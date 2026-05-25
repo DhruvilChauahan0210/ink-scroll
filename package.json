@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "npm run dev --workspace=apps/demo",
     "build:lib": "npm run build --workspace=packages/svg-scroll-draw",
-    "build:demo": "npm run build --workspace=apps/demo"
+    "build:demo": "npm run build --workspace=apps/demo",
+    "vercel-build": "npm run build:lib && npm run build:demo"
   }
 }
