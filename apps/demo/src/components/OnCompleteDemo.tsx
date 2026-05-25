@@ -7,17 +7,32 @@ export function OnCompleteDemo() {
   const [drawn, setDrawn] = useState(false);
 
   return (
-    <section className="min-h-screen flex flex-col md:flex-row items-center justify-center gap-16 px-6 md:px-20 py-32">
-      <div className="flex-1 max-w-sm">
-        <p className="text-xs uppercase tracking-[0.3em] text-amber-400 font-mono mb-3">05 / callback</p>
-        <h2 className="text-4xl font-bold mb-4">onComplete callback</h2>
-        <p className="text-zinc-400 leading-relaxed mb-6">
-          The{' '}
-          <code className="text-amber-300 bg-zinc-900 px-1.5 py-0.5 rounded text-sm">onComplete</code>{' '}
-          prop fires when the path reaches 100% — useful for chaining animations, revealing UI,
-          or triggering analytics events.
-        </p>
-        <pre className="bg-zinc-900 border border-zinc-800 rounded-lg p-4 text-sm font-mono text-amber-300 overflow-x-auto">
+    <section data-mascot="cheer" className="relative border-b border-pitch-black overflow-hidden">
+      <span className="pointer-events-none select-none absolute -right-6 top-1/2 -translate-y-1/2 font-display font-extrabold text-[220px] leading-none text-pitch-black opacity-[0.04]">05</span>
+      <div className="max-w-6xl mx-auto px-6 md:px-12 py-24 grid md:grid-cols-2 gap-16 items-center">
+
+        <div>
+          <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-3 font-medium">Callback</p>
+          <h2 className="font-display font-extrabold text-[clamp(28px,4vw,44px)] leading-[1] tracking-[-0.03em] mb-5">
+            Know when<br />it&apos;s done.
+          </h2>
+          <p className="text-graphite-border leading-relaxed mb-6 text-[15px]">
+            The <code className="inline-block bg-marketplace-gray border border-subtle-ash px-1.5 py-0.5 rounded-md text-[0.82em] font-mono text-pitch-black align-middle">onComplete</code>{' '}
+            callback fires the moment the path reaches 100%.
+            Use it to chain animations, reveal UI, or fire analytics.
+          </p>
+
+          <div className="rounded-2xl overflow-hidden border border-pitch-black mb-6">
+            <div className="bg-pitch-black flex items-center justify-between px-4 py-2.5">
+              <div className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#444]" />
+                <span className="w-2.5 h-2.5 rounded-full bg-[#444]" />
+                <span className="w-2.5 h-2.5 rounded-full bg-[#444]" />
+              </div>
+              <span className="text-[11px] text-[#666] font-mono tracking-wide">index.tsx</span>
+              <span className="w-16" />
+            </div>
+            <pre className="bg-graphite-border text-[#e8e8e3] px-5 py-4 text-[13px] font-mono leading-[1.75] overflow-x-auto">
 {`<ScrollDraw
   onComplete={() => {
     console.log('drawn!');
@@ -25,32 +40,38 @@ export function OnCompleteDemo() {
 >
   <svg>...</svg>
 </ScrollDraw>`}
-        </pre>
+            </pre>
+          </div>
 
-        <div
-          className={`mt-6 flex items-center gap-2 text-sm font-mono transition-all duration-500 ${
-            drawn ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
-          }`}
-        >
-          <span className="inline-block w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-          <span className="text-amber-300">onComplete fired ✓</span>
+          {/* Badge that appears on completion */}
+          <div
+            className={`inline-flex items-center gap-2.5 border border-pitch-black rounded-full px-4 py-2 text-[13px] font-medium transition-all duration-500 ${
+              drawn
+                ? 'opacity-100 translate-y-0 bg-creator-pink shadow-[2px_2px_0px_#000]'
+                : 'opacity-0 translate-y-3 pointer-events-none'
+            }`}
+          >
+            <span className="w-2 h-2 rounded-full bg-pitch-black" />
+            onComplete fired ✓
+          </div>
         </div>
-      </div>
 
-      <div className="flex-1 flex items-center justify-center relative">
-        <ScrollDraw easing="ease-in-out" onComplete={() => setDrawn(true)}>
-          <svg width="320" height="280" viewBox="0 0 320 280" fill="none">
-            <circle cx="160" cy="140" r="110" stroke="#f59e0b" strokeWidth="2" />
-            <polyline
-              points="90,140 140,195 230,90"
-              stroke="#fbbf24"
-              strokeWidth="4"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              fill="none"
-            />
-          </svg>
-        </ScrollDraw>
+        <div className="flex items-center justify-center bg-marketplace-gray rounded-2xl border border-pitch-black p-12 shadow-[4px_4px_0px_#000]">
+          <ScrollDraw easing="ease-in-out" trigger={{ start: 'top bottom', end: 'bottom center' }} onComplete={() => setDrawn(true)}>
+            <svg width="260" height="240" viewBox="0 0 260 240" fill="none">
+              <circle cx="130" cy="120" r="96" stroke="#000000" strokeWidth="2.5" />
+              <polyline
+                points="68,120 114,170 192,74"
+                stroke="#ff90e8"
+                strokeWidth="5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                fill="none"
+              />
+            </svg>
+          </ScrollDraw>
+        </div>
+
       </div>
     </section>
   );

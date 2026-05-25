@@ -1,234 +1,454 @@
 import { ScrollDraw } from '@/components/ScrollDraw';
 import { OnCompleteDemo } from '@/components/OnCompleteDemo';
 
+/* ── Shared sub-components ──────────────────────────────────────────────── */
+
+function CodeBlock({ filename, children }: { filename: string; children: string }) {
+  return (
+    <div className="rounded-2xl overflow-hidden border border-pitch-black">
+      <div className="bg-pitch-black flex items-center justify-between px-4 py-2.5">
+        <div className="flex items-center gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#444]" />
+          <span className="w-2.5 h-2.5 rounded-full bg-[#444]" />
+          <span className="w-2.5 h-2.5 rounded-full bg-[#444]" />
+        </div>
+        <span className="text-[11px] text-[#666] font-mono tracking-wide">{filename}</span>
+        <span className="w-16" />
+      </div>
+      <pre className="bg-graphite-border text-[#e8e8e3] px-5 py-4 text-[13px] font-mono leading-[1.75] overflow-x-auto">
+        {children}
+      </pre>
+    </div>
+  );
+}
+
+function Tag({ children }: { children: React.ReactNode }) {
+  return (
+    <code className="inline-block bg-marketplace-gray border border-subtle-ash px-1.5 py-0.5 rounded-md text-[0.82em] font-mono text-pitch-black align-middle">
+      {children}
+    </code>
+  );
+}
+
+/* ── Marquee data ────────────────────────────────────────────────────────── */
+const MARQUEE_ITEMS = [
+  'Container Automation',
+  'SSR Safe',
+  'requestAnimationFrame',
+  'IntersectionObserver',
+  '< 3 KB Gzipped',
+  'Zero Dependencies',
+  '43 Tests Passing',
+  'React + Next.js',
+  'Vanilla JS',
+];
+
+/* ── Page ────────────────────────────────────────────────────────────────── */
 export default function Home() {
   return (
-    <main className="bg-[#0a0a0a] text-white overflow-x-hidden">
+    <main className="bg-light-linen text-pitch-black overflow-x-hidden">
 
-      {/* Hero */}
-      <section className="min-h-screen flex flex-col items-center justify-center px-6 text-center relative">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_#1a1a2e_0%,_#0a0a0a_70%)]" />
-        <div className="relative z-10 max-w-3xl">
-          <p className="text-xs uppercase tracking-[0.3em] text-zinc-500 mb-4 font-mono">
-            svg-scroll-draw
-          </p>
-          <h1 className="text-6xl md:text-8xl font-bold tracking-tight leading-none mb-6">
-            Draw with{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-cyan-400">
-              scroll.
-            </span>
-          </h1>
-          <p className="text-lg text-zinc-400 max-w-xl mx-auto mb-10">
-            A zero-dependency library that animates SVG paths as you scroll.
-            Under&nbsp;3KB&nbsp;gzipped.
-          </p>
-          <div className="flex items-center justify-center gap-3">
-            <code className="bg-zinc-900 border border-zinc-800 px-4 py-2 rounded-lg text-sm text-violet-300 font-mono">
-              npm i svg-scroll-draw
-            </code>
+      {/* ── Nav ───────────────────────────────────────────────────────── */}
+      <nav className="sticky top-0 z-50 bg-light-linen/95 backdrop-blur-sm border-b border-pitch-black flex items-center justify-between px-6 md:px-12 h-14">
+        <span className="font-display font-bold text-sm tracking-tight">svg-scroll-draw</span>
+        <div className="flex items-center gap-2">
+          <a
+            href="https://www.npmjs.com/package/svg-scroll-draw"
+            className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono"
+          >
+            v0.1.0
+          </a>
+          <a
+            href="https://github.com"
+            className="text-sm px-4 py-1.5 rounded-full bg-pitch-black text-light-linen hover:bg-graphite-border transition-colors font-medium"
+          >
+            GitHub →
+          </a>
+        </div>
+      </nav>
+
+      {/* ── Hero ──────────────────────────────────────────────────────── */}
+      <section data-mascot-reset className="relative min-h-screen flex flex-col items-center justify-center px-6 text-center border-b border-pitch-black dot-grid overflow-hidden">
+
+        {/* Geometric decoration — thin concentric circles */}
+        <div className="pointer-events-none absolute -top-48 -right-48 w-[700px] h-[700px] rounded-full border border-subtle-ash" />
+        <div className="pointer-events-none absolute -top-24 -right-24 w-[450px] h-[450px] rounded-full border border-subtle-ash opacity-60" />
+        <div className="pointer-events-none absolute top-12 right-12 w-4 h-4 rounded-full bg-creator-pink" />
+        <div className="pointer-events-none absolute top-28 right-28 w-2 h-2 rounded-full bg-sunshine-yellow" />
+        <div className="pointer-events-none absolute -bottom-32 -left-48 w-[500px] h-[500px] rounded-full border border-subtle-ash opacity-40" />
+        <div className="pointer-events-none absolute bottom-24 left-16 w-3 h-3 rounded-full bg-lime-glow" />
+
+        {/* Badge */}
+        <div className="relative z-10 inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-10 border border-subtle-ash bg-light-linen/80 rounded-full px-4 py-1.5 font-medium">
+          <span className="w-1.5 h-1.5 rounded-full bg-creator-pink animate-pulse" />
+          Open source · MIT · Zero dependencies
+        </div>
+
+        {/* Headline */}
+        <h1 className="relative z-10 font-display font-extrabold leading-[0.88] tracking-[-0.04em] mb-8"
+            style={{ fontSize: 'clamp(58px, 11vw, 130px)' }}>
+          ANIMATE SVG<br />
+          PATHS AS YOU{' '}
+          <span className="relative inline-block">
+            <span className="relative z-10 px-4">SCROLL.</span>
+            <span className="absolute inset-0 bg-creator-pink rounded-xl -rotate-[1.2deg]" />
+          </span>
+        </h1>
+
+        {/* Sub */}
+        <p className="relative z-10 text-base md:text-lg text-graphite-border max-w-md mx-auto mb-10 leading-relaxed">
+          The definitive modern library. Under 3KB gzipped.
+          Works in React, Next.js, and vanilla JS.
+        </p>
+
+        {/* CTAs */}
+        <div className="relative z-10 flex flex-col sm:flex-row items-center gap-3 mb-14">
+          <div className="flex items-center gap-2 bg-light-linen border border-pitch-black rounded-full px-5 py-3 text-sm font-mono shadow-[2px_2px_0px_#000]">
+            <span className="text-graphite-border select-none">$</span>
+            <span className="font-medium">npm i svg-scroll-draw</span>
           </div>
+          <a
+            href="#demos"
+            className="px-6 py-3 rounded-full bg-pitch-black text-light-linen text-sm font-semibold hover:bg-graphite-border transition-colors shadow-[2px_2px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+          >
+            See it in action ↓
+          </a>
         </div>
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-zinc-600">
-          <span className="text-xs font-mono tracking-widest">SCROLL</span>
-          <div className="w-px h-12 bg-gradient-to-b from-zinc-600 to-transparent" />
+
+        {/* Stats */}
+        <div className="relative z-10 flex flex-wrap items-center justify-center gap-2">
+          {[
+            ['< 3KB', 'gzipped'],
+            ['0', 'dependencies'],
+            ['SSR', 'safe'],
+            ['43', 'tests ✓'],
+          ].map(([val, label]) => (
+            <div key={val} className="flex items-center gap-1.5 border border-pitch-black bg-light-linen rounded-full px-4 py-1.5 shadow-[1px_1px_0px_#000]">
+              <span className="font-display font-bold text-sm">{val}</span>
+              <span className="text-[11px] text-graphite-border">{label}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Scroll nudge */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 text-graphite-border">
+          <span className="text-[10px] font-mono uppercase tracking-[0.22em]">scroll</span>
+          <div className="w-px h-8 bg-gradient-to-b from-subtle-ash to-transparent" />
         </div>
       </section>
 
-      {/* Demo 1 — Simple path */}
-      <section className="min-h-screen flex flex-col md:flex-row items-center justify-center gap-16 px-6 md:px-20 py-32">
-        <div className="flex-1 max-w-sm">
-          <p className="text-xs uppercase tracking-[0.3em] text-violet-400 font-mono mb-3">01 / basic</p>
-          <h2 className="text-4xl font-bold mb-4">Simple path draw</h2>
-          <p className="text-zinc-400 leading-relaxed">
-            Drop{' '}
-            <code className="text-violet-300 bg-zinc-900 px-1.5 py-0.5 rounded text-sm">&lt;ScrollDraw&gt;</code>{' '}
-            around any SVG. The library detects all paths, measures their total length, and
-            animates{' '}
-            <code className="text-violet-300 bg-zinc-900 px-1.5 py-0.5 rounded text-sm">stroke-dashoffset</code>{' '}
-            as the element enters the viewport.
-          </p>
+      {/* ── Marquee ───────────────────────────────────────────────────── */}
+      <div className="bg-creator-pink border-b border-pitch-black py-3 overflow-hidden select-none">
+        <div className="flex animate-marquee whitespace-nowrap">
+          {[...MARQUEE_ITEMS, ...MARQUEE_ITEMS].map((item, i) => (
+            <span key={i} className="flex items-center text-[13px] font-display font-bold uppercase tracking-[0.12em] text-pitch-black">
+              {item}
+              <span className="mx-6 text-pitch-black/30">◆</span>
+            </span>
+          ))}
         </div>
-        <div className="flex-1 flex items-center justify-center">
-          <ScrollDraw>
-            <svg width="320" height="320" viewBox="0 0 320 320" fill="none">
-              <path
-                d="M 40 280 C 40 160 160 40 280 40"
-                stroke="#7c3aed"
-                strokeWidth="3"
-                strokeLinecap="round"
-                fill="none"
-              />
-              <path
-                d="M 40 240 C 40 160 120 80 280 80"
-                stroke="#4f46e5"
-                strokeWidth="2"
-                strokeLinecap="round"
-                fill="none"
-                strokeDasharray="8 6"
-              />
-              <circle cx="40" cy="280" r="5" fill="#7c3aed" />
-              <circle cx="280" cy="40" r="5" fill="#7c3aed" />
-            </svg>
-          </ScrollDraw>
-        </div>
-      </section>
+      </div>
 
-      {/* Demo 2 — Easing + speed */}
-      <section className="min-h-screen flex flex-col md:flex-row-reverse items-center justify-center gap-16 px-6 md:px-20 py-32 bg-[#0d0d1a]">
-        <div className="flex-1 max-w-sm">
-          <p className="text-xs uppercase tracking-[0.3em] text-cyan-400 font-mono mb-3">02 / easing</p>
-          <h2 className="text-4xl font-bold mb-4">Easing &amp; speed control</h2>
-          <p className="text-zinc-400 leading-relaxed mb-6">
-            Pass{' '}
-            <code className="text-cyan-300 bg-zinc-900 px-1.5 py-0.5 rounded text-sm">easing=&quot;ease-out&quot;</code>{' '}
-            and{' '}
-            <code className="text-cyan-300 bg-zinc-900 px-1.5 py-0.5 rounded text-sm">speed={'{1.5}'}</code>{' '}
-            to give the animation a natural deceleration feel. Supports <em>linear</em>,{' '}
-            <em>ease-in</em>, <em>ease-out</em>, <em>ease-in-out</em>, or any custom function.
-          </p>
-          <pre className="bg-zinc-900 border border-zinc-800 rounded-lg p-4 text-sm font-mono text-cyan-300 overflow-x-auto">
-{`<ScrollDraw
-  easing="ease-out"
-  speed={1.5}
->
-  <svg>...</svg>
-</ScrollDraw>`}
-          </pre>
-        </div>
-        <div className="flex-1 flex items-center justify-center">
-          <ScrollDraw easing="ease-out" speed={1.5}>
-            <svg width="320" height="320" viewBox="0 0 320 320" fill="none">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <path
-                  key={i}
-                  d={`M ${160 - i * 26} 160 A ${i * 26} ${i * 26} 0 1 1 ${160 + i * 26} 160`}
-                  stroke={`hsl(${185 + i * 14}, 80%, ${52 + i * 4}%)`}
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  fill="none"
-                />
-              ))}
-            </svg>
-          </ScrollDraw>
-        </div>
-      </section>
+      {/* ── Problems ──────────────────────────────────────────────────── */}
+      <section className="bg-marketplace-gray border-b border-pitch-black px-6 md:px-12 py-20">
+        <div className="max-w-5xl mx-auto">
+          <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-3 font-medium">The problem</p>
+          <h2 className="font-display font-extrabold text-[clamp(32px,5vw,56px)] leading-[0.95] tracking-[-0.03em] mb-12">
+            Every existing tool<br />is broken.
+          </h2>
 
-      {/* Demo 3 — Fade */}
-      <section className="min-h-screen flex flex-col md:flex-row items-center justify-center gap-16 px-6 md:px-20 py-32">
-        <div className="flex-1 max-w-sm">
-          <p className="text-xs uppercase tracking-[0.3em] text-emerald-400 font-mono mb-3">03 / fade</p>
-          <h2 className="text-4xl font-bold mb-4">Draw + fade in</h2>
-          <p className="text-zinc-400 leading-relaxed mb-6">
-            Enable{' '}
-            <code className="text-emerald-300 bg-zinc-900 px-1.5 py-0.5 rounded text-sm">fade={'{true}'}</code>{' '}
-            to simultaneously fade each path from{' '}
-            <code className="bg-zinc-900 px-1.5 py-0.5 rounded text-sm text-zinc-300">opacity: 0</code> to{' '}
-            <code className="bg-zinc-900 px-1.5 py-0.5 rounded text-sm text-zinc-300">1</code>{' '}
-            as it draws. Creates an elegant materialisation effect.
-          </p>
-          <pre className="bg-zinc-900 border border-zinc-800 rounded-lg p-4 text-sm font-mono text-emerald-300 overflow-x-auto">
-{`<ScrollDraw
-  fade={true}
-  easing="ease-in-out"
->
-  <svg>...</svg>
-</ScrollDraw>`}
-          </pre>
-        </div>
-        <div className="flex-1 flex items-center justify-center">
-          <ScrollDraw fade easing="ease-in-out">
-            <svg width="320" height="320" viewBox="0 0 320 320" fill="none">
-              {[60, 160, 260].map((x) =>
-                [60, 160, 260].map((y) => (
-                  <g key={`${x}-${y}`}>
-                    <line x1={x - 14} y1={y - 14} x2={x + 14} y2={y + 14}
-                      stroke="#34d399" strokeWidth="2" strokeLinecap="round" />
-                    <line x1={x + 14} y1={y - 14} x2={x - 14} y2={y + 14}
-                      stroke="#34d399" strokeWidth="2" strokeLinecap="round" />
-                  </g>
-                ))
-              )}
-            </svg>
-          </ScrollDraw>
-        </div>
-      </section>
-
-      {/* Demo 4 — Complex SVG */}
-      <section className="min-h-screen flex flex-col md:flex-row-reverse items-center justify-center gap-16 px-6 md:px-20 py-32 bg-[#0d0d1a]">
-        <div className="flex-1 max-w-sm">
-          <p className="text-xs uppercase tracking-[0.3em] text-rose-400 font-mono mb-3">04 / complex</p>
-          <h2 className="text-4xl font-bold mb-4">Complex multi-path SVG</h2>
-          <p className="text-zinc-400 leading-relaxed">
-            Every{' '}
-            <code className="text-rose-300 bg-zinc-900 px-1.5 py-0.5 rounded text-sm">&lt;path&gt;</code>,{' '}
-            <code className="text-rose-300 bg-zinc-900 px-1.5 py-0.5 rounded text-sm">&lt;line&gt;</code>,{' '}
-            <code className="text-rose-300 bg-zinc-900 px-1.5 py-0.5 rounded text-sm">&lt;polyline&gt;</code>, and{' '}
-            <code className="text-rose-300 bg-zinc-900 px-1.5 py-0.5 rounded text-sm">&lt;polygon&gt;</code>{' '}
-            inside the container is discovered and animated automatically — no manual selectors needed.
-          </p>
-        </div>
-        <div className="flex-1 flex items-center justify-center">
-          <ScrollDraw easing="ease-out" speed={0.9}>
-            <svg width="320" height="320" viewBox="0 0 320 320" fill="none">
-              <polygon
-                points="160,30 290,160 160,290 30,160"
-                stroke="#f43f5e"
-                strokeWidth="2"
-                fill="none"
-              />
-              <polygon
-                points="160,80 240,160 160,240 80,160"
-                stroke="#fb7185"
-                strokeWidth="1.5"
-                strokeDasharray="6 4"
-                fill="none"
-              />
-              <line x1="160" y1="30" x2="160" y2="290" stroke="#f43f5e" strokeWidth="1" opacity="0.3" />
-              <line x1="30" y1="160" x2="290" y2="160" stroke="#f43f5e" strokeWidth="1" opacity="0.3" />
-              <path d="M 145 30 L 160 15 L 175 30" stroke="#fda4af" strokeWidth="1.5" fill="none" strokeLinecap="round" />
-              <path d="M 290 145 L 305 160 L 290 175" stroke="#fda4af" strokeWidth="1.5" fill="none" strokeLinecap="round" />
-              <path d="M 175 290 L 160 305 L 145 290" stroke="#fda4af" strokeWidth="1.5" fill="none" strokeLinecap="round" />
-              <path d="M 30 175 L 15 160 L 30 145" stroke="#fda4af" strokeWidth="1.5" fill="none" strokeLinecap="round" />
-            </svg>
-          </ScrollDraw>
-        </div>
-      </section>
-
-      {/* Demo 5 — onComplete (client component for interactivity) */}
-      <OnCompleteDemo />
-
-      {/* API Reference */}
-      <section className="py-32 px-6 md:px-20 bg-[#0d0d1a]">
-        <div className="max-w-4xl mx-auto">
-          <p className="text-xs uppercase tracking-[0.3em] text-zinc-500 font-mono mb-3">API</p>
-          <h2 className="text-4xl font-bold mb-12">Configuration options</h2>
-          <div className="grid gap-3">
+          <div className="grid md:grid-cols-3 gap-4" data-mascot="shocked">
             {[
-              { prop: 'selector', type: 'string', def: '"path, polyline, line, polygon"', desc: 'CSS selector to target specific child elements.' },
-              { prop: 'speed', type: 'number', def: '1', desc: 'Scale factor — values > 1 complete the animation faster.' },
-              { prop: 'fade', type: 'boolean', def: 'false', desc: 'Simultaneously fade opacity from 0 → 1 while drawing.' },
-              { prop: 'easing', type: 'string | fn', def: '"linear"', desc: 'Built-in: linear, ease-in, ease-out, ease-in-out. Or pass a custom (t: number) => number.' },
-              { prop: 'trigger.start', type: 'string', def: '"top bottom"', desc: 'When animation begins. Format: "element-anchor viewport-anchor".' },
-              { prop: 'trigger.end', type: 'string', def: '"bottom top"', desc: 'When animation completes.' },
-              { prop: 'onComplete', type: '() => void', def: '—', desc: 'Fires once when the path reaches 100% draw progress.' },
-            ].map(({ prop, type, def, desc }) => (
-              <div key={prop} className="grid grid-cols-1 md:grid-cols-[180px_140px_120px_1fr] gap-3 items-start p-4 rounded-xl bg-zinc-900/60 border border-zinc-800">
-                <code className="text-violet-300 font-mono text-sm">{prop}</code>
-                <code className="text-cyan-300 font-mono text-sm">{type}</code>
-                <code className="text-zinc-400 font-mono text-sm">{def}</code>
-                <p className="text-zinc-400 text-sm">{desc}</p>
+              {
+                name: 'GSAP DrawSVG',
+                size: '40KB+',
+                badge: 'bg-creator-pink',
+                flaw: 'Paid license',
+                problem: 'Overkill for a single effect — and requires a Club GreenSock subscription for commercial use.',
+              },
+              {
+                name: 'Framer Motion',
+                size: '35KB+',
+                badge: 'bg-sunshine-yellow',
+                flaw: 'React only',
+                problem: 'Locks you into one ecosystem and adds 35KB of runtime overhead just to draw a line.',
+              },
+              {
+                name: 'scroll-svg',
+                size: '~2KB',
+                badge: 'bg-lime-glow',
+                flaw: 'Abandoned',
+                problem: 'Requires manually targeting individual path IDs. Crashes in Next.js with window is not defined.',
+              },
+            ].map(({ name, size, badge, flaw, problem }) => (
+              <div key={name} className="relative bg-light-linen border border-pitch-black rounded-2xl p-6 overflow-hidden">
+                {/* X mark watermark */}
+                <span className="absolute -top-3 -right-3 text-[120px] font-display font-extrabold text-pitch-black opacity-[0.04] leading-none select-none pointer-events-none">✕</span>
+                <div className="relative">
+                  <div className="flex items-start justify-between mb-1">
+                    <span className="font-display font-bold text-base">{name}</span>
+                  </div>
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className={`text-[11px] font-mono px-2 py-0.5 rounded-full ${badge} text-pitch-black font-medium`}>{size}</span>
+                    <span className="text-[11px] font-medium text-firecracker-orange uppercase tracking-wide border border-firecracker-orange rounded-full px-2 py-0.5">{flaw}</span>
+                  </div>
+                  <p className="text-sm text-graphite-border leading-relaxed">{problem}</p>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-12 px-6 text-center border-t border-zinc-900">
-        <p className="text-zinc-600 text-sm font-mono">
-          svg-scroll-draw &nbsp;·&nbsp; MIT &nbsp;·&nbsp; &lt;3KB gzipped
-        </p>
+      {/* ── Demos ─────────────────────────────────────────────────────── */}
+      <div id="demos">
+
+        {/* 01 — Basic */}
+        <section data-mascot="draw" className="relative border-b border-pitch-black overflow-hidden">
+          <span className="pointer-events-none select-none absolute -right-6 top-1/2 -translate-y-1/2 font-display font-extrabold text-[220px] leading-none text-pitch-black opacity-[0.04]">01</span>
+          <div className="max-w-6xl mx-auto px-6 md:px-12 py-24 grid md:grid-cols-2 gap-16 items-center">
+            <div>
+              <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-3 font-medium">Zero config</p>
+              <h2 className="font-display font-extrabold text-[clamp(28px,4vw,44px)] leading-[1] tracking-[-0.03em] mb-5">
+                Drop in.<br />It just works.
+              </h2>
+              <p className="text-graphite-border leading-relaxed mb-6 text-[15px]">
+                Wrap any SVG with <Tag>&lt;ScrollDraw&gt;</Tag>.
+                The engine discovers every path, measures total length,
+                and animates <Tag>stroke-dashoffset</Tag> as it enters the viewport.
+                No configuration required.
+              </p>
+              <CodeBlock filename="index.tsx">
+{`import { ScrollDraw } from 'svg-scroll-draw/react';
+
+export default function Hero() {
+  return (
+    <ScrollDraw>
+      <svg>...</svg>
+    </ScrollDraw>
+  );
+}`}
+              </CodeBlock>
+            </div>
+            <div className="flex items-center justify-center bg-marketplace-gray rounded-2xl border border-pitch-black p-12 shadow-[4px_4px_0px_#000]">
+              <ScrollDraw trigger={{ start: 'top bottom', end: 'bottom center' }}>
+                <svg width="260" height="260" viewBox="0 0 260 260" fill="none">
+                  <path d="M 25 235 C 25 115 130 25 235 25" stroke="#ff90e8" strokeWidth="3.5" strokeLinecap="round" />
+                  <path d="M 25 195 C 25 115 105 45 235 65" stroke="#000000" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="7 5" opacity="0.25" />
+                  <circle cx="25" cy="235" r="6" fill="#ff90e8" />
+                  <circle cx="235" cy="25" r="6" fill="#ff90e8" />
+                  <circle cx="25" cy="235" r="11" stroke="#ff90e8" strokeWidth="1.5" fill="none" opacity="0.4" />
+                  <circle cx="235" cy="25" r="11" stroke="#ff90e8" strokeWidth="1.5" fill="none" opacity="0.4" />
+                </svg>
+              </ScrollDraw>
+            </div>
+          </div>
+        </section>
+
+        {/* 02 — Easing */}
+        <section data-mascot="dance" className="relative border-b border-pitch-black bg-marketplace-gray overflow-hidden">
+          <span className="pointer-events-none select-none absolute -left-6 top-1/2 -translate-y-1/2 font-display font-extrabold text-[220px] leading-none text-pitch-black opacity-[0.04]">02</span>
+          <div className="max-w-6xl mx-auto px-6 md:px-12 py-24 grid md:grid-cols-2 gap-16 items-center">
+            <div className="order-2 md:order-1 flex items-center justify-center bg-light-linen rounded-2xl border border-pitch-black p-12 shadow-[4px_4px_0px_#000]">
+              <ScrollDraw easing="ease-out" speed={1.5} trigger={{ start: 'top bottom', end: 'bottom center' }}>
+                <svg width="260" height="260" viewBox="0 0 260 260" fill="none">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <path
+                      key={i}
+                      d={`M ${130 - i * 22} 130 A ${i * 22} ${i * 22} 0 1 1 ${130 + i * 22} 130`}
+                      stroke="#ffc900"
+                      strokeWidth={i === 5 ? 3 : 1.5}
+                      strokeLinecap="round"
+                      fill="none"
+                      opacity={0.35 + i * 0.13}
+                    />
+                  ))}
+                </svg>
+              </ScrollDraw>
+            </div>
+            <div className="order-1 md:order-2">
+              <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-3 font-medium">Easing + speed</p>
+              <h2 className="font-display font-extrabold text-[clamp(28px,4vw,44px)] leading-[1] tracking-[-0.03em] mb-5">
+                Natural motion,<br />your way.
+              </h2>
+              <p className="text-graphite-border leading-relaxed mb-6 text-[15px]">
+                Four built-in curves or any custom{' '}
+                <Tag>(t: number) =&gt; number</Tag> function.
+                The <Tag>speed</Tag> prop compresses or stretches the draw
+                relative to your scroll distance.
+              </p>
+              <CodeBlock filename="index.tsx">
+{`<ScrollDraw
+  easing="ease-out"
+  speed={1.5}
+>
+  <svg>...</svg>
+</ScrollDraw>`}
+              </CodeBlock>
+            </div>
+          </div>
+        </section>
+
+        {/* 03 — Fade */}
+        <section data-mascot="magic" className="relative border-b border-pitch-black overflow-hidden">
+          <span className="pointer-events-none select-none absolute -right-6 top-1/2 -translate-y-1/2 font-display font-extrabold text-[220px] leading-none text-pitch-black opacity-[0.04]">03</span>
+          <div className="max-w-6xl mx-auto px-6 md:px-12 py-24 grid md:grid-cols-2 gap-16 items-center">
+            <div>
+              <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-3 font-medium">Fade</p>
+              <h2 className="font-display font-extrabold text-[clamp(28px,4vw,44px)] leading-[1] tracking-[-0.03em] mb-5">
+                Draw and<br />materialise.
+              </h2>
+              <p className="text-graphite-border leading-relaxed mb-6 text-[15px]">
+                Enable <Tag>fade</Tag> to simultaneously animate{' '}
+                <Tag>opacity: 0 → 1</Tag> as the path draws.
+                Lines seem to emerge from nothing — elegant for technical illustrations and hero graphics.
+              </p>
+              <CodeBlock filename="index.tsx">
+{`<ScrollDraw
+  fade={true}
+  easing="ease-in-out"
+>
+  <svg>...</svg>
+</ScrollDraw>`}
+              </CodeBlock>
+            </div>
+            <div className="flex items-center justify-center bg-marketplace-gray rounded-2xl border border-pitch-black p-12 shadow-[4px_4px_0px_#000]">
+              <ScrollDraw fade easing="ease-in-out" trigger={{ start: 'top bottom', end: 'bottom center' }}>
+                <svg width="260" height="260" viewBox="0 0 260 260" fill="none">
+                  {/* Flowing wave */}
+                  <path
+                    d="M 20 130 C 60 60 100 200 140 130 S 200 60 240 130"
+                    stroke="#000000"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    fill="none"
+                  />
+                  {/* Nodes along the wave */}
+                  {[20, 80, 140, 200, 240].map((x, i) => (
+                    <circle key={i} cx={x} cy={i % 2 === 0 ? 130 : i === 1 ? 130 : 130} r="4" fill="#000" />
+                  ))}
+                  <circle cx="20" cy="130" r="4" fill="#000" />
+                  <circle cx="140" cy="130" r="4" fill="#ff90e8" />
+                  <circle cx="240" cy="130" r="4" fill="#000" />
+                  {/* Grid lines */}
+                  <line x1="20" y1="90" x2="240" y2="90" stroke="#d1d5dc" strokeWidth="1" strokeDasharray="4 4" />
+                  <line x1="20" y1="170" x2="240" y2="170" stroke="#d1d5dc" strokeWidth="1" strokeDasharray="4 4" />
+                </svg>
+              </ScrollDraw>
+            </div>
+          </div>
+        </section>
+
+        {/* 04 — Complex */}
+        <section data-mascot="celebrate" className="relative border-b border-pitch-black bg-marketplace-gray overflow-hidden">
+          <span className="pointer-events-none select-none absolute -left-6 top-1/2 -translate-y-1/2 font-display font-extrabold text-[220px] leading-none text-pitch-black opacity-[0.04]">04</span>
+          <div className="max-w-6xl mx-auto px-6 md:px-12 py-24 grid md:grid-cols-2 gap-16 items-center">
+            <div className="order-2 md:order-1 flex items-center justify-center bg-light-linen rounded-2xl border border-pitch-black p-12 shadow-[4px_4px_0px_#000]">
+              <ScrollDraw easing="ease-out" speed={0.9} trigger={{ start: 'top bottom', end: 'bottom center' }}>
+                <svg width="260" height="260" viewBox="0 0 260 260" fill="none">
+                  <polygon points="130,16 244,130 130,244 16,130" stroke="#000000" strokeWidth="2" fill="none" />
+                  <polygon points="130,58 202,130 130,202 58,130" stroke="#ff90e8" strokeWidth="2" fill="none" />
+                  <polygon points="130,100 160,130 130,160 100,130" stroke="#ffc900" strokeWidth="2" fill="none" />
+                  <line x1="130" y1="16" x2="130" y2="244" stroke="#000000" strokeWidth="0.75" strokeDasharray="4 4" opacity="0.3" />
+                  <line x1="16" y1="130" x2="244" y2="130" stroke="#000000" strokeWidth="0.75" strokeDasharray="4 4" opacity="0.3" />
+                  <path d="M 118 16 L 130 4 L 142 16" stroke="#000" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+                  <path d="M 244 118 L 256 130 L 244 142" stroke="#000" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+                  <path d="M 142 244 L 130 256 L 118 244" stroke="#000" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+                  <path d="M 16 142 L 4 130 L 16 118" stroke="#000" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+                </svg>
+              </ScrollDraw>
+            </div>
+            <div className="order-1 md:order-2">
+              <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-3 font-medium">Auto-discovery</p>
+              <h2 className="font-display font-extrabold text-[clamp(28px,4vw,44px)] leading-[1] tracking-[-0.03em] mb-5">
+                Every path.<br />Automatically.
+              </h2>
+              <p className="text-graphite-border leading-relaxed mb-4 text-[15px]">
+                Every <Tag>&lt;path&gt;</Tag>, <Tag>&lt;line&gt;</Tag>,{' '}
+                <Tag>&lt;polyline&gt;</Tag>, and <Tag>&lt;polygon&gt;</Tag> inside
+                the container is discovered, measured, and animated.
+              </p>
+              <p className="text-graphite-border leading-relaxed text-[15px]">
+                No manual selectors. No brittle ID targeting. When your designer updates
+                the SVG, your code doesn&apos;t break.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* 05 — onComplete */}
+        <OnCompleteDemo />
+
+      </div>
+
+      {/* ── API Reference ─────────────────────────────────────────────── */}
+      <section data-mascot="think" className="bg-marketplace-gray border-t border-pitch-black border-b px-6 md:px-12 py-20">
+        <div className="max-w-5xl mx-auto">
+          <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-3 font-medium">Reference</p>
+          <h2 className="font-display font-extrabold text-[clamp(32px,5vw,56px)] leading-[0.95] tracking-[-0.03em] mb-12">
+            All options.
+          </h2>
+
+          <div className="border border-pitch-black rounded-2xl overflow-hidden bg-light-linen shadow-[4px_4px_0px_#000]">
+            <div className="hidden md:grid grid-cols-[160px_130px_190px_1fr] gap-4 px-6 py-3 bg-pitch-black text-light-linen text-[11px] uppercase tracking-[0.15em] font-medium">
+              <span>Option</span><span>Type</span><span>Default</span><span>Description</span>
+            </div>
+            {[
+              { prop: 'selector', type: 'string', def: '"path, polyline…"', desc: 'CSS selector to target specific child elements.' },
+              { prop: 'speed', type: 'number', def: '1', desc: 'Scale factor — values above 1 complete the animation faster.' },
+              { prop: 'fade', type: 'boolean', def: 'false', desc: 'Animate opacity 0 → 1 simultaneously while drawing.' },
+              { prop: 'easing', type: 'string | fn', def: '"linear"', desc: 'linear · ease-in · ease-out · ease-in-out · or custom (t) => t.' },
+              { prop: 'trigger.start', type: 'string', def: '"top bottom"', desc: 'When animation begins. Format: "element-anchor viewport-anchor".' },
+              { prop: 'trigger.end', type: 'string', def: '"bottom top"', desc: 'When animation ends.' },
+              { prop: 'onComplete', type: '() => void', def: '—', desc: 'Fires once when the path reaches 100% draw progress.' },
+            ].map(({ prop, type, def, desc }, i) => (
+              <div
+                key={prop}
+                className={`grid grid-cols-1 md:grid-cols-[160px_130px_190px_1fr] gap-2 md:gap-4 px-6 py-4 text-sm items-start ${i < 6 ? 'border-b border-subtle-ash' : ''}`}
+              >
+                <code className="font-mono font-semibold text-pitch-black">{prop}</code>
+                <code className="font-mono text-graphite-border text-[13px]">{type}</code>
+                <code className="font-mono text-graphite-border text-[13px]">{def}</code>
+                <p className="text-graphite-border text-[14px] leading-relaxed">{desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── CTA ───────────────────────────────────────────────────────── */}
+      <section data-mascot="big-dance" className="bg-sunshine-yellow border-b border-pitch-black px-6 md:px-12 py-24 text-center">
+        <h2 className="font-display font-extrabold leading-[0.9] tracking-[-0.04em] mb-8 text-pitch-black"
+            style={{ fontSize: 'clamp(40px,8vw,96px)' }}>
+          THE MODERN<br />STANDARD FOR<br />SCROLL-DRAWN SVG.
+        </h2>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <div className="flex items-center gap-2 bg-pitch-black text-light-linen rounded-full px-6 py-3 text-sm font-mono shadow-[3px_3px_0px_rgba(0,0,0,0.3)]">
+            <span className="opacity-50">$</span>
+            <span>npm i svg-scroll-draw</span>
+          </div>
+          <a
+            href="https://github.com"
+            className="px-6 py-3 rounded-full border-2 border-pitch-black bg-transparent text-pitch-black text-sm font-semibold hover:bg-pitch-black hover:text-sunshine-yellow transition-colors shadow-[3px_3px_0px_rgba(0,0,0,0.2)]"
+          >
+            View on GitHub →
+          </a>
+        </div>
+      </section>
+
+      {/* ── Footer ────────────────────────────────────────────────────── */}
+      <footer className="px-6 md:px-12 py-7 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-subtle-ash">
+        <span className="font-display font-bold text-sm tracking-tight">svg-scroll-draw</span>
+        <div className="flex items-center gap-5 text-[13px] text-graphite-border">
+          <span>MIT License</span>
+          <span className="text-subtle-ash">·</span>
+          <span>&lt; 3KB gzipped</span>
+          <span className="text-subtle-ash">·</span>
+          <span>Zero dependencies</span>
+        </div>
+        <span className="text-[11px] font-mono text-graphite-border">v0.1.0</span>
       </footer>
+
     </main>
   );
 }

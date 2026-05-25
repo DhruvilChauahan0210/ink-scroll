@@ -1,26 +1,196 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@theme {
+  --color-pitch-black: #000000;
+  --color-light-linen: #ffffff;
+  --color-marketplace-gray: #f4f4f0;
+  --color-graphite-border: #242423;
+  --color-subtle-ash: #d1d5dc;
+  --color-creator-pink: #ff90e8;
+  --color-sunshine-yellow: #ffc900;
+  --color-lime-glow: #f1f333;
+  --color-firecracker-orange: #dc3400;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --font-display: var(--font-syne);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+body {
+  background: #ffffff;
+  color: #000000;
+  font-family: var(--font-geist-sans, sans-serif);
+  -webkit-font-smoothing: antialiased;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+* { box-sizing: border-box; }
+
+/* Dot grid for hero background */
+.dot-grid {
+  background-image: radial-gradient(circle, #d1d5dc 1.5px, transparent 1.5px);
+  background-size: 28px 28px;
 }
+
+/* Marquee */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee 28s linear infinite;
+  will-change: transform;
+}
+
+/* ── Mascot animations ─────────────────────────────────── */
+@keyframes mascot-bob {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  28%  { transform: translateY(-10px) rotate(-2deg); }
+  72%  { transform: translateY(-5px)  rotate(1.5deg); }
+}
+@keyframes star-float {
+  0%, 100% { transform: translateY(0px) rotate(-6deg) scale(1); }
+  50%  { transform: translateY(-14px) rotate(6deg) scale(1.06); }
+}
+@keyframes mascot-blink {
+  0%, 90%, 100% { transform: scaleY(1); }
+  93%  { transform: scaleY(0.07); }
+  96%  { transform: scaleY(1); }
+}
+@keyframes bubble-pop {
+  0%   { transform: scale(0) translateY(4px); opacity: 0; }
+  60%  { transform: scale(1.08) translateY(0); opacity: 1; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+@keyframes arm-wave {
+  0%, 100% { transform-origin: 22px 52px; transform: rotate(0deg); }
+  30%  { transform-origin: 22px 52px; transform: rotate(-28deg); }
+  60%  { transform-origin: 22px 52px; transform: rotate(14deg); }
+}
+
+/* ── Narrative one-shot animations ─────────────────────── */
+
+/* SHOCKED — recoils right, wiggles back */
+@keyframes mascot-shocked {
+  0%   { transform: translateX(0)    translateY(0)    rotate(0deg)  scale(1);    }
+  12%  { transform: translateX(22px) translateY(-14px) rotate(12deg) scale(1.22); }
+  28%  { transform: translateX(-8px) translateY(-6px)  rotate(-6deg) scale(1.1);  }
+  45%  { transform: translateX(10px) translateY(-3px)  rotate(5deg)  scale(1.06); }
+  65%  { transform: translateX(-3px) translateY(-1px)  rotate(-2deg) scale(1.02); }
+  100% { transform: translateX(0)    translateY(0)    rotate(0deg)  scale(1);    }
+}
+/* DRAW — leans forward like sketching, then back */
+@keyframes mascot-draw {
+  0%   { transform: translateX(0)    translateY(0)    rotate(0deg)  scale(1);   }
+  20%  { transform: translateX(-18px) translateY(-10px) rotate(-14deg) scale(1.12); }
+  40%  { transform: translateX(-14px) translateY(-8px)  rotate(-10deg) scale(1.08); }
+  55%  { transform: translateX(-18px) translateY(-12px) rotate(-14deg) scale(1.1);  }
+  75%  { transform: translateX(-8px)  translateY(-4px)  rotate(-5deg)  scale(1.04); }
+  100% { transform: translateX(0)    translateY(0)    rotate(0deg)  scale(1);   }
+}
+/* DANCE — groovy side-to-side boogie */
+@keyframes mascot-dance {
+  0%   { transform: translateX(0)    translateY(0)    rotate(0deg)  scale(1);    }
+  14%  { transform: translateX(-14px) translateY(-12px) rotate(-10deg) scale(1.08); }
+  28%  { transform: translateX(12px)  translateY(-18px) rotate(10deg)  scale(1.12); }
+  42%  { transform: translateX(-10px) translateY(-10px) rotate(-8deg)  scale(1.07); }
+  57%  { transform: translateX(10px)  translateY(-16px) rotate(8deg)   scale(1.1);  }
+  71%  { transform: translateX(-6px)  translateY(-8px)  rotate(-5deg)  scale(1.05); }
+  85%  { transform: translateX(4px)   translateY(-4px)  rotate(3deg)   scale(1.02); }
+  100% { transform: translateX(0)    translateY(0)    rotate(0deg)  scale(1);    }
+}
+/* MAGIC — slow orbital wand swirl */
+@keyframes mascot-magic {
+  0%   { transform: translateX(0)    translateY(0)    rotate(0deg)   scale(1);   }
+  18%  { transform: translateX(-18px) translateY(-18px) rotate(-22deg) scale(1.14); }
+  36%  { transform: translateX(14px)  translateY(-24px) rotate(18deg)  scale(1.16); }
+  54%  { transform: translateX(18px)  translateY(-8px)  rotate(22deg)  scale(1.1);  }
+  72%  { transform: translateX(8px)   translateY(-2px)  rotate(8deg)   scale(1.04); }
+  100% { transform: translateX(0)    translateY(0)    rotate(0deg)   scale(1);   }
+}
+/* CELEBRATE — multiple big jumps */
+@keyframes mascot-celebrate {
+  0%   { transform: translateY(0)    scale(1)    rotate(0deg);  }
+  15%  { transform: translateY(-28px) scale(1.18) rotate(-6deg); }
+  30%  { transform: translateY(-8px)  scale(1.08) rotate(4deg);  }
+  45%  { transform: translateY(-32px) scale(1.22) rotate(-5deg); }
+  60%  { transform: translateY(-10px) scale(1.1)  rotate(4deg);  }
+  75%  { transform: translateY(-20px) scale(1.14) rotate(-3deg); }
+  88%  { transform: translateY(-5px)  scale(1.04) rotate(1deg);  }
+  100% { transform: translateY(0)    scale(1)    rotate(0deg);  }
+}
+/* CHEER — arms-up victory leap */
+@keyframes mascot-cheer {
+  0%   { transform: translateY(0)    scale(1)    rotate(0deg);  }
+  20%  { transform: translateY(-38px) scale(1.28) rotate(-8deg); }
+  38%  { transform: translateY(-18px) scale(1.12) rotate(6deg);  }
+  55%  { transform: translateY(-30px) scale(1.2)  rotate(-5deg); }
+  70%  { transform: translateY(-12px) scale(1.08) rotate(3deg);  }
+  84%  { transform: translateY(-6px)  scale(1.03) rotate(-1deg); }
+  100% { transform: translateY(0)    scale(1)    rotate(0deg);  }
+}
+/* THINK — slow thoughtful head-tilt and nod */
+@keyframes mascot-think {
+  0%   { transform: rotate(0deg)   translateY(0);    }
+  20%  { transform: rotate(-14deg) translateY(-6px); }
+  45%  { transform: rotate(-16deg) translateY(-9px); }
+  65%  { transform: rotate(-12deg) translateY(-6px); }
+  80%  { transform: rotate(-6deg)  translateY(-3px); }
+  100% { transform: rotate(0deg)   translateY(0);    }
+}
+/* BIG DANCE — full celebration for CTA section */
+@keyframes mascot-big-dance {
+  0%   { transform: scale(1)    rotate(0deg)   translateY(0);    }
+  10%  { transform: scale(1.14) rotate(-12deg) translateY(-18px); }
+  20%  { transform: scale(1.22) rotate(12deg)  translateY(-28px); }
+  30%  { transform: scale(1.16) rotate(-10deg) translateY(-20px); }
+  40%  { transform: scale(1.2)  rotate(10deg)  translateY(-26px); }
+  50%  { transform: scale(1.14) rotate(-8deg)  translateY(-18px); }
+  60%  { transform: scale(1.18) rotate(8deg)   translateY(-22px); }
+  70%  { transform: scale(1.1)  rotate(-5deg)  translateY(-12px); }
+  80%  { transform: scale(1.06) rotate(4deg)   translateY(-8px);  }
+  90%  { transform: scale(1.02) rotate(-1deg)  translateY(-2px);  }
+  100% { transform: scale(1)    rotate(0deg)   translateY(0);     }
+}
+
+/* click — Scrolly jumps left then settles */
+@keyframes mascot-clicked {
+  0%   { transform: translateX(0)    translateY(0)    rotate(0deg)   scale(1);    }
+  22%  { transform: translateX(-46px) translateY(-20px) rotate(-22deg) scale(1.22); }
+  58%  { transform: translateX(-16px) translateY(-7px)  rotate(8deg)   scale(1.07); }
+  80%  { transform: translateX(-4px)  translateY(-1px)  rotate(-2deg)  scale(1.01); }
+  100% { transform: translateX(0)    translateY(0)    rotate(0deg)   scale(1);    }
+}
+/* click — Sparky spins and bounces up */
+@keyframes sparky-clicked {
+  0%   { transform: translateY(0)    rotate(0deg)   scale(1);    }
+  30%  { transform: translateY(-24px) rotate(210deg)  scale(1.38); }
+  65%  { transform: translateY(-10px) rotate(345deg)  scale(1.12); }
+  85%  { transform: translateY(-3px)  rotate(357deg)  scale(1.03); }
+  100% { transform: translateY(0)    rotate(360deg)  scale(1);    }
+}
+
+.mascot-bob        { animation: mascot-bob       3s    ease-in-out infinite; }
+.mascot-clicked    { animation: mascot-clicked   0.62s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+.mascot-shocked    { animation: mascot-shocked   1.2s  ease-in-out forwards; }
+.mascot-draw       { animation: mascot-draw      1.1s  ease-in-out forwards; }
+.mascot-dance      { animation: mascot-dance     1.6s  ease-in-out forwards; }
+.mascot-magic      { animation: mascot-magic     1.5s  ease-in-out forwards; }
+.mascot-celebrate  { animation: mascot-celebrate 1.6s  ease-in-out forwards; }
+.mascot-cheer      { animation: mascot-cheer     1.8s  ease-in-out forwards; }
+.mascot-think      { animation: mascot-think     1.9s  ease-in-out forwards; }
+.mascot-big-dance  { animation: mascot-big-dance 2.2s  ease-in-out forwards; }
+.star-float        { animation: star-float       3.8s  ease-in-out infinite 0.6s; }
+.sparky-clicked    { animation: sparky-clicked   0.68s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+
+.eye-blink-l {
+  transform-origin: 38px 46px;
+  animation: mascot-blink 4.2s ease-in-out infinite;
+}
+.eye-blink-r {
+  transform-origin: 74px 46px;
+  animation: mascot-blink 4.2s ease-in-out infinite 0.09s;
+}
+.mascot-wave:hover .wave-arm {
+  animation: arm-wave 0.6s ease-in-out 2;
+}
+.bubble-pop { animation: bubble-pop 0.28s cubic-bezier(0.34,1.56,0.64,1) forwards; }
