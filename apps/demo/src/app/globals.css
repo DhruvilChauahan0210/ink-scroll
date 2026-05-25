@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Class-based dark mode — applies when <html> has .dark */
+@variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-pitch-black: #000000;
   --color-light-linen: #ffffff;
@@ -16,14 +19,63 @@
   --font-mono: var(--font-geist-mono);
 }
 
+/* ── Dark mode token overrides ─────────────────────────── */
+.dark {
+  --color-light-linen:      #0d0d0d;
+  --color-marketplace-gray: #181818;
+  --color-pitch-black:      #efefef;
+  --color-graphite-border:  #888888;
+  --color-subtle-ash:       #2c2c2c;
+}
+
 body {
-  background: #ffffff;
-  color: #000000;
+  background: var(--color-light-linen);
+  color: var(--color-pitch-black);
   font-family: var(--font-geist-sans, sans-serif);
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 * { box-sizing: border-box; }
+
+/* Dark mode hero dot grid */
+.dark .dot-grid {
+  background-image: radial-gradient(circle, #2a2a2a 1.5px, transparent 1.5px);
+}
+
+/* ── Range input — consistent cross-browser ─── */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 5px;
+  background: #d1d5dc;
+  border-radius: 9999px;
+  outline: none;
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #000;
+  border: 2.5px solid #fff;
+  box-shadow: 0 0 0 2px #000;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+input[type="range"]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #000;
+  border: 2.5px solid #fff;
+  box-shadow: 0 0 0 2px #000;
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+input[type="range"]:active::-webkit-slider-thumb { transform: scale(0.95); }
 
 /* Dot grid for hero background */
 .dot-grid {

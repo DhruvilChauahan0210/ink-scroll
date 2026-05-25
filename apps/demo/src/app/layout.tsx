@@ -3,6 +3,12 @@ import { Geist, Geist_Mono, Syne } from "next/font/google";
 import "./globals.css";
 import { Mascot } from "@/components/Mascot";
 
+const THEME_SCRIPT = `(function(){
+  var s = localStorage.getItem('theme');
+  var p = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  if (s === 'dark' || (!s && p)) document.documentElement.classList.add('dark');
+})();`;
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -35,6 +41,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${syne.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
         {children}
         <Mascot />
       </body>

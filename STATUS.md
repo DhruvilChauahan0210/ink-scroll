@@ -72,8 +72,8 @@
 - [x] Demo 04 — complex multi-path SVG
 - [x] Demo 05 — `onComplete` with live amber badge + pulse animation (`OnCompleteDemo.tsx` client component)
 - [x] API reference table
-- [ ] Interactive controls (toggle easing, speed slider)
-- [ ] Dark/light mode toggle
+- [x] Interactive controls — easing toggles, speed slider, replay button (`InteractiveScrollDemo.tsx`)
+- [x] Dark/light mode toggle — `ThemeToggle.tsx`, CSS variable overrides in `.dark`, FOUC-prevention script
 
 ---
 
@@ -89,12 +89,9 @@
 - [x] `scrollDraw()` handles missing container gracefully
 - [x] **43 tests, all passing**
 - [x] Coverage report — **97.74% stmts / 95.52% branches / 90% funcs / 97.74% lines** — all ≥90% thresholds pass ✓
-- [ ] CI pipeline
-
 ---
 
 ## Remaining
-- [x] Coverage verified — ≥90% across all metrics
-- [ ] CI pipeline (GitHub Actions)
 - [ ] Interactive demo controls (easing toggle, speed slider)
-- [ ] Dark/light mode toggle on demo
+- [x] Dark/light mode toggle — `ThemeToggle.tsx`, CSS variable overrides in `.dark`, FOUC-prevention script on demo
+- [x] npm publish — **svg-scroll-draw@0.1.0** live at https://www.npmjs.com/package/svg-scroll-draw

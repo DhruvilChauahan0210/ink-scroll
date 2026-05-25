@@ -1,12 +1,13 @@
-import { ScrollDraw } from '@/components/ScrollDraw';
 import { OnCompleteDemo } from '@/components/OnCompleteDemo';
+import { InteractiveScrollDemo } from '@/components/InteractiveScrollDemo';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 /* ── Shared sub-components ──────────────────────────────────────────────── */
 
 function CodeBlock({ filename, children }: { filename: string; children: string }) {
   return (
     <div className="rounded-2xl overflow-hidden border border-pitch-black">
-      <div className="bg-pitch-black flex items-center justify-between px-4 py-2.5">
+      <div className="bg-[#111] dark:bg-[#1a1a1a] flex items-center justify-between px-4 py-2.5">
         <div className="flex items-center gap-1.5">
           <span className="w-2.5 h-2.5 rounded-full bg-[#444]" />
           <span className="w-2.5 h-2.5 rounded-full bg-[#444]" />
@@ -15,7 +16,7 @@ function CodeBlock({ filename, children }: { filename: string; children: string 
         <span className="text-[11px] text-[#666] font-mono tracking-wide">{filename}</span>
         <span className="w-16" />
       </div>
-      <pre className="bg-graphite-border text-[#e8e8e3] px-5 py-4 text-[13px] font-mono leading-[1.75] overflow-x-auto">
+      <pre className="bg-[#242423] dark:bg-[#1c1c1c] text-[#e8e8e3] px-5 py-4 text-[13px] font-mono leading-[1.75] overflow-x-auto">
         {children}
       </pre>
     </div>
@@ -52,6 +53,7 @@ export default function Home() {
       <nav className="sticky top-0 z-50 bg-light-linen/95 backdrop-blur-sm border-b border-pitch-black flex items-center justify-between px-6 md:px-12 h-14">
         <span className="font-display font-bold text-sm tracking-tight">svg-scroll-draw</span>
         <div className="flex items-center gap-2">
+          <ThemeToggle />
           <a
             href="https://www.npmjs.com/package/svg-scroll-draw"
             className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono"
@@ -206,7 +208,7 @@ export default function Home() {
         {/* 01 — Basic */}
         <section data-mascot="draw" className="relative border-b border-pitch-black overflow-hidden">
           <span className="pointer-events-none select-none absolute -right-6 top-1/2 -translate-y-1/2 font-display font-extrabold text-[220px] leading-none text-pitch-black opacity-[0.04]">01</span>
-          <div className="max-w-6xl mx-auto px-6 md:px-12 py-24 grid md:grid-cols-2 gap-16 items-center">
+          <div className="max-w-6xl mx-auto px-6 md:px-12 py-24 grid md:grid-cols-2 gap-16 items-start">
             <div>
               <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-3 font-medium">Zero config</p>
               <h2 className="font-display font-extrabold text-[clamp(28px,4vw,44px)] leading-[1] tracking-[-0.03em] mb-5">
@@ -230,42 +232,43 @@ export default function Hero() {
 }`}
               </CodeBlock>
             </div>
-            <div className="flex items-center justify-center bg-marketplace-gray rounded-2xl border border-pitch-black p-12 shadow-[4px_4px_0px_#000]">
-              <ScrollDraw trigger={{ start: 'top bottom', end: 'bottom center' }}>
-                <svg width="260" height="260" viewBox="0 0 260 260" fill="none">
-                  <path d="M 25 235 C 25 115 130 25 235 25" stroke="#ff90e8" strokeWidth="3.5" strokeLinecap="round" />
-                  <path d="M 25 195 C 25 115 105 45 235 65" stroke="#000000" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="7 5" opacity="0.25" />
-                  <circle cx="25" cy="235" r="6" fill="#ff90e8" />
-                  <circle cx="235" cy="25" r="6" fill="#ff90e8" />
-                  <circle cx="25" cy="235" r="11" stroke="#ff90e8" strokeWidth="1.5" fill="none" opacity="0.4" />
-                  <circle cx="235" cy="25" r="11" stroke="#ff90e8" strokeWidth="1.5" fill="none" opacity="0.4" />
-                </svg>
-              </ScrollDraw>
-            </div>
+            <InteractiveScrollDemo defaultEasing="linear" defaultSpeed={1} svgBg="gray">
+              <svg width="260" height="260" viewBox="0 0 260 260" fill="none">
+                <path d="M 25 235 C 25 115 130 25 235 25" stroke="#ff90e8" strokeWidth="3.5" strokeLinecap="round" />
+                <path d="M 25 195 C 25 115 105 45 235 65" stroke="#000000" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="7 5" opacity="0.25" />
+                <circle cx="25" cy="235" r="6" fill="#ff90e8" />
+                <circle cx="235" cy="25" r="6" fill="#ff90e8" />
+                <circle cx="25" cy="235" r="11" stroke="#ff90e8" strokeWidth="1.5" fill="none" opacity="0.4" />
+                <circle cx="235" cy="25" r="11" stroke="#ff90e8" strokeWidth="1.5" fill="none" opacity="0.4" />
+              </svg>
+            </InteractiveScrollDemo>
           </div>
         </section>
 
         {/* 02 — Easing */}
         <section data-mascot="dance" className="relative border-b border-pitch-black bg-marketplace-gray overflow-hidden">
           <span className="pointer-events-none select-none absolute -left-6 top-1/2 -translate-y-1/2 font-display font-extrabold text-[220px] leading-none text-pitch-black opacity-[0.04]">02</span>
-          <div className="max-w-6xl mx-auto px-6 md:px-12 py-24 grid md:grid-cols-2 gap-16 items-center">
-            <div className="order-2 md:order-1 flex items-center justify-center bg-light-linen rounded-2xl border border-pitch-black p-12 shadow-[4px_4px_0px_#000]">
-              <ScrollDraw easing="ease-out" speed={1.5} trigger={{ start: 'top bottom', end: 'bottom center' }}>
-                <svg width="260" height="260" viewBox="0 0 260 260" fill="none">
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <path
-                      key={i}
-                      d={`M ${130 - i * 22} 130 A ${i * 22} ${i * 22} 0 1 1 ${130 + i * 22} 130`}
-                      stroke="#ffc900"
-                      strokeWidth={i === 5 ? 3 : 1.5}
-                      strokeLinecap="round"
-                      fill="none"
-                      opacity={0.35 + i * 0.13}
-                    />
-                  ))}
-                </svg>
-              </ScrollDraw>
-            </div>
+          <div className="max-w-6xl mx-auto px-6 md:px-12 py-24 grid md:grid-cols-2 gap-16 items-start">
+            <InteractiveScrollDemo
+              className="order-2 md:order-1"
+              defaultEasing="ease-out"
+              defaultSpeed={1.5}
+              svgBg="white"
+            >
+              <svg width="260" height="260" viewBox="0 0 260 260" fill="none">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <path
+                    key={i}
+                    d={`M ${130 - i * 22} 130 A ${i * 22} ${i * 22} 0 1 1 ${130 + i * 22} 130`}
+                    stroke="#ffc900"
+                    strokeWidth={i === 5 ? 3 : 1.5}
+                    strokeLinecap="round"
+                    fill="none"
+                    opacity={0.35 + i * 0.13}
+                  />
+                ))}
+              </svg>
+            </InteractiveScrollDemo>
             <div className="order-1 md:order-2">
               <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-3 font-medium">Easing + speed</p>
               <h2 className="font-display font-extrabold text-[clamp(28px,4vw,44px)] leading-[1] tracking-[-0.03em] mb-5">
@@ -292,7 +295,7 @@ export default function Hero() {
         {/* 03 — Fade */}
         <section data-mascot="magic" className="relative border-b border-pitch-black overflow-hidden">
           <span className="pointer-events-none select-none absolute -right-6 top-1/2 -translate-y-1/2 font-display font-extrabold text-[220px] leading-none text-pitch-black opacity-[0.04]">03</span>
-          <div className="max-w-6xl mx-auto px-6 md:px-12 py-24 grid md:grid-cols-2 gap-16 items-center">
+          <div className="max-w-6xl mx-auto px-6 md:px-12 py-24 grid md:grid-cols-2 gap-16 items-start">
             <div>
               <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-3 font-medium">Fade</p>
               <h2 className="font-display font-extrabold text-[clamp(28px,4vw,44px)] leading-[1] tracking-[-0.03em] mb-5">
@@ -312,52 +315,42 @@ export default function Hero() {
 </ScrollDraw>`}
               </CodeBlock>
             </div>
-            <div className="flex items-center justify-center bg-marketplace-gray rounded-2xl border border-pitch-black p-12 shadow-[4px_4px_0px_#000]">
-              <ScrollDraw fade easing="ease-in-out" trigger={{ start: 'top bottom', end: 'bottom center' }}>
-                <svg width="260" height="260" viewBox="0 0 260 260" fill="none">
-                  {/* Flowing wave */}
-                  <path
-                    d="M 20 130 C 60 60 100 200 140 130 S 200 60 240 130"
-                    stroke="#000000"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    fill="none"
-                  />
-                  {/* Nodes along the wave */}
-                  {[20, 80, 140, 200, 240].map((x, i) => (
-                    <circle key={i} cx={x} cy={i % 2 === 0 ? 130 : i === 1 ? 130 : 130} r="4" fill="#000" />
-                  ))}
-                  <circle cx="20" cy="130" r="4" fill="#000" />
-                  <circle cx="140" cy="130" r="4" fill="#ff90e8" />
-                  <circle cx="240" cy="130" r="4" fill="#000" />
-                  {/* Grid lines */}
-                  <line x1="20" y1="90" x2="240" y2="90" stroke="#d1d5dc" strokeWidth="1" strokeDasharray="4 4" />
-                  <line x1="20" y1="170" x2="240" y2="170" stroke="#d1d5dc" strokeWidth="1" strokeDasharray="4 4" />
-                </svg>
-              </ScrollDraw>
-            </div>
+            <InteractiveScrollDemo defaultEasing="ease-in-out" defaultSpeed={1} fade svgBg="gray">
+              <svg width="260" height="260" viewBox="0 0 260 260" fill="none">
+                <path d="M 20 130 C 60 60 100 200 140 130 S 200 60 240 130" stroke="#000000" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+                {[20, 80, 140, 200, 240].map((x, i) => (
+                  <circle key={i} cx={x} cy={130} r="4" fill="#000" />
+                ))}
+                <circle cx="140" cy="130" r="4" fill="#ff90e8" />
+                <line x1="20" y1="90" x2="240" y2="90" stroke="#d1d5dc" strokeWidth="1" strokeDasharray="4 4" />
+                <line x1="20" y1="170" x2="240" y2="170" stroke="#d1d5dc" strokeWidth="1" strokeDasharray="4 4" />
+              </svg>
+            </InteractiveScrollDemo>
           </div>
         </section>
 
         {/* 04 — Complex */}
         <section data-mascot="celebrate" className="relative border-b border-pitch-black bg-marketplace-gray overflow-hidden">
           <span className="pointer-events-none select-none absolute -left-6 top-1/2 -translate-y-1/2 font-display font-extrabold text-[220px] leading-none text-pitch-black opacity-[0.04]">04</span>
-          <div className="max-w-6xl mx-auto px-6 md:px-12 py-24 grid md:grid-cols-2 gap-16 items-center">
-            <div className="order-2 md:order-1 flex items-center justify-center bg-light-linen rounded-2xl border border-pitch-black p-12 shadow-[4px_4px_0px_#000]">
-              <ScrollDraw easing="ease-out" speed={0.9} trigger={{ start: 'top bottom', end: 'bottom center' }}>
-                <svg width="260" height="260" viewBox="0 0 260 260" fill="none">
-                  <polygon points="130,16 244,130 130,244 16,130" stroke="#000000" strokeWidth="2" fill="none" />
-                  <polygon points="130,58 202,130 130,202 58,130" stroke="#ff90e8" strokeWidth="2" fill="none" />
-                  <polygon points="130,100 160,130 130,160 100,130" stroke="#ffc900" strokeWidth="2" fill="none" />
-                  <line x1="130" y1="16" x2="130" y2="244" stroke="#000000" strokeWidth="0.75" strokeDasharray="4 4" opacity="0.3" />
-                  <line x1="16" y1="130" x2="244" y2="130" stroke="#000000" strokeWidth="0.75" strokeDasharray="4 4" opacity="0.3" />
-                  <path d="M 118 16 L 130 4 L 142 16" stroke="#000" strokeWidth="1.5" fill="none" strokeLinecap="round" />
-                  <path d="M 244 118 L 256 130 L 244 142" stroke="#000" strokeWidth="1.5" fill="none" strokeLinecap="round" />
-                  <path d="M 142 244 L 130 256 L 118 244" stroke="#000" strokeWidth="1.5" fill="none" strokeLinecap="round" />
-                  <path d="M 16 142 L 4 130 L 16 118" stroke="#000" strokeWidth="1.5" fill="none" strokeLinecap="round" />
-                </svg>
-              </ScrollDraw>
-            </div>
+          <div className="max-w-6xl mx-auto px-6 md:px-12 py-24 grid md:grid-cols-2 gap-16 items-start">
+            <InteractiveScrollDemo
+              className="order-2 md:order-1"
+              defaultEasing="ease-out"
+              defaultSpeed={0.9}
+              svgBg="white"
+            >
+              <svg width="260" height="260" viewBox="0 0 260 260" fill="none">
+                <polygon points="130,16 244,130 130,244 16,130" stroke="#000000" strokeWidth="2" fill="none" />
+                <polygon points="130,58 202,130 130,202 58,130" stroke="#ff90e8" strokeWidth="2" fill="none" />
+                <polygon points="130,100 160,130 130,160 100,130" stroke="#ffc900" strokeWidth="2" fill="none" />
+                <line x1="130" y1="16" x2="130" y2="244" stroke="#000000" strokeWidth="0.75" strokeDasharray="4 4" opacity="0.3" />
+                <line x1="16" y1="130" x2="244" y2="130" stroke="#000000" strokeWidth="0.75" strokeDasharray="4 4" opacity="0.3" />
+                <path d="M 118 16 L 130 4 L 142 16" stroke="#000" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+                <path d="M 244 118 L 256 130 L 244 142" stroke="#000" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+                <path d="M 142 244 L 130 256 L 118 244" stroke="#000" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+                <path d="M 16 142 L 4 130 L 16 118" stroke="#000" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+              </svg>
+            </InteractiveScrollDemo>
             <div className="order-1 md:order-2">
               <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-3 font-medium">Auto-discovery</p>
               <h2 className="font-display font-extrabold text-[clamp(28px,4vw,44px)] leading-[1] tracking-[-0.03em] mb-5">
