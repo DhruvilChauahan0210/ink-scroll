@@ -92,6 +92,6 @@
 ---
 
 ## Remaining
-- [ ] Interactive demo controls (easing toggle, speed slider)
-- [x] Dark/light mode toggle — `ThemeToggle.tsx`, CSS variable overrides in `.dark`, FOUC-prevention script on demo
+- [x] Interactive demo controls — easing toggles, speed slider, replay button (`InteractiveScrollDemo.tsx`)
+- [x] Dark/light mode toggle — `ThemeToggle.tsx`, CSS variable overrides in `.dark`, FOUC-prevention script
 - [x] npm publish — **svg-scroll-draw@0.1.0** live at https://www.npmjs.com/package/svg-scroll-draw
