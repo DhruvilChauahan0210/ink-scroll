@@ -1,5 +1,5 @@
 import type { ScrollDrawOptions, ScrollDrawInstance } from './types';
-import { EASINGS, parseTrigger, computeProgress, computeTriggers } from './utils';
+import { EASINGS, parseTrigger, computeProgress, computeTriggers, getElementLength } from './utils';
 
 function warnDev(msg: string, el: Element): void {
   if (process.env.NODE_ENV !== 'production') {
@@ -7,7 +7,7 @@ function warnDev(msg: string, el: Element): void {
   }
 }
 
-function checkElement(el: SVGGeometryElement): void {
+function checkElement(el: SVGElement): void {
   const stroke = el.getAttribute('stroke');
   const fill = el.getAttribute('fill');
 
@@ -25,11 +25,14 @@ export function createEngine(
   if (typeof window === 'undefined') return { destroy: () => {} };
 
   const {
-    selector = 'path, polyline, line, polygon',
+    selector = 'path, polyline, line, polygon, rect, circle',
     speed = 1,
     fade = false,
     easing = 'linear',
     trigger = {},
+    stagger = 0,
+    direction = 'forward',
+    onProgress,
     onComplete,
   } = options;
 
@@ -37,7 +40,7 @@ export function createEngine(
   const startConfig = parseTrigger(trigger.start ?? 'top bottom');
   const endConfig = parseTrigger(trigger.end ?? 'bottom top');
 
-  const paths = Array.from(container.querySelectorAll<SVGGeometryElement>(selector));
+  const paths = Array.from(container.querySelectorAll<SVGElement>(selector));
   const lengths: number[] = [];
   let tStart = 0;
   let tEnd = 0;
@@ -60,28 +63,36 @@ export function createEngine(
 
   paths.forEach((el) => {
     checkElement(el);
-    const len = el.getTotalLength();
+    const len = getElementLength(el);
     lengths.push(len);
     el.style.strokeDasharray = `${len}`;
-    el.style.strokeDashoffset = `${len}`;
-    if (fade) el.style.opacity = '0';
+    el.style.strokeDashoffset = direction === 'reverse' ? '0' : `${len}`;
+    if (fade) el.style.opacity = direction === 'reverse' ? '1' : '0';
   });
 
   cacheTriggers();
 
   function update(): void {
     if (!isVisible) return;
-    const alpha = easeFn(computeProgress(window.scrollY, tStart, tEnd, speed));
+    const range = tEnd - tStart;
+    let allComplete = true;
 
     paths.forEach((el, i) => {
-      el.style.strokeDashoffset = `${lengths[i] * (1 - alpha)}`;
-      if (fade) el.style.opacity = `${alpha}`;
+      const offset = i * stagger * range;
+      const alpha = easeFn(computeProgress(window.scrollY, tStart + offset, tEnd + offset, speed));
+      el.style.strokeDashoffset =
+        direction === 'reverse'
+          ? `${lengths[i] * alpha}`
+          : `${lengths[i] * (1 - alpha)}`;
+      if (fade) el.style.opacity = direction === 'reverse' ? `${1 - alpha}` : `${alpha}`;
+      if (i === 0) onProgress?.(alpha);
+      if (alpha < 1) allComplete = false;
     });
 
-    if (alpha >= 1 && !completed) {
+    if (allComplete && !completed) {
       completed = true;
       onComplete?.();
-    } else if (alpha < 1) {
+    } else if (!allComplete) {
       completed = false;
     }
 
@@ -106,7 +117,7 @@ export function createEngine(
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
       paths.forEach((el, i) => {
-        lengths[i] = el.getTotalLength();
+        lengths[i] = getElementLength(el);
         el.style.strokeDasharray = `${lengths[i]}`;
       });
       cacheTriggers();

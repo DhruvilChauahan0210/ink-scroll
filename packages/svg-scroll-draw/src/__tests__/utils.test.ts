@@ -7,6 +7,7 @@ import {
   clamp,
   computeProgress,
   computeTriggers,
+  getElementLength,
 } from '../core/utils';
 
 describe('EASINGS', () => {
@@ -59,6 +60,18 @@ describe('parseTrigger', () => {
   it('handles extra whitespace', () => {
     expect(parseTrigger('  bottom   top  ')).toEqual({ element: 'bottom', viewport: 'top' });
   });
+
+  it('parses percentage shorthand "20%"', () => {
+    expect(parseTrigger('20%')).toEqual({ element: 'top', viewport: '20%' });
+  });
+
+  it('parses mixed anchor + percentage "top 75%"', () => {
+    expect(parseTrigger('top 75%')).toEqual({ element: 'top', viewport: '75%' });
+  });
+
+  it('parses decimal percentage "33.5%"', () => {
+    expect(parseTrigger('33.5%')).toEqual({ element: 'top', viewport: '33.5%' });
+  });
 });
 
 describe('elementAnchorY', () => {
@@ -98,6 +111,39 @@ describe('viewportAnchorY', () => {
 
   it('unknown falls back to bottom', () => {
     expect(viewportAnchorY('unknown', vpH)).toBe(800);
+  });
+
+  it('percentage "25%" returns 25% of viewport height', () => {
+    expect(viewportAnchorY('25%', vpH)).toBe(200);
+  });
+
+  it('percentage "0%" returns 0', () => {
+    expect(viewportAnchorY('0%', vpH)).toBe(0);
+  });
+
+  it('percentage "100%" returns full viewport height', () => {
+    expect(viewportAnchorY('100%', vpH)).toBe(800);
+  });
+});
+
+describe('getElementLength', () => {
+  it('calculates rect perimeter from width + height attributes', () => {
+    const el = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    el.setAttribute('width', '100');
+    el.setAttribute('height', '50');
+    expect(getElementLength(el as unknown as SVGElement)).toBe(300); // 2*(100+50)
+  });
+
+  it('calculates circle circumference from r attribute', () => {
+    const el = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    el.setAttribute('r', '10');
+    expect(getElementLength(el as unknown as SVGElement)).toBeCloseTo(2 * Math.PI * 10);
+  });
+
+  it('calls getTotalLength() for path elements', () => {
+    const el = document.createElementNS('http://www.w3.org/2000/svg', 'path') as SVGPathElement;
+    (el as unknown as { getTotalLength: () => number }).getTotalLength = () => 42;
+    expect(getElementLength(el as unknown as SVGElement)).toBe(42);
   });
 });
 

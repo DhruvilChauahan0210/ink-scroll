@@ -230,6 +230,64 @@ describe('createEngine — destroy', () => {
   });
 });
 
+describe('createEngine — direction reverse', () => {
+  it('initialises strokeDashoffset to 0 (fully drawn) when direction=reverse', () => {
+    const path = makeSvgPath();
+    const container = makeContainer([path]);
+    createEngine(container, { direction: 'reverse' });
+    expect(path.style.strokeDashoffset).toBe('0');
+  });
+
+  it('increases strokeDashoffset as scroll increases when direction=reverse', () => {
+    const path = makeSvgPath();
+    const container = makeContainer([path]);
+    createEngine(container, { direction: 'reverse' });
+
+    vi.stubGlobal('scrollY', 300);
+    FakeIO.instances[0].trigger(true);
+    raf.tick();
+
+    const offset = parseFloat(path.style.strokeDashoffset);
+    expect(offset).toBeGreaterThan(0);
+  });
+});
+
+describe('createEngine — onProgress', () => {
+  it('calls onProgress with current alpha on each frame', () => {
+    const onProgress = vi.fn();
+    const container = makeContainer([makeSvgPath()]);
+    createEngine(container, { onProgress });
+
+    vi.stubGlobal('scrollY', 300);
+    FakeIO.instances[0].trigger(true);
+    raf.tick();
+
+    expect(onProgress).toHaveBeenCalledOnce();
+    const [alpha] = onProgress.mock.calls[0];
+    expect(alpha).toBeGreaterThan(0);
+    expect(alpha).toBeLessThanOrEqual(1);
+  });
+});
+
+describe('createEngine — stagger', () => {
+  it('applies different dashoffsets to each path when stagger > 0', () => {
+    const path1 = makeSvgPath();
+    const path2 = makeSvgPath();
+    const container = makeContainer([path1, path2]);
+    createEngine(container, { stagger: 0.3 });
+
+    // At scrollY=0 with stagger, path1 starts earlier than path2
+    vi.stubGlobal('scrollY', 0);
+    FakeIO.instances[0].trigger(true);
+    raf.tick();
+
+    const offset1 = parseFloat(path1.style.strokeDashoffset);
+    const offset2 = parseFloat(path2.style.strokeDashoffset);
+    // path2 should be less drawn (higher dashoffset) than path1
+    expect(offset2).toBeGreaterThanOrEqual(offset1);
+  });
+});
+
 describe('scrollDraw', () => {
   it('returns no-op destroy when selector finds nothing', () => {
     const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});

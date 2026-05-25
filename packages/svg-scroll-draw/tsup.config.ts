@@ -20,7 +20,16 @@ export default defineConfig([
     external: ['react'],
   },
   {
-    entry: { 'svg-scroll-draw': 'src/index.ts' },
+    entry: { 'vue/index': 'src/vue/index.ts' },
+    format: ['esm', 'cjs'],
+    outExtension: ({ format }) => ({ js: format === 'cjs' ? '.cjs' : '.mjs' }),
+    dts: true,
+    treeshake: true,
+    minify: true,
+    external: ['vue'],
+  },
+  {
+    entry: { 'svg-scroll-draw': 'src/cdn.ts' },
     format: ['iife'],
     globalName: 'SvgScrollDraw',
     outDir: 'dist/cdn',

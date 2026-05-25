@@ -2,6 +2,9 @@ import { OnCompleteDemo } from '@/components/OnCompleteDemo';
 import { InteractiveScrollDemo } from '@/components/InteractiveScrollDemo';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { LiveStats } from '@/components/LiveStats';
+import { CopyButton } from '@/components/CopyButton';
+import { InstallTabs } from '@/components/InstallTabs';
+import { FrameworkTabs } from '@/components/FrameworkTabs';
 
 const GH  = 'https://github.com/DhruvilChauahan0210/ink-scroll';
 const NPM = 'https://www.npmjs.com/package/svg-scroll-draw';
@@ -18,7 +21,7 @@ function CodeBlock({ filename, children }: { filename: string; children: string 
           <span className="w-2.5 h-2.5 rounded-full bg-[#444]" />
         </div>
         <span className="text-[11px] text-[#666] font-mono tracking-wide">{filename}</span>
-        <span className="w-16" />
+        <CopyButton text={children} />
       </div>
       <pre className="bg-[#242423] dark:bg-[#1c1c1c] text-[#e8e8e3] px-5 py-4 text-[13px] font-mono leading-[1.75] overflow-x-auto">
         {children}
@@ -43,9 +46,11 @@ const MARQUEE_ITEMS = [
   'IntersectionObserver',
   '< 3 KB Gzipped',
   'Zero Dependencies',
-  '43 Tests Passing',
+  '56 Tests Passing',
   'React + Next.js',
+  'Vue 3',
   'Vanilla JS',
+  'Web Component',
 ];
 
 /* ── Page ────────────────────────────────────────────────────────────────── */
@@ -58,6 +63,12 @@ export default function Home() {
         <span className="font-display font-bold text-sm tracking-tight">svg-scroll-draw</span>
         <div className="flex items-center gap-2">
           <ThemeToggle />
+          <a
+            href="/playground"
+            className="hidden sm:inline-flex text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium items-center gap-1"
+          >
+            ⚡ Playground
+          </a>
           <a
             href={NPM}
             target="_blank" rel="noopener noreferrer"
@@ -110,11 +121,8 @@ export default function Home() {
         </p>
 
         {/* CTAs */}
-        <div className="relative z-10 flex flex-col sm:flex-row items-center gap-3 mb-14">
-          <div className="flex items-center gap-2 bg-light-linen border border-pitch-black rounded-full px-5 py-3 text-sm font-mono shadow-[2px_2px_0px_#000]">
-            <span className="text-graphite-border select-none">$</span>
-            <span className="font-medium">npm i svg-scroll-draw</span>
-          </div>
+        <div className="relative z-10 flex flex-col items-center gap-3 mb-14">
+          <InstallTabs />
           <a
             href="#demos"
             className="px-6 py-3 rounded-full bg-pitch-black text-light-linen text-sm font-semibold hover:bg-graphite-border transition-colors shadow-[2px_2px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
@@ -205,6 +213,46 @@ export default function Home() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* ── Bundle size chart ─────────────────────────────────────────── */}
+      <section className="border-b border-pitch-black px-6 md:px-12 py-20">
+        <div className="max-w-5xl mx-auto">
+          <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-3 font-medium">Bundle size</p>
+          <h2 className="font-display font-extrabold text-[clamp(32px,5vw,56px)] leading-[0.95] tracking-[-0.03em] mb-12">
+            2.6 KB.<br />Not 40 KB.
+          </h2>
+
+          <div className="space-y-5">
+            {[
+              { name: 'svg-scroll-draw', size: '2.6 KB', pct: 6.5,  color: 'bg-creator-pink',    badge: '✓ yours' },
+              { name: 'Framer Motion',   size: '~35 KB', pct: 87.5, color: 'bg-sunshine-yellow', badge: null },
+              { name: 'GSAP DrawSVG',    size: '~40 KB', pct: 100,  color: 'bg-[#e0e0e0] dark:bg-[#333]', badge: null },
+            ].map(({ name, size, pct, color, badge }) => (
+              <div key={name}>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono font-semibold text-sm">{name}</span>
+                    {badge && (
+                      <span className="text-[10px] font-medium bg-creator-pink text-pitch-black px-2 py-0.5 rounded-full uppercase tracking-wide">{badge}</span>
+                    )}
+                  </div>
+                  <span className="font-mono text-sm text-graphite-border">{size} gzip</span>
+                </div>
+                <div className="h-7 bg-marketplace-gray rounded-lg overflow-hidden border border-subtle-ash">
+                  <div
+                    className={`h-full ${color} rounded-lg transition-all`}
+                    style={{ width: `${pct}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <p className="mt-6 text-[13px] text-graphite-border">
+            Sizes are minified + gzipped. GSAP DrawSVG requires a paid Club GreenSock license for commercial use.
+          </p>
         </div>
       </section>
 
@@ -397,13 +445,16 @@ export default function Hero() {
               { prop: 'speed', type: 'number', def: '1', desc: 'Scale factor — values above 1 complete the animation faster.' },
               { prop: 'fade', type: 'boolean', def: 'false', desc: 'Animate opacity 0 → 1 simultaneously while drawing.' },
               { prop: 'easing', type: 'string | fn', def: '"linear"', desc: 'linear · ease-in · ease-out · ease-in-out · or custom (t) => t.' },
-              { prop: 'trigger.start', type: 'string', def: '"top bottom"', desc: 'When animation begins. Format: "element-anchor viewport-anchor".' },
-              { prop: 'trigger.end', type: 'string', def: '"bottom top"', desc: 'When animation ends.' },
-              { prop: 'onComplete', type: '() => void', def: '—', desc: 'Fires once when the path reaches 100% draw progress.' },
+              { prop: 'stagger', type: 'number', def: '0', desc: 'Normalized scroll-progress offset between each path starting. e.g. 0.15 → each path begins 15% of the range after the previous.' },
+              { prop: 'direction', type: '"forward"|"reverse"', def: '"forward"', desc: 'forward draws the path in. reverse starts fully drawn and erases as you scroll.' },
+              { prop: 'trigger.start', type: 'string', def: '"top bottom"', desc: 'When animation begins. Accepts anchor strings ("top bottom") or viewport percentages ("20%").' },
+              { prop: 'trigger.end', type: 'string', def: '"bottom top"', desc: 'When animation ends. Accepts anchor strings or viewport percentages.' },
+              { prop: 'onProgress', type: '(n: number) => void', def: '—', desc: 'Called every animation frame with current draw alpha (0–1).' },
+              { prop: 'onComplete', type: '() => void', def: '—', desc: 'Fires once when all paths reach 100% draw progress.' },
             ].map(({ prop, type, def, desc }, i) => (
               <div
                 key={prop}
-                className={`grid grid-cols-1 md:grid-cols-[160px_130px_190px_1fr] gap-2 md:gap-4 px-6 py-4 text-sm items-start ${i < 6 ? 'border-b border-subtle-ash' : ''}`}
+                className={`grid grid-cols-1 md:grid-cols-[160px_130px_190px_1fr] gap-2 md:gap-4 px-6 py-4 text-sm items-start ${i < 9 ? 'border-b border-subtle-ash' : ''}`}
               >
                 <code className="font-mono font-semibold text-pitch-black">{prop}</code>
                 <code className="font-mono text-graphite-border text-[13px]">{type}</code>
@@ -412,6 +463,17 @@ export default function Hero() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* ── Framework quickstart ──────────────────────────────────────── */}
+      <section className="border-b border-pitch-black px-6 md:px-12 py-20">
+        <div className="max-w-5xl mx-auto">
+          <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-3 font-medium">Quickstart</p>
+          <h2 className="font-display font-extrabold text-[clamp(32px,5vw,56px)] leading-[0.95] tracking-[-0.03em] mb-12">
+            Works everywhere<br />you do.
+          </h2>
+          <FrameworkTabs />
         </div>
       </section>
 
@@ -429,6 +491,12 @@ export default function Hero() {
             <span className="opacity-50">$</span>
             <span>npm i svg-scroll-draw</span>
           </div>
+          <a
+            href="/playground"
+            className="px-6 py-3 rounded-full border-2 border-pitch-black bg-transparent text-pitch-black text-sm font-semibold hover:bg-pitch-black hover:text-sunshine-yellow transition-colors shadow-[3px_3px_0px_rgba(0,0,0,0.2)]"
+          >
+            ⚡ Try the Playground →
+          </a>
           <a
             href={GH}
             target="_blank" rel="noopener noreferrer"
