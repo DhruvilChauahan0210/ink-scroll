@@ -1,6 +1,10 @@
 import { OnCompleteDemo } from '@/components/OnCompleteDemo';
 import { InteractiveScrollDemo } from '@/components/InteractiveScrollDemo';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { LiveStats } from '@/components/LiveStats';
+
+const GH  = 'https://github.com/DhruvilChauahan0210/ink-scroll';
+const NPM = 'https://www.npmjs.com/package/svg-scroll-draw';
 
 /* ── Shared sub-components ──────────────────────────────────────────────── */
 
@@ -55,13 +59,15 @@ export default function Home() {
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <a
-            href="https://www.npmjs.com/package/svg-scroll-draw"
+            href={NPM}
+            target="_blank" rel="noopener noreferrer"
             className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono"
           >
             v0.1.0
           </a>
           <a
-            href="https://github.com"
+            href={GH}
+            target="_blank" rel="noopener noreferrer"
             className="text-sm px-4 py-1.5 rounded-full bg-pitch-black text-light-linen hover:bg-graphite-border transition-colors font-medium"
           >
             GitHub →
@@ -409,6 +415,9 @@ export default function Hero() {
         </div>
       </section>
 
+      {/* ── Live Stats ────────────────────────────────────────────────── */}
+      <LiveStats />
+
       {/* ── CTA ───────────────────────────────────────────────────────── */}
       <section data-mascot="big-dance" className="bg-sunshine-yellow border-b border-pitch-black px-6 md:px-12 py-24 text-center">
         <h2 className="font-display font-extrabold leading-[0.9] tracking-[-0.04em] mb-8 text-pitch-black"
@@ -421,7 +430,8 @@ export default function Hero() {
             <span>npm i svg-scroll-draw</span>
           </div>
           <a
-            href="https://github.com"
+            href={GH}
+            target="_blank" rel="noopener noreferrer"
             className="px-6 py-3 rounded-full border-2 border-pitch-black bg-transparent text-pitch-black text-sm font-semibold hover:bg-pitch-black hover:text-sunshine-yellow transition-colors shadow-[3px_3px_0px_rgba(0,0,0,0.2)]"
           >
             View on GitHub →
@@ -430,16 +440,53 @@ export default function Hero() {
       </section>
 
       {/* ── Footer ────────────────────────────────────────────────────── */}
-      <footer className="px-6 md:px-12 py-7 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-subtle-ash">
-        <span className="font-display font-bold text-sm tracking-tight">svg-scroll-draw</span>
-        <div className="flex items-center gap-5 text-[13px] text-graphite-border">
-          <span>MIT License</span>
-          <span className="text-subtle-ash">·</span>
-          <span>&lt; 3KB gzipped</span>
-          <span className="text-subtle-ash">·</span>
-          <span>Zero dependencies</span>
+      <footer className="px-6 md:px-12 py-8 border-t border-subtle-ash">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+          <span className="font-display font-bold text-sm tracking-tight">svg-scroll-draw</span>
+
+          <div className="flex items-center gap-5 text-[13px] text-graphite-border">
+            <span>MIT License</span>
+            <span className="text-subtle-ash">·</span>
+            <span>&lt; 3KB gzipped</span>
+            <span className="text-subtle-ash">·</span>
+            <span>Zero dependencies</span>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <a
+              href={GH}
+              target="_blank" rel="noopener noreferrer"
+              className="text-[12px] font-medium px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors flex items-center gap-1.5"
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
+              </svg>
+              GitHub
+            </a>
+            <a
+              href={NPM}
+              target="_blank" rel="noopener noreferrer"
+              className="text-[12px] font-medium px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors flex items-center gap-1.5"
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M0 0v24h24V0H0zm19.2 19.2H4.8V4.8h14.4v14.4zm-9.6-9.6v4.8H7.2V7.2h9.6v7.2h-4.8V9.6h-2.4z"/>
+              </svg>
+              npm
+            </a>
+            <span className="text-[11px] font-mono text-graphite-border">v0.1.0</span>
+          </div>
         </div>
-        <span className="text-[11px] font-mono text-graphite-border">v0.1.0</span>
+
+        <div className="mt-4 pt-4 border-t border-subtle-ash text-center text-[11px] text-graphite-border font-mono">
+          built by{' '}
+          <a
+            href="https://github.com/DhruvilChauahan0210"
+            target="_blank" rel="noopener noreferrer"
+            className="hover:text-pitch-black transition-colors underline underline-offset-2"
+          >
+            dhruvil0210
+          </a>
+        </div>
       </footer>
 
     </main>
