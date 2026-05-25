@@ -1,0 +1,30 @@
+import { defineConfig } from 'tsup';
+
+export default defineConfig([
+  {
+    entry: { index: 'src/index.ts' },
+    format: ['esm', 'cjs'],
+    outExtension: ({ format }) => ({ js: format === 'cjs' ? '.cjs' : '.mjs' }),
+    dts: true,
+    clean: true,
+    treeshake: true,
+    minify: true,
+  },
+  {
+    entry: { 'react/index': 'src/react/index.tsx' },
+    format: ['esm', 'cjs'],
+    outExtension: ({ format }) => ({ js: format === 'cjs' ? '.cjs' : '.mjs' }),
+    dts: true,
+    treeshake: true,
+    minify: true,
+    external: ['react'],
+  },
+  {
+    entry: { 'svg-scroll-draw': 'src/index.ts' },
+    format: ['iife'],
+    globalName: 'SvgScrollDraw',
+    outDir: 'dist/cdn',
+    minify: true,
+    clean: false,
+  },
+]);
