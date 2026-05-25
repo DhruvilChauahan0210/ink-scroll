@@ -74,7 +74,7 @@ export default function Home() {
             target="_blank" rel="noopener noreferrer"
             className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono"
           >
-            v0.1.0
+            v0.2.0
           </a>
           <a
             href={GH}
@@ -137,7 +137,7 @@ export default function Home() {
             ['< 3KB', 'gzipped'],
             ['0', 'dependencies'],
             ['SSR', 'safe'],
-            ['43', 'tests ✓'],
+            ['56', 'tests ✓'],
           ].map(([val, label]) => (
             <div key={val} className="flex items-center gap-1.5 border border-pitch-black bg-light-linen rounded-full px-4 py-1.5 shadow-[1px_1px_0px_#000]">
               <span className="font-display font-bold text-sm">{val}</span>
@@ -541,7 +541,7 @@ export default function Hero() {
               </svg>
               npm
             </a>
-            <span className="text-[11px] font-mono text-graphite-border">v0.1.0</span>
+            <span className="text-[11px] font-mono text-graphite-border">v0.2.0</span>
           </div>
         </div>
 
