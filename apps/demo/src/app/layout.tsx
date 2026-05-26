@@ -59,12 +59,21 @@ export const metadata: Metadata = {
     title: "svg-scroll-draw — Scroll-driven SVG path animation",
     description:
       "A zero-dependency JavaScript library that animates SVG paths as you scroll. Under 3 KB gzipped. Works with React, Next.js, Vue 3, and vanilla JS.",
+    images: [
+      {
+        url: `${SITE_URL}/opengraph-image`,
+        width: 1200,
+        height: 630,
+        alt: "svg-scroll-draw — Scroll-driven SVG path animation",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "svg-scroll-draw — Scroll-driven SVG path animation",
     description:
       "A zero-dependency JavaScript library that animates SVG paths as you scroll. Under 3 KB gzipped.",
+    images: [`${SITE_URL}/opengraph-image`],
   },
   verification: {
     google: "a937c0c149fc8ebe",
