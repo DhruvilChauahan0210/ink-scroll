@@ -37,6 +37,30 @@ interface ScrollDrawInstance {
     replay: () => void;
 }
 
-declare function scrollDraw(target: string | Element, options?: ScrollDrawOptions): ScrollDrawInstance;
+/**
+ * SolidJS hook — returns a ref setter to attach to any container element.
+ *
+ * @example
+ * import { useScrollDraw } from 'svg-scroll-draw/solid';
+ *
+ * function Hero() {
+ *   const ref = useScrollDraw({ easing: 'spring', fade: true });
+ *   return <div ref={ref}><svg>...</svg></div>;
+ * }
+ */
+declare function useScrollDraw(options?: ScrollDrawOptions): (node: HTMLElement) => void;
+/**
+ * Returns both the ref setter and a getter for the live instance,
+ * so you can call instance.replay() from component logic.
+ *
+ * @example
+ * const { ref, getInstance } = createScrollDraw({ easing: 'ease-out' });
+ * <div ref={ref}><svg>...</svg></div>
+ * <button onClick={() => getInstance()?.replay()}>Replay</button>
+ */
+declare function createScrollDraw(options?: ScrollDrawOptions): {
+    ref: (node: HTMLElement) => void;
+    getInstance: () => ScrollDrawInstance | undefined;
+};
 
-export { type ScrollDrawInstance, type ScrollDrawOptions, scrollDraw };
+export { type ScrollDrawOptions, createScrollDraw, useScrollDraw };

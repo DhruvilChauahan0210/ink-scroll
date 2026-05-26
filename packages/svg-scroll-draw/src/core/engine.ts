@@ -1,48 +1,31 @@
 import type { ScrollDrawOptions, ScrollDrawInstance } from './types';
-import { EASINGS, parseTrigger, computeProgress, computeTriggers, getElementLength } from './utils';
+import { EASINGS, parseTrigger, computeProgress, computeTriggers, getElementLength, lerpColor } from './utils';
 
 function warnDev(msg: string, el: Element): void {
-  if (process.env.NODE_ENV !== 'production') {
-    console.warn(`[svg-scroll-draw] ${msg}`, el);
-  }
+  if (process.env.NODE_ENV !== 'production') console.warn(`[svg-scroll-draw] ${msg}`, el);
 }
 
 function checkElement(el: SVGElement): void {
   const stroke = el.getAttribute('stroke');
-  const fill = el.getAttribute('fill');
-  if (!stroke || stroke === 'none') {
-    warnDev('Element has no stroke — path will not be visible.', el);
-  } else if (fill && fill !== 'none' && fill !== 'transparent') {
-    warnDev('Element has a fill — it may obscure the stroke animation.', el);
-  }
+  const fill   = el.getAttribute('fill');
+  if (!stroke || stroke === 'none') warnDev('Element has no stroke — path will not be visible.', el);
+  else if (fill && fill !== 'none' && fill !== 'transparent') warnDev('Element has a fill — it may obscure the stroke animation.', el);
 }
 
 function createDebugOverlay(tStart: number, tEnd: number, axis: 'x' | 'y'): HTMLElement {
   const overlay = document.createElement('div');
   overlay.setAttribute('data-svg-scroll-draw-debug', '');
   overlay.style.cssText = 'position:fixed;pointer-events:none;z-index:9999;font-family:monospace;font-size:11px;top:0;left:0;right:0;bottom:0;';
-
   function update() {
     const scroll = axis === 'x' ? window.scrollX : window.scrollY;
-    const startPx = tStart - scroll;
-    const endPx   = tEnd   - scroll;
-    const isX = axis === 'x';
-
+    const a = tStart - scroll, b = tEnd - scroll, x = axis === 'x';
     overlay.innerHTML = `
-      <div style="position:absolute;
-        ${isX ? `left:${startPx}px;top:0;bottom:0;border-left:2px dashed #22c55e;` : `top:${startPx}px;left:0;right:0;border-top:2px dashed #22c55e;`}
-        padding:2px 6px;color:#22c55e;background:rgba(0,0,0,0.6);">▶ start</div>
-      <div style="position:absolute;
-        ${isX ? `left:${endPx}px;top:0;bottom:0;border-left:2px dashed #ef4444;` : `top:${endPx}px;left:0;right:0;border-top:2px dashed #ef4444;`}
-        padding:2px 6px;color:#ef4444;background:rgba(0,0,0,0.6);">■ end</div>
-    `;
+      <div style="position:absolute;${x?`left:${a}px;top:0;bottom:0;border-left:2px dashed #22c55e;`:`top:${a}px;left:0;right:0;border-top:2px dashed #22c55e;`}padding:2px 6px;color:#22c55e;background:rgba(0,0,0,.6)">▶ start</div>
+      <div style="position:absolute;${x?`left:${b}px;top:0;bottom:0;border-left:2px dashed #ef4444;`:`top:${b}px;left:0;right:0;border-top:2px dashed #ef4444;`}padding:2px 6px;color:#ef4444;background:rgba(0,0,0,.6)">■ end</div>`;
   }
-
   document.body.appendChild(overlay);
-  const evt = axis === 'x' ? 'scroll' : 'scroll';
-  window.addEventListener(evt, update, { passive: true });
+  window.addEventListener('scroll', update, { passive: true });
   update();
-
   return overlay;
 }
 
@@ -55,16 +38,22 @@ export function createEngine(
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const {
-    selector  = 'path, polyline, line, polygon, rect, circle',
-    speed     = 1,
-    fade      = false,
-    easing    = 'linear',
-    trigger   = {},
-    stagger   = 0,
-    direction = 'forward',
-    once      = false,
-    debug     = false,
-    axis      = 'y',
+    selector       = 'path, polyline, line, polygon, rect, circle',
+    speed          = 1,
+    fade           = false,
+    easing         = 'linear',
+    trigger        = {},
+    stagger        = 0,
+    direction      = 'forward',
+    once           = false,
+    debug          = false,
+    axis           = 'y',
+    scrollContainer,
+    autoReverse    = false,
+    delay          = 0,
+    strokeColor,
+    strokeWidth,
+    waypoints,
     onProgress,
     onStart,
     onComplete,
@@ -74,46 +63,60 @@ export function createEngine(
   const startConfig = parseTrigger(trigger.start ?? 'top bottom');
   const endConfig   = parseTrigger(trigger.end   ?? 'bottom top');
 
-  const paths: SVGElement[] = Array.from(container.querySelectorAll<SVGElement>(selector));
-  const lengths: number[]   = [];
-  let tStart     = 0;
-  let tEnd       = 0;
-  let completed  = false;
-  let started    = false;
-  let rafId      = 0;
-  let isVisible  = false;
-  let frozenAlpha = -1;
-  let debugOverlay: HTMLElement | null = null;
+  // ── Resolve custom scroll container ─────────────────────────────────────────
+  const scrollEl: Element | null =
+    typeof scrollContainer === 'string'
+      ? document.querySelector(scrollContainer)
+      : (scrollContainer ?? null);
 
-  // ── axis helpers ────────────────────────────────────────────────────────────
+  // ── Stroke color / width ranges ──────────────────────────────────────────────
+  const colorFrom = Array.isArray(strokeColor) ? strokeColor[0] : null;
+  const colorTo   = Array.isArray(strokeColor) ? strokeColor[1] : (typeof strokeColor === 'string' ? strokeColor : null);
+  const widthFrom = Array.isArray(strokeWidth) ? strokeWidth[0] : null;
+  const widthTo   = Array.isArray(strokeWidth) ? strokeWidth[1] : (typeof strokeWidth === 'number' ? strokeWidth : null);
+
+  const paths:   SVGElement[] = Array.from(container.querySelectorAll<SVGElement>(selector));
+  const lengths: number[]     = [];
+
+  let tStart       = 0;
+  let tEnd         = 0;
+  let completed    = false;
+  let started      = false;
+  let rafId        = 0;
+  let isVisible    = false;
+  let frozenAlpha  = -1;
+  let prevScroll   = -1;
+  let debugOverlay: HTMLElement | null = null;
+  const firedWaypoints = new Set<number>();
+
+  // ── Axis / container helpers ─────────────────────────────────────────────────
 
   function scrollPos(): number {
+    if (scrollEl) return axis === 'x' ? scrollEl.scrollLeft : scrollEl.scrollTop;
     return axis === 'x' ? window.scrollX : window.scrollY;
   }
 
-  function viewportSize(): number {
+  function vpSize(): number {
+    if (scrollEl) return axis === 'x' ? scrollEl.clientWidth : scrollEl.clientHeight;
     return axis === 'x' ? window.innerWidth : window.innerHeight;
   }
 
-  function rectPos(rect: DOMRect): number {
-    return axis === 'x' ? rect.left : rect.top;
-  }
-
-  function rectSize(rect: DOMRect): number {
-    return axis === 'x' ? rect.width : rect.height;
-  }
-
-  // ── trigger calculation ──────────────────────────────────────────────────────
-
   function cacheTriggers(): void {
     const rect = container.getBoundingClientRect();
-    const result = computeTriggers(
-      { top: rectPos(rect), height: rectSize(rect) },
-      scrollPos(),
-      viewportSize(),
-      startConfig,
-      endConfig
-    );
+    let pos: number, size: number, scroll: number;
+
+    if (scrollEl) {
+      const cr = scrollEl.getBoundingClientRect();
+      pos    = axis === 'x' ? rect.left - cr.left + scrollEl.scrollLeft : rect.top - cr.top + scrollEl.scrollTop;
+      size   = axis === 'x' ? rect.width : rect.height;
+      scroll = scrollPos();
+    } else {
+      pos    = axis === 'x' ? rect.left : rect.top;
+      size   = axis === 'x' ? rect.width : rect.height;
+      scroll = scrollPos();
+    }
+
+    const result = computeTriggers({ top: pos, height: size }, scroll, vpSize(), startConfig, endConfig);
     tStart = result.tStart;
     tEnd   = result.tEnd;
 
@@ -123,7 +126,7 @@ export function createEngine(
     }
   }
 
-  // ── initialise paths ─────────────────────────────────────────────────────────
+  // ── Initialise paths ─────────────────────────────────────────────────────────
 
   function resetPaths(): void {
     paths.forEach((el, i) => {
@@ -131,6 +134,8 @@ export function createEngine(
       el.style.strokeDashoffset = direction === 'reverse' ? '0' : `${lengths[i]}`;
       if (fade) el.style.opacity = direction === 'reverse' ? '1' : '0';
       else el.style.opacity = '';
+      if (colorFrom) el.style.stroke = colorFrom;
+      if (widthFrom !== null) el.style.strokeWidth = `${widthFrom}`;
     });
   }
 
@@ -143,10 +148,15 @@ export function createEngine(
       el.style.strokeDasharray  = `${len}`;
       el.style.strokeDashoffset = direction === 'reverse' ? `${len}` : '0';
       if (fade) el.style.opacity = '1';
+      if (colorTo) el.style.stroke = colorTo;
+      if (widthTo !== null) el.style.strokeWidth = `${widthTo}`;
     } else {
       el.style.strokeDasharray  = `${len}`;
       el.style.strokeDashoffset = direction === 'reverse' ? '0' : `${len}`;
       if (fade) el.style.opacity = direction === 'reverse' ? '1' : '0';
+      else el.style.opacity = '';
+      if (colorFrom) el.style.stroke = colorFrom;
+      if (widthFrom !== null) el.style.strokeWidth = `${widthFrom}`;
     }
   });
 
@@ -161,31 +171,63 @@ export function createEngine(
 
   function update(): void {
     if (!isVisible) return;
+
+    const currentScroll = scrollPos();
+    const effectiveDir  = autoReverse
+      ? (prevScroll === -1 || currentScroll >= prevScroll ? 'forward' : 'reverse')
+      : direction;
+    prevScroll = currentScroll;
+
     const range = tEnd - tStart;
     let allComplete = true;
 
     paths.forEach((el, i) => {
       const offset = i * stagger * range;
-      let alpha = easeFn(computeProgress(scrollPos(), tStart + offset, tEnd + offset, speed));
+      let alpha = easeFn(computeProgress(currentScroll, tStart + offset, tEnd + offset, speed));
 
-      if (once) {
+      if (once && !autoReverse) {
         frozenAlpha = Math.max(frozenAlpha, alpha);
         alpha = frozenAlpha;
       }
 
       el.style.strokeDashoffset =
-        direction === 'reverse'
+        effectiveDir === 'reverse'
           ? `${lengths[i] * alpha}`
           : `${lengths[i] * (1 - alpha)}`;
 
-      if (fade) el.style.opacity = direction === 'reverse' ? `${1 - alpha}` : `${alpha}`;
+      if (fade) el.style.opacity = effectiveDir === 'reverse' ? `${1 - alpha}` : `${alpha}`;
+
+      // Color animation
+      if (colorFrom && colorTo) el.style.stroke = lerpColor(colorFrom, colorTo, alpha);
+      else if (colorTo) el.style.stroke = colorTo;
+
+      // Width animation
+      if (widthFrom !== null && widthTo !== null) {
+        el.style.strokeWidth = `${widthFrom + (widthTo - widthFrom) * alpha}`;
+      } else if (widthTo !== null) {
+        el.style.strokeWidth = `${widthTo}`;
+      }
+
       if (i === 0) onProgress?.(alpha);
       if (alpha < 1) allComplete = false;
     });
 
-    if (!started) {
-      const rawAlpha = computeProgress(scrollPos(), tStart, tEnd, speed);
-      if (rawAlpha > 0) { started = true; onStart?.(); }
+    // Waypoints
+    if (waypoints) {
+      const rawAlpha = easeFn(computeProgress(currentScroll, tStart, tEnd, speed));
+      for (const key in waypoints) {
+        const t = parseFloat(key);
+        if (rawAlpha >= t && !firedWaypoints.has(t)) {
+          firedWaypoints.add(t);
+          waypoints[key as unknown as number]?.();
+        }
+      }
+    }
+
+    // onStart
+    if (!started && computeProgress(currentScroll, tStart, tEnd, speed) > 0) {
+      started = true;
+      onStart?.();
     }
 
     if (allComplete && !completed) {
@@ -198,19 +240,20 @@ export function createEngine(
     rafId = requestAnimationFrame(update);
   }
 
-  // ── intersection observer ────────────────────────────────────────────────────
+  // ── Intersection observer ─────────────────────────────────────────────────────
 
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((e) => {
-      isVisible = e.isIntersecting;
-      if (isVisible) rafId = requestAnimationFrame(update);
-      else cancelAnimationFrame(rafId);
-    });
-  });
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((e) => {
+        isVisible = e.isIntersecting;
+        if (isVisible) rafId = requestAnimationFrame(update);
+        else cancelAnimationFrame(rafId);
+      });
+    },
+    { root: scrollEl ?? null }
+  );
 
-  observer.observe(container);
-
-  // ── resize ───────────────────────────────────────────────────────────────────
+  // ── Resize ───────────────────────────────────────────────────────────────────
 
   let resizeTimer: ReturnType<typeof setTimeout>;
   function onResize(): void {
@@ -227,7 +270,15 @@ export function createEngine(
   window.addEventListener('resize', onResize);
   window.addEventListener('orientationchange', onResize);
 
-  // ── instance ─────────────────────────────────────────────────────────────────
+  // ── Start (with optional delay) ───────────────────────────────────────────────
+
+  if (delay > 0) {
+    setTimeout(() => observer.observe(container), delay);
+  } else {
+    observer.observe(container);
+  }
+
+  // ── Instance ─────────────────────────────────────────────────────────────────
 
   return {
     destroy() {
@@ -241,8 +292,10 @@ export function createEngine(
 
     replay() {
       frozenAlpha = -1;
+      prevScroll  = -1;
       started     = false;
       completed   = false;
+      firedWaypoints.clear();
       resetPaths();
     },
   };

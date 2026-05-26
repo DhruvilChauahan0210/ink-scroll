@@ -9,19 +9,25 @@ interface ScrollDrawOptions {
     fade?: boolean;
     easing?: EasingName | ((t: number) => number);
     trigger?: TriggerConfig;
-    /** Normalized scroll-progress offset between each path starting (0–1). e.g. 0.15 → each path begins 15% of the scroll range after the previous. */
     stagger?: number;
-    /** 'forward' draws the path in (default). 'reverse' erases — path starts fully drawn and disappears as you scroll. */
     direction?: 'forward' | 'reverse';
-    /** Draw once and stay drawn — animation does not reverse when scrolling back up. */
     once?: boolean;
-    /** Show trigger zone overlay for debugging. Dev-only — stripped in production. */
     debug?: boolean;
-    /** Scroll axis to track. 'y' (default) for vertical scroll, 'x' for horizontal scroll containers. */
+    /** Scroll axis to track. 'y' (default) for vertical, 'x' for horizontal. */
     axis?: 'x' | 'y';
-    /** Called every animation frame with the current draw progress (0–1) of the first path. */
+    /** CSS selector or Element for a custom scroll container (default: window). */
+    scrollContainer?: string | Element;
+    /** Automatically reverse the animation when the user scrolls back up. */
+    autoReverse?: boolean;
+    /** Delay in milliseconds before the engine starts observing (useful for page-load sequences). */
+    delay?: number;
+    /** Animate stroke color. Single string = static override. Tuple = interpolate from → to. */
+    strokeColor?: string | [string, string];
+    /** Animate stroke width. Single number = static override. Tuple = interpolate from → to. */
+    strokeWidth?: number | [number, number];
+    /** Fire callbacks at specific progress thresholds (0–1). Resets on replay(). */
+    waypoints?: Record<number, () => void>;
     onProgress?: (alpha: number) => void;
-    /** Fires once on the first frame the animation begins drawing. */
     onStart?: () => void;
     onComplete?: () => void;
 }

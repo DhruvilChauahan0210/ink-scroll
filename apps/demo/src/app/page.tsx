@@ -1,4 +1,5 @@
 import { OnCompleteDemo } from '@/components/OnCompleteDemo';
+import { WaypointsDemo } from '@/components/WaypointsDemo';
 import { InteractiveScrollDemo } from '@/components/InteractiveScrollDemo';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { LiveStats } from '@/components/LiveStats';
@@ -84,6 +85,11 @@ const MARQUEE_ITEMS = [
   'Debug Overlay',
   'Horizontal Scroll',
   'Replay API',
+  'Color Animation',
+  'Auto Reverse',
+  'Waypoints',
+  'SolidJS',
+  'Angular',
 ];
 
 /* ── Page ────────────────────────────────────────────────────────────────── */
@@ -465,6 +471,130 @@ export default function Hero() {
         {/* 05 — onComplete */}
         <OnCompleteDemo />
 
+        {/* 06 — autoReverse */}
+        <section data-mascot="think" className="relative border-b border-pitch-black bg-marketplace-gray overflow-hidden">
+          <span className="pointer-events-none select-none absolute -left-6 top-1/2 -translate-y-1/2 font-display font-extrabold text-[220px] leading-none text-pitch-black opacity-[0.04]">06</span>
+          <div className="max-w-6xl mx-auto px-6 md:px-12 py-24 grid md:grid-cols-2 gap-16 items-start">
+            <InteractiveScrollDemo
+              className="order-2 md:order-1"
+              defaultEasing="ease-in-out"
+              defaultSpeed={0.9}
+              svgBg="white"
+            >
+              <svg width="260" height="200" viewBox="0 0 260 200" fill="none">
+                <path d="M 20 100 C 60 30 100 170 130 100 C 160 30 200 170 240 100"
+                  stroke="#000" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
+                <path d="M 20 100 C 60 30 100 170 130 100 C 160 30 200 170 240 100"
+                  stroke="#ff90e8" strokeWidth="1" strokeLinecap="round" fill="none" opacity="0.35"/>
+                <line x1="20" y1="100" x2="240" y2="100" stroke="#ddd" strokeWidth="1" strokeDasharray="4 4"/>
+                {[20,65,110,155,200,240].map((x) => (
+                  <circle key={x} cx={x} cy={100} r="3" fill="#e2e2e2" stroke="#bbb" strokeWidth="1"/>
+                ))}
+              </svg>
+            </InteractiveScrollDemo>
+            <div className="order-1 md:order-2">
+              <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-3 font-medium">Auto Reverse</p>
+              <h2 className="font-display font-extrabold text-[clamp(28px,4vw,44px)] leading-[1] tracking-[-0.03em] mb-5">
+                Scroll up,<br />draw back.
+              </h2>
+              <p className="text-graphite-border leading-relaxed mb-6 text-[15px]">
+                Enable <Tag>autoReverse</Tag> and the animation automatically
+                follows scroll direction — drawing forward as you scroll down,
+                erasing as you scroll back up. No manual <Tag>direction</Tag> switching needed.
+              </p>
+              <CodeBlock filename="index.tsx">
+{`<ScrollDraw autoReverse>
+  <svg>...</svg>
+</ScrollDraw>`}
+              </CodeBlock>
+            </div>
+          </div>
+        </section>
+
+        {/* 07 — strokeColor */}
+        <section data-mascot="magic" className="relative border-b border-pitch-black overflow-hidden">
+          <span className="pointer-events-none select-none absolute -right-6 top-1/2 -translate-y-1/2 font-display font-extrabold text-[220px] leading-none text-pitch-black opacity-[0.04]">07</span>
+          <div className="max-w-6xl mx-auto px-6 md:px-12 py-24 grid md:grid-cols-2 gap-16 items-start">
+            <div>
+              <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-3 font-medium">Color Animation</p>
+              <h2 className="font-display font-extrabold text-[clamp(28px,4vw,44px)] leading-[1] tracking-[-0.03em] mb-5">
+                Color that<br />follows the draw.
+              </h2>
+              <p className="text-graphite-border leading-relaxed mb-6 text-[15px]">
+                Pass a <Tag>[from, to]</Tag> tuple to <Tag>strokeColor</Tag> and the stroke
+                interpolates between two colors as the path draws.
+                No extra CSS or keyframes — the engine handles it per-frame.
+              </p>
+              <CodeBlock filename="index.tsx">
+{`<ScrollDraw
+  strokeColor={['#ff6b9d', '#ffc900']}
+  easing="ease-out"
+>
+  <svg>...</svg>
+</ScrollDraw>`}
+              </CodeBlock>
+            </div>
+            <InteractiveScrollDemo
+              defaultEasing="ease-out"
+              defaultSpeed={0.8}
+              svgBg="gray"
+              colorFrom="#ff6b9d"
+              colorTo="#ffc900"
+            >
+              <svg width="260" height="200" viewBox="0 0 260 200" fill="none">
+                <path d="M 20 160 C 40 80 80 40 130 50 C 180 60 220 100 240 60"
+                  stroke="#ff6b9d" strokeWidth="3" strokeLinecap="round"/>
+                <path d="M 20 160 C 40 120 80 100 130 100 C 180 100 220 140 240 120"
+                  stroke="#ff6b9d" strokeWidth="1.5" strokeLinecap="round" opacity="0.35"/>
+              </svg>
+            </InteractiveScrollDemo>
+          </div>
+        </section>
+
+        {/* 08 — strokeWidth */}
+        <section data-mascot="draw" className="relative border-b border-pitch-black bg-marketplace-gray overflow-hidden">
+          <span className="pointer-events-none select-none absolute -left-6 top-1/2 -translate-y-1/2 font-display font-extrabold text-[220px] leading-none text-pitch-black opacity-[0.04]">08</span>
+          <div className="max-w-6xl mx-auto px-6 md:px-12 py-24 grid md:grid-cols-2 gap-16 items-start">
+            <InteractiveScrollDemo
+              className="order-2 md:order-1"
+              defaultEasing="ease-in-out"
+              defaultSpeed={0.9}
+              svgBg="white"
+              widthFrom={0.5}
+              widthTo={6}
+            >
+              <svg width="260" height="200" viewBox="0 0 260 200" fill="none">
+                <path d="M 20 170 C 40 100 70 60 110 70 C 150 80 160 40 200 30 C 220 25 240 40 250 60"
+                  stroke="#000" strokeWidth="0.5" strokeLinecap="round"/>
+                <path d="M 20 170 C 40 140 70 130 110 135 C 150 140 180 130 220 135 C 235 138 248 145 255 155"
+                  stroke="#ff90e8" strokeWidth="0.5" strokeLinecap="round" opacity="0.5"/>
+              </svg>
+            </InteractiveScrollDemo>
+            <div className="order-1 md:order-2">
+              <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-3 font-medium">Width Animation</p>
+              <h2 className="font-display font-extrabold text-[clamp(28px,4vw,44px)] leading-[1] tracking-[-0.03em] mb-5">
+                Hairline thin<br />to bold.
+              </h2>
+              <p className="text-graphite-border leading-relaxed mb-6 text-[15px]">
+                Pass a <Tag>[from, to]</Tag> tuple to <Tag>strokeWidth</Tag> and
+                the line grows from a hairline to any thickness as it draws.
+                Combine with <Tag>strokeColor</Tag> for dramatic logo reveals.
+              </p>
+              <CodeBlock filename="index.tsx">
+{`<ScrollDraw
+  strokeWidth={[0.5, 6]}
+  easing="ease-in-out"
+>
+  <svg>...</svg>
+</ScrollDraw>`}
+              </CodeBlock>
+            </div>
+          </div>
+        </section>
+
+        {/* 09 — waypoints */}
+        <WaypointsDemo />
+
       </div>
 
       {/* ── API Reference ─────────────────────────────────────────────── */}
@@ -489,6 +619,12 @@ export default function Hero() {
               { prop: 'once', type: 'boolean', def: 'false', desc: 'Draw once and stay drawn — animation does not reverse when scrolling back up.' },
               { prop: 'debug', type: 'boolean', def: 'false', desc: 'Renders a visual overlay showing trigger start/end zones. Dev-only, stripped in production.' },
               { prop: 'axis', type: '"x" | "y"', def: '"y"', desc: 'Scroll axis to track. Use "x" for horizontal scroll containers.' },
+              { prop: 'scrollContainer', type: 'string | Element', def: 'window', desc: 'CSS selector or Element for a custom scroll container instead of the window.' },
+              { prop: 'autoReverse', type: 'boolean', def: 'false', desc: 'Automatically reverse the animation when the user scrolls back up.' },
+              { prop: 'delay', type: 'number', def: '0', desc: 'Milliseconds to wait before the engine starts observing — useful for page-load sequences.' },
+              { prop: 'strokeColor', type: 'string | [string,string]', def: '—', desc: 'Static color override or [from, to] tuple to animate stroke color as the path draws.' },
+              { prop: 'strokeWidth', type: 'number | [number,number]', def: '—', desc: 'Static width override or [from, to] tuple to animate stroke width as the path draws.' },
+              { prop: 'waypoints', type: 'Record<number, fn>', def: '—', desc: 'Fire callbacks at specific progress thresholds (0–1). e.g. { 0.5: () => doSomething() }. Resets on replay().' },
               { prop: 'trigger.start', type: 'string', def: '"top bottom"', desc: 'When animation begins. Accepts anchor strings ("top bottom") or viewport percentages ("20%").' },
               { prop: 'trigger.end', type: 'string', def: '"bottom top"', desc: 'When animation ends. Accepts anchor strings or viewport percentages.' },
               { prop: 'onStart', type: '() => void', def: '—', desc: 'Fires once on the first frame the animation begins drawing.' },
@@ -497,7 +633,7 @@ export default function Hero() {
             ].map(({ prop, type, def, desc }, i) => (
               <div
                 key={prop}
-                className={`grid grid-cols-1 md:grid-cols-[160px_130px_190px_1fr] gap-2 md:gap-4 px-6 py-4 text-sm items-start ${i < 13 ? 'border-b border-subtle-ash' : ''}`}
+                className={`grid grid-cols-1 md:grid-cols-[160px_130px_190px_1fr] gap-2 md:gap-4 px-6 py-4 text-sm items-start ${i < 20 ? 'border-b border-subtle-ash' : ''}`}
               >
                 <code className="font-mono font-semibold text-pitch-black">{prop}</code>
                 <code className="font-mono text-graphite-border text-[13px]">{type}</code>

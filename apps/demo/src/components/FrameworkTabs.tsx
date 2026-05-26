@@ -59,6 +59,44 @@ import { ScrollDraw } from 'svg-scroll-draw/vue';
 </div>`,
   },
   {
+    id: 'solid',
+    label: 'SolidJS',
+    filename: 'Hero.tsx',
+    code: `import { useScrollDraw } from 'svg-scroll-draw/solid';
+
+function Hero() {
+  const ref = useScrollDraw({ easing: 'spring', fade: true });
+  return (
+    <div ref={ref}>
+      <svg>...</svg>
+    </div>
+  );
+}`,
+  },
+  {
+    id: 'angular',
+    label: 'Angular',
+    filename: 'hero.component.ts',
+    code: `import { ScrollDrawRef } from 'svg-scroll-draw/angular';
+
+@Component({
+  template: '<div #container><svg>...</svg></div>'
+})
+export class HeroComponent implements AfterViewInit, OnDestroy {
+  @ViewChild('container') containerRef!: ElementRef<HTMLElement>;
+  private draw = new ScrollDrawRef();
+
+  ngAfterViewInit() {
+    this.draw.init(this.containerRef.nativeElement, {
+      easing: 'ease-out',
+      speed: 1.2,
+    });
+  }
+
+  ngOnDestroy() { this.draw.destroy(); }
+}`,
+  },
+  {
     id: 'vanilla',
     label: 'Vanilla JS',
     filename: 'main.js',

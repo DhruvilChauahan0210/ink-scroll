@@ -37,6 +37,23 @@ export default defineConfig([
     minify: true,
   },
   {
+    entry: { 'solid/index': 'src/solid/index.ts' },
+    format: ['esm', 'cjs'],
+    outExtension: ({ format }) => ({ js: format === 'cjs' ? '.cjs' : '.mjs' }),
+    dts: true,
+    treeshake: true,
+    minify: true,
+    external: ['solid-js'],
+  },
+  {
+    entry: { 'angular/index': 'src/angular/index.ts' },
+    format: ['esm', 'cjs'],
+    outExtension: ({ format }) => ({ js: format === 'cjs' ? '.cjs' : '.mjs' }),
+    dts: true,
+    treeshake: true,
+    minify: true,
+  },
+  {
     entry: { 'svg-scroll-draw': 'src/cdn.ts' },
     format: ['iife'],
     globalName: 'SvgScrollDraw',

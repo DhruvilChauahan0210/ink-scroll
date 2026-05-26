@@ -1,20 +1,15 @@
 export const EASINGS: Record<string, (t: number) => number> = {
-  linear: (t) => t,
-  'ease-in': (t) => t * t,
-  'ease-out': (t) => t * (2 - t),
+  linear:        (t) => t,
+  'ease-in':     (t) => t * t,
+  'ease-out':    (t) => t * (2 - t),
   'ease-in-out': (t) => (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t),
-  // Approximates a spring settle — overshoots slightly then settles
-  spring: (t) => 1 - Math.cos(t * Math.PI * 2.5) * Math.pow(1 - t, 2.2),
+  spring:        (t) => 1 - Math.cos(t * Math.PI * 2.5) * Math.pow(1 - t, 2.2),
 };
 
 export function parseTrigger(str = 'top bottom'): { element: string; viewport: string } {
   const trimmed = str.trim();
-  // "20%" shorthand → "top of element hits 20% from viewport top"
-  if (/^\d+(\.\d+)?%$/.test(trimmed)) {
-    return { element: 'top', viewport: trimmed };
-  }
-  const parts = trimmed.split(/\s+/).filter(Boolean);
-  const [element = 'top', viewport = 'bottom'] = parts;
+  if (/^\d+(\.\d+)?%$/.test(trimmed)) return { element: 'top', viewport: trimmed };
+  const [element = 'top', viewport = 'bottom'] = trimmed.split(/\s+/).filter(Boolean);
   return { element, viewport };
 }
 
@@ -28,9 +23,7 @@ export function elementAnchorY(top: number, height: number, scrollY: number, anc
 }
 
 export function viewportAnchorY(anchor: string, vpHeight: number): number {
-  if (/^\d+(\.\d+)?%$/.test(anchor)) {
-    return vpHeight * (parseFloat(anchor) / 100);
-  }
+  if (/^\d+(\.\d+)?%$/.test(anchor)) return vpHeight * (parseFloat(anchor) / 100);
   switch (anchor) {
     case 'top':    return 0;
     case 'center': return vpHeight / 2;
@@ -39,7 +32,6 @@ export function viewportAnchorY(anchor: string, vpHeight: number): number {
   }
 }
 
-/** Returns the stroke length of any animatable SVG element. */
 export function getElementLength(el: SVGElement): number {
   const tag = el.tagName.toLowerCase();
   if (tag === 'rect') {
@@ -82,4 +74,27 @@ export function computeTriggers(
     elementAnchorY(rect.top, rect.height, scrollY, endConfig.element) -
     viewportAnchorY(endConfig.viewport, vpHeight);
   return { tStart, tEnd };
+}
+
+// ── Color interpolation ──────────────────────────────────────────────────────
+
+function parseColor(color: string): [number, number, number] | null {
+  const short = /^#([a-f\d])([a-f\d])([a-f\d])$/i.exec(color);
+  if (short) return [
+    parseInt(short[1] + short[1], 16),
+    parseInt(short[2] + short[2], 16),
+    parseInt(short[3] + short[3], 16),
+  ];
+  const full = /^#([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(color);
+  if (full) return [parseInt(full[1], 16), parseInt(full[2], 16), parseInt(full[3], 16)];
+  const rgb = /^rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/i.exec(color);
+  if (rgb) return [parseInt(rgb[1]), parseInt(rgb[2]), parseInt(rgb[3])];
+  return null;
+}
+
+export function lerpColor(from: string, to: string, t: number): string {
+  const a = parseColor(from);
+  const b = parseColor(to);
+  if (!a || !b) return from;
+  return `rgb(${Math.round(a[0] + (b[0] - a[0]) * t)},${Math.round(a[1] + (b[1] - a[1]) * t)},${Math.round(a[2] + (b[2] - a[2]) * t)})`;
 }

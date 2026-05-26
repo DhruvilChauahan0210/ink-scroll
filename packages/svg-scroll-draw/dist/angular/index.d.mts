@@ -37,6 +37,37 @@ interface ScrollDrawInstance {
     replay: () => void;
 }
 
-declare function scrollDraw(target: string | Element, options?: ScrollDrawOptions): ScrollDrawInstance;
+/**
+ * Framework-agnostic class for use in Angular components.
+ * No @angular/core dependency required.
+ *
+ * @example
+ * // In your Angular component:
+ * import { ScrollDrawRef } from 'svg-scroll-draw/angular';
+ *
+ * @Component({ template: '<div #container><svg>...</svg></div>' })
+ * export class HeroComponent implements AfterViewInit, OnDestroy {
+ *   @ViewChild('container') containerRef!: ElementRef<HTMLElement>;
+ *   private draw = new ScrollDrawRef();
+ *
+ *   ngAfterViewInit() {
+ *     this.draw.init(this.containerRef.nativeElement, {
+ *       easing: 'ease-out',
+ *       speed: 1.2,
+ *       fade: true,
+ *     });
+ *   }
+ *
+ *   ngOnDestroy() { this.draw.destroy(); }
+ *
+ *   replay() { this.draw.replay(); }
+ * }
+ */
+declare class ScrollDrawRef {
+    private instance;
+    init(element: HTMLElement, options?: ScrollDrawOptions): this;
+    replay(): this;
+    destroy(): this;
+}
 
-export { type ScrollDrawInstance, type ScrollDrawOptions, scrollDraw };
+export { type ScrollDrawInstance, type ScrollDrawOptions, ScrollDrawRef };

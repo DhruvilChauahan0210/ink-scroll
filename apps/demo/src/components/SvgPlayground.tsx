@@ -13,6 +13,12 @@ interface PlayState {
   stagger: number;
   direction: 'forward' | 'reverse';
   once: boolean;
+  colorFrom: string;
+  colorTo: string;
+  useColor: boolean;
+  widthFrom: number;
+  widthTo: number;
+  useWidth: boolean;
 }
 
 // ── Constants ──────────────────────────────────────────────────────────────────
@@ -70,9 +76,28 @@ const DEFAULT_STATE: PlayState = {
   stagger: 0,
   direction: 'forward',
   once: false,
+  colorFrom: '#ff6b9d',
+  colorTo: '#ffc900',
+  useColor: false,
+  widthFrom: 1,
+  widthTo: 4,
+  useWidth: false,
 };
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
+
+function parseRgb(c: string): [number,number,number] | null {
+  const s = /^#([a-f\d])([a-f\d])([a-f\d])$/i.exec(c);
+  if (s) return [parseInt(s[1]+s[1],16),parseInt(s[2]+s[2],16),parseInt(s[3]+s[3],16)];
+  const f = /^#([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(c);
+  if (f) return [parseInt(f[1],16),parseInt(f[2],16),parseInt(f[3],16)];
+  return null;
+}
+function lerpColor(a: string, b: string, t: number): string {
+  const ca = parseRgb(a), cb = parseRgb(b);
+  if (!ca || !cb) return a;
+  return `rgb(${Math.round(ca[0]+(cb[0]-ca[0])*t)},${Math.round(ca[1]+(cb[1]-ca[1])*t)},${Math.round(ca[2]+(cb[2]-ca[2])*t)})`;
+}
 
 function getLen(el: SVGElement): number {
   const tag = el.tagName.toLowerCase();
@@ -176,6 +201,16 @@ export function SvgPlayground() {
         state.direction === 'reverse' ? `${len * alpha}` : `${len * (1 - alpha)}`;
       if (state.fade) {
         el.style.opacity = state.direction === 'reverse' ? `${1 - alpha}` : `${alpha}`;
+      }
+      if (state.useColor) {
+        el.style.stroke = lerpColor(state.colorFrom, state.colorTo, alpha);
+      } else {
+        el.style.stroke = '';
+      }
+      if (state.useWidth) {
+        el.style.strokeWidth = `${state.widthFrom + (state.widthTo - state.widthFrom) * alpha}`;
+      } else {
+        el.style.strokeWidth = '';
       }
     });
   }, []);
@@ -407,7 +442,7 @@ export function SvgPlayground() {
 
       {/* ── Controls ────────────────────────────────────────────────── */}
       <div className="px-6 py-5 bg-marketplace-gray border-b border-pitch-black shrink-0">
-        <div className="max-w-4xl mx-auto grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div className="max-w-5xl mx-auto grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4">
 
           {/* Easing */}
           <div className="flex flex-col gap-1.5">
@@ -505,14 +540,60 @@ export function SvgPlayground() {
             </button>
           </div>
 
+          {/* Color */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-[10px] uppercase tracking-[0.18em] font-medium text-graphite-border">
+              Color{' '}
+              <button onClick={() => update('useColor', !ps.useColor)}
+                className={`font-mono normal-case text-[9px] px-1.5 py-0.5 rounded border ml-1 transition-all ${ps.useColor ? 'bg-creator-pink border-creator-pink text-pitch-black' : 'border-subtle-ash text-graphite-border'}`}>
+                {ps.useColor ? 'on' : 'off'}
+              </button>
+            </label>
+            <div className="flex gap-1.5 items-center">
+              <input type="color" value={ps.colorFrom}
+                onChange={e => update('colorFrom', e.target.value)}
+                className="w-8 h-8 rounded cursor-pointer border border-subtle-ash"
+                title="From color"
+              />
+              <span className="text-subtle-ash text-xs">→</span>
+              <input type="color" value={ps.colorTo}
+                onChange={e => update('colorTo', e.target.value)}
+                className="w-8 h-8 rounded cursor-pointer border border-subtle-ash"
+                title="To color"
+              />
+            </div>
+          </div>
+
+          {/* Width */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-[10px] uppercase tracking-[0.18em] font-medium text-graphite-border">
+              Width{' '}
+              <button onClick={() => update('useWidth', !ps.useWidth)}
+                className={`font-mono normal-case text-[9px] px-1.5 py-0.5 rounded border ml-1 transition-all ${ps.useWidth ? 'bg-lime-glow border-lime-glow text-pitch-black' : 'border-subtle-ash text-graphite-border'}`}>
+                {ps.useWidth ? 'on' : 'off'}
+              </button>
+            </label>
+            <div className="flex gap-1.5 items-center">
+              <input type="number" value={ps.widthFrom} min="0.5" max="10" step="0.5"
+                onChange={e => update('widthFrom', parseFloat(e.target.value))}
+                className="w-12 font-mono text-[12px] border border-subtle-ash rounded px-1.5 py-1 focus:outline-none focus:border-pitch-black"
+              />
+              <span className="text-subtle-ash text-xs">→</span>
+              <input type="number" value={ps.widthTo} min="0.5" max="20" step="0.5"
+                onChange={e => update('widthTo', parseFloat(e.target.value))}
+                className="w-12 font-mono text-[12px] border border-subtle-ash rounded px-1.5 py-1 focus:outline-none focus:border-pitch-black"
+              />
+            </div>
+          </div>
+
           {/* Generated code snippet */}
-          <div className="flex flex-col gap-1.5 col-span-2 sm:col-span-3 lg:col-span-1">
+          <div className="flex flex-col gap-1.5 col-span-2 sm:col-span-3 lg:col-span-2">
             <label className="text-[10px] uppercase tracking-[0.18em] font-medium text-graphite-border">Code</label>
             <div className="relative">
               <pre className="text-[10px] font-mono bg-[#1a1a18] text-[#e8e8e3] rounded-lg px-2.5 py-2 overflow-x-auto leading-relaxed whitespace-pre-wrap break-all">
 {`<ScrollDraw
   easing="${ps.easing}"
-  speed={${ps.speed.toFixed(1)}}${ps.fade ? '\n  fade' : ''}${ps.stagger > 0 ? `\n  stagger={${ps.stagger.toFixed(2)}}` : ''}${ps.direction === 'reverse' ? '\n  direction="reverse"' : ''}${ps.once ? '\n  once' : ''}
+  speed={${ps.speed.toFixed(1)}}${ps.fade ? '\n  fade' : ''}${ps.stagger > 0 ? `\n  stagger={${ps.stagger.toFixed(2)}}` : ''}${ps.direction === 'reverse' ? '\n  direction="reverse"' : ''}${ps.once ? '\n  once' : ''}${ps.useColor ? `\n  strokeColor={['${ps.colorFrom}', '${ps.colorTo}']}` : ''}${ps.useWidth ? `\n  strokeWidth={[${ps.widthFrom}, ${ps.widthTo}]}` : ''}
 >`}
               </pre>
             </div>
