@@ -66,6 +66,9 @@ export const metadata: Metadata = {
     description:
       "A zero-dependency JavaScript library that animates SVG paths as you scroll. Under 3 KB gzipped.",
   },
+  verification: {
+    google: "a937c0c149fc8ebe",
+  },
   robots: {
     index: true,
     follow: true,
