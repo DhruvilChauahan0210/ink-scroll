@@ -25,9 +25,57 @@ const syne = Syne({
   weight: ["700", "800"],
 });
 
+const SITE_URL = "https://svg-scroll-draw.vercel.app";
+
 export const metadata: Metadata = {
-  title: "svg-scroll-draw — Scroll-driven SVG animation",
-  description: "A zero-dependency library that animates SVG paths as you scroll. Under 3KB gzipped.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "svg-scroll-draw — Scroll-driven SVG path animation",
+    template: "%s | svg-scroll-draw",
+  },
+  description:
+    "A zero-dependency JavaScript library that animates SVG paths as you scroll. Under 3 KB gzipped. Works with React, Next.js, Vue 3, and vanilla JS.",
+  keywords: [
+    "svg animation",
+    "scroll animation",
+    "svg path animation",
+    "scroll-driven animation",
+    "svg scroll library",
+    "javascript svg",
+    "react svg animation",
+    "vue svg animation",
+    "web animation",
+    "svg-scroll-draw",
+  ],
+  authors: [{ name: "Dhruvil Chauhan", url: SITE_URL }],
+  creator: "Dhruvil Chauhan",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    url: SITE_URL,
+    siteName: "svg-scroll-draw",
+    title: "svg-scroll-draw — Scroll-driven SVG path animation",
+    description:
+      "A zero-dependency JavaScript library that animates SVG paths as you scroll. Under 3 KB gzipped. Works with React, Next.js, Vue 3, and vanilla JS.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "svg-scroll-draw — Scroll-driven SVG path animation",
+    description:
+      "A zero-dependency JavaScript library that animates SVG paths as you scroll. Under 3 KB gzipped.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 };
 
 export default function RootLayout({

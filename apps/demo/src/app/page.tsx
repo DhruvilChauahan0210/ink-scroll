@@ -9,6 +9,32 @@ import { FrameworkTabs } from '@/components/FrameworkTabs';
 const GH  = 'https://github.com/DhruvilChauahan0210/ink-scroll';
 const NPM = 'https://www.npmjs.com/package/svg-scroll-draw';
 
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'svg-scroll-draw',
+  description:
+    'A zero-dependency JavaScript library that animates SVG paths as you scroll. Under 3 KB gzipped.',
+  applicationCategory: 'DeveloperApplication',
+  operatingSystem: 'Web',
+  url: 'https://svg-scroll-draw.vercel.app',
+  downloadUrl: 'https://www.npmjs.com/package/svg-scroll-draw',
+  codeRepository: 'https://github.com/DhruvilChauahan0210/ink-scroll',
+  license: 'https://opensource.org/licenses/MIT',
+  softwareVersion: '0.2.0',
+  programmingLanguage: ['JavaScript', 'TypeScript'],
+  author: {
+    '@type': 'Person',
+    name: 'Dhruvil Chauhan',
+  },
+  keywords: 'svg, animation, scroll, javascript, react, vue, web animation',
+  offers: {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'USD',
+  },
+};
+
 /* ── Shared sub-components ──────────────────────────────────────────────── */
 
 function CodeBlock({ filename, children }: { filename: string; children: string }) {
@@ -56,6 +82,11 @@ const MARQUEE_ITEMS = [
 /* ── Page ────────────────────────────────────────────────────────────────── */
 export default function Home() {
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
     <main className="bg-light-linen text-pitch-black overflow-x-hidden">
 
       {/* ── Nav ───────────────────────────────────────────────────────── */}
@@ -558,5 +589,6 @@ export default function Hero() {
       </footer>
 
     </main>
+    </>
   );
 }
