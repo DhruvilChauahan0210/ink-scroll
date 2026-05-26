@@ -1,6 +1,8 @@
 import React, { useRef, useEffect } from 'react';
 import { createEngine } from '../core/engine';
 import type { ScrollDrawOptions } from '../core/types';
+export { useScrollDrawProgress } from './useScrollDrawProgress';
+export type { UseScrollDrawProgressOptions } from './useScrollDrawProgress';
 
 type ScrollDrawProps = ScrollDrawOptions & {
   children: React.ReactNode;

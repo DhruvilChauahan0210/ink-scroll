@@ -15,17 +15,17 @@ export function BundleGraphLine() {
         once
         strokeColor={['#ccc', '#ff6b9d']}
       >
-        <svg width="280" height="200" viewBox="0 0 280 200" fill="none">
-          <line x1="30" y1="10"  x2="30"  y2="175" stroke="#e0e0e0" strokeWidth="1" />
-          <line x1="30" y1="175" x2="270" y2="175" stroke="#e0e0e0" strokeWidth="1" />
+        <svg width="280" height="200" viewBox="0 0 280 200" fill="none" className="text-[#d0d0d0] dark:text-[#444]">
+          <line x1="30" y1="10"  x2="30"  y2="175" stroke="currentColor" strokeWidth="1" />
+          <line x1="30" y1="175" x2="270" y2="175" stroke="currentColor" strokeWidth="1" />
           <path
             d="M 30 20 C 80 22 110 24 140 28 C 165 32 180 150 210 168 C 235 172 255 173 270 173"
-            stroke="#ccc" strokeWidth="3" strokeLinecap="round"
+            stroke="currentColor" strokeWidth="3" strokeLinecap="round"
           />
-          <circle cx="30"  cy="20"  r="4" stroke="#bbb"    strokeWidth="2" fill="none" />
-          <circle cx="270" cy="173" r="4" stroke="#ff6b9d" strokeWidth="2" fill="none" />
-          <line x1="24" y1="20"  x2="18" y2="20"  stroke="#ddd" strokeWidth="1" />
-          <line x1="24" y1="173" x2="18" y2="173" stroke="#ddd" strokeWidth="1" />
+          <circle cx="30"  cy="20"  r="4" stroke="currentColor" strokeWidth="2" fill="none" />
+          <circle cx="270" cy="173" r="4" stroke="#ff6b9d"       strokeWidth="2" fill="none" />
+          <line x1="24" y1="20"  x2="18" y2="20"  stroke="currentColor" strokeWidth="1" />
+          <line x1="24" y1="173" x2="18" y2="173" stroke="currentColor" strokeWidth="1" />
         </svg>
       </ScrollDraw>
     </div>

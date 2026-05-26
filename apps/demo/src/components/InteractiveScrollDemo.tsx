@@ -220,8 +220,8 @@ export function InteractiveScrollDemo({
   const handleReplay       = ()              => { onReplay?.(); play(easing, speed); };
 
   const bgClass = svgBg === 'white'
-    ? 'bg-light-linen border-pitch-black'
-    : 'bg-marketplace-gray border-pitch-black';
+    ? 'bg-[#ffffff] border-pitch-black'
+    : 'bg-[#f4f4f0] border-pitch-black';
 
   return (
     <div className={className}>

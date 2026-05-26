@@ -296,10 +296,19 @@ export function SvgPlayground() {
     const encoded = encodeState({ ...ps, svg: rawSvg });
     const url = `${window.location.origin}${window.location.pathname}#p=${encoded}`;
     window.history.replaceState(null, '', `#p=${encoded}`);
-    navigator.clipboard.writeText(url).then(() => {
-      setShareMsg('Link copied!');
-      setTimeout(() => setShareMsg(''), 2500);
-    });
+    const copy = navigator.clipboard?.writeText(url);
+    if (copy) {
+      copy.then(() => {
+        setShareMsg('Link copied!');
+        setTimeout(() => setShareMsg(''), 2500);
+      }).catch(() => {
+        setShareMsg('URL updated ↑');
+        setTimeout(() => setShareMsg(''), 3000);
+      });
+    } else {
+      setShareMsg('URL updated ↑');
+      setTimeout(() => setShareMsg(''), 3000);
+    }
   }
 
   function loadExample(idx: number) {

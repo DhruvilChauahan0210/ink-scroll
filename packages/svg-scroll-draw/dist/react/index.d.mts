@@ -1,5 +1,5 @@
 import * as react_jsx_runtime from 'react/jsx-runtime';
-import React from 'react';
+import React, { RefObject } from 'react';
 
 type EasingName = 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | 'spring';
 interface TriggerConfig {
@@ -28,6 +28,14 @@ interface ScrollDrawOptions {
     strokeColor?: string | [string, string];
     /** Animate stroke width. Single number = static override. Tuple = interpolate from → to. */
     strokeWidth?: number | [number, number];
+    /** Animate fill opacity. Single number = static override. Tuple [from, to] = interpolate as the path draws. Use [0, 1] to flood fill in sync with the stroke draw. */
+    fillOpacity?: number | [number, number];
+    /**
+     * Reveal the container using CSS clip-path instead of stroke-dashoffset.
+     * Works on any content — SVG, images, text, divs.
+     * `true` defaults to `'left'`. Values: `'left' | 'right' | 'top' | 'bottom' | 'center'`.
+     */
+    clip?: boolean | 'left' | 'right' | 'top' | 'bottom' | 'center';
     /** Fire callbacks at specific progress thresholds (0–1). Resets on replay(). */
     waypoints?: Record<number, () => void>;
     /** Scale animation speed by scroll velocity — faster scrolling = faster draw. Pass a number to control sensitivity (default 1). */
@@ -47,6 +55,32 @@ interface ScrollDrawOptions {
     onComplete?: () => void;
 }
 
+interface UseScrollDrawProgressOptions {
+    /** Same speed multiplier as ScrollDraw. Values > 1 complete faster. Default 1. */
+    speed?: number;
+    /** Same easing curves as ScrollDraw. Default 'linear'. */
+    easing?: EasingName | ((t: number) => number);
+    /** Same trigger syntax as ScrollDraw. Default: start 'top bottom', end 'bottom top'. */
+    trigger?: TriggerConfig;
+    /** Scroll axis. Default 'y'. */
+    axis?: 'x' | 'y';
+    /** CSS selector or Element for a custom scroll container. Default: window. */
+    scrollContainer?: string | Element;
+    /** Lock at maximum progress once reached — never decreases on scroll back. Default false. */
+    once?: boolean;
+}
+/**
+ * Returns a reactive scroll progress value (0–1) for the given element.
+ * Identical trigger/speed/easing semantics to ScrollDraw — use this to
+ * drive any animation alongside or independent of an SVG draw.
+ *
+ * @example
+ * const ref = useRef<HTMLDivElement>(null);
+ * const progress = useScrollDrawProgress(ref, { speed: 1.2, easing: 'ease-out' });
+ * // progress is 0→1 as ref scrolls through the viewport
+ */
+declare function useScrollDrawProgress(target: RefObject<Element | null> | string, options?: UseScrollDrawProgressOptions): number;
+
 type ScrollDrawProps = ScrollDrawOptions & {
     children: React.ReactNode;
     className?: string;
@@ -54,4 +88,4 @@ type ScrollDrawProps = ScrollDrawOptions & {
 };
 declare function ScrollDraw({ children, className, style, ...options }: ScrollDrawProps): react_jsx_runtime.JSX.Element;
 
-export { ScrollDraw };
+export { ScrollDraw, type UseScrollDrawProgressOptions, useScrollDrawProgress };

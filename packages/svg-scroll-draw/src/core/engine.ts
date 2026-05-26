@@ -66,6 +66,7 @@ export function createEngine(
     delay          = 0,
     strokeColor,
     strokeWidth,
+    fillOpacity,
     waypoints,
     velocityScale  = false,
     threshold      = 0,
@@ -73,10 +74,14 @@ export function createEngine(
     repeat         = 0,
     repeatDelay    = 0,
     morphTo,
+    clip,
     onProgress,
     onStart,
     onComplete,
   } = options;
+
+  const clipDirection: 'left' | 'right' | 'top' | 'bottom' | 'center' | false =
+    clip === true ? 'left' : (typeof clip === 'string' ? clip : false);
 
   const easeFn      = typeof easing === 'function' ? easing : (EASINGS[easing] ?? EASINGS.linear);
   const startConfig = parseTrigger(trigger.start ?? 'top bottom');
@@ -87,12 +92,30 @@ export function createEngine(
       ? document.querySelector(scrollContainer)
       : (scrollContainer ?? null);
 
-  const colorFrom = Array.isArray(strokeColor) ? strokeColor[0] : null;
-  const colorTo   = Array.isArray(strokeColor) ? strokeColor[1] : (typeof strokeColor === 'string' ? strokeColor : null);
-  const widthFrom = Array.isArray(strokeWidth) ? strokeWidth[0] : null;
-  const widthTo   = Array.isArray(strokeWidth) ? strokeWidth[1] : (typeof strokeWidth === 'number' ? strokeWidth : null);
+  const colorFrom        = Array.isArray(strokeColor)  ? strokeColor[0]  : null;
+  const colorTo          = Array.isArray(strokeColor)  ? strokeColor[1]  : (typeof strokeColor  === 'string' ? strokeColor  : null);
+  const widthFrom        = Array.isArray(strokeWidth)  ? strokeWidth[0]  : null;
+  const widthTo          = Array.isArray(strokeWidth)  ? strokeWidth[1]  : (typeof strokeWidth  === 'number' ? strokeWidth  : null);
+  const fillOpacityFrom  = Array.isArray(fillOpacity)  ? fillOpacity[0]  : null;
+  const fillOpacityTo    = Array.isArray(fillOpacity)  ? fillOpacity[1]  : (typeof fillOpacity  === 'number' ? fillOpacity  : null);
 
-  const paths:      SVGElement[] = Array.from(container.querySelectorAll<SVGElement>(selector));
+  // ── Clip-path helpers ────────────────────────────────────────────────────
+
+  function computeClipPath(alpha: number): string {
+    const p = alpha * 100;
+    switch (clipDirection) {
+      case 'right':  return `inset(0 0 0 ${100 - p}%)`;
+      case 'top':    return `inset(0 0 ${100 - p}% 0)`;
+      case 'bottom': return `inset(${100 - p}% 0 0 0)`;
+      case 'center': return `circle(${alpha * 150}% at 50% 50%)`;
+      default:       return `inset(0 ${100 - p}% 0 0)`;  // 'left'
+    }
+  }
+
+  // In clip mode skip SVG path queries — nothing to stroke-animate
+  const paths: SVGElement[] = clipDirection
+    ? []
+    : Array.from(container.querySelectorAll<SVGElement>(selector));
   const lengths:    number[]     = [];
   const originalDs: string[]     = [];
 
@@ -152,6 +175,11 @@ export function createEngine(
   // ── Apply alpha to all paths ──────────────────────────────────────────────
 
   function applyAlpha(alpha: number, dir: 'forward' | 'reverse'): void {
+    if (clipDirection) {
+      const a = dir === 'reverse' ? 1 - alpha : alpha;
+      (container as HTMLElement).style.clipPath = computeClipPath(a);
+      return;
+    }
     paths.forEach((el, i) => {
       el.style.strokeDashoffset =
         dir === 'reverse' ? `${lengths[i] * alpha}` : `${lengths[i] * (1 - alpha)}`;
@@ -166,6 +194,11 @@ export function createEngine(
       else if (widthTo !== null)
         el.style.strokeWidth = `${widthTo}`;
 
+      if (fillOpacityFrom !== null && fillOpacityTo !== null)
+        el.style.fillOpacity = `${fillOpacityFrom + (fillOpacityTo - fillOpacityFrom) * alpha}`;
+      else if (fillOpacityTo !== null)
+        el.style.fillOpacity = `${fillOpacityTo}`;
+
       if (morphTo && el.tagName.toLowerCase() === 'path' && originalDs[i]) {
         el.setAttribute('d', morphPath(originalDs[i], morphTo, alpha));
       }
@@ -173,6 +206,10 @@ export function createEngine(
   }
 
   function resetPaths(): void {
+    if (clipDirection) {
+      (container as HTMLElement).style.clipPath = computeClipPath(0);
+      return;
+    }
     paths.forEach((el, i) => {
       el.style.strokeDasharray  = `${lengths[i]}`;
       el.style.strokeDashoffset = direction === 'reverse' ? '0' : `${lengths[i]}`;
@@ -180,6 +217,7 @@ export function createEngine(
       else el.style.opacity = '';
       if (colorFrom) el.style.stroke = colorFrom;
       if (widthFrom !== null) el.style.strokeWidth = `${widthFrom}`;
+      if (fillOpacityFrom !== null) el.style.fillOpacity = `${fillOpacityFrom}`;
       if (morphTo && el.tagName.toLowerCase() === 'path' && originalDs[i])
         el.setAttribute('d', originalDs[i]);
     });
@@ -200,6 +238,7 @@ export function createEngine(
       if (fade) el.style.opacity = '1';
       if (colorTo) el.style.stroke = colorTo;
       if (widthTo !== null) el.style.strokeWidth = `${widthTo}`;
+      if (fillOpacityTo !== null) el.style.fillOpacity = `${fillOpacityTo}`;
       if (morphTo && el.tagName.toLowerCase() === 'path') el.setAttribute('d', morphTo);
     } else {
       el.style.strokeDasharray  = `${len}`;
@@ -208,10 +247,18 @@ export function createEngine(
       else el.style.opacity = '';
       if (colorFrom) el.style.stroke = colorFrom;
       if (widthFrom !== null) el.style.strokeWidth = `${widthFrom}`;
+      if (fillOpacityFrom !== null) el.style.fillOpacity = `${fillOpacityFrom}`;
     }
   });
 
-  if (prefersReduced) {
+  if (clipDirection) {
+    if (prefersReduced) {
+      (container as HTMLElement).style.clipPath = computeClipPath(1);
+      onComplete?.();
+      return { destroy: () => {}, replay: () => {}, pause: () => {}, resume: () => {}, seek: () => {}, getProgress: () => 1 };
+    }
+    (container as HTMLElement).style.clipPath = computeClipPath(0);
+  } else if (prefersReduced) {
     onComplete?.();
     return { destroy: () => {}, replay: () => {}, pause: () => {}, resume: () => {}, seek: () => {}, getProgress: () => 1 };
   }
@@ -245,6 +292,40 @@ export function createEngine(
     const range = tEnd - tStart;
     let allComplete = true;
 
+    // ── Clip mode: animate clipPath on container, skip per-path logic ─────────
+    if (clipDirection) {
+      let alpha = easeFn(computeProgress(currentScroll, tStart, tEnd, effectiveSpeed));
+      if (once && !autoReverse) {
+        frozenAlpha = Math.max(frozenAlpha, alpha);
+        alpha = frozenAlpha;
+      }
+      currentAlpha = alpha;
+      const visual = effectiveDir === 'reverse' ? 1 - alpha : alpha;
+      (container as HTMLElement).style.clipPath = computeClipPath(visual);
+      onProgress?.(alpha);
+      if (!started && computeProgress(currentScroll, tStart, tEnd, effectiveSpeed) > 0) {
+        started = true;
+        onStart?.();
+      }
+      if (alpha >= 1 && !completed) {
+        completed = true;
+        onComplete?.();
+        const maxRepeats = repeat === 'infinite' ? Infinity : (repeat ?? 0);
+        if (repeatCount < maxRepeats) {
+          repeatCount++;
+          repeatTimer = setTimeout(() => {
+            frozenAlpha = -1; started = false; completed = false;
+            (container as HTMLElement).style.clipPath = computeClipPath(0);
+          }, repeatDelay);
+        }
+      } else if (alpha < 1 && !once) {
+        completed = false;
+      }
+      rafId = requestAnimationFrame(update);
+      return;
+    }
+    // ── End clip mode ─────────────────────────────────────────────────────────
+
     paths.forEach((el, i) => {
       const offset = i * stagger * range;
       let alpha = easeFn(computeProgress(currentScroll, tStart + offset, tEnd + offset, effectiveSpeed));
@@ -268,6 +349,11 @@ export function createEngine(
         el.style.strokeWidth = `${widthFrom + (widthTo - widthFrom) * alpha}`;
       else if (widthTo !== null)
         el.style.strokeWidth = `${widthTo}`;
+
+      if (fillOpacityFrom !== null && fillOpacityTo !== null)
+        el.style.fillOpacity = `${fillOpacityFrom + (fillOpacityTo - fillOpacityFrom) * alpha}`;
+      else if (fillOpacityTo !== null)
+        el.style.fillOpacity = `${fillOpacityTo}`;
 
       if (morphTo && el.tagName.toLowerCase() === 'path' && originalDs[i])
         el.setAttribute('d', morphPath(originalDs[i], morphTo, alpha));

@@ -27,6 +27,14 @@ export interface ScrollDrawOptions {
   strokeColor?: string | [string, string];
   /** Animate stroke width. Single number = static override. Tuple = interpolate from → to. */
   strokeWidth?: number | [number, number];
+  /** Animate fill opacity. Single number = static override. Tuple [from, to] = interpolate as the path draws. Use [0, 1] to flood fill in sync with the stroke draw. */
+  fillOpacity?: number | [number, number];
+  /**
+   * Reveal the container using CSS clip-path instead of stroke-dashoffset.
+   * Works on any content — SVG, images, text, divs.
+   * `true` defaults to `'left'`. Values: `'left' | 'right' | 'top' | 'bottom' | 'center'`.
+   */
+  clip?: boolean | 'left' | 'right' | 'top' | 'bottom' | 'center';
   /** Fire callbacks at specific progress thresholds (0–1). Resets on replay(). */
   waypoints?: Record<number, () => void>;
   /** Scale animation speed by scroll velocity — faster scrolling = faster draw. Pass a number to control sensitivity (default 1). */

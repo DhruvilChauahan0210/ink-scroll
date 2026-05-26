@@ -1,5 +1,8 @@
 import { OnCompleteDemo } from '@/components/OnCompleteDemo';
 import { WaypointsDemo } from '@/components/WaypointsDemo';
+import { ProgressHookDemo } from '@/components/ProgressHookDemo';
+import { FillOpacityDemo } from '@/components/FillOpacityDemo';
+import { ClipModeDemo } from '@/components/ClipModeDemo';
 import { ScrollShowcase } from '@/components/ScrollShowcase';
 import { BundleGraphLine, CtaBoldMark } from '@/components/BackgroundDecor';
 import { InteractiveScrollDemo } from '@/components/InteractiveScrollDemo';
@@ -24,7 +27,7 @@ const jsonLd = {
   downloadUrl: 'https://www.npmjs.com/package/svg-scroll-draw',
   codeRepository: 'https://github.com/DhruvilChauahan0210/ink-scroll',
   license: 'https://opensource.org/licenses/MIT',
-  softwareVersion: '0.6.0',
+  softwareVersion: '0.6.1',
   programmingLanguage: ['JavaScript', 'TypeScript'],
   author: {
     '@type': 'Person',
@@ -100,6 +103,9 @@ const MARQUEE_ITEMS = [
   'Pause · Resume · Seek',
   'Velocity Scale',
   'Repeat',
+  'useScrollDrawProgress',
+  'Fill Opacity',
+  'Clip Mode',
 ];
 
 /* ── Page ────────────────────────────────────────────────────────────────── */
@@ -118,6 +124,12 @@ export default function Home() {
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <a
+            href="/examples"
+            className="hidden sm:inline-flex text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium items-center gap-1"
+          >
+            Examples
+          </a>
+          <a
             href="/playground"
             className="hidden sm:inline-flex text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium items-center gap-1"
           >
@@ -128,7 +140,7 @@ export default function Home() {
             target="_blank" rel="noopener noreferrer"
             className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono"
           >
-            v0.6.0
+            v0.6.1
           </a>
           <a
             href={GH}
@@ -611,6 +623,115 @@ export default function Hero() {
         {/* 09 — waypoints */}
         <WaypointsDemo />
 
+        {/* 10 — morphTo */}
+        <section data-mascot="magic" className="relative border-b border-pitch-black overflow-hidden">
+          <span className="pointer-events-none select-none absolute -right-6 top-1/2 -translate-y-1/2 font-display font-extrabold text-[220px] leading-none text-pitch-black opacity-[0.04]">10</span>
+          <div className="max-w-6xl mx-auto px-6 md:px-12 py-24 grid md:grid-cols-2 gap-16 items-start">
+            <div>
+              <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-3 font-medium">Path Morphing</p>
+              <h2 className="font-display font-extrabold text-[clamp(28px,4vw,44px)] leading-[1] tracking-[-0.03em] mb-5">
+                Shape-shifts<br />as you scroll.
+              </h2>
+              <p className="text-graphite-border leading-relaxed mb-6 text-[15px]">
+                Pass a <Tag>morphTo</Tag> path string and the SVG shape interpolates
+                from its original <Tag>d</Tag> to the target as you scroll.
+                Both paths must have the same command count — perfect for logo reveals and icon transitions.
+              </p>
+              <CodeBlock filename="index.tsx">
+{`<ScrollDraw
+  morphTo="M 130 40 L 220 130 L 130 220 L 40 130 Z"
+  easing="ease-in-out"
+>
+  <svg>
+    <path d="M 130 40 C 220 40 220 220 130 220
+             C 40 220 40 40 130 40 Z" />
+  </svg>
+</ScrollDraw>`}
+              </CodeBlock>
+            </div>
+            <InteractiveScrollDemo
+              defaultEasing="ease-in-out"
+              defaultSpeed={0.9}
+              svgBg="white"
+            >
+              <svg width="260" height="260" viewBox="0 0 260 260" fill="none">
+                {/* Circle → diamond morph — shown via static preview; live via ScrollDraw on the page */}
+                <path
+                  d="M 130 40 C 196 40 220 84 220 130 C 220 176 196 220 130 220 C 64 220 40 176 40 130 C 40 84 64 40 130 40 Z"
+                  stroke="#000" strokeWidth="2.5" strokeLinecap="round" fill="none"
+                />
+                <path
+                  d="M 130 40 L 220 130 L 130 220 L 40 130 Z"
+                  stroke="#ff90e8" strokeWidth="1.5" strokeLinecap="round"
+                  strokeDasharray="6 4" fill="none" opacity="0.5"
+                />
+                <circle cx="130" cy="40"  r="4" fill="#ff90e8" />
+                <circle cx="220" cy="130" r="4" fill="#ff90e8" />
+                <circle cx="130" cy="220" r="4" fill="#ff90e8" />
+                <circle cx="40"  cy="130" r="4" fill="#ff90e8" />
+                <text x="130" y="136" textAnchor="middle" fontSize="10" fontFamily="monospace" fill="#999" opacity="0.6">morphs to →</text>
+              </svg>
+            </InteractiveScrollDemo>
+          </div>
+        </section>
+
+        {/* 11 — Group API */}
+        <section data-mascot="celebrate" className="relative border-b border-pitch-black bg-marketplace-gray overflow-hidden">
+          <span className="pointer-events-none select-none absolute -left-6 top-1/2 -translate-y-1/2 font-display font-extrabold text-[220px] leading-none text-pitch-black opacity-[0.04]">11</span>
+          <div className="max-w-6xl mx-auto px-6 md:px-12 py-24 grid md:grid-cols-2 gap-16 items-start">
+            <div className="order-2 md:order-1 flex flex-col gap-4">
+              {/* Three mini SVG containers side by side */}
+              {[
+                { stroke: '#ff90e8', d: 'M 20 60 C 40 10 80 10 100 60 S 160 110 180 60' },
+                { stroke: '#ffc900', d: 'M 20 60 L 60 20 L 100 60 L 140 20 L 180 60' },
+                { stroke: '#000',    d: 'M 20 40 C 60 10 120 110 180 40' },
+              ].map(({ stroke, d }, i) => (
+                <div key={i} className="flex-1 flex items-center justify-center rounded-2xl border border-pitch-black bg-[#ffffff] p-6 shadow-[2px_2px_0px_#000]">
+                  <svg width="180" height="80" viewBox="0 0 200 80" fill="none">
+                    <path d={d} stroke={stroke} strokeWidth="3" strokeLinecap="round" fill="none" />
+                  </svg>
+                </div>
+              ))}
+            </div>
+            <div className="order-1 md:order-2">
+              <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-3 font-medium">Group API</p>
+              <h2 className="font-display font-extrabold text-[clamp(28px,4vw,44px)] leading-[1] tracking-[-0.03em] mb-5">
+                Many SVGs,<br />one command.
+              </h2>
+              <p className="text-graphite-border leading-relaxed mb-6 text-[15px]">
+                Use <Tag>scrollDrawGroup</Tag> to animate multiple SVG containers simultaneously
+                with shared options. Or use <Tag>scrollDrawSequence</Tag> to chain them — each one
+                starts only after the previous finishes.
+              </p>
+              <CodeBlock filename="main.js">
+{`import { scrollDrawGroup, scrollDrawSequence }
+  from 'svg-scroll-draw/group';
+
+// Animate all three at once
+const group = scrollDrawGroup(
+  ['#chart-1', '#chart-2', '#chart-3'],
+  { easing: 'ease-out', stagger: 0.1 }
+);
+
+// Or chain them in sequence
+const seq = scrollDrawSequence(
+  ['#step-1', '#step-2', '#step-3'],
+  { easing: 'spring' }
+);`}
+              </CodeBlock>
+            </div>
+          </div>
+        </section>
+
+        {/* 12 — useScrollDrawProgress hook */}
+        <ProgressHookDemo />
+
+        {/* 13 — fillOpacity */}
+        <FillOpacityDemo />
+
+        {/* 14 — clip mode */}
+        <ClipModeDemo />
+
       </div>
 
       {/* ── API Reference ─────────────────────────────────────────────── */}
@@ -640,6 +761,8 @@ export default function Hero() {
               { prop: 'delay', type: 'number', def: '0', desc: 'Milliseconds to wait before the engine starts observing — useful for page-load sequences.' },
               { prop: 'strokeColor', type: 'string | [string,string]', def: '—', desc: 'Static color override or [from, to] tuple to animate stroke color as the path draws.' },
               { prop: 'strokeWidth', type: 'number | [number,number]', def: '—', desc: 'Static width override or [from, to] tuple to animate stroke width as the path draws.' },
+              { prop: 'fillOpacity', type: 'number | [number,number]', def: '—', desc: 'Static fill-opacity override or [from, to] tuple to animate fill opacity in sync with the stroke draw. Use [0, 1] to flood fill as the outline traces itself.' },
+              { prop: 'clip', type: 'boolean | string', def: 'false', desc: "Reveal using CSS clip-path instead of stroke-dashoffset. Works on any HTML/SVG content. Values: 'left' (default), 'right', 'top', 'bottom', 'center' (radial). All easing/speed/trigger options apply." },
               { prop: 'waypoints', type: 'Record<number, fn>', def: '—', desc: 'Fire callbacks at specific progress thresholds (0–1). e.g. { 0.5: () => doSomething() }. Resets on replay().' },
               { prop: 'trigger.start', type: 'string', def: '"top bottom"', desc: 'When animation begins. Accepts anchor strings ("top bottom") or viewport percentages ("20%").' },
               { prop: 'trigger.end', type: 'string', def: '"bottom top"', desc: 'When animation ends. Accepts anchor strings or viewport percentages.' },
@@ -652,6 +775,7 @@ export default function Hero() {
               { prop: 'onStart', type: '() => void', def: '—', desc: 'Fires once on the first frame the animation begins drawing.' },
               { prop: 'onProgress', type: '(n: number) => void', def: '—', desc: 'Called every animation frame with current draw alpha (0–1).' },
               { prop: 'onComplete', type: '() => void', def: '—', desc: 'Fires once when all paths reach 100% draw progress.' },
+              { prop: 'useScrollDrawProgress', type: 'hook', def: '—', desc: 'React hook — returns scroll progress (0–1) for any element. Same trigger/speed/easing options as ScrollDraw. No SVG required.' },
             ].map(({ prop, type, def, desc }, i) => (
               <div
                 key={prop}
@@ -724,6 +848,12 @@ export default function Hero() {
 
           <div className="flex items-center gap-3">
             <a
+              href="/examples"
+              className="text-[12px] font-medium px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors"
+            >
+              Examples
+            </a>
+            <a
               href={GH}
               target="_blank" rel="noopener noreferrer"
               className="text-[12px] font-medium px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors flex items-center gap-1.5"
@@ -743,7 +873,7 @@ export default function Hero() {
               </svg>
               npm
             </a>
-            <span className="text-[11px] font-mono text-graphite-border">v0.6.0</span>
+            <span className="text-[11px] font-mono text-graphite-border">v0.6.1</span>
           </div>
         </div>
 

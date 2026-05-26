@@ -1,12 +1,13 @@
 # svg-scroll-draw
 
+[![CI](https://github.com/DhruvilChauahan0210/ink-scroll/actions/workflows/ci.yml/badge.svg)](https://github.com/DhruvilChauahan0210/ink-scroll/actions/workflows/ci.yml)
 [![npm](https://img.shields.io/npm/v/svg-scroll-draw)](https://www.npmjs.com/package/svg-scroll-draw)
 [![downloads](https://img.shields.io/npm/dw/svg-scroll-draw)](https://www.npmjs.com/package/svg-scroll-draw)
 [![bundle size](https://img.shields.io/bundlephobia/minzip/svg-scroll-draw)](https://bundlephobia.com/package/svg-scroll-draw)
 [![license](https://img.shields.io/npm/l/svg-scroll-draw)](./LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/DhruvilChauahan0210/ink-scroll?style=flat)](https://github.com/DhruvilChauahan0210/ink-scroll/stargazers)
 
-> Scroll-driven SVG path animation. Zero dependencies. Under 3KB gzipped.
+> Scroll-driven SVG path animation. Zero dependencies. ~3 KB gzipped.
 
 **[Live Demo](https://ink-scroll.vercel.app)** · [npm](https://www.npmjs.com/package/svg-scroll-draw) · [Report a bug](https://github.com/DhruvilChauahan0210/ink-scroll/issues)
 
@@ -58,7 +59,7 @@ const instance = scrollDraw('#my-svg-container', {
 instance.destroy();
 ```
 
-**[Try it on StackBlitz →](https://stackblitz.com/edit/svg-scroll-draw-vanilla)**
+**[Try the Playground →](https://svg-scroll-draw.vercel.app/playground)**
 
 ### React / Next.js
 
@@ -78,7 +79,7 @@ export default function Hero() {
 
 > **Next.js App Router:** add `'use client'` to any component that uses `ScrollDraw`.
 
-**[Try it on StackBlitz →](https://stackblitz.com/edit/svg-scroll-draw-react)**
+**[Try the Playground →](https://svg-scroll-draw.vercel.app/playground)**
 
 ### Vue 3
 
@@ -102,7 +103,7 @@ import { useScrollDraw } from 'svg-scroll-draw/vue';
 const containerRef = useScrollDraw({ easing: 'ease-out', speed: 1.2 });
 ```
 
-**[Try it on StackBlitz →](https://stackblitz.com/edit/svg-scroll-draw-vue)**
+**[Try the Playground →](https://svg-scroll-draw.vercel.app/playground)**
 
 ### CDN / Web Component
 

@@ -20,7 +20,8 @@ export default defineConfig([
   base({ 'angular/index': 'src/angular/index.ts'   }),
   base({ 'astro/index':   'src/astro/index.ts'     }),
   base({ 'nuxt/index':    'src/nuxt/index.ts'      }, ['vue']),
-  base({ 'group/index':   'src/group/index.ts'     }),
+  base({ 'group/index':        'src/group/index.ts'          }),
+  base({ 'web-component/index': 'src/web-component/index.ts' }),
   {
     entry: { 'svg-scroll-draw': 'src/cdn.ts' },
     format: ['iife'],
