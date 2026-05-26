@@ -1,10 +1,8 @@
 import { OnCompleteDemo } from '@/components/OnCompleteDemo';
 import { WaypointsDemo } from '@/components/WaypointsDemo';
-import {
-  HeroWaveIllustration,
-  BundleGraphLine,
-  CtaBoldMark,
-} from '@/components/BackgroundDecor';
+import { HeroIllustration } from '@/components/HeroIllustration';
+import { ScrollShowcase } from '@/components/ScrollShowcase';
+import { BundleGraphLine, CtaBoldMark } from '@/components/BackgroundDecor';
 import { InteractiveScrollDemo } from '@/components/InteractiveScrollDemo';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { LiveStats } from '@/components/LiveStats';
@@ -146,6 +144,11 @@ export default function Home() {
       {/* ── Hero ──────────────────────────────────────────────────────── */}
       <section data-mascot-reset className="relative min-h-screen flex flex-col items-center justify-center px-6 text-center border-b border-pitch-black dot-grid overflow-hidden">
 
+        {/* Hero illustration — cosmos scene, draws on page load */}
+        <div className="hidden lg:block absolute right-8 xl:right-16 top-1/2 -translate-y-1/2 pointer-events-none z-[1] opacity-90">
+          <HeroIllustration />
+        </div>
+
         {/* Geometric decoration — thin concentric circles */}
         <div className="pointer-events-none absolute -top-48 -right-48 w-[700px] h-[700px] rounded-full border border-subtle-ash" />
         <div className="pointer-events-none absolute -top-24 -right-24 w-[450px] h-[450px] rounded-full border border-subtle-ash opacity-60" />
@@ -209,9 +212,10 @@ export default function Home() {
           <div className="w-px h-8 bg-gradient-to-b from-subtle-ash to-transparent" />
         </div>
 
-        {/* Wave illustration — uses svg-scroll-draw on itself */}
-        <HeroWaveIllustration />
       </section>
+
+      {/* ── Scroll showcase ───────────────────────────────────────────── */}
+      <ScrollShowcase />
 
       {/* ── Marquee ───────────────────────────────────────────────────── */}
       <div className="bg-creator-pink border-b border-pitch-black py-3 overflow-hidden select-none">
