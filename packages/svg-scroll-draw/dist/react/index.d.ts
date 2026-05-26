@@ -22,7 +22,7 @@ interface ScrollDrawOptions {
     scrollContainer?: string | Element;
     /** Automatically reverse the animation when the user scrolls back up. */
     autoReverse?: boolean;
-    /** Delay in milliseconds before the engine starts observing (useful for page-load sequences). */
+    /** Delay in milliseconds before the engine starts observing. */
     delay?: number;
     /** Animate stroke color. Single string = static override. Tuple = interpolate from → to. */
     strokeColor?: string | [string, string];
@@ -30,6 +30,18 @@ interface ScrollDrawOptions {
     strokeWidth?: number | [number, number];
     /** Fire callbacks at specific progress thresholds (0–1). Resets on replay(). */
     waypoints?: Record<number, () => void>;
+    /** Scale animation speed by scroll velocity — faster scrolling = faster draw. Pass a number to control sensitivity (default 1). */
+    velocityScale?: boolean | number;
+    /** IntersectionObserver threshold (0–1). Default 0. */
+    threshold?: number;
+    /** IntersectionObserver rootMargin. Default "0px". */
+    rootMargin?: string;
+    /** Repeat the animation N times after completion. Use 'infinite' to loop forever. */
+    repeat?: number | 'infinite';
+    /** Milliseconds to wait between repeats. Default 0. */
+    repeatDelay?: number;
+    /** Target path `d` attribute to morph toward as the animation progresses. Paths must have compatible structures. */
+    morphTo?: string;
     onProgress?: (alpha: number) => void;
     onStart?: () => void;
     onComplete?: () => void;

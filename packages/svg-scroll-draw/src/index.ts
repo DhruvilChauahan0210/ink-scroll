@@ -5,7 +5,7 @@ export function scrollDraw(
   target: string | Element,
   options?: ScrollDrawOptions
 ): ScrollDrawInstance {
-  const noop: ScrollDrawInstance = { destroy: () => {}, replay: () => {} };
+  const noop: ScrollDrawInstance = { destroy: () => {}, replay: () => {}, pause: () => {}, resume: () => {}, seek: () => {}, getProgress: () => 0 };
   if (typeof window === 'undefined') return noop;
 
   const container =

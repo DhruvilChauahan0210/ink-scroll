@@ -1,6 +1,6 @@
 {
   "name": "svg-scroll-draw",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Scroll-driven SVG path drawing animation library — zero dependencies, under 3KB gzipped, works with React, Vue, and vanilla JS",
   "keywords": [
     "svg",
@@ -29,7 +29,13 @@
     "angular",
     "horizontal-scroll",
     "color-animation",
-    "waypoints"
+    "waypoints",
+    "astro",
+    "nuxt",
+    "path-morphing",
+    "svg-morph",
+    "sequence",
+    "group"
   ],
   "homepage": "https://ink-scroll.vercel.app",
   "repository": {
@@ -83,6 +89,21 @@
       "types": "./dist/angular/index.d.ts",
       "import": "./dist/angular/index.mjs",
       "require": "./dist/angular/index.cjs"
+    },
+    "./astro": {
+      "types": "./dist/astro/index.d.ts",
+      "import": "./dist/astro/index.mjs",
+      "require": "./dist/astro/index.cjs"
+    },
+    "./nuxt": {
+      "types": "./dist/nuxt/index.d.ts",
+      "import": "./dist/nuxt/index.mjs",
+      "require": "./dist/nuxt/index.cjs"
+    },
+    "./group": {
+      "types": "./dist/group/index.d.ts",
+      "import": "./dist/group/index.mjs",
+      "require": "./dist/group/index.cjs"
     }
   },
   "scripts": {

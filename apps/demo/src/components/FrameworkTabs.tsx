@@ -97,6 +97,38 @@ export class HeroComponent implements AfterViewInit, OnDestroy {
 }`,
   },
   {
+    id: 'astro',
+    label: 'Astro',
+    filename: 'Hero.astro',
+    code: `---
+// No server-side imports needed
+---
+<div data-scroll-draw data-scroll-draw-options='{"easing":"ease-out","fade":true}'>
+  <svg>...</svg>
+</div>
+
+<script>
+  import { initScrollDraw } from 'svg-scroll-draw/astro';
+  initScrollDraw();
+</script>`,
+  },
+  {
+    id: 'nuxt',
+    label: 'Nuxt',
+    filename: 'Hero.vue',
+    code: `<script setup>
+import { useScrollDraw } from 'svg-scroll-draw/nuxt';
+
+const ref = useScrollDraw({ easing: 'ease-out', speed: 1.2 });
+</script>
+
+<template>
+  <div :ref="ref">
+    <svg>...</svg>
+  </div>
+</template>`,
+  },
+  {
     id: 'vanilla',
     label: 'Vanilla JS',
     filename: 'main.js',

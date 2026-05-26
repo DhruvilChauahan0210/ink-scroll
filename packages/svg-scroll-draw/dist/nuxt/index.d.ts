@@ -1,4 +1,5 @@
 import * as vue from 'vue';
+import { App } from 'vue';
 
 type EasingName = 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | 'spring';
 interface TriggerConfig {
@@ -131,4 +132,35 @@ declare const ScrollDraw: vue.DefineComponent<vue.ExtractPropTypes<{
     debug: boolean;
 }, {}, {}, {}, string, vue.ComponentProvideOptions, true, {}, any>;
 
-export { ScrollDraw, type ScrollDrawOptions, useScrollDraw };
+/**
+ * Nuxt 3 integration for svg-scroll-draw.
+ *
+ * Re-exports the Vue composable and component for direct use, plus a
+ * plugin factory for global auto-registration.
+ *
+ * ## Option A — Import per component (recommended)
+ * ```ts
+ * import { useScrollDraw, ScrollDraw } from 'svg-scroll-draw/nuxt';
+ * ```
+ *
+ * ## Option B — Global auto-registration via Nuxt plugin
+ * Create `plugins/svg-scroll-draw.ts` in your Nuxt project:
+ * ```ts
+ * import { createScrollDrawPlugin } from 'svg-scroll-draw/nuxt';
+ * export default defineNuxtPlugin((nuxtApp) => {
+ *   nuxtApp.vueApp.use(createScrollDrawPlugin());
+ * });
+ * ```
+ *
+ * Then use <ScrollDraw> globally with no imports.
+ */
+
+/**
+ * Vue plugin that globally registers the <ScrollDraw> component.
+ * Pass to nuxtApp.vueApp.use() inside a Nuxt plugin.
+ */
+declare function createScrollDrawPlugin(): {
+    install(app: App): void;
+};
+
+export { ScrollDraw, type ScrollDrawOptions, createScrollDrawPlugin, useScrollDraw };

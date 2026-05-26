@@ -29,11 +29,24 @@ function createDebugOverlay(tStart: number, tEnd: number, axis: 'x' | 'y'): HTML
   return overlay;
 }
 
+// ── Path morphing helper ──────────────────────────────────────────────────────
+function morphPath(from: string, to: string, t: number): string {
+  const toNums = (to.match(/[-+]?(?:\d*\.)?\d+(?:[eE][-+]?\d+)?/g) ?? []).map(Number);
+  let idx = 0;
+  return from.replace(/[-+]?(?:\d*\.)?\d+(?:[eE][-+]?\d+)?/g, (match) => {
+    const f = parseFloat(match);
+    const target = toNums[idx++] ?? f;
+    return String(+(f + (target - f) * t).toFixed(4));
+  });
+}
+
 export function createEngine(
   container: Element,
   options: ScrollDrawOptions = {}
 ): ScrollDrawInstance {
-  if (typeof window === 'undefined') return { destroy: () => {}, replay: () => {} };
+  if (typeof window === 'undefined') {
+    return { destroy: () => {}, replay: () => {}, pause: () => {}, resume: () => {}, seek: () => {}, getProgress: () => 0 };
+  }
 
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -54,6 +67,12 @@ export function createEngine(
     strokeColor,
     strokeWidth,
     waypoints,
+    velocityScale  = false,
+    threshold      = 0,
+    rootMargin     = '0px',
+    repeat         = 0,
+    repeatDelay    = 0,
+    morphTo,
     onProgress,
     onStart,
     onComplete,
@@ -63,33 +82,40 @@ export function createEngine(
   const startConfig = parseTrigger(trigger.start ?? 'top bottom');
   const endConfig   = parseTrigger(trigger.end   ?? 'bottom top');
 
-  // ── Resolve custom scroll container ─────────────────────────────────────────
   const scrollEl: Element | null =
     typeof scrollContainer === 'string'
       ? document.querySelector(scrollContainer)
       : (scrollContainer ?? null);
 
-  // ── Stroke color / width ranges ──────────────────────────────────────────────
   const colorFrom = Array.isArray(strokeColor) ? strokeColor[0] : null;
   const colorTo   = Array.isArray(strokeColor) ? strokeColor[1] : (typeof strokeColor === 'string' ? strokeColor : null);
   const widthFrom = Array.isArray(strokeWidth) ? strokeWidth[0] : null;
   const widthTo   = Array.isArray(strokeWidth) ? strokeWidth[1] : (typeof strokeWidth === 'number' ? strokeWidth : null);
 
-  const paths:   SVGElement[] = Array.from(container.querySelectorAll<SVGElement>(selector));
-  const lengths: number[]     = [];
+  const paths:      SVGElement[] = Array.from(container.querySelectorAll<SVGElement>(selector));
+  const lengths:    number[]     = [];
+  const originalDs: string[]     = [];
 
-  let tStart       = 0;
-  let tEnd         = 0;
-  let completed    = false;
-  let started      = false;
-  let rafId        = 0;
-  let isVisible    = false;
-  let frozenAlpha  = -1;
-  let prevScroll   = -1;
+  let tStart        = 0;
+  let tEnd          = 0;
+  let completed     = false;
+  let started       = false;
+  let rafId         = 0;
+  let isVisible     = false;
+  let frozenAlpha   = -1;
+  let prevScroll    = -1;
+  let paused        = false;
+  let currentAlpha  = 0;
+  let repeatCount   = 0;
+  let repeatTimer: ReturnType<typeof setTimeout> | undefined;
   let debugOverlay: HTMLElement | null = null;
   const firedWaypoints = new Set<number>();
 
-  // ── Axis / container helpers ─────────────────────────────────────────────────
+  // velocity tracking
+  let prevVelScroll = -1;
+  let prevVelTime   = performance.now();
+
+  // ── Axis / container helpers ──────────────────────────────────────────────
 
   function scrollPos(): number {
     if (scrollEl) return axis === 'x' ? scrollEl.scrollLeft : scrollEl.scrollTop;
@@ -104,7 +130,6 @@ export function createEngine(
   function cacheTriggers(): void {
     const rect = container.getBoundingClientRect();
     let pos: number, size: number, scroll: number;
-
     if (scrollEl) {
       const cr = scrollEl.getBoundingClientRect();
       pos    = axis === 'x' ? rect.left - cr.left + scrollEl.scrollLeft : rect.top - cr.top + scrollEl.scrollTop;
@@ -115,18 +140,37 @@ export function createEngine(
       size   = axis === 'x' ? rect.width : rect.height;
       scroll = scrollPos();
     }
-
     const result = computeTriggers({ top: pos, height: size }, scroll, vpSize(), startConfig, endConfig);
     tStart = result.tStart;
     tEnd   = result.tEnd;
-
     if (debug && process.env.NODE_ENV !== 'production') {
       debugOverlay?.remove();
       debugOverlay = createDebugOverlay(tStart, tEnd, axis);
     }
   }
 
-  // ── Initialise paths ─────────────────────────────────────────────────────────
+  // ── Apply alpha to all paths ──────────────────────────────────────────────
+
+  function applyAlpha(alpha: number, dir: 'forward' | 'reverse'): void {
+    paths.forEach((el, i) => {
+      el.style.strokeDashoffset =
+        dir === 'reverse' ? `${lengths[i] * alpha}` : `${lengths[i] * (1 - alpha)}`;
+
+      if (fade) el.style.opacity = dir === 'reverse' ? `${1 - alpha}` : `${alpha}`;
+
+      if (colorFrom && colorTo) el.style.stroke = lerpColor(colorFrom, colorTo, alpha);
+      else if (colorTo) el.style.stroke = colorTo;
+
+      if (widthFrom !== null && widthTo !== null)
+        el.style.strokeWidth = `${widthFrom + (widthTo - widthFrom) * alpha}`;
+      else if (widthTo !== null)
+        el.style.strokeWidth = `${widthTo}`;
+
+      if (morphTo && el.tagName.toLowerCase() === 'path' && originalDs[i]) {
+        el.setAttribute('d', morphPath(originalDs[i], morphTo, alpha));
+      }
+    });
+  }
 
   function resetPaths(): void {
     paths.forEach((el, i) => {
@@ -136,13 +180,19 @@ export function createEngine(
       else el.style.opacity = '';
       if (colorFrom) el.style.stroke = colorFrom;
       if (widthFrom !== null) el.style.strokeWidth = `${widthFrom}`;
+      if (morphTo && el.tagName.toLowerCase() === 'path' && originalDs[i])
+        el.setAttribute('d', originalDs[i]);
     });
   }
+
+  // ── Init paths ────────────────────────────────────────────────────────────
 
   paths.forEach((el) => {
     checkElement(el);
     const len = getElementLength(el);
     lengths.push(len);
+    if (el.tagName.toLowerCase() === 'path') originalDs.push(el.getAttribute('d') ?? '');
+    else originalDs.push('');
 
     if (prefersReduced) {
       el.style.strokeDasharray  = `${len}`;
@@ -150,6 +200,7 @@ export function createEngine(
       if (fade) el.style.opacity = '1';
       if (colorTo) el.style.stroke = colorTo;
       if (widthTo !== null) el.style.strokeWidth = `${widthTo}`;
+      if (morphTo && el.tagName.toLowerCase() === 'path') el.setAttribute('d', morphTo);
     } else {
       el.style.strokeDasharray  = `${len}`;
       el.style.strokeDashoffset = direction === 'reverse' ? '0' : `${len}`;
@@ -162,18 +213,31 @@ export function createEngine(
 
   if (prefersReduced) {
     onComplete?.();
-    return { destroy: () => {}, replay: () => {} };
+    return { destroy: () => {}, replay: () => {}, pause: () => {}, resume: () => {}, seek: () => {}, getProgress: () => 1 };
   }
 
   cacheTriggers();
 
-  // ── rAF update loop ──────────────────────────────────────────────────────────
+  // ── rAF update loop ───────────────────────────────────────────────────────
 
   function update(): void {
-    if (!isVisible) return;
+    if (!isVisible || paused) return;
 
+    const now           = performance.now();
     const currentScroll = scrollPos();
-    const effectiveDir  = autoReverse
+
+    // Velocity scaling
+    let effectiveSpeed = speed;
+    if (velocityScale !== false) {
+      const dt  = now - prevVelTime;
+      const vel = dt > 0 ? Math.abs(currentScroll - (prevVelScroll < 0 ? currentScroll : prevVelScroll)) / dt : 0;
+      const sensitivity = typeof velocityScale === 'number' ? velocityScale : 1;
+      effectiveSpeed = speed * Math.max(0.2, 1 + vel * sensitivity * 0.04);
+    }
+    prevVelScroll = currentScroll;
+    prevVelTime   = now;
+
+    const effectiveDir = autoReverse
       ? (prevScroll === -1 || currentScroll >= prevScroll ? 'forward' : 'reverse')
       : direction;
     prevScroll = currentScroll;
@@ -183,30 +247,30 @@ export function createEngine(
 
     paths.forEach((el, i) => {
       const offset = i * stagger * range;
-      let alpha = easeFn(computeProgress(currentScroll, tStart + offset, tEnd + offset, speed));
+      let alpha = easeFn(computeProgress(currentScroll, tStart + offset, tEnd + offset, effectiveSpeed));
 
       if (once && !autoReverse) {
         frozenAlpha = Math.max(frozenAlpha, alpha);
         alpha = frozenAlpha;
       }
 
+      currentAlpha = alpha;
+
       el.style.strokeDashoffset =
-        effectiveDir === 'reverse'
-          ? `${lengths[i] * alpha}`
-          : `${lengths[i] * (1 - alpha)}`;
+        effectiveDir === 'reverse' ? `${lengths[i] * alpha}` : `${lengths[i] * (1 - alpha)}`;
 
       if (fade) el.style.opacity = effectiveDir === 'reverse' ? `${1 - alpha}` : `${alpha}`;
 
-      // Color animation
       if (colorFrom && colorTo) el.style.stroke = lerpColor(colorFrom, colorTo, alpha);
       else if (colorTo) el.style.stroke = colorTo;
 
-      // Width animation
-      if (widthFrom !== null && widthTo !== null) {
+      if (widthFrom !== null && widthTo !== null)
         el.style.strokeWidth = `${widthFrom + (widthTo - widthFrom) * alpha}`;
-      } else if (widthTo !== null) {
+      else if (widthTo !== null)
         el.style.strokeWidth = `${widthTo}`;
-      }
+
+      if (morphTo && el.tagName.toLowerCase() === 'path' && originalDs[i])
+        el.setAttribute('d', morphPath(originalDs[i], morphTo, alpha));
 
       if (i === 0) onProgress?.(alpha);
       if (alpha < 1) allComplete = false;
@@ -214,7 +278,7 @@ export function createEngine(
 
     // Waypoints
     if (waypoints) {
-      const rawAlpha = easeFn(computeProgress(currentScroll, tStart, tEnd, speed));
+      const rawAlpha = easeFn(computeProgress(currentScroll, tStart, tEnd, effectiveSpeed));
       for (const key in waypoints) {
         const t = parseFloat(key);
         if (rawAlpha >= t && !firedWaypoints.has(t)) {
@@ -225,7 +289,7 @@ export function createEngine(
     }
 
     // onStart
-    if (!started && computeProgress(currentScroll, tStart, tEnd, speed) > 0) {
+    if (!started && computeProgress(currentScroll, tStart, tEnd, effectiveSpeed) > 0) {
       started = true;
       onStart?.();
     }
@@ -233,6 +297,19 @@ export function createEngine(
     if (allComplete && !completed) {
       completed = true;
       onComplete?.();
+
+      // repeat
+      const maxRepeats = repeat === 'infinite' ? Infinity : (repeat ?? 0);
+      if (repeatCount < maxRepeats) {
+        repeatCount++;
+        repeatTimer = setTimeout(() => {
+          frozenAlpha = -1;
+          started     = false;
+          completed   = false;
+          firedWaypoints.clear();
+          resetPaths();
+        }, repeatDelay);
+      }
     } else if (!allComplete && !once) {
       completed = false;
     }
@@ -240,20 +317,20 @@ export function createEngine(
     rafId = requestAnimationFrame(update);
   }
 
-  // ── Intersection observer ─────────────────────────────────────────────────────
+  // ── IntersectionObserver ──────────────────────────────────────────────────
 
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((e) => {
         isVisible = e.isIntersecting;
-        if (isVisible) rafId = requestAnimationFrame(update);
+        if (isVisible && !paused) rafId = requestAnimationFrame(update);
         else cancelAnimationFrame(rafId);
       });
     },
-    { root: scrollEl ?? null }
+    { root: scrollEl ?? null, threshold, rootMargin }
   );
 
-  // ── Resize ───────────────────────────────────────────────────────────────────
+  // ── Resize ────────────────────────────────────────────────────────────────
 
   let resizeTimer: ReturnType<typeof setTimeout>;
   function onResize(): void {
@@ -270,19 +347,15 @@ export function createEngine(
   window.addEventListener('resize', onResize);
   window.addEventListener('orientationchange', onResize);
 
-  // ── Start (with optional delay) ───────────────────────────────────────────────
+  if (delay > 0) setTimeout(() => observer.observe(container), delay);
+  else observer.observe(container);
 
-  if (delay > 0) {
-    setTimeout(() => observer.observe(container), delay);
-  } else {
-    observer.observe(container);
-  }
-
-  // ── Instance ─────────────────────────────────────────────────────────────────
+  // ── Instance ──────────────────────────────────────────────────────────────
 
   return {
     destroy() {
       cancelAnimationFrame(rafId);
+      clearTimeout(repeatTimer);
       observer.disconnect();
       window.removeEventListener('resize', onResize);
       window.removeEventListener('orientationchange', onResize);
@@ -291,12 +364,40 @@ export function createEngine(
     },
 
     replay() {
-      frozenAlpha = -1;
-      prevScroll  = -1;
-      started     = false;
-      completed   = false;
+      frozenAlpha  = -1;
+      prevScroll   = -1;
+      prevVelScroll = -1;
+      started      = false;
+      completed    = false;
+      repeatCount  = 0;
+      paused       = false;
       firedWaypoints.clear();
+      clearTimeout(repeatTimer);
       resetPaths();
+    },
+
+    pause() {
+      paused = true;
+      cancelAnimationFrame(rafId);
+    },
+
+    resume() {
+      if (!paused) return;
+      paused = false;
+      if (isVisible) rafId = requestAnimationFrame(update);
+    },
+
+    seek(progress: number) {
+      const p = Math.min(1, Math.max(0, progress));
+      currentAlpha = p;
+      frozenAlpha  = p;
+      paused       = true;
+      cancelAnimationFrame(rafId);
+      applyAlpha(p, direction);
+    },
+
+    getProgress() {
+      return currentAlpha;
     },
   };
 }

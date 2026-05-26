@@ -1,6 +1,3 @@
-import * as react_jsx_runtime from 'react/jsx-runtime';
-import React from 'react';
-
 type EasingName = 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | 'spring';
 interface TriggerConfig {
     start?: string;
@@ -46,12 +43,47 @@ interface ScrollDrawOptions {
     onStart?: () => void;
     onComplete?: () => void;
 }
+interface ScrollDrawInstance {
+    destroy: () => void;
+    /** Reset and replay the animation from the beginning. */
+    replay: () => void;
+    /** Pause the animation at the current progress. */
+    pause: () => void;
+    /** Resume a paused animation. */
+    resume: () => void;
+    /** Jump to a specific progress value (0–1) and pause. */
+    seek: (progress: number) => void;
+    /** Returns current draw progress (0–1). */
+    getProgress: () => number;
+}
 
-type ScrollDrawProps = ScrollDrawOptions & {
-    children: React.ReactNode;
-    className?: string;
-    style?: React.CSSProperties;
-};
-declare function ScrollDraw({ children, className, style, ...options }: ScrollDrawProps): react_jsx_runtime.JSX.Element;
+/**
+ * Animate multiple SVG containers simultaneously with the same options.
+ * Each container tracks its own scroll position independently.
+ *
+ * @example
+ * import { scrollDrawGroup } from 'svg-scroll-draw/group';
+ *
+ * const group = scrollDrawGroup(['#hero-svg', '#logo', '#diagram'], {
+ *   easing: 'ease-out',
+ *   stagger: 0.1,
+ * });
+ *
+ * group.replay(); // replays all at once
+ * group.destroy();
+ */
+declare function scrollDrawGroup(targets: Array<string | Element>, options?: ScrollDrawOptions): ScrollDrawInstance;
+/**
+ * Animate multiple SVG containers in sequence — each one starts only after
+ * the previous has reached 100% draw progress.
+ *
+ * @example
+ * import { scrollDrawSequence } from 'svg-scroll-draw/group';
+ *
+ * const seq = scrollDrawSequence(['#step-1', '#step-2', '#step-3'], {
+ *   easing: 'spring',
+ * });
+ */
+declare function scrollDrawSequence(targets: Array<string | Element>, options?: ScrollDrawOptions): ScrollDrawInstance;
 
-export { ScrollDraw };
+export { type ScrollDrawOptions, scrollDrawGroup, scrollDrawSequence };

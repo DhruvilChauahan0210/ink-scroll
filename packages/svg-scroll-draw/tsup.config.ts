@@ -1,58 +1,26 @@
 import { defineConfig } from 'tsup';
 
+const base = (entry: Record<string, string>, external: string[] = []) =>
+  ({
+    format: ['esm', 'cjs'] as const,
+    outExtension: ({ format }: { format: string }) => ({ js: format === 'cjs' ? '.cjs' : '.mjs' }),
+    dts: true,
+    treeshake: true,
+    minify: true,
+    entry,
+    external,
+  });
+
 export default defineConfig([
-  {
-    entry: { index: 'src/index.ts' },
-    format: ['esm', 'cjs'],
-    outExtension: ({ format }) => ({ js: format === 'cjs' ? '.cjs' : '.mjs' }),
-    dts: true,
-    clean: true,
-    treeshake: true,
-    minify: true,
-  },
-  {
-    entry: { 'react/index': 'src/react/index.tsx' },
-    format: ['esm', 'cjs'],
-    outExtension: ({ format }) => ({ js: format === 'cjs' ? '.cjs' : '.mjs' }),
-    dts: true,
-    treeshake: true,
-    minify: true,
-    external: ['react'],
-  },
-  {
-    entry: { 'vue/index': 'src/vue/index.ts' },
-    format: ['esm', 'cjs'],
-    outExtension: ({ format }) => ({ js: format === 'cjs' ? '.cjs' : '.mjs' }),
-    dts: true,
-    treeshake: true,
-    minify: true,
-    external: ['vue'],
-  },
-  {
-    entry: { 'svelte/index': 'src/svelte/index.ts' },
-    format: ['esm', 'cjs'],
-    outExtension: ({ format }) => ({ js: format === 'cjs' ? '.cjs' : '.mjs' }),
-    dts: true,
-    treeshake: true,
-    minify: true,
-  },
-  {
-    entry: { 'solid/index': 'src/solid/index.ts' },
-    format: ['esm', 'cjs'],
-    outExtension: ({ format }) => ({ js: format === 'cjs' ? '.cjs' : '.mjs' }),
-    dts: true,
-    treeshake: true,
-    minify: true,
-    external: ['solid-js'],
-  },
-  {
-    entry: { 'angular/index': 'src/angular/index.ts' },
-    format: ['esm', 'cjs'],
-    outExtension: ({ format }) => ({ js: format === 'cjs' ? '.cjs' : '.mjs' }),
-    dts: true,
-    treeshake: true,
-    minify: true,
-  },
+  { ...base({ index: 'src/index.ts' }), clean: true },
+  base({ 'react/index':   'src/react/index.tsx'   }, ['react']),
+  base({ 'vue/index':     'src/vue/index.ts'       }, ['vue']),
+  base({ 'svelte/index':  'src/svelte/index.ts'    }),
+  base({ 'solid/index':   'src/solid/index.ts'     }, ['solid-js']),
+  base({ 'angular/index': 'src/angular/index.ts'   }),
+  base({ 'astro/index':   'src/astro/index.ts'     }),
+  base({ 'nuxt/index':    'src/nuxt/index.ts'      }, ['vue']),
+  base({ 'group/index':   'src/group/index.ts'     }),
   {
     entry: { 'svg-scroll-draw': 'src/cdn.ts' },
     format: ['iife'],

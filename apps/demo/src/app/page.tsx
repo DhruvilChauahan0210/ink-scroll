@@ -22,7 +22,7 @@ const jsonLd = {
   downloadUrl: 'https://www.npmjs.com/package/svg-scroll-draw',
   codeRepository: 'https://github.com/DhruvilChauahan0210/ink-scroll',
   license: 'https://opensource.org/licenses/MIT',
-  softwareVersion: '0.5.0',
+  softwareVersion: '0.6.0',
   programmingLanguage: ['JavaScript', 'TypeScript'],
   author: {
     '@type': 'Person',
@@ -90,6 +90,14 @@ const MARQUEE_ITEMS = [
   'Waypoints',
   'SolidJS',
   'Angular',
+  'Astro',
+  'Nuxt',
+  'Path Morphing',
+  'Group API',
+  'Sequence API',
+  'Pause · Resume · Seek',
+  'Velocity Scale',
+  'Repeat',
 ];
 
 /* ── Page ────────────────────────────────────────────────────────────────── */
@@ -118,7 +126,7 @@ export default function Home() {
             target="_blank" rel="noopener noreferrer"
             className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono"
           >
-            v0.5.0
+            v0.6.0
           </a>
           <a
             href={GH}
@@ -627,13 +635,19 @@ export default function Hero() {
               { prop: 'waypoints', type: 'Record<number, fn>', def: '—', desc: 'Fire callbacks at specific progress thresholds (0–1). e.g. { 0.5: () => doSomething() }. Resets on replay().' },
               { prop: 'trigger.start', type: 'string', def: '"top bottom"', desc: 'When animation begins. Accepts anchor strings ("top bottom") or viewport percentages ("20%").' },
               { prop: 'trigger.end', type: 'string', def: '"bottom top"', desc: 'When animation ends. Accepts anchor strings or viewport percentages.' },
+              { prop: 'velocityScale', type: 'boolean | number', def: 'false', desc: 'Scale draw speed by scroll velocity — faster scrolling draws faster. Pass a number to set sensitivity.' },
+              { prop: 'threshold', type: 'number', def: '0', desc: 'IntersectionObserver threshold — how much of the element must be visible before animating.' },
+              { prop: 'rootMargin', type: 'string', def: '"0px"', desc: 'IntersectionObserver rootMargin — expand or shrink the trigger zone.' },
+              { prop: 'repeat', type: 'number | "infinite"', def: '0', desc: 'Repeat the animation N times. Use "infinite" to loop forever.' },
+              { prop: 'repeatDelay', type: 'number', def: '0', desc: 'Milliseconds to wait between repeats.' },
+              { prop: 'morphTo', type: 'string', def: '—', desc: 'SVG path `d` value to morph toward as the animation progresses.' },
               { prop: 'onStart', type: '() => void', def: '—', desc: 'Fires once on the first frame the animation begins drawing.' },
               { prop: 'onProgress', type: '(n: number) => void', def: '—', desc: 'Called every animation frame with current draw alpha (0–1).' },
               { prop: 'onComplete', type: '() => void', def: '—', desc: 'Fires once when all paths reach 100% draw progress.' },
             ].map(({ prop, type, def, desc }, i) => (
               <div
                 key={prop}
-                className={`grid grid-cols-1 md:grid-cols-[160px_130px_190px_1fr] gap-2 md:gap-4 px-6 py-4 text-sm items-start ${i < 20 ? 'border-b border-subtle-ash' : ''}`}
+                className={`grid grid-cols-1 md:grid-cols-[160px_130px_190px_1fr] gap-2 md:gap-4 px-6 py-4 text-sm items-start ${i < 26 ? 'border-b border-subtle-ash' : ''}`}
               >
                 <code className="font-mono font-semibold text-pitch-black">{prop}</code>
                 <code className="font-mono text-graphite-border text-[13px]">{type}</code>
@@ -720,7 +734,7 @@ export default function Hero() {
               </svg>
               npm
             </a>
-            <span className="text-[11px] font-mono text-graphite-border">v0.5.0</span>
+            <span className="text-[11px] font-mono text-graphite-border">v0.6.0</span>
           </div>
         </div>
 

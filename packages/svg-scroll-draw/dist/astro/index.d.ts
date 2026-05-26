@@ -1,6 +1,3 @@
-import * as react_jsx_runtime from 'react/jsx-runtime';
-import React from 'react';
-
 type EasingName = 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | 'spring';
 interface TriggerConfig {
     start?: string;
@@ -46,12 +43,37 @@ interface ScrollDrawOptions {
     onStart?: () => void;
     onComplete?: () => void;
 }
+interface ScrollDrawInstance {
+    destroy: () => void;
+    /** Reset and replay the animation from the beginning. */
+    replay: () => void;
+    /** Pause the animation at the current progress. */
+    pause: () => void;
+    /** Resume a paused animation. */
+    resume: () => void;
+    /** Jump to a specific progress value (0–1) and pause. */
+    seek: (progress: number) => void;
+    /** Returns current draw progress (0–1). */
+    getProgress: () => number;
+}
 
-type ScrollDrawProps = ScrollDrawOptions & {
-    children: React.ReactNode;
-    className?: string;
-    style?: React.CSSProperties;
-};
-declare function ScrollDraw({ children, className, style, ...options }: ScrollDrawProps): react_jsx_runtime.JSX.Element;
+declare function scrollDraw(target: string | Element, options?: ScrollDrawOptions): ScrollDrawInstance;
 
-export { ScrollDraw };
+/**
+ * Auto-initialises all elements with a [data-scroll-draw] attribute on the page.
+ * Options are read from the data-scroll-draw-options JSON attribute.
+ *
+ * @example
+ * // In your Astro component:
+ * <div data-scroll-draw data-scroll-draw-options='{"easing":"ease-out","fade":true}'>
+ *   <svg>...</svg>
+ * </div>
+ *
+ * <script>
+ *   import { initScrollDraw } from 'svg-scroll-draw/astro';
+ *   initScrollDraw();
+ * </script>
+ */
+declare function initScrollDraw(root?: Element | Document): ScrollDrawInstance[];
+
+export { type ScrollDrawInstance, type ScrollDrawOptions, initScrollDraw, scrollDraw };
