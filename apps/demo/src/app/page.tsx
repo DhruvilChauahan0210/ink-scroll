@@ -17,7 +17,7 @@ const jsonLd = {
   '@type': 'SoftwareApplication',
   name: 'svg-scroll-draw',
   description:
-    'A zero-dependency JavaScript library that animates SVG paths as you scroll. Under 3 KB gzipped.',
+    'A zero-dependency JavaScript library that animates SVG paths as you scroll. Under 3 KB brotli.',
   applicationCategory: 'DeveloperApplication',
   operatingSystem: 'Web',
   url: 'https://svg-scroll-draw.vercel.app',
@@ -73,7 +73,7 @@ const MARQUEE_ITEMS = [
   'SSR Safe',
   'requestAnimationFrame',
   'IntersectionObserver',
-  '< 3 KB Gzipped',
+  '~3 KB Gzipped',
   'Zero Dependencies',
   '56 Tests Passing',
   'React + Next.js',
@@ -171,7 +171,7 @@ export default function Home() {
 
         {/* Sub */}
         <p className="relative z-10 text-base md:text-lg text-graphite-border max-w-md mx-auto mb-10 leading-relaxed">
-          The definitive modern library. Under 3KB gzipped.
+          The definitive modern library. ~3 KB gzipped.
           Works in React, Next.js, and vanilla JS.
         </p>
 
@@ -189,7 +189,7 @@ export default function Home() {
         {/* Stats */}
         <div className="relative z-10 flex flex-wrap items-center justify-center gap-2">
           {[
-            ['< 3KB', 'gzipped'],
+            ['~3 KB', 'gzipped'],
             ['0', 'dependencies'],
             ['SSR', 'safe'],
             ['56', 'tests ✓'],
@@ -281,12 +281,12 @@ export default function Home() {
         <div className="max-w-5xl mx-auto">
           <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-3 font-medium">Bundle size</p>
           <h2 className="font-display font-extrabold text-[clamp(32px,5vw,56px)] leading-[0.95] tracking-[-0.03em] mb-12">
-            2.6 KB.<br />Not 40 KB.
+            ~3 KB.<br />Not 40 KB.
           </h2>
 
           <div className="space-y-5">
             {[
-              { name: 'svg-scroll-draw', size: '2.6 KB', pct: 6.5,  color: 'bg-creator-pink',    badge: '✓ yours' },
+              { name: 'svg-scroll-draw', size: '~3 KB',  pct: 7.5,  color: 'bg-creator-pink',    badge: '✓ yours' },
               { name: 'Framer Motion',   size: '~35 KB', pct: 87.5, color: 'bg-sunshine-yellow', badge: null },
               { name: 'GSAP DrawSVG',    size: '~40 KB', pct: 100,  color: 'bg-[#e0e0e0] dark:bg-[#333]', badge: null },
             ].map(({ name, size, pct, color, badge }) => (
@@ -717,7 +717,7 @@ export default function Hero() {
           <div className="flex items-center gap-5 text-[13px] text-graphite-border">
             <span>MIT License</span>
             <span className="text-subtle-ash">·</span>
-            <span>&lt; 3KB gzipped</span>
+            <span>~3 KB gzipped</span>
             <span className="text-subtle-ash">·</span>
             <span>Zero dependencies</span>
           </div>
