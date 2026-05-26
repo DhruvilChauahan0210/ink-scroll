@@ -1,12 +1,49 @@
 {
   "name": "svg-scroll-draw",
   "version": "0.2.0",
-  "description": "Scroll-driven SVG path drawing animation library",
+  "description": "Scroll-driven SVG path drawing animation library — zero dependencies, under 3KB gzipped, works with React, Vue, and vanilla JS",
+  "keywords": [
+    "svg",
+    "scroll",
+    "animation",
+    "path",
+    "draw",
+    "stroke-dashoffset",
+    "scroll-driven",
+    "intersection-observer",
+    "react",
+    "vue",
+    "nextjs",
+    "web-animation",
+    "svg-animation",
+    "scroll-animation",
+    "path-drawing",
+    "vanilla-js",
+    "web-component",
+    "zero-dependencies",
+    "lightweight"
+  ],
+  "homepage": "https://ink-scroll.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DhruvilChauahan0210/ink-scroll.git",
+    "directory": "packages/svg-scroll-draw"
+  },
+  "bugs": {
+    "url": "https://github.com/DhruvilChauahan0210/ink-scroll/issues"
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/DhruvilChauahan0210"
+  },
+  "license": "MIT",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "LICENSE"
   ],
   "exports": {
     ".": {
