@@ -3,22 +3,59 @@
 import { ScrollDraw } from 'svg-scroll-draw/react';
 
 /* ─────────────────────────────────────────────────────────────
-   Hero — orbital arcs (top-right, complements CSS circles)
-   Four sweeping curves draw in with stagger, opacity 0.07
+   1. HERO WAVE ILLUSTRATION
+   6 layered wave paths spanning the full width of the hero,
+   drawing in with stagger as you scroll — the first thing a
+   visitor sees that shows the library in action on itself.
 ───────────────────────────────────────────────────────────── */
-export function HeroOrbitalDecor() {
+export function HeroWaveIllustration() {
   return (
-    <div className="absolute top-0 right-0 w-[520px] h-[520px] pointer-events-none z-[1] opacity-[0.07]">
-      <ScrollDraw easing="ease-out" speed={0.55} fade once stagger={0.14}>
-        <svg width="520" height="520" viewBox="0 0 520 520" fill="none">
-          <path d="M 520 0 C 520 230 230 520 0 520"
-            stroke="#111" strokeWidth="1.8" strokeLinecap="round" />
-          <path d="M 520 70 C 490 270 210 500 20 510"
-            stroke="#111" strokeWidth="1.2" strokeLinecap="round" />
-          <path d="M 520 160 C 460 310 170 470 0 450"
-            stroke="#ff6b9d" strokeWidth="1" strokeLinecap="round" />
-          <path d="M 520 270 C 420 360 130 430 0 370"
-            stroke="#111" strokeWidth="0.7" strokeLinecap="round" strokeDasharray="5 9" />
+    <div className="absolute bottom-0 left-0 right-0 h-[160px] pointer-events-none overflow-hidden">
+      <ScrollDraw
+        easing="ease-out"
+        speed={0.7}
+        fade
+        once
+        stagger={0.1}
+      >
+        <svg
+          width="100%"
+          height="160"
+          viewBox="0 0 1440 160"
+          preserveAspectRatio="none"
+          fill="none"
+        >
+          {/* Bold black — primary wave */}
+          <path
+            d="M 0 90 C 180 35 360 145 540 75 C 720 5 900 125 1080 70 C 1260 10 1380 80 1440 90"
+            stroke="#111" strokeWidth="2" strokeLinecap="round"
+          />
+          {/* Pink — offset phase */}
+          <path
+            d="M 0 105 C 180 50 360 160 540 90 C 720 20 900 140 1080 85 C 1260 25 1380 95 1440 105"
+            stroke="#ff6b9d" strokeWidth="1.5" strokeLinecap="round"
+          />
+          {/* Yellow — counter-phase */}
+          <path
+            d="M 0 72 C 180 128 360 18 540 88 C 720 158 900 48 1080 118 C 1260 155 1380 88 1440 72"
+            stroke="#ffc900" strokeWidth="1.5" strokeLinecap="round"
+          />
+          {/* Medium black — slightly below primary */}
+          <path
+            d="M 0 118 C 180 63 360 173 540 103 C 720 33 900 153 1080 98 C 1260 33 1380 113 1440 118"
+            stroke="#111" strokeWidth="0.9" strokeLinecap="round"
+          />
+          {/* Pink dashed */}
+          <path
+            d="M 0 58 C 180 113 360 3 540 73 C 720 143 900 33 1080 103 C 1260 143 1380 73 1440 58"
+            stroke="#ff6b9d" strokeWidth="0.8" strokeLinecap="round"
+            strokeDasharray="8 12"
+          />
+          {/* Subtle black — deepest */}
+          <path
+            d="M 0 135 C 180 80 360 190 540 120 C 720 50 900 170 1080 115 C 1260 50 1380 130 1440 135"
+            stroke="#333" strokeWidth="0.5" strokeLinecap="round"
+          />
         </svg>
       </ScrollDraw>
     </div>
@@ -26,28 +63,36 @@ export function HeroOrbitalDecor() {
 }
 
 /* ─────────────────────────────────────────────────────────────
-   Hero — constellation (bottom-left)
-   6 nodes + 7 connecting lines draw in sequence, opacity 0.08
+   2. BUNDLE COMPARISON GRAPH LINE
+   A single dramatic "cliff-dive" path in the bundle section —
+   starts high (heavy competitors), then drops off a cliff to
+   our tiny 3KB. Color transitions from #aaa → #ff6b9d using
+   strokeColor as the path draws. Clean, editorial, powerful.
 ───────────────────────────────────────────────────────────── */
-export function HeroConstellationDecor() {
+export function BundleGraphLine() {
   return (
-    <div className="absolute bottom-10 left-0 w-[300px] h-[240px] pointer-events-none z-[1] opacity-[0.08]">
-      <ScrollDraw easing="ease-out" speed={0.6} fade once stagger={0.05}>
-        <svg width="300" height="240" viewBox="0 0 300 240" fill="none">
-          <circle cx="40"  cy="160" r="4"   stroke="#111"    strokeWidth="2" />
-          <circle cx="100" cy="100" r="3"   stroke="#111"    strokeWidth="2" />
-          <circle cx="185" cy="130" r="4"   stroke="#111"    strokeWidth="2" />
-          <circle cx="245" cy="70"  r="3"   stroke="#111"    strokeWidth="2" />
-          <circle cx="210" cy="190" r="3.5" stroke="#ffc900" strokeWidth="2" />
-          <circle cx="80"  cy="205" r="3"   stroke="#111"    strokeWidth="2" />
-          <line x1="40"  y1="160" x2="100" y2="100" stroke="#111" strokeWidth="0.9" />
-          <line x1="100" y1="100" x2="185" y2="130" stroke="#111" strokeWidth="0.9" />
-          <line x1="185" y1="130" x2="245" y2="70"  stroke="#111" strokeWidth="0.9" />
-          <line x1="185" y1="130" x2="210" y2="190" stroke="#111" strokeWidth="0.7" />
-          <line x1="40"  y1="160" x2="80"  y2="205" stroke="#111" strokeWidth="0.7" />
-          <line x1="80"  y1="205" x2="210" y2="190" stroke="#111" strokeWidth="0.6" />
-          <line x1="100" y1="100" x2="210" y2="190" stroke="#111" strokeWidth="0.5"
-                strokeDasharray="3 6" />
+    <div className="absolute right-8 top-1/2 -translate-y-1/2 w-[280px] h-[200px] pointer-events-none hidden lg:block">
+      <ScrollDraw
+        easing="ease-out"
+        speed={0.9}
+        once
+        strokeColor={['#ccc', '#ff6b9d']}
+      >
+        <svg width="280" height="200" viewBox="0 0 280 200" fill="none">
+          {/* Axis lines */}
+          <line x1="30" y1="10" x2="30" y2="175" stroke="#ddd" strokeWidth="1" />
+          <line x1="30" y1="175" x2="270" y2="175" stroke="#ddd" strokeWidth="1" />
+          {/* Cliff-dive comparison line — high → dramatic drop → settled low */}
+          <path
+            d="M 30 20 C 80 22 110 24 140 28 C 165 32 180 150 210 168 C 235 172 255 173 270 173"
+            stroke="#ccc" strokeWidth="3" strokeLinecap="round"
+          />
+          {/* Dot markers */}
+          <circle cx="30"  cy="20"  r="4" stroke="#bbb"    strokeWidth="2" fill="none" />
+          <circle cx="270" cy="173" r="4" stroke="#ff6b9d" strokeWidth="2" fill="none" />
+          {/* Labels */}
+          <line x1="24" y1="20"  x2="18" y2="20"  stroke="#ccc" strokeWidth="1" />
+          <line x1="24" y1="173" x2="18" y2="173" stroke="#ccc" strokeWidth="1" />
         </svg>
       </ScrollDraw>
     </div>
@@ -55,16 +100,37 @@ export function HeroConstellationDecor() {
 }
 
 /* ─────────────────────────────────────────────────────────────
-   Problems section — flowing S-curve (right side)
-   Single organic bezier, yellow, opacity 0.18
+   3. CTA BOLD MARK
+   Three bold angular paths on the yellow CTA background —
+   an abstract mark that draws itself dramatically with stagger.
+   Dark on yellow, confident and editorial.
 ───────────────────────────────────────────────────────────── */
-export function ProblemsCurveDecor() {
+export function CtaBoldMark() {
   return (
-    <div className="absolute top-0 right-0 w-[220px] h-full pointer-events-none z-0 opacity-[0.18]">
-      <ScrollDraw easing="ease-in-out" speed={0.7} fade once>
-        <svg width="220" height="400" viewBox="0 0 220 400" preserveAspectRatio="none" fill="none">
-          <path d="M 180 0 C 60 60 220 140 80 200 C -20 250 200 320 120 400"
-            stroke="#ffc900" strokeWidth="2" strokeLinecap="round" />
+    <div className="absolute right-8 md:right-20 top-1/2 -translate-y-1/2 w-[180px] h-[220px] pointer-events-none hidden md:block opacity-[0.12]">
+      <ScrollDraw
+        easing="ease-in-out"
+        speed={1}
+        once
+        stagger={0.2}
+        fade
+      >
+        <svg width="180" height="220" viewBox="0 0 180 220" fill="none">
+          {/* Top diagonal slash */}
+          <path
+            d="M 20 20 L 160 80"
+            stroke="#111" strokeWidth="5" strokeLinecap="round"
+          />
+          {/* Middle sweeping curve */}
+          <path
+            d="M 10 110 C 50 70 130 150 170 110"
+            stroke="#111" strokeWidth="5" strokeLinecap="round"
+          />
+          {/* Bottom diagonal slash (reversed) */}
+          <path
+            d="M 20 190 L 160 140"
+            stroke="#111" strokeWidth="5" strokeLinecap="round"
+          />
         </svg>
       </ScrollDraw>
     </div>
@@ -72,85 +138,15 @@ export function ProblemsCurveDecor() {
 }
 
 /* ─────────────────────────────────────────────────────────────
-   Bundle size section — measurement brackets (left side)
-   Technical tick marks, black, opacity 0.12
+   4. SECTION CONNECTOR — thin vertical line drawn between
+   major sections, giving a sense of continuous motion.
 ───────────────────────────────────────────────────────────── */
-export function BundleMeasureDecor() {
+export function SectionConnector() {
   return (
-    <div className="absolute top-1/2 left-4 -translate-y-1/2 w-[56px] h-[280px] pointer-events-none z-0 opacity-[0.12]">
-      <ScrollDraw easing="ease-out" speed={0.8} once stagger={0.12}>
-        <svg width="56" height="280" viewBox="0 0 56 280" fill="none">
-          <line x1="28" y1="10"  x2="28" y2="270" stroke="#111" strokeWidth="1.5" />
-          <line x1="16" y1="10"  x2="40" y2="10"  stroke="#111" strokeWidth="2" />
-          <line x1="16" y1="270" x2="40" y2="270" stroke="#111" strokeWidth="2" />
-          <line x1="20" y1="75"  x2="36" y2="75"  stroke="#111" strokeWidth="1.5" />
-          <line x1="20" y1="140" x2="36" y2="140" stroke="#111" strokeWidth="1.5" />
-          <line x1="20" y1="205" x2="36" y2="205" stroke="#111" strokeWidth="1.5" />
-          <line x1="22" y1="42"  x2="34" y2="42"  stroke="#111" strokeWidth="1" />
-          <line x1="22" y1="107" x2="34" y2="107" stroke="#111" strokeWidth="1" />
-          <line x1="22" y1="172" x2="34" y2="172" stroke="#111" strokeWidth="1" />
-          <line x1="22" y1="237" x2="34" y2="237" stroke="#111" strokeWidth="1" />
-        </svg>
-      </ScrollDraw>
-    </div>
-  );
-}
-
-/* ─────────────────────────────────────────────────────────────
-   API reference section — radial spoke wheel (left background)
-   6 spokes + 2 rings draw in, opacity 0.055
-───────────────────────────────────────────────────────────── */
-export function ApiRadialDecor() {
-  return (
-    <div className="absolute top-1/2 -left-20 -translate-y-1/2 w-[340px] h-[340px] pointer-events-none z-0 opacity-[0.055]">
-      <ScrollDraw easing="ease-out" speed={0.65} fade once stagger={0.09}>
-        <svg width="340" height="340" viewBox="0 0 340 340" fill="none">
-          <circle cx="170" cy="170" r="150" stroke="#111" strokeWidth="1.5" />
-          <circle cx="170" cy="170" r="55"  stroke="#111" strokeWidth="1.5" />
-          <line x1="225" y1="170" x2="320" y2="170" stroke="#111" strokeWidth="1.5" />
-          <line x1="197" y1="218" x2="245" y2="300" stroke="#111" strokeWidth="1.5" />
-          <line x1="143" y1="218" x2="95"  y2="300" stroke="#111" strokeWidth="1.5" />
-          <line x1="115" y1="170" x2="20"  y2="170" stroke="#111" strokeWidth="1.5" />
-          <line x1="143" y1="122" x2="95"  y2="40"  stroke="#111" strokeWidth="1.5" />
-          <line x1="197" y1="122" x2="245" y2="40"  stroke="#111" strokeWidth="1.5" />
-        </svg>
-      </ScrollDraw>
-    </div>
-  );
-}
-
-/* ─────────────────────────────────────────────────────────────
-   CTA section — bold diagonal slashes (yellow bg)
-   3 angular marks, black, opacity 0.06
-───────────────────────────────────────────────────────────── */
-export function CtaSlashDecor() {
-  return (
-    <div className="absolute inset-0 pointer-events-none z-0 opacity-[0.06]">
-      <ScrollDraw easing="ease-in-out" speed={0.9} fade once stagger={0.2}>
-        <svg width="100%" height="100%" viewBox="0 0 800 300"
-             preserveAspectRatio="xMidYMid slice" fill="none">
-          <path d="M -40 300 L 200 -20"  stroke="#111" strokeWidth="4" strokeLinecap="round" />
-          <path d="M 200 300 L 500 -20"  stroke="#111" strokeWidth="4" strokeLinecap="round" />
-          <path d="M 520 300 L 840 -20"  stroke="#111" strokeWidth="3" strokeLinecap="round" />
-        </svg>
-      </ScrollDraw>
-    </div>
-  );
-}
-
-/* ─────────────────────────────────────────────────────────────
-   Quickstart section — nested corner bracket (top-right)
-   Angular L-shapes, pink, opacity 0.22
-───────────────────────────────────────────────────────────── */
-export function QuickstartBracketDecor() {
-  return (
-    <div className="absolute top-6 right-6 w-[80px] h-[80px] pointer-events-none z-0 opacity-[0.22]">
-      <ScrollDraw easing="ease-out" speed={0.85} once stagger={0.3}>
-        <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
-          <path d="M 80 10 L 10 10 L 10 80"
-            stroke="#ff6b9d" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-          <path d="M 80 28 L 28 28 L 28 80"
-            stroke="#ff6b9d" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <div className="absolute left-1/2 -translate-x-1/2 top-0 w-[2px] h-full pointer-events-none opacity-[0.08]">
+      <ScrollDraw easing="linear" speed={0.5} once>
+        <svg width="2" height="100%" viewBox="0 0 2 400" preserveAspectRatio="none" fill="none">
+          <line x1="1" y1="0" x2="1" y2="400" stroke="#111" strokeWidth="1.5" />
         </svg>
       </ScrollDraw>
     </div>

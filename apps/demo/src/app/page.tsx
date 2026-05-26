@@ -1,13 +1,9 @@
 import { OnCompleteDemo } from '@/components/OnCompleteDemo';
 import { WaypointsDemo } from '@/components/WaypointsDemo';
 import {
-  HeroOrbitalDecor,
-  HeroConstellationDecor,
-  ProblemsCurveDecor,
-  BundleMeasureDecor,
-  ApiRadialDecor,
-  CtaSlashDecor,
-  QuickstartBracketDecor,
+  HeroWaveIllustration,
+  BundleGraphLine,
+  CtaBoldMark,
 } from '@/components/BackgroundDecor';
 import { InteractiveScrollDemo } from '@/components/InteractiveScrollDemo';
 import { ThemeToggle } from '@/components/ThemeToggle';
@@ -158,10 +154,6 @@ export default function Home() {
         <div className="pointer-events-none absolute -bottom-32 -left-48 w-[500px] h-[500px] rounded-full border border-subtle-ash opacity-40" />
         <div className="pointer-events-none absolute bottom-24 left-16 w-3 h-3 rounded-full bg-lime-glow" />
 
-        {/* svg-scroll-draw ambient decorations — using our own package */}
-        <HeroOrbitalDecor />
-        <HeroConstellationDecor />
-
         {/* Badge */}
         <div className="relative z-10 inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-10 border border-subtle-ash bg-light-linen/80 rounded-full px-4 py-1.5 font-medium">
           <span className="w-1.5 h-1.5 rounded-full bg-creator-pink animate-pulse" />
@@ -212,10 +204,13 @@ export default function Home() {
         </div>
 
         {/* Scroll nudge */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 text-graphite-border">
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 text-graphite-border z-10">
           <span className="text-[10px] font-mono uppercase tracking-[0.22em]">scroll</span>
           <div className="w-px h-8 bg-gradient-to-b from-subtle-ash to-transparent" />
         </div>
+
+        {/* Wave illustration — uses svg-scroll-draw on itself */}
+        <HeroWaveIllustration />
       </section>
 
       {/* ── Marquee ───────────────────────────────────────────────────── */}
@@ -231,8 +226,7 @@ export default function Home() {
       </div>
 
       {/* ── Problems ──────────────────────────────────────────────────── */}
-      <section className="relative bg-marketplace-gray border-b border-pitch-black px-6 md:px-12 py-20 overflow-hidden">
-        <ProblemsCurveDecor />
+      <section className="bg-marketplace-gray border-b border-pitch-black px-6 md:px-12 py-20">
         <div className="max-w-5xl mx-auto">
           <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-3 font-medium">The problem</p>
           <h2 className="font-display font-extrabold text-[clamp(32px,5vw,56px)] leading-[0.95] tracking-[-0.03em] mb-12">
@@ -284,7 +278,7 @@ export default function Home() {
 
       {/* ── Bundle size chart ─────────────────────────────────────────── */}
       <section className="relative border-b border-pitch-black px-6 md:px-12 py-20 overflow-hidden">
-        <BundleMeasureDecor />
+        <BundleGraphLine />
         <div className="max-w-5xl mx-auto">
           <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-3 font-medium">Bundle size</p>
           <h2 className="font-display font-extrabold text-[clamp(32px,5vw,56px)] leading-[0.95] tracking-[-0.03em] mb-12">
@@ -621,8 +615,7 @@ export default function Hero() {
       </div>
 
       {/* ── API Reference ─────────────────────────────────────────────── */}
-      <section data-mascot="think" className="relative bg-marketplace-gray border-t border-pitch-black border-b px-6 md:px-12 py-20 overflow-hidden">
-        <ApiRadialDecor />
+      <section data-mascot="think" className="bg-marketplace-gray border-t border-pitch-black border-b px-6 md:px-12 py-20">
         <div className="max-w-5xl mx-auto">
           <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-3 font-medium">Reference</p>
           <h2 className="font-display font-extrabold text-[clamp(32px,5vw,56px)] leading-[0.95] tracking-[-0.03em] mb-12">
@@ -676,8 +669,7 @@ export default function Hero() {
       </section>
 
       {/* ── Framework quickstart ──────────────────────────────────────── */}
-      <section className="relative border-b border-pitch-black px-6 md:px-12 py-20 overflow-hidden">
-        <QuickstartBracketDecor />
+      <section className="border-b border-pitch-black px-6 md:px-12 py-20">
         <div className="max-w-5xl mx-auto">
           <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-3 font-medium">Quickstart</p>
           <h2 className="font-display font-extrabold text-[clamp(32px,5vw,56px)] leading-[0.95] tracking-[-0.03em] mb-12">
@@ -692,7 +684,7 @@ export default function Hero() {
 
       {/* ── CTA ───────────────────────────────────────────────────────── */}
       <section data-mascot="big-dance" className="relative bg-sunshine-yellow border-b border-pitch-black px-6 md:px-12 py-24 text-center overflow-hidden">
-        <CtaSlashDecor />
+        <CtaBoldMark />
         <h2 className="font-display font-extrabold leading-[0.9] tracking-[-0.04em] mb-8 text-pitch-black"
             style={{ fontSize: 'clamp(40px,8vw,96px)' }}>
           THE MODERN<br />STANDARD FOR<br />SCROLL-DRAWN SVG.
