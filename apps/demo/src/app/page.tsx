@@ -21,7 +21,7 @@ const jsonLd = {
   downloadUrl: 'https://www.npmjs.com/package/svg-scroll-draw',
   codeRepository: 'https://github.com/DhruvilChauahan0210/ink-scroll',
   license: 'https://opensource.org/licenses/MIT',
-  softwareVersion: '0.2.0',
+  softwareVersion: '0.2.1',
   programmingLanguage: ['JavaScript', 'TypeScript'],
   author: {
     '@type': 'Person',
@@ -105,7 +105,7 @@ export default function Home() {
             target="_blank" rel="noopener noreferrer"
             className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono"
           >
-            v0.2.0
+            v0.2.1
           </a>
           <a
             href={GH}
@@ -572,7 +572,7 @@ export default function Hero() {
               </svg>
               npm
             </a>
-            <span className="text-[11px] font-mono text-graphite-border">v0.2.0</span>
+            <span className="text-[11px] font-mono text-graphite-border">v0.2.1</span>
           </div>
         </div>
 
