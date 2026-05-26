@@ -21,7 +21,10 @@
     "vanilla-js",
     "web-component",
     "zero-dependencies",
-    "lightweight"
+    "lightweight",
+    "svelte",
+    "svelte-action",
+    "horizontal-scroll"
   ],
   "homepage": "https://ink-scroll.vercel.app",
   "repository": {
@@ -60,6 +63,11 @@
       "types": "./dist/vue/index.d.ts",
       "import": "./dist/vue/index.mjs",
       "require": "./dist/vue/index.cjs"
+    },
+    "./svelte": {
+      "types": "./dist/svelte/index.d.ts",
+      "import": "./dist/svelte/index.mjs",
+      "require": "./dist/svelte/index.cjs"
     }
   },
   "scripts": {

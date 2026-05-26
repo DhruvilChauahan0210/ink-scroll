@@ -3,6 +3,8 @@ export const EASINGS: Record<string, (t: number) => number> = {
   'ease-in': (t) => t * t,
   'ease-out': (t) => t * (2 - t),
   'ease-in-out': (t) => (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t),
+  // Approximates a spring settle — overshoots slightly then settles
+  spring: (t) => 1 - Math.cos(t * Math.PI * 2.5) * Math.pow(1 - t, 2.2),
 };
 
 export function parseTrigger(str = 'top bottom'): { element: string; viewport: string } {

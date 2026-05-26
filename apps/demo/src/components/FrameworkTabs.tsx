@@ -47,6 +47,18 @@ import { ScrollDraw } from 'svg-scroll-draw/vue';
 </template>`,
   },
   {
+    id: 'svelte',
+    label: 'Svelte',
+    filename: 'Hero.svelte',
+    code: `<script>
+  import { scrollDraw } from 'svg-scroll-draw/svelte';
+</script>
+
+<div use:scrollDraw={{ easing: 'ease-out', speed: 1.2 }}>
+  <svg>...</svg>
+</div>`,
+  },
+  {
     id: 'vanilla',
     label: 'Vanilla JS',
     filename: 'main.js',

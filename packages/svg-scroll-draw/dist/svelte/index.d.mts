@@ -31,6 +31,42 @@ interface ScrollDrawInstance {
     replay: () => void;
 }
 
-declare function scrollDraw(target: string | Element, options?: ScrollDrawOptions): ScrollDrawInstance;
+/**
+ * Svelte action — apply to any container element wrapping an SVG.
+ *
+ * @example
+ * <script>
+ *   import { scrollDraw } from 'svg-scroll-draw/svelte';
+ * </script>
+ *
+ * <div use:scrollDraw={{ easing: 'ease-out', speed: 1.2, fade: true }}>
+ *   <svg>...</svg>
+ * </div>
+ */
+declare function scrollDraw(node: HTMLElement, options?: ScrollDrawOptions): {
+    update(newOptions: ScrollDrawOptions): void;
+    destroy(): void;
+};
+/**
+ * Composable helper — returns an action and the live instance so you can
+ * call `instance.replay()` from your Svelte component logic.
+ *
+ * @example
+ * <script>
+ *   import { createScrollDraw } from 'svg-scroll-draw/svelte';
+ *   const { action, getInstance } = createScrollDraw({ easing: 'spring' });
+ * </script>
+ *
+ * <div use:action>
+ *   <svg>...</svg>
+ * </div>
+ * <button on:click={() => getInstance()?.replay()}>Replay</button>
+ */
+declare function createScrollDraw(options?: ScrollDrawOptions): {
+    action: (node: HTMLElement) => {
+        destroy(): void;
+    };
+    getInstance: () => ScrollDrawInstance | null;
+};
 
-export { type ScrollDrawInstance, type ScrollDrawOptions, scrollDraw };
+export { type ScrollDrawOptions, createScrollDraw, scrollDraw };

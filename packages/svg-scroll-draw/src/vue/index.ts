@@ -29,7 +29,10 @@ export const ScrollDraw = defineComponent({
     direction:  { type: String as () => 'forward' | 'reverse' },
     trigger:    { type: Object },
     onProgress: { type: Function },
+    onStart:    { type: Function },
     onComplete: { type: Function },
+    once:       { type: Boolean },
+    debug:      { type: Boolean },
   },
   setup(props, { slots }) {
     const containerRef = ref<HTMLElement | null>(null);
@@ -44,7 +47,10 @@ export const ScrollDraw = defineComponent({
       if (props.easing     != null) opts.easing     = props.easing as ScrollDrawOptions['easing'];
       if (props.direction  != null) opts.direction  = props.direction;
       if (props.trigger    != null) opts.trigger    = props.trigger as ScrollDrawOptions['trigger'];
+      if (props.once       != null) opts.once       = props.once;
+      if (props.debug      != null) opts.debug      = props.debug;
       if (props.onProgress != null) opts.onProgress = props.onProgress as ScrollDrawOptions['onProgress'];
+      if (props.onStart    != null) opts.onStart    = props.onStart    as ScrollDrawOptions['onStart'];
       if (props.onComplete != null) opts.onComplete = props.onComplete as ScrollDrawOptions['onComplete'];
       const instance = createEngine(containerRef.value, opts);
       onUnmounted(() => instance.destroy());

@@ -29,6 +29,14 @@ export default defineConfig([
     external: ['vue'],
   },
   {
+    entry: { 'svelte/index': 'src/svelte/index.ts' },
+    format: ['esm', 'cjs'],
+    outExtension: ({ format }) => ({ js: format === 'cjs' ? '.cjs' : '.mjs' }),
+    dts: true,
+    treeshake: true,
+    minify: true,
+  },
+  {
     entry: { 'svg-scroll-draw': 'src/cdn.ts' },
     format: ['iife'],
     globalName: 'SvgScrollDraw',

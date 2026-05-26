@@ -75,8 +75,15 @@ const MARQUEE_ITEMS = [
   '56 Tests Passing',
   'React + Next.js',
   'Vue 3',
+  'Svelte',
   'Vanilla JS',
   'Web Component',
+  'Reduced Motion',
+  'Spring Easing',
+  'Once Mode',
+  'Debug Overlay',
+  'Horizontal Scroll',
+  'Replay API',
 ];
 
 /* ── Page ────────────────────────────────────────────────────────────────── */
@@ -360,14 +367,15 @@ export default function Hero() {
                 Natural motion,<br />your way.
               </h2>
               <p className="text-graphite-border leading-relaxed mb-6 text-[15px]">
-                Four built-in curves or any custom{' '}
+                Five built-in curves — including a <Tag>spring</Tag> that
+                overshoots and settles — or any custom{' '}
                 <Tag>(t: number) =&gt; number</Tag> function.
                 The <Tag>speed</Tag> prop compresses or stretches the draw
                 relative to your scroll distance.
               </p>
               <CodeBlock filename="index.tsx">
 {`<ScrollDraw
-  easing="ease-out"
+  easing="spring"
   speed={1.5}
 >
   <svg>...</svg>
@@ -475,17 +483,21 @@ export default function Hero() {
               { prop: 'selector', type: 'string', def: '"path, polyline…"', desc: 'CSS selector to target specific child elements.' },
               { prop: 'speed', type: 'number', def: '1', desc: 'Scale factor — values above 1 complete the animation faster.' },
               { prop: 'fade', type: 'boolean', def: 'false', desc: 'Animate opacity 0 → 1 simultaneously while drawing.' },
-              { prop: 'easing', type: 'string | fn', def: '"linear"', desc: 'linear · ease-in · ease-out · ease-in-out · or custom (t) => t.' },
+              { prop: 'easing', type: 'string | fn', def: '"linear"', desc: 'linear · ease-in · ease-out · ease-in-out · spring · or custom (t) => t.' },
               { prop: 'stagger', type: 'number', def: '0', desc: 'Normalized scroll-progress offset between each path starting. e.g. 0.15 → each path begins 15% of the range after the previous.' },
               { prop: 'direction', type: '"forward"|"reverse"', def: '"forward"', desc: 'forward draws the path in. reverse starts fully drawn and erases as you scroll.' },
+              { prop: 'once', type: 'boolean', def: 'false', desc: 'Draw once and stay drawn — animation does not reverse when scrolling back up.' },
+              { prop: 'debug', type: 'boolean', def: 'false', desc: 'Renders a visual overlay showing trigger start/end zones. Dev-only, stripped in production.' },
+              { prop: 'axis', type: '"x" | "y"', def: '"y"', desc: 'Scroll axis to track. Use "x" for horizontal scroll containers.' },
               { prop: 'trigger.start', type: 'string', def: '"top bottom"', desc: 'When animation begins. Accepts anchor strings ("top bottom") or viewport percentages ("20%").' },
               { prop: 'trigger.end', type: 'string', def: '"bottom top"', desc: 'When animation ends. Accepts anchor strings or viewport percentages.' },
+              { prop: 'onStart', type: '() => void', def: '—', desc: 'Fires once on the first frame the animation begins drawing.' },
               { prop: 'onProgress', type: '(n: number) => void', def: '—', desc: 'Called every animation frame with current draw alpha (0–1).' },
               { prop: 'onComplete', type: '() => void', def: '—', desc: 'Fires once when all paths reach 100% draw progress.' },
             ].map(({ prop, type, def, desc }, i) => (
               <div
                 key={prop}
-                className={`grid grid-cols-1 md:grid-cols-[160px_130px_190px_1fr] gap-2 md:gap-4 px-6 py-4 text-sm items-start ${i < 9 ? 'border-b border-subtle-ash' : ''}`}
+                className={`grid grid-cols-1 md:grid-cols-[160px_130px_190px_1fr] gap-2 md:gap-4 px-6 py-4 text-sm items-start ${i < 13 ? 'border-b border-subtle-ash' : ''}`}
               >
                 <code className="font-mono font-semibold text-pitch-black">{prop}</code>
                 <code className="font-mono text-graphite-border text-[13px]">{type}</code>

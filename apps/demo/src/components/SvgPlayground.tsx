@@ -3,7 +3,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
-type EasingName = 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out';
+type EasingName = 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | 'spring';
 
 interface PlayState {
   svg: string;
@@ -12,6 +12,7 @@ interface PlayState {
   fade: boolean;
   stagger: number;
   direction: 'forward' | 'reverse';
+  once: boolean;
 }
 
 // ── Constants ──────────────────────────────────────────────────────────────────
@@ -21,6 +22,7 @@ const EASINGS: Record<EasingName, (t: number) => number> = {
   'ease-in':    t => t * t,
   'ease-out':   t => t * (2 - t),
   'ease-in-out':t => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t,
+  spring:       t => 1 - Math.cos(t * Math.PI * 2.5) * Math.pow(1 - t, 2.2),
 };
 
 const SELECTOR = 'path, polyline, line, polygon, rect, circle';
@@ -67,6 +69,7 @@ const DEFAULT_STATE: PlayState = {
   fade: false,
   stagger: 0,
   direction: 'forward',
+  once: false,
 };
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
@@ -414,7 +417,7 @@ export function SvgPlayground() {
               onChange={e => update('easing', e.target.value as EasingName)}
               className="font-mono text-[13px] border border-pitch-black rounded-lg px-2.5 py-1.5 bg-light-linen appearance-none cursor-pointer focus:outline-none hover:bg-pitch-black hover:text-light-linen transition-colors"
             >
-              {(['linear', 'ease-in', 'ease-out', 'ease-in-out'] as EasingName[]).map(e => (
+              {(['linear', 'ease-in', 'ease-out', 'ease-in-out', 'spring'] as EasingName[]).map(e => (
                 <option key={e} value={e}>{e}</option>
               ))}
             </select>
@@ -487,6 +490,21 @@ export function SvgPlayground() {
             </button>
           </div>
 
+          {/* Once */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-[10px] uppercase tracking-[0.18em] font-medium text-graphite-border">Once</label>
+            <button
+              onClick={() => update('once', !ps.once)}
+              className={`text-[12px] font-mono py-1.5 px-3 rounded-lg border transition-all text-left ${
+                ps.once
+                  ? 'bg-lime-glow border-lime-glow text-pitch-black'
+                  : 'border-subtle-ash text-graphite-border hover:border-pitch-black'
+              }`}
+            >
+              {ps.once ? '✓ on' : '○ off'}
+            </button>
+          </div>
+
           {/* Generated code snippet */}
           <div className="flex flex-col gap-1.5 col-span-2 sm:col-span-3 lg:col-span-1">
             <label className="text-[10px] uppercase tracking-[0.18em] font-medium text-graphite-border">Code</label>
@@ -494,7 +512,7 @@ export function SvgPlayground() {
               <pre className="text-[10px] font-mono bg-[#1a1a18] text-[#e8e8e3] rounded-lg px-2.5 py-2 overflow-x-auto leading-relaxed whitespace-pre-wrap break-all">
 {`<ScrollDraw
   easing="${ps.easing}"
-  speed={${ps.speed.toFixed(1)}}${ps.fade ? '\n  fade' : ''}${ps.stagger > 0 ? `\n  stagger={${ps.stagger.toFixed(2)}}` : ''}${ps.direction === 'reverse' ? '\n  direction="reverse"' : ''}
+  speed={${ps.speed.toFixed(1)}}${ps.fade ? '\n  fade' : ''}${ps.stagger > 0 ? `\n  stagger={${ps.stagger.toFixed(2)}}` : ''}${ps.direction === 'reverse' ? '\n  direction="reverse"' : ''}${ps.once ? '\n  once' : ''}
 >`}
               </pre>
             </div>

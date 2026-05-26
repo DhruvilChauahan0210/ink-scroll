@@ -70,6 +70,12 @@ beforeEach(() => {
   vi.stubGlobal('IntersectionObserver', FakeIO);
   vi.stubGlobal('requestAnimationFrame', raf.schedule);
   vi.stubGlobal('cancelAnimationFrame', raf.cancel);
+  vi.stubGlobal('matchMedia', (query: string) => ({
+    matches: false,
+    media: query,
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+  }));
   vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({
     top: 0, height: 500, left: 0, width: 500, right: 500, bottom: 500, x: 0, y: 0,
     toJSON: () => {},

@@ -5,7 +5,8 @@ export function scrollDraw(
   target: string | Element,
   options?: ScrollDrawOptions
 ): ScrollDrawInstance {
-  if (typeof window === 'undefined') return { destroy: () => {} };
+  const noop: ScrollDrawInstance = { destroy: () => {}, replay: () => {} };
+  if (typeof window === 'undefined') return noop;
 
   const container =
     typeof target === 'string'
@@ -14,7 +15,7 @@ export function scrollDraw(
 
   if (!container) {
     console.warn('[svg-scroll-draw] Container not found:', target);
-    return { destroy: () => {} };
+    return noop;
   }
 
   return createEngine(container, options);
