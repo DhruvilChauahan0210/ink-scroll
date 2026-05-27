@@ -65,6 +65,19 @@ interface ScrollDrawInstance {
     getProgress: () => number;
 }
 
+/**
+ * Returns a custom spring easing function.
+ * - `tension` controls oscillation frequency (default 2.5 — higher = more bouncy)
+ * - `friction` controls damping (default 2.2 — higher = less bouncy)
+ *
+ * @example
+ * scrollDraw('#svg', { easing: createSpring({ tension: 3, friction: 1.8 }) });
+ */
+declare function createSpring({ tension, friction, }?: {
+    tension?: number;
+    friction?: number;
+}): (t: number) => number;
+
 declare function scrollDraw(target: string | Element, options?: ScrollDrawOptions): ScrollDrawInstance;
 
-export { type ScrollDrawInstance, type ScrollDrawOptions, scrollDraw };
+export { type ScrollDrawInstance, type ScrollDrawOptions, createSpring, scrollDraw };

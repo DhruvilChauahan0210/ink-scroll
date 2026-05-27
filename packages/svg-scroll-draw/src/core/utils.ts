@@ -6,6 +6,21 @@ export const EASINGS: Record<string, (t: number) => number> = {
   spring:        (t) => 1 - Math.cos(t * Math.PI * 2.5) * Math.pow(1 - t, 2.2),
 };
 
+/**
+ * Returns a custom spring easing function.
+ * - `tension` controls oscillation frequency (default 2.5 — higher = more bouncy)
+ * - `friction` controls damping (default 2.2 — higher = less bouncy)
+ *
+ * @example
+ * scrollDraw('#svg', { easing: createSpring({ tension: 3, friction: 1.8 }) });
+ */
+export function createSpring({
+  tension = 2.5,
+  friction = 2.2,
+}: { tension?: number; friction?: number } = {}): (t: number) => number {
+  return (t: number) => 1 - Math.cos(t * Math.PI * tension) * Math.pow(1 - t, friction);
+}
+
 export function parseTrigger(str = 'top bottom'): { element: string; viewport: string } {
   const trimmed = str.trim();
   if (/^\d+(\.\d+)?%$/.test(trimmed)) return { element: 'top', viewport: trimmed };

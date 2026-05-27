@@ -175,6 +175,7 @@ export function createEngine(
   // ── Apply alpha to all paths ──────────────────────────────────────────────
 
   function applyAlpha(alpha: number, dir: 'forward' | 'reverse'): void {
+    (container as HTMLElement).style.setProperty('--scroll-draw-progress', String(alpha));
     if (clipDirection) {
       const a = dir === 'reverse' ? 1 - alpha : alpha;
       (container as HTMLElement).style.clipPath = computeClipPath(a);
@@ -206,6 +207,7 @@ export function createEngine(
   }
 
   function resetPaths(): void {
+    (container as HTMLElement).style.setProperty('--scroll-draw-progress', '0');
     if (clipDirection) {
       (container as HTMLElement).style.clipPath = computeClipPath(0);
       return;
@@ -300,6 +302,7 @@ export function createEngine(
         alpha = frozenAlpha;
       }
       currentAlpha = alpha;
+      (container as HTMLElement).style.setProperty('--scroll-draw-progress', String(alpha));
       const visual = effectiveDir === 'reverse' ? 1 - alpha : alpha;
       (container as HTMLElement).style.clipPath = computeClipPath(visual);
       onProgress?.(alpha);
@@ -358,7 +361,10 @@ export function createEngine(
       if (morphTo && el.tagName.toLowerCase() === 'path' && originalDs[i])
         el.setAttribute('d', morphPath(originalDs[i], morphTo, alpha));
 
-      if (i === 0) onProgress?.(alpha);
+      if (i === 0) {
+        onProgress?.(alpha);
+        (container as HTMLElement).style.setProperty('--scroll-draw-progress', String(alpha));
+      }
       if (alpha < 1) allComplete = false;
     });
 

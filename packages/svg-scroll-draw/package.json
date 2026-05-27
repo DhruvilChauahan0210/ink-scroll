@@ -105,6 +105,11 @@
       "import": "./dist/group/index.mjs",
       "require": "./dist/group/index.cjs"
     },
+    "./timeline": {
+      "types": "./dist/timeline/index.d.ts",
+      "import": "./dist/timeline/index.mjs",
+      "require": "./dist/timeline/index.cjs"
+    },
     "./web-component": {
       "types": "./dist/web-component/index.d.ts",
       "import": "./dist/web-component/index.mjs",

@@ -1,7 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { ScrollDraw } from 'svg-scroll-draw/react';
+import { scrollDrawGroup, scrollDrawSequence } from 'svg-scroll-draw/group';
+import { scrollDrawTimeline } from 'svg-scroll-draw/timeline';
 import Link from 'next/link';
 import { CopyButton } from './CopyButton';
 
@@ -292,6 +294,243 @@ function NetworkDiagram() {
   );
 }
 
+function GroupDemo() {
+  const c1 = useRef<HTMLDivElement>(null);
+  const c2 = useRef<HTMLDivElement>(null);
+  const c3 = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const els = [c1.current, c2.current, c3.current].filter(Boolean) as Element[];
+    const instance = scrollDrawGroup(els, {
+      easing: 'ease-out',
+      speed: 1.1,
+      fade: true,
+      once: true,
+      trigger: TRIGGER,
+    });
+    return () => instance.destroy();
+  }, []);
+
+  const boxCls = 'flex flex-col items-center gap-3 p-5 rounded-2xl border border-[#e8e8e8] bg-white';
+
+  return (
+    <div className="flex gap-4 justify-center w-full">
+      {/* Speed */}
+      <div ref={c1} className={boxCls}>
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+          <circle cx="32" cy="32" r="28" stroke="#ff90e8" strokeWidth="2.5" />
+          <path d="M20 32 L44 32" stroke="#ff90e8" strokeWidth="2.5" strokeLinecap="round" />
+          <path d="M38 25 L45 32 L38 39" stroke="#ff90e8" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M32 20 L32 14" stroke="#ff90e8" strokeWidth="2" strokeLinecap="round" />
+          <path d="M44 24 L48 20" stroke="#ff90e8" strokeWidth="2" strokeLinecap="round" />
+          <path d="M20 24 L16 20" stroke="#ff90e8" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+        <span style={{ fontFamily: 'system-ui', fontSize: 11, color: '#999', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Speed</span>
+      </div>
+
+      {/* Size */}
+      <div ref={c2} className={boxCls}>
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+          <rect x="12" y="12" width="40" height="40" rx="6" stroke="#ffc900" strokeWidth="2.5" />
+          <rect x="22" y="22" width="20" height="20" rx="3" stroke="#ffc900" strokeWidth="2.5" />
+          <line x1="32" y1="12" x2="32" y2="7"  stroke="#ffc900" strokeWidth="2" strokeLinecap="round" />
+          <line x1="52" y1="32" x2="57" y2="32" stroke="#ffc900" strokeWidth="2" strokeLinecap="round" />
+          <line x1="32" y1="52" x2="32" y2="57" stroke="#ffc900" strokeWidth="2" strokeLinecap="round" />
+          <line x1="12" y1="32" x2="7"  y2="32" stroke="#ffc900" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+        <span style={{ fontFamily: 'system-ui', fontSize: 11, color: '#999', letterSpacing: '0.08em', textTransform: 'uppercase' }}>~3 KB</span>
+      </div>
+
+      {/* Framework */}
+      <div ref={c3} className={boxCls}>
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+          <circle cx="32" cy="12" r="7" stroke="#5865F2" strokeWidth="2.5" />
+          <circle cx="12" cy="48" r="7" stroke="#5865F2" strokeWidth="2.5" />
+          <circle cx="52" cy="48" r="7" stroke="#5865F2" strokeWidth="2.5" />
+          <line x1="27" y1="17" x2="17"  y2="43" stroke="#5865F2" strokeWidth="2" strokeLinecap="round" />
+          <line x1="37" y1="17" x2="47"  y2="43" stroke="#5865F2" strokeWidth="2" strokeLinecap="round" />
+          <line x1="19" y1="48" x2="45"  y2="48" stroke="#5865F2" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+        <span style={{ fontFamily: 'system-ui', fontSize: 11, color: '#999', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Any&nbsp;framework</span>
+      </div>
+    </div>
+  );
+}
+
+function SequenceDemo() {
+  const c1 = useRef<HTMLDivElement>(null);
+  const c2 = useRef<HTMLDivElement>(null);
+  const c3 = useRef<HTMLDivElement>(null);
+  const [step, setStep] = useState(0);
+
+  useEffect(() => {
+    const els = [c1.current, c2.current, c3.current].filter(Boolean) as Element[];
+    const instance = scrollDrawSequence(els, {
+      easing: 'ease-out',
+      speed: 1.4,
+      fade: true,
+      trigger: TRIGGER,
+      onComplete: () => setStep((s) => Math.min(s + 1, 3)),
+    });
+    return () => instance.destroy();
+  }, []);
+
+  const steps = [
+    { ref: c1, label: 'Code', color: '#ff90e8', num: '01',
+      svg: (
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+          <path d="M22 20 L10 32 L22 44" stroke="#ff90e8" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M42 20 L54 32 L42 44" stroke="#ff90e8" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M36 14 L28 50"        stroke="#ff90e8" strokeWidth="2.5" strokeLinecap="round" />
+        </svg>
+      ),
+    },
+    { ref: c2, label: 'Build', color: '#ffc900', num: '02',
+      svg: (
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+          <path d="M12 46 L12 28 L32 16 L52 28 L52 46 Z" stroke="#ffc900" strokeWidth="2.5" strokeLinejoin="round" />
+          <path d="M22 46 L22 34 L42 34 L42 46"          stroke="#ffc900" strokeWidth="2.5" strokeLinejoin="round" />
+          <line x1="32" y1="16" x2="32" y2="34"          stroke="#ffc900" strokeWidth="2.5" strokeLinecap="round" />
+        </svg>
+      ),
+    },
+    { ref: c3, label: 'Ship', color: '#22c55e', num: '03',
+      svg: (
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+          <path d="M32 8 C32 8 48 20 48 36 C48 44 42 50 32 54 C22 50 16 44 16 36 C16 20 32 8 32 8Z" stroke="#22c55e" strokeWidth="2.5" strokeLinejoin="round" />
+          <circle cx="32" cy="36" r="8" stroke="#22c55e" strokeWidth="2.5" />
+          <line x1="32" y1="8"  x2="32" y2="28" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+      ),
+    },
+  ];
+
+  return (
+    <div className="flex flex-col gap-4 w-full max-w-[280px] mx-auto">
+      {steps.map(({ ref, label, color, num, svg }, i) => (
+        <div key={label} className="flex items-center gap-4">
+          <div
+            ref={ref}
+            className="flex items-center justify-center w-20 h-20 rounded-2xl border bg-white shrink-0"
+            style={{ borderColor: i < step ? color : '#e8e8e8', transition: 'border-color 0.3s ease' }}
+          >
+            {svg}
+          </div>
+          <div>
+            <p style={{ fontFamily: 'monospace', fontSize: 10, color: '#bbb', letterSpacing: '0.14em', textTransform: 'uppercase' }}>{num}</p>
+            <p style={{ fontFamily: 'system-ui', fontSize: 14, fontWeight: 600, color: i < step ? '#111' : '#bbb', transition: 'color 0.3s ease' }}>{label}</p>
+            {i < steps.length - 1 && (
+              <div style={{ width: 2, height: 12, background: i < step - 1 ? color : '#e8e8e8', marginTop: 6, marginLeft: 1, borderRadius: 1, transition: 'background 0.3s ease' }} />
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function TimelineDemo() {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!ref.current) return;
+    const instance = scrollDrawTimeline(ref.current, {
+      trigger: TRIGGER,
+      tracks: [
+        // Axes first
+        { selector: '.tl-axis', from: 0,    to: 0.28, easing: 'ease-out' },
+        // Bars staggered, each with its own window
+        { selector: '.tl-b1',   from: 0.1,  to: 0.42, easing: 'ease-out' },
+        { selector: '.tl-b2',   from: 0.26, to: 0.56, easing: 'ease-out' },
+        { selector: '.tl-b3',   from: 0.42, to: 0.72, easing: 'ease-out' },
+        { selector: '.tl-b4',   from: 0.58, to: 0.88, easing: 'ease-out' },
+        // Trend line last, after all bars are visible
+        { selector: '.tl-trend', from: 0.75, to: 1.0,  easing: 'spring'  },
+      ],
+    });
+    return () => instance.destroy();
+  }, []);
+
+  const bars = [
+    { cls: 'tl-b1', x: 75,  y2: 62,  color: '#ff90e8', label: 'Q1', val: '$92k' },
+    { cls: 'tl-b2', x: 135, y2: 32,  color: '#ffc900', label: 'Q2', val: '$122k' },
+    { cls: 'tl-b3', x: 195, y2: 78,  color: '#5865F2', label: 'Q3', val: '$77k' },
+    { cls: 'tl-b4', x: 255, y2: 44,  color: '#22c55e', label: 'Q4', val: '$111k' },
+  ] as const;
+
+  const Y_BASE = 158;
+
+  return (
+    <div ref={ref} className="w-full flex justify-center">
+      <svg width="310" height="200" viewBox="0 0 310 200" fill="none" style={{ fontFamily: 'monospace' }}>
+
+        {/* Static: subtle grid */}
+        {[40, 70, 100, 130].map((offset) => (
+          <line key={offset}
+            x1="48" y1={Y_BASE - offset} x2="285" y2={Y_BASE - offset}
+            stroke="#f0f0f0" strokeWidth="0.5" strokeDasharray="3 3"
+          />
+        ))}
+
+        {/* Static: y-axis value labels */}
+        {[0, 40, 80, 120].map((v, i) => (
+          <text key={v} x="42" y={Y_BASE - i * 30 + 4}
+            textAnchor="end" fontSize="8" fill="#ccc"
+          >${v}k</text>
+        ))}
+
+        {/* Static: bar fills (always visible as ghost) */}
+        {bars.map(({ x, y2, color }) => (
+          <rect key={x} x={x - 16} y={y2} width={32} height={Y_BASE - y2}
+            fill={color} fillOpacity="0.07"
+          />
+        ))}
+
+        {/* Static: x labels + value badges */}
+        {bars.map(({ x, label, val, color }) => (
+          <g key={x}>
+            <text x={x} y={Y_BASE + 13} textAnchor="middle" fontSize="8" fill="#aaa">{label}</text>
+            <text x={x} y={22} textAnchor="middle" fontSize="8" fontWeight="bold" fill={color}>{val}</text>
+          </g>
+        ))}
+
+        {/* Animated: axes */}
+        <line className="tl-axis" x1="48" y1="25" x2="48" y2={Y_BASE} stroke="#ccc" strokeWidth="1.5" />
+        <line className="tl-axis" x1="48" y1={Y_BASE} x2="288" y2={Y_BASE} stroke="#ccc" strokeWidth="1.5" />
+
+        {/* Animated: bars — thick vertical lines drawing bottom-to-top */}
+        {bars.map(({ cls, x, y2, color }) => (
+          <line key={cls}
+            className={cls}
+            x1={x} y1={Y_BASE} x2={x} y2={y2}
+            stroke={color} strokeWidth="30" strokeLinecap="round"
+          />
+        ))}
+
+        {/* Animated: trend line connecting bar peaks */}
+        <polyline
+          className="tl-trend"
+          points={bars.map(({ x, y2 }) => `${x},${y2}`).join(' ')}
+          stroke="#111" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+        />
+        {/* Animated: trend dots */}
+        {bars.map(({ x, y2 }) => (
+          <circle key={x} className="tl-trend"
+            cx={x} cy={y2} r="4.5"
+            stroke="#111" strokeWidth="2"
+          />
+        ))}
+
+        {/* Static: "Timeline API" label */}
+        <text x="168" y="192" textAnchor="middle" fontSize="8"
+          fill="#bbb" letterSpacing="0.1em" style={{ textTransform: 'uppercase' }}>
+          Each bar is an independent track
+        </text>
+      </svg>
+    </div>
+  );
+}
+
 /* ── Example cards data ───────────────────────────────────── */
 
 const EXAMPLES = [
@@ -435,6 +674,154 @@ const EXAMPLES = [
   </svg>
 </ScrollDraw>`,
   },
+  {
+    id: 'astro',
+    label: 'Astro Integration',
+    tag: 'data-scroll-draw · initScrollDraw()',
+    description:
+      'Zero-JS server components — add data-scroll-draw to any element and call initScrollDraw() in a client script. Options are passed as a JSON attribute. No framework wrapper needed.',
+    preview: (
+      <div style={{ width: '100%', background: '#0f172a', borderRadius: 12, padding: '28px 24px', fontFamily: 'monospace', fontSize: 12, lineHeight: 1.7 }}>
+        <div style={{ color: '#94a3b8', marginBottom: 16, fontSize: 10, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+          src/pages/index.astro
+        </div>
+        <div>
+          <span style={{ color: '#f472b6' }}>&lt;div</span>
+          <span style={{ color: '#7dd3fc' }}> data-scroll-draw</span>
+        </div>
+        <div style={{ paddingLeft: 16 }}>
+          <span style={{ color: '#7dd3fc' }}>data-scroll-draw-options</span>
+          <span style={{ color: '#e2e8f0' }}>=</span>
+          <span style={{ color: '#86efac' }}>'&#123;"easing":"ease-out","once":true&#125;'</span>
+        </div>
+        <div><span style={{ color: '#f472b6' }}>&gt;</span></div>
+        <div style={{ paddingLeft: 16 }}>
+          <span style={{ color: '#f472b6' }}>&lt;svg</span>
+          <span style={{ color: '#7dd3fc' }}> viewBox</span>
+          <span style={{ color: '#e2e8f0' }}>=</span>
+          <span style={{ color: '#86efac' }}>"0 0 200 80"</span>
+          <span style={{ color: '#f472b6' }}>&gt;</span>
+        </div>
+        <div style={{ paddingLeft: 32 }}>
+          <span style={{ color: '#f472b6' }}>&lt;path</span>
+          <span style={{ color: '#7dd3fc' }}> d</span>
+          <span style={{ color: '#e2e8f0' }}>=</span>
+          <span style={{ color: '#86efac' }}>"M10 40 Q100 5 190 40"</span>
+        </div>
+        <div style={{ paddingLeft: 32, color: '#94a3b8' }}>stroke="white" fill="none" /&gt;</div>
+        <div style={{ paddingLeft: 16 }}><span style={{ color: '#f472b6' }}>&lt;/svg&gt;</span></div>
+        <div><span style={{ color: '#f472b6' }}>&lt;/div&gt;</span></div>
+        <div style={{ marginTop: 16 }}><span style={{ color: '#f472b6' }}>&lt;script&gt;</span></div>
+        <div style={{ paddingLeft: 16 }}>
+          <span style={{ color: '#c084fc' }}>import</span>
+          <span style={{ color: '#e2e8f0' }}> &#123; initScrollDraw &#125; </span>
+          <span style={{ color: '#c084fc' }}>from</span>
+          <span style={{ color: '#86efac' }}> 'svg-scroll-draw/astro'</span>
+          <span style={{ color: '#e2e8f0' }}>;</span>
+        </div>
+        <div style={{ paddingLeft: 16, color: '#fbbf24' }}>initScrollDraw();</div>
+        <div><span style={{ color: '#f472b6' }}>&lt;/script&gt;</span></div>
+      </div>
+    ),
+    code: `// src/pages/index.astro
+---
+// No server-side imports needed
+---
+
+<div
+  data-scroll-draw
+  data-scroll-draw-options='{"easing":"ease-out","fade":true,"once":true}'
+>
+  <svg viewBox="0 0 200 80" fill="none">
+    <path d="M10 40 Q100 5 190 40"
+      stroke="white" strokeWidth="2" />
+  </svg>
+</div>
+
+<script>
+  import { initScrollDraw } from 'svg-scroll-draw/astro';
+
+  // Finds all [data-scroll-draw] on the page and
+  // initialises each one — no React, no Vue needed.
+  initScrollDraw();
+</script>`,
+  },
+  {
+    id: 'timeline-api',
+    label: 'Timeline API',
+    tag: 'scrollDrawTimeline · independent tracks',
+    description:
+      'Four quarterly bars and a trend line — each animated on its own independent scroll window using scrollDrawTimeline. Axes draw first (0→28%), then Q1–Q4 bars stagger across (10→88%), and the trend line traces last (75→100%) once all bars are fully visible.',
+    preview: <TimelineDemo />,
+    code: `import { scrollDrawTimeline } from 'svg-scroll-draw/timeline';
+
+// Each track owns its own from/to slice of the scroll range.
+// Unlike stagger (time offset), windows can overlap freely.
+scrollDrawTimeline('#chart', {
+  trigger: { start: 'top 88%', end: 'top 25%' },
+  tracks: [
+    { selector: '.axis',  from: 0,    to: 0.28, easing: 'ease-out' },
+    { selector: '.bar-1', from: 0.1,  to: 0.42, easing: 'ease-out' },
+    { selector: '.bar-2', from: 0.26, to: 0.56, easing: 'ease-out' },
+    { selector: '.bar-3', from: 0.42, to: 0.72, easing: 'ease-out' },
+    { selector: '.bar-4', from: 0.58, to: 0.88, easing: 'ease-out' },
+    // Trend line draws only after all bars are visible
+    { selector: '.trend', from: 0.75, to: 1.0,  easing: 'spring'   },
+  ],
+});`,
+  },
+  {
+    id: 'group-api',
+    label: 'Group API',
+    tag: 'scrollDrawGroup · synchronized',
+    description:
+      'Three separate SVG containers — Speed, Size, and Framework icons — all animate simultaneously the moment the section scrolls into view. scrollDrawGroup wires them to the same scroll timeline with one call.',
+    preview: <GroupDemo />,
+    code: `import { scrollDrawGroup } from 'svg-scroll-draw/group';
+
+// All three containers share the same options and
+// start drawing at exactly the same scroll position.
+const group = scrollDrawGroup(
+  [speedRef.current, sizeRef.current, frameworkRef.current],
+  {
+    easing: 'ease-out',
+    speed:  1.1,
+    fade:   true,
+    once:   true,
+    trigger: { start: 'top 88%', end: 'top 25%' },
+  }
+);
+
+// One call controls all instances
+group.replay();
+group.pause();
+group.destroy(); // cleanup on unmount`,
+  },
+  {
+    id: 'sequence-api',
+    label: 'Sequence API',
+    tag: 'scrollDrawSequence · one after another',
+    description:
+      'Three steps — Code, Build, Ship — draw in strict sequence: each one starts only after the previous reaches 100%. The border and label color up as each step completes. Uses scrollDrawSequence with onComplete to track state.',
+    preview: <SequenceDemo />,
+    code: `import { scrollDrawSequence } from 'svg-scroll-draw/group';
+
+// Each container starts drawing only after
+// the previous one fully completes.
+const seq = scrollDrawSequence(
+  [codeRef.current, buildRef.current, shipRef.current],
+  {
+    easing:     'ease-out',
+    speed:      1.4,
+    fade:       true,
+    trigger:    { start: 'top 88%', end: 'top 25%' },
+    onComplete: () => setStep((s) => s + 1),
+  }
+);
+
+seq.replay();   // restart from step 1
+seq.destroy();  // cleanup on unmount`,
+  },
 ];
 
 /* ── Page ─────────────────────────────────────────────────── */
@@ -452,7 +839,7 @@ export function ExamplesPage() {
           <Link href="/playground" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium">
             ⚡ Playground
           </Link>
-          <Link href="/" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium">
+          <Link href="/docs" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium">
             ← Docs
           </Link>
         </div>
@@ -472,7 +859,7 @@ export function ExamplesPage() {
             </span>
           </h1>
           <p className="text-base md:text-lg text-graphite-border max-w-2xl leading-relaxed">
-            Six production-ready patterns — logo reveals, charts, signatures, diagrams, and more.
+            Ten production-ready patterns — logo reveals, charts, signatures, diagrams, Timeline API, Group API, Sequence API, and more.
             Each one is powered by <code className="font-mono text-pitch-black text-[0.9em] bg-marketplace-gray border border-subtle-ash px-1.5 py-0.5 rounded-md">svg-scroll-draw</code> and
             works in React, Next.js, Vue, and vanilla JS.
             Scroll down to see them draw live.

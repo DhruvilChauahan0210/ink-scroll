@@ -614,7 +614,7 @@ export function SvgPlayground() {
       {/* ── Footer ──────────────────────────────────────────────────── */}
       <footer className="px-6 py-4 text-center text-[11px] font-mono text-graphite-border">
         Paste any SVG · tweak controls · hit Share to get a link ·{' '}
-        <a href="/" className="underline underline-offset-2 hover:text-pitch-black transition-colors">back to docs</a>
+        <a href="/docs" className="underline underline-offset-2 hover:text-pitch-black transition-colors">back to docs</a>
       </footer>
 
     </div>

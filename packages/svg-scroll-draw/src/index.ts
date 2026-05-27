@@ -22,3 +22,4 @@ export function scrollDraw(
 }
 
 export type { ScrollDrawOptions, ScrollDrawInstance };
+export { createSpring } from './core/utils';

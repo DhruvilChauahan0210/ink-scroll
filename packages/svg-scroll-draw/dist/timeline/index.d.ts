@@ -1,0 +1,64 @@
+type EasingName = 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | 'spring';
+interface ScrollDrawInstance {
+    destroy: () => void;
+    /** Reset and replay the animation from the beginning. */
+    replay: () => void;
+    /** Pause the animation at the current progress. */
+    pause: () => void;
+    /** Resume a paused animation. */
+    resume: () => void;
+    /** Jump to a specific progress value (0–1) and pause. */
+    seek: (progress: number) => void;
+    /** Returns current draw progress (0–1). */
+    getProgress: () => number;
+}
+
+interface TimelineTrack {
+    /** CSS selector for paths within the container to animate on this track. */
+    selector: string;
+    /** Progress value (0–1) within the overall scroll range where this track starts. */
+    from: number;
+    /** Progress value (0–1) within the overall scroll range where this track ends. */
+    to: number;
+    /** Easing for this track. Defaults to 'linear'. */
+    easing?: EasingName | ((t: number) => number);
+    /** Fade opacity in sync with this track's draw progress. */
+    fade?: boolean;
+}
+interface ScrollDrawTimelineOptions {
+    /** Scroll trigger window. Same syntax as scrollDraw(). */
+    trigger?: {
+        start?: string;
+        end?: string;
+    };
+    /** Overall speed multiplier. Default 1. */
+    speed?: number;
+    /** Lock at max progress once reached. Default false. */
+    once?: boolean;
+    /** Scroll axis. Default 'y'. */
+    axis?: 'x' | 'y';
+    /** Per-path animation tracks — each with independent start/end within the scroll range. */
+    tracks: TimelineTrack[];
+    /** Fires when all tracks have reached their full draw progress. */
+    onComplete?: () => void;
+}
+/**
+ * Animate multiple path groups with independent start/end windows within a
+ * single scroll range. Unlike `stagger` (which offsets by time), each track
+ * defines its own `from`/`to` slice of the 0–1 progress range.
+ *
+ * @example
+ * import { scrollDrawTimeline } from 'svg-scroll-draw/timeline';
+ *
+ * scrollDrawTimeline('#diagram', {
+ *   trigger: { start: 'top 80%', end: 'bottom 20%' },
+ *   tracks: [
+ *     { selector: '.outline', from: 0,   to: 0.5, easing: 'ease-out' },
+ *     { selector: '.detail',  from: 0.3, to: 0.8, easing: 'ease-in'  },
+ *     { selector: '.label',   from: 0.7, to: 1.0, easing: 'spring'   },
+ *   ],
+ * });
+ */
+declare function scrollDrawTimeline(target: string | Element, options: ScrollDrawTimelineOptions): ScrollDrawInstance;
+
+export { type ScrollDrawTimelineOptions, type TimelineTrack, scrollDrawTimeline };

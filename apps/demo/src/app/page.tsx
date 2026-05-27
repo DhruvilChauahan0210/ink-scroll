@@ -124,6 +124,12 @@ export default function Home() {
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <a
+            href="/docs"
+            className="inline-flex text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium items-center gap-1"
+          >
+            Docs
+          </a>
+          <a
             href="/examples"
             className="hidden sm:inline-flex text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium items-center gap-1"
           >
