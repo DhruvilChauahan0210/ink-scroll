@@ -56,6 +56,14 @@ const NAV_GROUPS = [
     items: [{ id: 'use-scroll-draw-progress', label: 'useScrollDrawProgress' }],
   },
   {
+    label: 'v0.7.0',
+    items: [
+      { id: 'create-spring',      label: 'createSpring' },
+      { id: 'timeline',           label: 'scrollDrawTimeline' },
+      { id: 'css-custom-property', label: 'CSS Custom Prop' },
+    ],
+  },
+  {
     label: 'TypeScript',
     items: [{ id: 'typescript', label: 'Types' }],
   },
@@ -201,7 +209,7 @@ export function DocsPage() {
             rel="noopener noreferrer"
             className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono"
           >
-            v0.6.2
+            v0.7.0
           </a>
           <a
             href={GH}
@@ -903,6 +911,137 @@ export function ParallaxSection() {
               <Opt name="scrollContainer" type="string | Element">Custom scroll container.</Opt>
               <Opt name="once" type="boolean" defaultVal="false">Lock at max progress once reached — never decreases on scroll back.</Opt>
             </OptGroup>
+          </DocSection>
+
+          {/* ── createSpring ─────────────────────────────────── */}
+          <DocSection id="create-spring" tag="v0.7.0" heading="createSpring">
+            <p className="text-sm text-graphite-border leading-relaxed mb-2">
+              Returns a custom spring easing function. The built-in{' '}
+              <code className="font-mono text-pitch-black">'spring'</code> easing is hardcoded —{' '}
+              <code className="font-mono text-pitch-black">createSpring</code> lets you tune it.
+            </p>
+            <OptGroup>
+              <Opt name="tension" type="number" defaultVal="2.5">
+                Oscillation frequency. Higher = more bouncy, faster oscillation.
+              </Opt>
+              <Opt name="friction" type="number" defaultVal="2.2">
+                Damping strength. Higher = less bouncy, settles faster.
+              </Opt>
+            </OptGroup>
+            <CodeBlock file="spring.js">
+{`import { scrollDraw, createSpring } from 'svg-scroll-draw';
+
+// Gentle bounce — close to the built-in 'spring'
+scrollDraw('#svg', { easing: createSpring() });
+
+// Tight, snappy spring
+scrollDraw('#svg', { easing: createSpring({ tension: 4, friction: 3 }) });
+
+// Slow, wobbly spring
+scrollDraw('#svg', { easing: createSpring({ tension: 1.5, friction: 1.2 }) });`}
+            </CodeBlock>
+            <Note>
+              <code className="font-mono">createSpring()</code> with no arguments produces the same curve as{' '}
+              <code className="font-mono">easing: 'spring'</code>. Use it when you need to parameterize the bounce.
+            </Note>
+          </DocSection>
+
+          {/* ── scrollDrawTimeline ───────────────────────────── */}
+          <DocSection id="timeline" tag="v0.7.0" heading="scrollDrawTimeline">
+            <p className="text-sm text-graphite-border leading-relaxed mb-2">
+              Animate multiple path groups with independent start/end windows within a single scroll range.
+              Unlike <code className="font-mono text-pitch-black">stagger</code> (which offsets by time),
+              each track defines its own <code className="font-mono text-pitch-black">from</code>/
+              <code className="font-mono text-pitch-black">to</code> slice of the 0–1 progress range —
+              and they can overlap freely.
+            </p>
+            <CodeBlock file="timeline.js">
+{`import { scrollDrawTimeline } from 'svg-scroll-draw/timeline';
+
+const instance = scrollDrawTimeline('#diagram', {
+  trigger: { start: 'top 80%', end: 'bottom 20%' },
+  tracks: [
+    // Axes draw first
+    { selector: '.axis',    from: 0,    to: 0.3,  easing: 'ease-out' },
+    // Bars stagger, each with its own window
+    { selector: '.bar-q1',  from: 0.1,  to: 0.45, easing: 'ease-out' },
+    { selector: '.bar-q2',  from: 0.28, to: 0.58, easing: 'ease-out' },
+    { selector: '.bar-q3',  from: 0.45, to: 0.75, easing: 'ease-out' },
+    { selector: '.bar-q4',  from: 0.6,  to: 0.88, easing: 'ease-out' },
+    // Trend line traces last
+    { selector: '.trend',   from: 0.75, to: 1.0,  easing: 'spring'   },
+  ],
+  onComplete: () => console.log('all tracks done'),
+});
+
+instance.seek(0.5);   // jump to 50% of total range
+instance.destroy();`}
+            </CodeBlock>
+            <Sub>Track options</Sub>
+            <OptGroup>
+              <Opt name="selector" type="string">
+                CSS selector for SVG elements to animate on this track — scoped to the container.
+              </Opt>
+              <Opt name="from" type="number">
+                Progress value (0–1) within the overall range where this track starts drawing.
+              </Opt>
+              <Opt name="to" type="number">
+                Progress value (0–1) within the overall range where this track finishes drawing.
+              </Opt>
+              <Opt name="easing" type="EasingName | function" defaultVal="'linear'">
+                Easing applied to this track's local progress independently of other tracks.
+              </Opt>
+              <Opt name="fade" type="boolean" defaultVal="false">
+                Fade opacity in sync with this track's draw progress.
+              </Opt>
+            </OptGroup>
+            <Sub>Timeline-level options</Sub>
+            <OptGroup>
+              <Opt name="trigger" type="TriggerConfig">Same trigger syntax as <code className="font-mono text-pitch-black">scrollDraw()</code>.</Opt>
+              <Opt name="speed" type="number" defaultVal="1">Overall speed multiplier applied to the full range.</Opt>
+              <Opt name="once" type="boolean" defaultVal="false">Lock at max progress once reached.</Opt>
+              <Opt name="axis" type="'x' | 'y'" defaultVal="'y'">Scroll axis.</Opt>
+              <Opt name="onComplete" type="() => void">Fires when the overall progress reaches 1.</Opt>
+            </OptGroup>
+          </DocSection>
+
+          {/* ── CSS Custom Property ──────────────────────────── */}
+          <DocSection id="css-custom-property" tag="v0.7.0" heading="CSS Custom Property">
+            <p className="text-sm text-graphite-border leading-relaxed mb-2">
+              Every <code className="font-mono text-pitch-black">scrollDraw()</code> instance automatically
+              sets <code className="font-mono text-pitch-black">--scroll-draw-progress</code> on the container
+              element on every animation frame. Use it to drive CSS animations without any JS callbacks.
+            </p>
+            <CodeBlock file="custom-property.css">
+{`/* Drive any CSS property directly from scroll progress */
+.hero-text {
+  opacity: var(--scroll-draw-progress);
+  transform: translateY(calc((1 - var(--scroll-draw-progress)) * 24px));
+}
+
+.highlight {
+  background-size: calc(var(--scroll-draw-progress) * 100%) 100%;
+}
+
+.counter {
+  /* Combine with @property for smooth transitions */
+  color: oklch(from var(--scroll-draw-progress) 60% 0.2 250);
+}`}
+            </CodeBlock>
+            <CodeBlock file="custom-property.js">
+{`import { scrollDraw } from 'svg-scroll-draw';
+
+// No onProgress callback needed —
+// --scroll-draw-progress is set automatically
+scrollDraw('#hero-svg', { easing: 'ease-out', once: true });
+
+// The CSS does the rest:`}
+            </CodeBlock>
+            <Note>
+              The value is the progress of the <strong>first path</strong> (path index 0) in normal mode,
+              and the overall alpha in clip mode. Use{' '}
+              <code className="font-mono">onProgress</code> if you need per-path values.
+            </Note>
           </DocSection>
 
           {/* ── TypeScript ───────────────────────────────────── */}

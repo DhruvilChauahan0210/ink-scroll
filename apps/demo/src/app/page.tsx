@@ -27,7 +27,7 @@ const jsonLd = {
   downloadUrl: 'https://www.npmjs.com/package/svg-scroll-draw',
   codeRepository: 'https://github.com/DhruvilChauahan0210/ink-scroll',
   license: 'https://opensource.org/licenses/MIT',
-  softwareVersion: '0.6.2',
+  softwareVersion: '0.7.0',
   programmingLanguage: ['JavaScript', 'TypeScript'],
   author: {
     '@type': 'Person',
@@ -98,6 +98,9 @@ const MARQUEE_ITEMS = [
   'Astro',
   'Nuxt',
   'Path Morphing',
+  'Timeline API',
+  'createSpring',
+  'CSS Custom Property',
   'Group API',
   'Sequence API',
   'Pause · Resume · Seek',
@@ -146,7 +149,7 @@ export default function Home() {
             target="_blank" rel="noopener noreferrer"
             className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono"
           >
-            v0.6.2
+            v0.7.0
           </a>
           <a
             href={GH}
@@ -879,7 +882,7 @@ const seq = scrollDrawSequence(
               </svg>
               npm
             </a>
-            <span className="text-[11px] font-mono text-graphite-border">v0.6.2</span>
+            <span className="text-[11px] font-mono text-graphite-border">v0.7.0</span>
           </div>
         </div>
 
