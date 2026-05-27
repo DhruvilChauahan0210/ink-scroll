@@ -139,6 +139,12 @@ export default function Home() {
             Examples
           </a>
           <a
+            href="/changelog"
+            className="hidden sm:inline-flex text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium items-center gap-1"
+          >
+            Changelog
+          </a>
+          <a
             href="/playground"
             className="hidden sm:inline-flex text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium items-center gap-1"
           >

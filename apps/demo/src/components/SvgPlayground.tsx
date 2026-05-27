@@ -19,6 +19,8 @@ interface PlayState {
   widthFrom: number;
   widthTo: number;
   useWidth: boolean;
+  springTension: number;
+  springFriction: number;
 }
 
 // ── Constants ──────────────────────────────────────────────────────────────────
@@ -82,6 +84,8 @@ const DEFAULT_STATE: PlayState = {
   widthFrom: 1,
   widthTo: 4,
   useWidth: false,
+  springTension: 2.5,
+  springFriction: 2.2,
 };
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
@@ -196,7 +200,10 @@ export function SvgPlayground() {
       const len = getLen(el);
       if (!len) return;
       const shifted = Math.min(1, Math.max(0, p - i * state.stagger));
-      const alpha = EASINGS[state.easing](shifted);
+      const easeFn = state.easing === 'spring'
+        ? (t: number) => 1 - Math.cos(t * Math.PI * state.springTension) * Math.pow(1 - t, state.springFriction)
+        : EASINGS[state.easing];
+      const alpha = easeFn(shifted);
       el.style.strokeDashoffset =
         state.direction === 'reverse' ? `${len * alpha}` : `${len * (1 - alpha)}`;
       if (state.fade) {
@@ -466,6 +473,34 @@ export function SvgPlayground() {
               ))}
             </select>
           </div>
+
+          {/* Spring tension — only when spring easing is active */}
+          {ps.easing === 'spring' && (
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[10px] uppercase tracking-[0.18em] font-medium text-graphite-border">
+                Tension <span className="font-mono normal-case">{ps.springTension.toFixed(1)}</span>
+              </label>
+              <input
+                type="range" min="0.5" max="6" step="0.1"
+                value={ps.springTension}
+                onChange={e => update('springTension', parseFloat(e.target.value))}
+              />
+            </div>
+          )}
+
+          {/* Spring friction — only when spring easing is active */}
+          {ps.easing === 'spring' && (
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[10px] uppercase tracking-[0.18em] font-medium text-graphite-border">
+                Friction <span className="font-mono normal-case">{ps.springFriction.toFixed(1)}</span>
+              </label>
+              <input
+                type="range" min="0.5" max="5" step="0.1"
+                value={ps.springFriction}
+                onChange={e => update('springFriction', parseFloat(e.target.value))}
+              />
+            </div>
+          )}
 
           {/* Speed */}
           <div className="flex flex-col gap-1.5">

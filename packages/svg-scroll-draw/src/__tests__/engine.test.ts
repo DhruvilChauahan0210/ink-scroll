@@ -294,6 +294,45 @@ describe('createEngine — stagger', () => {
   });
 });
 
+describe('createEngine — --scroll-draw-progress CSS custom property', () => {
+  it('sets --scroll-draw-progress on the container element each frame', () => {
+    const path = makeSvgPath();
+    const container = makeContainer([path]);
+
+    createEngine(container);
+    vi.stubGlobal('scrollY', 300);
+    FakeIO.instances[0].trigger(true);
+    raf.tick();
+
+    const val = container.style.getPropertyValue('--scroll-draw-progress');
+    expect(val).not.toBe('');
+    const num = parseFloat(val);
+    expect(num).toBeGreaterThan(0);
+    expect(num).toBeLessThanOrEqual(1);
+  });
+
+  it('resets --scroll-draw-progress to 0 on replay()', () => {
+    const container = makeContainer([makeSvgPath()]);
+    const instance = createEngine(container);
+
+    vi.stubGlobal('scrollY', 500);
+    FakeIO.instances[0].trigger(true);
+    raf.tick();
+
+    instance.replay();
+    expect(container.style.getPropertyValue('--scroll-draw-progress')).toBe('0');
+  });
+
+  it('sets --scroll-draw-progress to seeked value on seek()', () => {
+    const container = makeContainer([makeSvgPath()]);
+    const instance = createEngine(container);
+
+    instance.seek(0.75);
+    const val = parseFloat(container.style.getPropertyValue('--scroll-draw-progress'));
+    expect(val).toBeCloseTo(0.75, 2);
+  });
+});
+
 describe('scrollDraw', () => {
   it('returns no-op destroy when selector finds nothing', () => {
     const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});

@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   EASINGS,
+  createSpring,
   parseTrigger,
   elementAnchorY,
   viewportAnchorY,
@@ -41,6 +42,48 @@ describe('EASINGS', () => {
     // symmetric: fn(t) + fn(1-t) ≈ 1
     expect(fn(0.2) + fn(0.8)).toBeCloseTo(1, 10);
     expect(fn(0.3) + fn(0.7)).toBeCloseTo(1, 10);
+  });
+});
+
+describe('createSpring', () => {
+  it('returns 0 at t=0', () => {
+    expect(createSpring()(0)).toBeCloseTo(0);
+  });
+
+  it('returns 1 at t=1', () => {
+    expect(createSpring()(1)).toBeCloseTo(1, 5);
+  });
+
+  it('default matches built-in spring easing', () => {
+    const custom = createSpring();
+    for (const t of [0, 0.25, 0.5, 0.75, 1]) {
+      expect(custom(t)).toBeCloseTo(EASINGS.spring(t), 10);
+    }
+  });
+
+  it('tension changes the curve shape', () => {
+    const low  = createSpring({ tension: 1.5 });
+    const high = createSpring({ tension: 4 });
+    // Different tension → different midpoint values
+    expect(low(0.5)).not.toBeCloseTo(high(0.5), 3);
+  });
+
+  it('higher friction damps faster (closer to 1 at t=1)', () => {
+    const loose = createSpring({ friction: 1 });
+    const tight = createSpring({ friction: 4 });
+    // Both should reach ~1 at t=1
+    expect(tight(1)).toBeCloseTo(1, 3);
+    expect(loose(1)).toBeCloseTo(1, 3);
+  });
+
+  it('custom params produce different curve than defaults', () => {
+    const def    = createSpring();
+    const custom = createSpring({ tension: 1, friction: 1 });
+    // At least one intermediate point should differ
+    const differs = [0.2, 0.4, 0.6, 0.8].some(
+      (t) => Math.abs(def(t) - custom(t)) > 0.001
+    );
+    expect(differs).toBe(true);
   });
 });
 
