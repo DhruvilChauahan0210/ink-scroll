@@ -52,44 +52,10 @@ export function MobileMenu() {
       position: 'fixed',
       top: 0, left: 0, right: 0, bottom: 0,
       width: '100vw', height: '100vh',
-      zIndex: 99999,
+      zIndex: 49, // below the sticky nav (z-50) so nav stays on top unchanged
+      pointerEvents: open ? 'auto' : 'none',
     }}>
-      {/* ── Top bar — NO animation, instantly visible like the sticky nav ── */}
-      <div style={{
-        position: 'absolute', top: 0, left: 0, right: 0,
-        height: 56,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '0 24px',
-        backgroundColor: 'var(--color-light-linen, #ffffff)',
-        borderBottom: '1px solid var(--color-pitch-black, #000)',
-      }}>
-        <span style={{
-          fontFamily: 'var(--font-display, sans-serif)',
-          fontWeight: 800, fontSize: 14, letterSpacing: '-0.02em',
-          color: 'var(--color-pitch-black, #000)',
-        }}>
-          svg-scroll-draw
-        </span>
-        <button
-          onClick={handleClose}
-          aria-label="Close menu"
-          style={{
-            display: 'inline-flex', alignItems: 'center', gap: 6,
-            padding: '6px 14px', borderRadius: 9999,
-            border: '1.5px solid var(--color-pitch-black, #000)',
-            background: 'transparent',
-            color: 'var(--color-pitch-black, #000)',
-            fontFamily: 'var(--font-sans, sans-serif)',
-            fontSize: 12, fontWeight: 600, cursor: 'pointer',
-          }}
-        >
-          Close <span style={{ fontSize: 14 }}>✕</span>
-        </button>
-      </div>
-
-      {/* ── Animated panel — slides in below the top bar ── */}
+      {/* ── Animated panel — starts below the sticky nav (56px) ── */}
       <div style={{
         position: 'absolute', top: 56, left: 0, right: 0, bottom: 0,
         display: 'flex', flexDirection: 'column',
@@ -190,10 +156,10 @@ export function MobileMenu() {
 
   return (
     <>
-      {/* Hamburger */}
+      {/* Hamburger / Close toggle — stays in the original nav, unchanged position */}
       <button
-        onClick={handleOpen}
-        aria-label="Open navigation menu"
+        onClick={rendered ? handleClose : handleOpen}
+        aria-label={rendered ? 'Close menu' : 'Open menu'}
         className="lg:hidden"
         style={{
           display: 'flex', flexDirection: 'column',
@@ -201,11 +167,30 @@ export function MobileMenu() {
           gap: 5, width: 36, height: 36,
           background: 'none', border: 'none', cursor: 'pointer',
           flexShrink: 0, padding: 0,
+          position: 'relative',
         }}
       >
-        <span style={{ display: 'block', width: 20, height: 2, background: 'currentColor', borderRadius: 1 }} />
-        <span style={{ display: 'block', width: 20, height: 2, background: 'currentColor', borderRadius: 1 }} />
-        <span style={{ display: 'block', width: 20, height: 2, background: 'currentColor', borderRadius: 1 }} />
+        {/* Top bar — rotates to form ✕ when open */}
+        <span style={{
+          display: 'block', width: 20, height: 2,
+          background: 'currentColor', borderRadius: 1,
+          transition: 'transform 0.25s ease, opacity 0.25s ease',
+          transform: rendered ? 'translateY(7px) rotate(45deg)' : 'none',
+        }} />
+        {/* Middle bar — fades out when open */}
+        <span style={{
+          display: 'block', width: 20, height: 2,
+          background: 'currentColor', borderRadius: 1,
+          transition: 'opacity 0.25s ease',
+          opacity: rendered ? 0 : 1,
+        }} />
+        {/* Bottom bar — rotates to form ✕ when open */}
+        <span style={{
+          display: 'block', width: 20, height: 2,
+          background: 'currentColor', borderRadius: 1,
+          transition: 'transform 0.25s ease, opacity 0.25s ease',
+          transform: rendered ? 'translateY(-7px) rotate(-45deg)' : 'none',
+        }} />
       </button>
 
       {mounted && createPortal(overlay, document.body)}
