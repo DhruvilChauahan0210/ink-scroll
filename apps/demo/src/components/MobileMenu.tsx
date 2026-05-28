@@ -17,14 +17,12 @@ const NAV_LINKS = [
 export function MobileMenu() {
   const [open, setOpen] = useState(false);
 
-  // Close on Escape
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, []);
 
-  // Lock body scroll while menu is open
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
@@ -32,56 +30,112 @@ export function MobileMenu() {
 
   return (
     <>
-      {/* Hamburger — visible on mobile & tablet, hidden on desktop */}
+      {/* Hamburger button */}
       <button
         onClick={() => setOpen(true)}
-        aria-label="Open navigation menu"
-        className="lg:hidden flex flex-col justify-center gap-[5px] w-9 h-9 rounded-lg hover:bg-subtle-ash/40 transition-colors shrink-0"
+        aria-label="Open menu"
+        className="lg:hidden flex flex-col justify-center items-center gap-[5px] w-9 h-9 rounded-lg"
+        style={{ flexShrink: 0 }}
       >
-        <span className="block mx-auto w-5 h-0.5 bg-pitch-black rounded-full" />
-        <span className="block mx-auto w-5 h-0.5 bg-pitch-black rounded-full" />
-        <span className="block mx-auto w-5 h-0.5 bg-pitch-black rounded-full" />
+        <span style={{ display: 'block', width: 20, height: 2, background: 'currentColor', borderRadius: 2 }} />
+        <span style={{ display: 'block', width: 20, height: 2, background: 'currentColor', borderRadius: 2 }} />
+        <span style={{ display: 'block', width: 20, height: 2, background: 'currentColor', borderRadius: 2 }} />
       </button>
 
       {/* Full-page overlay */}
       {open && (
-        <div className="lg:hidden fixed inset-0 z-[200] flex flex-col bg-light-linen">
-
+        <div
+          className="lg:hidden"
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 9999,
+            display: 'flex',
+            flexDirection: 'column',
+            backgroundColor: '#ffffff',
+            color: '#000000',
+          }}
+        >
           {/* Top bar */}
-          <div className="flex items-center justify-between px-6 h-14 border-b border-pitch-black shrink-0">
-            <span className="font-display font-bold text-sm tracking-tight">svg-scroll-draw</span>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '0 24px',
+            height: 56,
+            borderBottom: '1px solid #000',
+            flexShrink: 0,
+          }}>
+            <span style={{ fontWeight: 800, fontSize: 14, letterSpacing: '-0.02em' }}>
+              svg-scroll-draw
+            </span>
             <button
               onClick={() => setOpen(false)}
-              aria-label="Close navigation menu"
-              className="flex items-center justify-center w-9 h-9 rounded-lg hover:bg-subtle-ash/40 transition-colors text-lg font-bold"
+              aria-label="Close menu"
+              style={{
+                width: 36, height: 36, display: 'flex',
+                alignItems: 'center', justifyContent: 'center',
+                fontSize: 18, fontWeight: 700, cursor: 'pointer',
+                background: 'none', border: 'none', color: '#000',
+              }}
             >
               ✕
             </button>
           </div>
 
           {/* Nav links */}
-          <nav className="flex-1 flex flex-col px-6 pt-6 overflow-y-auto">
+          <nav style={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            padding: '8px 24px',
+            overflowY: 'auto',
+          }}>
             {NAV_LINKS.map(({ href, label }) => (
               <Link
                 key={href}
                 href={href}
                 onClick={() => setOpen(false)}
-                className="font-display font-extrabold text-[clamp(32px,8vw,52px)] leading-none tracking-[-0.03em] py-4 border-b border-subtle-ash hover:text-creator-pink transition-colors"
+                style={{
+                  display: 'block',
+                  fontSize: 'clamp(32px, 9vw, 52px)',
+                  fontWeight: 800,
+                  letterSpacing: '-0.03em',
+                  lineHeight: 1.1,
+                  paddingTop: 14,
+                  paddingBottom: 14,
+                  borderBottom: '1px solid #d1d5dc',
+                  color: '#000000',
+                  textDecoration: 'none',
+                }}
               >
                 {label}
               </Link>
             ))}
           </nav>
 
-          {/* Bottom — external links + version */}
-          <div className="px-6 py-8 flex flex-col gap-4 border-t border-subtle-ash shrink-0">
-            <div className="flex items-center gap-4">
+          {/* Bottom bar */}
+          <div style={{
+            padding: '24px',
+            borderTop: '1px solid #d1d5dc',
+            flexShrink: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 16,
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
               <a
                 href={GH}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => setOpen(false)}
-                className="text-sm font-semibold px-4 py-2 rounded-full bg-pitch-black text-light-linen hover:bg-graphite-border transition-colors"
+                style={{
+                  display: 'inline-flex', alignItems: 'center',
+                  padding: '8px 18px', borderRadius: 9999,
+                  background: '#000', color: '#fff',
+                  fontSize: 14, fontWeight: 600,
+                  textDecoration: 'none',
+                }}
               >
                 GitHub →
               </a>
@@ -90,17 +144,22 @@ export function MobileMenu() {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => setOpen(false)}
-                className="text-sm font-mono text-graphite-border px-4 py-2 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors"
+                style={{
+                  display: 'inline-flex', alignItems: 'center',
+                  padding: '8px 18px', borderRadius: 9999,
+                  border: '1px solid #d1d5dc', color: '#444',
+                  fontSize: 14, fontFamily: 'monospace',
+                  textDecoration: 'none',
+                }}
               >
                 npm
               </a>
-              <span className="text-[11px] font-mono text-graphite-border">v1.0.0</span>
+              <span style={{ fontSize: 12, fontFamily: 'monospace', color: '#666' }}>v1.0.0</span>
             </div>
-            <p className="text-[11px] font-mono text-graphite-border">
+            <p style={{ fontSize: 11, fontFamily: 'monospace', color: '#888', margin: 0 }}>
               MIT · Zero dependencies · ~3 KB gzipped
             </p>
           </div>
-
         </div>
       )}
     </>
