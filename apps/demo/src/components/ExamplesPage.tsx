@@ -19,7 +19,7 @@ function CodeBlock({ filename, children }: { filename: string; children: string 
         <span className="text-[11px] text-[#666] font-mono">{filename}</span>
         <CopyButton text={children} />
       </div>
-      <pre className="bg-[#242423] text-[#e8e8e3] px-5 py-4 text-[12px] font-mono leading-[1.75] overflow-x-auto">
+      <pre className="bg-[#242423] text-[#e8e8e3] px-3 sm:px-5 py-4 text-[10px] sm:text-[12px] font-mono leading-[1.75] overflow-x-auto">
         {children}
       </pre>
     </div>
@@ -858,9 +858,9 @@ export function ExamplesPage() {
               <span className="absolute inset-0 bg-creator-pink rounded-xl -rotate-[0.8deg]" />
             </span>
           </h1>
-          <p className="text-sm sm:text-base md:text-lg text-graphite-border max-w-2xl leading-relaxed">
+          <p className="text-sm sm:text-base md:text-lg text-graphite-border max-w-2xl leading-relaxed break-words">
             Ten production-ready patterns — logo reveals, charts, signatures, diagrams, Timeline API, Group API, Sequence API, and more.
-            Each one is powered by <code className="font-mono text-pitch-black text-[0.9em] bg-marketplace-gray border border-subtle-ash px-1.5 py-0.5 rounded-md">svg-scroll-draw</code> and
+            Each one is powered by <code className="inline font-mono text-pitch-black text-[0.9em] bg-marketplace-gray border border-subtle-ash px-1.5 py-0.5 rounded-md break-all">svg-scroll-draw</code> and
             works in React, Next.js, Vue, and vanilla JS.
             Scroll down to see them draw live.
           </p>
@@ -870,7 +870,7 @@ export function ExamplesPage() {
       {/* Examples grid */}
       <div className="divide-y divide-pitch-black">
         {EXAMPLES.map((ex, i) => (
-          <section key={ex.id} id={ex.id} className={`px-4 sm:px-6 md:px-12 py-12 sm:py-14 md:py-16 ${i % 2 === 1 ? 'bg-marketplace-gray' : ''}`}>
+          <section key={ex.id} id={ex.id} className={`px-4 sm:px-6 md:px-12 py-12 sm:py-14 md:py-16 overflow-hidden ${i % 2 === 1 ? 'bg-marketplace-gray' : ''}`}>
             <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-8 md:gap-12 items-start">
 
               {/* Text + code */}
@@ -887,7 +887,7 @@ export function ExamplesPage() {
                 <h2 className="font-display font-extrabold text-[clamp(22px,3vw,36px)] leading-[1] tracking-[-0.03em] mb-4">
                   {ex.label}
                 </h2>
-                <p className="text-graphite-border leading-relaxed mb-5 sm:mb-6 text-[14px] sm:text-[15px]">
+                <p className="text-graphite-border leading-relaxed mb-5 sm:mb-6 text-[14px] sm:text-[15px] break-words">
                   {ex.description}
                 </p>
                 <CodeBlock filename="Hero.tsx">{ex.code}</CodeBlock>
