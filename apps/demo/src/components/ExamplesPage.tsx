@@ -58,6 +58,7 @@ function LogoReveal() {
     }}>
       {/* fillOpacity={[0, 1]} floods the body fill in sync with the stroke draw —
           no onComplete hack, no React state for the fill */}
+      <div style={{ width: '100%', maxWidth: '200px', margin: '0 auto' }}>
       <ScrollDraw
         easing="ease-out"
         speed={0.95}
@@ -68,9 +69,8 @@ function LogoReveal() {
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          viewBox="-6 -6 140 110"
-          style={{ width: '100%', maxWidth: '220px', display: 'block' }}
-          overflow="visible"
+          viewBox="0 0 128 98"
+          style={{ width: '100%', height: 'auto', display: 'block' }}
         >
           <path
             d="M107.7,8.07A105.15,105.15,0,0,0,77.26,0a77.19,77.19,0,0,0-3.3,6.83A96.67,96.67,0,0,0,53.22,6.83,77.19,77.19,0,0,0,49.88,0,105.15,105.15,0,0,0,19.44,8.07C3.66,31.58-1.86,54.65,1,77.53A105.73,105.73,0,0,0,32,96.36a74.37,74.37,0,0,0,6.72-10.93,68.6,68.6,0,0,1-10.64-5.12c.91-.67,1.81-1.37,2.65-2.1a75.22,75.22,0,0,0,72.76,0c.84.73,1.74,1.43,2.65,2.1a68.86,68.86,0,0,1-10.64,5.12,74.74,74.74,0,0,0,6.72,10.93,105.73,105.73,0,0,0,31-18.83C130.1,49.22,123.33,26.54,107.7,8.07Z"
@@ -91,6 +91,7 @@ function LogoReveal() {
           />
         </svg>
       </ScrollDraw>
+      </div>
 
       <span style={{
         color: wordmark ? '#ffffff' : 'transparent',
