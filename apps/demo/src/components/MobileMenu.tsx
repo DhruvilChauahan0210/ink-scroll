@@ -48,43 +48,30 @@ export function MobileMenu() {
   }
 
   const overlay = rendered ? (
-    <div
-      style={{
-        position: 'fixed',
-        top: 0, left: 0, right: 0, bottom: 0,
-        width: '100vw', height: '100vh',
-        zIndex: 99999,
-        display: 'flex',
-        flexDirection: 'column',
-        backgroundColor: 'var(--color-light-linen, #ffffff)',
-        color: 'var(--color-pitch-black, #000000)',
-        // Animation
-        opacity:   open ? 1 : 0,
-        transform: open ? 'translateY(0)' : 'translateY(-16px)',
-        transition: 'opacity 0.35s cubic-bezier(0.4,0,0.2,1), transform 0.35s cubic-bezier(0.4,0,0.2,1)',
-      }}
-    >
-      {/* ── Top bar — mirrors site nav exactly ── */}
+    <div style={{
+      position: 'fixed',
+      top: 0, left: 0, right: 0, bottom: 0,
+      width: '100vw', height: '100vh',
+      zIndex: 99999,
+    }}>
+      {/* ── Top bar — NO animation, instantly visible like the sticky nav ── */}
       <div style={{
+        position: 'absolute', top: 0, left: 0, right: 0,
+        height: 56,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: '0 24px',
-        height: 56,
+        backgroundColor: 'var(--color-light-linen, #ffffff)',
         borderBottom: '1px solid var(--color-pitch-black, #000)',
-        flexShrink: 0,
       }}>
         <span style={{
           fontFamily: 'var(--font-display, sans-serif)',
-          fontWeight: 800,
-          fontSize: 14,
-          letterSpacing: '-0.02em',
+          fontWeight: 800, fontSize: 14, letterSpacing: '-0.02em',
           color: 'var(--color-pitch-black, #000)',
         }}>
           svg-scroll-draw
         </span>
-
-        {/* Close — styled like a pill button */}
         <button
           onClick={handleClose}
           aria-label="Close menu"
@@ -96,119 +83,107 @@ export function MobileMenu() {
             color: 'var(--color-pitch-black, #000)',
             fontFamily: 'var(--font-sans, sans-serif)',
             fontSize: 12, fontWeight: 600, cursor: 'pointer',
-            letterSpacing: '0.02em',
           }}
         >
           Close <span style={{ fontSize: 14 }}>✕</span>
         </button>
       </div>
 
-      {/* ── Nav links ── */}
-      <nav style={{
-        flex: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        padding: '0 24px',
-        overflowY: 'auto',
-        gap: 0,
-      }}>
-        {NAV_LINKS.map(({ num, href, label }, i) => (
-          <Link
-            key={href}
-            href={href}
-            onClick={handleClose}
-            onMouseEnter={() => setHover(href)}
-            onMouseLeave={() => setHover(null)}
-            style={{
-              display: 'flex',
-              alignItems: 'baseline',
-              gap: 16,
-              padding: '14px 0',
-              borderBottom: i < NAV_LINKS.length - 1 ? '1px solid var(--color-subtle-ash, #d1d5dc)' : 'none',
-              color: hover === href
-                ? 'var(--color-creator-pink, #ff90e8)'
-                : 'var(--color-pitch-black, #000)',
-              textDecoration: 'none',
-              transition: 'color 0.15s ease',
-            }}
-          >
-            <span style={{
-              fontFamily: 'var(--font-mono, monospace)',
-              fontSize: 10,
-              color: 'var(--color-graphite-border, #888)',
-              letterSpacing: '0.14em',
-              textTransform: 'uppercase',
-              flexShrink: 0,
-              paddingTop: 4,
-            }}>
-              {num}
-            </span>
-            <span style={{
-              fontFamily: 'var(--font-display, sans-serif)',
-              fontWeight: 800,
-              fontSize: 'clamp(32px, 9vw, 52px)',
-              letterSpacing: '-0.04em',
-              lineHeight: 1,
-            }}>
-              {label}
-            </span>
-          </Link>
-        ))}
-      </nav>
-
-      {/* ── Bottom bar ── */}
+      {/* ── Animated panel — slides in below the top bar ── */}
       <div style={{
-        padding: '20px 24px',
-        borderTop: '1px solid var(--color-subtle-ash, #d1d5dc)',
-        flexShrink: 0,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        flexWrap: 'wrap',
-        gap: 12,
+        position: 'absolute', top: 56, left: 0, right: 0, bottom: 0,
+        display: 'flex', flexDirection: 'column',
+        backgroundColor: 'var(--color-light-linen, #ffffff)',
+        color: 'var(--color-pitch-black, #000)',
+        opacity:   open ? 1 : 0,
+        transform: open ? 'translateY(0)' : 'translateY(-12px)',
+        transition: 'opacity 0.3s cubic-bezier(0.4,0,0.2,1), transform 0.3s cubic-bezier(0.4,0,0.2,1)',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <a
-            href={GH}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={handleClose}
-            style={{
-              padding: '7px 16px', borderRadius: 9999,
-              background: 'var(--color-pitch-black, #000)',
-              color: 'var(--color-light-linen, #fff)',
-              fontFamily: 'var(--font-sans, sans-serif)',
-              fontSize: 12, fontWeight: 600, textDecoration: 'none',
-              letterSpacing: '0.01em',
-            }}
-          >
-            GitHub →
-          </a>
-          <a
-            href={NPM}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={handleClose}
-            style={{
-              padding: '7px 16px', borderRadius: 9999,
-              border: '1.5px solid var(--color-subtle-ash, #d1d5dc)',
-              color: 'var(--color-graphite-border, #444)',
-              fontFamily: 'var(--font-mono, monospace)',
-              fontSize: 12, textDecoration: 'none',
-            }}
-          >
-            npm
-          </a>
-        </div>
-        <span style={{
-          fontFamily: 'var(--font-mono, monospace)',
-          fontSize: 11,
-          color: 'var(--color-graphite-border, #888)',
-          letterSpacing: '0.05em',
+        {/* Nav links */}
+        <nav style={{
+          flex: 1,
+          display: 'flex', flexDirection: 'column', justifyContent: 'center',
+          padding: '0 24px', overflowY: 'auto',
         }}>
-          v1.0.0 · MIT · ~3 KB
-        </span>
+          {NAV_LINKS.map(({ num, href, label }, i) => (
+            <Link
+              key={href}
+              href={href}
+              onClick={handleClose}
+              onMouseEnter={() => setHover(href)}
+              onMouseLeave={() => setHover(null)}
+              style={{
+                display: 'flex', alignItems: 'baseline', gap: 16,
+                padding: '14px 0',
+                borderBottom: i < NAV_LINKS.length - 1
+                  ? '1px solid var(--color-subtle-ash, #d1d5dc)' : 'none',
+                color: hover === href
+                  ? 'var(--color-creator-pink, #ff90e8)'
+                  : 'var(--color-pitch-black, #000)',
+                textDecoration: 'none',
+                transition: 'color 0.15s ease',
+              }}
+            >
+              <span style={{
+                fontFamily: 'var(--font-mono, monospace)',
+                fontSize: 10, color: 'var(--color-graphite-border, #888)',
+                letterSpacing: '0.14em', textTransform: 'uppercase',
+                flexShrink: 0, paddingTop: 4,
+              }}>
+                {num}
+              </span>
+              <span style={{
+                fontFamily: 'var(--font-display, sans-serif)',
+                fontWeight: 800,
+                fontSize: 'clamp(32px, 9vw, 52px)',
+                letterSpacing: '-0.04em', lineHeight: 1,
+              }}>
+                {label}
+              </span>
+            </Link>
+          ))}
+        </nav>
+
+        {/* Bottom bar */}
+        <div style={{
+          padding: '20px 24px',
+          borderTop: '1px solid var(--color-subtle-ash, #d1d5dc)',
+          flexShrink: 0,
+          display: 'flex', alignItems: 'center',
+          justifyContent: 'space-between', flexWrap: 'wrap', gap: 12,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <a href={GH} target="_blank" rel="noopener noreferrer"
+              onClick={handleClose}
+              style={{
+                padding: '7px 16px', borderRadius: 9999,
+                background: 'var(--color-pitch-black, #000)',
+                color: 'var(--color-light-linen, #fff)',
+                fontFamily: 'var(--font-sans, sans-serif)',
+                fontSize: 12, fontWeight: 600, textDecoration: 'none',
+              }}>
+              GitHub →
+            </a>
+            <a href={NPM} target="_blank" rel="noopener noreferrer"
+              onClick={handleClose}
+              style={{
+                padding: '7px 16px', borderRadius: 9999,
+                border: '1.5px solid var(--color-subtle-ash, #d1d5dc)',
+                color: 'var(--color-graphite-border, #444)',
+                fontFamily: 'var(--font-mono, monospace)',
+                fontSize: 12, textDecoration: 'none',
+              }}>
+              npm
+            </a>
+          </div>
+          <span style={{
+            fontFamily: 'var(--font-mono, monospace)',
+            fontSize: 11, color: 'var(--color-graphite-border, #888)',
+            letterSpacing: '0.05em',
+          }}>
+            v1.0.0 · MIT · ~3 KB
+          </span>
+        </div>
       </div>
     </div>
   ) : null;
