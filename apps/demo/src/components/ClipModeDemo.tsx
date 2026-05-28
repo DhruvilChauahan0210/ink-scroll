@@ -63,13 +63,13 @@ export function ClipModeDemo() {
           <h2 className="font-display font-extrabold text-[clamp(28px,4vw,44px)] leading-[1] tracking-[-0.03em] mb-5">
             Reveal anything.<br />Not just SVGs.
           </h2>
-          <p className="text-graphite-border leading-relaxed mb-3 text-[15px]">
+          <p className="text-graphite-border leading-relaxed mb-3 text-[15px] break-words">
             Set <code className="font-mono text-pitch-black text-[0.9em] bg-marketplace-gray border border-subtle-ash px-1.5 py-0.5 rounded-md">clip</code> to
             skip stroke-dashoffset entirely and use CSS{' '}
             <code className="font-mono text-pitch-black text-[0.9em] bg-marketplace-gray border border-subtle-ash px-1.5 py-0.5 rounded-md">clip-path</code> instead.
             Works on images, cards, text blocks, gradients — any HTML or SVG content.
           </p>
-          <p className="text-graphite-border leading-relaxed mb-6 text-[15px]">
+          <p className="text-graphite-border leading-relaxed mb-6 text-[15px] break-words">
             Five directions: <code className="font-mono text-[0.9em]">left</code>,{' '}
             <code className="font-mono text-[0.9em]">right</code>,{' '}
             <code className="font-mono text-[0.9em]">top</code>,{' '}
@@ -91,7 +91,7 @@ export function ClipModeDemo() {
               <span className="text-[11px] text-[#666] font-mono">Hero.tsx</span>
               <span className="w-10" />
             </div>
-            <pre className="bg-[#242423] text-[#e8e8e3] px-5 py-4 text-[12px] font-mono leading-[1.75] overflow-x-auto">{`// Reveal any content — not just SVG paths
+            <pre className="bg-[#242423] text-[#e8e8e3] px-3 sm:px-5 py-4 text-[11px] sm:text-[12px] font-mono leading-[1.75] overflow-x-auto">{`// Reveal any content — not just SVG paths
 <ScrollDraw clip="left" easing="ease-out" once>
   <img src="/hero.png" />
 </ScrollDraw>

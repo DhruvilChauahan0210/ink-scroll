@@ -55,7 +55,7 @@ function CodeBlock({ filename, children }: { filename: string; children: string 
         <span className="text-[11px] text-[#666] font-mono tracking-wide">{filename}</span>
         <CopyButton text={children} />
       </div>
-      <pre className="bg-[#242423] dark:bg-[#1c1c1c] text-[#e8e8e3] px-5 py-4 text-[13px] font-mono leading-[1.75] overflow-x-auto">
+      <pre className="bg-[#242423] dark:bg-[#1c1c1c] text-[#e8e8e3] px-3 sm:px-5 py-4 text-[11px] sm:text-[13px] font-mono leading-[1.75] overflow-x-auto">
         {children}
       </pre>
     </div>
@@ -64,7 +64,7 @@ function CodeBlock({ filename, children }: { filename: string; children: string 
 
 function Tag({ children }: { children: React.ReactNode }) {
   return (
-    <code className="inline-block bg-marketplace-gray border border-subtle-ash px-1.5 py-0.5 rounded-md text-[0.82em] font-mono text-pitch-black align-middle">
+    <code className="inline bg-marketplace-gray border border-subtle-ash px-1.5 py-0.5 rounded-md text-[0.82em] font-mono text-pitch-black align-middle break-all">
       {children}
     </code>
   );
@@ -355,7 +355,7 @@ export default function Home() {
               <h2 className="font-display font-extrabold text-[clamp(28px,4vw,44px)] leading-[1] tracking-[-0.03em] mb-5">
                 Drop in.<br />It just works.
               </h2>
-              <p className="text-graphite-border leading-relaxed mb-6 text-[15px]">
+              <p className="text-graphite-border leading-relaxed mb-6 text-[15px] break-words">
                 Wrap any SVG with <Tag>&lt;ScrollDraw&gt;</Tag>.
                 The engine discovers every path, measures total length,
                 and animates <Tag>stroke-dashoffset</Tag> as it enters the viewport.
@@ -415,7 +415,7 @@ export default function Hero() {
               <h2 className="font-display font-extrabold text-[clamp(28px,4vw,44px)] leading-[1] tracking-[-0.03em] mb-5">
                 Natural motion,<br />your way.
               </h2>
-              <p className="text-graphite-border leading-relaxed mb-6 text-[15px]">
+              <p className="text-graphite-border leading-relaxed mb-6 text-[15px] break-words">
                 Five built-in curves — including a <Tag>spring</Tag> that
                 overshoots and settles — or any custom{' '}
                 <Tag>(t: number) =&gt; number</Tag> function.
@@ -443,7 +443,7 @@ export default function Hero() {
               <h2 className="font-display font-extrabold text-[clamp(28px,4vw,44px)] leading-[1] tracking-[-0.03em] mb-5">
                 Draw and<br />materialise.
               </h2>
-              <p className="text-graphite-border leading-relaxed mb-6 text-[15px]">
+              <p className="text-graphite-border leading-relaxed mb-6 text-[15px] break-words">
                 Enable <Tag>fade</Tag> to simultaneously animate{' '}
                 <Tag>opacity: 0 → 1</Tag> as the path draws.
                 Lines seem to emerge from nothing — elegant for technical illustrations and hero graphics.
@@ -540,7 +540,7 @@ export default function Hero() {
               <h2 className="font-display font-extrabold text-[clamp(28px,4vw,44px)] leading-[1] tracking-[-0.03em] mb-5">
                 Scroll up,<br />draw back.
               </h2>
-              <p className="text-graphite-border leading-relaxed mb-6 text-[15px]">
+              <p className="text-graphite-border leading-relaxed mb-6 text-[15px] break-words">
                 Enable <Tag>autoReverse</Tag> and the animation automatically
                 follows scroll direction — drawing forward as you scroll down,
                 erasing as you scroll back up. No manual <Tag>direction</Tag> switching needed.
@@ -563,7 +563,7 @@ export default function Hero() {
               <h2 className="font-display font-extrabold text-[clamp(28px,4vw,44px)] leading-[1] tracking-[-0.03em] mb-5">
                 Color that<br />follows the draw.
               </h2>
-              <p className="text-graphite-border leading-relaxed mb-6 text-[15px]">
+              <p className="text-graphite-border leading-relaxed mb-6 text-[15px] break-words">
                 Pass a <Tag>[from, to]</Tag> tuple to <Tag>strokeColor</Tag> and the stroke
                 interpolates between two colors as the path draws.
                 No extra CSS or keyframes — the engine handles it per-frame.
@@ -618,7 +618,7 @@ export default function Hero() {
               <h2 className="font-display font-extrabold text-[clamp(28px,4vw,44px)] leading-[1] tracking-[-0.03em] mb-5">
                 Hairline thin<br />to bold.
               </h2>
-              <p className="text-graphite-border leading-relaxed mb-6 text-[15px]">
+              <p className="text-graphite-border leading-relaxed mb-6 text-[15px] break-words">
                 Pass a <Tag>[from, to]</Tag> tuple to <Tag>strokeWidth</Tag> and
                 the line grows from a hairline to any thickness as it draws.
                 Combine with <Tag>strokeColor</Tag> for dramatic logo reveals.
@@ -647,7 +647,7 @@ export default function Hero() {
               <h2 className="font-display font-extrabold text-[clamp(28px,4vw,44px)] leading-[1] tracking-[-0.03em] mb-5">
                 Shape-shifts<br />as you scroll.
               </h2>
-              <p className="text-graphite-border leading-relaxed mb-6 text-[15px]">
+              <p className="text-graphite-border leading-relaxed mb-6 text-[15px] break-words">
                 Pass a <Tag>morphTo</Tag> path string and the SVG shape interpolates
                 from its original <Tag>d</Tag> to the target as you scroll.
                 Both paths must have the same command count — perfect for logo reveals and icon transitions.
@@ -713,7 +713,7 @@ export default function Hero() {
               <h2 className="font-display font-extrabold text-[clamp(28px,4vw,44px)] leading-[1] tracking-[-0.03em] mb-5">
                 Many SVGs,<br />one command.
               </h2>
-              <p className="text-graphite-border leading-relaxed mb-6 text-[15px]">
+              <p className="text-graphite-border leading-relaxed mb-6 text-[15px] break-words">
                 Use <Tag>scrollDrawGroup</Tag> to animate multiple SVG containers simultaneously
                 with shared options. Or use <Tag>scrollDrawSequence</Tag> to chain them — each one
                 starts only after the previous finishes.
