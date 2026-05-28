@@ -7,6 +7,7 @@ import { ScrollShowcase } from '@/components/ScrollShowcase';
 import { BundleGraphLine, CtaBoldMark } from '@/components/BackgroundDecor';
 import { InteractiveScrollDemo } from '@/components/InteractiveScrollDemo';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { MobileMenu } from '@/components/MobileMenu';
 import { LiveStats } from '@/components/LiveStats';
 import { CopyButton } from '@/components/CopyButton';
 import { InstallTabs } from '@/components/InstallTabs';
@@ -124,46 +125,22 @@ export default function Home() {
       {/* ── Nav ───────────────────────────────────────────────────────── */}
       <nav className="sticky top-0 z-50 bg-light-linen/95 backdrop-blur-sm border-b border-pitch-black flex items-center justify-between px-4 md:px-12 h-14">
         <span className="font-display font-bold text-sm tracking-tight shrink-0">svg-scroll-draw</span>
-        <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto scrollbar-hide">
+
+        {/* Desktop nav */}
+        <div className="hidden lg:flex items-center gap-2">
           <ThemeToggle />
-          <a
-            href="/docs"
-            className="inline-flex text-xs px-3 sm:px-3.5 py-2 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium items-center gap-1 whitespace-nowrap"
-          >
-            Docs
-          </a>
-          <a
-            href="/examples"
-            className="hidden sm:inline-flex text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium items-center gap-1 whitespace-nowrap"
-          >
-            Examples
-          </a>
-          <a
-            href="/changelog"
-            className="hidden md:inline-flex text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium items-center gap-1 whitespace-nowrap"
-          >
-            Changelog
-          </a>
-          <a
-            href="/playground"
-            className="hidden sm:inline-flex text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium items-center gap-1 whitespace-nowrap"
-          >
-            ⚡ Playground
-          </a>
-          <a
-            href={NPM}
-            target="_blank" rel="noopener noreferrer"
-            className="hidden sm:inline-flex text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono whitespace-nowrap"
-          >
-            v1.0.0
-          </a>
-          <a
-            href={GH}
-            target="_blank" rel="noopener noreferrer"
-            className="text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-full bg-pitch-black text-light-linen hover:bg-graphite-border transition-colors font-medium whitespace-nowrap"
-          >
-            GitHub →
-          </a>
+          <a href="/docs" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Docs</a>
+          <a href="/examples" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Examples</a>
+          <a href="/changelog" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Changelog</a>
+          <a href="/playground" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">⚡ Playground</a>
+          <a href={NPM} target="_blank" rel="noopener noreferrer" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono whitespace-nowrap">v1.0.0</a>
+          <a href={GH} target="_blank" rel="noopener noreferrer" className="text-sm px-4 py-1.5 rounded-full bg-pitch-black text-light-linen hover:bg-graphite-border transition-colors font-medium whitespace-nowrap">GitHub →</a>
+        </div>
+
+        {/* Mobile / tablet nav */}
+        <div className="flex lg:hidden items-center gap-2">
+          <ThemeToggle />
+          <MobileMenu />
         </div>
       </nav>
 

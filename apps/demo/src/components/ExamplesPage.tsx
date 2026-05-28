@@ -6,6 +6,7 @@ import { scrollDrawGroup, scrollDrawSequence } from 'svg-scroll-draw/group';
 import { scrollDrawTimeline } from 'svg-scroll-draw/timeline';
 import Link from 'next/link';
 import { CopyButton } from './CopyButton';
+import { MobileMenu } from './MobileMenu';
 
 function CodeBlock({ filename, children }: { filename: string; children: string }) {
   return (
@@ -833,17 +834,17 @@ export function ExamplesPage() {
 
       {/* Nav */}
       <nav className="sticky top-0 z-50 bg-light-linen/95 backdrop-blur-sm border-b border-pitch-black flex items-center justify-between px-4 md:px-12 h-14">
-        <Link href="/" className="font-display font-bold text-sm tracking-tight hover:opacity-70 transition-opacity shrink-0">
-          svg-scroll-draw
-        </Link>
-        <div className="flex items-center gap-1.5 sm:gap-2">
-          <Link href="/playground" className="text-xs px-3 sm:px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">
-            ⚡ Playground
-          </Link>
-          <Link href="/docs" className="text-xs px-3 sm:px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">
-            ← Docs
-          </Link>
+        <Link href="/" className="font-display font-bold text-sm tracking-tight hover:opacity-70 transition-opacity shrink-0">svg-scroll-draw</Link>
+
+        {/* Desktop */}
+        <div className="hidden lg:flex items-center gap-2">
+          <Link href="/" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Home</Link>
+          <Link href="/docs" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Docs</Link>
+          <Link href="/playground" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">⚡ Playground</Link>
         </div>
+
+        {/* Mobile / tablet */}
+        <MobileMenu />
       </nav>
 
       {/* Header */}

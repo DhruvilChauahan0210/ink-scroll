@@ -1,5 +1,6 @@
 'use client';
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { MobileMenu } from './MobileMenu';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -341,25 +342,28 @@ export function SvgPlayground() {
     <div className="flex flex-col min-h-screen bg-light-linen text-pitch-black">
 
       {/* ── Nav ─────────────────────────────────────────────────────── */}
-      <nav className="sticky top-0 z-50 bg-light-linen/95 backdrop-blur-sm border-b border-pitch-black flex items-center justify-between px-6 h-14 shrink-0">
-        <div className="flex items-center gap-4">
-          <a href="/" className="flex items-center gap-1.5 text-sm font-medium text-graphite-border hover:text-pitch-black transition-colors">
+      <nav className="sticky top-0 z-50 bg-light-linen/95 backdrop-blur-sm border-b border-pitch-black flex items-center justify-between px-4 sm:px-6 h-14 shrink-0">
+        <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+          <a href="/" className="flex items-center gap-1.5 text-sm font-medium text-graphite-border hover:text-pitch-black transition-colors shrink-0">
             <span>←</span>
             <span className="font-display font-bold text-sm tracking-tight text-pitch-black">svg-scroll-draw</span>
           </a>
-          <span className="text-subtle-ash">/</span>
-          <span className="text-sm font-medium">Playground</span>
+          <span className="hidden sm:inline text-subtle-ash">/</span>
+          <span className="hidden sm:inline text-sm font-medium">Playground</span>
         </div>
-        <button
-          onClick={handleShare}
-          className={`text-sm px-4 py-1.5 rounded-full border font-medium transition-all ${
-            shareMsg
-              ? 'bg-lime-glow border-lime-glow text-pitch-black'
-              : 'border-pitch-black bg-light-linen hover:bg-pitch-black hover:text-light-linen'
-          }`}
-        >
-          {shareMsg || 'Share ↗'}
-        </button>
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={handleShare}
+            className={`text-sm px-3 sm:px-4 py-1.5 rounded-full border font-medium transition-all ${
+              shareMsg
+                ? 'bg-lime-glow border-lime-glow text-pitch-black'
+                : 'border-pitch-black bg-light-linen hover:bg-pitch-black hover:text-light-linen'
+            }`}
+          >
+            {shareMsg || 'Share ↗'}
+          </button>
+          <MobileMenu />
+        </div>
       </nav>
 
       {/* ── Examples bar ────────────────────────────────────────────── */}

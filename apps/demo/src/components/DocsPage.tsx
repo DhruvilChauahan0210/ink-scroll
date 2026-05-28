@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { CopyButton } from './CopyButton';
 import { ThemeToggle } from './ThemeToggle';
+import { MobileMenu } from './MobileMenu';
 
 const GH  = 'https://github.com/DhruvilChauahan0210/ink-scroll';
 const NPM = 'https://www.npmjs.com/package/svg-scroll-draw';
@@ -180,45 +181,22 @@ export function DocsPage() {
 
       {/* Nav */}
       <nav className="sticky top-0 z-50 bg-light-linen/95 backdrop-blur-sm border-b border-pitch-black flex items-center justify-between px-4 md:px-12 h-14">
-        <Link href="/" className="font-display font-bold text-sm tracking-tight shrink-0">
-          svg-scroll-draw
-        </Link>
-        <div className="flex items-center gap-1.5 sm:gap-2">
+        <Link href="/" className="font-display font-bold text-sm tracking-tight shrink-0">svg-scroll-draw</Link>
+
+        {/* Desktop */}
+        <div className="hidden lg:flex items-center gap-2">
           <ThemeToggle />
-          <Link
-            href="/docs"
-            className="hidden sm:inline-flex text-xs px-3.5 py-1.5 rounded-full bg-pitch-black text-light-linen font-medium items-center whitespace-nowrap"
-          >
-            Docs
-          </Link>
-          <Link
-            href="/examples"
-            className="hidden sm:inline-flex text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium items-center whitespace-nowrap"
-          >
-            Examples
-          </Link>
-          <Link
-            href="/playground"
-            className="hidden sm:inline-flex text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium items-center whitespace-nowrap"
-          >
-            ⚡ Playground
-          </Link>
-          <a
-            href={NPM}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden sm:inline-flex text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono whitespace-nowrap"
-          >
-            v1.0.0
-          </a>
-          <a
-            href={GH}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs sm:text-sm px-3 sm:px-4 py-1.5 rounded-full bg-pitch-black text-light-linen hover:bg-graphite-border transition-colors font-medium whitespace-nowrap"
-          >
-            GitHub →
-          </a>
+          <Link href="/docs" className="text-xs px-3.5 py-1.5 rounded-full bg-pitch-black text-light-linen font-medium whitespace-nowrap">Docs</Link>
+          <Link href="/examples" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Examples</Link>
+          <Link href="/playground" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">⚡ Playground</Link>
+          <a href={NPM} target="_blank" rel="noopener noreferrer" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono whitespace-nowrap">v1.0.0</a>
+          <a href={GH} target="_blank" rel="noopener noreferrer" className="text-sm px-4 py-1.5 rounded-full bg-pitch-black text-light-linen hover:bg-graphite-border transition-colors font-medium whitespace-nowrap">GitHub →</a>
+        </div>
+
+        {/* Mobile / tablet */}
+        <div className="flex lg:hidden items-center gap-2">
+          <ThemeToggle />
+          <MobileMenu />
         </div>
       </nav>
 
