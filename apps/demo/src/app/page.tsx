@@ -27,7 +27,7 @@ const jsonLd = {
   downloadUrl: 'https://www.npmjs.com/package/svg-scroll-draw',
   codeRepository: 'https://github.com/DhruvilChauahan0210/ink-scroll',
   license: 'https://opensource.org/licenses/MIT',
-  softwareVersion: '0.7.0',
+  softwareVersion: '1.0.0',
   programmingLanguage: ['JavaScript', 'TypeScript'],
   author: {
     '@type': 'Person',
@@ -888,18 +888,31 @@ const seq = scrollDrawSequence(
               </svg>
               npm
             </a>
-            <span className="text-[11px] font-mono text-graphite-border">v0.7.0</span>
+            <span className="text-[11px] font-mono text-graphite-border">v1.0.0</span>
           </div>
         </div>
 
-        <div className="mt-4 pt-4 border-t border-subtle-ash text-center text-[11px] text-graphite-border font-mono">
-          built by{' '}
+        <div className="mt-4 pt-4 border-t border-subtle-ash flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-graphite-border font-mono">
+          <span>
+            built by{' '}
+            <a
+              href="https://github.com/DhruvilChauahan0210"
+              target="_blank" rel="noopener noreferrer"
+              className="hover:text-pitch-black transition-colors underline underline-offset-2"
+            >
+              dhruvil0210
+            </a>
+          </span>
           <a
-            href="https://github.com/DhruvilChauahan0210"
+            href="https://www.producthunt.com/products/svg-scroll-draw?utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-svg-scroll-draw"
             target="_blank" rel="noopener noreferrer"
-            className="hover:text-pitch-black transition-colors underline underline-offset-2"
           >
-            dhruvil0210
+            <img
+              alt="svg-scroll-draw on Product Hunt"
+              src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1158188&theme=light&t=1779995488928"
+              width="200"
+              height="43"
+            />
           </a>
         </div>
       </footer>
