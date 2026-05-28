@@ -892,27 +892,58 @@ const seq = scrollDrawSequence(
           </div>
         </div>
 
-        <div className="mt-4 pt-4 border-t border-subtle-ash flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-graphite-border font-mono">
-          <span>
-            built by{' '}
+        {/* Product Hunt embed card */}
+        <div className="mt-6 pt-6 border-t border-subtle-ash flex justify-center">
+          <div style={{
+            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+            border: '1px solid rgb(224, 224, 224)',
+            borderRadius: 12,
+            padding: 20,
+            maxWidth: 500,
+            width: '100%',
+            background: 'rgb(255, 255, 255)',
+            boxShadow: 'rgba(0,0,0,0.05) 0px 2px 8px',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
+              <img
+                alt="svg-scroll-draw"
+                src="https://ph-files.imgix.net/1ed7196f-bc94-4765-a849-68b31b0c32bd.png?auto=format&fit=crop&w=80&h=80"
+                style={{ width: 64, height: 64, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }}
+              />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <h3 style={{ margin: 0, fontSize: 18, fontWeight: 600, color: 'rgb(26,26,26)', lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  svg-scroll-draw
+                </h3>
+                <p style={{ margin: '4px 0 0', fontSize: 14, color: 'rgb(102,102,102)', lineHeight: 1.4 }}>
+                  Scroll-driven SVG path animation. Zero deps. 3 KB.
+                </p>
+              </div>
+            </div>
             <a
-              href="https://github.com/DhruvilChauahan0210"
-              target="_blank" rel="noopener noreferrer"
-              className="hover:text-pitch-black transition-colors underline underline-offset-2"
+              href="https://www.producthunt.com/products/svg-scroll-draw?utm_source=embed&utm_medium=post_embed"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 4,
+                marginTop: 12, padding: '8px 16px',
+                background: 'rgb(255,97,84)', color: 'rgb(255,255,255)',
+                textDecoration: 'none', borderRadius: 8,
+                fontSize: 14, fontWeight: 600,
+              }}
             >
-              dhruvil0210
+              Check it out on Product Hunt →
             </a>
-          </span>
+          </div>
+        </div>
+
+        <div className="mt-4 pt-4 border-t border-subtle-ash text-center text-[11px] text-graphite-border font-mono">
+          built by{' '}
           <a
-            href="https://www.producthunt.com/products/svg-scroll-draw?utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-svg-scroll-draw"
+            href="https://github.com/DhruvilChauahan0210"
             target="_blank" rel="noopener noreferrer"
+            className="hover:text-pitch-black transition-colors underline underline-offset-2"
           >
-            <img
-              alt="svg-scroll-draw on Product Hunt"
-              src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1158188&theme=light&t=1779995488928"
-              width="200"
-              height="43"
-            />
+            dhruvil0210
           </a>
         </div>
       </footer>
