@@ -69,7 +69,7 @@ function LogoReveal() {
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="-6 -6 140 110"
-          width="220"
+          style={{ width: '100%', maxWidth: '220px', display: 'block' }}
           overflow="visible"
         >
           <path
@@ -119,7 +119,7 @@ function LineChart() {
 
   return (
     <ScrollDraw easing="ease-in-out" speed={0.85} once trigger={TRIGGER} selector=".ink">
-      <svg width="310" height="185" viewBox="0 0 310 185" fill="none" style={{fontFamily:'monospace'}}>
+      <svg width="100%" viewBox="0 0 310 185" fill="none" style={{fontFamily:'monospace', display:'block'}}>
         {/* Static area fill */}
         <path d={areaPath} fill="#ff90e8" fillOpacity="0.07" />
         {/* Static grid */}
@@ -153,7 +153,7 @@ function LineChart() {
 function SignatureAnim() {
   return (
     <ScrollDraw easing="ease-out" speed={0.6} stagger={0.35} once trigger={TRIGGER}>
-      <svg width="300" height="145" viewBox="0 0 300 145" fill="none" style={{fontFamily:'serif'}}>
+      <svg width="100%" viewBox="0 0 300 145" fill="none" style={{fontFamily:'serif', display:'block'}}>
         {/* Static: document context */}
         <text x="12" y="18" fontSize="8" fill="#ccc" style={{fontFamily:'monospace',letterSpacing:'0.12em',textTransform:'uppercase'}}>Authorized Signature</text>
         {/* Animated: signature path — capital loop + cursive body + flourish */}
@@ -186,7 +186,7 @@ function Flowchart() {
 
   return (
     <ScrollDraw easing="ease-out" speed={1.1} stagger={0.18} once trigger={TRIGGER} selector=".ink">
-      <svg width="300" height="140" viewBox="0 0 300 140" fill="none" style={{fontFamily:'system-ui,sans-serif'}}>
+      <svg width="100%" viewBox="0 0 300 140" fill="none" style={{fontFamily:'system-ui,sans-serif', display:'block'}}>
         {/* Static fills + labels */}
         {steps.map(s => (
           <g key={s.x}>
@@ -221,7 +221,7 @@ function Flowchart() {
 function MapRoute() {
   return (
     <ScrollDraw easing="ease-in-out" speed={0.75} once trigger={TRIGGER} selector=".ink" strokeColor={['#fbbf24','#ff90e8']}>
-      <svg width="300" height="200" viewBox="0 0 300 200" fill="none" style={{fontFamily:'monospace'}}>
+      <svg width="100%" viewBox="0 0 300 200" fill="none" style={{fontFamily:'monospace', display:'block'}}>
         {/* Static: city blocks */}
         {[
           [8,8,72,52],[100,8,82,52],[192,8,100,52],
@@ -264,7 +264,7 @@ function NetworkDiagram() {
   ];
   return (
     <ScrollDraw easing="ease-out" speed={1.1} selector=".ink" once trigger={TRIGGER}>
-      <svg width="300" height="200" viewBox="0 0 300 200" fill="none" style={{fontFamily:'system-ui,sans-serif'}}>
+      <svg width="100%" viewBox="0 0 300 200" fill="none" style={{fontFamily:'system-ui,sans-serif', display:'block'}}>
         {/* Static: service boxes */}
         {/* Browser */}
         <rect x="110" y="8" width="80" height="32" rx="6" fill="#f8f8f8" />
@@ -462,7 +462,7 @@ function TimelineDemo() {
 
   return (
     <div ref={ref} className="w-full flex justify-center">
-      <svg width="310" height="200" viewBox="0 0 310 200" fill="none" style={{ fontFamily: 'monospace' }}>
+      <svg width="100%" viewBox="0 0 310 200" fill="none" style={{ fontFamily: 'monospace', display: 'block' }}>
 
         {/* Static: subtle grid */}
         {[40, 70, 100, 130].map((offset) => (
