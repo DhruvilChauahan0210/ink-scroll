@@ -5,14 +5,14 @@ import { ScrollDraw } from 'svg-scroll-draw/react';
 export function FillOpacityDemo() {
   return (
     <section className="relative border-b border-pitch-black bg-marketplace-gray overflow-hidden">
-      <span className="pointer-events-none select-none absolute -left-6 top-1/2 -translate-y-1/2 font-display font-extrabold text-[220px] leading-none text-pitch-black opacity-[0.04]">
+      <span className="pointer-events-none select-none absolute -left-6 top-1/2 -translate-y-1/2 font-display font-extrabold text-[120px] md:text-[220px] leading-none text-pitch-black opacity-[0.04]">
         13
       </span>
 
-      <div className="max-w-6xl mx-auto px-6 md:px-12 py-24 grid md:grid-cols-2 gap-16 items-start">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-12 py-12 sm:py-16 md:py-24 grid md:grid-cols-2 gap-8 md:gap-16 items-start">
 
         {/* Right: live demo */}
-        <div className="order-2 md:order-1 flex items-center justify-center rounded-2xl border border-pitch-black bg-[#ffffff] p-10 shadow-[4px_4px_0px_#000] min-h-[320px]">
+        <div className="order-2 md:order-1 flex items-center justify-center rounded-2xl border border-pitch-black bg-[#ffffff] p-6 sm:p-10 shadow-[4px_4px_0px_#000] min-h-[280px] sm:min-h-[320px]">
           <ScrollDraw
             easing="ease-in-out"
             speed={0.9}

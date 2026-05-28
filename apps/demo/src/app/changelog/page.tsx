@@ -139,32 +139,32 @@ export default function ChangelogPage() {
     <div className="bg-light-linen text-pitch-black min-h-screen">
 
       {/* Nav */}
-      <nav className="sticky top-0 z-50 bg-light-linen/95 backdrop-blur-sm border-b border-pitch-black flex items-center justify-between px-6 md:px-12 h-14">
-        <Link href="/" className="font-display font-bold text-sm tracking-tight">
+      <nav className="sticky top-0 z-50 bg-light-linen/95 backdrop-blur-sm border-b border-pitch-black flex items-center justify-between px-4 md:px-12 h-14">
+        <Link href="/" className="font-display font-bold text-sm tracking-tight shrink-0">
           svg-scroll-draw
         </Link>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           <ThemeToggle />
-          <Link href="/docs" className="hidden sm:inline-flex text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium items-center">
+          <Link href="/docs" className="hidden sm:inline-flex text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium items-center whitespace-nowrap">
             Docs
           </Link>
-          <Link href="/examples" className="hidden sm:inline-flex text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium items-center">
+          <Link href="/examples" className="hidden sm:inline-flex text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium items-center whitespace-nowrap">
             Examples
           </Link>
-          <a href={NPM} target="_blank" rel="noopener noreferrer" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono">
+          <a href={NPM} target="_blank" rel="noopener noreferrer" className="hidden sm:inline-flex text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono whitespace-nowrap">
             v1.0.0
           </a>
-          <a href={GH} target="_blank" rel="noopener noreferrer" className="text-sm px-4 py-1.5 rounded-full bg-pitch-black text-light-linen hover:bg-graphite-border transition-colors font-medium">
+          <a href={GH} target="_blank" rel="noopener noreferrer" className="text-xs sm:text-sm px-3 sm:px-4 py-1.5 rounded-full bg-pitch-black text-light-linen hover:bg-graphite-border transition-colors font-medium whitespace-nowrap">
             GitHub →
           </a>
         </div>
       </nav>
 
       {/* Header */}
-      <section className="border-b border-pitch-black px-6 md:px-12 py-16">
+      <section className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-12 sm:py-16">
         <div className="max-w-3xl mx-auto">
           <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-3 font-medium">Release history</p>
-          <h1 className="font-display font-extrabold text-[clamp(40px,7vw,80px)] leading-[0.92] tracking-[-0.04em] mb-4">
+          <h1 className="font-display font-extrabold text-[clamp(36px,7vw,80px)] leading-[0.92] tracking-[-0.04em] mb-4">
             Changelog
           </h1>
           <p className="text-base text-graphite-border">
@@ -174,9 +174,9 @@ export default function ChangelogPage() {
       </section>
 
       {/* Releases */}
-      <div className="max-w-3xl mx-auto px-6 md:px-12 py-12 space-y-0">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 md:px-12 py-10 sm:py-12 space-y-0">
         {RELEASES.map((release, i) => (
-          <div key={release.version} className="relative flex gap-6 md:gap-10 pb-12">
+          <div key={release.version} className="relative flex gap-4 sm:gap-6 md:gap-10 pb-10 sm:pb-12">
             {/* Timeline line */}
             {i < RELEASES.length - 1 && (
               <div className="absolute left-[13px] top-8 bottom-0 w-px bg-subtle-ash" />

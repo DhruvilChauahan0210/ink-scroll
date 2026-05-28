@@ -363,7 +363,7 @@ export function SvgPlayground() {
       </nav>
 
       {/* ── Examples bar ────────────────────────────────────────────── */}
-      <div className="border-b border-pitch-black px-6 py-3 flex items-center gap-2 overflow-x-auto shrink-0 bg-marketplace-gray">
+      <div className="border-b border-pitch-black px-3 sm:px-6 py-3 flex items-center gap-2 overflow-x-auto shrink-0 bg-marketplace-gray">
         <span className="text-[11px] uppercase tracking-[0.18em] text-graphite-border font-medium shrink-0 mr-1">Examples</span>
         {EXAMPLES.map((ex, i) => (
           <button
@@ -402,7 +402,7 @@ export function SvgPlayground() {
             value={rawSvg}
             onChange={e => handleSvgChange(e.target.value)}
             spellCheck={false}
-            className="flex-1 resize-none bg-[#1a1a18] text-[#e8e8e3] font-mono text-[13px] leading-[1.75] p-5 outline-none min-h-[240px] lg:min-h-0"
+            className="flex-1 resize-none bg-[#1a1a18] text-[#e8e8e3] font-mono text-[12px] sm:text-[13px] leading-[1.75] p-4 sm:p-5 outline-none min-h-[200px] lg:min-h-0"
             placeholder="Paste your SVG code here…"
           />
           {error && (
@@ -422,7 +422,7 @@ export function SvgPlayground() {
           </div>
 
           {/* Progress bar + play controls */}
-          <div className="border-t border-subtle-ash px-6 py-4 shrink-0 space-y-3">
+          <div className="border-t border-subtle-ash px-3 sm:px-6 py-3 sm:py-4 shrink-0 space-y-3">
             {/* Scrubber */}
             <div className="flex items-center gap-3">
               <button
@@ -457,8 +457,8 @@ export function SvgPlayground() {
       </div>
 
       {/* ── Controls ────────────────────────────────────────────────── */}
-      <div className="px-6 py-5 bg-marketplace-gray border-b border-pitch-black shrink-0">
-        <div className="max-w-5xl mx-auto grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4">
+      <div className="px-4 sm:px-6 py-4 sm:py-5 bg-marketplace-gray border-b border-pitch-black shrink-0">
+        <div className="max-w-5xl mx-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-3 sm:gap-4">
 
           {/* Easing */}
           <div className="flex flex-col gap-1.5">
@@ -631,7 +631,7 @@ export function SvgPlayground() {
           </div>
 
           {/* Generated code snippet */}
-          <div className="flex flex-col gap-1.5 col-span-2 sm:col-span-3 lg:col-span-2">
+          <div className="flex flex-col gap-1.5 col-span-2 sm:col-span-3 md:col-span-4 lg:col-span-2">
             <label className="text-[10px] uppercase tracking-[0.18em] font-medium text-graphite-border">Code</label>
             <div className="relative">
               <pre className="text-[10px] font-mono bg-[#1a1a18] text-[#e8e8e3] rounded-lg px-2.5 py-2 overflow-x-auto leading-relaxed whitespace-pre-wrap break-all">
@@ -647,7 +647,7 @@ export function SvgPlayground() {
       </div>
 
       {/* ── Footer ──────────────────────────────────────────────────── */}
-      <footer className="px-6 py-4 text-center text-[11px] font-mono text-graphite-border">
+      <footer className="px-4 sm:px-6 py-4 text-center text-[11px] font-mono text-graphite-border">
         Paste any SVG · tweak controls · hit Share to get a link ·{' '}
         <a href="/docs" className="underline underline-offset-2 hover:text-pitch-black transition-colors">back to docs</a>
       </footer>

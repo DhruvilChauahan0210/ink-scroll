@@ -11,8 +11,8 @@ export function OnCompleteDemo() {
 
   return (
     <section data-mascot="cheer" className="relative border-b border-pitch-black overflow-hidden">
-      <span className="pointer-events-none select-none absolute -right-6 top-1/2 -translate-y-1/2 font-display font-extrabold text-[220px] leading-none text-pitch-black opacity-[0.04]">05</span>
-      <div className="max-w-6xl mx-auto px-6 md:px-12 py-24 grid md:grid-cols-2 gap-16 items-start">
+      <span className="pointer-events-none select-none absolute -right-6 top-1/2 -translate-y-1/2 font-display font-extrabold text-[120px] md:text-[220px] leading-none text-pitch-black opacity-[0.04]">05</span>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-12 py-12 sm:py-16 md:py-24 grid md:grid-cols-2 gap-8 md:gap-16 items-start">
 
         <div>
           <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-3 font-medium">Callback</p>

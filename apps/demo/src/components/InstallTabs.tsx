@@ -38,8 +38,8 @@ export function InstallTabs() {
         ))}
       </div>
       {/* Command line */}
-      <div className="flex items-center justify-between gap-2 px-4 py-3">
-        <div className="flex items-center gap-2 font-mono text-sm min-w-0">
+      <div className="flex items-center justify-between gap-2 px-3 sm:px-4 py-3">
+        <div className="flex items-center gap-2 font-mono text-[12px] sm:text-sm min-w-0">
           {tab.showDollar && (
             <span className="text-graphite-border select-none shrink-0">$</span>
           )}

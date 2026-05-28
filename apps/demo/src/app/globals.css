@@ -34,9 +34,17 @@ body {
   font-family: var(--font-geist-sans, sans-serif);
   -webkit-font-smoothing: antialiased;
   transition: background-color 0.2s ease, color 0.2s ease;
+  overflow-x: hidden;
 }
 
 * { box-sizing: border-box; }
+
+/* Ensure SVGs in demo containers never overflow their parent */
+[class*="rounded-2xl"] svg,
+[class*="rounded-xl"] svg {
+  max-width: 100%;
+  height: auto;
+}
 
 /* Dark mode hero dot grid */
 .dark .dot-grid {

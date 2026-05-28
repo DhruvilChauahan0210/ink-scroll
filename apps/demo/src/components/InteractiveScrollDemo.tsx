@@ -113,8 +113,8 @@ function Controls({
   onReplay:       () => void;
 }) {
   return (
-    <div className="mt-4 rounded-2xl border border-pitch-black bg-light-linen p-5 shadow-[2px_2px_0px_#000]">
-      <div className="mb-5">
+    <div className="mt-4 rounded-2xl border border-pitch-black bg-light-linen p-4 sm:p-5 shadow-[2px_2px_0px_#000]">
+      <div className="mb-4 sm:mb-5">
         <p className="text-[10px] uppercase tracking-[0.22em] font-semibold text-graphite-border mb-2.5">Easing</p>
         <div className="flex flex-wrap gap-1.5">
           {(Object.keys(EASING_FNS) as EasingName[]).map((e) => (
@@ -226,7 +226,7 @@ export function InteractiveScrollDemo({
   return (
     <div className={className}>
       <div ref={containerRef}
-        className={`flex items-center justify-center rounded-2xl border p-4 sm:p-8 md:p-12 shadow-[4px_4px_0px_#000] ${bgClass}`}
+        className={`flex items-center justify-center rounded-2xl border p-4 sm:p-8 shadow-[4px_4px_0px_#000] ${bgClass} overflow-hidden`}
       >{children}</div>
       <Controls
         easing={easing} speed={speed} playing={playing}

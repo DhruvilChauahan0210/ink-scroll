@@ -311,10 +311,10 @@ function GroupDemo() {
     return () => instance.destroy();
   }, []);
 
-  const boxCls = 'flex flex-col items-center gap-3 p-5 rounded-2xl border border-[#e8e8e8] bg-white';
+  const boxCls = 'flex flex-col items-center gap-2 sm:gap-3 p-3 sm:p-5 rounded-2xl border border-[#e8e8e8] bg-white min-w-0';
 
   return (
-    <div className="flex gap-4 justify-center w-full">
+    <div className="flex gap-2 sm:gap-4 justify-center w-full">
       {/* Speed */}
       <div ref={c1} className={boxCls}>
         <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
@@ -681,7 +681,7 @@ const EXAMPLES = [
     description:
       'Zero-JS server components — add data-scroll-draw to any element and call initScrollDraw() in a client script. Options are passed as a JSON attribute. No framework wrapper needed.',
     preview: (
-      <div style={{ width: '100%', background: '#0f172a', borderRadius: 12, padding: '28px 24px', fontFamily: 'monospace', fontSize: 12, lineHeight: 1.7 }}>
+      <div style={{ width: '100%', background: '#0f172a', borderRadius: 12, padding: '16px', fontFamily: 'monospace', fontSize: 11, lineHeight: 1.6, overflowX: 'auto' }}>
         <div style={{ color: '#94a3b8', marginBottom: 16, fontSize: 10, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
           src/pages/index.astro
         </div>
@@ -831,34 +831,34 @@ export function ExamplesPage() {
     <div className="bg-light-linen text-pitch-black min-h-screen">
 
       {/* Nav */}
-      <nav className="sticky top-0 z-50 bg-light-linen/95 backdrop-blur-sm border-b border-pitch-black flex items-center justify-between px-6 md:px-12 h-14">
-        <Link href="/" className="font-display font-bold text-sm tracking-tight hover:opacity-70 transition-opacity">
+      <nav className="sticky top-0 z-50 bg-light-linen/95 backdrop-blur-sm border-b border-pitch-black flex items-center justify-between px-4 md:px-12 h-14">
+        <Link href="/" className="font-display font-bold text-sm tracking-tight hover:opacity-70 transition-opacity shrink-0">
           svg-scroll-draw
         </Link>
-        <div className="flex items-center gap-2">
-          <Link href="/playground" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium">
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <Link href="/playground" className="text-xs px-3 sm:px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">
             ⚡ Playground
           </Link>
-          <Link href="/docs" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium">
+          <Link href="/docs" className="text-xs px-3 sm:px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">
             ← Docs
           </Link>
         </div>
       </nav>
 
       {/* Header */}
-      <section className="border-b border-pitch-black px-6 md:px-12 py-16 md:py-20">
+      <section className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-12 sm:py-16 md:py-20">
         <div className="max-w-4xl mx-auto">
           <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-4 font-medium">
             Real-world examples
           </p>
-          <h1 className="font-display font-extrabold text-[clamp(36px,6vw,72px)] leading-[0.92] tracking-[-0.04em] mb-6">
+          <h1 className="font-display font-extrabold text-[clamp(30px,6vw,72px)] leading-[0.92] tracking-[-0.04em] mb-6">
             SVG scroll animations<br />
             <span className="relative inline-block">
-              <span className="relative z-10 px-3">without GSAP.</span>
+              <span className="relative z-10 px-2 sm:px-3">without GSAP.</span>
               <span className="absolute inset-0 bg-creator-pink rounded-xl -rotate-[0.8deg]" />
             </span>
           </h1>
-          <p className="text-base md:text-lg text-graphite-border max-w-2xl leading-relaxed">
+          <p className="text-sm sm:text-base md:text-lg text-graphite-border max-w-2xl leading-relaxed">
             Ten production-ready patterns — logo reveals, charts, signatures, diagrams, Timeline API, Group API, Sequence API, and more.
             Each one is powered by <code className="font-mono text-pitch-black text-[0.9em] bg-marketplace-gray border border-subtle-ash px-1.5 py-0.5 rounded-md">svg-scroll-draw</code> and
             works in React, Next.js, Vue, and vanilla JS.
@@ -870,31 +870,31 @@ export function ExamplesPage() {
       {/* Examples grid */}
       <div className="divide-y divide-pitch-black">
         {EXAMPLES.map((ex, i) => (
-          <section key={ex.id} id={ex.id} className={`px-6 md:px-12 py-16 ${i % 2 === 1 ? 'bg-marketplace-gray' : ''}`}>
-            <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-12 items-start">
+          <section key={ex.id} id={ex.id} className={`px-4 sm:px-6 md:px-12 py-12 sm:py-14 md:py-16 ${i % 2 === 1 ? 'bg-marketplace-gray' : ''}`}>
+            <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-8 md:gap-12 items-start">
 
               {/* Text + code */}
               <div className={i % 2 === 1 ? 'order-1 md:order-2' : ''}>
-                <div className="flex items-center gap-2 mb-3">
+                <div className="flex flex-wrap items-center gap-2 mb-3">
                   <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border font-medium">
                     {String(i + 1).padStart(2, '0')}
                   </p>
                   <span className="text-subtle-ash">·</span>
-                  <code className="text-[11px] font-mono bg-sunshine-yellow/30 text-pitch-black px-2 py-0.5 rounded-full border border-sunshine-yellow/50">
+                  <code className="text-[10px] sm:text-[11px] font-mono bg-sunshine-yellow/30 text-pitch-black px-2 py-0.5 rounded-full border border-sunshine-yellow/50 break-all">
                     {ex.tag}
                   </code>
                 </div>
-                <h2 className="font-display font-extrabold text-[clamp(24px,3vw,36px)] leading-[1] tracking-[-0.03em] mb-4">
+                <h2 className="font-display font-extrabold text-[clamp(22px,3vw,36px)] leading-[1] tracking-[-0.03em] mb-4">
                   {ex.label}
                 </h2>
-                <p className="text-graphite-border leading-relaxed mb-6 text-[15px]">
+                <p className="text-graphite-border leading-relaxed mb-5 sm:mb-6 text-[14px] sm:text-[15px]">
                   {ex.description}
                 </p>
                 <CodeBlock filename="Hero.tsx">{ex.code}</CodeBlock>
               </div>
 
               {/* Live preview */}
-              <div className={`flex items-center justify-center rounded-2xl border border-pitch-black shadow-[4px_4px_0px_#000] min-h-[240px] ${'darkPreview' in ex && ex.darkPreview ? 'bg-[#1e1f22] p-0 overflow-hidden' : 'bg-[#ffffff] p-10'} ${i % 2 === 1 ? 'order-2 md:order-1' : ''}`}>
+              <div className={`flex items-center justify-center rounded-2xl border border-pitch-black shadow-[4px_4px_0px_#000] min-h-[200px] sm:min-h-[240px] overflow-hidden ${'darkPreview' in ex && ex.darkPreview ? 'bg-[#1e1f22] p-0' : 'bg-[#ffffff] p-6 sm:p-10'} ${i % 2 === 1 ? 'order-2 md:order-1' : ''}`}>
                 {ex.preview}
               </div>
 
@@ -904,24 +904,24 @@ export function ExamplesPage() {
       </div>
 
       {/* CTA */}
-      <section className="border-t border-pitch-black bg-creator-pink px-6 md:px-12 py-16 text-center">
-        <h2 className="font-display font-extrabold text-[clamp(28px,5vw,52px)] leading-[0.95] tracking-[-0.03em] mb-6 text-pitch-black">
+      <section className="border-t border-pitch-black bg-creator-pink px-4 sm:px-6 md:px-12 py-12 sm:py-16 text-center">
+        <h2 className="font-display font-extrabold text-[clamp(24px,5vw,52px)] leading-[0.95] tracking-[-0.03em] mb-6 text-pitch-black">
           Ready to add this<br />to your project?
         </h2>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-          <div className="flex items-center gap-2 bg-pitch-black text-light-linen rounded-full px-6 py-3 text-sm font-mono shadow-[3px_3px_0px_rgba(0,0,0,0.3)]">
+        <div className="flex flex-col items-center justify-center gap-3 w-full max-w-xs mx-auto sm:max-w-none sm:flex-row sm:flex-wrap">
+          <div className="flex items-center gap-2 bg-pitch-black text-light-linen rounded-full px-5 sm:px-6 py-3 text-sm font-mono shadow-[3px_3px_0px_rgba(0,0,0,0.3)] w-full sm:w-auto justify-center">
             <span className="opacity-50">$</span>
             <span>npm i svg-scroll-draw</span>
           </div>
           <Link
             href="/playground"
-            className="px-6 py-3 rounded-full border-2 border-pitch-black bg-transparent text-pitch-black text-sm font-semibold hover:bg-pitch-black hover:text-creator-pink transition-colors shadow-[3px_3px_0px_rgba(0,0,0,0.2)]"
+            className="px-5 sm:px-6 py-3 rounded-full border-2 border-pitch-black bg-transparent text-pitch-black text-sm font-semibold hover:bg-pitch-black hover:text-creator-pink transition-colors shadow-[3px_3px_0px_rgba(0,0,0,0.2)] w-full sm:w-auto text-center"
           >
             ⚡ Try the Playground →
           </Link>
           <Link
             href="/"
-            className="px-6 py-3 rounded-full border-2 border-pitch-black bg-transparent text-pitch-black text-sm font-semibold hover:bg-pitch-black hover:text-creator-pink transition-colors shadow-[3px_3px_0px_rgba(0,0,0,0.2)]"
+            className="px-5 sm:px-6 py-3 rounded-full border-2 border-pitch-black bg-transparent text-pitch-black text-sm font-semibold hover:bg-pitch-black hover:text-creator-pink transition-colors shadow-[3px_3px_0px_rgba(0,0,0,0.2)] w-full sm:w-auto text-center"
           >
             Read the Docs →
           </Link>

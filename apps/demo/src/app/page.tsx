@@ -122,45 +122,45 @@ export default function Home() {
     <main className="bg-light-linen text-pitch-black overflow-x-hidden">
 
       {/* ── Nav ───────────────────────────────────────────────────────── */}
-      <nav className="sticky top-0 z-50 bg-light-linen/95 backdrop-blur-sm border-b border-pitch-black flex items-center justify-between px-6 md:px-12 h-14">
-        <span className="font-display font-bold text-sm tracking-tight">svg-scroll-draw</span>
-        <div className="flex items-center gap-2">
+      <nav className="sticky top-0 z-50 bg-light-linen/95 backdrop-blur-sm border-b border-pitch-black flex items-center justify-between px-4 md:px-12 h-14">
+        <span className="font-display font-bold text-sm tracking-tight shrink-0">svg-scroll-draw</span>
+        <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto scrollbar-hide">
           <ThemeToggle />
           <a
             href="/docs"
-            className="inline-flex text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium items-center gap-1"
+            className="inline-flex text-xs px-3 sm:px-3.5 py-2 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium items-center gap-1 whitespace-nowrap"
           >
             Docs
           </a>
           <a
             href="/examples"
-            className="hidden sm:inline-flex text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium items-center gap-1"
+            className="hidden sm:inline-flex text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium items-center gap-1 whitespace-nowrap"
           >
             Examples
           </a>
           <a
             href="/changelog"
-            className="hidden sm:inline-flex text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium items-center gap-1"
+            className="hidden md:inline-flex text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium items-center gap-1 whitespace-nowrap"
           >
             Changelog
           </a>
           <a
             href="/playground"
-            className="hidden sm:inline-flex text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium items-center gap-1"
+            className="hidden sm:inline-flex text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium items-center gap-1 whitespace-nowrap"
           >
             ⚡ Playground
           </a>
           <a
             href={NPM}
             target="_blank" rel="noopener noreferrer"
-            className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono"
+            className="hidden sm:inline-flex text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono whitespace-nowrap"
           >
             v1.0.0
           </a>
           <a
             href={GH}
             target="_blank" rel="noopener noreferrer"
-            className="text-sm px-4 py-1.5 rounded-full bg-pitch-black text-light-linen hover:bg-graphite-border transition-colors font-medium"
+            className="text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-full bg-pitch-black text-light-linen hover:bg-graphite-border transition-colors font-medium whitespace-nowrap"
           >
             GitHub →
           </a>
@@ -168,7 +168,7 @@ export default function Home() {
       </nav>
 
       {/* ── Hero ──────────────────────────────────────────────────────── */}
-      <section data-mascot-reset className="relative min-h-screen flex flex-col items-center justify-center px-6 text-center border-b border-pitch-black dot-grid overflow-hidden">
+      <section data-mascot-reset className="relative min-h-[100svh] flex flex-col items-center justify-center px-4 sm:px-6 text-center border-b border-pitch-black dot-grid overflow-hidden">
 
 
         {/* Geometric decoration — hidden on small screens to prevent overflow */}
@@ -180,34 +180,34 @@ export default function Home() {
         <div className="pointer-events-none absolute bottom-24 left-16 w-3 h-3 rounded-full bg-lime-glow" />
 
         {/* Badge */}
-        <div className="relative z-10 inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-10 border border-subtle-ash bg-light-linen/80 rounded-full px-4 py-1.5 font-medium">
-          <span className="w-1.5 h-1.5 rounded-full bg-creator-pink animate-pulse" />
-          Open source · MIT · Zero dependencies
+        <div className="relative z-10 inline-flex items-center gap-2 text-[10px] sm:text-[11px] uppercase tracking-[0.18em] sm:tracking-[0.22em] text-graphite-border mb-6 sm:mb-10 border border-subtle-ash bg-light-linen/80 rounded-full px-3 sm:px-4 py-1.5 font-medium">
+          <span className="w-1.5 h-1.5 rounded-full bg-creator-pink animate-pulse shrink-0" />
+          <span>Open source · MIT · Zero dependencies</span>
         </div>
 
         {/* Headline */}
-        <h1 className="relative z-10 font-display font-extrabold leading-[0.88] tracking-[-0.04em] mb-8"
-            style={{ fontSize: 'clamp(58px, 11vw, 130px)' }}>
+        <h1 className="relative z-10 font-display font-extrabold leading-[0.88] tracking-[-0.04em] mb-6 sm:mb-8"
+            style={{ fontSize: 'clamp(42px, 11vw, 130px)' }}>
           ANIMATE SVG<br />
           PATHS AS YOU{' '}
           <span className="relative inline-block">
-            <span className="relative z-10 px-4">SCROLL.</span>
+            <span className="relative z-10 px-2 sm:px-4">SCROLL.</span>
             <span className="absolute inset-0 bg-creator-pink rounded-xl -rotate-[1.2deg]" />
           </span>
         </h1>
 
         {/* Sub */}
-        <p className="relative z-10 text-base md:text-lg text-graphite-border max-w-md mx-auto mb-10 leading-relaxed">
+        <p className="relative z-10 text-sm sm:text-base md:text-lg text-graphite-border max-w-sm sm:max-w-md mx-auto mb-8 sm:mb-10 leading-relaxed">
           The definitive modern library. ~3 KB gzipped.
           Works in React, Next.js, and vanilla JS.
         </p>
 
         {/* CTAs */}
-        <div className="relative z-10 flex flex-col items-center gap-3 mb-14">
+        <div className="relative z-10 flex flex-col items-center gap-3 mb-10 sm:mb-14 w-full max-w-sm sm:max-w-md px-2">
           <InstallTabs />
           <a
             href="#demos"
-            className="px-6 py-3 rounded-full bg-pitch-black text-light-linen text-sm font-semibold hover:bg-graphite-border transition-colors shadow-[2px_2px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+            className="px-6 py-3 rounded-full bg-pitch-black text-light-linen text-sm font-semibold hover:bg-graphite-border shadow-[2px_2px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
           >
             See it in action ↓
           </a>
@@ -221,9 +221,9 @@ export default function Home() {
             ['SSR', 'safe'],
             ['56', 'tests ✓'],
           ].map(([val, label]) => (
-            <div key={val} className="flex items-center gap-1.5 border border-pitch-black bg-light-linen rounded-full px-4 py-1.5 shadow-[1px_1px_0px_#000]">
-              <span className="font-display font-bold text-sm">{val}</span>
-              <span className="text-[11px] text-graphite-border">{label}</span>
+            <div key={val} className="flex items-center gap-1.5 border border-pitch-black bg-light-linen rounded-full px-3 sm:px-4 py-1.5 shadow-[1px_1px_0px_#000]">
+              <span className="font-display font-bold text-xs sm:text-sm">{val}</span>
+              <span className="text-[10px] sm:text-[11px] text-graphite-border">{label}</span>
             </div>
           ))}
         </div>
@@ -252,10 +252,10 @@ export default function Home() {
       </div>
 
       {/* ── Problems ──────────────────────────────────────────────────── */}
-      <section className="bg-marketplace-gray border-b border-pitch-black px-6 md:px-12 py-20">
+      <section className="bg-marketplace-gray border-b border-pitch-black px-4 sm:px-6 md:px-12 py-12 sm:py-16 md:py-20">
         <div className="max-w-5xl mx-auto">
           <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-3 font-medium">The problem</p>
-          <h2 className="font-display font-extrabold text-[clamp(32px,5vw,56px)] leading-[0.95] tracking-[-0.03em] mb-12">
+          <h2 className="font-display font-extrabold text-[clamp(28px,5vw,56px)] leading-[0.95] tracking-[-0.03em] mb-8 sm:mb-12">
             Every existing tool<br />is broken.
           </h2>
 
@@ -303,11 +303,11 @@ export default function Home() {
       </section>
 
       {/* ── Bundle size chart ─────────────────────────────────────────── */}
-      <section className="relative border-b border-pitch-black px-6 md:px-12 py-20 overflow-hidden">
+      <section className="relative border-b border-pitch-black px-4 sm:px-6 md:px-12 py-12 sm:py-16 md:py-20 overflow-hidden">
         <BundleGraphLine />
         <div className="max-w-5xl mx-auto">
           <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-3 font-medium">Bundle size</p>
-          <h2 className="font-display font-extrabold text-[clamp(32px,5vw,56px)] leading-[0.95] tracking-[-0.03em] mb-12">
+          <h2 className="font-display font-extrabold text-[clamp(28px,5vw,56px)] leading-[0.95] tracking-[-0.03em] mb-8 sm:mb-12">
             ~3 KB.<br />Not 40 KB.
           </h2>
 
@@ -348,8 +348,8 @@ export default function Home() {
 
         {/* 01 — Basic */}
         <section data-mascot="draw" className="relative border-b border-pitch-black overflow-hidden">
-          <span className="pointer-events-none select-none absolute -right-6 top-1/2 -translate-y-1/2 font-display font-extrabold text-[220px] leading-none text-pitch-black opacity-[0.04]">01</span>
-          <div className="max-w-6xl mx-auto px-6 md:px-12 py-24 grid md:grid-cols-2 gap-16 items-start">
+          <span className="pointer-events-none select-none absolute -right-6 top-1/2 -translate-y-1/2 font-display font-extrabold text-[120px] md:text-[220px] leading-none text-pitch-black opacity-[0.04]">01</span>
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-12 py-12 sm:py-16 md:py-24 grid md:grid-cols-2 gap-8 md:gap-16 items-start">
             <div>
               <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-3 font-medium">Zero config</p>
               <h2 className="font-display font-extrabold text-[clamp(28px,4vw,44px)] leading-[1] tracking-[-0.03em] mb-5">
@@ -374,7 +374,7 @@ export default function Hero() {
               </CodeBlock>
             </div>
             <InteractiveScrollDemo defaultEasing="linear" defaultSpeed={1} svgBg="gray">
-              <svg width="260" height="260" viewBox="0 0 260 260" fill="none">
+              <svg width="260" height="260" viewBox="0 0 260 260" fill="none" className="max-w-full h-auto">
                 <path d="M 25 235 C 25 115 130 25 235 25" stroke="#ff90e8" strokeWidth="3.5" strokeLinecap="round" />
                 <path d="M 25 195 C 25 115 105 45 235 65" stroke="#000000" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="7 5" opacity="0.25" />
                 <circle cx="25" cy="235" r="6" fill="#ff90e8" />
@@ -388,8 +388,8 @@ export default function Hero() {
 
         {/* 02 — Easing */}
         <section data-mascot="dance" className="relative border-b border-pitch-black bg-marketplace-gray overflow-hidden">
-          <span className="pointer-events-none select-none absolute -left-6 top-1/2 -translate-y-1/2 font-display font-extrabold text-[220px] leading-none text-pitch-black opacity-[0.04]">02</span>
-          <div className="max-w-6xl mx-auto px-6 md:px-12 py-24 grid md:grid-cols-2 gap-16 items-start">
+          <span className="pointer-events-none select-none absolute -left-6 top-1/2 -translate-y-1/2 font-display font-extrabold text-[120px] md:text-[220px] leading-none text-pitch-black opacity-[0.04]">02</span>
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-12 py-12 sm:py-16 md:py-24 grid md:grid-cols-2 gap-8 md:gap-16 items-start">
             <InteractiveScrollDemo
               className="order-2 md:order-1"
               defaultEasing="ease-out"
@@ -436,8 +436,8 @@ export default function Hero() {
 
         {/* 03 — Fade */}
         <section data-mascot="magic" className="relative border-b border-pitch-black overflow-hidden">
-          <span className="pointer-events-none select-none absolute -right-6 top-1/2 -translate-y-1/2 font-display font-extrabold text-[220px] leading-none text-pitch-black opacity-[0.04]">03</span>
-          <div className="max-w-6xl mx-auto px-6 md:px-12 py-24 grid md:grid-cols-2 gap-16 items-start">
+          <span className="pointer-events-none select-none absolute -right-6 top-1/2 -translate-y-1/2 font-display font-extrabold text-[120px] md:text-[220px] leading-none text-pitch-black opacity-[0.04]">03</span>
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-12 py-12 sm:py-16 md:py-24 grid md:grid-cols-2 gap-8 md:gap-16 items-start">
             <div>
               <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-3 font-medium">Fade</p>
               <h2 className="font-display font-extrabold text-[clamp(28px,4vw,44px)] leading-[1] tracking-[-0.03em] mb-5">
@@ -473,8 +473,8 @@ export default function Hero() {
 
         {/* 04 — Complex */}
         <section data-mascot="celebrate" className="relative border-b border-pitch-black bg-marketplace-gray overflow-hidden">
-          <span className="pointer-events-none select-none absolute -left-6 top-1/2 -translate-y-1/2 font-display font-extrabold text-[220px] leading-none text-pitch-black opacity-[0.04]">04</span>
-          <div className="max-w-6xl mx-auto px-6 md:px-12 py-24 grid md:grid-cols-2 gap-16 items-start">
+          <span className="pointer-events-none select-none absolute -left-6 top-1/2 -translate-y-1/2 font-display font-extrabold text-[120px] md:text-[220px] leading-none text-pitch-black opacity-[0.04]">04</span>
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-12 py-12 sm:py-16 md:py-24 grid md:grid-cols-2 gap-8 md:gap-16 items-start">
             <InteractiveScrollDemo
               className="order-2 md:order-1"
               defaultEasing="ease-out"
@@ -516,8 +516,8 @@ export default function Hero() {
 
         {/* 06 — autoReverse */}
         <section data-mascot="think" className="relative border-b border-pitch-black bg-marketplace-gray overflow-hidden">
-          <span className="pointer-events-none select-none absolute -left-6 top-1/2 -translate-y-1/2 font-display font-extrabold text-[220px] leading-none text-pitch-black opacity-[0.04]">06</span>
-          <div className="max-w-6xl mx-auto px-6 md:px-12 py-24 grid md:grid-cols-2 gap-16 items-start">
+          <span className="pointer-events-none select-none absolute -left-6 top-1/2 -translate-y-1/2 font-display font-extrabold text-[120px] md:text-[220px] leading-none text-pitch-black opacity-[0.04]">06</span>
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-12 py-12 sm:py-16 md:py-24 grid md:grid-cols-2 gap-8 md:gap-16 items-start">
             <InteractiveScrollDemo
               className="order-2 md:order-1"
               defaultEasing="ease-in-out"
@@ -556,8 +556,8 @@ export default function Hero() {
 
         {/* 07 — strokeColor */}
         <section data-mascot="magic" className="relative border-b border-pitch-black overflow-hidden">
-          <span className="pointer-events-none select-none absolute -right-6 top-1/2 -translate-y-1/2 font-display font-extrabold text-[220px] leading-none text-pitch-black opacity-[0.04]">07</span>
-          <div className="max-w-6xl mx-auto px-6 md:px-12 py-24 grid md:grid-cols-2 gap-16 items-start">
+          <span className="pointer-events-none select-none absolute -right-6 top-1/2 -translate-y-1/2 font-display font-extrabold text-[120px] md:text-[220px] leading-none text-pitch-black opacity-[0.04]">07</span>
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-12 py-12 sm:py-16 md:py-24 grid md:grid-cols-2 gap-8 md:gap-16 items-start">
             <div>
               <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-3 font-medium">Color Animation</p>
               <h2 className="font-display font-extrabold text-[clamp(28px,4vw,44px)] leading-[1] tracking-[-0.03em] mb-5">
@@ -596,8 +596,8 @@ export default function Hero() {
 
         {/* 08 — strokeWidth */}
         <section data-mascot="draw" className="relative border-b border-pitch-black bg-marketplace-gray overflow-hidden">
-          <span className="pointer-events-none select-none absolute -left-6 top-1/2 -translate-y-1/2 font-display font-extrabold text-[220px] leading-none text-pitch-black opacity-[0.04]">08</span>
-          <div className="max-w-6xl mx-auto px-6 md:px-12 py-24 grid md:grid-cols-2 gap-16 items-start">
+          <span className="pointer-events-none select-none absolute -left-6 top-1/2 -translate-y-1/2 font-display font-extrabold text-[120px] md:text-[220px] leading-none text-pitch-black opacity-[0.04]">08</span>
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-12 py-12 sm:py-16 md:py-24 grid md:grid-cols-2 gap-8 md:gap-16 items-start">
             <InteractiveScrollDemo
               className="order-2 md:order-1"
               defaultEasing="ease-in-out"
@@ -640,8 +640,8 @@ export default function Hero() {
 
         {/* 10 — morphTo */}
         <section data-mascot="magic" className="relative border-b border-pitch-black overflow-hidden">
-          <span className="pointer-events-none select-none absolute -right-6 top-1/2 -translate-y-1/2 font-display font-extrabold text-[220px] leading-none text-pitch-black opacity-[0.04]">10</span>
-          <div className="max-w-6xl mx-auto px-6 md:px-12 py-24 grid md:grid-cols-2 gap-16 items-start">
+          <span className="pointer-events-none select-none absolute -right-6 top-1/2 -translate-y-1/2 font-display font-extrabold text-[120px] md:text-[220px] leading-none text-pitch-black opacity-[0.04]">10</span>
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-12 py-12 sm:py-16 md:py-24 grid md:grid-cols-2 gap-8 md:gap-16 items-start">
             <div>
               <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-3 font-medium">Path Morphing</p>
               <h2 className="font-display font-extrabold text-[clamp(28px,4vw,44px)] leading-[1] tracking-[-0.03em] mb-5">
@@ -692,17 +692,17 @@ export default function Hero() {
 
         {/* 11 — Group API */}
         <section data-mascot="celebrate" className="relative border-b border-pitch-black bg-marketplace-gray overflow-hidden">
-          <span className="pointer-events-none select-none absolute -left-6 top-1/2 -translate-y-1/2 font-display font-extrabold text-[220px] leading-none text-pitch-black opacity-[0.04]">11</span>
-          <div className="max-w-6xl mx-auto px-6 md:px-12 py-24 grid md:grid-cols-2 gap-16 items-start">
-            <div className="order-2 md:order-1 flex flex-col gap-4">
-              {/* Three mini SVG containers side by side */}
+          <span className="pointer-events-none select-none absolute -left-6 top-1/2 -translate-y-1/2 font-display font-extrabold text-[120px] md:text-[220px] leading-none text-pitch-black opacity-[0.04]">11</span>
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-12 py-12 sm:py-16 md:py-24 grid md:grid-cols-2 gap-8 md:gap-16 items-start">
+            <div className="order-2 md:order-1 flex flex-col gap-3 sm:gap-4">
+              {/* Three mini SVG containers stacked */}
               {[
                 { stroke: '#ff90e8', d: 'M 20 60 C 40 10 80 10 100 60 S 160 110 180 60' },
                 { stroke: '#ffc900', d: 'M 20 60 L 60 20 L 100 60 L 140 20 L 180 60' },
                 { stroke: '#000',    d: 'M 20 40 C 60 10 120 110 180 40' },
               ].map(({ stroke, d }, i) => (
-                <div key={i} className="flex-1 flex items-center justify-center rounded-2xl border border-pitch-black bg-[#ffffff] p-6 shadow-[2px_2px_0px_#000]">
-                  <svg width="180" height="80" viewBox="0 0 200 80" fill="none">
+                <div key={i} className="flex-1 flex items-center justify-center rounded-2xl border border-pitch-black bg-[#ffffff] p-4 sm:p-6 shadow-[2px_2px_0px_#000]">
+                  <svg width="180" height="80" viewBox="0 0 200 80" fill="none" className="max-w-full h-auto">
                     <path d={d} stroke={stroke} strokeWidth="3" strokeLinecap="round" fill="none" />
                   </svg>
                 </div>
@@ -750,14 +750,14 @@ const seq = scrollDrawSequence(
       </div>
 
       {/* ── API Reference ─────────────────────────────────────────────── */}
-      <section data-mascot="think" className="bg-marketplace-gray border-t border-pitch-black border-b px-6 md:px-12 py-20">
+      <section data-mascot="think" className="bg-marketplace-gray border-t border-pitch-black border-b px-4 sm:px-6 md:px-12 py-12 sm:py-16 md:py-20">
         <div className="max-w-5xl mx-auto">
           <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-3 font-medium">Reference</p>
-          <h2 className="font-display font-extrabold text-[clamp(32px,5vw,56px)] leading-[0.95] tracking-[-0.03em] mb-12">
+          <h2 className="font-display font-extrabold text-[clamp(28px,5vw,56px)] leading-[0.95] tracking-[-0.03em] mb-8 sm:mb-12">
             All options.
           </h2>
 
-          <div className="border border-pitch-black rounded-2xl overflow-hidden bg-light-linen shadow-[4px_4px_0px_#000]">
+          <div className="border border-pitch-black rounded-2xl overflow-hidden bg-light-linen shadow-[4px_4px_0px_#000] overflow-x-auto">
             <div className="hidden md:grid grid-cols-[160px_130px_190px_1fr] gap-4 px-6 py-3 bg-pitch-black text-light-linen text-[11px] uppercase tracking-[0.15em] font-medium">
               <span>Option</span><span>Type</span><span>Default</span><span>Description</span>
             </div>
@@ -794,12 +794,12 @@ const seq = scrollDrawSequence(
             ].map(({ prop, type, def, desc }, i) => (
               <div
                 key={prop}
-                className={`grid grid-cols-1 md:grid-cols-[160px_130px_190px_1fr] gap-2 md:gap-4 px-6 py-4 text-sm items-start ${i < 26 ? 'border-b border-subtle-ash' : ''}`}
+                className={`grid grid-cols-1 md:grid-cols-[160px_130px_190px_1fr] gap-1.5 md:gap-4 px-4 sm:px-6 py-3 sm:py-4 text-sm items-start ${i < 26 ? 'border-b border-subtle-ash' : ''}`}
               >
-                <code className="font-mono font-semibold text-pitch-black">{prop}</code>
-                <code className="font-mono text-graphite-border text-[13px]">{type}</code>
-                <code className="font-mono text-graphite-border text-[13px]">{def}</code>
-                <p className="text-graphite-border text-[14px] leading-relaxed">{desc}</p>
+                <code className="font-mono font-semibold text-pitch-black text-[12px] sm:text-sm">{prop}</code>
+                <code className="font-mono text-graphite-border text-[11px] sm:text-[13px]"><span className="md:hidden text-[10px] uppercase tracking-wide text-graphite-border/60 mr-1">type:</span>{type}</code>
+                <code className="font-mono text-graphite-border text-[11px] sm:text-[13px]"><span className="md:hidden text-[10px] uppercase tracking-wide text-graphite-border/60 mr-1">default:</span>{def}</code>
+                <p className="text-graphite-border text-[13px] sm:text-[14px] leading-relaxed">{desc}</p>
               </div>
             ))}
           </div>
@@ -807,10 +807,10 @@ const seq = scrollDrawSequence(
       </section>
 
       {/* ── Framework quickstart ──────────────────────────────────────── */}
-      <section className="border-b border-pitch-black px-6 md:px-12 py-20">
+      <section className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-12 sm:py-16 md:py-20">
         <div className="max-w-5xl mx-auto">
           <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-3 font-medium">Quickstart</p>
-          <h2 className="font-display font-extrabold text-[clamp(32px,5vw,56px)] leading-[0.95] tracking-[-0.03em] mb-12">
+          <h2 className="font-display font-extrabold text-[clamp(28px,5vw,56px)] leading-[0.95] tracking-[-0.03em] mb-8 sm:mb-12">
             Works everywhere<br />you do.
           </h2>
           <FrameworkTabs />
@@ -821,10 +821,10 @@ const seq = scrollDrawSequence(
       <LiveStats />
 
       {/* ── CTA ───────────────────────────────────────────────────────── */}
-      <section data-mascot="big-dance" className="relative bg-sunshine-yellow border-b border-pitch-black px-6 md:px-12 py-24 text-center overflow-hidden">
+      <section data-mascot="big-dance" className="relative bg-sunshine-yellow border-b border-pitch-black px-4 sm:px-6 md:px-12 py-16 sm:py-20 md:py-24 text-center overflow-hidden">
         <CtaBoldMark />
-        <h2 className="font-display font-extrabold leading-[0.9] tracking-[-0.04em] mb-8 text-pitch-black"
-            style={{ fontSize: 'clamp(40px,8vw,96px)' }}>
+        <h2 className="font-display font-extrabold leading-[0.9] tracking-[-0.04em] mb-6 sm:mb-8 text-pitch-black"
+            style={{ fontSize: 'clamp(32px,8vw,96px)' }}>
           THE MODERN<br />STANDARD FOR<br />SCROLL-DRAWN SVG.
         </h2>
         <div className="flex flex-col items-center justify-center gap-3 w-full max-w-sm mx-auto sm:max-w-none sm:flex-row sm:flex-wrap">
@@ -849,11 +849,11 @@ const seq = scrollDrawSequence(
       </section>
 
       {/* ── Footer ────────────────────────────────────────────────────── */}
-      <footer className="px-6 md:px-12 py-8 border-t border-subtle-ash">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+      <footer className="px-4 sm:px-6 md:px-12 py-8 border-t border-subtle-ash">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6">
           <span className="font-display font-bold text-sm tracking-tight">svg-scroll-draw</span>
 
-          <div className="flex items-center gap-5 text-[13px] text-graphite-border">
+          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-5 text-[13px] text-graphite-border">
             <span>MIT License</span>
             <span className="text-subtle-ash">·</span>
             <span>~3 KB gzipped</span>
@@ -861,7 +861,7 @@ const seq = scrollDrawSequence(
             <span>Zero dependencies</span>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap justify-center">
             <a
               href="/examples"
               className="text-[12px] font-medium px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors"
@@ -898,7 +898,7 @@ const seq = scrollDrawSequence(
             fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
             border: '1px solid rgb(224, 224, 224)',
             borderRadius: 12,
-            padding: 20,
+            padding: '16px',
             maxWidth: 500,
             width: '100%',
             background: 'rgb(255, 255, 255)',

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { CopyButton } from './CopyButton';
 import { ThemeToggle } from './ThemeToggle';
@@ -153,7 +153,7 @@ function Note({ children }: { children: React.ReactNode }) {
 function OptGroup({ children }: { children: React.ReactNode }) {
   return (
     <div className="rounded-2xl border border-pitch-black overflow-hidden">
-      <div className="px-6 py-1">{children}</div>
+      <div className="px-4 sm:px-6 py-1">{children}</div>
     </div>
   );
 }
@@ -179,27 +179,27 @@ export function DocsPage() {
     <div className="bg-light-linen text-pitch-black min-h-screen">
 
       {/* Nav */}
-      <nav className="sticky top-0 z-50 bg-light-linen/95 backdrop-blur-sm border-b border-pitch-black flex items-center justify-between px-6 md:px-12 h-14">
-        <Link href="/" className="font-display font-bold text-sm tracking-tight">
+      <nav className="sticky top-0 z-50 bg-light-linen/95 backdrop-blur-sm border-b border-pitch-black flex items-center justify-between px-4 md:px-12 h-14">
+        <Link href="/" className="font-display font-bold text-sm tracking-tight shrink-0">
           svg-scroll-draw
         </Link>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           <ThemeToggle />
           <Link
             href="/docs"
-            className="hidden sm:inline-flex text-xs px-3.5 py-1.5 rounded-full bg-pitch-black text-light-linen font-medium items-center"
+            className="hidden sm:inline-flex text-xs px-3.5 py-1.5 rounded-full bg-pitch-black text-light-linen font-medium items-center whitespace-nowrap"
           >
             Docs
           </Link>
           <Link
             href="/examples"
-            className="hidden sm:inline-flex text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium items-center"
+            className="hidden sm:inline-flex text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium items-center whitespace-nowrap"
           >
             Examples
           </Link>
           <Link
             href="/playground"
-            className="hidden sm:inline-flex text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium items-center"
+            className="hidden sm:inline-flex text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium items-center whitespace-nowrap"
           >
             ⚡ Playground
           </Link>
@@ -207,7 +207,7 @@ export function DocsPage() {
             href={NPM}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono"
+            className="hidden sm:inline-flex text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono whitespace-nowrap"
           >
             v1.0.0
           </a>
@@ -215,16 +215,33 @@ export function DocsPage() {
             href={GH}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm px-4 py-1.5 rounded-full bg-pitch-black text-light-linen hover:bg-graphite-border transition-colors font-medium"
+            className="text-xs sm:text-sm px-3 sm:px-4 py-1.5 rounded-full bg-pitch-black text-light-linen hover:bg-graphite-border transition-colors font-medium whitespace-nowrap"
           >
             GitHub →
           </a>
         </div>
       </nav>
 
+      {/* Mobile section nav — scrollable pill strip */}
+      <div className="md:hidden border-b border-pitch-black bg-marketplace-gray px-4 py-2 flex gap-2 overflow-x-auto scrollbar-hide">
+        {NAV_GROUPS.flatMap((g) => g.items).map((item) => (
+          <a
+            key={item.id}
+            href={`#${item.id}`}
+            className={`shrink-0 text-[11px] font-mono px-3 py-1 rounded-full border transition-all whitespace-nowrap ${
+              activeId === item.id
+                ? 'bg-pitch-black text-light-linen border-pitch-black'
+                : 'border-subtle-ash text-graphite-border hover:border-pitch-black'
+            }`}
+          >
+            {item.label}
+          </a>
+        ))}
+      </div>
+
       <div className="max-w-7xl mx-auto flex">
 
-        {/* Sidebar */}
+        {/* Sidebar — desktop only */}
         <aside className="hidden md:block w-52 shrink-0 sticky top-14 h-[calc(100vh-56px)] overflow-y-auto border-r border-pitch-black py-8 pl-6 pr-3">
           {NAV_GROUPS.map((group) => (
             <div key={group.label} className="mb-5">
@@ -252,7 +269,7 @@ export function DocsPage() {
         </aside>
 
         {/* Content */}
-        <main className="flex-1 min-w-0 px-6 md:px-12 lg:px-16">
+        <main className="flex-1 min-w-0 px-4 sm:px-6 md:px-12 lg:px-16">
 
           {/* ── Installation ─────────────────────────────────── */}
           <DocSection id="installation" tag="Getting Started" heading="Installation">
@@ -268,9 +285,9 @@ export function DocsPage() {
               ].map(({ pm, cmd }) => (
                 <div
                   key={pm}
-                  className="flex items-center justify-between px-4 py-3 rounded-xl border border-pitch-black bg-marketplace-gray font-mono text-sm"
+                  className="flex items-center justify-between gap-2 px-3 sm:px-4 py-3 rounded-xl border border-pitch-black bg-marketplace-gray font-mono text-[12px] sm:text-sm min-w-0"
                 >
-                  <span>
+                  <span className="truncate">
                     <span className="text-graphite-border select-none">$ </span>
                     {cmd}
                   </span>

@@ -49,11 +49,11 @@ const COLORS = ['#ffeaa7', '#fd79a8', '#74b9ff', '#55efc4', '#a29bfe'];
 export function ClipModeDemo() {
   return (
     <section className="relative border-b border-pitch-black overflow-hidden">
-      <span className="pointer-events-none select-none absolute -right-6 top-1/2 -translate-y-1/2 font-display font-extrabold text-[220px] leading-none text-pitch-black opacity-[0.04]">
+      <span className="pointer-events-none select-none absolute -right-6 top-1/2 -translate-y-1/2 font-display font-extrabold text-[120px] md:text-[220px] leading-none text-pitch-black opacity-[0.04]">
         14
       </span>
 
-      <div className="max-w-6xl mx-auto px-6 md:px-12 py-24 grid md:grid-cols-2 gap-16 items-start">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-12 py-12 sm:py-16 md:py-24 grid md:grid-cols-2 gap-8 md:gap-16 items-start">
 
         {/* Left: explanation + code */}
         <div>
@@ -119,7 +119,7 @@ export function ClipModeDemo() {
         </div>
 
         {/* Right: 5 live direction demos */}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-2 sm:gap-3">
           {DIRECTIONS.map((dir, i) => (
             <div
               key={dir}

@@ -4,8 +4,8 @@ import { ScrollDraw } from 'svg-scroll-draw/react';
 
 export function ScrollShowcase() {
   return (
-    <section className="w-full bg-marketplace-gray border-b border-pitch-black py-24 md:py-32 px-6 md:px-16 overflow-hidden">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+    <section className="w-full bg-marketplace-gray border-b border-pitch-black py-12 sm:py-16 md:py-24 lg:py-32 px-4 sm:px-6 md:px-16 overflow-hidden">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 lg:gap-16 items-center">
 
         {/* Left: Copy */}
         <div className="lg:col-span-5 flex flex-col items-start text-left max-w-xl">

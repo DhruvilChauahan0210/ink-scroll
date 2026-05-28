@@ -22,8 +22,8 @@ export function WaypointsDemo() {
 
   return (
     <section data-mascot="celebrate" className="relative border-b border-pitch-black overflow-hidden">
-      <span className="pointer-events-none select-none absolute -right-6 top-1/2 -translate-y-1/2 font-display font-extrabold text-[220px] leading-none text-pitch-black opacity-[0.04]">09</span>
-      <div className="max-w-6xl mx-auto px-6 md:px-12 py-24 grid md:grid-cols-2 gap-16 items-start">
+      <span className="pointer-events-none select-none absolute -right-6 top-1/2 -translate-y-1/2 font-display font-extrabold text-[120px] md:text-[220px] leading-none text-pitch-black opacity-[0.04]">09</span>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-12 py-12 sm:py-16 md:py-24 grid md:grid-cols-2 gap-8 md:gap-16 items-start">
 
         <div>
           <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-3 font-medium">Waypoints</p>
@@ -38,10 +38,10 @@ export function WaypointsDemo() {
           </p>
 
           {/* Live waypoint indicators */}
-          <div className="flex gap-3 mb-6 flex-wrap">
+          <div className="flex gap-2 sm:gap-3 mb-6 flex-wrap">
             {STOPS.map(({ threshold, label, color }) => (
               <div key={threshold}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full border-2 border-pitch-black font-mono text-[13px] font-bold transition-all duration-300 ${
+                className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border-2 border-pitch-black font-mono text-[11px] sm:text-[13px] font-bold transition-all duration-300 ${
                   reached.has(threshold)
                     ? `${color} shadow-[2px_2px_0px_#000] scale-105`
                     : 'bg-light-linen text-graphite-border opacity-40'

@@ -75,7 +75,7 @@ function Skeleton() {
     <div className="border border-pitch-black rounded-2xl overflow-hidden shadow-[4px_4px_0px_#000] bg-light-linen">
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6">
         {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className={`p-6 ${i < 5 ? 'border-r border-subtle-ash' : ''}`}>
+          <div key={i} className={`p-4 sm:p-6 ${i % 2 !== 1 || i < 5 ? 'border-r border-subtle-ash' : ''} ${i < 4 ? 'border-b sm:border-b-0' : ''}`}>
             <div className="w-4 h-4 rounded bg-subtle-ash mb-3 animate-pulse" />
             <div className="w-12 h-8 rounded bg-subtle-ash mb-2 animate-pulse" />
             <div className="w-16 h-3 rounded bg-subtle-ash animate-pulse" />
@@ -96,14 +96,14 @@ function Cell({
   last?: boolean;
 }) {
   return (
-    <div className={`p-6 bg-light-linen flex flex-col gap-2 group hover:bg-creator-pink/10 transition-colors ${!last ? 'border-r border-subtle-ash' : ''}`}>
+    <div className={`p-4 sm:p-6 bg-light-linen flex flex-col gap-1.5 sm:gap-2 group hover:bg-creator-pink/10 transition-colors ${!last ? 'border-r border-subtle-ash' : ''}`}>
       <div className="text-graphite-border group-hover:text-pitch-black transition-colors">
         {icon}
       </div>
-      <div className="font-display font-extrabold text-[clamp(22px,3vw,34px)] leading-none tracking-tight text-pitch-black">
+      <div className="font-display font-extrabold text-[clamp(18px,3vw,34px)] leading-none tracking-tight text-pitch-black">
         {value}
       </div>
-      <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-graphite-border">
+      <div className="text-[9px] sm:text-[10px] font-mono uppercase tracking-[0.15em] sm:tracking-[0.2em] text-graphite-border">
         {label}
       </div>
     </div>
@@ -129,7 +129,7 @@ async function StatsData() {
 
   return (
     <div className="border border-pitch-black rounded-2xl overflow-hidden shadow-[4px_4px_0px_#000]">
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 divide-x divide-subtle-ash">
         {cells.map((c, i) => (
           <Cell key={c.label} {...c} last={i === cells.length - 1} />
         ))}
@@ -141,7 +141,7 @@ async function StatsData() {
 /* ── Exported section ────────────────────────────────────── */
 export function LiveStats() {
   return (
-    <section className="border-b border-pitch-black bg-marketplace-gray px-6 md:px-12 py-20">
+    <section className="border-b border-pitch-black bg-marketplace-gray px-4 sm:px-6 md:px-12 py-12 sm:py-16 md:py-20">
       <div className="max-w-5xl mx-auto">
 
         {/* Header */}

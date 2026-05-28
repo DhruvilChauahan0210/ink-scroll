@@ -57,11 +57,11 @@ export function ProgressHookDemo() {
       className="relative border-b border-pitch-black overflow-hidden"
       style={{ background: bgColor, transition: 'background 0.1s linear' }}
     >
-      <span className="pointer-events-none select-none absolute -right-6 top-1/2 -translate-y-1/2 font-display font-extrabold text-[220px] leading-none text-pitch-black opacity-[0.04]">
+      <span className="pointer-events-none select-none absolute -right-6 top-1/2 -translate-y-1/2 font-display font-extrabold text-[120px] md:text-[220px] leading-none text-pitch-black opacity-[0.04]">
         12
       </span>
 
-      <div className="max-w-6xl mx-auto px-6 md:px-12 py-24 grid md:grid-cols-2 gap-16 items-center">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-12 py-12 sm:py-16 md:py-24 grid md:grid-cols-2 gap-8 md:gap-16 items-center">
 
         {/* Left: explanation */}
         <div>
@@ -142,7 +142,7 @@ const color   = lerp('#ccc', '#ff90e8', progress);`}</pre>
           </div>
 
           {/* Three live values */}
-          <div className="w-full max-w-xs grid grid-cols-3 gap-2 text-center">
+          <div className="w-full max-w-xs grid grid-cols-3 gap-1.5 sm:gap-2 text-center">
             {[
               { label: 'opacity',   value: progress.toFixed(2) },
               { label: 'scale',     value: (0.8 + progress * 0.2).toFixed(2) },
@@ -150,10 +150,10 @@ const color   = lerp('#ccc', '#ff90e8', progress);`}</pre>
             ].map(({ label, value }) => (
               <div
                 key={label}
-                className="rounded-xl border border-subtle-ash bg-light-linen p-3"
+                className="rounded-xl border border-subtle-ash bg-light-linen p-2 sm:p-3"
               >
-                <div className="font-display font-bold text-lg tabular-nums">{value}</div>
-                <div className="text-[9px] font-mono text-graphite-border mt-0.5">{label}</div>
+                <div className="font-display font-bold text-base sm:text-lg tabular-nums">{value}</div>
+                <div className="text-[8px] sm:text-[9px] font-mono text-graphite-border mt-0.5">{label}</div>
               </div>
             ))}
           </div>
