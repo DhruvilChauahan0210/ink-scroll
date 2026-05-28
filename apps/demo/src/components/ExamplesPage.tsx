@@ -847,8 +847,8 @@ export function ExamplesPage() {
       </nav>
 
       {/* Header */}
-      <section className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-12 sm:py-16 md:py-20">
-        <div className="max-w-4xl mx-auto">
+      <section className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-12 sm:py-16 md:py-20 overflow-hidden">
+        <div className="max-w-4xl mx-auto min-w-0">
           <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-4 font-medium">
             Real-world examples
           </p>
@@ -874,28 +874,30 @@ export function ExamplesPage() {
           <section key={ex.id} id={ex.id} className={`px-4 sm:px-6 md:px-12 py-12 sm:py-14 md:py-16 overflow-hidden ${i % 2 === 1 ? 'bg-marketplace-gray' : ''}`}>
             <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-8 md:gap-12 items-start">
 
-              {/* Text + code */}
-              <div className={i % 2 === 1 ? 'order-1 md:order-2' : ''}>
+              {/* Text + code — min-w-0 stops grid cell from overflowing */}
+              <div className={`min-w-0 ${i % 2 === 1 ? 'order-1 md:order-2' : ''}`}>
                 <div className="flex flex-wrap items-center gap-2 mb-3">
-                  <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border font-medium">
+                  <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border font-medium shrink-0">
                     {String(i + 1).padStart(2, '0')}
                   </p>
-                  <span className="text-subtle-ash">·</span>
-                  <code className="text-[10px] sm:text-[11px] font-mono bg-sunshine-yellow/30 text-pitch-black px-2 py-0.5 rounded-full border border-sunshine-yellow/50 break-all">
+                  <span className="text-subtle-ash shrink-0">·</span>
+                  <code className="text-[10px] sm:text-[11px] font-mono bg-sunshine-yellow/30 text-pitch-black px-2 py-0.5 rounded-full border border-sunshine-yellow/50 break-all min-w-0">
                     {ex.tag}
                   </code>
                 </div>
-                <h2 className="font-display font-extrabold text-[clamp(22px,3vw,36px)] leading-[1] tracking-[-0.03em] mb-4">
+                <h2 className="font-display font-extrabold text-[clamp(22px,3vw,36px)] leading-[1] tracking-[-0.03em] mb-4 break-words">
                   {ex.label}
                 </h2>
                 <p className="text-graphite-border leading-relaxed mb-5 sm:mb-6 text-[14px] sm:text-[15px] break-words">
                   {ex.description}
                 </p>
-                <CodeBlock filename="Hero.tsx">{ex.code}</CodeBlock>
+                <div className="max-w-full overflow-hidden">
+                  <CodeBlock filename="Hero.tsx">{ex.code}</CodeBlock>
+                </div>
               </div>
 
               {/* Live preview */}
-              <div className={`flex items-center justify-center rounded-2xl border border-pitch-black shadow-[4px_4px_0px_#000] min-h-[200px] sm:min-h-[240px] overflow-hidden ${'darkPreview' in ex && ex.darkPreview ? 'bg-[#1e1f22] p-0' : 'bg-[#ffffff] p-6 sm:p-10'} ${i % 2 === 1 ? 'order-2 md:order-1' : ''}`}>
+              <div className={`min-w-0 flex items-center justify-center rounded-2xl border border-pitch-black shadow-[4px_4px_0px_#000] min-h-[200px] sm:min-h-[240px] overflow-hidden ${'darkPreview' in ex && ex.darkPreview ? 'bg-[#1e1f22] p-0' : 'bg-[#ffffff] p-4 sm:p-8'} ${i % 2 === 1 ? 'order-2 md:order-1' : ''}`}>
                 {ex.preview}
               </div>
 
