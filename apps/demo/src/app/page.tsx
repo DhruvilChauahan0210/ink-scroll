@@ -919,20 +919,34 @@ const seq = scrollDrawSequence(
                 </p>
               </div>
             </div>
-            <a
-              href="https://www.producthunt.com/products/svg-scroll-draw?utm_source=embed&utm_medium=post_embed"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: 4,
-                marginTop: 12, padding: '8px 16px',
-                background: 'rgb(255,97,84)', color: 'rgb(255,255,255)',
-                textDecoration: 'none', borderRadius: 8,
-                fontSize: 14, fontWeight: 600,
-              }}
-            >
-              Check it out on Product Hunt →
-            </a>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 12, flexWrap: 'wrap' }}>
+              <a
+                href="https://www.producthunt.com/products/svg-scroll-draw?utm_source=embed&utm_medium=post_embed"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 4,
+                  padding: '8px 16px',
+                  background: 'rgb(255,97,84)', color: 'rgb(255,255,255)',
+                  textDecoration: 'none', borderRadius: 8,
+                  fontSize: 14, fontWeight: 600,
+                }}
+              >
+                Check it out on Product Hunt →
+              </a>
+              <a
+                href="https://www.producthunt.com/products/svg-scroll-draw/reviews/new?utm_source=badge-product_review&utm_medium=badge"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img
+                  src="https://api.producthunt.com/widgets/embed-image/v1/product_review.svg?product_id=1235411&theme=light"
+                  alt="Leave a review on Product Hunt"
+                  width={200}
+                  height={43}
+                />
+              </a>
+            </div>
           </div>
         </div>
 
