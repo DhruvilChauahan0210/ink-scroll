@@ -77,6 +77,10 @@ input[type="range"]::-moz-range-thumb {
 input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
 input[type="range"]:active::-webkit-slider-thumb { transform: scale(0.95); }
 
+/* Hide scrollbar while keeping scroll functionality */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
 /* Dot grid for hero background */
 .dot-grid {
   background-image: radial-gradient(circle, #d1d5dc 1.5px, transparent 1.5px);

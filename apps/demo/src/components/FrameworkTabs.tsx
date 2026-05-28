@@ -190,7 +190,7 @@ export function FrameworkTabs() {
         <CopyButton text={tab.code} />
       </div>
       {/* Code */}
-      <pre className="bg-[#242423] dark:bg-[#1c1c1c] text-[#e8e8e3] px-5 py-4 text-[13px] font-mono leading-[1.75] overflow-x-auto min-h-[200px]">
+      <pre className="bg-[#242423] dark:bg-[#1c1c1c] text-[#e8e8e3] px-3 sm:px-5 py-4 text-[11px] sm:text-[13px] font-mono leading-[1.75] overflow-x-auto min-h-[200px]">
         {tab.code}
       </pre>
     </div>

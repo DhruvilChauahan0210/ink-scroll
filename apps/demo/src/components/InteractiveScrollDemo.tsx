@@ -226,7 +226,7 @@ export function InteractiveScrollDemo({
   return (
     <div className={className}>
       <div ref={containerRef}
-        className={`flex items-center justify-center rounded-2xl border p-12 shadow-[4px_4px_0px_#000] ${bgClass}`}
+        className={`flex items-center justify-center rounded-2xl border p-4 sm:p-8 md:p-12 shadow-[4px_4px_0px_#000] ${bgClass}`}
       >{children}</div>
       <Controls
         easing={easing} speed={speed} playing={playing}

@@ -171,12 +171,12 @@ export default function Home() {
       <section data-mascot-reset className="relative min-h-screen flex flex-col items-center justify-center px-6 text-center border-b border-pitch-black dot-grid overflow-hidden">
 
 
-        {/* Geometric decoration — thin concentric circles */}
-        <div className="pointer-events-none absolute -top-48 -right-48 w-[700px] h-[700px] rounded-full border border-subtle-ash" />
-        <div className="pointer-events-none absolute -top-24 -right-24 w-[450px] h-[450px] rounded-full border border-subtle-ash opacity-60" />
+        {/* Geometric decoration — hidden on small screens to prevent overflow */}
+        <div className="hidden sm:block pointer-events-none absolute -top-48 -right-48 w-[700px] h-[700px] rounded-full border border-subtle-ash" />
+        <div className="hidden sm:block pointer-events-none absolute -top-24 -right-24 w-[450px] h-[450px] rounded-full border border-subtle-ash opacity-60" />
         <div className="pointer-events-none absolute top-12 right-12 w-4 h-4 rounded-full bg-creator-pink" />
         <div className="pointer-events-none absolute top-28 right-28 w-2 h-2 rounded-full bg-sunshine-yellow" />
-        <div className="pointer-events-none absolute -bottom-32 -left-48 w-[500px] h-[500px] rounded-full border border-subtle-ash opacity-40" />
+        <div className="hidden sm:block pointer-events-none absolute -bottom-32 -left-48 w-[500px] h-[500px] rounded-full border border-subtle-ash opacity-40" />
         <div className="pointer-events-none absolute bottom-24 left-16 w-3 h-3 rounded-full bg-lime-glow" />
 
         {/* Badge */}
@@ -259,7 +259,7 @@ export default function Home() {
             Every existing tool<br />is broken.
           </h2>
 
-          <div className="grid md:grid-cols-3 gap-4" data-mascot="shocked">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4" data-mascot="shocked">
             {[
               {
                 name: 'GSAP DrawSVG',
@@ -827,21 +827,21 @@ const seq = scrollDrawSequence(
             style={{ fontSize: 'clamp(40px,8vw,96px)' }}>
           THE MODERN<br />STANDARD FOR<br />SCROLL-DRAWN SVG.
         </h2>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-          <div className="flex items-center gap-2 bg-pitch-black text-light-linen rounded-full px-6 py-3 text-sm font-mono shadow-[3px_3px_0px_rgba(0,0,0,0.3)]">
+        <div className="flex flex-col items-center justify-center gap-3 w-full max-w-sm mx-auto sm:max-w-none sm:flex-row sm:flex-wrap">
+          <div className="flex items-center gap-2 bg-pitch-black text-light-linen rounded-full px-5 py-3 text-sm font-mono shadow-[3px_3px_0px_rgba(0,0,0,0.3)] w-full sm:w-auto justify-center">
             <span className="opacity-50">$</span>
             <span>npm i svg-scroll-draw</span>
           </div>
           <a
             href="/playground"
-            className="px-6 py-3 rounded-full border-2 border-pitch-black bg-transparent text-pitch-black text-sm font-semibold hover:bg-pitch-black hover:text-sunshine-yellow transition-colors shadow-[3px_3px_0px_rgba(0,0,0,0.2)]"
+            className="px-5 py-3 rounded-full border-2 border-pitch-black bg-transparent text-pitch-black text-sm font-semibold hover:bg-pitch-black hover:text-sunshine-yellow transition-colors shadow-[3px_3px_0px_rgba(0,0,0,0.2)] w-full sm:w-auto text-center"
           >
             ⚡ Try the Playground →
           </a>
           <a
             href={GH}
             target="_blank" rel="noopener noreferrer"
-            className="px-6 py-3 rounded-full border-2 border-pitch-black bg-transparent text-pitch-black text-sm font-semibold hover:bg-pitch-black hover:text-sunshine-yellow transition-colors shadow-[3px_3px_0px_rgba(0,0,0,0.2)]"
+            className="px-5 py-3 rounded-full border-2 border-pitch-black bg-transparent text-pitch-black text-sm font-semibold hover:bg-pitch-black hover:text-sunshine-yellow transition-colors shadow-[3px_3px_0px_rgba(0,0,0,0.2)] w-full sm:w-auto text-center"
           >
             View on GitHub →
           </a>
