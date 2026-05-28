@@ -62,12 +62,31 @@ afterEach(() => {
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
+describe('scrollDrawTimeline — SSR guard', () => {
+  it('all noop methods are safe when window is undefined', () => {
+    vi.stubGlobal('window', undefined);
+    const instance = scrollDrawTimeline('#any', { tracks: [] });
+    expect(() => instance.destroy()).not.toThrow();
+    expect(() => instance.replay()).not.toThrow();
+    expect(() => instance.pause()).not.toThrow();
+    expect(() => instance.resume()).not.toThrow();
+    expect(() => instance.seek(0.5)).not.toThrow();
+    expect(instance.getProgress()).toBe(0);
+  });
+});
+
 describe('scrollDrawTimeline — initialisation', () => {
   it('returns a noop when container not found', () => {
     const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const instance = scrollDrawTimeline('#nonexistent', { tracks: [] });
     expect(spy).toHaveBeenCalledWith(expect.stringContaining('Container not found'), '#nonexistent');
+    // Exercise all noop methods from the "not found" return
     expect(() => instance.destroy()).not.toThrow();
+    expect(() => instance.replay()).not.toThrow();
+    expect(() => instance.pause()).not.toThrow();
+    expect(() => instance.resume()).not.toThrow();
+    expect(() => instance.seek(0.5)).not.toThrow();
+    expect(instance.getProgress()).toBe(0);
     spy.mockRestore();
   });
 
@@ -257,5 +276,57 @@ describe('scrollDrawTimeline — fade option', () => {
 
     const path = container.querySelector('.p') as SVGPathElement;
     expect(parseFloat(path.style.opacity)).toBeGreaterThan(0);
+  });
+});
+
+describe('scrollDrawTimeline — completed flag reset (once:false)', () => {
+  it('resets completed so onComplete fires again after scrolling back and forward', () => {
+    const onComplete = vi.fn();
+    const container  = makeContainer([{ cls: 'p' }]);
+    scrollDrawTimeline(container, {
+      tracks: [{ selector: '.p', from: 0, to: 1 }],
+      onComplete,
+    });
+
+    // Complete it
+    vi.stubGlobal('scrollY', 10000);
+    FakeIO.instances[0].trigger(true);
+    raf.tick();
+    expect(onComplete).toHaveBeenCalledOnce();
+
+    // Scroll back to before the trigger zone (scrollY < tStart = -800)
+    // so alpha=0 < 1 → completed flag resets
+    vi.stubGlobal('scrollY', -1000);
+    raf.tick();
+
+    // Complete again — onComplete fires a second time
+    vi.stubGlobal('scrollY', 10000);
+    raf.tick();
+    expect(onComplete).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('scrollDrawTimeline — observer leaves viewport', () => {
+  it('cancels rAF when intersection observer fires as not-intersecting', () => {
+    const container = makeContainer([{ cls: 'p' }]);
+    scrollDrawTimeline(container, { tracks: [{ selector: '.p', from: 0, to: 1 }] });
+
+    FakeIO.instances[0].trigger(true);  // becomes visible → rAF scheduled
+    FakeIO.instances[0].trigger(false); // leaves viewport → rAF cancelled
+
+    expect(raf.cancel).toHaveBeenCalled();
+  });
+});
+
+describe('scrollDrawTimeline — resume when not paused', () => {
+  it('resume() is a no-op and does not schedule a rAF when not paused', () => {
+    const container = makeContainer([{ cls: 'p' }]);
+    const instance  = scrollDrawTimeline(container, {
+      tracks: [{ selector: '.p', from: 0, to: 1 }],
+    });
+
+    const callsBefore = raf.schedule.mock.calls.length;
+    instance.resume(); // not paused — should be a no-op
+    expect(raf.schedule.mock.calls.length).toBe(callsBefore);
   });
 });

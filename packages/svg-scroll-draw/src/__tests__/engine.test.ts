@@ -91,10 +91,15 @@ afterEach(() => {
 // ── tests ─────────────────────────────────────────────────────────────────────
 
 describe('createEngine — SSR guard', () => {
-  it('returns no-op destroy when window is undefined', () => {
+  it('all noop methods are safe when window is undefined', () => {
     vi.stubGlobal('window', undefined);
     const instance = createEngine(document.createElement('div'));
     expect(() => instance.destroy()).not.toThrow();
+    expect(() => instance.replay()).not.toThrow();
+    expect(() => instance.pause()).not.toThrow();
+    expect(() => instance.resume()).not.toThrow();
+    expect(() => instance.seek(0.5)).not.toThrow();
+    expect(instance.getProgress()).toBe(0);
   });
 });
 
@@ -334,7 +339,7 @@ describe('createEngine — --scroll-draw-progress CSS custom property', () => {
 });
 
 describe('scrollDraw', () => {
-  it('returns no-op destroy when selector finds nothing', () => {
+  it('all noop methods are safe when selector finds nothing', () => {
     const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const instance = scrollDraw('#does-not-exist');
     expect(spy).toHaveBeenCalledWith(
@@ -342,6 +347,11 @@ describe('scrollDraw', () => {
       '#does-not-exist'
     );
     expect(() => instance.destroy()).not.toThrow();
+    expect(() => instance.replay()).not.toThrow();
+    expect(() => instance.pause()).not.toThrow();
+    expect(() => instance.resume()).not.toThrow();
+    expect(() => instance.seek(0.5)).not.toThrow();
+    expect(instance.getProgress()).toBe(0);
   });
 
   it('accepts a DOM Element directly and returns a valid instance', () => {

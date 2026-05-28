@@ -32,7 +32,11 @@ interface ScrollDrawOptions {
     /**
      * Reveal the container using CSS clip-path instead of stroke-dashoffset.
      * Works on any content — SVG, images, text, divs.
-     * `true` defaults to `'left'`. Values: `'left' | 'right' | 'top' | 'bottom' | 'center'`.
+     *
+     * Pass a direction string to control which edge the reveal starts from,
+     * or `true` as shorthand for `'left'`.
+     *
+     * Values: `'left' | 'right' | 'top' | 'bottom' | 'center'`
      */
     clip?: boolean | 'left' | 'right' | 'top' | 'bottom' | 'center';
     /** Fire callbacks at specific progress thresholds (0–1). Resets on replay(). */
@@ -47,7 +51,13 @@ interface ScrollDrawOptions {
     repeat?: number | 'infinite';
     /** Milliseconds to wait between repeats. Default 0. */
     repeatDelay?: number;
-    /** Target path `d` attribute to morph toward as the animation progresses. Paths must have compatible structures. */
+    /**
+     * Target path `d` attribute to morph toward as the animation progresses.
+     * Paths must have compatible command structures (same number of numeric tokens).
+     *
+     * Only applies to `<path>` elements — silently no-ops on `<rect>`, `<circle>`,
+     * `<line>`, and other SVG shape elements.
+     */
     morphTo?: string;
     onProgress?: (alpha: number) => void;
     onStart?: () => void;

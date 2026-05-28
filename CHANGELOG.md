@@ -4,6 +4,33 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ---
 
+## [1.0.0] — 2026-05-28
+
+First stable release. The public API is now considered stable — no breaking changes
+will be made without a major version bump.
+
+### Added
+- **`scrollDrawSequence` bug fix** — engines are now all created upfront and paused;
+  later steps no longer read the wrong scroll position when chained. `activeIdx`
+  now tracks correctly so `pause()`, `resume()`, `seek()`, and `getProgress()`
+  always target the currently active step.
+- **194 passing tests** across 6 test suites — engine, engine-options, group,
+  timeline, framework wrappers (Angular, Astro, Svelte, Solid), and utilities.
+- **Framework wrapper tests** — Angular `ScrollDrawRef`, Astro `initScrollDraw`,
+  Svelte `scrollDraw` action + `createScrollDraw`, Solid `useScrollDraw` +
+  `createScrollDraw` all now have dedicated test coverage.
+- **Root workspace test runner** — `npx vitest run` from the repo root now works
+  correctly via `vitest.workspace.ts`, picking up all packages with the right jsdom
+  environment.
+
+### Improved
+- **Coverage** — lines 94.98%, functions 95.23%, branches 82.94%; all thresholds pass.
+- **JSDoc** — `clip`, `morphTo`, and `scrollDrawSequence` now document their
+  non-obvious edge cases inline (clip:true maps to 'left', morphTo silently no-ops
+  on non-path elements, sequence forces once:true per step).
+
+---
+
 ## [0.6.2] — 2026
 
 ### Added

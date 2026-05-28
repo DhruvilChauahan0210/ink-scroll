@@ -46,6 +46,11 @@ export function scrollDrawGroup(
  * Animate multiple SVG containers in sequence — each one starts only after
  * the previous has reached 100% draw progress.
  *
+ * **Note:** each step is internally forced to `once: true` regardless of the
+ * option you pass. This prevents a completed step from being reset when the
+ * user scrolls back, which would break the chain. If you need every step to
+ * be reversible, use `scrollDrawGroup` with `autoReverse` instead.
+ *
  * @example
  * import { scrollDrawSequence } from 'svg-scroll-draw/group';
  *
@@ -57,35 +62,48 @@ export function scrollDrawSequence(
   targets: Array<string | Element>,
   options: ScrollDrawOptions = {}
 ): ScrollDrawInstance {
-  if (typeof window === 'undefined') return { destroy: () => {}, replay: () => {}, pause: () => {}, resume: () => {}, seek: () => {}, getProgress: () => 0 };
+  const noop: ScrollDrawInstance = { destroy: () => {}, replay: () => {}, pause: () => {}, resume: () => {}, seek: () => {}, getProgress: () => 0 };
+  if (typeof window === 'undefined') return noop;
 
   const containers = resolveTargets(targets);
-  const instances: (ScrollDrawInstance | null)[] = new Array(containers.length).fill(null);
-  let activeIdx = 0;
+  if (containers.length === 0) return noop;
 
-  function start(idx: number) {
-    if (idx >= containers.length) return;
-    instances[idx] = createEngine(containers[idx], {
+  let activeIdx = 0;
+  const instances: ScrollDrawInstance[] = [];
+
+  function makeEngine(idx: number): ScrollDrawInstance {
+    return createEngine(containers[idx], {
       ...options,
-      onComplete: () => {
+      // Each step must lock once complete — scrolling back must not un-complete
+      // a step and re-trigger the chain.
+      once: true,
+      onComplete() {
         options.onComplete?.();
-        start(idx + 1);
+        activeIdx = idx + 1;
+        instances[activeIdx]?.resume();
       },
     });
   }
 
-  start(0);
+  function init(): void {
+    containers.forEach((_, idx) => { instances[idx] = makeEngine(idx); });
+    // All engines start paused except the first; resume() is called when the
+    // preceding engine fires onComplete.
+    for (let i = 1; i < instances.length; i++) instances[i].pause();
+  }
+
+  init();
 
   return {
     destroy() {
-      instances.forEach((i) => i?.destroy());
-      instances.fill(null);
+      instances.forEach((i) => i.destroy());
+      instances.length = 0;
     },
     replay() {
-      instances.forEach((i) => i?.destroy());
-      instances.fill(null);
+      instances.forEach((i) => i.destroy());
+      instances.length = 0;
       activeIdx = 0;
-      start(0);
+      init();
     },
     pause()         { instances[activeIdx]?.pause(); },
     resume()        { instances[activeIdx]?.resume(); },

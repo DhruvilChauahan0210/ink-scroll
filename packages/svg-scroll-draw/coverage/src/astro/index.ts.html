@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for src/core/types.ts</title>
+    <title>Code coverage report for src/astro/index.ts</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../prettify.css" />
     <link rel="stylesheet" href="../../base.css" />
@@ -19,34 +19,34 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../index.html">All files</a> / <a href="index.html">src/core</a> types.ts</h1>
+        <h1><a href="../../index.html">All files</a> / <a href="index.html">src/astro</a> index.ts</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/0</span>
+                <span class='fraction'>11/11</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>1/1</span>
+                <span class='fraction'>6/6</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
                 <span class='fraction'>1/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/0</span>
+                <span class='fraction'>11/11</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -82,7 +82,19 @@
 <a name='L17'></a><a href='#L17'>17</a>
 <a name='L18'></a><a href='#L18'>18</a>
 <a name='L19'></a><a href='#L19'>19</a>
-<a name='L20'></a><a href='#L20'>20</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -101,24 +113,48 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">export type EasingName = 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out';
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { createEngine } from '../core/engine';
+import type { ScrollDrawOptions, ScrollDrawInstance } from '../core/types';
 &nbsp;
-export interface TriggerConfig {
-  start?: string;
-  end?: string;
-}
+export { scrollDraw } from '../index';
+export type { ScrollDrawOptions, ScrollDrawInstance };
 &nbsp;
-export interface ScrollDrawOptions {
-  selector?: string;
-  speed?: number;
-  fade?: boolean;
-  easing?: EasingName | ((t: number) =&gt; number);
-  trigger?: TriggerConfig;
-  onComplete?: () =&gt; void;
-}
-&nbsp;
-export interface ScrollDrawInstance {
-  destroy: () =&gt; void;
+/**
+ * Auto-initialises all elements with a [data-scroll-draw] attribute on the page.
+ * Options are read from the data-scroll-draw-options JSON attribute.
+ *
+ * @example
+ * // In your Astro component:
+ * &lt;div data-scroll-draw data-scroll-draw-options='{"easing":"ease-out","fade":true}'&gt;
+ *   &lt;svg&gt;...&lt;/svg&gt;
+ * &lt;/div&gt;
+ *
+ * &lt;script&gt;
+ *   import { initScrollDraw } from 'svg-scroll-draw/astro';
+ *   initScrollDraw();
+ * &lt;/script&gt;
+ */
+export function initScrollDraw(root: Element | Document = document): ScrollDrawInstance[] {
+  return Array.from(root.querySelectorAll&lt;HTMLElement&gt;('[data-scroll-draw]')).map((el) =&gt; {
+    let opts: ScrollDrawOptions = {};
+    try {
+      const raw = el.dataset.scrollDrawOptions ?? el.dataset.scrollDrawoptions ?? '';
+      if (raw) opts = JSON.parse(raw);
+    } catch { /* ignore invalid JSON */ }
+    return createEngine(el, opts);
+  });
 }
 &nbsp;</pre></td></tr></table></pre>
 
@@ -127,7 +163,7 @@ export interface ScrollDrawInstance {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-05-25T18:51:13.271Z
+                at 2026-05-28T17:41:56.481Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
