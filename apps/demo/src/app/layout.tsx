@@ -5,8 +5,7 @@ import { Mascot } from "@/components/Mascot";
 
 const THEME_SCRIPT = `(function(){
   var s = localStorage.getItem('theme');
-  var p = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  if (s === 'dark' || (!s && p)) document.documentElement.classList.add('dark');
+  if (s === 'dark') document.documentElement.classList.add('dark');
 })();`;
 
 const geistSans = Geist({
