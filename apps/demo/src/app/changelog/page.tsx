@@ -47,7 +47,7 @@ const RELEASES = [
   },
   {
     version: '0.6.2',
-    date: '2026',
+    date: 'May 2026',
     tag: null,
     tagColor: '',
     items: [
@@ -58,7 +58,7 @@ const RELEASES = [
   },
   {
     version: '0.6.0',
-    date: '2025',
+    date: 'May 2026',
     tag: null,
     tagColor: '',
     items: [
@@ -74,7 +74,7 @@ const RELEASES = [
   },
   {
     version: '0.4.0',
-    date: '2025',
+    date: 'May 2026',
     tag: null,
     tagColor: '',
     items: [
@@ -90,7 +90,7 @@ const RELEASES = [
   },
   {
     version: '0.3.0',
-    date: '2025',
+    date: 'May 2026',
     tag: null,
     tagColor: '',
     items: [
@@ -105,7 +105,7 @@ const RELEASES = [
   },
   {
     version: '0.2.0',
-    date: '2025',
+    date: 'May 2026',
     tag: null,
     tagColor: '',
     items: [
@@ -117,7 +117,7 @@ const RELEASES = [
   },
   {
     version: '0.1.0',
-    date: '2025',
+    date: 'May 2026',
     tag: 'Initial release',
     tagColor: 'bg-lime-glow',
     items: [
