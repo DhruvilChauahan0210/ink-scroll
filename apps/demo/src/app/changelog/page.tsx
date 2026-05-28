@@ -18,10 +18,24 @@ const NPM = 'https://www.npmjs.com/package/svg-scroll-draw';
 
 const RELEASES = [
   {
-    version: '0.7.0',
+    version: '1.0.0',
     date: 'May 2026',
     tag: 'Latest',
     tagColor: 'bg-creator-pink',
+    items: [
+      { type: 'fix', text: 'scrollDrawSequence chain was broken — engines now created upfront and paused; each step resumes only when the previous fires onComplete. activeIdx tracks correctly so pause/resume/seek/getProgress always target the active step.' },
+      { type: 'new', text: '194 passing tests across 6 suites — engine, engine-options, group, timeline, framework wrappers (Angular, Astro, Svelte, Solid), and utilities' },
+      { type: 'new', text: 'Framework wrapper tests — Angular ScrollDrawRef, Astro initScrollDraw, Svelte scrollDraw action + createScrollDraw, Solid useScrollDraw + createScrollDraw' },
+      { type: 'new', text: 'Root workspace test runner — npx vitest run from the repo root works via vitest.workspace.ts' },
+      { type: 'new', text: 'CI coverage threshold enforcement — Node 20 + 22 matrix' },
+      { type: 'new', text: 'JSDoc improvements — clip, morphTo, and scrollDrawSequence document their non-obvious edge cases inline' },
+    ],
+  },
+  {
+    version: '0.7.0',
+    date: 'May 2026',
+    tag: null,
+    tagColor: '',
     items: [
       { type: 'new', text: 'createSpring({ tension, friction }) — parameterize the spring easing instead of the hardcoded preset' },
       { type: 'new', text: 'svg-scroll-draw/timeline — scrollDrawTimeline API for independent per-track scroll windows within a single range' },
@@ -138,7 +152,7 @@ export default function ChangelogPage() {
             Examples
           </Link>
           <a href={NPM} target="_blank" rel="noopener noreferrer" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono">
-            v0.7.0
+            v1.0.0
           </a>
           <a href={GH} target="_blank" rel="noopener noreferrer" className="text-sm px-4 py-1.5 rounded-full bg-pitch-black text-light-linen hover:bg-graphite-border transition-colors font-medium">
             GitHub →

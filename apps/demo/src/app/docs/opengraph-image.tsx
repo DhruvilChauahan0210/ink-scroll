@@ -55,7 +55,7 @@ export default function OgImage() {
             ['Options',          '30+ configuration options'],
             ['Instance Methods', 'pause · resume · seek · replay · destroy'],
             ['Frameworks',       'React · Vue · Svelte · Solid · Angular · Nuxt · Astro'],
-            ['v0.7.0 APIs',      'createSpring · scrollDrawTimeline · CSS custom property'],
+            ['v1.0.0 APIs',      'createSpring · scrollDrawTimeline · CSS custom property'],
           ].map(([title, sub]) => (
             <div key={title} style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
               <div style={{ width: 3, height: 20, background: '#ff90e8', borderRadius: 2 }} />

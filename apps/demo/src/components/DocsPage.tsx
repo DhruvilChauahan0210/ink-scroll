@@ -56,7 +56,7 @@ const NAV_GROUPS = [
     items: [{ id: 'use-scroll-draw-progress', label: 'useScrollDrawProgress' }],
   },
   {
-    label: 'v0.7.0',
+    label: 'v1.0.0',
     items: [
       { id: 'create-spring',      label: 'createSpring' },
       { id: 'timeline',           label: 'scrollDrawTimeline' },
@@ -209,7 +209,7 @@ export function DocsPage() {
             rel="noopener noreferrer"
             className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono"
           >
-            v0.7.0
+            v1.0.0
           </a>
           <a
             href={GH}
@@ -914,7 +914,7 @@ export function ParallaxSection() {
           </DocSection>
 
           {/* ── createSpring ─────────────────────────────────── */}
-          <DocSection id="create-spring" tag="v0.7.0" heading="createSpring">
+          <DocSection id="create-spring" tag="v1.0.0" heading="createSpring">
             <p className="text-sm text-graphite-border leading-relaxed mb-2">
               Returns a custom spring easing function. The built-in{' '}
               <code className="font-mono text-pitch-black">'spring'</code> easing is hardcoded —{' '}
@@ -947,7 +947,7 @@ scrollDraw('#svg', { easing: createSpring({ tension: 1.5, friction: 1.2 }) });`}
           </DocSection>
 
           {/* ── scrollDrawTimeline ───────────────────────────── */}
-          <DocSection id="timeline" tag="v0.7.0" heading="scrollDrawTimeline">
+          <DocSection id="timeline" tag="v1.0.0" heading="scrollDrawTimeline">
             <p className="text-sm text-graphite-border leading-relaxed mb-2">
               Animate multiple path groups with independent start/end windows within a single scroll range.
               Unlike <code className="font-mono text-pitch-black">stagger</code> (which offsets by time),
@@ -1006,7 +1006,7 @@ instance.destroy();`}
           </DocSection>
 
           {/* ── CSS Custom Property ──────────────────────────── */}
-          <DocSection id="css-custom-property" tag="v0.7.0" heading="CSS Custom Property">
+          <DocSection id="css-custom-property" tag="v1.0.0" heading="CSS Custom Property">
             <p className="text-sm text-graphite-border leading-relaxed mb-2">
               Every <code className="font-mono text-pitch-black">scrollDraw()</code> instance automatically
               sets <code className="font-mono text-pitch-black">--scroll-draw-progress</code> on the container
