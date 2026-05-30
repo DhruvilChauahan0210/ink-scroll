@@ -1,6 +1,6 @@
 {
   "name": "svg-scroll-draw",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Scroll-driven SVG path drawing animation library — zero dependencies, ~4.4 KB gzipped, works with React, Vue, and vanilla JS",
   "keywords": [
     "svg",

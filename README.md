@@ -206,6 +206,23 @@ import { createScrollDrawPlugin } from 'svg-scroll-draw/nuxt';
 | `debug` | `boolean` | `false` | Render a visual overlay showing trigger zones (dev only) |
 | `threshold` | `number` | `0` | IntersectionObserver threshold |
 | `rootMargin` | `string` | `"0px"` | IntersectionObserver rootMargin |
+| `native` | `boolean` | `true` | Run the draw as a native CSS scroll-driven animation when the browser supports it and the config is simple. Falls back to the JS engine automatically. Set `false` to always use the JS engine |
+
+### Native CSS rendering
+
+For the common case — a default trigger, a named easing, optional `fade`, forward or
+reverse — `svg-scroll-draw` hands the animation to the browser's native
+[`animation-timeline: view()`](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-timeline).
+The draw then runs on the compositor with **zero per-frame JavaScript and no scroll or
+resize listeners**.
+
+It falls back to the JS engine automatically when the browser lacks support, or when the
+config uses something CSS can't express declaratively — callbacks (`onProgress` /
+`onStart` / `onComplete` / `waypoints`), `stagger`, `morphTo`, `velocityScale`,
+`autoReverse`, `once`, `repeat`, a custom trigger, a custom scroll container,
+`speed ≠ 1`, a custom-function or `spring` easing, or animated color/width/fill. The
+full instance API (`pause`, `resume`, `seek`, `replay`, `getProgress`, `destroy`) works
+on both paths. Pass `native: false` to force the JS engine.
 
 ### Trigger anchors
 

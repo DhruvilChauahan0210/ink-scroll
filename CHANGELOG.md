@@ -4,6 +4,35 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ---
 
+## [1.1.0] — 2026-05-30
+
+### Added
+- **Native CSS scroll-driven rendering** — when the browser supports
+  [`animation-timeline: view()`](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-timeline)
+  and the config is simple (default trigger, named easing, optional `fade`, forward or
+  reverse), the draw now runs on the compositor with **zero per-frame JavaScript and no
+  scroll/resize listeners**. The full instance API (`pause`, `resume`, `seek`, `replay`,
+  `getProgress`, `destroy`) works on both the native and JS paths.
+- **`native` option** (`boolean`, default `true`) — set `false` to always use the JS
+  engine. When `true`, the JS engine is still used automatically for any config CSS
+  can't express declaratively (callbacks, `stagger`, `morphTo`, `velocityScale`,
+  `autoReverse`, `once`, `repeat`, custom trigger/scroll-container, `speed ≠ 1`,
+  custom-function or `spring` easing, animated color/width/fill).
+- **27 new tests** (`engine-native.test.ts`) covering native activation, automatic
+  fallback for every non-eligible config, the unsupported-browser path, and the
+  instance API on the native path. **221 tests total.**
+
+### Changed
+- Documentation now reports the accurate **~4.4 KB gzipped** core size (the engine has
+  grown well beyond the original ~3 KB with morph, clip, velocity, waypoints, timeline,
+  and group features). Still 8–9× smaller than Framer Motion or GSAP DrawSVG.
+
+### Notes
+- Fully backward compatible — existing code keeps working unchanged, and behavior is
+  identical in browsers without native `animation-timeline` support.
+
+---
+
 ## [1.0.0] — 2026-05-28
 
 First stable release. The public API is now considered stable — no breaking changes
