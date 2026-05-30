@@ -27,10 +27,23 @@ const NPM = 'https://www.npmjs.com/package/svg-scroll-draw';
 
 const RELEASES = [
   {
-    version: '1.2.0',
+    version: '1.3.0',
     date: 'May 2026',
     tag: 'Latest',
     tagColor: 'bg-creator-pink',
+    items: [
+      { type: 'new', text: 'autoplay option — trigger the animation on viewport enter instead of scroll. Draws over duration milliseconds, replays on each re-entry. Use once: true to play only the first time.' },
+      { type: 'new', text: 'duration option (number, default 1000ms) — controls how long the autoplay animation runs. Only used when autoplay: true.' },
+      { type: 'new', text: 'All existing visual options work in autoplay mode — easing, stagger, fade, strokeColor, strokeWidth, fillOpacity, clip, morphTo, waypoints, repeat, repeatDelay, direction, onStart, onComplete, onProgress.' },
+      { type: 'new', text: 'Full instance API in autoplay mode — pause/resume freeze/unfreeze elapsed time; seek(0–1) jumps to a fraction of duration; replay restarts from scratch.' },
+      { type: 'new', text: '249 passing tests (8 new) — autoplay draw, onStart, onComplete, seek, replay, destroy, clip mode, and once covered.' },
+    ],
+  },
+  {
+    version: '1.2.0',
+    date: 'May 2026',
+    tag: null,
+    tagColor: '',
     items: [
       { type: 'new', text: 'createBounce({ bounces, decay }) — bounce-out easing that rises to 1 then makes N dips before settling. Also available as the named string \'bounce\'. Values stay within [0, 1]' },
       { type: 'new', text: 'createElastic({ amplitude, period }) — elastic-out easing that overshoots past 1 and oscillates back. Also available as the named string \'elastic\'. Based on the Penner elastic-out formula' },

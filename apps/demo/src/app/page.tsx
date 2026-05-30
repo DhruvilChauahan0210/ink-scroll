@@ -3,6 +3,7 @@ import { WaypointsDemo } from '@/components/WaypointsDemo';
 import { ProgressHookDemo } from '@/components/ProgressHookDemo';
 import { FillOpacityDemo } from '@/components/FillOpacityDemo';
 import { ClipModeDemo } from '@/components/ClipModeDemo';
+import { AutoplayDemo } from '@/components/AutoplayDemo';
 import { ScrollShowcase } from '@/components/ScrollShowcase';
 import { BundleGraphLine, CtaBoldMark } from '@/components/BackgroundDecor';
 import { InteractiveScrollDemo } from '@/components/InteractiveScrollDemo';
@@ -806,6 +807,9 @@ const seq = scrollDrawSequence(
         {/* 14 — clip mode */}
         <ClipModeDemo />
 
+        {/* 15 — autoplay */}
+        <AutoplayDemo />
+
       </div>
 
       {/* ── API Reference ─────────────────────────────────────────────── */}
@@ -825,7 +829,7 @@ const seq = scrollDrawSequence(
               { prop: 'speed', type: 'number', def: '1', desc: 'Scale factor — values above 1 complete the animation faster.' },
               { prop: 'fade', type: 'boolean', def: 'false', desc: 'Animate opacity 0 → 1 simultaneously while drawing.' },
               { prop: 'easing', type: 'string | fn', def: '"linear"', desc: 'linear · ease-in · ease-out · ease-in-out · spring · or custom (t) => t.' },
-              { prop: 'stagger', type: 'number', def: '0', desc: 'Normalized scroll-progress offset between each path starting. e.g. 0.15 → each path begins 15% of the range after the previous.' },
+              { prop: 'stagger', type: 'number', def: '0', desc: 'Offset between each path starting. In scroll mode: fraction of the scroll range (0.15 → each path begins 15% of the range after the previous). In autoplay mode: fraction of duration (0.15 → 150ms apart at duration=1000).' },
               { prop: 'direction', type: '"forward"|"reverse"', def: '"forward"', desc: 'forward draws the path in. reverse starts fully drawn and erases as you scroll.' },
               { prop: 'once', type: 'boolean', def: 'false', desc: 'Draw once and stay drawn — animation does not reverse when scrolling back up.' },
               { prop: 'debug', type: 'boolean', def: 'false', desc: 'Renders a visual overlay showing trigger start/end zones. Dev-only, stripped in production.' },
@@ -849,12 +853,14 @@ const seq = scrollDrawSequence(
               { prop: 'onStart', type: '() => void', def: '—', desc: 'Fires once on the first frame the animation begins drawing.' },
               { prop: 'onProgress', type: '(n: number) => void', def: '—', desc: 'Called every animation frame with current draw alpha (0–1).' },
               { prop: 'onComplete', type: '() => void', def: '—', desc: 'Fires once when all paths reach 100% draw progress.' },
+              { prop: 'autoplay', type: 'boolean', def: 'false', desc: 'Draw on viewport enter instead of scroll. Replays each time the element enters view; use once to play only the first time.' },
+              { prop: 'duration', type: 'number', def: '1000', desc: 'Duration in milliseconds for the autoplay animation. Only used when autoplay: true.' },
               { prop: 'native', type: 'boolean', def: 'true', desc: 'Use the browser\'s native CSS scroll-driven animation (animation-timeline: view()) when eligible. Falls back to the JS engine automatically. Set false to always use the JS engine.' },
               { prop: 'useScrollDrawProgress', type: 'hook', def: '—', desc: 'React hook — returns scroll progress (0–1) for any element. Same trigger/speed/easing options as ScrollDraw. No SVG required.' },
             ].map(({ prop, type, def, desc }, i) => (
               <div
                 key={prop}
-                className={`grid grid-cols-1 md:grid-cols-[160px_130px_190px_1fr] gap-1.5 md:gap-4 px-4 sm:px-6 py-3 sm:py-4 text-sm items-start ${i < 29 ? 'border-b border-subtle-ash' : ''}`}
+                className={`grid grid-cols-1 md:grid-cols-[160px_130px_190px_1fr] gap-1.5 md:gap-4 px-4 sm:px-6 py-3 sm:py-4 text-sm items-start ${i < 31 ? 'border-b border-subtle-ash' : ''}`}
               >
                 <code className="font-mono font-semibold text-pitch-black text-[12px] sm:text-sm">{prop}</code>
                 <code className="font-mono text-graphite-border text-[11px] sm:text-[13px]"><span className="md:hidden text-[10px] uppercase tracking-wide text-graphite-border/60 mr-1">type:</span>{type}</code>

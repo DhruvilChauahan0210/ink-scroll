@@ -63,6 +63,25 @@ export interface ScrollDrawOptions {
   onStart?: () => void;
   onComplete?: () => void;
   /**
+   * Trigger the animation when the element enters the viewport instead of
+   * tying it to scroll position. The draw runs over `duration` milliseconds,
+   * replaying each time the element re-enters the viewport (use `once: true`
+   * to play only the first time).
+   *
+   * All visual options work in autoplay mode — `easing`, `stagger`, `fade`,
+   * `strokeColor`, `strokeWidth`, `fillOpacity`, `clip`, `morphTo`, `waypoints`,
+   * `repeat`, `repeatDelay`, `onStart`, `onComplete`, `onProgress`, etc.
+   *
+   * The full instance API (`pause`, `resume`, `seek`, `replay`, `getProgress`)
+   * also works — `seek(0.5)` pauses at 50% of the duration.
+   */
+  autoplay?: boolean;
+  /**
+   * Duration of the autoplay animation in milliseconds. Only used when
+   * `autoplay: true`. Default `1000`.
+   */
+  duration?: number;
+  /**
    * Use the browser's native CSS scroll-driven animation
    * (`animation-timeline: view()`) when the configuration is simple enough and
    * the browser supports it. This runs the draw entirely on the compositor —

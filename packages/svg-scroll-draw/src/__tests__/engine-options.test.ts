@@ -744,3 +744,136 @@ describe('createEngine — resize handler', () => {
     expect(path.style.strokeDasharray).toBe('100');
   });
 });
+
+// ── autoplay ──────────────────────────────────────────────────────────────────
+
+// Helper: spy on performance.now() and return a mutable ref so tests can
+// advance "time" without depending on fake-timer support for performance.
+function mockPerformanceNow(): { now: number } {
+  const ref = { now: 0 };
+  vi.spyOn(performance, 'now').mockImplementation(() => ref.now);
+  return ref;
+}
+
+describe('createEngine — autoplay', () => {
+  it('draws path when element enters viewport (time-based, not scroll)', () => {
+    const t = mockPerformanceNow();
+    const path = makePath();
+    const container = makeContainer([path]);
+    createEngine(container, { autoplay: true, duration: 1000 });
+
+    t.now = 0;
+    FakeIO.instances[0].trigger(true); // startTime = 0
+    raf.tick();                         // elapsed≈0 → offset near full
+
+    const offsetBefore = path.style.strokeDashoffset;
+
+    t.now = 1100;  // 1100ms elapsed → past duration=1000
+    raf.tick();
+
+    expect(path.style.strokeDashoffset).not.toBe(offsetBefore);
+  });
+
+  it('fires onComplete after duration elapses', () => {
+    vi.useFakeTimers();
+    const t = mockPerformanceNow();
+    const onComplete = vi.fn();
+    const container = makeContainer([makePath()]);
+    createEngine(container, { autoplay: true, duration: 500, onComplete });
+
+    t.now = 0;
+    FakeIO.instances[0].trigger(true); // startTime = 0
+    t.now = 600;                        // 600ms elapsed > duration=500
+    raf.tick();
+
+    expect(onComplete).toHaveBeenCalledTimes(1);
+  });
+
+  it('fires onStart on first tick', () => {
+    const t = mockPerformanceNow();
+    const onStart = vi.fn();
+    const container = makeContainer([makePath()]);
+    createEngine(container, { autoplay: true, duration: 1000, onStart });
+
+    t.now = 0;
+    FakeIO.instances[0].trigger(true);
+    raf.tick();
+
+    expect(onStart).toHaveBeenCalledTimes(1);
+  });
+
+  it('seek() jumps to target progress and pauses', () => {
+    const t = mockPerformanceNow();
+    const path = makePath();
+    const container = makeContainer([path]);
+    const instance = createEngine(container, { autoplay: true, duration: 1000 });
+
+    t.now = 0;
+    FakeIO.instances[0].trigger(true);
+    instance.seek(0.5);
+
+    expect(instance.getProgress()).toBe(0.5);
+    expect(path.style.strokeDashoffset).toBe('50');
+  });
+
+  it('replay() restarts the animation from scratch', () => {
+    vi.useFakeTimers();
+    const t = mockPerformanceNow();
+    const onComplete = vi.fn();
+    const container = makeContainer([makePath()]);
+    const instance = createEngine(container, { autoplay: true, duration: 200, onComplete });
+
+    t.now = 0;
+    FakeIO.instances[0].trigger(true);
+    t.now = 300;
+    raf.tick();
+    expect(onComplete).toHaveBeenCalledTimes(1);
+
+    t.now = 400;
+    instance.replay(); // startTime reset to performance.now() = 400
+    expect(instance.getProgress()).toBe(0);
+  });
+
+  it('destroy() cleans up without errors', () => {
+    const t = mockPerformanceNow();
+    const container = makeContainer([makePath()]);
+    const instance = createEngine(container, { autoplay: true, duration: 1000 });
+
+    t.now = 0;
+    FakeIO.instances[0].trigger(true);
+    expect(() => instance.destroy()).not.toThrow();
+  });
+
+  it('uses clip-path in autoplay clip mode', () => {
+    const t = mockPerformanceNow();
+    const container = makeContainer();
+    createEngine(container, { autoplay: true, duration: 1000, clip: 'left' });
+
+    t.now = 0;
+    FakeIO.instances[0].trigger(true);
+    raf.tick();
+
+    expect(container.style.clipPath).toContain('inset');
+  });
+
+  it('once:true does not restart on second intersection', () => {
+    vi.useFakeTimers();
+    const t = mockPerformanceNow();
+    const onComplete = vi.fn();
+    const container = makeContainer([makePath()]);
+    createEngine(container, { autoplay: true, duration: 100, once: true, onComplete });
+
+    t.now = 0;
+    FakeIO.instances[0].trigger(true);
+    t.now = 200;
+    raf.tick();
+    expect(onComplete).toHaveBeenCalledTimes(1);
+
+    // Re-enter viewport — once:true must block restart
+    FakeIO.instances[0].trigger(false);
+    FakeIO.instances[0].trigger(true);
+    t.now = 400;
+    raf.tick();
+    expect(onComplete).toHaveBeenCalledTimes(1);
+  });
+});

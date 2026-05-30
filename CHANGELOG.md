@@ -4,6 +4,29 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ---
 
+## [1.3.0] — 2026-05-30
+
+### Added
+- **`autoplay` option** (`boolean`, default `false`) — trigger the animation when the
+  element enters the viewport instead of tying it to scroll position. The draw runs over
+  `duration` milliseconds and replays each time the element re-enters the viewport. Use
+  `once: true` to play only the first time.
+- **`duration` option** (`number`, default `1000`) — animation duration in milliseconds,
+  used only when `autoplay: true`.
+- All existing visual options work in autoplay mode: `easing`, `stagger`, `fade`,
+  `strokeColor`, `strokeWidth`, `fillOpacity`, `clip`, `morphTo`, `waypoints`, `repeat`,
+  `repeatDelay`, `onStart`, `onComplete`, `onProgress`, `direction`.
+- The full instance API works in autoplay mode — `pause` / `resume` freeze/unfreeze
+  elapsed time; `seek(0–1)` jumps to a fraction of `duration`; `replay` restarts from 0.
+- **8 new tests** covering autoplay draw, `onStart`, `onComplete`, `seek`, `replay`,
+  `destroy`, clip mode, and `once`. **249 tests total.**
+
+### Notes
+- Fully backward compatible — `autoplay` defaults to `false`, existing scroll-driven
+  code is unchanged.
+
+---
+
 ## [1.1.0] — 2026-05-30
 
 ### Added

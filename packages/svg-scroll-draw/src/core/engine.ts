@@ -96,6 +96,8 @@ export function createEngine(
     repeatDelay    = 0,
     morphTo,
     clip,
+    autoplay    = false,
+    duration    = 1000,
     native      = true,
     onProgress,
     onStart,
@@ -406,6 +408,186 @@ export function createEngine(
   }
 
   if (nativeEligible()) return buildNative();
+
+  // ── Autoplay / viewport-enter animation ──────────────────────────────────
+
+  function buildAutoplay(): ScrollDrawInstance {
+    const effectiveDuration = Math.max(1, duration);
+    let startTime    = 0;
+    let pausedElapsed = 0;
+
+    function applyAutoAlpha(elapsed: number): boolean {
+      let allDone = true;
+
+      if (clipDirection) {
+        const raw   = Math.min(1, Math.max(0, elapsed / effectiveDuration));
+        const alpha = easeFn(raw);
+        currentAlpha = alpha;
+        (container as HTMLElement).style.setProperty('--scroll-draw-progress', String(alpha));
+        (container as HTMLElement).style.clipPath = computeClipPath(direction === 'reverse' ? 1 - alpha : alpha);
+        onProgress?.(alpha);
+        if (raw < 1) allDone = false;
+      } else {
+        paths.forEach((el, i) => {
+          const staggerMs = i * stagger * effectiveDuration;
+          const raw       = Math.min(1, Math.max(0, (elapsed - staggerMs) / effectiveDuration));
+          const alpha     = easeFn(raw);
+
+          el.style.strokeDashoffset = direction === 'reverse'
+            ? `${lengths[i] * alpha}`
+            : `${lengths[i] * (1 - alpha)}`;
+
+          if (fade) el.style.opacity = direction === 'reverse' ? `${1 - alpha}` : `${alpha}`;
+          if (colorFrom && colorTo) el.style.stroke = lerpColor(colorFrom, colorTo, alpha);
+          else if (colorTo) el.style.stroke = colorTo;
+          if (widthFrom !== null && widthTo !== null)
+            el.style.strokeWidth = `${widthFrom + (widthTo - widthFrom) * alpha}`;
+          else if (widthTo !== null)
+            el.style.strokeWidth = `${widthTo}`;
+          if (fillOpacityFrom !== null && fillOpacityTo !== null)
+            el.style.fillOpacity = `${fillOpacityFrom + (fillOpacityTo - fillOpacityFrom) * alpha}`;
+          else if (fillOpacityTo !== null)
+            el.style.fillOpacity = `${fillOpacityTo}`;
+          if (morphTo && el.tagName.toLowerCase() === 'path' && originalDs[i])
+            el.setAttribute('d', morphPath(originalDs[i], morphTo, alpha));
+
+          if (i === 0) {
+            onProgress?.(alpha);
+            (container as HTMLElement).style.setProperty('--scroll-draw-progress', String(alpha));
+          }
+          if (raw < 1) allDone = false;
+        });
+      }
+
+      if (waypoints) {
+        const globalRaw   = Math.min(1, Math.max(0, elapsed / effectiveDuration));
+        const globalAlpha = easeFn(globalRaw);
+        for (const key in waypoints) {
+          const t = parseFloat(key);
+          if (globalAlpha >= t && !firedWaypoints.has(t)) {
+            firedWaypoints.add(t);
+            waypoints[key as unknown as number]?.();
+          }
+        }
+      }
+
+      return allDone;
+    }
+
+    function tick(now: number): void {
+      if (paused) return;
+      const elapsed = now - startTime;
+
+      if (!started) { started = true; onStart?.(); }
+
+      const done = applyAutoAlpha(elapsed);
+
+      if (done && !completed) {
+        completed = true;
+        applyAutoAlpha(effectiveDuration * (1 + Math.max(0, paths.length - 1) * stagger));
+        onComplete?.();
+        const maxRepeats = repeat === 'infinite' ? Infinity : (repeat ?? 0);
+        if (repeatCount < maxRepeats) {
+          repeatCount++;
+          repeatTimer = setTimeout(() => {
+            startTime = performance.now();
+            started   = false;
+            completed = false;
+            firedWaypoints.clear();
+            resetPaths();
+            rafId = requestAnimationFrame(tick);
+          }, repeatDelay);
+        }
+        return;
+      }
+
+      if (!done) rafId = requestAnimationFrame(tick);
+    }
+
+    function startAnimation(): void {
+      cancelAnimationFrame(rafId);
+      clearTimeout(repeatTimer);
+      startTime     = performance.now();
+      pausedElapsed = 0;
+      paused        = false;
+      started       = false;
+      completed     = false;
+      repeatCount   = 0;
+      firedWaypoints.clear();
+      resetPaths();
+      rafId = requestAnimationFrame(tick);
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting && !(once && completed)) {
+            startAnimation();
+          } else if (!e.isIntersecting && !once && !completed) {
+            cancelAnimationFrame(rafId);
+            clearTimeout(repeatTimer);
+            startTime = null;
+          }
+        });
+      },
+      { root: scrollEl ?? null, threshold, rootMargin },
+    );
+
+    let resizeTimer: ReturnType<typeof setTimeout>;
+    function onResize(): void {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        paths.forEach((el, i) => {
+          lengths[i] = getElementLength(el);
+          el.style.strokeDasharray = `${lengths[i]}`;
+        });
+      }, 150);
+    }
+    window.addEventListener('resize', onResize);
+    window.addEventListener('orientationchange', onResize);
+
+    if (delay > 0) setTimeout(() => observer.observe(container), delay);
+    else observer.observe(container);
+
+    return {
+      destroy() {
+        cancelAnimationFrame(rafId);
+        clearTimeout(repeatTimer);
+        observer.disconnect();
+        window.removeEventListener('resize', onResize);
+        window.removeEventListener('orientationchange', onResize);
+        clearTimeout(resizeTimer);
+      },
+      replay() {
+        repeatCount = 0;
+        startAnimation();
+      },
+      pause() {
+        if (paused) return;
+        paused        = true;
+        pausedElapsed = performance.now() - startTime;
+        cancelAnimationFrame(rafId);
+      },
+      resume() {
+        if (!paused) return;
+        paused    = false;
+        startTime = performance.now() - pausedElapsed;
+        rafId     = requestAnimationFrame(tick);
+      },
+      seek(p: number) {
+        const clamped = Math.min(1, Math.max(0, p));
+        currentAlpha  = clamped;
+        paused        = true;
+        pausedElapsed = clamped * effectiveDuration;
+        startTime     = performance.now() - pausedElapsed;
+        cancelAnimationFrame(rafId);
+        applyAutoAlpha(pausedElapsed);
+      },
+      getProgress() { return currentAlpha; },
+    };
+  }
+
+  if (autoplay) return buildAutoplay();
 
   cacheTriggers();
 
