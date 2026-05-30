@@ -1146,6 +1146,7 @@ export function ExamplesPage() {
         <div className="hidden lg:flex items-center gap-2">
           <Link href="/" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Home</Link>
           <Link href="/docs" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Docs</Link>
+          <Link href="/changelog" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Changelog</Link>
           <Link href="/playground" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">⚡ Playground</Link>
         </div>
 
@@ -1169,7 +1170,7 @@ export function ExamplesPage() {
           <p className="text-sm sm:text-base md:text-lg text-graphite-border max-w-2xl leading-relaxed break-words">
             Thirteen production-ready patterns — logo reveals, charts, signatures, diagrams, Vue 3, Svelte, Solid.js, Timeline API, Group API, Sequence API, and more.
             Each one is powered by <code className="inline font-mono text-pitch-black text-[0.9em] bg-marketplace-gray border border-subtle-ash px-1.5 py-0.5 rounded-md break-all">svg-scroll-draw</code> and
-            works in React, Next.js, Vue, Svelte, and vanilla JS.
+            works in React, Vue 3, Svelte, Solid, and vanilla JS.
             Scroll down to see them draw live.
           </p>
 

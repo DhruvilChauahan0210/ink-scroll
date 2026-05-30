@@ -80,7 +80,7 @@ const MARQUEE_ITEMS = [
   'IntersectionObserver',
   '~4.4 KB Gzipped',
   'Zero Dependencies',
-  '221 Tests Passing',
+  '241 Tests Passing',
   'React + Next.js',
   'Vue 3',
   'Svelte',
@@ -177,7 +177,7 @@ export default function Home() {
         {/* Sub */}
         <p className="relative z-10 text-sm sm:text-base md:text-lg text-graphite-border max-w-sm sm:max-w-md mx-auto mb-8 sm:mb-10 leading-relaxed">
           The definitive modern library. ~4.4 KB gzipped.
-          Works in React, Next.js, and vanilla JS.
+          Works in React, Vue 3, Svelte, Solid, and more.
         </p>
 
         {/* CTAs */}
@@ -197,7 +197,7 @@ export default function Home() {
             ['~4.4 KB', 'gzipped'],
             ['0', 'dependencies'],
             ['SSR', 'safe'],
-            ['221', 'tests ✓'],
+            ['241', 'tests ✓'],
           ].map(([val, label]) => (
             <div key={val} className="flex items-center gap-1.5 border border-pitch-black bg-light-linen rounded-full px-3 sm:px-4 py-1.5 shadow-[1px_1px_0px_#000]">
               <span className="font-display font-bold text-xs sm:text-sm">{val}</span>
