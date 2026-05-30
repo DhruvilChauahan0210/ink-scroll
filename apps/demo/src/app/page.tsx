@@ -12,6 +12,7 @@ import { LiveStats } from '@/components/LiveStats';
 import { CopyButton } from '@/components/CopyButton';
 import { InstallTabs } from '@/components/InstallTabs';
 import { FrameworkTabs } from '@/components/FrameworkTabs';
+import { NativeCSSBadge } from '@/components/NativeCSSBadge';
 
 const GH  = 'https://github.com/DhruvilChauahan0210/ink-scroll';
 const NPM = 'https://www.npmjs.com/package/svg-scroll-draw';
@@ -28,7 +29,7 @@ const jsonLd = {
   downloadUrl: 'https://www.npmjs.com/package/svg-scroll-draw',
   codeRepository: 'https://github.com/DhruvilChauahan0210/ink-scroll',
   license: 'https://opensource.org/licenses/MIT',
-  softwareVersion: '1.0.0',
+  softwareVersion: '1.1.0',
   programmingLanguage: ['JavaScript', 'TypeScript'],
   author: {
     '@type': 'Person',
@@ -133,7 +134,7 @@ export default function Home() {
           <a href="/examples" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Examples</a>
           <a href="/changelog" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Changelog</a>
           <a href="/playground" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">⚡ Playground</a>
-          <a href={NPM} target="_blank" rel="noopener noreferrer" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono whitespace-nowrap">v1.0.0</a>
+          <a href={NPM} target="_blank" rel="noopener noreferrer" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono whitespace-nowrap">v1.1.0</a>
           <a href={GH} target="_blank" rel="noopener noreferrer" className="text-sm px-4 py-1.5 rounded-full bg-pitch-black text-light-linen hover:bg-graphite-border transition-colors font-medium whitespace-nowrap">GitHub →</a>
         </div>
 
@@ -320,6 +321,80 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ── Native CSS ────────────────────────────────────────────────── */}
+      <section className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-12 sm:py-16 md:py-20">
+        <div className="max-w-5xl mx-auto">
+          <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-3 font-medium">v1.1.0</p>
+          <h2 className="font-display font-extrabold text-[clamp(28px,5vw,56px)] leading-[0.95] tracking-[-0.03em] mb-5">
+            Native CSS, with<br />a safety net.
+          </h2>
+          <p className="text-graphite-border leading-relaxed mb-8 text-[15px] max-w-2xl">
+            On Chrome, Edge, and Firefox the simple draw case runs on the compositor via{' '}
+            <code className="font-mono text-[13px] bg-marketplace-gray border border-subtle-ash px-1.5 py-0.5 rounded-md">animation-timeline: view()</code>
+            {' '}— <strong>zero per-frame JavaScript, no scroll listeners, no rAF loop.</strong>{' '}
+            When the browser doesn&apos;t support it, or the config uses a feature CSS can&apos;t express
+            declaratively, the library falls back to the JS engine automatically. You never change your code.
+          </p>
+
+          <div className="grid sm:grid-cols-2 gap-6 mb-8">
+            {/* Native fast path */}
+            <div className="rounded-2xl border border-pitch-black bg-light-linen p-6 shadow-[2px_2px_0px_#000]">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="w-2 h-2 rounded-full bg-[#6cc070]" />
+                <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-graphite-border">Native CSS fast path</span>
+              </div>
+              <p className="text-sm text-graphite-border leading-relaxed mb-3">
+                Runs on the compositor when you use: a default or named trigger, a named easing, optional{' '}
+                <code className="font-mono text-[12px]">fade</code>, forward or reverse direction.
+              </p>
+              <CodeBlock filename="native.tsx">
+{`<ScrollDraw easing="ease-out" fade>
+  <svg>...</svg>
+</ScrollDraw>
+// ✓ Uses animation-timeline: view()`}
+              </CodeBlock>
+            </div>
+
+            {/* JS engine fallback */}
+            <div className="rounded-2xl border border-pitch-black bg-marketplace-gray p-6 shadow-[2px_2px_0px_#000]">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="w-2 h-2 rounded-full bg-graphite-border" />
+                <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-graphite-border">JS engine (auto fallback)</span>
+              </div>
+              <p className="text-sm text-graphite-border leading-relaxed mb-3">
+                These features require the JS engine and trigger the fallback automatically:{' '}
+                <code className="font-mono text-[12px]">onProgress</code>,{' '}
+                <code className="font-mono text-[12px]">onComplete</code>,{' '}
+                <code className="font-mono text-[12px]">waypoints</code>,{' '}
+                <code className="font-mono text-[12px]">stagger</code>,{' '}
+                <code className="font-mono text-[12px]">morphTo</code>,{' '}
+                <code className="font-mono text-[12px]">velocityScale</code>,{' '}
+                <code className="font-mono text-[12px]">autoReverse</code>,{' '}
+                <code className="font-mono text-[12px]">once</code>,{' '}
+                <code className="font-mono text-[12px]">repeat</code>,{' '}
+                custom trigger, custom scroll container,{' '}
+                <code className="font-mono text-[12px]">speed ≠ 1</code>,{' '}
+                <code className="font-mono text-[12px]">spring</code> easing, animated color/width/fill.
+              </p>
+              <CodeBlock filename="js-engine.tsx">
+{`<ScrollDraw native={false} easing="spring">
+  <svg>...</svg>
+</ScrollDraw>
+// Forces JS engine regardless of browser`}
+              </CodeBlock>
+            </div>
+          </div>
+
+          <p className="text-[13px] text-graphite-border">
+            The full instance API — <code className="font-mono text-[12px]">pause</code>,{' '}
+            <code className="font-mono text-[12px]">resume</code>,{' '}
+            <code className="font-mono text-[12px]">seek</code>,{' '}
+            <code className="font-mono text-[12px]">replay</code>,{' '}
+            <code className="font-mono text-[12px]">destroy</code> — works on both paths.
+          </p>
+        </div>
+      </section>
+
       {/* ── Demos ─────────────────────────────────────────────────────── */}
       <div id="demos">
 
@@ -349,6 +424,10 @@ export default function Hero() {
   );
 }`}
               </CodeBlock>
+              <div className="mt-4 flex items-center gap-2">
+                <span className="text-[11px] text-graphite-border font-mono">your browser:</span>
+                <NativeCSSBadge />
+              </div>
             </div>
             <InteractiveScrollDemo defaultEasing="linear" defaultSpeed={1} svgBg="gray">
               <svg width="260" height="260" viewBox="0 0 260 260" fill="none" className="max-w-full h-auto">
@@ -865,7 +944,7 @@ const seq = scrollDrawSequence(
               </svg>
               npm
             </a>
-            <span className="text-[11px] font-mono text-graphite-border">v1.0.0</span>
+            <span className="text-[11px] font-mono text-graphite-border">v1.1.0</span>
           </div>
         </div>
 

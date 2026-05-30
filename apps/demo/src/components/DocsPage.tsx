@@ -57,6 +57,12 @@ const NAV_GROUPS = [
     items: [{ id: 'use-scroll-draw-progress', label: 'useScrollDrawProgress' }],
   },
   {
+    label: 'v1.1.0',
+    items: [
+      { id: 'native-css', label: 'Native CSS' },
+    ],
+  },
+  {
     label: 'v1.0.0',
     items: [
       { id: 'create-spring',      label: 'createSpring' },
@@ -189,7 +195,7 @@ export function DocsPage() {
           <Link href="/docs" className="text-xs px-3.5 py-1.5 rounded-full bg-pitch-black text-light-linen font-medium whitespace-nowrap">Docs</Link>
           <Link href="/examples" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Examples</Link>
           <Link href="/playground" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">⚡ Playground</Link>
-          <a href={NPM} target="_blank" rel="noopener noreferrer" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono whitespace-nowrap">v1.0.0</a>
+          <a href={NPM} target="_blank" rel="noopener noreferrer" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono whitespace-nowrap">v1.1.0</a>
           <a href={GH} target="_blank" rel="noopener noreferrer" className="text-sm px-4 py-1.5 rounded-full bg-pitch-black text-light-linen hover:bg-graphite-border transition-colors font-medium whitespace-nowrap">GitHub →</a>
         </div>
 
@@ -457,6 +463,14 @@ scrollDraw('#shape', { morphTo: 'M10 80 Q50 10 90 80', easing: 'spring' });`}
           {/* ── Advanced ─────────────────────────────────────── */}
           <DocSection id="advanced" tag="Options" heading="Advanced Options">
             <OptGroup>
+              <Opt name="native" type="boolean" defaultVal="true">
+                Run the draw as a native CSS scroll-driven animation when the browser supports it and
+                the config is eligible (default trigger, named easing, optional{' '}
+                <code className="font-mono text-pitch-black">fade</code>, no callbacks or JS-only features).
+                Falls back to the JS engine automatically when not eligible. Set{' '}
+                <code className="font-mono text-pitch-black">false</code> to always use the JS engine.
+                The full instance API works on both paths.
+              </Opt>
               <Opt name="autoReverse" type="boolean" defaultVal="false">
                 Automatically reverse the animation direction when scrolling back up. Overrides{' '}
                 <code className="font-mono text-pitch-black">direction</code>.
@@ -906,6 +920,54 @@ export function ParallaxSection() {
               <Opt name="scrollContainer" type="string | Element">Custom scroll container.</Opt>
               <Opt name="once" type="boolean" defaultVal="false">Lock at max progress once reached — never decreases on scroll back.</Opt>
             </OptGroup>
+          </DocSection>
+
+          {/* ── Native CSS rendering ─────────────────────────── */}
+          <DocSection id="native-css" tag="v1.1.0" heading="Native CSS rendering">
+            <p className="text-sm text-graphite-border leading-relaxed mb-4">
+              For the common case, <code className="font-mono text-pitch-black">svg-scroll-draw</code> hands
+              the animation to the browser&apos;s native{' '}
+              <code className="font-mono text-pitch-black">animation-timeline: view()</code>.
+              The draw runs on the compositor with{' '}
+              <strong>zero per-frame JavaScript and no scroll or resize listeners.</strong>{' '}
+              It falls back to the JS engine automatically when the browser lacks support, or when the config
+              uses a feature CSS can&apos;t express declaratively.
+            </p>
+            <Sub>Eligible for native CSS (compositor path)</Sub>
+            <p className="text-sm text-graphite-border leading-relaxed mb-4">
+              Default trigger, a named easing, optional{' '}
+              <code className="font-mono text-pitch-black">fade</code>, forward or reverse direction.
+            </p>
+            <Sub>Falls back to JS engine automatically</Sub>
+            <p className="text-sm text-graphite-border leading-relaxed mb-4">
+              <code className="font-mono text-pitch-black">onProgress</code> /{' '}
+              <code className="font-mono text-pitch-black">onComplete</code> /{' '}
+              <code className="font-mono text-pitch-black">waypoints</code>,{' '}
+              <code className="font-mono text-pitch-black">stagger</code>,{' '}
+              <code className="font-mono text-pitch-black">morphTo</code>,{' '}
+              <code className="font-mono text-pitch-black">velocityScale</code>,{' '}
+              <code className="font-mono text-pitch-black">autoReverse</code>,{' '}
+              <code className="font-mono text-pitch-black">once</code>,{' '}
+              <code className="font-mono text-pitch-black">repeat</code>,
+              custom trigger, custom scroll container,{' '}
+              <code className="font-mono text-pitch-black">speed ≠ 1</code>,{' '}
+              <code className="font-mono text-pitch-black">spring</code> easing, animated color/width/fill.
+            </p>
+            <CodeBlock file="native.js">
+{`// Uses animation-timeline: view() on supporting browsers
+scrollDraw('#svg', { easing: 'ease-out', fade: true });
+
+// Force JS engine regardless
+scrollDraw('#svg', { native: false, easing: 'spring' });`}
+            </CodeBlock>
+            <Note>
+              The full instance API —{' '}
+              <code className="font-mono">pause</code>,{' '}
+              <code className="font-mono">resume</code>,{' '}
+              <code className="font-mono">seek</code>,{' '}
+              <code className="font-mono">replay</code>,{' '}
+              <code className="font-mono">destroy</code> — works on both paths.
+            </Note>
           </DocSection>
 
           {/* ── createSpring ─────────────────────────────────── */}
