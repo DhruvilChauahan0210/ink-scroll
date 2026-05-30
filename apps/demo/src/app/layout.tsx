@@ -22,6 +22,7 @@ const syne = Syne({
   variable: "--font-syne",
   subsets: ["latin"],
   weight: ["700", "800"],
+  display: "block",
 });
 
 const SITE_URL = "https://svg-scroll-draw.vercel.app";
