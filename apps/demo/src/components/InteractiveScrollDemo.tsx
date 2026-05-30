@@ -133,6 +133,7 @@ function Controls({
           Speed — <span className="font-bold font-mono text-pitch-black">{speed.toFixed(1)}×</span>
         </p>
         <input type="range" min="0.3" max="3" step="0.1" value={speed}
+          aria-label="Animation speed"
           onChange={(e) => onSpeedChange(parseFloat(e.target.value))}
           onPointerUp={onSpeedCommit} onKeyUp={onSpeedCommit}
         />

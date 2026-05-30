@@ -34,7 +34,7 @@ export function OnCompleteDemo() {
                 <span className="w-2.5 h-2.5 rounded-full bg-[#444]" />
                 <span className="w-2.5 h-2.5 rounded-full bg-[#444]" />
               </div>
-              <span className="text-[11px] text-[#666] font-mono tracking-wide">index.tsx</span>
+              <span className="text-[11px] text-[#888] font-mono tracking-wide">index.tsx</span>
               <span className="w-16" />
             </div>
             <pre className="bg-[#242423] dark:bg-[#1c1c1c] text-[#e8e8e3] px-5 py-4 text-[13px] font-mono leading-[1.75] overflow-x-auto">

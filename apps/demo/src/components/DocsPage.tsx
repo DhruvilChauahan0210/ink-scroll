@@ -89,7 +89,7 @@ function CodeBlock({ file, children }: { file: string; children: string }) {
           <span className="w-2 h-2 rounded-full bg-[#444]" />
           <span className="w-2 h-2 rounded-full bg-[#444]" />
         </div>
-        <span className="text-[11px] text-[#666] font-mono">{file}</span>
+        <span className="text-[11px] text-[#888] font-mono">{file}</span>
         <CopyButton text={children} />
       </div>
       <pre className="bg-[#0d0d0d] text-[#e5e5e5] px-5 py-4 text-[12.5px] font-mono leading-[1.75] overflow-x-auto">

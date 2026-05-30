@@ -172,7 +172,7 @@ export function FrameworkTabs() {
             className={`shrink-0 px-5 py-2.5 text-[12px] font-mono font-medium tracking-wide transition-colors whitespace-nowrap ${
               active === t.id
                 ? 'bg-pitch-black text-light-linen'
-                : 'text-[#666] hover:text-[#aaa]'
+                : 'text-[#888] hover:text-[#aaa]'
             }`}
           >
             {t.label}
@@ -186,7 +186,7 @@ export function FrameworkTabs() {
           <span className="w-2.5 h-2.5 rounded-full bg-[#444]" />
           <span className="w-2.5 h-2.5 rounded-full bg-[#444]" />
         </div>
-        <span className="text-[11px] text-[#666] font-mono tracking-wide">{tab.filename}</span>
+        <span className="text-[11px] text-[#888] font-mono tracking-wide">{tab.filename}</span>
         <CopyButton text={tab.code} />
       </div>
       {/* Code */}

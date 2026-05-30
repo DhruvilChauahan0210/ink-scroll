@@ -21,7 +21,7 @@ export function CopyButton({ text }: { text: string }) {
       className={`text-[11px] font-mono transition-all px-2 py-0.5 rounded border ${
         copied
           ? 'text-lime-glow border-lime-glow'
-          : 'text-[#666] border-transparent hover:text-[#aaa] hover:border-[#444]'
+          : 'text-[#888] border-transparent hover:text-[#aaa] hover:border-[#444]'
       }`}
     >
       {copied ? 'copied!' : 'copy'}

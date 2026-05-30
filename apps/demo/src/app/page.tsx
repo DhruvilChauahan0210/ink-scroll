@@ -1,12 +1,5 @@
-import { OnCompleteDemo } from '@/components/OnCompleteDemo';
-import { WaypointsDemo } from '@/components/WaypointsDemo';
-import { ProgressHookDemo } from '@/components/ProgressHookDemo';
-import { FillOpacityDemo } from '@/components/FillOpacityDemo';
-import { ClipModeDemo } from '@/components/ClipModeDemo';
-import { AutoplayDemo } from '@/components/AutoplayDemo';
-import { ScrollShowcase } from '@/components/ScrollShowcase';
+import dynamic from 'next/dynamic';
 import { BundleGraphLine, CtaBoldMark } from '@/components/BackgroundDecor';
-import { InteractiveScrollDemo } from '@/components/InteractiveScrollDemo';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { MobileMenu } from '@/components/MobileMenu';
 import { LiveStats } from '@/components/LiveStats';
@@ -14,6 +7,15 @@ import { CopyButton } from '@/components/CopyButton';
 import { InstallTabs } from '@/components/InstallTabs';
 import { FrameworkTabs } from '@/components/FrameworkTabs';
 import { NativeCSSBadgeLoader as NativeCSSBadge } from '@/components/NativeCSSBadgeLoader';
+
+const ScrollShowcase = dynamic(() => import('@/components/ScrollShowcase').then(m => ({ default: m.ScrollShowcase })));
+const InteractiveScrollDemo = dynamic(() => import('@/components/InteractiveScrollDemo').then(m => ({ default: m.InteractiveScrollDemo })));
+const AutoplayDemo = dynamic(() => import('@/components/AutoplayDemo').then(m => ({ default: m.AutoplayDemo })));
+const OnCompleteDemo = dynamic(() => import('@/components/OnCompleteDemo').then(m => ({ default: m.OnCompleteDemo })));
+const WaypointsDemo = dynamic(() => import('@/components/WaypointsDemo').then(m => ({ default: m.WaypointsDemo })));
+const ProgressHookDemo = dynamic(() => import('@/components/ProgressHookDemo').then(m => ({ default: m.ProgressHookDemo })));
+const FillOpacityDemo = dynamic(() => import('@/components/FillOpacityDemo').then(m => ({ default: m.FillOpacityDemo })));
+const ClipModeDemo = dynamic(() => import('@/components/ClipModeDemo').then(m => ({ default: m.ClipModeDemo })));
 
 const GH  = 'https://github.com/DhruvilChauahan0210/ink-scroll';
 const NPM = 'https://www.npmjs.com/package/svg-scroll-draw';
@@ -55,7 +57,7 @@ function CodeBlock({ filename, children }: { filename: string; children: string 
           <span className="w-2.5 h-2.5 rounded-full bg-[#444]" />
           <span className="w-2.5 h-2.5 rounded-full bg-[#444]" />
         </div>
-        <span className="text-[11px] text-[#666] font-mono tracking-wide">{filename}</span>
+        <span className="text-[11px] text-[#888] font-mono tracking-wide">{filename}</span>
         <CopyButton text={children} />
       </div>
       <pre className="bg-[#242423] dark:bg-[#1c1c1c] text-[#e8e8e3] px-3 sm:px-5 py-4 text-[11px] sm:text-[13px] font-mono leading-[1.75] overflow-x-auto">

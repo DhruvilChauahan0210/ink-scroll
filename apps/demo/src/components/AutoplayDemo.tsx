@@ -55,7 +55,7 @@ export function AutoplayDemo() {
                 <span className="w-2.5 h-2.5 rounded-full bg-[#444]" />
                 <span className="w-2.5 h-2.5 rounded-full bg-[#444]" />
               </div>
-              <span className="text-[11px] text-[#666] font-mono tracking-wide">Hero.tsx</span>
+              <span className="text-[11px] text-[#888] font-mono tracking-wide">Hero.tsx</span>
               <span className="w-16" />
             </div>
             <pre className="bg-[#242423] dark:bg-[#1c1c1c] text-[#e8e8e3] px-5 py-4 text-[12px] sm:text-[13px] font-mono leading-[1.75] overflow-x-auto">{`// Draws on viewport enter — no scroll required
@@ -80,9 +80,10 @@ scrollDraw('#logo', {
           {/* Controls */}
           <div className="space-y-4">
             <div className="flex items-center gap-4 flex-wrap">
-              <label className="text-[12px] font-mono text-graphite-border w-16 shrink-0">duration</label>
+              <label htmlFor="autoplay-duration" className="text-[12px] font-mono text-graphite-border w-16 shrink-0">duration</label>
               <div className="flex items-center gap-3 flex-1 min-w-0">
                 <input
+                  id="autoplay-duration"
                   type="range"
                   min={300}
                   max={3000}
@@ -115,9 +116,10 @@ scrollDraw('#logo', {
             </div>
 
             <div className="flex items-center gap-4 flex-wrap">
-              <label className="text-[12px] font-mono text-graphite-border w-16 shrink-0">stagger</label>
+              <label htmlFor="autoplay-stagger" className="text-[12px] font-mono text-graphite-border w-16 shrink-0">stagger</label>
               <div className="flex items-center gap-3 flex-1 min-w-0">
                 <input
+                  id="autoplay-stagger"
                   type="range"
                   min={0}
                   max={0.4}

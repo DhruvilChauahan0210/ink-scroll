@@ -309,6 +309,7 @@ function SliderRow({ label, value, min, max, step, onChange, display }: {
         <span className="text-[11px] font-mono text-pitch-black font-semibold">{display ?? value}</span>
       </div>
       <input type="range" min={min} max={max} step={step} value={value}
+        aria-label={label}
         onChange={e => onChange(parseFloat(e.target.value))}
         className="w-full accent-pitch-black" />
     </div>
@@ -545,7 +546,7 @@ export function SvgPlayground() {
               <span className="w-2.5 h-2.5 rounded-full bg-[#febc2e]" />
               <span className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
             </div>
-            <span className="text-[10px] text-[#666] font-mono tracking-widest uppercase">SVG Editor</span>
+            <span className="text-[10px] text-[#888] font-mono tracking-widest uppercase">SVG Editor</span>
             <span className="text-[10px] font-mono text-[#555]">{rawSvg.length.toLocaleString()} ch</span>
           </div>
 
@@ -590,6 +591,7 @@ export function SvgPlayground() {
               </button>
               <div className="flex-1">
                 <input type="range" min="0" max="1" step="0.001" value={progress}
+                  aria-label="Animation progress"
                   onChange={handleSlider} className="w-full accent-pitch-black" />
               </div>
               <button onClick={handleReset}

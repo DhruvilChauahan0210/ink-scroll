@@ -60,7 +60,7 @@ function Code({ filename, children }: { filename?: string; children: string }) {
   return (
     <div className="rounded-xl overflow-hidden border border-[#333] text-sm">
       {filename && (
-        <div className="bg-[#111] px-4 py-2 text-[11px] font-mono text-[#666] border-b border-[#333]">
+        <div className="bg-[#111] px-4 py-2 text-[11px] font-mono text-[#888] border-b border-[#333]">
           {filename}
         </div>
       )}

@@ -60,7 +60,7 @@ export function WaypointsDemo() {
                 <span className="w-2.5 h-2.5 rounded-full bg-[#444]" />
                 <span className="w-2.5 h-2.5 rounded-full bg-[#444]" />
               </div>
-              <span className="text-[11px] text-[#666] font-mono">index.tsx</span>
+              <span className="text-[11px] text-[#888] font-mono">index.tsx</span>
               <span className="w-16" />
             </div>
             <pre className="bg-[#242423] text-[#e8e8e3] px-5 py-4 text-[13px] font-mono leading-[1.75] overflow-x-auto">
