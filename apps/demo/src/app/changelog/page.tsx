@@ -27,10 +27,27 @@ const NPM = 'https://www.npmjs.com/package/svg-scroll-draw';
 
 const RELEASES = [
   {
-    version: '1.1.0',
+    version: '1.2.0',
     date: 'May 2026',
     tag: 'Latest',
     tagColor: 'bg-creator-pink',
+    items: [
+      { type: 'new', text: 'createBounce({ bounces, decay }) — bounce-out easing that rises to 1 then makes N dips before settling. Also available as the named string \'bounce\'. Values stay within [0, 1]' },
+      { type: 'new', text: 'createElastic({ amplitude, period }) — elastic-out easing that overshoots past 1 and oscillates back. Also available as the named string \'elastic\'. Based on the Penner elastic-out formula' },
+      { type: 'new', text: 'EasingName type updated — \'bounce\' and \'elastic\' are now valid TypeScript string values for the easing option' },
+      { type: 'new', text: '241 passing tests (20 new) — createBounce and createElastic covered across boundary values, curve shape, overshoot, and factory parameterization' },
+      { type: 'new', text: 'Solid.js gallery demo on /examples — fine-grained reactivity graph (createSignal → createMemo → createEffect) in Solid brand blue' },
+      { type: 'new', text: 'Framework filter on /examples — pill strip (All / React / Vue 3 / Svelte / Solid / Vanilla / API) filters the 13-demo gallery client-side' },
+      { type: 'new', text: 'Page-specific OG images for /playground and /changelog; display:inline-block Satori crash fixed across all five OG images' },
+      { type: 'new', text: '/blog/gsap-drawsvg-alternative — full SEO comparison page with bundle size chart, side-by-side code, 19-row feature matrix, and migration guide' },
+      { type: 'new', text: 'Playground easing dropdown now includes bounce and elastic with live parameter sliders (Bounces/Decay and Amplitude/Period)' },
+    ],
+  },
+  {
+    version: '1.1.0',
+    date: 'May 2026',
+    tag: null,
+    tagColor: '',
     items: [
       { type: 'new', text: 'Native CSS scroll-driven rendering — on supporting browsers (Chrome, Edge, Firefox) the simple draw case runs on the compositor via animation-timeline: view() with zero per-frame JavaScript and no scroll/resize listeners' },
       { type: 'new', text: 'native option (default true) — automatically uses the CSS fast path when eligible; pass false to always use the JS engine. The full instance API works on both paths' },

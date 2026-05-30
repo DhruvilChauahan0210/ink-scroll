@@ -1,0 +1,113 @@
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import { MobileMenu } from '@/components/MobileMenu';
+
+export const metadata: Metadata = {
+  title: 'Blog — svg-scroll-draw',
+  description:
+    'Guides, comparisons, and deep-dives on scroll-driven SVG animation — svg-scroll-draw vs GSAP, migration guides, and more.',
+  alternates: { canonical: '/blog' },
+  openGraph: {
+    title: 'Blog — svg-scroll-draw',
+    description: 'Guides, comparisons, and deep-dives on scroll-driven SVG animation.',
+    url: 'https://svg-scroll-draw.vercel.app/blog',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Blog — svg-scroll-draw',
+    description: 'Guides, comparisons, and deep-dives on scroll-driven SVG animation.',
+  },
+};
+
+const POSTS = [
+  {
+    slug: 'gsap-drawsvg-alternative',
+    title: 'svg-scroll-draw vs GSAP DrawSVG',
+    description:
+      'Bundle size, licensing, side-by-side code, a full feature matrix, and a migration guide. The definitive comparison for developers choosing between the two.',
+    tag: 'Comparison',
+    tagColor: '#ff90e8',
+    readTime: '6 min read',
+    date: 'May 2026',
+  },
+];
+
+export default function BlogPage() {
+  return (
+    <div className="bg-light-linen text-pitch-black min-h-screen">
+
+      {/* Nav */}
+      <nav className="sticky top-0 z-50 bg-light-linen/95 backdrop-blur-sm border-b border-pitch-black flex items-center justify-between px-4 md:px-12 h-14">
+        <Link href="/" className="font-display font-bold text-sm tracking-tight hover:opacity-70 transition-opacity shrink-0">
+          svg-scroll-draw
+        </Link>
+        <div className="hidden lg:flex items-center gap-2">
+          <Link href="/" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Home</Link>
+          <Link href="/docs" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Docs</Link>
+          <Link href="/examples" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Examples</Link>
+          <Link href="/playground" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">⚡ Playground</Link>
+        </div>
+        <MobileMenu />
+      </nav>
+
+      {/* Header */}
+      <section className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-12 sm:py-16">
+        <div className="max-w-3xl mx-auto">
+          <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-4 font-medium">
+            Blog
+          </p>
+          <h1 className="font-display font-extrabold text-[clamp(32px,6vw,64px)] leading-[0.92] tracking-[-0.04em]">
+            Guides &amp; comparisons.
+          </h1>
+        </div>
+      </section>
+
+      {/* Posts */}
+      <section className="px-4 sm:px-6 md:px-12 py-12 sm:py-16">
+        <div className="max-w-3xl mx-auto space-y-4">
+          {POSTS.map(post => (
+            <Link
+              key={post.slug}
+              href={`/blog/${post.slug}`}
+              className="group flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-8 p-6 sm:p-8 rounded-2xl border border-pitch-black bg-white hover:shadow-[4px_4px_0px_#000] transition-shadow"
+            >
+              {/* Tag + date */}
+              <div className="shrink-0 sm:w-32 sm:text-right space-y-1.5">
+                <div
+                  className="inline-block text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full"
+                  style={{ background: post.tagColor + '30', color: '#111', border: `1px solid ${post.tagColor}` }}
+                >
+                  {post.tag}
+                </div>
+                <p className="text-[11px] font-mono text-graphite-border block">{post.date}</p>
+                <p className="text-[11px] font-mono text-graphite-border">{post.readTime}</p>
+              </div>
+
+              {/* Content */}
+              <div className="flex-1 min-w-0">
+                <h2 className="font-display font-extrabold text-xl sm:text-2xl leading-tight tracking-[-0.02em] mb-2 group-hover:underline underline-offset-4">
+                  {post.title}
+                </h2>
+                <p className="text-[14px] text-graphite-border leading-relaxed">
+                  {post.description}
+                </p>
+                <p className="mt-3 text-[12px] font-mono text-pitch-black font-semibold group-hover:underline underline-offset-2">
+                  Read →
+                </p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="px-6 md:px-12 py-6 border-t border-subtle-ash text-center text-[11px] font-mono text-graphite-border">
+        svg-scroll-draw · MIT · ~4.4 KB gzipped ·{' '}
+        <a href="https://github.com/DhruvilChauahan0210/ink-scroll" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-pitch-black transition-colors">
+          GitHub
+        </a>
+      </footer>
+
+    </div>
+  );
+}
