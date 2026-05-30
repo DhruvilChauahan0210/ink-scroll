@@ -1,6 +1,6 @@
 {
   "name": "svg-scroll-draw",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Scroll-driven SVG path drawing animation library — zero dependencies, ~4.4 KB gzipped, works with React, Vue, and vanilla JS",
   "keywords": [
     "svg",
@@ -35,7 +35,11 @@
     "path-morphing",
     "svg-morph",
     "sequence",
-    "group"
+    "group",
+    "bounce-easing",
+    "elastic-easing",
+    "spring-easing",
+    "physics-easing"
   ],
   "homepage": "https://svg-scroll-draw.vercel.app",
   "repository": {
