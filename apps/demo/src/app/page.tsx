@@ -12,7 +12,7 @@ import { LiveStats } from '@/components/LiveStats';
 import { CopyButton } from '@/components/CopyButton';
 import { InstallTabs } from '@/components/InstallTabs';
 import { FrameworkTabs } from '@/components/FrameworkTabs';
-import { NativeCSSBadge } from '@/components/NativeCSSBadge';
+import { NativeCSSBadgeLoader as NativeCSSBadge } from '@/components/NativeCSSBadgeLoader';
 
 const GH  = 'https://github.com/DhruvilChauahan0210/ink-scroll';
 const NPM = 'https://www.npmjs.com/package/svg-scroll-draw';
@@ -846,11 +846,12 @@ const seq = scrollDrawSequence(
               { prop: 'onStart', type: '() => void', def: '—', desc: 'Fires once on the first frame the animation begins drawing.' },
               { prop: 'onProgress', type: '(n: number) => void', def: '—', desc: 'Called every animation frame with current draw alpha (0–1).' },
               { prop: 'onComplete', type: '() => void', def: '—', desc: 'Fires once when all paths reach 100% draw progress.' },
+              { prop: 'native', type: 'boolean', def: 'true', desc: 'Use the browser\'s native CSS scroll-driven animation (animation-timeline: view()) when eligible. Falls back to the JS engine automatically. Set false to always use the JS engine.' },
               { prop: 'useScrollDrawProgress', type: 'hook', def: '—', desc: 'React hook — returns scroll progress (0–1) for any element. Same trigger/speed/easing options as ScrollDraw. No SVG required.' },
             ].map(({ prop, type, def, desc }, i) => (
               <div
                 key={prop}
-                className={`grid grid-cols-1 md:grid-cols-[160px_130px_190px_1fr] gap-1.5 md:gap-4 px-4 sm:px-6 py-3 sm:py-4 text-sm items-start ${i < 26 ? 'border-b border-subtle-ash' : ''}`}
+                className={`grid grid-cols-1 md:grid-cols-[160px_130px_190px_1fr] gap-1.5 md:gap-4 px-4 sm:px-6 py-3 sm:py-4 text-sm items-start ${i < 29 ? 'border-b border-subtle-ash' : ''}`}
               >
                 <code className="font-mono font-semibold text-pitch-black text-[12px] sm:text-sm">{prop}</code>
                 <code className="font-mono text-graphite-border text-[11px] sm:text-[13px]"><span className="md:hidden text-[10px] uppercase tracking-wide text-graphite-border/60 mr-1">type:</span>{type}</code>

@@ -533,6 +533,101 @@ function TimelineDemo() {
   );
 }
 
+function VueDemo() {
+  // Vue component tree — App.vue → Header.vue + Content.vue
+  // Static fills + labels always visible; .ink borders + connections animate with stagger
+  return (
+    <div style={{ position: 'relative', width: '100%' }}>
+      <span style={{
+        position: 'absolute', top: 12, right: 12, zIndex: 1,
+        background: '#42b883', color: '#fff',
+        padding: '2px 8px', borderRadius: 4,
+        fontSize: 10, fontFamily: 'var(--font-geist-mono, monospace)', fontWeight: 700,
+        letterSpacing: '0.06em', pointerEvents: 'none',
+      }}>Vue 3</span>
+
+      <ScrollDraw easing="ease-out" speed={0.9} once trigger={TRIGGER} stagger={0.1} selector=".ink">
+        <svg width="100%" viewBox="0 0 280 210" fill="none" style={{ fontFamily: 'monospace', display: 'block' }}>
+          {/* Static: box fills */}
+          <rect x="90"  y="14"  width="100" height="38" rx="7" fill="#f0fdf4"/>
+          <rect x="18"  y="106" width="106" height="38" rx="7" fill="#f0fdf4"/>
+          <rect x="156" y="106" width="106" height="38" rx="7" fill="#f0fdf4"/>
+          {/* Static: component labels */}
+          <text x="140" y="39"  textAnchor="middle" fontSize="11" fontWeight="600" fill="#15803d">App.vue</text>
+          <text x="71"  y="131" textAnchor="middle" fontSize="10" fontWeight="500" fill="#15803d">Header.vue</text>
+          <text x="209" y="131" textAnchor="middle" fontSize="10" fontWeight="500" fill="#15803d">Content.vue</text>
+          {/* Static: slot/prop badges */}
+          <rect x="32"  y="148" width="52" height="16" rx="8" fill="#dcfce7"/>
+          <rect x="170" y="148" width="52" height="16" rx="8" fill="#dcfce7"/>
+          <text x="58"  y="160" textAnchor="middle" fontSize="7" fill="#15803d">:title="…"</text>
+          <text x="196" y="160" textAnchor="middle" fontSize="7" fill="#15803d">v-for</text>
+          {/* Animated: box borders */}
+          <rect className="ink" x="90"  y="14"  width="100" height="38" rx="7" stroke="#42b883" strokeWidth="2"/>
+          <rect className="ink" x="18"  y="106" width="106" height="38" rx="7" stroke="#42b883" strokeWidth="2"/>
+          <rect className="ink" x="156" y="106" width="106" height="38" rx="7" stroke="#42b883" strokeWidth="2"/>
+          {/* Animated: prop-flow connectors */}
+          <path className="ink" d="M 116 52 L 71 106"  stroke="#35495e" strokeWidth="1.5" strokeLinecap="round"/>
+          <path className="ink" d="M 164 52 L 209 106" stroke="#35495e" strokeWidth="1.5" strokeLinecap="round"/>
+          {/* Animated: arrowheads */}
+          <path className="ink" d="M 65 100 L 71 106 L 77 100"  stroke="#35495e" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          <path className="ink" d="M 203 100 L 209 106 L 215 100" stroke="#35495e" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          {/* Animated: emit bus at bottom */}
+          <path className="ink" d="M 71 144 L 71 186 L 209 186 L 209 144" stroke="#42b883" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="5 4"/>
+          <text x="140" y="200" textAnchor="middle" fontSize="8" fill="#42b883">emit('update')</text>
+        </svg>
+      </ScrollDraw>
+    </div>
+  );
+}
+
+function SvelteDemo() {
+  // Svelte reactive store graph — $source drives $count and $label
+  // Central source node spreads reactivity outward via spring easing
+  return (
+    <div style={{ position: 'relative', width: '100%' }}>
+      <span style={{
+        position: 'absolute', top: 12, right: 12, zIndex: 1,
+        background: '#ff3e00', color: '#fff',
+        padding: '2px 8px', borderRadius: 4,
+        fontSize: 10, fontFamily: 'var(--font-geist-mono, monospace)', fontWeight: 700,
+        letterSpacing: '0.06em', pointerEvents: 'none',
+      }}>Svelte</span>
+
+      <ScrollDraw easing="spring" speed={0.85} once trigger={TRIGGER} stagger={0.15} selector=".ink">
+        <svg width="100%" viewBox="0 0 280 200" fill="none" style={{ fontFamily: 'monospace', display: 'block' }}>
+          {/* Static: node fills */}
+          <circle cx="140" cy="52"  r="32" fill="#fff5f0"/>
+          <circle cx="60"  cy="152" r="26" fill="#fff5f0"/>
+          <circle cx="220" cy="152" r="26" fill="#fff5f0"/>
+          <circle cx="140" cy="152" r="26" fill="#fff5f0"/>
+          {/* Static: labels */}
+          <text x="140" y="48"  textAnchor="middle" fontSize="8"  fontWeight="700" fill="#ff3e00">$source</text>
+          <text x="140" y="60"  textAnchor="middle" fontSize="7"  fill="#ff7a5c">writable</text>
+          <text x="60"  y="149" textAnchor="middle" fontSize="7" fontWeight="600" fill="#c2410c">$count</text>
+          <text x="60"  y="160" textAnchor="middle" fontSize="6"  fill="#c2410c">derived</text>
+          <text x="140" y="149" textAnchor="middle" fontSize="7"  fontWeight="600" fill="#c2410c">$label</text>
+          <text x="140" y="160" textAnchor="middle" fontSize="6"  fill="#c2410c">derived</text>
+          <text x="220" y="149" textAnchor="middle" fontSize="7"  fontWeight="600" fill="#c2410c">$effect</text>
+          <text x="220" y="160" textAnchor="middle" fontSize="6"  fill="#c2410c">autorun</text>
+          {/* Animated: node borders */}
+          <circle className="ink" cx="140" cy="52"  r="32" stroke="#ff3e00" strokeWidth="2.5"/>
+          <circle className="ink" cx="60"  cy="152" r="26" stroke="#ff3e00" strokeWidth="2"/>
+          <circle className="ink" cx="140" cy="152" r="26" stroke="#ff3e00" strokeWidth="2"/>
+          <circle className="ink" cx="220" cy="152" r="26" stroke="#ff3e00" strokeWidth="2"/>
+          {/* Animated: reactive dependency edges */}
+          <path className="ink" d="M 112 76  L 72  126" stroke="#ff7a5c" strokeWidth="1.5" strokeLinecap="round"/>
+          <path className="ink" d="M 140 84  L 140 126" stroke="#ff7a5c" strokeWidth="1.5" strokeLinecap="round"/>
+          <path className="ink" d="M 168 76  L 208 126" stroke="#ff7a5c" strokeWidth="1.5" strokeLinecap="round"/>
+          {/* Animated: arrowheads */}
+          <path className="ink" d="M 66 120 L 72 126 L 78 120"   stroke="#ff7a5c" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          <path className="ink" d="M 134 120 L 140 126 L 146 120" stroke="#ff7a5c" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          <path className="ink" d="M 202 120 L 208 126 L 214 120" stroke="#ff7a5c" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </ScrollDraw>
+    </div>
+  );
+}
+
 /* ── Example cards data ───────────────────────────────────── */
 
 const EXAMPLES = [
@@ -800,6 +895,87 @@ group.pause();
 group.destroy(); // cleanup on unmount`,
   },
   {
+    id: 'vue',
+    label: 'Vue 3',
+    tag: 'ScrollDraw component · useScrollDraw composable',
+    description:
+      'A Vue component tree animates its borders and prop-flow connections on scroll. Uses the <ScrollDraw> component — or the useScrollDraw composable for full ref control. Both are included in svg-scroll-draw/vue.',
+    preview: <VueDemo />,
+    code: `<!-- Option 1: <ScrollDraw> component -->
+<script setup>
+import { ScrollDraw } from 'svg-scroll-draw/vue';
+</script>
+
+<template>
+  <ScrollDraw easing="ease-out" :speed="0.9" fade once>
+    <svg viewBox="0 0 200 100" fill="none">
+      <path d="M10 50 Q100 10 190 50"
+        stroke="#42b883" stroke-width="2.5" />
+    </svg>
+  </ScrollDraw>
+</template>
+
+<!-- Option 2: useScrollDraw composable -->
+<script setup>
+import { useScrollDraw } from 'svg-scroll-draw/vue';
+
+const containerRef = useScrollDraw({
+  easing: 'spring',
+  once:   true,
+  trigger: { start: 'top 80%', end: 'center 20%' },
+});
+</script>
+
+<template>
+  <div :ref="containerRef">
+    <svg viewBox="0 0 200 100" fill="none">
+      <path d="M10 50 Q100 10 190 50"
+        stroke="#42b883" stroke-width="2.5" />
+    </svg>
+  </div>
+</template>`,
+  },
+  {
+    id: 'svelte',
+    label: 'Svelte',
+    tag: 'use:scrollDraw action · createScrollDraw',
+    description:
+      'A reactive store graph — $source driving three derived values — animates with spring easing on scroll. Uses the Svelte use:scrollDraw action; createScrollDraw gives access to the instance for replay/pause.',
+    preview: <SvelteDemo />,
+    code: `<!-- Option 1: use:scrollDraw action (simplest) -->
+<script>
+  import { scrollDraw } from 'svg-scroll-draw/svelte';
+</script>
+
+<div use:scrollDraw={{ easing: 'spring', fade: true, once: true }}>
+  <svg viewBox="0 0 200 100" fill="none">
+    <path d="M10 50 Q100 10 190 50"
+      stroke="#ff3e00" stroke-width="2.5" />
+  </svg>
+</div>
+
+<!-- Option 2: createScrollDraw for instance control -->
+<script>
+  import { createScrollDraw } from 'svg-scroll-draw/svelte';
+
+  const { action, getInstance } = createScrollDraw({
+    easing: 'spring',
+    once:   true,
+    speed:  1.2,
+  });
+</script>
+
+<div use:action>
+  <svg viewBox="0 0 200 100" fill="none">
+    <path d="M10 50 Q100 10 190 50"
+      stroke="#ff3e00" stroke-width="2.5" />
+  </svg>
+</div>
+<button on:click={() => getInstance()?.replay()}>
+  Replay
+</button>`,
+  },
+  {
     id: 'sequence-api',
     label: 'Sequence API',
     tag: 'scrollDrawSequence · one after another',
@@ -861,9 +1037,9 @@ export function ExamplesPage() {
             </span>
           </h1>
           <p className="text-sm sm:text-base md:text-lg text-graphite-border max-w-2xl leading-relaxed break-words">
-            Ten production-ready patterns — logo reveals, charts, signatures, diagrams, Timeline API, Group API, Sequence API, and more.
+            Twelve production-ready patterns — logo reveals, charts, signatures, diagrams, Vue 3, Svelte, Timeline API, Group API, Sequence API, and more.
             Each one is powered by <code className="inline font-mono text-pitch-black text-[0.9em] bg-marketplace-gray border border-subtle-ash px-1.5 py-0.5 rounded-md break-all">svg-scroll-draw</code> and
-            works in React, Next.js, Vue, and vanilla JS.
+            works in React, Next.js, Vue, Svelte, and vanilla JS.
             Scroll down to see them draw live.
           </p>
         </div>

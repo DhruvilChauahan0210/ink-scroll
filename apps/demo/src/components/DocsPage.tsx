@@ -255,6 +255,9 @@ export function DocsPage() {
         {/* Content */}
         <main className="flex-1 min-w-0 px-4 sm:px-6 md:px-12 lg:px-16">
 
+          {/* H1 — visible to crawlers, styled as a subtle lead-in */}
+          <h1 className="sr-only">Animate SVG on Scroll — svg-scroll-draw API Reference</h1>
+
           {/* ── Installation ─────────────────────────────────── */}
           <DocSection id="installation" tag="Getting Started" heading="Installation">
             <p className="text-sm text-graphite-border leading-relaxed mb-5">
@@ -1158,6 +1161,7 @@ interface ScrollDrawOptions {
   onProgress?:      (alpha: number) => void;
   onStart?:         () => void;
   onComplete?:      () => void;
+  native?:          boolean;
 }`}
             </CodeBlock>
           </DocSection>

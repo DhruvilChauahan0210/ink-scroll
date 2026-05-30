@@ -35,15 +35,15 @@ export const metadata: Metadata = {
   description:
     "A zero-dependency JavaScript library that animates SVG paths as you scroll. ~4.4 KB gzipped. Works with React, Next.js, Vue 3, and vanilla JS.",
   keywords: [
-    "svg animation",
-    "scroll animation",
+    "svg draw on scroll",
+    "animate svg on scroll",
+    "animate svg line on scroll react",
+    "stroke-dashoffset scroll animation",
+    "scroll-driven svg animation",
+    "svg scroll draw javascript",
+    "animate svg paths on scroll",
     "svg path animation",
-    "scroll-driven animation",
-    "svg scroll library",
-    "javascript svg",
-    "react svg animation",
-    "vue svg animation",
-    "web animation",
+    "svg animation react nextjs",
     "svg-scroll-draw",
   ],
   authors: [{ name: "Dhruvil Chauhan", url: SITE_URL }],
@@ -99,7 +99,7 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${syne.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
         {children}
         <Mascot />

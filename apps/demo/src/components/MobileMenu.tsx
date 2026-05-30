@@ -20,7 +20,7 @@ export function MobileMenu() {
   const [open,     setOpen]     = useState(false); // animated state
   const [mounted,  setMounted]  = useState(false); // SSR guard
   const [hover,    setHover]    = useState<string | null>(null);
-  const closeTimer = useRef<ReturnType<typeof setTimeout>>();
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   useEffect(() => { setMounted(true); }, []);
 
@@ -147,7 +147,7 @@ export function MobileMenu() {
             fontSize: 11, color: 'var(--color-graphite-border, #888)',
             letterSpacing: '0.05em',
           }}>
-            v1.0.0 · MIT · ~4.4 KB
+            v1.1.0 · MIT · ~4.4 KB
           </span>
         </div>
       </div>

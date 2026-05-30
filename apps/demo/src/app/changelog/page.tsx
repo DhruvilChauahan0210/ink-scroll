@@ -3,14 +3,26 @@ import Link from 'next/link';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { MobileMenu } from '@/components/MobileMenu';
 
+const OG_IMAGE = 'https://svg-scroll-draw.vercel.app/opengraph-image';
+
 export const metadata: Metadata = {
-  title: 'Changelog — svg-scroll-draw',
-  description: 'Version history for svg-scroll-draw — every release, what shipped, and what changed.',
+  title: 'Changelog — Release History',
+  description:
+    'Complete release history for svg-scroll-draw, the scroll-driven SVG path animation library. Track what shipped in each version, including native CSS scroll animation support.',
   alternates: { canonical: '/changelog' },
   openGraph: {
     title: 'Changelog — svg-scroll-draw',
-    description: 'Version history for svg-scroll-draw.',
+    description:
+      'Complete release history for svg-scroll-draw. Native CSS scroll animation, stroke-dashoffset, React/Vue/Svelte support and more.',
     url: 'https://svg-scroll-draw.vercel.app/changelog',
+    images: [{ url: OG_IMAGE, width: 1200, height: 630, alt: 'svg-scroll-draw Changelog' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Changelog — svg-scroll-draw',
+    description:
+      'Complete release history for svg-scroll-draw. Native CSS scroll animation, React/Vue/Svelte/Nuxt support.',
+    images: [OG_IMAGE],
   },
 };
 
@@ -19,10 +31,22 @@ const NPM = 'https://www.npmjs.com/package/svg-scroll-draw';
 
 const RELEASES = [
   {
-    version: '1.0.0',
+    version: '1.1.0',
     date: 'May 2026',
     tag: 'Latest',
     tagColor: 'bg-creator-pink',
+    items: [
+      { type: 'new', text: 'Native CSS scroll-driven rendering — on supporting browsers (Chrome, Edge, Firefox) the simple draw case runs on the compositor via animation-timeline: view() with zero per-frame JavaScript and no scroll/resize listeners' },
+      { type: 'new', text: 'native option (default true) — automatically uses the CSS fast path when eligible; pass false to always use the JS engine. The full instance API works on both paths' },
+      { type: 'new', text: '221 passing tests across 7 suites — engine-native.test.ts added to cover the native CSS path and fallback logic' },
+      { type: 'fix', text: 'Bundle size claim corrected to ~4.4 KB gzipped across all docs (stale "<3 KB" figure removed)' },
+    ],
+  },
+  {
+    version: '1.0.0',
+    date: 'May 2026',
+    tag: null,
+    tagColor: '',
     items: [
       { type: 'fix', text: 'scrollDrawSequence chain was broken — engines now created upfront and paused; each step resumes only when the previous fires onComplete. activeIdx tracks correctly so pause/resume/seek/getProgress always target the active step.' },
       { type: 'new', text: '194 passing tests across 6 suites — engine, engine-options, group, timeline, framework wrappers (Angular, Astro, Svelte, Solid), and utilities' },
@@ -149,7 +173,7 @@ export default function ChangelogPage() {
           <Link href="/docs" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Docs</Link>
           <Link href="/examples" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Examples</Link>
           <Link href="/playground" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">⚡ Playground</Link>
-          <a href={NPM} target="_blank" rel="noopener noreferrer" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono whitespace-nowrap">v1.0.0</a>
+          <a href={NPM} target="_blank" rel="noopener noreferrer" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono whitespace-nowrap">v1.1.0</a>
           <a href={GH} target="_blank" rel="noopener noreferrer" className="text-sm px-4 py-1.5 rounded-full bg-pitch-black text-light-linen hover:bg-graphite-border transition-colors font-medium whitespace-nowrap">GitHub →</a>
         </div>
 
