@@ -628,6 +628,56 @@ function SvelteDemo() {
   );
 }
 
+function SolidDemo() {
+  // Fine-grained reactivity graph: createSignal → createMemo × 2 → createEffect
+  // Top-down dependency flow; borders + edges animate with stagger
+  return (
+    <div style={{ position: 'relative', width: '100%' }}>
+      <span style={{
+        position: 'absolute', top: 12, right: 12, zIndex: 1,
+        background: '#2C4F7C', color: '#fff',
+        padding: '2px 8px', borderRadius: 4,
+        fontSize: 10, fontFamily: 'var(--font-geist-mono, monospace)', fontWeight: 700,
+        letterSpacing: '0.06em', pointerEvents: 'none',
+      }}>Solid.js</span>
+
+      <ScrollDraw easing="ease-out" speed={0.9} once trigger={TRIGGER} stagger={0.12} selector=".ink">
+        <svg width="100%" viewBox="0 0 280 200" fill="none" style={{ fontFamily: 'monospace', display: 'block' }}>
+          {/* Static: node fills */}
+          <circle cx="140" cy="38"  r="30" fill="#eef2f8"/>
+          <circle cx="70"  cy="128" r="24" fill="#eef2f8"/>
+          <circle cx="210" cy="128" r="24" fill="#eef2f8"/>
+          <rect   x="80"   y="168" width="120" height="28" rx="7" fill="#eef2f8"/>
+          {/* Static: labels */}
+          <text x="140" y="33"  textAnchor="middle" fontSize="7.5" fontWeight="700" fill="#2C4F7C">createSignal</text>
+          <text x="140" y="44"  textAnchor="middle" fontSize="7"   fill="#446B9E">count = 0</text>
+          <text x="70"  y="124" textAnchor="middle" fontSize="7"   fontWeight="600" fill="#2C4F7C">createMemo</text>
+          <text x="70"  y="135" textAnchor="middle" fontSize="6.5" fill="#446B9E">doubled</text>
+          <text x="210" y="124" textAnchor="middle" fontSize="7"   fontWeight="600" fill="#2C4F7C">createMemo</text>
+          <text x="210" y="135" textAnchor="middle" fontSize="6.5" fill="#446B9E">isEven</text>
+          <text x="140" y="179" textAnchor="middle" fontSize="7"   fontWeight="600" fill="#2C4F7C">createEffect</text>
+          <text x="140" y="190" textAnchor="middle" fontSize="6.5" fill="#446B9E">DOM update</text>
+          {/* Animated: node borders */}
+          <circle className="ink" cx="140" cy="38"  r="30" stroke="#2C4F7C" strokeWidth="2.5"/>
+          <circle className="ink" cx="70"  cy="128" r="24" stroke="#446B9E" strokeWidth="2"/>
+          <circle className="ink" cx="210" cy="128" r="24" stroke="#446B9E" strokeWidth="2"/>
+          <rect   className="ink" x="80" y="168" width="120" height="28" rx="7" stroke="#446B9E" strokeWidth="2"/>
+          {/* Animated: dependency edges */}
+          <path className="ink" d="M 118 62  L 80  104" stroke="#6B8CB8" strokeWidth="1.5" strokeLinecap="round"/>
+          <path className="ink" d="M 162 62  L 200 104" stroke="#6B8CB8" strokeWidth="1.5" strokeLinecap="round"/>
+          <path className="ink" d="M 80  148 L 108 168" stroke="#6B8CB8" strokeWidth="1.5" strokeLinecap="round"/>
+          <path className="ink" d="M 200 148 L 172 168" stroke="#6B8CB8" strokeWidth="1.5" strokeLinecap="round"/>
+          {/* Animated: arrowheads */}
+          <path className="ink" d="M 74  98  L 80  104 L 86  98"  stroke="#6B8CB8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          <path className="ink" d="M 194 98  L 200 104 L 206 98"  stroke="#6B8CB8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          <path className="ink" d="M 102 162 L 108 168 L 114 162" stroke="#6B8CB8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          <path className="ink" d="M 166 162 L 172 168 L 178 162" stroke="#6B8CB8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </ScrollDraw>
+    </div>
+  );
+}
+
 /* ── Example cards data ───────────────────────────────────── */
 
 const EXAMPLES = [
@@ -976,6 +1026,55 @@ const containerRef = useScrollDraw({
 </button>`,
   },
   {
+    id: 'solid',
+    label: 'Solid.js',
+    tag: 'useScrollDraw hook · createScrollDraw',
+    description:
+      'A fine-grained reactivity graph — createSignal feeding two createMemo derivations into a createEffect — animates with ease-out on scroll. Uses the useScrollDraw hook; createScrollDraw gives access to the instance for replay and pause.',
+    preview: <SolidDemo />,
+    code: `// Option 1: useScrollDraw hook (simplest)
+import { useScrollDraw } from 'svg-scroll-draw/solid';
+
+function Hero() {
+  const ref = useScrollDraw({
+    easing: 'ease-out',
+    fade:   true,
+    once:   true,
+  });
+  return (
+    <div ref={ref}>
+      <svg viewBox="0 0 200 80" fill="none">
+        <path d="M10 40 Q100 5 190 40"
+          stroke="#446B9E" stroke-width="2.5" />
+      </svg>
+    </div>
+  );
+}
+
+// Option 2: createScrollDraw — instance control
+import { createScrollDraw } from 'svg-scroll-draw/solid';
+
+function HeroWithReplay() {
+  const { ref, getInstance } = createScrollDraw({
+    easing: 'spring',
+    once:   true,
+  });
+  return (
+    <>
+      <div ref={ref}>
+        <svg viewBox="0 0 200 80" fill="none">
+          <path d="M10 40 Q100 5 190 40"
+            stroke="#446B9E" stroke-width="2.5" />
+        </svg>
+      </div>
+      <button onClick={() => getInstance()?.replay()}>
+        Replay
+      </button>
+    </>
+  );
+}`,
+  },
+  {
     id: 'sequence-api',
     label: 'Sequence API',
     tag: 'scrollDrawSequence · one after another',
@@ -1002,9 +1101,40 @@ seq.destroy();  // cleanup on unmount`,
   },
 ];
 
+const EXAMPLE_FRAMEWORKS: Record<string, string[]> = {
+  'logo-reveal':  ['react'],
+  'line-chart':   ['react'],
+  'signature':    ['react'],
+  'flowchart':    ['react'],
+  'map-route':    ['react'],
+  'network':      ['react'],
+  'astro':        ['vanilla'],
+  'timeline-api': ['api'],
+  'group-api':    ['api'],
+  'vue':          ['vue'],
+  'svelte':       ['svelte'],
+  'solid':        ['solid'],
+  'sequence-api': ['api'],
+};
+
+const FILTERS = [
+  { key: 'all',     label: 'All' },
+  { key: 'react',   label: 'React' },
+  { key: 'vue',     label: 'Vue 3' },
+  { key: 'svelte',  label: 'Svelte' },
+  { key: 'solid',   label: 'Solid' },
+  { key: 'vanilla', label: 'Vanilla' },
+  { key: 'api',     label: 'API' },
+];
+
 /* ── Page ─────────────────────────────────────────────────── */
 
 export function ExamplesPage() {
+  const [activeFilter, setActiveFilter] = useState('all');
+  const filtered = activeFilter === 'all'
+    ? EXAMPLES
+    : EXAMPLES.filter(ex => (EXAMPLE_FRAMEWORKS[ex.id] ?? []).includes(activeFilter));
+
   return (
     <div className="bg-light-linen text-pitch-black min-h-screen">
 
@@ -1037,17 +1167,39 @@ export function ExamplesPage() {
             </span>
           </h1>
           <p className="text-sm sm:text-base md:text-lg text-graphite-border max-w-2xl leading-relaxed break-words">
-            Twelve production-ready patterns — logo reveals, charts, signatures, diagrams, Vue 3, Svelte, Timeline API, Group API, Sequence API, and more.
+            Thirteen production-ready patterns — logo reveals, charts, signatures, diagrams, Vue 3, Svelte, Solid.js, Timeline API, Group API, Sequence API, and more.
             Each one is powered by <code className="inline font-mono text-pitch-black text-[0.9em] bg-marketplace-gray border border-subtle-ash px-1.5 py-0.5 rounded-md break-all">svg-scroll-draw</code> and
             works in React, Next.js, Vue, Svelte, and vanilla JS.
             Scroll down to see them draw live.
           </p>
+
+          {/* Framework filter pills */}
+          <div className="flex flex-wrap gap-2 mt-8">
+            {FILTERS.map(f => (
+              <button
+                key={f.key}
+                onClick={() => setActiveFilter(f.key)}
+                className={`text-xs px-3.5 py-1.5 rounded-full border font-medium transition-colors whitespace-nowrap ${
+                  activeFilter === f.key
+                    ? 'bg-pitch-black text-light-linen border-pitch-black'
+                    : 'border-subtle-ash text-graphite-border hover:border-pitch-black hover:text-pitch-black'
+                }`}
+              >
+                {f.label}
+                {f.key !== 'all' && (
+                  <span className={`ml-1.5 text-[10px] ${activeFilter === f.key ? 'opacity-60' : 'opacity-40'}`}>
+                    {EXAMPLES.filter(ex => (EXAMPLE_FRAMEWORKS[ex.id] ?? []).includes(f.key)).length}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* Examples grid */}
       <div className="divide-y divide-pitch-black">
-        {EXAMPLES.map((ex, i) => (
+        {filtered.map((ex, i) => (
           <section key={ex.id} id={ex.id} className={`px-4 sm:px-6 md:px-12 py-12 sm:py-14 md:py-16 overflow-hidden ${i % 2 === 1 ? 'bg-marketplace-gray' : ''}`}>
             <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-8 md:gap-12 items-start">
 
@@ -1100,7 +1252,7 @@ export function ExamplesPage() {
             ⚡ Try the Playground →
           </Link>
           <Link
-            href="/"
+            href="/docs"
             className="px-5 sm:px-6 py-3 rounded-full border-2 border-pitch-black bg-transparent text-pitch-black text-sm font-semibold hover:bg-pitch-black hover:text-creator-pink transition-colors shadow-[3px_3px_0px_rgba(0,0,0,0.2)] w-full sm:w-auto text-center"
           >
             Read the Docs →

@@ -82,6 +82,8 @@ export default function OgImage() {
         {/* headline */}
         <div
           style={{
+            display: "flex",
+            flexDirection: "column",
             fontSize: 80,
             fontWeight: 900,
             lineHeight: 0.9,
@@ -90,20 +92,22 @@ export default function OgImage() {
             marginBottom: 32,
           }}
         >
-          ANIMATE SVG
-          <br />
-          PATHS AS YOU{" "}
-          <span
-            style={{
-              background: "#ff6b9d",
-              borderRadius: 12,
-              padding: "0 12px",
-              display: "inline-block",
-              transform: "rotate(-1.2deg)",
-            }}
-          >
-            SCROLL.
-          </span>
+          <span>ANIMATE SVG</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <span>PATHS AS YOU</span>
+            <span
+              style={{
+                background: "#ff6b9d",
+                borderRadius: 12,
+                padding: "0 12px",
+                display: "flex",
+                alignItems: "center",
+                transform: "rotate(-1.2deg)",
+              }}
+            >
+              SCROLL.
+            </span>
+          </div>
         </div>
 
         {/* sub */}

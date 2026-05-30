@@ -1,4 +1,4 @@
-type EasingName = 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | 'spring';
+type EasingName = 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | 'spring' | 'bounce' | 'elastic';
 interface ScrollDrawInstance {
     destroy: () => void;
     /** Reset and replay the animation from the beginning. */

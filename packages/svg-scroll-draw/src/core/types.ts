@@ -1,4 +1,4 @@
-export type EasingName = 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | 'spring';
+export type EasingName = 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | 'spring' | 'bounce' | 'elastic';
 
 export interface TriggerConfig {
   start?: string;

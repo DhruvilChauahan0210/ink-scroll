@@ -316,7 +316,10 @@ export default function Home() {
           </div>
 
           <p className="mt-6 text-[13px] text-graphite-border">
-            Sizes are minified + gzipped. GSAP DrawSVG requires a paid Club GreenSock license for commercial use.
+            Sizes are minified + gzipped. GSAP DrawSVG requires a paid Club GreenSock license for commercial use.{' '}
+            <a href="/blog/gsap-drawsvg-alternative" className="underline underline-offset-2 hover:text-pitch-black transition-colors whitespace-nowrap">
+              Full comparison →
+            </a>
           </p>
         </div>
       </section>
@@ -472,8 +475,8 @@ export default function Hero() {
                 Natural motion,<br />your way.
               </h2>
               <p className="text-graphite-border leading-relaxed mb-6 text-[15px] break-words">
-                Five built-in curves — including a <Tag>spring</Tag> that
-                overshoots and settles — or any custom{' '}
+                Seven built-in curves — <Tag>spring</Tag>, <Tag>bounce</Tag>,
+                <Tag>elastic</Tag>, and four standard easings — or any custom{' '}
                 <Tag>(t: number) =&gt; number</Tag> function.
                 The <Tag>speed</Tag> prop compresses or stretches the draw
                 relative to your scroll distance.

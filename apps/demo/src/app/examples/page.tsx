@@ -1,8 +1,6 @@
 import type { Metadata } from 'next';
 import { ExamplesPage } from '@/components/ExamplesPage';
 
-const OG_IMAGE = 'https://svg-scroll-draw.vercel.app/opengraph-image';
-
 export const metadata: Metadata = {
   title: 'SVG Scroll Animation Examples without GSAP',
   description:
@@ -24,13 +22,11 @@ export const metadata: Metadata = {
     description:
       'Logo reveals, line charts, signatures, flowcharts — all animated on scroll. No GSAP required.',
     url: 'https://svg-scroll-draw.vercel.app/examples',
-    images: [{ url: OG_IMAGE, width: 1200, height: 630, alt: 'SVG Scroll Animation Examples' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'SVG Scroll Animation Examples — svg-scroll-draw',
     description: 'Real-world SVG scroll animations. No GSAP. ~4.4 KB.',
-    images: [OG_IMAGE],
   },
 };
 
@@ -41,7 +37,7 @@ const jsonLd = {
   description:
     'Real-world SVG scroll animation examples: logo reveals, line charts, signature animations, flowcharts, and more. Built with svg-scroll-draw — no GSAP, no dependencies.',
   url: 'https://svg-scroll-draw.vercel.app/examples',
-  numberOfItems: 12,
+  numberOfItems: 13,
 };
 
 export default function Page() {

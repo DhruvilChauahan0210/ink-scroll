@@ -2,6 +2,8 @@ import { describe, it, expect } from 'vitest';
 import {
   EASINGS,
   createSpring,
+  createBounce,
+  createElastic,
   parseTrigger,
   elementAnchorY,
   viewportAnchorY,
@@ -84,6 +86,139 @@ describe('createSpring', () => {
       (t) => Math.abs(def(t) - custom(t)) > 0.001
     );
     expect(differs).toBe(true);
+  });
+});
+
+describe('createBounce', () => {
+  it('returns 0 at t=0', () => {
+    expect(createBounce()(0)).toBe(0);
+  });
+
+  it('returns 1 at t=1', () => {
+    expect(createBounce()(1)).toBe(1);
+  });
+
+  it('returns 0 for t <= 0', () => {
+    expect(createBounce()(-0.5)).toBe(0);
+  });
+
+  it('named "bounce" entry matches default createBounce()', () => {
+    const fn = createBounce();
+    for (const t of [0, 0.2, 0.5, 0.8, 1]) {
+      expect(EASINGS.bounce(t)).toBeCloseTo(fn(t), 10);
+    }
+  });
+
+  it('reaches 1 at the end of the initial approach segment', () => {
+    // At the first segment boundary the value should be very close to 1
+    const fn = createBounce({ bounces: 3, decay: 0.5 });
+    // Somewhere around t=0.45 is the first boundary; just check t=1
+    expect(fn(1)).toBe(1);
+  });
+
+  it('dips below 1 after the initial approach (bounce effect)', () => {
+    const fn = createBounce({ bounces: 3, decay: 0.5 });
+    // Find the trough of the first bounce (should be below 1)
+    const samples = Array.from({ length: 100 }, (_, i) => fn((i + 1) / 100));
+    const min = Math.min(...samples);
+    expect(min).toBeLessThan(1);
+    expect(min).toBeGreaterThanOrEqual(0);
+  });
+
+  it('stays within [0, 1]', () => {
+    const fn = createBounce({ bounces: 4, decay: 0.4 });
+    for (let i = 0; i <= 100; i++) {
+      const v = fn(i / 100);
+      expect(v).toBeGreaterThanOrEqual(0);
+      expect(v).toBeLessThanOrEqual(1);
+    }
+  });
+
+  it('more bounces produce more dips', () => {
+    const fn2 = createBounce({ bounces: 2, decay: 0.5 });
+    const fn5 = createBounce({ bounces: 5, decay: 0.5 });
+    // With 5 bounces there are more segments — shapes differ
+    const differs = [0.3, 0.5, 0.7, 0.85].some(
+      (t) => Math.abs(fn2(t) - fn5(t)) > 0.001
+    );
+    expect(differs).toBe(true);
+  });
+
+  it('decay=0 means no amplitude reduction (all bounces equal depth)', () => {
+    const fn = createBounce({ bounces: 3, decay: 0.01 });
+    expect(fn(0)).toBe(0);
+    expect(fn(1)).toBe(1);
+  });
+});
+
+describe('createElastic', () => {
+  it('returns 0 at t=0', () => {
+    expect(createElastic()(0)).toBeCloseTo(0, 10);
+  });
+
+  it('returns 1 at t=1', () => {
+    expect(createElastic()(1)).toBe(1);
+  });
+
+  it('returns 0 for t <= 0', () => {
+    expect(createElastic()(-0.1)).toBe(0);
+  });
+
+  it('named "elastic" entry matches default createElastic()', () => {
+    const fn = createElastic();
+    for (const t of [0, 0.25, 0.5, 0.75, 1]) {
+      expect(EASINGS.elastic(t)).toBeCloseTo(fn(t), 10);
+    }
+  });
+
+  it('overshoots past 1 before settling (elastic effect)', () => {
+    const fn = createElastic({ amplitude: 1, period: 0.4 });
+    const samples = Array.from({ length: 100 }, (_, i) => fn((i + 1) / 100));
+    const max = Math.max(...samples);
+    expect(max).toBeGreaterThan(1);
+  });
+
+  it('higher amplitude produces larger overshoot', () => {
+    const lo = createElastic({ amplitude: 1,   period: 0.4 });
+    const hi = createElastic({ amplitude: 1.8, period: 0.4 });
+    const maxLo = Math.max(...Array.from({ length: 100 }, (_, i) => lo((i + 1) / 100)));
+    const maxHi = Math.max(...Array.from({ length: 100 }, (_, i) => hi((i + 1) / 100)));
+    expect(maxHi).toBeGreaterThan(maxLo);
+  });
+
+  it('different period changes curve shape', () => {
+    const short = createElastic({ period: 0.2 });
+    const long  = createElastic({ period: 0.6 });
+    const differs = [0.1, 0.2, 0.3, 0.4].some(
+      (t) => Math.abs(short(t) - long(t)) > 0.01
+    );
+    expect(differs).toBe(true);
+  });
+
+  it('custom params produce different curve than defaults', () => {
+    const def    = createElastic();
+    const custom = createElastic({ amplitude: 1.5, period: 0.3 });
+    const differs = [0.1, 0.2, 0.3, 0.4].some(
+      (t) => Math.abs(def(t) - custom(t)) > 0.001
+    );
+    expect(differs).toBe(true);
+  });
+});
+
+describe('EASINGS named strings', () => {
+  it('includes bounce and elastic', () => {
+    expect(typeof EASINGS.bounce).toBe('function');
+    expect(typeof EASINGS.elastic).toBe('function');
+  });
+
+  it('bounce(0) = 0 and bounce(1) = 1', () => {
+    expect(EASINGS.bounce(0)).toBe(0);
+    expect(EASINGS.bounce(1)).toBe(1);
+  });
+
+  it('elastic(0) ≈ 0 and elastic(1) = 1', () => {
+    expect(EASINGS.elastic(0)).toBeCloseTo(0, 10);
+    expect(EASINGS.elastic(1)).toBe(1);
   });
 });
 

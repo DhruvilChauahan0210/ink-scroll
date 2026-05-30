@@ -1,11 +1,12 @@
 'use client';
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { createBounce, createElastic } from 'svg-scroll-draw';
 import { MobileMenu } from './MobileMenu';
 import { CopyButton } from './CopyButton';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
-type EasingName = 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | 'spring';
+type EasingName = 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | 'spring' | 'bounce' | 'elastic';
 type ClipDir    = 'left' | 'right' | 'top' | 'bottom' | 'center';
 type Tab        = 'motion' | 'visual' | 'effects' | 'code';
 
@@ -32,6 +33,10 @@ interface PlayState {
   useMorphTo: boolean;
   springTension: number;
   springFriction: number;
+  bounceBounces: number;
+  bounceDecay: number;
+  elasticAmplitude: number;
+  elasticPeriod: number;
 }
 
 type ExamplePreset = {
@@ -182,6 +187,10 @@ const DEFAULT_STATE: PlayState = {
   useMorphTo: false,
   springTension: 2.5,
   springFriction: 2.2,
+  bounceBounces: 3,
+  bounceDecay: 0.5,
+  elasticAmplitude: 1,
+  elasticPeriod: 0.4,
 };
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
@@ -192,6 +201,8 @@ const EASINGS: Record<EasingName, (t: number) => number> = {
   'ease-out':    t => t * (2 - t),
   'ease-in-out': t => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t,
   spring:        t => 1 - Math.cos(t * Math.PI * 2.5) * Math.pow(1 - t, 2.2),
+  bounce:        createBounce(),
+  elastic:       createElastic(),
 };
 
 const SELECTOR = 'path, polyline, line, polygon, rect, circle, ellipse';
@@ -346,8 +357,10 @@ export function SvgPlayground() {
       const len = getLen(el);
       if (!len) return;
       const shifted = Math.min(1, Math.max(0, p - i * state.stagger));
-      const easeFn = state.easing === 'spring'
-        ? (t: number) => 1 - Math.cos(t * Math.PI * state.springTension) * Math.pow(1 - t, state.springFriction)
+      const easeFn =
+        state.easing === 'spring'   ? (t: number) => 1 - Math.cos(t * Math.PI * state.springTension) * Math.pow(1 - t, state.springFriction)
+        : state.easing === 'bounce'  ? createBounce({ bounces: state.bounceBounces, decay: state.bounceDecay })
+        : state.easing === 'elastic' ? createElastic({ amplitude: state.elasticAmplitude, period: state.elasticPeriod })
         : EASINGS[state.easing];
       const alpha = easeFn(state.direction === 'reverse' ? 1 - shifted : shifted);
       el.style.strokeDashoffset = `${len * (1 - alpha)}`;
@@ -454,9 +467,21 @@ export function SvgPlayground() {
     ps.stagger > 0 && `stagger:${ps.stagger.toFixed(2)}`,
   ].filter(Boolean) as string[];
 
+  const easingSnippet =
+    ps.easing === 'bounce'
+      ? `{createBounce({ bounces: ${ps.bounceBounces}, decay: ${ps.bounceDecay.toFixed(2)} })}`
+      : ps.easing === 'elastic'
+      ? `{createElastic({ amplitude: ${ps.elasticAmplitude.toFixed(2)}, period: ${ps.elasticPeriod.toFixed(2)} })}`
+      : `"${ps.easing}"`;
+
+  const physicsImport =
+    ps.easing === 'bounce'  ? `import { createBounce } from 'svg-scroll-draw';\n\n`
+    : ps.easing === 'elastic' ? `import { createElastic } from 'svg-scroll-draw';\n\n`
+    : '';
+
   const codeLines = [
-    `<ScrollDraw`,
-    `  easing="${ps.easing}"`,
+    physicsImport ? physicsImport + `<ScrollDraw` : `<ScrollDraw`,
+    `  easing=${easingSnippet}`,
     ps.speed !== 1 ? `  speed={${ps.speed.toFixed(2)}}` : null,
     ps.fade ? `  fade` : null,
     ps.stagger > 0 ? `  stagger={${ps.stagger.toFixed(2)}}` : null,
@@ -645,7 +670,7 @@ export function SvgPlayground() {
                   <ControlLabel>Easing</ControlLabel>
                   <select value={ps.easing} onChange={e => update('easing', e.target.value as EasingName)}
                     className="w-full font-mono text-[12px] border border-pitch-black rounded-lg px-3 py-2 bg-light-linen appearance-none cursor-pointer focus:outline-none hover:bg-pitch-black hover:text-light-linen transition-colors shadow-[1px_1px_0px_#000]">
-                    {(['linear', 'ease-in', 'ease-out', 'ease-in-out', 'spring'] as EasingName[]).map(e => (
+                    {(['linear', 'ease-in', 'ease-out', 'ease-in-out', 'spring', 'bounce', 'elastic'] as EasingName[]).map(e => (
                       <option key={e} value={e}>{e}</option>
                     ))}
                   </select>
@@ -658,6 +683,26 @@ export function SvgPlayground() {
                       onChange={v => update('springTension', v)} display={ps.springTension.toFixed(1)} />
                     <SliderRow label="Friction" value={ps.springFriction} min={0.5} max={5} step={0.1}
                       onChange={v => update('springFriction', v)} display={ps.springFriction.toFixed(1)} />
+                  </div>
+                )}
+
+                {ps.easing === 'bounce' && (
+                  <div className="p-3 rounded-xl border border-[#ffc900]/40 bg-[#ffc900]/5 space-y-3">
+                    <ControlLabel>Bounce params</ControlLabel>
+                    <SliderRow label="Bounces" value={ps.bounceBounces} min={1} max={6} step={1}
+                      onChange={v => update('bounceBounces', v)} display={String(Math.round(ps.bounceBounces))} />
+                    <SliderRow label="Decay" value={ps.bounceDecay} min={0.1} max={0.9} step={0.05}
+                      onChange={v => update('bounceDecay', v)} display={ps.bounceDecay.toFixed(2)} />
+                  </div>
+                )}
+
+                {ps.easing === 'elastic' && (
+                  <div className="p-3 rounded-xl border border-[#5865F2]/30 bg-[#5865F2]/5 space-y-3">
+                    <ControlLabel>Elastic params</ControlLabel>
+                    <SliderRow label="Amplitude" value={ps.elasticAmplitude} min={1} max={2.5} step={0.05}
+                      onChange={v => update('elasticAmplitude', v)} display={ps.elasticAmplitude.toFixed(2)} />
+                    <SliderRow label="Period" value={ps.elasticPeriod} min={0.1} max={0.8} step={0.05}
+                      onChange={v => update('elasticPeriod', v)} display={ps.elasticPeriod.toFixed(2)} />
                   </div>
                 )}
 

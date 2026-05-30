@@ -1,4 +1,4 @@
-type EasingName = 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | 'spring';
+type EasingName = 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | 'spring' | 'bounce' | 'elastic';
 interface TriggerConfig {
     start?: string;
     end?: string;
@@ -101,7 +101,36 @@ declare function createSpring({ tension, friction, }?: {
     tension?: number;
     friction?: number;
 }): (t: number) => number;
+/**
+ * Returns a bounce-out easing function.
+ * The animation rises to 1 and then makes `bounces` dips below 1 that settle.
+ * - `bounces` — number of bounces after the initial approach (default 3)
+ * - `decay`   — amplitude reduction per bounce (0–1, default 0.5)
+ *
+ * @example
+ * scrollDraw('#svg', { easing: createBounce() });
+ * scrollDraw('#svg', { easing: createBounce({ bounces: 5, decay: 0.4 }) });
+ */
+declare function createBounce({ bounces, decay, }?: {
+    bounces?: number;
+    decay?: number;
+}): (t: number) => number;
+/**
+ * Returns an elastic-out easing function.
+ * The animation overshoots past 1 and oscillates back, settling at 1.
+ * Can produce values outside [0, 1] — the overshoot is the effect.
+ * - `amplitude` — overshoot magnitude (>=1, default 1 → overshoots to ~1.25)
+ * - `period`    — oscillation period in [0, 1] time (default 0.4)
+ *
+ * @example
+ * scrollDraw('#svg', { easing: createElastic() });
+ * scrollDraw('#svg', { easing: createElastic({ amplitude: 1.5, period: 0.3 }) });
+ */
+declare function createElastic({ amplitude, period, }?: {
+    amplitude?: number;
+    period?: number;
+}): (t: number) => number;
 
 declare function scrollDraw(target: string | Element, options?: ScrollDrawOptions): ScrollDrawInstance;
 
-export { type ScrollDrawInstance, type ScrollDrawOptions, createSpring, scrollDraw };
+export { type ScrollDrawInstance, type ScrollDrawOptions, createBounce, createElastic, createSpring, scrollDraw };

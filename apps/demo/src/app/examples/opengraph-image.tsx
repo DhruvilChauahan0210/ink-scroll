@@ -40,9 +40,9 @@ export default function OgImage() {
         </div>
 
         {/* Headline */}
-        <div style={{ fontSize: 78, fontWeight: 900, lineHeight: 0.92, letterSpacing: '-0.04em', color: '#111', marginBottom: 36 }}>
-          10 SVG SCROLL{' '}
-          <span style={{ background: '#ff90e8', borderRadius: 12, padding: '2px 12px', display: 'inline-block' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', fontSize: 78, fontWeight: 900, lineHeight: 0.92, letterSpacing: '-0.04em', color: '#111', marginBottom: 36 }}>
+          <span>13 SVG SCROLL</span>
+          <span style={{ background: '#ff90e8', borderRadius: 12, padding: '2px 12px', display: 'flex', alignItems: 'center' }}>
             DEMOS.
           </span>
         </div>

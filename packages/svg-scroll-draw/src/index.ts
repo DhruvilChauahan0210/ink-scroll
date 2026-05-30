@@ -22,4 +22,4 @@ export function scrollDraw(
 }
 
 export type { ScrollDrawOptions, ScrollDrawInstance };
-export { createSpring } from './core/utils';
+export { createSpring, createBounce, createElastic } from './core/utils';

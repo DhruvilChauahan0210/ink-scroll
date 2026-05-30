@@ -1,7 +1,7 @@
 import * as react_jsx_runtime from 'react/jsx-runtime';
 import React, { RefObject } from 'react';
 
-type EasingName = 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | 'spring';
+type EasingName = 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | 'spring' | 'bounce' | 'elastic';
 interface TriggerConfig {
     start?: string;
     end?: string;

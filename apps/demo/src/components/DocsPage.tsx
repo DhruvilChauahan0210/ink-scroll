@@ -66,6 +66,8 @@ const NAV_GROUPS = [
     label: 'v1.0.0',
     items: [
       { id: 'create-spring',      label: 'createSpring' },
+      { id: 'create-bounce',      label: 'createBounce' },
+      { id: 'create-elastic',     label: 'createElastic' },
       { id: 'timeline',           label: 'scrollDrawTimeline' },
       { id: 'css-custom-property', label: 'CSS Custom Prop' },
     ],
@@ -261,7 +263,11 @@ export function DocsPage() {
           {/* ── Installation ─────────────────────────────────── */}
           <DocSection id="installation" tag="Getting Started" heading="Installation">
             <p className="text-sm text-graphite-border leading-relaxed mb-5">
-              Install via your package manager of choice, or drop in a CDN script tag — no build step required.
+              Install via your package manager of choice, or drop in a CDN script tag — no build step required.{' '}
+              Coming from GSAP DrawSVG?{' '}
+              <Link href="/blog/gsap-drawsvg-alternative" className="underline underline-offset-2 hover:text-pitch-black transition-colors">
+                See the migration guide →
+              </Link>
             </p>
             <div className="grid sm:grid-cols-2 gap-3">
               {[
@@ -336,7 +342,7 @@ instance.destroy();   // cleanup on unmount`}
               <Opt name="speed" type="number" defaultVal="1">
                 Animation speed multiplier. Values above 1 complete the draw over a shorter scroll distance. Values below 1 slow it down.
               </Opt>
-              <Opt name="easing" type="'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | 'spring' | (t: number) => number" defaultVal="'linear'">
+              <Opt name="easing" type="'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | 'spring' | 'bounce' | 'elastic' | (t: number) => number" defaultVal="'linear'">
                 Easing curve applied to draw progress. Pass a custom function for full control — receives and returns a 0–1 value.
               </Opt>
               <Opt name="direction" type="'forward' | 'reverse'" defaultVal="'forward'">
@@ -1003,6 +1009,72 @@ scrollDraw('#svg', { easing: createSpring({ tension: 1.5, friction: 1.2 }) });`}
             <Note>
               <code className="font-mono">createSpring()</code> with no arguments produces the same curve as{' '}
               <code className="font-mono">easing: 'spring'</code>. Use it when you need to parameterize the bounce.
+            </Note>
+          </DocSection>
+
+          {/* ── createBounce ─────────────────────────────────── */}
+          <DocSection id="create-bounce" tag="v1.2.0" heading="createBounce">
+            <p className="text-sm text-graphite-border leading-relaxed mb-2">
+              Returns a bounce-out easing. The animation rises to 1 via ease-out, then makes{' '}
+              <code className="font-mono text-pitch-black">bounces</code> dips below 1 that settle —
+              like a ball landing. Output stays within [0, 1].
+            </p>
+            <OptGroup>
+              <Opt name="bounces" type="number" defaultVal="3">
+                Number of bounces after the initial approach. Higher = more dips before settling.
+              </Opt>
+              <Opt name="decay" type="number" defaultVal="0.5">
+                Amplitude reduction per bounce (0–1). Lower = faster decay, shallower bounces.
+              </Opt>
+            </OptGroup>
+            <CodeBlock file="bounce.js">
+{`import { scrollDraw, createBounce } from 'svg-scroll-draw';
+
+// Named string — default params (3 bounces, decay 0.5)
+scrollDraw('#svg', { easing: 'bounce' });
+
+// Lots of quick bounces
+scrollDraw('#svg', { easing: createBounce({ bounces: 5, decay: 0.35 }) });
+
+// Two slow, deep bounces
+scrollDraw('#svg', { easing: createBounce({ bounces: 2, decay: 0.7 }) });`}
+            </CodeBlock>
+          </DocSection>
+
+          {/* ── createElastic ────────────────────────────────── */}
+          <DocSection id="create-elastic" tag="v1.2.0" heading="createElastic">
+            <p className="text-sm text-graphite-border leading-relaxed mb-2">
+              Returns an elastic-out easing. The animation overshoots past 1 and oscillates
+              back before settling — like a rubber band snapping into place. Can produce values
+              slightly outside [0, 1]; for SVG paths this appears as a brief over-draw.
+            </p>
+            <OptGroup>
+              <Opt name="amplitude" type="number" defaultVal="1">
+                Overshoot magnitude (≥1). Default overshoots to ~1.25; try 1.5 for a dramatic snap.
+              </Opt>
+              <Opt name="period" type="number" defaultVal="0.4">
+                Oscillation period in scroll-time. Smaller = faster oscillations; larger = slow wobble.
+              </Opt>
+            </OptGroup>
+            <CodeBlock file="elastic.js">
+{`import { scrollDraw, createElastic } from 'svg-scroll-draw';
+
+// Named string — default params (amplitude 1, period 0.4)
+scrollDraw('#svg', { easing: 'elastic' });
+
+// Big snap, fast oscillation
+scrollDraw('#svg', { easing: createElastic({ amplitude: 1.5, period: 0.3 }) });
+
+// Subtle, slow wobble
+scrollDraw('#svg', { easing: createElastic({ amplitude: 1.1, period: 0.6 }) });`}
+            </CodeBlock>
+            <Note>
+              Try both in the{' '}
+              <a href="/playground" className="underline underline-offset-2 hover:text-pitch-black transition-colors">
+                ⚡ Playground
+              </a>{' '}
+              — the easing dropdown includes <code className="font-mono">bounce</code> and{' '}
+              <code className="font-mono">elastic</code> with live parameter sliders.
             </Note>
           </DocSection>
 

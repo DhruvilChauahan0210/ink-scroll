@@ -1,6 +1,6 @@
 import * as vue from 'vue';
 
-type EasingName = 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | 'spring';
+type EasingName = 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | 'spring' | 'bounce' | 'elastic';
 interface TriggerConfig {
     start?: string;
     end?: string;

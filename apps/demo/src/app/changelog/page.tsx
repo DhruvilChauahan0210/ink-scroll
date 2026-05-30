@@ -3,8 +3,6 @@ import Link from 'next/link';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { MobileMenu } from '@/components/MobileMenu';
 
-const OG_IMAGE = 'https://svg-scroll-draw.vercel.app/opengraph-image';
-
 export const metadata: Metadata = {
   title: 'Changelog — Release History',
   description:
@@ -15,14 +13,12 @@ export const metadata: Metadata = {
     description:
       'Complete release history for svg-scroll-draw. Native CSS scroll animation, stroke-dashoffset, React/Vue/Svelte support and more.',
     url: 'https://svg-scroll-draw.vercel.app/changelog',
-    images: [{ url: OG_IMAGE, width: 1200, height: 630, alt: 'svg-scroll-draw Changelog' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Changelog — svg-scroll-draw',
     description:
       'Complete release history for svg-scroll-draw. Native CSS scroll animation, React/Vue/Svelte/Nuxt support.',
-    images: [OG_IMAGE],
   },
 };
 
