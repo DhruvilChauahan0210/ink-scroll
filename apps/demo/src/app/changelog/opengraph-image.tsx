@@ -51,20 +51,20 @@ export default function OgImage() {
             padding: '6px 18px', fontSize: 20, fontWeight: 800,
             color: '#111', fontFamily: 'monospace',
           }}>
-            v1.1.0
+            v1.2.0
           </div>
           <div style={{ fontSize: 22, color: '#444' }}>
-            Native CSS scroll-driven animation
+            Bounce, elastic easings + Solid.js demo
           </div>
         </div>
 
         {/* Version timeline */}
         <div style={{ display: 'flex', gap: 12 }}>
           {[
-            { v: 'v1.1.0', highlight: true },
+            { v: 'v1.2.0', highlight: true },
+            { v: 'v1.1.0', highlight: false },
             { v: 'v1.0.0', highlight: false },
             { v: 'v0.7.0', highlight: false },
-            { v: 'v0.6.0', highlight: false },
           ].map(({ v, highlight }) => (
             <div
               key={v}
