@@ -340,7 +340,7 @@ function GroupDemo() {
           <line x1="32" y1="52" x2="32" y2="57" stroke="#ffc900" strokeWidth="2" strokeLinecap="round" />
           <line x1="12" y1="32" x2="7"  y2="32" stroke="#ffc900" strokeWidth="2" strokeLinecap="round" />
         </svg>
-        <span style={{ fontFamily: 'system-ui', fontSize: 11, color: '#999', letterSpacing: '0.08em', textTransform: 'uppercase' }}>~3 KB</span>
+        <span style={{ fontFamily: 'system-ui', fontSize: 11, color: '#999', letterSpacing: '0.08em', textTransform: 'uppercase' }}>~4.4 KB</span>
       </div>
 
       {/* Framework */}
@@ -934,7 +934,7 @@ export function ExamplesPage() {
 
       {/* Footer */}
       <footer className="px-6 md:px-12 py-6 border-t border-subtle-ash text-center text-[11px] font-mono text-graphite-border">
-        svg-scroll-draw · MIT · ~3 KB gzipped ·{' '}
+        svg-scroll-draw · MIT · ~4.4 KB gzipped ·{' '}
         <a href="https://github.com/DhruvilChauahan0210/ink-scroll" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-pitch-black transition-colors">
           GitHub
         </a>

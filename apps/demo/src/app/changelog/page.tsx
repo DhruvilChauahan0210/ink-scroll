@@ -227,7 +227,7 @@ export default function ChangelogPage() {
 
       {/* Footer */}
       <footer className="border-t border-subtle-ash px-6 md:px-12 py-6 text-center text-[11px] font-mono text-graphite-border">
-        svg-scroll-draw · MIT · ~3 KB gzipped ·{' '}
+        svg-scroll-draw · MIT · ~4.4 KB gzipped ·{' '}
         <a href={GH} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-pitch-black transition-colors">
           GitHub
         </a>

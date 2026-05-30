@@ -108,13 +108,13 @@ export default function OgImage() {
 
         {/* sub */}
         <div style={{ fontSize: 24, color: "#666", marginBottom: 48, maxWidth: 600 }}>
-          The definitive modern library. ~3 KB gzipped.
+          The definitive modern library. ~4.4 KB gzipped.
           Works in React, Next.js, Vue 3, and vanilla JS.
         </div>
 
         {/* stats row */}
         <div style={{ display: "flex", gap: 24 }}>
-          {["~3 KB gzipped", "Zero deps", "56 tests", "React · Vue · Vanilla"].map(
+          {["~4.4 KB gzipped", "Zero deps", "221 tests", "React · Vue · Vanilla"].map(
             (label) => (
               <div
                 key={label}

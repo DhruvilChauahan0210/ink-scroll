@@ -5,6 +5,27 @@ function warnDev(msg: string, el: Element): void {
   if (process.env.NODE_ENV !== 'production') console.warn(`[svg-scroll-draw] ${msg}`, el);
 }
 
+// ── Native CSS scroll-driven animation (animation-timeline: view()) ───────────
+// Easing names that have a 1:1 CSS timing-function. 'spring' and custom function
+// easings have no CSS equivalent, so those configs stay on the JS engine.
+const CSS_EASINGS: Record<string, string> = {
+  linear:        'linear',
+  'ease-in':     'ease-in',
+  'ease-out':    'ease-out',
+  'ease-in-out': 'ease-in-out',
+};
+
+// Unique keyframes name per native instance so multiple draws don't collide.
+let nativeUid = 0;
+
+function supportsNativeTimeline(): boolean {
+  return (
+    typeof CSS !== 'undefined' &&
+    typeof CSS.supports === 'function' &&
+    CSS.supports('animation-timeline: view()')
+  );
+}
+
 function checkElement(el: SVGElement): void {
   const stroke = el.getAttribute('stroke');
   const fill   = el.getAttribute('fill');
@@ -75,6 +96,7 @@ export function createEngine(
     repeatDelay    = 0,
     morphTo,
     clip,
+    native      = true,
     onProgress,
     onStart,
     onComplete,
@@ -264,6 +286,126 @@ export function createEngine(
     onComplete?.();
     return { destroy: () => {}, replay: () => {}, pause: () => {}, resume: () => {}, seek: () => {}, getProgress: () => 1 };
   }
+
+  // ── Native CSS fast path ──────────────────────────────────────────────────
+  // Hand the draw to the compositor when the config is simple enough that CSS
+  // `animation-timeline: view()` reproduces it exactly. Anything CSS can't
+  // express keeps the JS engine below. The default trigger maps precisely to
+  // the CSS `cover` range, which is what makes this substitution safe.
+
+  function nativeEligible(): boolean {
+    if (native === false) return false;
+    if (!supportsNativeTimeline()) return false;
+    if (!paths.length) return false;
+    // Only string easings with a CSS equivalent (no 'spring', no custom fn).
+    if (typeof easing !== 'string' || !(easing in CSS_EASINGS)) return false;
+    // Features with no declarative CSS equivalent → stay on the JS engine.
+    if (clipDirection) return false;
+    if (axis !== 'y') return false;          // view() block axis only
+    if (scrollEl) return false;              // custom scroll container
+    if (speed !== 1) return false;
+    if (stagger !== 0) return false;
+    if (once) return false;                  // CSS scroll progress can't latch
+    if (autoReverse) return false;
+    if (velocityScale !== false) return false;
+    if (morphTo) return false;
+    if (waypoints) return false;
+    if (repeat) return false;
+    if (delay > 0) return false;
+    if (onProgress || onStart || onComplete) return false;  // need JS frames
+    if (strokeColor != null || strokeWidth != null || fillOpacity != null) return false;
+    // Only the default trigger maps cleanly to the CSS `cover` range.
+    if ((trigger.start ?? 'top bottom').trim() !== 'top bottom') return false;
+    if ((trigger.end   ?? 'bottom top').trim() !== 'bottom top') return false;
+    return true;
+  }
+
+  function buildNative(): ScrollDrawInstance {
+    const cls    = `svg-scroll-draw-${++nativeUid}`;
+    const fromO  = direction === 'reverse' ? '0' : 'var(--ssd-len)';
+    const toO    = direction === 'reverse' ? 'var(--ssd-len)' : '0';
+    let fromBody = `stroke-dashoffset:${fromO};`;
+    let toBody   = `stroke-dashoffset:${toO};`;
+    if (fade) {
+      fromBody += `opacity:${direction === 'reverse' ? 1 : 0};`;
+      toBody   += `opacity:${direction === 'reverse' ? 0 : 1};`;
+    }
+
+    const style = document.createElement('style');
+    style.setAttribute('data-svg-scroll-draw', '');
+    style.textContent =
+      `@keyframes ${cls}{from{${fromBody}}to{${toBody}}}` +
+      `.${cls}{animation-name:${cls};animation-duration:auto;` +
+      `animation-timing-function:${CSS_EASINGS[easing as string]};` +
+      `animation-fill-mode:both;animation-timeline:view();` +
+      `animation-range:cover 0% cover 100%;}`;
+    document.head.appendChild(style);
+
+    function attach(el: SVGElement, i: number): void {
+      el.style.setProperty('--ssd-len', String(lengths[i]));
+      el.style.strokeDasharray  = `${lengths[i]}`;
+      el.style.strokeDashoffset = '';
+      el.style.opacity          = '';
+      el.style.animationPlayState = '';
+      el.classList.add(cls);
+    }
+    paths.forEach(attach);
+
+    let paused   = false;
+    let lastSeek = -1;
+
+    function liveProgress(): number {
+      if (lastSeek >= 0) return lastSeek;
+      const rect = container.getBoundingClientRect();
+      const { tStart, tEnd } = computeTriggers(
+        { top: rect.top, height: rect.height },
+        scrollPos(), vpSize(), startConfig, endConfig
+      );
+      return easeFn(computeProgress(scrollPos(), tStart, tEnd, speed));
+    }
+
+    return {
+      destroy() {
+        paths.forEach((el) => {
+          el.classList.remove(cls);
+          el.style.removeProperty('--ssd-len');
+          el.style.animationPlayState = '';
+        });
+        style.remove();
+      },
+      replay() {
+        paused = false;
+        lastSeek = -1;
+        paths.forEach(attach);
+      },
+      pause() {
+        paused = true;
+        paths.forEach((el) => { el.style.animationPlayState = 'paused'; });
+      },
+      resume() {
+        if (!paused) return;
+        paused = false;
+        paths.forEach((el) => { el.style.animationPlayState = 'running'; });
+      },
+      seek(progress: number) {
+        const p = Math.min(1, Math.max(0, progress));
+        lastSeek = p;
+        paused = true;
+        // Leave the scroll timeline and pin the frame manually.
+        paths.forEach((el, i) => {
+          el.classList.remove(cls);
+          el.style.strokeDashoffset =
+            direction === 'reverse' ? `${lengths[i] * p}` : `${lengths[i] * (1 - p)}`;
+          if (fade) el.style.opacity = direction === 'reverse' ? `${1 - p}` : `${p}`;
+        });
+      },
+      getProgress() {
+        return liveProgress();
+      },
+    };
+  }
+
+  if (nativeEligible()) return buildNative();
 
   cacheTriggers();
 

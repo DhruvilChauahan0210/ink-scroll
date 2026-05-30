@@ -39,7 +39,7 @@ const SECTION_MAP: Record<string, { anim: AnimState; duration: number; quip?: st
 const CLICK_QUIPS = [
   'Scroll to see me draw! ✏️',
   'Zero deps. Just vibes ✨',
-  '< 3KB — tiny but mighty!',
+  '~4.4 KB — tiny but mighty!',
   'I animate SVGs 🎨',
   'Try scrolling slooowly…',
   'IntersectionObserver FTW',

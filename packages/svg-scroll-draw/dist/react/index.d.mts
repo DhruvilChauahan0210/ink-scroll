@@ -63,6 +63,20 @@ interface ScrollDrawOptions {
     onProgress?: (alpha: number) => void;
     onStart?: () => void;
     onComplete?: () => void;
+    /**
+     * Use the browser's native CSS scroll-driven animation
+     * (`animation-timeline: view()`) when the configuration is simple enough and
+     * the browser supports it. This runs the draw entirely on the compositor —
+     * zero per-frame JavaScript, zero scroll/resize listeners.
+     *
+     * Falls back to the JS engine automatically when unsupported or when the
+     * config uses a feature native CSS can't express (callbacks, stagger, morph,
+     * velocity scaling, custom triggers, `once`, custom easing functions, etc.).
+     *
+     * - `undefined` / `true` (default): use native when eligible.
+     * - `false`: always use the JS engine.
+     */
+    native?: boolean;
 }
 
 interface UseScrollDrawProgressOptions {

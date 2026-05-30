@@ -21,7 +21,7 @@ const jsonLd = {
   '@type': 'SoftwareApplication',
   name: 'svg-scroll-draw',
   description:
-    'A zero-dependency JavaScript library that animates SVG paths as you scroll. Under 3 KB brotli.',
+    'A zero-dependency JavaScript library that animates SVG paths as you scroll. ~4.4 KB gzipped.',
   applicationCategory: 'DeveloperApplication',
   operatingSystem: 'Web',
   url: 'https://svg-scroll-draw.vercel.app',
@@ -77,9 +77,9 @@ const MARQUEE_ITEMS = [
   'SSR Safe',
   'requestAnimationFrame',
   'IntersectionObserver',
-  '~3 KB Gzipped',
+  '~4.4 KB Gzipped',
   'Zero Dependencies',
-  '56 Tests Passing',
+  '221 Tests Passing',
   'React + Next.js',
   'Vue 3',
   'Svelte',
@@ -175,7 +175,7 @@ export default function Home() {
 
         {/* Sub */}
         <p className="relative z-10 text-sm sm:text-base md:text-lg text-graphite-border max-w-sm sm:max-w-md mx-auto mb-8 sm:mb-10 leading-relaxed">
-          The definitive modern library. ~3 KB gzipped.
+          The definitive modern library. ~4.4 KB gzipped.
           Works in React, Next.js, and vanilla JS.
         </p>
 
@@ -193,10 +193,10 @@ export default function Home() {
         {/* Stats */}
         <div className="relative z-10 flex flex-wrap items-center justify-center gap-2">
           {[
-            ['~3 KB', 'gzipped'],
+            ['~4.4 KB', 'gzipped'],
             ['0', 'dependencies'],
             ['SSR', 'safe'],
-            ['56', 'tests ✓'],
+            ['221', 'tests ✓'],
           ].map(([val, label]) => (
             <div key={val} className="flex items-center gap-1.5 border border-pitch-black bg-light-linen rounded-full px-3 sm:px-4 py-1.5 shadow-[1px_1px_0px_#000]">
               <span className="font-display font-bold text-xs sm:text-sm">{val}</span>
@@ -285,12 +285,12 @@ export default function Home() {
         <div className="max-w-5xl mx-auto">
           <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-3 font-medium">Bundle size</p>
           <h2 className="font-display font-extrabold text-[clamp(28px,5vw,56px)] leading-[0.95] tracking-[-0.03em] mb-8 sm:mb-12">
-            ~3 KB.<br />Not 40 KB.
+            ~4.4 KB.<br />Not 40 KB.
           </h2>
 
           <div className="space-y-5">
             {[
-              { name: 'svg-scroll-draw', size: '~3 KB',  pct: 7.5,  color: 'bg-creator-pink',    badge: '✓ yours' },
+              { name: 'svg-scroll-draw', size: '~4.4 KB', pct: 11,   color: 'bg-creator-pink',    badge: '✓ yours' },
               { name: 'Framer Motion',   size: '~35 KB', pct: 87.5, color: 'bg-sunshine-yellow', badge: null },
               { name: 'GSAP DrawSVG',    size: '~40 KB', pct: 100,  color: 'bg-[#e0e0e0] dark:bg-[#333]', badge: null },
             ].map(({ name, size, pct, color, badge }) => (
@@ -833,7 +833,7 @@ const seq = scrollDrawSequence(
           <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-5 text-[13px] text-graphite-border">
             <span>MIT License</span>
             <span className="text-subtle-ash">·</span>
-            <span>~3 KB gzipped</span>
+            <span>~4.4 KB gzipped</span>
             <span className="text-subtle-ash">·</span>
             <span>Zero dependencies</span>
           </div>
@@ -892,7 +892,7 @@ const seq = scrollDrawSequence(
                   svg-scroll-draw
                 </h3>
                 <p style={{ margin: '4px 0 0', fontSize: 14, color: 'rgb(102,102,102)', lineHeight: 1.4 }}>
-                  Scroll-driven SVG path animation. Zero deps. 3 KB.
+                  Scroll-driven SVG path animation. Zero deps. ~4.4 KB.
                 </p>
               </div>
             </div>

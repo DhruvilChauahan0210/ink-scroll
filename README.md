@@ -6,7 +6,7 @@
 [![license](https://img.shields.io/npm/l/svg-scroll-draw)](./LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/DhruvilChauahan0210/ink-scroll?style=flat)](https://github.com/DhruvilChauahan0210/ink-scroll/stargazers)
 
-> Scroll-driven SVG path animation. Zero dependencies. Under 3 KB gzipped.
+> Scroll-driven SVG path animation. Zero dependencies. ~4.4 KB gzipped — vs 35–40 KB for Framer Motion / GSAP DrawSVG.
 
 **[Live Demo](https://svg-scroll-draw.vercel.app)** · **[Docs](https://svg-scroll-draw.vercel.app/docs)** · **[Examples](https://svg-scroll-draw.vercel.app/examples)** · [npm](https://www.npmjs.com/package/svg-scroll-draw) · [Report a bug](https://github.com/DhruvilChauahan0210/ink-scroll/issues)
 
@@ -371,11 +371,14 @@ function Section() {
 
 ## Bundle sizes
 
-| Format | Size |
-|---|---|
-| ESM (`.mjs`) | ~3.2 KB |
-| CJS (`.cjs`) | ~3.2 KB |
-| IIFE / CDN (`.global.js`) | ~4.2 KB (includes Web Component) |
+| Format | Minified | Gzipped |
+|---|---|---|
+| ESM (`.mjs`) | 11.9 KB | ~4.4 KB |
+| CJS (`.cjs`) | 11.9 KB | ~4.4 KB |
+| React (`/react`) | 13.4 KB | ~4.8 KB |
+| IIFE / CDN (`.global.js`) | 12.9 KB | ~4.8 KB (includes Web Component) |
+
+Still 8–9× smaller than Framer Motion (~35 KB) or GSAP DrawSVG (~40 KB), and on supporting browsers the simple case runs as a native CSS scroll animation with zero per-frame JavaScript.
 
 ---
 
