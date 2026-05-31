@@ -4,6 +4,33 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ---
 
+## [1.4.0] — 2026-05-31
+
+### Added
+- **`Cinematic` class** — the runtime bridge for [Cinematic Studio](https://github.com/DhruvilChauahan0210/reel),
+  the visual scroll-animation editor. Reads a `story.json` authored in the Studio and
+  wires a scroll-scrubbed timeline with zero JavaScript on the author's side:
+
+  ```js
+  import { Cinematic } from "svg-scroll-draw";
+  import story from "./story.json";
+  new Cinematic({ wrapper: "#app" }).loadStory(story);
+  ```
+- **`loadStory(story)`** builds a sticky-stage scroll structure from the story, strokes
+  each traced `draw` path on across its scroll range, and fades `fade` layers (the product
+  photo) in. Honors `prefers-reduced-motion` by jumping to the finished frame, and only
+  runs its rAF loop while the stage is on screen (IntersectionObserver-gated).
+- **Cinematic Story protocol types** exported: `Story`, `StoryScene`, `StoryAnimation`,
+  `DrawAnimation`, `FadeAnimation`, `StoryEasing`. New `svg-scroll-draw/cinematic` subpath
+  for tree-shaken imports.
+- **5 new tests** covering DOM construction, draw + fade scrubbing at a known scroll
+  position, reduced-motion fallback, and observer lifecycle. **254 tests total.**
+
+### Notes
+- Fully backward compatible — purely additive. The existing `scrollDraw` API is untouched.
+
+---
+
 ## [1.3.0] — 2026-05-30
 
 ### Added

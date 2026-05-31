@@ -23,3 +23,18 @@ export function scrollDraw(
 
 export type { ScrollDrawOptions, ScrollDrawInstance };
 export { createSpring, createBounce, createElastic } from './core/utils';
+
+// Cinematic — the Studio bridge. Reads a story.json and runs the scroll show.
+export { Cinematic } from './cinematic';
+export type {
+  CinematicOptions,
+  CinematicInstance,
+} from './cinematic';
+export type {
+  Story,
+  StoryScene,
+  StoryAnimation,
+  DrawAnimation,
+  FadeAnimation,
+  StoryEasing,
+} from './cinematic/story';

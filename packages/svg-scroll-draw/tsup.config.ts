@@ -21,6 +21,7 @@ export default defineConfig([
   base({ 'astro/index':   'src/astro/index.ts'     }),
   base({ 'nuxt/index':    'src/nuxt/index.ts'      }, ['vue']),
   base({ 'group/index':        'src/group/index.ts'          }),
+  base({ 'cinematic/index':   'src/cinematic/index.ts'      }),
   base({ 'timeline/index':    'src/timeline/index.ts'       }),
   base({ 'web-component/index': 'src/web-component/index.ts' }),
   {
