@@ -1,10 +1,12 @@
-# I replaced GSAP DrawSVG with 4.4 KB (and it uses native CSS where it can)
-
+---
+title: I replaced GSAP DrawSVG with 4.4 KB (and it uses native CSS where it can)
+published: false
+description: A tiny, MIT-licensed, zero-dependency library for drawing SVG paths on scroll — works in every framework and hands the animation to the compositor where the browser supports it.
+tags: javascript, webdev, react, css
+cover_image:
 ---
 
-**Tags:** `javascript` `webdev` `animation` `react`
-
-**Cover image suggestion:** The bundle bar chart from the demo site — GSAP DrawSVG (~40 KB) vs Framer Motion (~35 KB) vs svg-scroll-draw (~4.4 KB). Clean, immediately scannable.
+> **Cover image suggestion:** your `demo.gif`, or the bundle bar chart from the demo site — GSAP DrawSVG (~40 KB) vs Framer Motion (~35 KB) vs svg-scroll-draw (~4.4 KB). Upload it in the dev.to editor and it'll populate `cover_image` above. A moving GIF as the cover will out-perform a static chart.
 
 ---
 
@@ -55,7 +57,7 @@ That's it. The engine discovers every `path`, `line`, `rect`, `circle`, `polylin
 
 ---
 
-## The part that makes v1.1.0 different: native CSS
+## The part that makes it different: native CSS
 
 Here's what I didn't expect when building this: for the common case, you don't need JavaScript at all.
 
