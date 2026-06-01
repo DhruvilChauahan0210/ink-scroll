@@ -30,12 +30,18 @@ const SITE_URL = "https://svg-scroll-draw.vercel.app";
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "svg-scroll-draw — Scroll-driven SVG path animation",
+    default: "svg-scroll-draw — SVG Scroll Draw Animation Library",
     template: "%s | svg-scroll-draw",
   },
   description:
-    "A zero-dependency JavaScript library that animates SVG paths as you scroll. ~4.4 KB gzipped. Works with React, Next.js, Vue 3, and vanilla JS.",
+    "The definitive SVG scroll draw library. Animate SVG paths as you scroll. ~4.4 KB gzipped. Zero dependencies. Works with React, Next.js, Vue 3, and vanilla JS.",
   keywords: [
+    "scroll draw",
+    "svg scroll draw",
+    "scroll draw animation",
+    "scroll draw library",
+    "scroll draw svg javascript",
+    "scroll draw react",
     "svg draw on scroll",
     "animate svg on scroll",
     "animate svg line on scroll react",
@@ -56,9 +62,9 @@ export const metadata: Metadata = {
     type: "website",
     url: SITE_URL,
     siteName: "svg-scroll-draw",
-    title: "svg-scroll-draw — Scroll-driven SVG path animation",
+    title: "svg-scroll-draw — SVG Scroll Draw Animation Library",
     description:
-      "A zero-dependency JavaScript library that animates SVG paths as you scroll. ~4.4 KB gzipped. Works with React, Next.js, Vue 3, and vanilla JS.",
+      "The definitive SVG scroll draw library. Animate SVG paths as you scroll. ~4.4 KB gzipped. Zero dependencies. Works with React, Next.js, Vue 3, and vanilla JS.",
     images: [
       {
         url: `${SITE_URL}/opengraph-image`,
@@ -70,9 +76,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "svg-scroll-draw — Scroll-driven SVG path animation",
+    title: "svg-scroll-draw — SVG Scroll Draw Animation Library",
     description:
-      "A zero-dependency JavaScript library that animates SVG paths as you scroll. ~4.4 KB gzipped.",
+      "The definitive SVG scroll draw library. Animate SVG paths as you scroll. ~4.4 KB gzipped. Zero dependencies.",
     images: [`${SITE_URL}/opengraph-image`],
   },
   verification: {

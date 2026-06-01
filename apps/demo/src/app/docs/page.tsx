@@ -2,10 +2,15 @@ import type { Metadata } from 'next';
 import { DocsPage } from '@/components/DocsPage';
 
 export const metadata: Metadata = {
-  title: 'Animate SVG on Scroll — API Docs',
+  title: 'SVG Scroll Draw — API Docs & Reference',
   description:
-    'Full API reference for animating SVG paths on scroll. Options, React/Vue/Svelte/Nuxt/Astro guides, stroke-dashoffset animation, Group API, and TypeScript types.',
+    'Full API reference for the SVG scroll draw library. Animate paths on scroll with React, Vue, Svelte, Nuxt, and Astro. stroke-dashoffset, Group API, TypeScript types.',
   keywords: [
+    'scroll draw',
+    'svg scroll draw',
+    'scroll draw api',
+    'scroll draw react',
+    'scroll draw animation library',
     'animate svg on scroll',
     'svg draw on scroll',
     'svg scroll animation api',
@@ -18,25 +23,25 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: '/docs' },
   openGraph: {
-    title: 'Animate SVG on Scroll — API Docs | svg-scroll-draw',
+    title: 'SVG Scroll Draw — API Docs & Reference | svg-scroll-draw',
     description:
-      'Full API reference for animating SVG paths on scroll. Options, React/Vue/Svelte/Nuxt/Astro guides, stroke-dashoffset animation, Group API, and TypeScript types.',
+      'Full API reference for the SVG scroll draw library. Animate paths on scroll with React, Vue, Svelte, Nuxt, and Astro. stroke-dashoffset, Group API, TypeScript types.',
     url: 'https://svg-scroll-draw.vercel.app/docs',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Animate SVG on Scroll — API Docs | svg-scroll-draw',
+    title: 'SVG Scroll Draw — API Docs & Reference | svg-scroll-draw',
     description:
-      'Full API reference for animating SVG paths on scroll. Options, React/Vue/Svelte/Nuxt/Astro guides, Group API, and TypeScript types.',
+      'Full API reference for the SVG scroll draw library. React, Vue, Svelte, Nuxt, Astro guides, Group API, TypeScript types.',
   },
 };
 
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'TechArticle',
-  headline: 'svg-scroll-draw — Animate SVG on Scroll API Reference',
+  headline: 'svg-scroll-draw — SVG Scroll Draw API Reference',
   description:
-    'Full API reference for animating SVG paths on scroll using svg-scroll-draw. Covers options, stroke-dashoffset animation, React/Vue/Svelte/Nuxt/Astro guides, Group API, and TypeScript types.',
+    'Full API reference for the SVG scroll draw library. Covers scroll draw options, stroke-dashoffset animation, React/Vue/Svelte/Nuxt/Astro guides, Group API, and TypeScript types.',
   url: 'https://svg-scroll-draw.vercel.app/docs',
   author: { '@type': 'Person', name: 'Dhruvil Chauhan' },
   about: {

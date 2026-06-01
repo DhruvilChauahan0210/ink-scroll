@@ -25,7 +25,7 @@ const jsonLd = {
   '@type': 'SoftwareApplication',
   name: 'svg-scroll-draw',
   description:
-    'A zero-dependency JavaScript library that animates SVG paths as you scroll. ~4.4 KB gzipped.',
+    'The definitive SVG scroll draw library. Animate SVG paths as you scroll. ~4.4 KB gzipped. Zero dependencies.',
   applicationCategory: 'DeveloperApplication',
   operatingSystem: 'Web',
   url: 'https://svg-scroll-draw.vercel.app',
@@ -38,7 +38,7 @@ const jsonLd = {
     '@type': 'Person',
     name: 'Dhruvil Chauhan',
   },
-  keywords: 'svg, animation, scroll, javascript, react, vue, web animation',
+  keywords: 'scroll draw, svg scroll draw, scroll draw animation, scroll draw library, svg, animation, scroll, javascript, react, vue, web animation',
   offers: {
     '@type': 'Offer',
     price: '0',
@@ -179,7 +179,7 @@ export default function Home() {
 
         {/* Sub */}
         <p className="relative z-10 text-sm sm:text-base md:text-lg text-graphite-border max-w-sm sm:max-w-md mx-auto mb-8 sm:mb-10 leading-relaxed">
-          The definitive modern library. ~4.4 KB gzipped.
+          The definitive scroll draw library. ~4.4 KB gzipped.
           Works in React, Vue 3, Svelte, Solid, and more.
         </p>
 

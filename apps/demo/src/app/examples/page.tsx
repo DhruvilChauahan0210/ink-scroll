@@ -6,6 +6,9 @@ export const metadata: Metadata = {
   description:
     'Real-world examples: animate SVG paths on scroll in React and Next.js. Logo reveals, line charts, signature animations — no GSAP, no dependencies.',
   keywords: [
+    'scroll draw examples',
+    'svg scroll draw examples',
+    'scroll draw react',
     'animate svg on scroll react',
     'svg path drawing animation',
     'stroke-dashoffset scroll animation',
