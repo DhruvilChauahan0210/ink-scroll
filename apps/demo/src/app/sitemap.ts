@@ -1,5 +1,7 @@
 import type { MetadataRoute } from "next";
 
+export const dynamic = "force-static";
+
 const SITE_URL = "https://svg-scroll-draw.vercel.app";
 
 export default function sitemap(): MetadataRoute.Sitemap {
