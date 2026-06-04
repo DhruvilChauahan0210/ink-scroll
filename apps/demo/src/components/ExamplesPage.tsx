@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { ScrollDraw } from 'svg-scroll-draw/react';
+import { scrollDraw } from 'svg-scroll-draw';
 import { scrollDrawGroup, scrollDrawSequence } from 'svg-scroll-draw/group';
 import { scrollDrawTimeline } from 'svg-scroll-draw/timeline';
 import Link from 'next/link';
@@ -612,6 +613,65 @@ function TimelineDemo() {
   );
 }
 
+const PRESET_LIST = [
+  { name: 'sketch',     color: '#ff90e8', label: 'sketch'     },
+  { name: 'reveal',     color: '#22c55e', label: 'reveal'     },
+  { name: 'typewriter', color: '#ffc900', label: 'typewriter' },
+  { name: 'cinematic',  color: '#5865F2', label: 'cinematic'  },
+  { name: 'spring',     color: '#ef4444', label: 'spring'     },
+] as const;
+
+const WAVE_SVG = (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 50" style={{ width: '100%', height: 'auto', display: 'block' }}>
+    <path d="M5 25 C 20 5, 35 45, 50 25 S 80 5, 95 25" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+  </svg>
+);
+
+function PresetShowcase() {
+  const refs = [
+    useRef<HTMLDivElement>(null),
+    useRef<HTMLDivElement>(null),
+    useRef<HTMLDivElement>(null),
+    useRef<HTMLDivElement>(null),
+    useRef<HTMLDivElement>(null),
+  ];
+
+  useEffect(() => {
+    const instances = PRESET_LIST.map(({ name }, i) =>
+      refs[i].current
+        ? scrollDraw(refs[i].current!, { preset: name, trigger: TRIGGER })
+        : null,
+    );
+    return () => instances.forEach(inst => inst?.destroy());
+  }, []);
+
+  return (
+    <div style={{ width: '100%', padding: '8px 0' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8 }}>
+        {PRESET_LIST.map(({ name, color, label }, i) => (
+          <div key={name} style={{ textAlign: 'center' }}>
+            <div
+              ref={refs[i]}
+              style={{
+                background: color + '12',
+                borderRadius: 10,
+                padding: '12px 8px 8px',
+                marginBottom: 6,
+                color,
+              }}
+            >
+              {WAVE_SVG}
+            </div>
+            <span style={{ fontFamily: 'monospace', fontSize: 9, color, fontWeight: 700, letterSpacing: '0.05em' }}>
+              {label}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function VueDemo() {
   // Vue component tree — App.vue → Header.vue + Content.vue
   // Static fills + labels always visible; .ink borders + connections animate with stagger
@@ -1154,6 +1214,30 @@ function HeroWithReplay() {
 }`,
   },
   {
+    id: 'presets',
+    label: 'Presets',
+    tag: 'preset option · one-liner setup',
+    description:
+      'Five named presets — sketch, reveal, typewriter, cinematic, spring — apply sensible defaults in a single option. Each preset is a shorthand for 2–4 common options; user options always override.',
+    preview: <PresetShowcase />,
+    code: `import { scrollDraw } from 'svg-scroll-draw';
+
+// One-liner for each common pattern
+scrollDraw('#logo',    { preset: 'reveal'     }); // fade + ease-out, once
+scrollDraw('#diagram', { preset: 'sketch'     }); // staggered ease-in
+scrollDraw('#text',    { preset: 'typewriter' }); // fast linear stagger
+scrollDraw('#hero',    { preset: 'cinematic'  }); // slow fade ease-in-out
+scrollDraw('#icon',    { preset: 'spring'     }); // spring easing
+
+// Override any preset value
+scrollDraw('#logo', { preset: 'reveal', easing: 'spring' });
+
+// Inspect presets
+import { PRESETS } from 'svg-scroll-draw';
+console.log(PRESETS.reveal);
+// { easing: 'ease-out', fade: true, speed: 1.2, once: true }`,
+  },
+  {
     id: 'sequence-api',
     label: 'Sequence API',
     tag: 'scrollDrawSequence · one after another',
@@ -1194,6 +1278,7 @@ const EXAMPLE_FRAMEWORKS: Record<string, string[]> = {
   'svelte':       ['svelte'],
   'solid':        ['solid'],
   'sequence-api': ['api'],
+  'presets':      ['api'],
 };
 
 const FILTERS = [
@@ -1248,7 +1333,7 @@ export function ExamplesPage() {
             </span>
           </h1>
           <p className="text-sm sm:text-base md:text-lg text-graphite-border max-w-2xl leading-relaxed break-words">
-            Thirteen production-ready patterns — logo reveals, charts, signatures, diagrams, Vue 3, Svelte, Solid.js, Timeline API, Group API, Sequence API, and more.
+            Fourteen production-ready patterns — logo reveals, charts, signatures, diagrams, presets, Vue 3, Svelte, Solid.js, Timeline API, Group API, Sequence API, and more.
             Each one is powered by <code className="inline font-mono text-pitch-black text-[0.9em] bg-marketplace-gray border border-subtle-ash px-1.5 py-0.5 rounded-md break-all">svg-scroll-draw</code> and
             works in React, Vue 3, Svelte, Solid, and vanilla JS.
             Scroll down to see them draw live.

@@ -448,6 +448,119 @@ describe('scrollDrawTimeline — repeat option', () => {
   });
 });
 
+describe('scrollDrawTimeline — loop option', () => {
+  beforeEach(() => { vi.useFakeTimers(); });
+  afterEach(()  => { vi.useRealTimers(); });
+
+  it('switches to time-driven loop after scroll completion when loop:true', () => {
+    const container = makeContainer([{ cls: 'p' }]);
+    scrollDrawTimeline(container, {
+      tracks:       [{ selector: '.p', from: 0, to: 1 }],
+      loop:         true,
+      loopDuration: 1000,
+      repeatDelay:  0,
+    });
+
+    // Complete the scroll-driven phase
+    vi.stubGlobal('scrollY', 10000);
+    FakeIO.instances[0].trigger(true);
+    raf.tick();
+
+    // Advance past repeatDelay — loop should start
+    vi.advanceTimersByTime(50);
+
+    const path = container.querySelector('.p') as SVGPathElement;
+    // paths should have been reset (dashoffset back to 100)
+    expect(parseFloat(path.style.strokeDashoffset)).toBe(100);
+  });
+
+  it('fires onComplete on each loop iteration', () => {
+    const onComplete = vi.fn();
+    const container  = makeContainer([{ cls: 'p' }]);
+    scrollDrawTimeline(container, {
+      tracks:       [{ selector: '.p', from: 0, to: 1 }],
+      loop:         2,
+      loopDuration: 500,
+      repeatDelay:  0,
+      onComplete,
+    });
+
+    // First completion (scroll-driven)
+    vi.stubGlobal('scrollY', 10000);
+    FakeIO.instances[0].trigger(true);
+    raf.tick();
+    expect(onComplete).toHaveBeenCalledTimes(1);
+
+    // After reset, tick through loop iteration 1
+    vi.advanceTimersByTime(0); // trigger setTimeout(0)
+    // Simulate time advancing past loopDuration
+    vi.stubGlobal('performance', { now: () => Date.now() + 600 });
+    raf.tick();
+    expect(onComplete).toHaveBeenCalledTimes(2);
+  });
+
+  it('loop:false does not trigger time-driven looping', () => {
+    const container = makeContainer([{ cls: 'p' }]);
+    scrollDrawTimeline(container, {
+      tracks: [{ selector: '.p', from: 0, to: 1 }],
+      loop:   false,
+    });
+
+    vi.stubGlobal('scrollY', 10000);
+    FakeIO.instances[0].trigger(true);
+    raf.tick();
+
+    const path = container.querySelector('.p') as SVGPathElement;
+    const offsetAfterComplete = parseFloat(path.style.strokeDashoffset);
+
+    vi.advanceTimersByTime(2000);
+    // No loop — offset unchanged
+    expect(parseFloat(path.style.strokeDashoffset)).toBe(offsetAfterComplete);
+  });
+
+  it('replay() resets loopsLeft counter', () => {
+    const container = makeContainer([{ cls: 'p' }]);
+    const instance  = scrollDrawTimeline(container, {
+      tracks:       [{ selector: '.p', from: 0, to: 1 }],
+      loop:         1,
+      loopDuration: 500,
+      repeatDelay:  0,
+    });
+
+    // Complete scroll-driven phase (uses the 1 loop slot)
+    vi.stubGlobal('scrollY', 10000);
+    FakeIO.instances[0].trigger(true);
+    raf.tick();
+    vi.advanceTimersByTime(0);
+
+    // replay() should restore loopsLeft
+    instance.replay();
+    expect(instance.getProgress()).toBe(0);
+  });
+
+  it('destroy() cancels a pending loop timer', () => {
+    const container = makeContainer([{ cls: 'p' }]);
+    const instance  = scrollDrawTimeline(container, {
+      tracks:       [{ selector: '.p', from: 0, to: 1 }],
+      loop:         true,
+      loopDuration: 1000,
+      repeatDelay:  500,
+    });
+
+    vi.stubGlobal('scrollY', 10000);
+    FakeIO.instances[0].trigger(true);
+    raf.tick();
+
+    instance.destroy();
+    const path   = container.querySelector('.p') as SVGPathElement;
+    const before = parseFloat(path.style.strokeDashoffset);
+
+    vi.advanceTimersByTime(600);
+    // Loop timer was cancelled — no reset
+    expect(parseFloat(path.style.strokeDashoffset)).toBe(before);
+  });
+});
+
 describe('scrollDrawTimeline — debug overlay', () => {
   it('injects a debug overlay into document.body when debug:true', () => {
     const container = makeContainer([{ cls: 'p' }]);

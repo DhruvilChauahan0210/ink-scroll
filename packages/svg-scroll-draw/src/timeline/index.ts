@@ -37,6 +37,17 @@ export interface ScrollDrawTimelineOptions {
   /** Milliseconds to wait before each repeat. Default 0. */
   repeatDelay?: number;
   /**
+   * After the scroll-driven animation completes, automatically replay the full
+   * timeline as a time-driven loop — no further scroll input needed. Use `true`
+   * to loop infinitely or a number to loop N additional times.
+   *
+   * Each iteration plays over `loopDuration` milliseconds, then waits
+   * `repeatDelay` before the next iteration begins.
+   */
+  loop?: boolean | number;
+  /** Duration of each time-driven loop iteration in milliseconds. Default 1500. */
+  loopDuration?: number;
+  /**
    * Show a developer overlay panel visualising each track's window and live
    * fill progress. Injected into document.body as a fixed HUD, removed on destroy().
    * Useful for tuning `from`/`to` values without guessing.
@@ -88,6 +99,8 @@ export function scrollDrawTimeline(
     onComplete,
     repeat,
     repeatDelay  = 0,
+    loop         = false,
+    loopDuration = 1500,
     debug        = false,
     label,
   } = options;
@@ -97,6 +110,12 @@ export function scrollDrawTimeline(
 
   let repeatCount: number = repeat === 'infinite' ? Infinity : (repeat ?? 0);
   let repeatTimer: ReturnType<typeof setTimeout> | undefined;
+
+  // ── Loop state ────────────────────────────────────────────────────────────
+  const maxLoops: number = loop === true ? Infinity : (typeof loop === 'number' ? loop : 0);
+  let looping    = false;
+  let loopStart  = 0;
+  let loopsLeft  = maxLoops;
 
   // Resolve each track's elements + lengths up front
   const trackData = tracks.map((track) => {
@@ -206,8 +225,9 @@ export function scrollDrawTimeline(
   }
 
   function doReset() {
-    frozenAlpha = -1;
-    completed   = false;
+    frozenAlpha  = -1;
+    currentAlpha = 0;
+    completed    = false;
     trackData.forEach(({ elements, lengths, fade }) => {
       elements.forEach((el, i) => {
         el.style.strokeDashoffset = `${lengths[i]}`;
@@ -219,23 +239,58 @@ export function scrollDrawTimeline(
 
   function update() {
     if (!isVisible || paused) return;
-    let alpha = computeProgress(scrollPos(), tStart, tEnd, speed);
-    if (once) { frozenAlpha = Math.max(frozenAlpha, alpha); alpha = frozenAlpha; }
+
+    let alpha: number;
+    if (looping) {
+      alpha = Math.min(1, (performance.now() - loopStart) / loopDuration);
+    } else {
+      alpha = computeProgress(scrollPos(), tStart, tEnd, speed);
+      if (once || maxLoops > 0) { frozenAlpha = Math.max(frozenAlpha, alpha); alpha = frozenAlpha; }
+    }
+
     currentAlpha = alpha;
     applyGlobalAlpha(alpha);
 
     if (alpha >= 1 && !completed) {
       completed = true;
       onComplete?.();
-      if (repeatCount > 0 && once) {
+
+      if (maxLoops > 0 && !looping && !repeatTimer) {
+        // First completion (scroll-driven) — start time-driven loop after delay
         repeatTimer = setTimeout(() => {
+          repeatTimer = undefined;
+          if (loopsLeft !== Infinity) loopsLeft--;
+          doReset();
+          looping    = true;
+          loopStart  = performance.now();
+        }, repeatDelay);
+      } else if (repeatCount > 0 && once && !looping && !repeatTimer) {
+        // repeat (scroll-re-entry mode)
+        repeatTimer = setTimeout(() => {
+          repeatTimer = undefined;
           if (repeatCount !== Infinity) repeatCount--;
           doReset();
         }, repeatDelay);
       }
-    } else if (alpha < 1 && !once) {
+    } else if (!looping && alpha < 1 && !once) {
       completed = false;
     }
+
+    // End of a loop iteration — reset and continue or stop
+    if (looping && alpha >= 1 && !repeatTimer) {
+      completed = false;
+      if (loopsLeft > 0) {
+        repeatTimer = setTimeout(() => {
+          repeatTimer = undefined;
+          if (loopsLeft !== Infinity) loopsLeft--;
+          doReset();
+          loopStart = performance.now();
+        }, repeatDelay);
+      } else {
+        looping = false; // exhausted all loop iterations — stop
+      }
+    }
+
     rafId = requestAnimationFrame(update);
   }
 
@@ -281,7 +336,10 @@ export function scrollDrawTimeline(
     },
     replay() {
       repeatCount = repeat === 'infinite' ? Infinity : (repeat ?? 0);
+      loopsLeft   = maxLoops;
+      looping     = false;
       clearTimeout(repeatTimer);
+      repeatTimer = undefined;
       doReset();
       paused = false;
     },

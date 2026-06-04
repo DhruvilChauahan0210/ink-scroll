@@ -14,7 +14,23 @@ The demo site is fully built with all pages, components, and SEO infrastructure 
 
 ---
 
-## Completed this session (v1.6.0)
+## Completed this session (v1.8.0 — demo only)
+
+- [x] Changelog page — v1.4.0–v1.7.0 entries added, Latest tag updated
+- [x] Examples page — Presets card (14 examples now), PresetShowcase component
+- [x] Playground — Preset shortcut dropdown in Motion tab
+- [x] Blog post: "5 scroll animation patterns in under 10 lines" at /blog/5-patterns-under-10-lines
+- [x] Blog index now shows 4 posts; sitemap updated
+
+## Previous session (v1.7.0)
+
+- [x] `scrollDrawTimeline` `loop` + `loopDuration` — time-driven auto-loop after scroll completion
+- [x] `doReset()` fix — `currentAlpha` now resets to 0 (getProgress() correct after replay)
+- [x] 5 new loop tests (272 total)
+- [x] DocsPage — `preset` in Core Options, new Presets section, new CLI section, timeline options updated
+- [x] README — Presets section, CLI in Install, `preset` in options table, timeline table updated, test count updated
+
+## Previous session (v1.6.0)
 
 - [x] `preset` option — sketch, reveal, typewriter, cinematic, spring
 - [x] `PRESETS` export — inspect/extend presets directly

@@ -4,6 +4,36 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ---
 
+## [1.8.0] — 2026-06-04
+
+### Added
+- **Changelog page** — v1.4.0 through v1.7.0 entries added; "Latest" tag updated to v1.7.0.
+- **Examples page** — new Presets example card showing all 5 presets on the same SVG side by side. Count updated from 13 to 14.
+- **Playground** — Preset shortcut dropdown at the top of the Motion tab. Selecting a preset instantly applies its option values (easing, stagger, speed, fade, once) to the current state.
+- **Blog post: "5 scroll animation patterns in under 10 lines"** — `/blog/5-patterns-under-10-lines`. Covers all 5 presets with Vanilla JS + React code, use cases, and when-to-use guidance. Blog index now shows 4 posts.
+
+### Notes
+- No library changes in v1.8.0 — all changes are demo site only. Version bump optional.
+
+---
+
+## [1.7.0] — 2026-06-04
+
+### Added
+- **`loop` option for `scrollDrawTimeline`** — after the scroll-driven animation completes, automatically replay as a time-driven loop. `true` = loop infinitely, `number` = loop N additional times. Each iteration plays over `loopDuration` ms.
+- **`loopDuration` option** — duration of each time-driven loop iteration in ms (default `1500`).
+- **`preset` in docs** — `preset` option now documented in DocsPage Core Options section with link to Presets section.
+- **Presets section in DocsPage** — all 5 presets documented with option sets and code example.
+- **CLI section in DocsPage** — `npx svg-scroll-draw init` documented with framework-specific output descriptions.
+- **README updates** — Presets section with table, CLI in Install section, `preset` in options table, timeline options table updated with `repeat`, `repeatDelay`, `loop`, `loopDuration`, `debug`, `label`. Test count updated to 272.
+- **5 new loop tests** — 272 tests total.
+- **`doReset()` fix** — now correctly resets `currentAlpha = 0` so `getProgress()` returns 0 after `replay()`.
+
+### Notes
+- Fully backward compatible — `loop` and `loopDuration` default to off/1500.
+
+---
+
 ## [1.6.0] — 2026-06-04
 
 ### Added

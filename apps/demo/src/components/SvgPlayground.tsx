@@ -667,6 +667,31 @@ export function SvgPlayground() {
             {/* ── Motion tab ─────────────────────────────────────────── */}
             {activeTab === 'motion' && (
               <div className="p-4 space-y-4">
+                {/* Preset shortcut */}
+                <div className="space-y-1.5">
+                  <ControlLabel>Preset</ControlLabel>
+                  <select defaultValue="" onChange={e => {
+                    const presets: Record<string, Partial<typeof ps>> = {
+                      sketch:     { easing: 'ease-in',     stagger: 0.10, speed: 0.90, fade: false, once: false },
+                      reveal:     { easing: 'ease-out',    stagger: 0,    speed: 1.20, fade: true,  once: true  },
+                      typewriter: { easing: 'linear',      stagger: 0.05, speed: 1.50, fade: false, once: false },
+                      cinematic:  { easing: 'ease-in-out', stagger: 0,    speed: 0.75, fade: true,  once: false },
+                      spring:     { easing: 'spring',      stagger: 0,    speed: 1.10, fade: false, once: false },
+                    };
+                    const p = presets[e.target.value];
+                    if (p) setPs(prev => ({ ...prev, ...p }));
+                    e.target.value = '';
+                  }}
+                    className="w-full font-mono text-[12px] border border-pitch-black rounded-lg px-3 py-2 bg-light-linen appearance-none cursor-pointer focus:outline-none hover:bg-pitch-black hover:text-light-linen transition-colors shadow-[1px_1px_0px_#000]">
+                    <option value="">— apply preset —</option>
+                    <option value="sketch">sketch</option>
+                    <option value="reveal">reveal</option>
+                    <option value="typewriter">typewriter</option>
+                    <option value="cinematic">cinematic</option>
+                    <option value="spring">spring</option>
+                  </select>
+                </div>
+
                 {/* Easing */}
                 <div className="space-y-1.5">
                   <ControlLabel>Easing</ControlLabel>

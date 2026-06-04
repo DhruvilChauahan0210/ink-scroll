@@ -1,7 +1,7 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **1.6.0** (not yet published — bump `packages/svg-scroll-draw/package.json` before next npm publish)
-> Tests: **267 passing** across 8 test suites
+> Current version: **1.7.0** (not yet published — bump `packages/svg-scroll-draw/package.json` before next npm publish)
+> Tests: **272 passing** across 8 test suites
 > Last updated: 2026-06-04
 
 ---
@@ -156,4 +156,8 @@
 - [x] `preset` option — 5 named presets (sketch, reveal, typewriter, cinematic, spring); `PRESETS` exported
 - [x] CLI init tool — `npx svg-scroll-draw init` scaffolds starter files for all frameworks
 - [x] Blog post: "Scroll-driven path morphing with morphTo" — `/blog/scroll-path-morphing`
-- [ ] npm publish v1.6.0 — bump `packages/svg-scroll-draw/package.json` then `npm publish --access public`
+- [x] Blog post: "5 scroll animation patterns in under 10 lines" — `/blog/5-patterns-under-10-lines`
+- [x] Changelog page — v1.4.0–v1.7.0 entries, Latest tag updated
+- [x] Examples page — Presets card (14 examples total)
+- [x] Playground — Preset shortcut dropdown in Motion tab
+- [ ] npm publish v1.7.0 — bump version then `npm publish --access public` from `packages/svg-scroll-draw`

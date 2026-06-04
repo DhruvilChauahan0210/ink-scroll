@@ -22,10 +22,12 @@ Works in **React · Next.js · Vue 3 · Svelte · Solid · Angular · Nuxt · As
 - **Native CSS fast path** — on Chrome/Edge/Firefox 115+ the draw runs as `animation-timeline: view()` with zero per-frame JavaScript; falls back to the JS engine automatically
 - **Zero dependencies** — no GSAP, no ScrollTrigger, no heavyweight runtime
 - **Full playback API** — `pause`, `resume`, `seek`, `replay`, `getProgress`, `destroy`
+- **Presets** — `{ preset: 'reveal' }` for instant one-liner setup; five named presets: `sketch`, `reveal`, `typewriter`, `cinematic`, `spring`
+- **CLI scaffolder** — `npx svg-scroll-draw init` generates a ready-to-use starter file for your framework
 - **30+ options** — easing, stagger, fade, stroke color/width lerp, fill opacity, clip reveal, morphTo, velocityScale, waypoints, callbacks, repeat, autoReverse, and more
-- **Group / Sequence / Timeline APIs** — animate multiple containers simultaneously, one-after-another, or on independent scroll windows
+- **Group / Sequence / Timeline APIs** — animate multiple containers simultaneously, one-after-another, or on independent scroll windows with `loop` for auto-looping after scroll completion
 - **CSS custom property** — `--scroll-draw-progress` is set on every frame so you can drive any CSS animation without a callback
-- **221 tests across 7 suites** — engine, options, group, timeline, all framework wrappers
+- **272 tests across 8 suites** — engine, options, group, timeline, framework wrappers, cinematic
 
 ---
 
@@ -55,6 +57,14 @@ npm i svg-scroll-draw
 # yarn add svg-scroll-draw
 # bun add svg-scroll-draw
 ```
+
+Or scaffold a starter file for your framework:
+
+```bash
+npx svg-scroll-draw init
+```
+
+Asks for your framework (React/Vue/Svelte/Solid/Vanilla), preset, easing, and SVG selector — writes a ready-to-use component file.
 
 ---
 
@@ -272,6 +282,7 @@ The library falls back to the JS engine automatically when:
 
 | Option | Type | Default | Description |
 |---|---|---|---|
+| `preset` | `'sketch' \| 'reveal' \| 'typewriter' \| 'cinematic' \| 'spring'` | — | Named option bag as base config — user options always override |
 | `selector` | `string` | `"path, polyline, line, polygon, rect, circle"` | CSS selector for child elements to animate |
 | `speed` | `number` | `1` | Scale factor — values above 1 complete faster |
 | `easing` | `string \| fn` | `"linear"` | `linear`, `ease-in`, `ease-out`, `ease-in-out`, `spring`, `bounce`, `elastic`, or a custom `(t: number) => number` |
@@ -445,6 +456,37 @@ seq.destroy();
 
 ---
 
+## Presets
+
+Named option bags for common patterns. User options always override the preset:
+
+```js
+import { scrollDraw, PRESETS } from 'svg-scroll-draw';
+
+scrollDraw('#logo',    { preset: 'reveal'     }); // fade + ease-out, once
+scrollDraw('#diagram', { preset: 'sketch'     }); // staggered ease-in
+scrollDraw('#text',    { preset: 'typewriter' }); // fast linear stagger
+scrollDraw('#hero',    { preset: 'cinematic'  }); // slow fade ease-in-out
+scrollDraw('#icon',    { preset: 'spring'     }); // spring easing
+
+// Override any preset value
+scrollDraw('#logo', { preset: 'reveal', easing: 'spring' });
+
+// Inspect preset defaults
+console.log(PRESETS.reveal);
+// { easing: 'ease-out', fade: true, speed: 1.2, once: true }
+```
+
+| Preset | Sets |
+|---|---|
+| `'sketch'` | `easing: 'ease-in', stagger: 0.1, speed: 0.9` |
+| `'reveal'` | `easing: 'ease-out', fade: true, speed: 1.2, once: true` |
+| `'typewriter'` | `easing: 'linear', stagger: 0.05, speed: 1.5` |
+| `'cinematic'` | `easing: 'ease-in-out', fade: true, speed: 0.75` |
+| `'spring'` | `easing: 'spring', speed: 1.1` |
+
+---
+
 ## scrollDrawTimeline
 
 Animate multiple path groups with independent start/end windows within a single scroll range. Unlike `stagger`, each track's window can start and end wherever you want — and windows can overlap freely.
@@ -461,6 +503,11 @@ scrollDrawTimeline('#chart', {
     { selector: '.bar-3', from: 0.45, to: 0.75, easing: 'ease-out' },
     { selector: '.trend', from: 0.75, to: 1.0,  easing: 'spring'   },
   ],
+  // Auto-loop after scroll completion — no further scroll needed
+  loop:         true,
+  loopDuration: 1500,
+  // Dev overlay showing each track's window and live progress
+  debug: true,
 });
 ```
 
@@ -471,6 +518,15 @@ scrollDrawTimeline('#chart', {
 | `to` | `number` | 0–1 progress value where this track ends |
 | `easing` | `string \| fn` | Easing for this track independently |
 | `fade` | `boolean` | Fade opacity in sync with this track's draw |
+
+| Timeline option | Type | Default | Description |
+|---|---|---|---|
+| `repeat` | `number \| 'infinite'` | `0` | Reset and replay N times on scroll re-entry (with `once: true`) |
+| `repeatDelay` | `number` | `0` | ms to wait before each repeat or loop iteration |
+| `loop` | `boolean \| number` | `false` | After scroll completion, auto-loop as time-driven animation |
+| `loopDuration` | `number` | `1500` | Duration of each time-driven loop iteration in ms |
+| `debug` | `boolean` | `false` | Inject a HUD overlay showing track windows and live progress |
+| `label` | `string` | — | Label shown in the debug panel header |
 
 ---
 

@@ -27,10 +27,63 @@ const NPM = 'https://www.npmjs.com/package/svg-scroll-draw';
 
 const RELEASES = [
   {
-    version: '1.3.0',
-    date: 'May 2026',
+    version: '1.7.0',
+    date: 'June 2026',
     tag: 'Latest',
     tagColor: 'bg-creator-pink',
+    items: [
+      { type: 'new', text: 'scrollDrawTimeline loop option — after the scroll-driven animation completes, automatically replay as a time-driven loop with no further scroll input needed. loop: true = infinite, loop: number = N additional iterations.' },
+      { type: 'new', text: 'scrollDrawTimeline loopDuration option — duration of each time-driven loop iteration in ms (default 1500).' },
+      { type: 'fix', text: 'doReset() now correctly resets currentAlpha to 0, so getProgress() returns 0 immediately after replay().' },
+      { type: 'new', text: 'DocsPage updated — preset in Core Options, new Presets section, new CLI init section, timeline options fully documented (repeat, repeatDelay, loop, loopDuration, debug, label).' },
+      { type: 'new', text: 'README updated — Presets section with table, CLI in Install section, preset in options table, timeline table with all new options.' },
+      { type: 'new', text: '272 passing tests (5 new loop tests).' },
+    ],
+  },
+  {
+    version: '1.6.0',
+    date: 'June 2026',
+    tag: null,
+    tagColor: '',
+    items: [
+      { type: 'new', text: 'preset option — apply a named option bag as the base config. Five presets: sketch (staggered ease-in), reveal (fade + ease-out + once), typewriter (fast linear stagger), cinematic (slow ease-in-out + fade), spring (spring easing). User options always override.' },
+      { type: 'new', text: 'PRESETS export — the preset definitions are exported from the main package for inspection and extension.' },
+      { type: 'new', text: 'CLI init tool — npx svg-scroll-draw init scaffolds a ready-to-use starter file for React, Vue, Svelte, Solid, or Vanilla JS. Asks for framework, preset, easing, and selector.' },
+      { type: 'new', text: 'Blog post: "Scroll-driven SVG path morphing with morphTo" at /blog/scroll-path-morphing.' },
+      { type: 'new', text: '267 passing tests (5 new preset tests).' },
+    ],
+  },
+  {
+    version: '1.5.0',
+    date: 'June 2026',
+    tag: null,
+    tagColor: '',
+    items: [
+      { type: 'new', text: 'scrollDrawTimeline repeat option — replay N times (or \'infinite\') after completion with once: true. After delay, paths reset and animate again on next scroll-into-view.' },
+      { type: 'new', text: 'scrollDrawTimeline repeatDelay option — ms to wait before each repeat.' },
+      { type: 'new', text: 'scrollDrawTimeline debug option — inject a fixed HUD panel into document.body showing each track\'s scroll window as a coloured progress bar with live fill and global progress. Removed on destroy().' },
+      { type: 'new', text: 'scrollDrawTimeline label option — label shown in the debug panel header.' },
+      { type: 'new', text: 'Blog post: "Zero-JS SVG scroll animations with native CSS" at /blog/native-css-svg-scroll-animations.' },
+      { type: 'new', text: '262 passing tests (8 new timeline tests).' },
+    ],
+  },
+  {
+    version: '1.4.0',
+    date: 'May 2026',
+    tag: null,
+    tagColor: '',
+    items: [
+      { type: 'new', text: 'Cinematic class — the runtime bridge for Cinematic Studio. Reads a story.json and wires a scroll-scrubbed timeline with zero JS on the author\'s side. Import from svg-scroll-draw/cinematic.' },
+      { type: 'new', text: 'loadStory(story) — builds a sticky-stage scroll structure from the story, strokes draw paths across their scroll range, fades layers in. Honors prefers-reduced-motion.' },
+      { type: 'new', text: 'Story protocol types exported: Story, StoryScene, StoryAnimation, DrawAnimation, FadeAnimation, StoryEasing.' },
+      { type: 'new', text: '254 passing tests (5 new cinematic tests).' },
+    ],
+  },
+  {
+    version: '1.3.0',
+    date: 'May 2026',
+    tag: null,
+    tagColor: '',
     items: [
       { type: 'new', text: 'autoplay option — trigger the animation on viewport enter instead of scroll. Draws over duration milliseconds, replays on each re-entry. Use once: true to play only the first time.' },
       { type: 'new', text: 'duration option (number, default 1000ms) — controls how long the autoplay animation runs. Only used when autoplay: true.' },

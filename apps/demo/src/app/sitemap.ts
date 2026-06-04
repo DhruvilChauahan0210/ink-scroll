@@ -55,6 +55,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
+      url: `${SITE_URL}/blog/5-patterns-under-10-lines`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
       url: `${SITE_URL}/blog/scroll-path-morphing`,
       lastModified: new Date(),
       changeFrequency: "monthly",

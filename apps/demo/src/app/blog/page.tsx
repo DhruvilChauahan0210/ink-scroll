@@ -21,6 +21,16 @@ export const metadata: Metadata = {
 
 const POSTS = [
   {
+    slug: '5-patterns-under-10-lines',
+    title: '5 scroll animation patterns in under 10 lines',
+    description:
+      'Logo reveal, sketch diagram, typewriter, cinematic hero, and spring icon — five production-ready patterns each in 3 lines using svg-scroll-draw presets. No config, no GSAP.',
+    tag: 'Patterns',
+    tagColor: '#ffc900',
+    readTime: '5 min read',
+    date: 'June 2026',
+  },
+  {
     slug: 'scroll-path-morphing',
     title: 'Scroll-driven SVG path morphing with morphTo',
     description:

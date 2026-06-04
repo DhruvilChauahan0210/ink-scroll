@@ -57,6 +57,13 @@ const NAV_GROUPS = [
     items: [{ id: 'use-scroll-draw-progress', label: 'useScrollDrawProgress' }],
   },
   {
+    label: 'v1.6.0',
+    items: [
+      { id: 'presets',  label: 'Presets' },
+      { id: 'cli-init', label: 'CLI init' },
+    ],
+  },
+  {
     label: 'v1.1.0',
     items: [
       { id: 'native-css', label: 'Native CSS' },
@@ -337,6 +344,10 @@ instance.destroy();   // cleanup on unmount`}
           {/* ── Core Options ─────────────────────────────────── */}
           <DocSection id="core-options" tag="Options" heading="Core Options">
             <OptGroup>
+              <Opt name="preset" type="'sketch' | 'reveal' | 'typewriter' | 'cinematic' | 'spring'">
+                Apply a named preset as the base configuration. User-supplied options always override the preset.
+                See the <a href="#presets" className="underline underline-offset-2">Presets</a> section for the full option sets.
+              </Opt>
               <Opt name="selector" type="string" defaultVal="'path, polyline, line, polygon, rect, circle'">
                 CSS selector for elements to animate inside the container. Override to target specific paths by class or ID.
               </Opt>
@@ -1135,6 +1146,95 @@ instance.destroy();`}
               <Opt name="once" type="boolean" defaultVal="false">Lock at max progress once reached.</Opt>
               <Opt name="axis" type="'x' | 'y'" defaultVal="'y'">Scroll axis.</Opt>
               <Opt name="onComplete" type="() => void">Fires when the overall progress reaches 1.</Opt>
+              <Opt name="repeat" type="number | 'infinite'" defaultVal="0">
+                Replay N times after completing (with <code className="font-mono text-pitch-black">once: true</code>).
+                After completion + <code className="font-mono text-pitch-black">repeatDelay</code> ms, paths reset and animate again on next scroll-into-view.
+              </Opt>
+              <Opt name="repeatDelay" type="number" defaultVal="0">Milliseconds to wait before each repeat or loop iteration.</Opt>
+              <Opt name="loop" type="boolean | number" defaultVal="false">
+                After the scroll-driven animation completes, automatically replay as a time-driven loop — no further scroll needed.{' '}
+                <code className="font-mono text-pitch-black">true</code> = loop forever,{' '}
+                <code className="font-mono text-pitch-black">number</code> = loop N additional times.
+                Each iteration plays over <code className="font-mono text-pitch-black">loopDuration</code> ms.
+              </Opt>
+              <Opt name="loopDuration" type="number" defaultVal="1500">Duration of each time-driven loop iteration in milliseconds.</Opt>
+              <Opt name="debug" type="boolean" defaultVal="false">
+                Inject a fixed HUD panel into <code className="font-mono text-pitch-black">document.body</code> showing each track&apos;s
+                scroll window as a coloured progress bar with live fill and global progress. Removed on{' '}
+                <code className="font-mono text-pitch-black">destroy()</code>. Useful for tuning{' '}
+                <code className="font-mono text-pitch-black">from</code>/<code className="font-mono text-pitch-black">to</code> values.
+              </Opt>
+              <Opt name="label" type="string">Label shown in the debug panel header. Defaults to the target selector.</Opt>
+            </OptGroup>
+          </DocSection>
+
+          {/* ── Presets ──────────────────────────────────────── */}
+          <DocSection id="presets" tag="v1.6.0" heading="Presets">
+            <p className="text-sm text-graphite-border leading-relaxed mb-4">
+              Named option bags for common scroll-draw patterns. Pass{' '}
+              <code className="font-mono text-pitch-black">preset</code> as a shorthand — user options always override preset values.
+            </p>
+            <CodeBlock file="presets.js">
+{`import { scrollDraw } from 'svg-scroll-draw';
+
+// One-liner for common patterns
+scrollDraw('#logo',    { preset: 'reveal'     });
+scrollDraw('#diagram', { preset: 'sketch'     });
+scrollDraw('#text',    { preset: 'typewriter' });
+scrollDraw('#hero',    { preset: 'cinematic'  });
+scrollDraw('#icon',    { preset: 'spring'     });
+
+// Override any preset value
+scrollDraw('#logo', { preset: 'reveal', easing: 'spring' });
+
+// Inspect presets directly
+import { PRESETS } from 'svg-scroll-draw';
+console.log(PRESETS.reveal);
+// { easing: 'ease-out', fade: true, speed: 1.2, once: true }`}
+            </CodeBlock>
+            <Sub>Available presets</Sub>
+            <OptGroup>
+              <Opt name="'sketch'" type="preset">
+                Staggered ease-in draw — paths trace in one by one. Pencil-drawing feel.
+                Sets: <code className="font-mono text-pitch-black">easing: &apos;ease-in&apos;, stagger: 0.1, speed: 0.9</code>.
+              </Opt>
+              <Opt name="'reveal'" type="preset">
+                Clean viewport reveal — fades and draws in once. Best for logos and hero graphics.
+                Sets: <code className="font-mono text-pitch-black">easing: &apos;ease-out&apos;, fade: true, speed: 1.2, once: true</code>.
+              </Opt>
+              <Opt name="'typewriter'" type="preset">
+                Fast mechanical draw — paths appear quickly one after another.
+                Sets: <code className="font-mono text-pitch-black">easing: &apos;linear&apos;, stagger: 0.05, speed: 1.5</code>.
+              </Opt>
+              <Opt name="'cinematic'" type="preset">
+                Slow dramatic entrance — long ease-in-out with a gentle fade.
+                Sets: <code className="font-mono text-pitch-black">easing: &apos;ease-in-out&apos;, fade: true, speed: 0.75</code>.
+              </Opt>
+              <Opt name="'spring'" type="preset">
+                Bouncy physics feel — spring easing gives a natural overshoot-and-settle.
+                Sets: <code className="font-mono text-pitch-black">easing: &apos;spring&apos;, speed: 1.1</code>.
+              </Opt>
+            </OptGroup>
+          </DocSection>
+
+          {/* ── CLI init ─────────────────────────────────────── */}
+          <DocSection id="cli-init" tag="v1.6.0" heading="CLI — npx svg-scroll-draw init">
+            <p className="text-sm text-graphite-border leading-relaxed mb-4">
+              An interactive scaffolder that generates a starter file for your framework — no manual copy-paste from the docs needed.
+            </p>
+            <CodeBlock file="terminal">
+{`npx svg-scroll-draw init`}
+            </CodeBlock>
+            <p className="text-sm text-graphite-border leading-relaxed mb-4">
+              The CLI asks for your framework, preset, easing, and SVG selector, then writes a ready-to-use file:
+            </p>
+            <Sub>Output by framework</Sub>
+            <OptGroup>
+              <Opt name="react" type="">Writes <code className="font-mono text-pitch-black">ScrollDraw.tsx</code> — a client component with <code className="font-mono text-pitch-black">&lt;ScrollDraw&gt;</code> and a sample SVG.</Opt>
+              <Opt name="vue" type="">Writes <code className="font-mono text-pitch-black">ScrollDraw.vue</code> — a SFC with <code className="font-mono text-pitch-black">useScrollDraw</code> composable wired up.</Opt>
+              <Opt name="svelte" type="">Writes <code className="font-mono text-pitch-black">ScrollDraw.svelte</code> — uses the <code className="font-mono text-pitch-black">use:scrollDraw</code> action.</Opt>
+              <Opt name="solid" type="">Writes <code className="font-mono text-pitch-black">ScrollDraw.tsx</code> — uses <code className="font-mono text-pitch-black">createScrollDraw</code>.</Opt>
+              <Opt name="vanilla" type="">Writes <code className="font-mono text-pitch-black">scroll-draw.js</code> — a plain <code className="font-mono text-pitch-black">scrollDraw()</code> call.</Opt>
             </OptGroup>
           </DocSection>
 
