@@ -51,6 +51,17 @@ interface ScrollDrawTimelineOptions {
     /** Milliseconds to wait before each repeat. Default 0. */
     repeatDelay?: number;
     /**
+     * After the scroll-driven animation completes, automatically replay the full
+     * timeline as a time-driven loop — no further scroll input needed. Use `true`
+     * to loop infinitely or a number to loop N additional times.
+     *
+     * Each iteration plays over `loopDuration` milliseconds, then waits
+     * `repeatDelay` before the next iteration begins.
+     */
+    loop?: boolean | number;
+    /** Duration of each time-driven loop iteration in milliseconds. Default 1500. */
+    loopDuration?: number;
+    /**
      * Show a developer overlay panel visualising each track's window and live
      * fill progress. Injected into document.body as a fixed HUD, removed on destroy().
      * Useful for tuning `from`/`to` values without guessing.
