@@ -7,11 +7,25 @@
 [![license](https://img.shields.io/npm/l/svg-scroll-draw)](./LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/DhruvilChauahan0210/ink-scroll?style=flat)](https://github.com/DhruvilChauahan0210/ink-scroll/stargazers)
 
-> Scroll-driven SVG path animation. Zero dependencies. ~4.4 KB gzipped — vs 35–40 KB for Framer Motion / GSAP DrawSVG.
+> The scroll animation platform. Animate SVG paths, CSS properties, counters, video, and text — all scroll-driven, all MIT, all under 10 KB. GSAP is overkill.
 
-**[Live Demo](https://ink-scroll.vercel.app)** · [npm](https://www.npmjs.com/package/svg-scroll-draw) · [Report a bug](https://github.com/DhruvilChauahan0210/ink-scroll/issues)
+**[Live Demo](https://svg-scroll-draw.vercel.app)** · [npm](https://www.npmjs.com/package/svg-scroll-draw) · [Docs](https://svg-scroll-draw.vercel.app/docs) · [Examples](https://svg-scroll-draw.vercel.app/examples) · [Report a bug](https://github.com/DhruvilChauahan0210/ink-scroll/issues)
 
-![svg-scroll-draw demo](https://raw.githubusercontent.com/DhruvilChauahan0210/ink-scroll/main/demo.gif)
+---
+
+## What's in v2
+
+| API | Import | What it does |
+|---|---|---|
+| `scrollAnimate` | `svg-scroll-draw` | Animate **any CSS property** on any element driven by scroll. Replaces `gsap.to + ScrollTrigger`. |
+| `scrollCounter` | `svg-scroll-draw` | Animate a number from `from` to `to` as it scrolls into view. Custom format, decimals, easing. |
+| `scrollParallax` | `svg-scroll-draw` | Move any element at a different rate than scroll. Speed multiplier, reverse direction. |
+| `scrollDraw` | `svg-scroll-draw` | The original — scroll-driven SVG path drawing via `stroke-dashoffset`. |
+| `scrollVideo` | `svg-scroll-draw/video` | Tie `<video>.currentTime` to scroll. The Apple/Stripe product-page pattern. |
+| `scrollText` | `svg-scroll-draw/text` | Split text into chars/words/lines and stagger-animate each on scroll. Free GSAP SplitText. |
+| `devtools` | `svg-scroll-draw/devtools` | Visual overlay showing every active animation's triggers and progress. Dev-only. |
+
+All APIs return the same instance object: `{ destroy, replay, pause, resume, seek, getProgress }`.
 
 ---
 
@@ -19,56 +33,263 @@
 
 ```bash
 npm i svg-scroll-draw
-# or
-pnpm add svg-scroll-draw
-# or
-yarn add svg-scroll-draw
-# or
-bun add svg-scroll-draw
+# pnpm add svg-scroll-draw
+# yarn add svg-scroll-draw
+# bun add svg-scroll-draw
 ```
 
 ---
 
-## Why this exists
+## scrollAnimate — any CSS property on scroll
 
-The `stroke-dashoffset` trick for drawing SVG lines on scroll is well-known — but every existing tool that implements it is broken in a different way:
+```js
+import { scrollAnimate } from 'svg-scroll-draw';
 
-| Tool | Problem |
-|---|---|
-| **GSAP DrawSVG** | 40KB+, requires a paid Club GreenSock license for commercial use |
-| **Framer Motion** | 35KB+, React-only, heavy runtime for a single animation effect |
-| **scroll-svg** | ~2KB but abandoned — forces you to target individual path IDs manually, crashes in Next.js |
+// Fade + slide in
+scrollAnimate('#hero-text', {
+  props: {
+    opacity:   [0, 1],
+    transform: ['translateY(40px)', 'translateY(0px)'],
+  },
+  easing: 'ease-out',
+  once:   true,
+});
 
-`svg-scroll-draw` fixes all three pain points in one package.
+// Color transition
+scrollAnimate('#section', {
+  props: {
+    backgroundColor: ['#ffffff', '#0d0d0d'],
+    color:           ['#000000', '#ffffff'],
+  },
+  trigger: { start: 'top 60%', end: 'top 20%' },
+});
+
+// Multiple elements with stagger
+document.querySelectorAll('.card').forEach((el, i) => {
+  scrollAnimate(el, {
+    props: { opacity: [0, 1], transform: ['translateY(32px)', 'translateY(0)'] },
+    trigger: { start: `top ${85 - i * 5}%`, end: `top ${50 - i * 5}%` },
+    easing: 'ease-out',
+    once:   true,
+  });
+});
+```
+
+#### React
+
+```tsx
+import { ScrollAnimate } from 'svg-scroll-draw/react';
+
+<ScrollAnimate
+  props={{ opacity: [0, 1], transform: ['translateY(24px)', 'translateY(0)'] }}
+  easing="ease-out"
+  once
+>
+  <div>Any content — HTML or SVG</div>
+</ScrollAnimate>
+```
+
+#### scrollAnimate options
+
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `props` | `Record<string, [from, to]>` | — | CSS properties to animate. Supports numbers, hex/rgb colors, transform functions, and unit values like `40px`. |
+| `trigger.start` | `string` | `"top bottom"` | When animation begins |
+| `trigger.end` | `string` | `"bottom top"` | When animation ends |
+| `easing` | `string \| fn` | `"ease-out"` | Same easing system as `scrollDraw` |
+| `speed` | `number` | `1` | Animation scale factor |
+| `once` | `boolean` | `false` | Freeze at max progress — doesn't reverse on scroll back |
+| `axis` | `"x" \| "y"` | `"y"` | Scroll axis |
+| `native` | `boolean` | `true` | Use CSS `animation-timeline: view()` fast path when eligible |
+| `onProgress` | `(n: number) => void` | — | Called every frame with alpha 0–1 |
+| `onComplete` | `() => void` | — | Fires when alpha reaches 1 |
 
 ---
 
-## Quick start
+## scrollCounter — animated number on scroll
 
-### Vanilla JS
+```js
+import { scrollCounter } from 'svg-scroll-draw';
+
+// Simple count-up
+scrollCounter('#users', { to: 50_000, once: true });
+
+// Formatted currency
+scrollCounter('#revenue', {
+  to:     1_250_000,
+  format: n => '$' + Math.round(n).toLocaleString(),
+  easing: 'ease-out',
+  once:   true,
+});
+
+// Percentage with decimal
+scrollCounter('#rate', {
+  from:     0,
+  to:       94.7,
+  decimals: 1,
+  format:   n => n.toFixed(1) + '%',
+});
+```
+
+#### React
+
+```tsx
+import { ScrollCounter } from 'svg-scroll-draw/react';
+
+<ScrollCounter to={50000} format={n => n.toLocaleString()} once />
+```
+
+#### scrollCounter options
+
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `to` | `number` | — | Target value **(required)** |
+| `from` | `number` | `0` | Starting value. Set higher than `to` to count down. |
+| `format` | `(n: number) => string` | `String(Math.round(n))` | Custom formatter |
+| `decimals` | `number` | — | Shorthand for `format: n => n.toFixed(decimals)` |
+| `easing` | `string \| fn` | `"ease-out"` | — |
+| `trigger` | `TriggerConfig` | `{ start: 'top 80%', end: 'top 20%' }` | — |
+| `once` | `boolean` | `true` | — |
+| `onComplete` | `() => void` | — | — |
+
+---
+
+## scrollParallax — parallax in one line
+
+```js
+import { scrollParallax } from 'svg-scroll-draw';
+
+scrollParallax('#hero-bg', { speed: 0.4 });           // 40% of scroll rate
+scrollParallax('#floating-badge', { speed: -0.3 });   // opposite direction
+scrollParallax('#sidebar', { speed: 0.3, axis: 'x' }); // horizontal
+```
+
+`speed` is a multiplier relative to element height. `0.5` = half scroll speed, `-0.2` = opposite direction.
+
+---
+
+## scrollVideo — video scrubbing on scroll
+
+```js
+import { scrollVideo } from 'svg-scroll-draw/video';
+
+// Scrub the full video as user scrolls through the section
+scrollVideo('#hero-video', {
+  trigger: { start: 'top top', end: 'bottom top' },
+});
+
+// Scrub only the first 3 seconds
+scrollVideo('#product-reveal', {
+  from:    0,
+  to:      3,
+  trigger: { start: 'top 80%', end: 'top 20%' },
+  easing:  'ease-in-out',
+});
+```
+
+```html
+<!-- Recommended attributes for smooth scrubbing -->
+<video id="hero-video" src="hero.mp4" muted playsinline preload="auto"></video>
+```
+
+#### React
+
+```tsx
+import { ScrollVideo } from 'svg-scroll-draw/react';
+
+<ScrollVideo src="/hero.mp4" trigger={{ start: 'top top', end: 'bottom top' }} />
+```
+
+#### scrollVideo options
+
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `from` | `number` | `0` | Start time in seconds |
+| `to` | `number` | `video.duration` | End time in seconds |
+| `trigger` | `TriggerConfig` | `{ start: 'top top', end: 'bottom top' }` | — |
+| `easing` | `string \| fn` | `"linear"` | — |
+| `once` | `boolean` | `false` | — |
+| `preload` | `"auto" \| "metadata"` | `"auto"` | Sets `preload` attribute if not already present |
+| `onReady` | `() => void` | — | Fires when video metadata is loaded |
+| `onProgress` | `(n: number) => void` | — | — |
+| `onComplete` | `() => void` | — | — |
+
+---
+
+## scrollText — text reveal on scroll
+
+Free replacement for GSAP SplitText (which requires a $150+/yr Club GreenSock subscription).
+
+```js
+import { scrollText } from 'svg-scroll-draw/text';
+
+// Words fade up one by one
+scrollText('#headline', {
+  split:   'words',
+  stagger: 0.05,
+  from:    { opacity: 0, y: 24 },
+  easing:  'ease-out',
+  once:    true,
+});
+
+// Characters with rotation
+scrollText('#tagline', {
+  split:   'chars',
+  stagger: 0.025,
+  from:    { opacity: 0, y: 32, rotate: 8 },
+  once:    true,
+});
+```
+
+#### React
+
+```tsx
+import { ScrollText } from 'svg-scroll-draw/react';
+
+<ScrollText split="words" stagger={0.05} from={{ opacity: 0, y: 24 }} once>
+  Animate this headline word by word.
+</ScrollText>
+```
+
+#### scrollText options
+
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `split` | `"chars" \| "words" \| "lines"` | `"words"` | How to split the text |
+| `stagger` | `number` | `0.04` | Delay between each unit (0–1 fraction of the animation range) |
+| `from` | `{ opacity?, y?, x?, rotate?, scale? }` | `{ opacity: 0, y: 24 }` | Starting state of each unit |
+| `easing` | `string \| fn` | `"ease-out"` | — |
+| `trigger` | `TriggerConfig` | `{ start: 'top 85%', end: 'top 40%' }` | — |
+| `once` | `boolean` | `true` | — |
+| `onComplete` | `() => void` | — | — |
+
+> **Accessibility:** `scrollText` preserves the original text in `aria-label` on the container and adds `aria-hidden="true"` to all split spans. `destroy()` fully restores the original HTML.
+
+---
+
+## scrollDraw — SVG path drawing (v1 API, unchanged)
 
 ```js
 import { scrollDraw } from 'svg-scroll-draw';
 
-const instance = scrollDraw('#my-svg-container', {
-  easing: 'ease-out',
-  speed: 1.2,
+scrollDraw('#my-svg', {
+  easing:    'ease-out',
+  speed:     1.2,
+  fade:      true,
+  once:      true,
+  stagger:   0.15,
+  trigger:   { start: 'top 80%', end: 'top 20%' },
 });
-
-// Clean up on SPA navigation / unmount
-instance.destroy();
 ```
 
-**[Try the Playground →](https://svg-scroll-draw.vercel.app/playground)**
-
-### React / Next.js
+#### React / Next.js
 
 ```tsx
 import { ScrollDraw } from 'svg-scroll-draw/react';
 
 export default function Hero() {
   return (
-    <ScrollDraw speed={1.2} fade easing="ease-out">
+    <ScrollDraw speed={1.2} fade easing="ease-out" once>
       <svg width="500" height="500" viewBox="0 0 500 500">
         <path d="M10 80 C 40 10, 60 10, 95 80" stroke="black" fill="none" />
       </svg>
@@ -77,11 +298,9 @@ export default function Hero() {
 }
 ```
 
-> **Next.js App Router:** add `'use client'` to any component that uses `ScrollDraw`.
+> **Next.js App Router:** add `'use client'` to any component that uses these wrappers.
 
-**[Try the Playground →](https://svg-scroll-draw.vercel.app/playground)**
-
-### Vue 3
+#### Vue 3
 
 ```vue
 <script setup>
@@ -95,103 +314,184 @@ import { ScrollDraw } from 'svg-scroll-draw/vue';
 </template>
 ```
 
-Or use the composable directly:
+#### scrollDraw options
+
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `selector` | `string` | `"path, polyline…"` | CSS selector for child elements to animate |
+| `speed` | `number` | `1` | Scale factor relative to scroll distance |
+| `fade` | `boolean` | `false` | Animate `opacity 0 → 1` simultaneously |
+| `easing` | `string \| fn` | `"linear"` | `linear`, `ease-in`, `ease-out`, `ease-in-out`, `spring`, `bounce`, `elastic`, or `(t) => t` |
+| `stagger` | `number` | `0` | Offset between each path starting (fraction of scroll range) |
+| `direction` | `"forward" \| "reverse"` | `"forward"` | `reverse` erases the path as you scroll |
+| `trigger.start` | `string` | `"top bottom"` | When animation begins |
+| `trigger.end` | `string` | `"bottom top"` | When animation ends |
+| `once` | `boolean` | `false` | Lock at max progress |
+| `debug` | `boolean` | `false` | Show trigger zone overlay (dev only) |
+| `axis` | `"x" \| "y"` | `"y"` | Scroll axis |
+| `scrollContainer` | `string \| Element` | `window` | Custom scroll container |
+| `autoReverse` | `boolean` | `false` | Reverse when scrolling back up |
+| `delay` | `number` | `0` | ms before the engine starts observing |
+| `strokeColor` | `string \| [string, string]` | — | Static color or `[from, to]` animation |
+| `strokeWidth` | `number \| [number, number]` | — | Static width or `[from, to]` animation |
+| `fillOpacity` | `number \| [number, number]` | — | Animate fill opacity in sync with the draw |
+| `clip` | `boolean \| "left" \| "right" \| "top" \| "bottom" \| "center"` | `false` | Reveal via CSS `clip-path` instead of stroke-dashoffset |
+| `morphTo` | `string` | — | SVG path `d` value to morph toward |
+| `waypoints` | `Record<number, () => void>` | — | Callbacks at specific progress thresholds (0–1) |
+| `velocityScale` | `boolean \| number` | `false` | Scale draw speed by scroll velocity |
+| `repeat` | `number \| "infinite"` | `0` | Replay N times after completion |
+| `repeatDelay` | `number` | `0` | ms between repeats |
+| `autoplay` | `boolean` | `false` | Trigger on viewport entry instead of scroll |
+| `duration` | `number` | `1000` | Duration in ms for `autoplay` mode |
+| `native` | `boolean` | `true` | Use CSS `animation-timeline: view()` when eligible |
+| `preset` | `"sketch" \| "reveal" \| "typewriter" \| "cinematic" \| "spring"` | — | Apply a named option preset as the base config |
+| `onProgress` | `(alpha: number) => void` | — | Called every frame with draw progress (0–1) |
+| `onStart` | `() => void` | — | Fires on the first frame |
+| `onComplete` | `() => void` | — | Fires when all paths reach 100% |
+
+---
+
+## Instance API
+
+Every function returns the same instance object:
 
 ```ts
-import { useScrollDraw } from 'svg-scroll-draw/vue';
+const inst = scrollAnimate('#el', { props: { opacity: [0, 1] } });
+// Same for scrollDraw, scrollCounter, scrollVideo, scrollText, scrollParallax
 
-const containerRef = useScrollDraw({ easing: 'ease-out', speed: 1.2 });
-```
-
-**[Try the Playground →](https://svg-scroll-draw.vercel.app/playground)**
-
-### CDN / Web Component
-
-```html
-<script src="https://unpkg.com/svg-scroll-draw/dist/cdn/svg-scroll-draw.global.js"></script>
-
-<!-- Web Component (auto-registered) -->
-<scroll-draw easing="ease-out" speed="1.2">
-  <svg>...</svg>
-</scroll-draw>
-
-<!-- Or vanilla JS API -->
-<script>
-  SvgScrollDraw.scrollDraw('#my-container', { easing: 'ease-out' });
-</script>
+inst.pause();           // pause at current frame
+inst.resume();          // resume from paused state
+inst.seek(0.5);         // jump to 50% and pause
+inst.replay();          // reset and replay from the beginning
+inst.getProgress();     // → number 0–1
+inst.destroy();         // remove all listeners and clean up
 ```
 
 ---
 
-## Options
+## Easing
 
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `selector` | `string` | `"path, polyline, line, polygon, rect, circle"` | CSS selector for child elements to animate |
-| `speed` | `number` | `1` | Scale factor — values above 1 complete faster relative to scroll distance |
-| `fade` | `boolean` | `false` | Simultaneously animate `opacity 0 → 1` while drawing |
-| `easing` | `string \| fn` | `"linear"` | `linear`, `ease-in`, `ease-out`, `ease-in-out`, or a custom `(t: number) => number` |
-| `stagger` | `number` | `0` | Normalized offset between each path starting. `0.15` = each path begins 15% of the scroll range after the previous |
-| `direction` | `"forward" \| "reverse"` | `"forward"` | `reverse` starts fully drawn and erases as you scroll |
-| `trigger.start` | `string` | `"top bottom"` | When animation begins. Accepts anchor strings (`"top bottom"`) or viewport percentages (`"20%"`) |
-| `trigger.end` | `string` | `"bottom top"` | When animation ends |
-| `onProgress` | `(alpha: number) => void` | — | Called every animation frame with current draw progress (0–1) |
-| `onComplete` | `() => void` | — | Fires once when all paths reach 100% draw progress |
-| `native` | `boolean` | `true` | Run the draw as a native CSS scroll-driven animation when the browser supports it and the config is simple. Falls back to the JS engine automatically. Set `false` to always use the JS engine |
-
-### Native CSS rendering
-
-For the common case — a default trigger, a named easing, optional `fade`, forward or
-reverse — `svg-scroll-draw` hands the animation to the browser's native
-[`animation-timeline: view()`](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-timeline).
-The draw then runs on the compositor with **zero per-frame JavaScript and no scroll or
-resize listeners**.
-
-It falls back to the JS engine automatically when the browser lacks support, or when the
-config uses something CSS can't express declaratively — callbacks (`onProgress` /
-`onComplete` / `waypoints`), `stagger`, `morphTo`, `velocityScale`, `autoReverse`,
-`once`, `repeat`, a custom trigger, a custom scroll container, `speed ≠ 1`, a
-custom-function or `spring` easing, or animated color/width/fill. The full instance API
-(`pause`, `resume`, `seek`, `replay`, `getProgress`, `destroy`) works on both paths.
-
-Pass `native: false` to force the JS engine regardless.
-
-### Trigger anchors
+All APIs share the same easing system:
 
 ```js
-scrollDraw('#logo', {
-  trigger: {
-    start: 'top bottom',  // when top of element hits bottom of viewport
-    end: 'bottom top',    // when bottom of element hits top of viewport
-  }
-});
+// Named strings
+easing: 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | 'spring' | 'bounce' | 'elastic'
 
-// Or use viewport percentages
-scrollDraw('#logo', {
-  trigger: { start: '20%', end: '80%' }
-});
+// Custom function
+easing: (t: number) => number
+
+// Factory functions for parameterized physics easings
+import { createSpring, createBounce, createElastic } from 'svg-scroll-draw';
+
+easing: createSpring({ tension: 3, friction: 1.8 })
+easing: createBounce({ bounces: 4, decay: 0.4 })
+easing: createElastic({ amplitude: 1.5, period: 0.3 })
 ```
 
-Available named anchors: `top`, `center`, `bottom`.
+---
+
+## Presets
+
+Named option bags for `scrollDraw`:
+
+```js
+import { scrollDraw, PRESETS } from 'svg-scroll-draw';
+
+scrollDraw('#logo', { preset: 'sketch' });    // staggered ease-in, pencil feel
+scrollDraw('#hero', { preset: 'reveal' });    // fade + ease-out, once
+scrollDraw('#type', { preset: 'typewriter' }); // fast linear stagger
+scrollDraw('#film', { preset: 'cinematic' }); // slow ease-in-out + fade
+scrollDraw('#icon', { preset: 'spring' });    // spring easing
+
+// Inspect or extend
+console.log(PRESETS.sketch);
+```
+
+---
+
+## DevTools
+
+Visual debug overlay — shows every active animation's trigger window, progress bar, and type. Zero production bytes.
+
+```js
+import { devtools } from 'svg-scroll-draw/devtools';
+
+devtools.enable();    // Cmd/Ctrl+Shift+S to toggle
+devtools.disable();
+devtools.highlight('#my-element'); // outline for 2 seconds
+```
+
+---
+
+## Sub-path exports
+
+| Import | Contents |
+|---|---|
+| `svg-scroll-draw` | `scrollDraw`, `scrollAnimate`, `scrollCounter`, `scrollParallax`, `PRESETS`, easing factories |
+| `svg-scroll-draw/react` | `ScrollDraw`, `ScrollAnimate`, `ScrollCounter`, `ScrollVideo`, `ScrollText`, `useScrollDrawProgress` |
+| `svg-scroll-draw/vue` | `ScrollDraw`, `useScrollDraw` |
+| `svg-scroll-draw/svelte` | `scrollDraw` action, `createScrollDraw` |
+| `svg-scroll-draw/solid` | `useScrollDraw`, `createScrollDraw` |
+| `svg-scroll-draw/angular` | `ScrollDrawRef` |
+| `svg-scroll-draw/astro` | `initScrollDraw()` |
+| `svg-scroll-draw/nuxt` | `useScrollDraw()` composable |
+| `svg-scroll-draw/video` | `scrollVideo` |
+| `svg-scroll-draw/text` | `scrollText` |
+| `svg-scroll-draw/group` | `scrollDrawGroup`, `scrollDrawSequence` |
+| `svg-scroll-draw/timeline` | `scrollDrawTimeline` |
+| `svg-scroll-draw/cinematic` | `Cinematic` |
+| `svg-scroll-draw/devtools` | `devtools` (dev-only) |
 
 ---
 
 ## Bundle sizes
 
-| Format | Minified | Gzipped |
-|---|---|---|
-| ESM (`.mjs`) | 11.9 KB | ~4.4 KB |
-| CJS (`.cjs`) | 11.9 KB | ~4.4 KB |
-| React (`/react`) | 13.4 KB | ~4.8 KB |
-| IIFE / CDN (`.global.js`) | 12.9 KB | ~4.8 KB (includes Web Component) |
+| Entry | Gzipped |
+|---|---|
+| `svg-scroll-draw` (main) | ~9 KB |
+| `svg-scroll-draw/react` | ~3 KB |
+| `svg-scroll-draw/video` | ~1.5 KB |
+| `svg-scroll-draw/text` | ~2 KB |
+| `svg-scroll-draw/devtools` | ~4 KB (dev only) |
 
-Still 8–9× smaller than Framer Motion (~35 KB) or GSAP DrawSVG (~40 KB), and on supporting browsers the simple case runs as a native CSS scroll animation with zero per-frame JavaScript.
+GSAP core + ScrollTrigger = ~40 KB gzipped. **svg-scroll-draw v2 covers 95% of those use cases at ~9 KB.**
+
+---
+
+## CDN / Web Component
+
+```html
+<script src="https://unpkg.com/svg-scroll-draw/dist/cdn/svg-scroll-draw.global.js"></script>
+
+<scroll-draw easing="ease-out" speed="1.2">
+  <svg>...</svg>
+</scroll-draw>
+
+<script>
+  SvgScrollDraw.scrollDraw('#container', { easing: 'ease-out' });
+  SvgScrollDraw.scrollAnimate('#hero', {
+    props: { opacity: [0, 1] }, easing: 'ease-out', once: true,
+  });
+</script>
+```
+
+---
+
+## CLI
+
+```bash
+npx svg-scroll-draw init
+```
+
+Scaffolds a ready-to-use starter file for React, Vue, Svelte, Solid, or Vanilla JS.
 
 ---
 
 ## Browser support
 
 Chrome 80+, Safari 14+, Firefox 75+, Edge 80+
+
+Native CSS `animation-timeline: view()` fast path: Chrome 115+, Safari 18+, Firefox 110+. Automatically falls back to the JS engine on older browsers.
 
 ---
 

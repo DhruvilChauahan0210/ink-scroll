@@ -1,6 +1,6 @@
 # svg-scroll-draw — Roadmap
 
-> Last updated: 2026-06-04 — v1.4.0
+> Last updated: 2026-06-04 — v2.0.0
 >
 > Items marked ✓ are shipped. Remaining items are ordered by value/effort ratio.
 
@@ -47,6 +47,28 @@
 - [x] Timeline API (`svg-scroll-draw/timeline`) — independent per-element scroll windows
 - [x] Cinematic API (`svg-scroll-draw/cinematic`) — Studio bridge
 
+### v2 APIs (Phase 1 — v2.0.0)
+- [x] `scrollAnimate` — animate any CSS property on any element driven by scroll; native CSS fast path; full instance API
+- [x] `scrollCounter` — animated number counter on scroll with format/decimals
+- [x] `scrollParallax` — thin wrapper over `scrollAnimate` for parallax movement
+- [x] `ScrollAnimate` React component (`svg-scroll-draw/react`)
+- [x] `ScrollCounter` React component (`svg-scroll-draw/react`)
+
+### v2 APIs (Phase 2 — v2.1.0 → shipped in v2.2.0)
+- [x] `scrollVideo` — `<video>.currentTime` tied to scroll, ships as `svg-scroll-draw/video`
+- [x] `scrollText` — text split + reveal animation on scroll, ships as `svg-scroll-draw/text`
+- [x] `ScrollVideo` + `ScrollText` React wrappers
+
+### v2 APIs (Phase 3 — v2.2.0)
+- [x] Visual DevTools overlay — `svg-scroll-draw/devtools`, progress panel + trigger lines, dev-only
+- [x] Global instance registry in `src/core/registry.ts`
+
+### Demo site (v2)
+- [x] Home page v2 section — 6-card grid with code snippets for all new APIs
+- [x] DocsPage — v2.0–2.2 nav group with full option tables for all 6 new APIs
+- [x] ExamplesPage — 3 new v2 example cards (scrollAnimate, scrollCounter, scrollText)
+- [x] Blog post: "Replace GSAP ScrollTrigger with scrollAnimate" at `/blog/replace-gsap-scrolltrigger`
+
 ### Demo Site
 - [x] Home page — hero, 15+ demos, API table, framework tabs, bundle comparison, live stats
 - [x] `/examples` — 13 examples with framework filter (All / React / Vue / Svelte / Solid / Vanilla / API)
@@ -81,6 +103,9 @@
 ---
 
 ### Library
+
+#### Vue/Svelte/Solid wrappers for v2 APIs — v2.3.0 (future)
+- [ ] `scrollAnimate`, `scrollCounter`, `scrollParallax`, `scrollVideo`, `scrollText` wrappers for Vue, Svelte, and Solid
 
 #### `scrollDrawTimeline` demo — scrub bar ✓ shipped
 `TimelineDemo` in `ExamplesPage.tsx` now shows per-track progress bars + global scroll position live below the chart.

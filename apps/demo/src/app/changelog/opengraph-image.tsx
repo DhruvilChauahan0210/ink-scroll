@@ -51,20 +51,20 @@ export default function OgImage() {
             padding: '6px 18px', fontSize: 20, fontWeight: 800,
             color: '#111', fontFamily: 'monospace',
           }}>
-            v1.2.0
+            v2.2.0
           </div>
           <div style={{ fontSize: 22, color: '#444' }}>
-            Bounce, elastic easings + Solid.js demo
+            scrollVideo · scrollText · DevTools overlay
           </div>
         </div>
 
         {/* Version timeline */}
         <div style={{ display: 'flex', gap: 12 }}>
           {[
-            { v: 'v1.2.0', highlight: true },
-            { v: 'v1.1.0', highlight: false },
-            { v: 'v1.0.0', highlight: false },
-            { v: 'v0.7.0', highlight: false },
+            { v: 'v2.2.0', highlight: true },
+            { v: 'v2.0.0', highlight: false },
+            { v: 'v1.8.0', highlight: false },
+            { v: 'v1.7.0', highlight: false },
           ].map(({ v, highlight }) => (
             <div
               key={v}

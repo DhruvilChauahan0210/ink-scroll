@@ -608,7 +608,7 @@ instance.getProgress();        // → 0–1`}</Code>
         {/* Footer */}
         <footer className="border-t border-pitch-black px-4 sm:px-6 md:px-12 py-8">
           <div className="max-w-4xl mx-auto flex flex-wrap items-center justify-between gap-4">
-            <span className="font-mono text-[11px] text-graphite-border">svg-scroll-draw · MIT · ~4.4 KB gzipped</span>
+            <span className="font-mono text-[11px] text-graphite-border">svg-scroll-draw · MIT · ~9 KB gzipped</span>
             <div className="flex items-center gap-4">
               <a href={GH}  target="_blank" rel="noopener noreferrer" className="text-xs text-graphite-border hover:text-pitch-black transition-colors">GitHub</a>
               <a href={NPM} target="_blank" rel="noopener noreferrer" className="text-xs text-graphite-border hover:text-pitch-black transition-colors">npm</a>

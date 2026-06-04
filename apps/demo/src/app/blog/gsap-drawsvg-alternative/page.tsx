@@ -21,13 +21,13 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'svg-scroll-draw vs GSAP DrawSVG — Free Alternative',
     description:
-      '~4.4 KB, MIT, zero deps. A detailed comparison and drop-in alternative to GSAP DrawSVG + ScrollTrigger.',
+      '~9 KB, MIT, zero deps. A detailed comparison and drop-in alternative to GSAP DrawSVG + ScrollTrigger.',
     url: 'https://svg-scroll-draw.vercel.app/blog/gsap-drawsvg-alternative',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'svg-scroll-draw vs GSAP DrawSVG — Free Alternative',
-    description: '~4.4 KB, MIT, zero deps. Drop-in alternative to GSAP DrawSVG + ScrollTrigger.',
+    description: '~9 KB, MIT, zero deps. Drop-in alternative to GSAP DrawSVG + ScrollTrigger.',
   },
 };
 
@@ -80,14 +80,14 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 }
 
 const BUNDLE_BARS = [
-  { label: 'svg-scroll-draw', size: '~4.4 KB', pct: 11,  color: '#ff90e8' },
+  { label: 'svg-scroll-draw', size: '~9 KB', pct: 22,  color: '#ff90e8' },
   { label: 'GSAP + ScrollTrigger + DrawSVG', size: '~40 KB', pct: 100, color: '#ef4444' },
   { label: 'Framer Motion', size: '~35 KB', pct: 87,  color: '#f59e0b' },
 ];
 
 const FEATURES = [
   { feature: 'License',               ours: 'MIT — free forever',              theirs: 'Club GreenSock (commercial use requires membership)',  ourWin: true },
-  { feature: 'Bundle size (gzipped)', ours: '~4.4 KB',                          theirs: '~40 KB (gsap + ScrollTrigger + DrawSVG)',              ourWin: true },
+  { feature: 'Bundle size (gzipped)', ours: '~9 KB',                           theirs: '~40 KB (gsap + ScrollTrigger + DrawSVG)',              ourWin: true },
   { feature: 'Dependencies',          ours: 'Zero',                              theirs: '3 packages to install and register',                   ourWin: true },
   { feature: 'Native CSS fast path',  ours: 'Yes — compositor-driven on Chrome/FF 115+', theirs: 'No — JS only',                                ourWin: true },
   { feature: 'React component',       ours: '<ScrollDraw> + useScrollDraw hook', theirs: 'useEffect/useRef boilerplate every time',              ourWin: true },
@@ -157,7 +157,7 @@ export default function Page() {
             {/* Quick stats */}
             <div className="flex flex-wrap gap-3">
               {[
-                { label: 'svg-scroll-draw', value: '~4.4 KB', sub: 'gzipped', color: '#ff90e8' },
+                { label: 'svg-scroll-draw', value: '~9 KB', sub: 'gzipped', color: '#ff90e8' },
                 { label: 'GSAP stack',       value: '~40 KB',  sub: 'gzipped', color: '#ef4444' },
                 { label: 'svg-scroll-draw', value: 'MIT',     sub: 'license',  color: '#22c55e' },
                 { label: 'GSAP DrawSVG',    value: 'Paid',    sub: 'commercial', color: '#f59e0b' },
@@ -188,7 +188,7 @@ export default function Page() {
                 </div>
                 <ul className="space-y-2 text-sm">
                   {[
-                    '~4.4 KB gzipped — 9× smaller',
+                    '~9 KB gzipped — 4× smaller than GSAP',
                     'MIT — free for commercial use, forever',
                     'Zero dependencies',
                     'Native CSS fast path (Chrome/FF 115+)',
@@ -270,7 +270,7 @@ export default function Page() {
           <div className="max-w-4xl mx-auto">
             <SectionLabel>Bundle size</SectionLabel>
             <h2 className="font-display font-extrabold text-[clamp(22px,4vw,42px)] leading-[1] tracking-[-0.03em] mb-8">
-              9× smaller than GSAP
+              4× smaller than GSAP
             </h2>
             <div className="space-y-4">
               {BUNDLE_BARS.map(b => (
@@ -621,7 +621,7 @@ scrollDraw('#hero', {
 
         {/* Footer */}
         <footer className="px-6 md:px-12 py-6 border-t border-subtle-ash text-center text-[11px] font-mono text-graphite-border">
-          svg-scroll-draw · MIT · ~4.4 KB gzipped ·{' '}
+          svg-scroll-draw · MIT · ~9 KB gzipped ·{' '}
           <a href="https://github.com/DhruvilChauahan0210/ink-scroll" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-pitch-black transition-colors">
             GitHub
           </a>

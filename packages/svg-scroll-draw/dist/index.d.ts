@@ -172,6 +172,40 @@ declare function createElastic({ amplitude, period, }?: {
     period?: number;
 }): (t: number) => number;
 
+interface ScrollAnimateOptions {
+    props: Record<string, string | number | [string | number, string | number]>;
+    trigger?: TriggerConfig;
+    easing?: EasingName | ((t: number) => number);
+    speed?: number;
+    once?: boolean;
+    axis?: 'x' | 'y';
+    scrollContainer?: string | Element;
+    native?: boolean;
+    onProgress?: (alpha: number) => void;
+    onComplete?: () => void;
+}
+interface ScrollParallaxOptions {
+    speed?: number;
+    axis?: 'x' | 'y';
+    easing?: EasingName | ((t: number) => number);
+    trigger?: TriggerConfig;
+    onProgress?: (alpha: number) => void;
+}
+declare function scrollAnimate(target: string | Element, options: ScrollAnimateOptions): ScrollDrawInstance;
+declare function scrollParallax(target: string | Element, options?: ScrollParallaxOptions): ScrollDrawInstance;
+
+interface ScrollCounterOptions {
+    from?: number;
+    to: number;
+    format?: (value: number) => string;
+    easing?: EasingName | ((t: number) => number);
+    trigger?: TriggerConfig;
+    once?: boolean;
+    decimals?: number;
+    onComplete?: () => void;
+}
+declare function scrollCounter(target: string | Element, options: ScrollCounterOptions): ScrollDrawInstance;
+
 type StoryEasing = 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | 'spring' | 'bounce' | 'elastic';
 /** A traced path that strokes itself on across a scroll range. */
 interface DrawAnimation {
@@ -245,4 +279,4 @@ declare class Cinematic {
 
 declare function scrollDraw(target: string | Element, options?: ScrollDrawOptions): ScrollDrawInstance;
 
-export { Cinematic, type CinematicInstance, type CinematicOptions, type DrawAnimation, type FadeAnimation, PRESETS, type PresetName$1 as PresetName, type ScrollDrawInstance, type ScrollDrawOptions, type Story, type StoryAnimation, type StoryEasing, type StoryScene, createBounce, createElastic, createSpring, scrollDraw };
+export { Cinematic, type CinematicInstance, type CinematicOptions, type DrawAnimation, type FadeAnimation, PRESETS, type PresetName$1 as PresetName, type ScrollAnimateOptions, type ScrollCounterOptions, type ScrollDrawInstance, type ScrollDrawOptions, type ScrollParallaxOptions, type Story, type StoryAnimation, type StoryEasing, type StoryScene, createBounce, createElastic, createSpring, scrollAnimate, scrollCounter, scrollDraw, scrollParallax };

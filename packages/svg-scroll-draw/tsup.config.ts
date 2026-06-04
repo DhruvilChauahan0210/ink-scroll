@@ -24,6 +24,9 @@ export default defineConfig([
   base({ 'cinematic/index':   'src/cinematic/index.ts'      }),
   base({ 'timeline/index':    'src/timeline/index.ts'       }),
   base({ 'web-component/index': 'src/web-component/index.ts' }),
+  base({ 'video/index':    'src/video/index.ts'    }),
+  base({ 'text/index':     'src/text/index.ts'     }),
+  base({ 'devtools/index': 'src/devtools/index.ts' }),
   {
     entry: { 'svg-scroll-draw': 'src/cdn.ts' },
     format: ['iife'],

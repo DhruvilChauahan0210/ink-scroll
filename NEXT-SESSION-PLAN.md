@@ -6,15 +6,36 @@
 
 ## Current state
 
-**Library: v1.4.0 — published on npm. 254 tests passing.**
+**Library: v2.2.0 — NOT YET PUBLISHED. 358 tests passing.**
 
-The library is feature-complete for the foreseeable future. All framework wrappers (React, Vue, Svelte, Solid, Angular, Astro, Nuxt, Web Component), advanced APIs (Group, Timeline, Cinematic), and every planned option are shipped.
+All PRD v2 phases complete (Phase 1, 2, 3). svg-scroll-draw is now a full scroll animation platform.
 
-The demo site is fully built with all pages, components, and SEO infrastructure in place.
+### What shipped (all of v2, this session)
+
+**v2.0.0 — Phase 1:**
+- [x] `scrollAnimate` — animate any CSS property on any element. Native CSS fast path.
+- [x] `scrollCounter` — animated number counter on scroll.
+- [x] `scrollParallax` — parallax wrapper over scrollAnimate.
+- [x] `ScrollAnimate` + `ScrollCounter` React wrappers.
+
+**v2.2.0 — Phase 2 + 3:**
+- [x] `scrollVideo` — `<video>.currentTime` tied to scroll. Ships as `svg-scroll-draw/video`.
+- [x] `scrollText` — split text (chars/words/lines) + stagger animate. Ships as `svg-scroll-draw/text`. Free GSAP SplitText replacement.
+- [x] `devtools` overlay — progress panel, trigger lines, color-coded by type. Ships as `svg-scroll-draw/devtools`. Dev-only.
+- [x] Global instance registry (`src/core/registry.ts`).
+- [x] `ScrollVideo` + `ScrollText` React wrappers.
+- [x] 36 new tests — 358 total.
+
+**Demo site:**
+- [x] Home page v2 section — 6-card grid for all new APIs.
+- [x] DocsPage v2.0–2.2 nav group with full docs for all 6 APIs.
+- [x] ExamplesPage — 3 new v2 example cards.
+- [x] Blog post: "Replace GSAP ScrollTrigger with scrollAnimate" at `/blog/replace-gsap-scrolltrigger`.
+- [x] Version badges updated to v2.2.0.
 
 ---
 
-## Completed this session (v1.8.0 — demo only)
+## Previous session (v1.8.0 — demo only)
 
 - [x] Changelog page — v1.4.0–v1.7.0 entries added, Latest tag updated
 - [x] Examples page — Presets card (14 examples now), PresetShowcase component
@@ -56,21 +77,21 @@ The demo site is fully built with all pages, components, and SEO infrastructure 
 
 ## Remaining code tasks
 
-### TASK 0 — npm publish v1.6.0
+### TASK 0 — npm publish v2.2.0
 ```bash
 cd packages/svg-scroll-draw
-npm version 1.6.0
 npm publish --access public
 ```
 
-### TASK 1 — More blog posts
-Technical content compounds over time. Good next article:
-- "Zero-JS SVG scroll animations with native CSS" — deep-dive on the `animation-timeline` fast path, when it activates, when it falls back, browser support matrix
+### TASK 1 — Vue/Svelte/Solid wrappers for v2 APIs (v2.3.0)
+All Phase 1+2 APIs have React wrappers. Vue, Svelte, and Solid wrappers are missing for:
+- `scrollAnimate`, `scrollCounter`, `scrollParallax`, `scrollVideo`, `scrollText`
 
-### TASK 2 — `scrollDrawTimeline` API improvements
-Small quality-of-life additions to the timeline API itself:
-- Looping timeline support
-- Better debugging (visualize track windows like `debug: true` does for scroll draw)
+### TASK 2 — Changelog page update
+Update `apps/demo/src/app/changelog/page.tsx` to add v2.0.0 and v2.2.0 entries in the UI changelog.
+
+### TASK 3 — Demo site: live `scrollAnimate` demo section on home page
+Add an interactive `scrollAnimate` demo component (like `InteractiveScrollDemo` for scrollDraw) to the home page so visitors can see the v2 animations in action rather than just code snippets.
 
 ---
 

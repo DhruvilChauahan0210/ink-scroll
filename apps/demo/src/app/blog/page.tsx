@@ -21,6 +21,16 @@ export const metadata: Metadata = {
 
 const POSTS = [
   {
+    slug: 'replace-gsap-scrolltrigger',
+    title: 'Replace GSAP ScrollTrigger with scrollAnimate',
+    description:
+      'Full migration guide: scrollAnimate covers 95% of ScrollTrigger use cases at 9× smaller bundle size. Side-by-side code for fade/slide, parallax, counters, text reveals, and video scrubbing.',
+    tag: 'Migration',
+    tagColor: '#ef4444',
+    readTime: '8 min read',
+    date: 'June 2026',
+  },
+  {
     slug: '5-patterns-under-10-lines',
     title: '5 scroll animation patterns in under 10 lines',
     description:
@@ -133,7 +143,7 @@ export default function BlogPage() {
 
       {/* Footer */}
       <footer className="px-6 md:px-12 py-6 border-t border-subtle-ash text-center text-[11px] font-mono text-graphite-border">
-        svg-scroll-draw · MIT · ~4.4 KB gzipped ·{' '}
+        svg-scroll-draw · MIT · ~9 KB gzipped ·{' '}
         <a href="https://github.com/DhruvilChauahan0210/ink-scroll" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-pitch-black transition-colors">
           GitHub
         </a>

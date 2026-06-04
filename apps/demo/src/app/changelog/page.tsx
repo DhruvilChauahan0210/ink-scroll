@@ -27,10 +27,52 @@ const NPM = 'https://www.npmjs.com/package/svg-scroll-draw';
 
 const RELEASES = [
   {
-    version: '1.7.0',
+    version: '2.2.0',
     date: 'June 2026',
     tag: 'Latest',
-    tagColor: 'bg-creator-pink',
+    tagColor: 'bg-lime-glow',
+    items: [
+      { type: 'new', text: 'scrollVideo — tie <video>.currentTime to scroll position. Ships as svg-scroll-draw/video. The Apple / Stripe product-page scrub pattern. Supports from/to in seconds, preload strategy, onReady callback, and the full pause/resume/seek/replay/getProgress instance API.' },
+      { type: 'new', text: 'scrollText — split any element into chars, words, or lines and stagger-animate each unit on scroll. Ships as svg-scroll-draw/text. Free replacement for GSAP SplitText ($150+/yr). Accessibility: aria-label on container, aria-hidden on spans, destroy() restores original HTML.' },
+      { type: 'new', text: 'devtools overlay — ships as svg-scroll-draw/devtools. Fixed panel showing all active animation types (draw/animate/counter/video/text), progress bars, trigger-start/end lines on the page, color-coded by type. enable(), disable(), toggle(), highlight(el). Cmd/Ctrl+Shift+S keyboard shortcut. Zero production bytes (dev-only guard).' },
+      { type: 'new', text: 'Global instance registry (src/core/registry.ts) — all engines (animate, counter, video, text) self-register on init and unregister on destroy. DevTools reads the registry.' },
+      { type: 'new', text: 'ScrollVideo + ScrollText React components added to svg-scroll-draw/react.' },
+      { type: 'new', text: '36 new tests — scrollVideo.test.ts (17), scrollText.test.ts (19). 358 total across 12 suites.' },
+      { type: 'new', text: 'Demo site — DocsPage v2.0–2.2 nav group with full option tables. Examples page: Pricing Card Reveal (scrollAnimate), Social Proof Strip (scrollCounter), Hero Headline Reveal (scrollText). Blog post: "Replace GSAP ScrollTrigger with scrollAnimate".' },
+    ],
+  },
+  {
+    version: '2.0.0',
+    date: 'June 2026',
+    tag: null,
+    tagColor: '',
+    items: [
+      { type: 'new', text: 'scrollAnimate — animate any CSS property (opacity, transform, color, background-color, filter, or any unit-based value) on any HTML or SVG element driven by scroll. Direct replacement for gsap.to + ScrollTrigger for the 80% case. Interpolates numbers, hex/rgb colors, transform functions (multi-function string parsing), and CSS unit values.' },
+      { type: 'new', text: 'Native CSS fast path — for opacity/transform with named easing and default trigger, scrollAnimate injects animation-timeline: view() CSS instead of running JS on every frame. Automatically falls back to the JS engine when native is unsupported or the config uses callbacks, custom triggers, once, etc.' },
+      { type: 'new', text: 'scrollCounter — animate a number from from to to as the element scrolls into view. Custom format function, decimals shorthand, all standard easing. Ships in the main bundle.' },
+      { type: 'new', text: 'scrollParallax — move any element at speed × elementHeight pixels of travel. Negative speed reverses direction. Thin wrapper over scrollAnimate. Ships in the main bundle.' },
+      { type: 'new', text: 'ScrollAnimate + ScrollCounter React components added to svg-scroll-draw/react.' },
+      { type: 'new', text: '50 new tests — scrollAnimate.test.ts (30), scrollCounter.test.ts (20). 322 total across 10 suites.' },
+      { type: 'new', text: 'interpolateValue utility exported — public helper for CSS value interpolation (numbers, colors, transforms, unit values).' },
+    ],
+  },
+  {
+    version: '1.8.0',
+    date: 'June 2026',
+    tag: null,
+    tagColor: '',
+    items: [
+      { type: 'new', text: 'Changelog page — v1.4.0–v1.7.0 entries added with full release notes; "Latest" tag updated to v1.7.0.' },
+      { type: 'new', text: 'Examples page — new Presets card (14 examples total); PresetShowcase component shows all 5 presets side by side on the same SVG.' },
+      { type: 'new', text: 'Playground — Preset shortcut dropdown at the top of the Motion tab. Selecting a preset instantly applies its options to the current state.' },
+      { type: 'new', text: 'Blog post: "5 scroll animation patterns in under 10 lines" at /blog/5-patterns-under-10-lines. Covers all 5 presets with Vanilla JS + React code. Blog index now shows 4 posts.' },
+    ],
+  },
+  {
+    version: '1.7.0',
+    date: 'June 2026',
+    tag: null,
+    tagColor: '',
     items: [
       { type: 'new', text: 'scrollDrawTimeline loop option — after the scroll-driven animation completes, automatically replay as a time-driven loop with no further scroll input needed. loop: true = infinite, loop: number = N additional iterations.' },
       { type: 'new', text: 'scrollDrawTimeline loopDuration option — duration of each time-driven loop iteration in ms (default 1500).' },
@@ -253,7 +295,7 @@ export default function ChangelogPage() {
           <Link href="/examples" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Examples</Link>
           <Link href="/blog" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Blog</Link>
           <Link href="/playground" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">⚡ Playground</Link>
-          <a href={NPM} target="_blank" rel="noopener noreferrer" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono whitespace-nowrap">v1.4.0</a>
+          <a href={NPM} target="_blank" rel="noopener noreferrer" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono whitespace-nowrap">v2.2.0</a>
           <a href={GH} target="_blank" rel="noopener noreferrer" className="text-sm px-4 py-1.5 rounded-full bg-pitch-black text-light-linen hover:bg-graphite-border transition-colors font-medium whitespace-nowrap">GitHub →</a>
         </div>
 
@@ -331,7 +373,7 @@ export default function ChangelogPage() {
 
       {/* Footer */}
       <footer className="border-t border-subtle-ash px-6 md:px-12 py-6 text-center text-[11px] font-mono text-graphite-border">
-        svg-scroll-draw · MIT · ~4.4 KB gzipped ·{' '}
+        svg-scroll-draw · MIT · ~9 KB gzipped ·{' '}
         <a href={GH} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-pitch-black transition-colors">
           GitHub
         </a>

@@ -4,6 +4,43 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ---
 
+## [2.2.0] — 2026-06-04
+
+### Added — v2 Phase 2 + Phase 3
+- **`scrollVideo(target, options)`** — tie `<video>.currentTime` to scroll position. Ships as `svg-scroll-draw/video`. Supports `from`/`to` in seconds, `preload`, `onReady`, all lifecycle callbacks and instance methods. Auto-pauses on init, handles `loadedmetadata` lazily.
+- **`scrollText(target, options)`** — split text into `chars`, `words`, or `lines` and animate each unit on scroll with stagger. Ships as `svg-scroll-draw/text`. Free replacement for GSAP SplitText. Accessibility: `aria-label` on container, `aria-hidden` on spans, `destroy()` restores original HTML.
+- **`devtools` overlay** — ships as `svg-scroll-draw/devtools`. Visual panel showing all active animation types (draw/animate/counter/video/text), progress bars, trigger lines, color-coded by type. `devtools.enable()`, `devtools.disable()`, `devtools.toggle()`, `devtools.highlight(el)`. `Cmd/Ctrl+Shift+S` keyboard shortcut. Dev-only — zero production bytes.
+- **`ScrollVideo` React component** — `svg-scroll-draw/react` wrapper for `scrollVideo`.
+- **`ScrollText` React component** — `svg-scroll-draw/react` wrapper for `scrollText`.
+- **Global instance registry** (`src/core/registry.ts`) — all engines (animate, counter, video, text) self-register on init and unregister on destroy. DevTools reads the registry.
+- **36 new tests** — `scrollVideo.test.ts` (17), `scrollText.test.ts` (19). 358 total.
+
+### Demo site
+- **v2 section on home page** — 6-card grid for scrollAnimate, scrollVideo, scrollCounter, scrollText, scrollParallax, DevTools with code snippets.
+- **DocsPage v2.0–2.2 nav group** — full API docs for all 6 new APIs.
+- **ExamplesPage** — 3 new v2 example cards: scrollAnimate fade/slide, scrollCounter stats, scrollText word reveal.
+- **Blog post: "Replace GSAP ScrollTrigger with scrollAnimate"** — full migration guide with side-by-side code at `/blog/replace-gsap-scrolltrigger`.
+- **Blog index** — now shows 5 posts.
+- **Sitemap** — updated with new blog post.
+
+---
+
+## [2.0.0] — 2026-06-04
+
+### Added — v2 APIs (Phase 1)
+- **`scrollAnimate(target, options)`** — animate any CSS property on any DOM/SVG element driven by scroll. Supports `opacity`, `transform` (with multi-function interpolation), `color`, `background-color`, and any CSS property with numeric units. Native CSS `animation-timeline: view()` fast path when eligible. Same trigger, easing, `once`, `seek`, `pause`, `resume`, `replay`, `getProgress`, `destroy` API as `scrollDraw`.
+- **`scrollCounter(target, options)`** — scroll-driven number counter. Animates a numeric value from `from` to `to` as the element scrolls into view. Supports custom `format` function, `decimals` shorthand, `once` (default true), and all lifecycle callbacks.
+- **`scrollParallax(target, options)`** — move any element at a different rate than scroll. `speed` multiplier relative to element size (`0.3` = 30% of element height travel, `-0.2` = opposite direction). Thin wrapper over `scrollAnimate`.
+- **`ScrollAnimate` React component** — `svg-scroll-draw/react` wrapper for `scrollAnimate`.
+- **`ScrollCounter` React component** — `svg-scroll-draw/react` wrapper for `scrollCounter`.
+- **50 new tests** — `scrollAnimate.test.ts` (30 tests), `scrollCounter.test.ts` (20 tests). 322 total.
+- **`interpolateValue` export** — public utility for CSS value interpolation (numbers, colors, transforms, unit values).
+
+### Breaking changes
+None — all v1 APIs unchanged. v2 is purely additive.
+
+---
+
 ## [1.8.0] — 2026-06-04
 
 ### Added

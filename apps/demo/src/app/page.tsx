@@ -16,6 +16,7 @@ const WaypointsDemo = dynamic(() => import('@/components/WaypointsDemo').then(m 
 const ProgressHookDemo = dynamic(() => import('@/components/ProgressHookDemo').then(m => ({ default: m.ProgressHookDemo })));
 const FillOpacityDemo = dynamic(() => import('@/components/FillOpacityDemo').then(m => ({ default: m.FillOpacityDemo })));
 const ClipModeDemo = dynamic(() => import('@/components/ClipModeDemo').then(m => ({ default: m.ClipModeDemo })));
+const ScrollAnimateInteractive = dynamic(() => import('@/components/ScrollAnimateInteractive').then(m => ({ default: m.ScrollAnimateInteractive })));
 
 const GH  = 'https://github.com/DhruvilChauahan0210/ink-scroll';
 const NPM = 'https://www.npmjs.com/package/svg-scroll-draw';
@@ -25,7 +26,7 @@ const jsonLd = {
   '@type': 'SoftwareApplication',
   name: 'svg-scroll-draw',
   description:
-    'The definitive SVG scroll draw library. Animate SVG paths as you scroll. ~4.4 KB gzipped. Zero dependencies.',
+    'The scroll animation platform. Animate SVG paths, CSS properties, counters, video, and text on scroll. ~9 KB. Zero dependencies.',
   applicationCategory: 'DeveloperApplication',
   operatingSystem: 'Web',
   url: 'https://svg-scroll-draw.vercel.app',
@@ -81,9 +82,12 @@ const MARQUEE_ITEMS = [
   'SSR Safe',
   'requestAnimationFrame',
   'IntersectionObserver',
-  '~4.4 KB Gzipped',
+  '~9 KB Gzipped',
   'Zero Dependencies',
-  '241 Tests Passing',
+  '358 Tests Passing',
+  'scrollAnimate',
+  'scrollCounter',
+  'scrollText',
   'React + Next.js',
   'Vue 3',
   'Svelte',
@@ -138,7 +142,7 @@ export default function Home() {
           <a href="/blog" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Blog</a>
           <a href="/changelog" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Changelog</a>
           <a href="/playground" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">⚡ Playground</a>
-          <a href={NPM} target="_blank" rel="noopener noreferrer" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono whitespace-nowrap">v1.4.0</a>
+          <a href={NPM} target="_blank" rel="noopener noreferrer" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono whitespace-nowrap">v2.2.0</a>
           <a href={GH} target="_blank" rel="noopener noreferrer" className="text-sm px-4 py-1.5 rounded-full bg-pitch-black text-light-linen hover:bg-graphite-border transition-colors font-medium whitespace-nowrap">GitHub →</a>
         </div>
 
@@ -180,7 +184,7 @@ export default function Home() {
 
         {/* Sub */}
         <p className="relative z-10 text-sm sm:text-base md:text-lg text-graphite-border max-w-sm sm:max-w-md mx-auto mb-8 sm:mb-10 leading-relaxed">
-          The definitive scroll draw library. ~4.4 KB gzipped.
+          The scroll animation platform. ~9 KB gzipped.
           Works in React, Vue 3, Svelte, Solid, and more.
         </p>
 
@@ -198,10 +202,10 @@ export default function Home() {
         {/* Stats */}
         <div className="relative z-10 flex flex-wrap items-center justify-center gap-2">
           {[
-            ['~4.4 KB', 'gzipped'],
+            ['~9 KB', 'gzipped'],
             ['0', 'dependencies'],
             ['SSR', 'safe'],
-            ['241', 'tests ✓'],
+            ['358', 'tests ✓'],
           ].map(([val, label]) => (
             <div key={val} className="flex items-center gap-1.5 border border-pitch-black bg-light-linen rounded-full px-3 sm:px-4 py-1.5 shadow-[1px_1px_0px_#000]">
               <span className="font-display font-bold text-xs sm:text-sm">{val}</span>
@@ -290,12 +294,12 @@ export default function Home() {
         <div className="max-w-5xl mx-auto">
           <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-3 font-medium">Bundle size</p>
           <h2 className="font-display font-extrabold text-[clamp(28px,5vw,56px)] leading-[0.95] tracking-[-0.03em] mb-8 sm:mb-12">
-            ~4.4 KB.<br />Not 40 KB.
+            ~9 KB.<br />Not 40 KB.
           </h2>
 
           <div className="space-y-5">
             {[
-              { name: 'svg-scroll-draw', size: '~4.4 KB', pct: 11,   color: 'bg-creator-pink',    badge: '✓ yours' },
+              { name: 'svg-scroll-draw', size: '~9 KB',   pct: 22,   color: 'bg-creator-pink',    badge: '✓ yours' },
               { name: 'Framer Motion',   size: '~35 KB', pct: 87.5, color: 'bg-sunshine-yellow', badge: null },
               { name: 'GSAP DrawSVG',    size: '~40 KB', pct: 100,  color: 'bg-[#e0e0e0] dark:bg-[#333]', badge: null },
             ].map(({ name, size, pct, color, badge }) => (
@@ -889,6 +893,86 @@ const seq = scrollDrawSequence(
       {/* ── Live Stats ────────────────────────────────────────────────── */}
       <LiveStats />
 
+      {/* ── v2 ────────────────────────────────────────────────────────── */}
+      <section className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-12 sm:py-16 md:py-20">
+        <div className="max-w-5xl mx-auto">
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
+            <div>
+              <div className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-graphite-border border border-subtle-ash rounded-full px-3 py-1.5 font-medium mb-3">
+                <span className="w-1.5 h-1.5 rounded-full bg-lime-glow" />
+                New in v2.0 – v2.2
+              </div>
+              <h2 className="font-display font-extrabold text-[clamp(26px,5vw,52px)] leading-[0.95] tracking-[-0.03em]">
+                Beyond SVG.<br />Animate everything.
+              </h2>
+            </div>
+            <a href="/examples#scroll-animate" className="text-sm px-4 py-2 rounded-full border border-pitch-black hover:bg-pitch-black hover:text-light-linen transition-colors font-medium whitespace-nowrap self-start sm:self-auto">
+              See live examples →
+            </a>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-pitch-black border border-pitch-black rounded-2xl overflow-hidden">
+            {[
+              {
+                version: 'v2.0.0',
+                name: 'scrollAnimate',
+                sub: 'css · any element',
+                desc: 'Animate opacity, transform, color — any CSS property on any element. Direct replacement for gsap.to + ScrollTrigger.',
+                code: `scrollAnimate('#card', {\n  props: {\n    opacity:   [0, 1],\n    transform: [\n      'translateY(40px)',\n      'translateY(0)',\n    ],\n  },\n  easing: 'ease-out',\n  once: true,\n});`,
+              },
+              {
+                version: 'v2.0.0',
+                name: 'scrollCounter',
+                sub: 'numbers · format fn',
+                desc: 'Animate any number into view. Custom format function, decimals, easing. One call for an entire stats section.',
+                code: `scrollCounter('#revenue', {\n  to:     1_250_000,\n  format: n =>\n    '$' + Math.round(n)\n         .toLocaleString(),\n  easing: 'ease-out',\n  once:   true,\n});`,
+              },
+              {
+                version: 'v2.1.0',
+                name: 'scrollText',
+                sub: 'chars · words · lines',
+                desc: 'Split text and stagger-animate each piece on scroll. Free GSAP SplitText replacement — no Club GreenSock subscription.',
+                code: `scrollText('#headline', {\n  split:   'words',\n  stagger: 0.05,\n  from: {\n    opacity: 0,\n    y: 24,\n  },\n  once: true,\n});`,
+              },
+              {
+                version: 'v2.1.0',
+                name: 'scrollVideo',
+                sub: 'currentTime · scrub',
+                desc: 'Tie <video> playback to scroll. The Apple/Stripe product page pattern — ships free.',
+                code: `import { scrollVideo }\n  from 'svg-scroll-draw/video';\n\nscrollVideo('#hero-video', {\n  trigger: {\n    start: 'top top',\n    end:   'bottom top',\n  },\n});`,
+              },
+              {
+                version: 'v2.0.0',
+                name: 'scrollParallax',
+                sub: 'speed · depth',
+                desc: 'Move any element at a different rate than scroll. Speed multiplier, reverse direction. One line.',
+                code: `// 40% of scroll speed\nscrollParallax('#bg', {\n  speed: 0.4,\n});\n\n// Opposite direction\nscrollParallax('#badge', {\n  speed: -0.3,\n});`,
+              },
+              {
+                version: 'v2.2.0',
+                name: 'devtools',
+                sub: 'overlay · dev-only',
+                desc: 'Visual panel showing every active animation\'s trigger window, progress, and type. Zero production bytes.',
+                code: `import { devtools }\n  from 'svg-scroll-draw/devtools';\n\n// Cmd+Shift+S to toggle\ndevtools.enable();`,
+              },
+            ].map(({ version, name, sub, desc, code }) => (
+              <div key={name} className="bg-light-linen p-5 flex flex-col gap-3">
+                <div className="flex items-center justify-between">
+                  <code className="font-mono font-bold text-[13px]">{name}</code>
+                  <span className="text-[9px] font-mono text-graphite-border bg-marketplace-gray border border-subtle-ash px-2 py-0.5 rounded-full">{version}</span>
+                </div>
+                <p className="text-[11px] font-mono text-graphite-border uppercase tracking-[0.1em]">{sub}</p>
+                <p className="text-[13px] text-graphite-border leading-relaxed flex-1">{desc}</p>
+                <pre className="bg-[#111] text-[#e8e8e3] text-[10px] sm:text-[11px] font-mono leading-[1.7] rounded-lg px-3 py-3 overflow-x-auto">{code}</pre>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── scrollAnimate interactive ─────────────────────────────────── */}
+      <ScrollAnimateInteractive />
+
       {/* ── CTA ───────────────────────────────────────────────────────── */}
       <section data-mascot="big-dance" className="relative bg-sunshine-yellow border-b border-pitch-black px-4 sm:px-6 md:px-12 py-16 sm:py-20 md:py-24 text-center overflow-hidden">
         <CtaBoldMark />
@@ -925,7 +1009,7 @@ const seq = scrollDrawSequence(
           <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-5 text-[13px] text-graphite-border">
             <span>MIT License</span>
             <span className="text-subtle-ash">·</span>
-            <span>~4.4 KB gzipped</span>
+            <span>~9 KB gzipped</span>
             <span className="text-subtle-ash">·</span>
             <span>Zero dependencies</span>
           </div>
@@ -957,7 +1041,7 @@ const seq = scrollDrawSequence(
               </svg>
               npm
             </a>
-            <span className="text-[11px] font-mono text-graphite-border">v1.4.0</span>
+            <span className="text-[11px] font-mono text-graphite-border">v2.2.0</span>
           </div>
         </div>
 
@@ -984,7 +1068,7 @@ const seq = scrollDrawSequence(
                   svg-scroll-draw
                 </h3>
                 <p style={{ margin: '4px 0 0', fontSize: 14, color: 'rgb(102,102,102)', lineHeight: 1.4 }}>
-                  Scroll-driven SVG path animation. Zero deps. ~4.4 KB.
+                  The scroll animation platform. Zero deps. ~9 KB.
                 </p>
               </div>
             </div>

@@ -8,6 +8,9 @@ import { scrollDrawTimeline } from 'svg-scroll-draw/timeline';
 import Link from 'next/link';
 import { CopyButton } from './CopyButton';
 import { MobileMenu } from './MobileMenu';
+import { scrollAnimate, scrollCounter, scrollParallax } from 'svg-scroll-draw';
+import { ScrollAnimate } from 'svg-scroll-draw/react';
+import { scrollText } from 'svg-scroll-draw/text';
 
 function CodeBlock({ filename, children }: { filename: string; children: string }) {
   return (
@@ -341,7 +344,7 @@ function GroupDemo() {
           <line x1="32" y1="52" x2="32" y2="57" stroke="#ffc900" strokeWidth="2" strokeLinecap="round" />
           <line x1="12" y1="32" x2="7"  y2="32" stroke="#ffc900" strokeWidth="2" strokeLinecap="round" />
         </svg>
-        <span style={{ fontFamily: 'system-ui', fontSize: 11, color: '#999', letterSpacing: '0.08em', textTransform: 'uppercase' }}>~4.4 KB</span>
+        <span style={{ fontFamily: 'system-ui', fontSize: 11, color: '#999', letterSpacing: '0.08em', textTransform: 'uppercase' }}>~9 KB</span>
       </div>
 
       {/* Framework */}
@@ -817,6 +820,267 @@ function SolidDemo() {
   );
 }
 
+/* ── v2 real example components ──────────────────────────── */
+
+// scrollAnimate — Pricing card where every element reveals on scroll
+function PricingCardReveal() {
+  const badgeRef    = useRef<HTMLDivElement>(null);
+  const planRef     = useRef<HTMLDivElement>(null);
+  const priceRef    = useRef<HTMLDivElement>(null);
+  const featuresRef = useRef<HTMLUListElement>(null);
+  const ctaRef      = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const tr = { start: 'top 85%', end: 'top 45%' };
+    const instances = [
+      badgeRef.current && scrollAnimate(badgeRef.current, {
+        props: { opacity: [0, 1], transform: ['translateY(16px)', 'translateY(0)'] },
+        trigger: tr, easing: 'ease-out', once: true,
+      }),
+      planRef.current && scrollAnimate(planRef.current, {
+        props: { opacity: [0, 1], transform: ['translateY(20px)', 'translateY(0)'] },
+        trigger: { start: 'top 83%', end: 'top 43%' }, easing: 'ease-out', once: true,
+      }),
+      priceRef.current && scrollAnimate(priceRef.current, {
+        props: { opacity: [0, 1], transform: ['translateY(24px)', 'translateY(0)'] },
+        trigger: { start: 'top 80%', end: 'top 40%' }, easing: 'ease-out', once: true,
+      }),
+      featuresRef.current && scrollAnimate(featuresRef.current, {
+        props: { opacity: [0, 1] },
+        trigger: { start: 'top 77%', end: 'top 37%' }, easing: 'ease-out', once: true,
+      }),
+      ctaRef.current && scrollAnimate(ctaRef.current, {
+        props: { opacity: [0, 1], transform: ['translateY(12px)', 'translateY(0)'] },
+        trigger: { start: 'top 74%', end: 'top 34%' }, easing: 'ease-out', once: true,
+      }),
+    ].filter(Boolean);
+    return () => instances.forEach(i => i && i.destroy());
+  }, []);
+
+  return (
+    <div style={{ width: '100%', padding: '20px', background: '#f8f8f6' }}>
+      <div style={{
+        maxWidth: 320, margin: '0 auto',
+        background: '#fff', borderRadius: 16,
+        border: '1.5px solid #111', boxShadow: '4px 4px 0 #111',
+        padding: '28px 24px', display: 'flex', flexDirection: 'column', gap: 16,
+      }}>
+        <div ref={badgeRef} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#ffeaa7', border: '1px solid #f0d040', borderRadius: 20, padding: '4px 10px', width: 'fit-content' }}>
+          <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#e6a817' }} />
+          <span style={{ fontFamily: 'monospace', fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase' }}>Pro Plan</span>
+        </div>
+        <div ref={planRef}>
+          <div style={{ fontFamily: 'system-ui', fontWeight: 800, fontSize: 22, letterSpacing: '-0.03em', lineHeight: 1.1 }}>Everything you need</div>
+          <div style={{ fontFamily: 'system-ui', fontSize: 13, color: '#666', marginTop: 4 }}>For teams shipping fast.</div>
+        </div>
+        <div ref={priceRef} style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
+          <span style={{ fontFamily: 'system-ui', fontWeight: 800, fontSize: 42, letterSpacing: '-0.05em', lineHeight: 1 }}>$49</span>
+          <span style={{ fontFamily: 'monospace', fontSize: 12, color: '#666' }}>/mo</span>
+        </div>
+        <ul ref={featuresRef} style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {['Unlimited projects', 'scrollAnimate + scrollText', 'Zero dependencies', 'MIT license'].map(f => (
+            <li key={f} style={{ display: 'flex', alignItems: 'center', gap: 8, fontFamily: 'system-ui', fontSize: 13 }}>
+              <span style={{ width: 16, height: 16, borderRadius: '50%', background: '#4ade80', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, flexShrink: 0 }}>✓</span>
+              {f}
+            </li>
+          ))}
+        </ul>
+        <div ref={ctaRef}>
+          <button style={{ width: '100%', background: '#111', color: '#fff', border: 'none', borderRadius: 10, padding: '12px 0', fontFamily: 'system-ui', fontWeight: 700, fontSize: 14, cursor: 'pointer', boxShadow: '2px 2px 0 #555' }}>
+            Get started →
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// scrollCounter — clean SaaS metrics row
+function SocialProofStats() {
+  const STATS = [
+    { to: 50000, label: 'developers',  fmt: (n: number) => Math.round(n).toLocaleString() + '+' },
+    { to: 9,     label: 'KB gzipped',  fmt: (n: number) => '~' + Math.round(n) },
+    { to: 358,   label: 'tests green', fmt: (n: number) => Math.round(n).toString() },
+    { to: 0,     label: 'dependencies', fmt: (n: number) => Math.round(n).toString() },
+  ];
+
+  const numRefs  = [useRef<HTMLSpanElement>(null), useRef<HTMLSpanElement>(null), useRef<HTMLSpanElement>(null), useRef<HTMLSpanElement>(null)];
+  const itemRefs = [useRef<HTMLDivElement>(null),  useRef<HTMLDivElement>(null),  useRef<HTMLDivElement>(null),  useRef<HTMLDivElement>(null)];
+
+  useEffect(() => {
+    const insts = STATS.flatMap((s, i) => [
+      numRefs[i].current && scrollCounter(numRefs[i].current!, {
+        to: s.to, format: s.fmt, easing: 'ease-out', once: true,
+        trigger: { start: `top ${86 - i * 4}%`, end: `top ${46 - i * 4}%` },
+      }),
+      itemRefs[i].current && scrollAnimate(itemRefs[i].current!, {
+        props: { opacity: [0, 1], transform: ['translateY(18px)', 'translateY(0)'] },
+        trigger: { start: `top ${88 - i * 4}%`, end: `top ${54 - i * 4}%` },
+        easing: 'ease-out', once: true,
+      }),
+    ]).filter(Boolean);
+    return () => insts.forEach(i => i && i.destroy());
+  }, []);
+
+  return (
+    <div style={{ width: '100%', background: '#faf9f5', padding: '32px 20px' }}>
+      {/* header row */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24 }}>
+        <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#111', flexShrink: 0 }} />
+        <span style={{ fontFamily: 'var(--font-geist-mono, monospace)', fontSize: 10, fontWeight: 600, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#888' }}>
+          The numbers
+        </span>
+      </div>
+
+      {/* stats — 2 columns, full-width dividers */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', borderTop: '1px solid #e0e0d8' }}>
+        {STATS.map((s, i) => (
+          <div
+            key={s.label}
+            ref={itemRefs[i]}
+            style={{
+              padding: '20px 0 20px',
+              paddingRight: i % 2 === 0 ? 20 : 0,
+              paddingLeft:  i % 2 === 1 ? 20 : 0,
+              borderBottom: '1px solid #e0e0d8',
+              borderRight:  i % 2 === 0 ? '1px solid #e0e0d8' : 'none',
+            }}
+          >
+            <span
+              ref={numRefs[i]}
+              style={{
+                fontFamily: 'var(--font-syne, system-ui)',
+                fontWeight: 800,
+                fontSize: 38,
+                lineHeight: 1,
+                letterSpacing: '-0.04em',
+                color: '#111',
+                display: 'block',
+              }}
+            >
+              {s.fmt(0)}
+            </span>
+            <span style={{
+              fontFamily: 'var(--font-geist-mono, monospace)',
+              fontSize: 10,
+              color: '#888',
+              textTransform: 'uppercase',
+              letterSpacing: '0.12em',
+              marginTop: 6,
+              display: 'block',
+            }}>
+              {s.label}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// scrollText — hero headline reveal
+function HeadlineReveal() {
+  const eyebrow = useRef<HTMLDivElement>(null);
+  const line1   = useRef<HTMLHeadingElement>(null);
+  const line2   = useRef<HTMLHeadingElement>(null);
+  const desc    = useRef<HTMLParagraphElement>(null);
+
+  useEffect(() => {
+    const insts = [
+      eyebrow.current && scrollAnimate(eyebrow.current, {
+        props: { opacity: [0, 1], transform: ['translateY(10px)', 'translateY(0)'] },
+        trigger: { start: 'top 90%', end: 'top 65%' }, easing: 'ease-out', once: true,
+      }),
+      line1.current && scrollText(line1.current, {
+        split: 'words', stagger: 0.08,
+        from: { opacity: 0, y: 40 },
+        easing: 'ease-out', once: true,
+        trigger: { start: 'top 87%', end: 'top 54%' },
+      }),
+      line2.current && scrollText(line2.current, {
+        split: 'words', stagger: 0.08,
+        from: { opacity: 0, y: 40 },
+        easing: 'ease-out', once: true,
+        trigger: { start: 'top 82%', end: 'top 49%' },
+      }),
+      desc.current && scrollText(desc.current, {
+        split: 'chars', stagger: 0.012,
+        from: { opacity: 0 },
+        easing: 'linear', once: true,
+        trigger: { start: 'top 78%', end: 'top 44%' },
+      }),
+    ].filter(Boolean);
+    return () => insts.forEach(i => i && i.destroy());
+  }, []);
+
+  return (
+    <div style={{
+      background: '#0d0d0d',
+      padding: '48px 28px',
+      minHeight: 280,
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      gap: 0,
+    }}>
+      {/* eyebrow */}
+      <div ref={eyebrow} style={{ marginBottom: 16 }}>
+        <span style={{
+          display: 'inline-flex', alignItems: 'center', gap: 6,
+          fontFamily: 'var(--font-geist-mono, monospace)',
+          fontSize: 10, fontWeight: 600,
+          letterSpacing: '0.2em', textTransform: 'uppercase',
+          color: '#555',
+          border: '1px solid #2a2a2a',
+          borderRadius: 20,
+          padding: '4px 10px',
+        }}>
+          <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#ffd60a' }} />
+          scrollText demo
+        </span>
+      </div>
+
+      {/* headline line 1 — white */}
+      <h2 ref={line1} style={{
+        fontFamily: 'var(--font-syne, system-ui)',
+        fontWeight: 800,
+        fontSize: 'clamp(28px, 5vw, 44px)',
+        lineHeight: 1.0,
+        letterSpacing: '-0.04em',
+        color: '#f5f5f5',
+        margin: '0 0 4px',
+      }}>
+        Build scroll animations.
+      </h2>
+
+      {/* headline line 2 — accent yellow */}
+      <h2 ref={line2} style={{
+        fontFamily: 'var(--font-syne, system-ui)',
+        fontWeight: 800,
+        fontSize: 'clamp(28px, 5vw, 44px)',
+        lineHeight: 1.0,
+        letterSpacing: '-0.04em',
+        color: '#ffd60a',
+        margin: '0 0 20px',
+      }}>
+        Without GSAP.
+      </h2>
+
+      {/* descriptor — char trickle */}
+      <p ref={desc} style={{
+        fontFamily: 'var(--font-geist-mono, monospace)',
+        fontSize: 11,
+        color: '#444',
+        letterSpacing: '0.05em',
+        margin: 0,
+        lineHeight: 1.6,
+      }}>
+        Zero deps · MIT · 9 KB · works with React, Vue, Svelte
+      </p>
+    </div>
+  );
+}
+
 /* ── Example cards data ───────────────────────────────────── */
 
 const EXAMPLES = [
@@ -1262,6 +1526,112 @@ const seq = scrollDrawSequence(
 seq.replay();   // restart from step 1
 seq.destroy();  // cleanup on unmount`,
   },
+
+  // ── v2 examples ────────────────────────────────────────────────────────────
+
+  {
+    id: 'scroll-animate',
+    label: 'Pricing Card Reveal',
+    tag: 'v2 · scrollAnimate · staggered',
+    darkPreview: false,
+    description:
+      'A pricing card where every element — badge, plan name, price, feature list, CTA — reveals on scroll with staggered scrollAnimate calls. Each element has its own trigger offset for a natural cascade.',
+    preview: <PricingCardReveal />,
+    code: `import { scrollAnimate } from 'svg-scroll-draw';
+
+// Each element gets its own trigger offset → natural cascade
+scrollAnimate(badgeEl, {
+  props: { opacity: [0, 1], transform: ['translateY(16px)', 'translateY(0)'] },
+  trigger: { start: 'top 85%', end: 'top 45%' },
+  easing: 'ease-out', once: true,
+});
+
+scrollAnimate(priceEl, {
+  props: { opacity: [0, 1], transform: ['translateY(24px)', 'translateY(0)'] },
+  trigger: { start: 'top 80%', end: 'top 40%' }, // starts 5% later
+  easing: 'ease-out', once: true,
+});
+
+scrollAnimate(ctaEl, {
+  props: { opacity: [0, 1], transform: ['translateY(12px)', 'translateY(0)'] },
+  trigger: { start: 'top 74%', end: 'top 34%' }, // last to reveal
+  easing: 'ease-out', once: true,
+});`,
+  },
+
+  {
+    id: 'scroll-counter',
+    label: 'Social Proof Strip',
+    tag: 'v2 · scrollCounter · formatted',
+    darkPreview: true,
+    description:
+      'A dark social proof section with 4 live counters — each with a different format function. Numbers count up from zero as the section scrolls into view. Cards also fade in with scrollAnimate.',
+    preview: <SocialProofStats />,
+    code: `import { scrollCounter, scrollAnimate } from 'svg-scroll-draw';
+
+// Users — integer with locale formatting
+scrollCounter('#users', {
+  to: 50_000,
+  format: n => Math.round(n).toLocaleString() + '+',
+  once: true,
+});
+
+// Satisfaction — fixed decimal percentage
+scrollCounter('#satisfaction', {
+  to: 94.7,
+  format: n => n.toFixed(1) + '%',
+  once: true,
+});
+
+// KB size — prefix notation
+scrollCounter('#size', {
+  to: 9,
+  format: n => '~' + Math.round(n),
+  once: true,
+});
+
+// Zero — counts down to 0 (dependencies)
+scrollCounter('#deps', { to: 0, once: true });`,
+  },
+
+  {
+    id: 'scroll-text',
+    label: 'Hero Headline Reveal',
+    tag: 'v2 · scrollText · words + chars',
+    darkPreview: true,
+    description:
+      'A two-line marketing headline that reveals word-by-word on scroll, followed by a subtitle trickling in char by char. Each line has its own trigger window so they cascade naturally.',
+    preview: <HeadlineReveal />,
+    code: `import { scrollText } from 'svg-scroll-draw/text';
+
+// Line 1 — words fade up with stagger
+scrollText('#line1', {
+  split:   'words',
+  stagger: 0.07,
+  from:    { opacity: 0, y: 32 },
+  easing:  'ease-out',
+  once:    true,
+  trigger: { start: 'top 88%', end: 'top 52%' },
+});
+
+// Line 2 — offset trigger, starts after line 1
+scrollText('#line2', {
+  split:   'words',
+  stagger: 0.07,
+  from:    { opacity: 0, y: 32 },
+  once:    true,
+  trigger: { start: 'top 84%', end: 'top 48%' },
+});
+
+// Subtitle — char-by-char typewriter trickle
+scrollText('#subtitle', {
+  split:   'chars',
+  stagger: 0.015,
+  from:    { opacity: 0 },
+  easing:  'linear',
+  once:    true,
+});`,
+  },
 ];
 
 const EXAMPLE_FRAMEWORKS: Record<string, string[]> = {
@@ -1277,7 +1647,10 @@ const EXAMPLE_FRAMEWORKS: Record<string, string[]> = {
   'vue':          ['vue'],
   'svelte':       ['svelte'],
   'solid':        ['solid'],
-  'sequence-api': ['api'],
+  'sequence-api':    ['api'],
+  'scroll-animate':  ['react', 'vanilla'],
+  'scroll-counter':  ['vanilla', 'react'],
+  'scroll-text':     ['react', 'vanilla'],
   'presets':      ['api'],
 };
 
@@ -1428,7 +1801,7 @@ export function ExamplesPage() {
 
       {/* Footer */}
       <footer className="px-6 md:px-12 py-6 border-t border-subtle-ash text-center text-[11px] font-mono text-graphite-border">
-        svg-scroll-draw · MIT · ~4.4 KB gzipped ·{' '}
+        svg-scroll-draw · MIT · ~9 KB gzipped ·{' '}
         <a href="https://github.com/DhruvilChauahan0210/ink-scroll" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-pitch-black transition-colors">
           GitHub
         </a>

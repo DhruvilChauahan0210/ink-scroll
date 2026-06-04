@@ -109,6 +109,59 @@ interface ScrollDrawOptions {
     native?: boolean;
 }
 
+interface ScrollAnimateOptions {
+    props: Record<string, string | number | [string | number, string | number]>;
+    trigger?: TriggerConfig;
+    easing?: EasingName | ((t: number) => number);
+    speed?: number;
+    once?: boolean;
+    axis?: 'x' | 'y';
+    scrollContainer?: string | Element;
+    native?: boolean;
+    onProgress?: (alpha: number) => void;
+    onComplete?: () => void;
+}
+
+interface ScrollCounterOptions {
+    from?: number;
+    to: number;
+    format?: (value: number) => string;
+    easing?: EasingName | ((t: number) => number);
+    trigger?: TriggerConfig;
+    once?: boolean;
+    decimals?: number;
+    onComplete?: () => void;
+}
+
+interface ScrollVideoOptions {
+    trigger?: TriggerConfig;
+    from?: number;
+    to?: number;
+    easing?: EasingName | ((t: number) => number);
+    once?: boolean;
+    axis?: 'x' | 'y';
+    preload?: 'auto' | 'metadata';
+    onReady?: () => void;
+    onComplete?: () => void;
+    onProgress?: (alpha: number) => void;
+}
+
+interface ScrollTextOptions {
+    split?: 'chars' | 'words' | 'lines';
+    stagger?: number;
+    easing?: EasingName | ((t: number) => number);
+    from?: {
+        opacity?: number;
+        y?: number;
+        x?: number;
+        rotate?: number;
+        scale?: number;
+    };
+    trigger?: TriggerConfig;
+    once?: boolean;
+    onComplete?: () => void;
+}
+
 interface UseScrollDrawProgressOptions {
     /** Same speed multiplier as ScrollDraw. Values > 1 complete faster. Default 1. */
     speed?: number;
@@ -141,5 +194,35 @@ type ScrollDrawProps = ScrollDrawOptions & {
     style?: React.CSSProperties;
 };
 declare function ScrollDraw({ children, className, style, ...options }: ScrollDrawProps): react_jsx_runtime.JSX.Element;
+type ScrollAnimateProps = ScrollAnimateOptions & {
+    children: React.ReactNode;
+    className?: string;
+    style?: React.CSSProperties;
+};
+declare function ScrollAnimate({ children, className, style, ...options }: ScrollAnimateProps): react_jsx_runtime.JSX.Element;
+type ScrollCounterProps = ScrollCounterOptions & {
+    className?: string;
+    style?: React.CSSProperties;
+};
+declare function ScrollCounter({ className, style, ...options }: ScrollCounterProps): react_jsx_runtime.JSX.Element;
+type ScrollVideoProps = ScrollVideoOptions & {
+    src: string;
+    className?: string;
+    style?: React.CSSProperties;
+    muted?: boolean;
+    playsInline?: boolean;
+};
+declare function ScrollVideo({ src, className, style, muted, playsInline, ...options }: ScrollVideoProps): react_jsx_runtime.JSX.Element;
+type ScrollTextProps = ScrollTextOptions & {
+    children: string;
+    as?: keyof React.JSX.IntrinsicElements;
+    className?: string;
+    style?: React.CSSProperties;
+};
+declare function ScrollText({ children, as: Tag, className, style, ...options }: ScrollTextProps): React.ReactElement<{
+    ref: React.RefObject<HTMLElement>;
+    className: string | undefined;
+    style: React.CSSProperties | undefined;
+}, string | React.JSXElementConstructor<any>>;
 
-export { ScrollDraw, type UseScrollDrawProgressOptions, useScrollDrawProgress };
+export { ScrollAnimate, ScrollCounter, ScrollDraw, ScrollText, ScrollVideo, type UseScrollDrawProgressOptions, useScrollDrawProgress };

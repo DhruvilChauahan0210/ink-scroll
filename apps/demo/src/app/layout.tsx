@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     template: "%s | svg-scroll-draw",
   },
   description:
-    "The definitive SVG scroll draw library. Animate SVG paths as you scroll. ~4.4 KB gzipped. Zero dependencies. Works with React, Next.js, Vue 3, and vanilla JS.",
+    "The scroll animation platform. Animate SVG paths, CSS properties, counters, video, and text — all scroll-driven. ~9 KB. Zero dependencies. Works with React, Next.js, Vue 3, and vanilla JS.",
   keywords: [
     "scroll draw",
     "svg scroll draw",
@@ -64,7 +64,7 @@ export const metadata: Metadata = {
     siteName: "svg-scroll-draw",
     title: "svg-scroll-draw — SVG Scroll Draw Animation Library",
     description:
-      "The definitive SVG scroll draw library. Animate SVG paths as you scroll. ~4.4 KB gzipped. Zero dependencies. Works with React, Next.js, Vue 3, and vanilla JS.",
+      "The scroll animation platform. Animate SVG paths, CSS properties, counters, video, and text — all scroll-driven. ~9 KB. Zero dependencies. Works with React, Next.js, Vue 3, and vanilla JS.",
     images: [
       {
         url: `${SITE_URL}/opengraph-image`,
@@ -78,7 +78,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "svg-scroll-draw — SVG Scroll Draw Animation Library",
     description:
-      "The definitive SVG scroll draw library. Animate SVG paths as you scroll. ~4.4 KB gzipped. Zero dependencies.",
+      "The scroll animation platform. Animate SVG paths, CSS properties, counters, video, and text — all scroll-driven. ~9 KB. Zero dependencies.",
     images: [`${SITE_URL}/opengraph-image`],
   },
   verification: {

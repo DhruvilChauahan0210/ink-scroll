@@ -1,7 +1,7 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **1.7.0** (not yet published — bump `packages/svg-scroll-draw/package.json` before next npm publish)
-> Tests: **272 passing** across 8 test suites
+> Current version: **2.2.0** (not yet published — run `npm publish --access public` from `packages/svg-scroll-draw`)
+> Tests: **358 passing** across 12 test suites
 > Last updated: 2026-06-04
 
 ---
@@ -9,7 +9,7 @@
 ## Core Library (`packages/svg-scroll-draw`)
 
 ### Architecture
-- [x] Directory structure — `src/core/`, `src/react/`, `src/vue/`, `src/svelte/`, `src/solid/`, `src/angular/`, `src/astro/`, `src/nuxt/`, `src/web-component/`, `src/group/`, `src/timeline/`, `src/cinematic/`
+- [x] Directory structure — `src/core/`, `src/animate/`, `src/counter/`, `src/react/`, `src/vue/`, `src/svelte/`, `src/solid/`, `src/angular/`, `src/astro/`, `src/nuxt/`, `src/web-component/`, `src/group/`, `src/timeline/`, `src/cinematic/`
 - [x] TypeScript interfaces — `ScrollDrawOptions`, `ScrollDrawInstance`, `TriggerConfig`, `EasingName`, `Story`, `StoryScene`, `StoryAnimation`
 - [x] Pure utility functions in `src/core/utils.ts` — easing, math, trigger parsing, color interpolation, `getElementLength`
 - [x] Core engine in `src/core/engine.ts` — handles both scroll-driven and autoplay modes, native CSS fast path, clip-path mode

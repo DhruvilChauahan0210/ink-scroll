@@ -57,6 +57,17 @@ const NAV_GROUPS = [
     items: [{ id: 'use-scroll-draw-progress', label: 'useScrollDrawProgress' }],
   },
   {
+    label: 'v2.0–2.2',
+    items: [
+      { id: 'scroll-animate',   label: 'scrollAnimate' },
+      { id: 'scroll-counter',   label: 'scrollCounter' },
+      { id: 'scroll-parallax',  label: 'scrollParallax' },
+      { id: 'scroll-video',     label: 'scrollVideo' },
+      { id: 'scroll-text',      label: 'scrollText' },
+      { id: 'devtools',         label: 'DevTools' },
+    ],
+  },
+  {
     label: 'v1.6.0',
     items: [
       { id: 'presets',  label: 'Presets' },
@@ -205,7 +216,7 @@ export function DocsPage() {
           <Link href="/examples" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Examples</Link>
           <Link href="/blog" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Blog</Link>
           <Link href="/playground" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">⚡ Playground</Link>
-          <a href={NPM} target="_blank" rel="noopener noreferrer" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono whitespace-nowrap">v1.4.0</a>
+          <a href={NPM} target="_blank" rel="noopener noreferrer" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono whitespace-nowrap">v2.2.0</a>
           <a href={GH} target="_blank" rel="noopener noreferrer" className="text-sm px-4 py-1.5 rounded-full bg-pitch-black text-light-linen hover:bg-graphite-border transition-colors font-medium whitespace-nowrap">GitHub →</a>
         </div>
 
@@ -1275,6 +1286,208 @@ scrollDraw('#hero-svg', { easing: 'ease-out', once: true });
               and the overall alpha in clip mode. Use{' '}
               <code className="font-mono">onProgress</code> if you need per-path values.
             </Note>
+          </DocSection>
+
+          {/* ── v2 APIs ──────────────────────────────────────── */}
+          <DocSection id="scroll-animate" tag="v2.0.0" heading="scrollAnimate">
+            <p className="text-sm text-graphite-border leading-relaxed mb-2">
+              Animate any CSS property on any DOM or SVG element driven by scroll position. The direct replacement for <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">gsap.to(el, {'{'} scrollTrigger {'}'})</code> for the 80% case.
+            </p>
+            <CodeBlock file="index.js">
+{`import { scrollAnimate } from 'svg-scroll-draw';
+
+// Fade + slide in
+scrollAnimate('#hero-text', {
+  props: {
+    opacity:   [0, 1],
+    transform: ['translateY(40px)', 'translateY(0px)'],
+  },
+  easing: 'ease-out',
+  once: true,
+});
+
+// Color transition
+scrollAnimate('#section', {
+  props: {
+    backgroundColor: ['#ffffff', '#0d0d0d'],
+    color:           ['#000000', '#ffffff'],
+  },
+});
+
+// React wrapper
+import { ScrollAnimate } from 'svg-scroll-draw/react';
+
+<ScrollAnimate
+  props={{ opacity: [0, 1], transform: ['translateY(24px)', 'translateY(0)'] }}
+  easing="ease-out"
+  once
+>
+  <div>Any content</div>
+</ScrollAnimate>`}
+            </CodeBlock>
+            <div className="overflow-x-auto mt-4">
+              <table className="w-full text-[13px] border border-subtle-ash rounded-xl overflow-hidden">
+                <thead>
+                  <tr className="bg-pitch-black text-light-linen text-[11px] uppercase tracking-wide">
+                    <th className="text-left px-4 py-2 font-medium">Option</th>
+                    <th className="text-left px-4 py-2 font-medium">Type</th>
+                    <th className="text-left px-4 py-2 font-medium">Default</th>
+                    <th className="text-left px-4 py-2 font-medium">Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    ['props', 'Record<string, …>', '—', 'CSS properties to animate. Value can be a single target or [from, to] tuple. Supports numbers, colors (hex/rgb), transform functions, and CSS units.'],
+                    ['trigger', 'TriggerConfig', '{ start: "top bottom", end: "bottom top" }', 'Same trigger syntax as scrollDraw.'],
+                    ['easing', 'EasingName | fn', '"ease-out"', 'Same easing system as scrollDraw.'],
+                    ['speed', 'number', '1', 'Animation scale factor.'],
+                    ['once', 'boolean', 'false', 'Freeze at max progress — does not reverse on scroll back.'],
+                    ['axis', '"x" | "y"', '"y"', 'Scroll axis.'],
+                    ['native', 'boolean', 'true', 'Use CSS animation-timeline: view() fast path when eligible.'],
+                    ['onProgress', '(n) => void', '—', 'Called every frame with alpha 0–1.'],
+                    ['onComplete', '() => void', '—', 'Fires when alpha reaches 1.'],
+                  ].map(([opt, type, def, desc]) => (
+                    <tr key={opt} className="border-t border-subtle-ash">
+                      <td className="px-4 py-2 font-mono font-semibold text-[12px]">{opt}</td>
+                      <td className="px-4 py-2 font-mono text-graphite-border text-[11px]">{type}</td>
+                      <td className="px-4 py-2 font-mono text-graphite-border text-[11px]">{def}</td>
+                      <td className="px-4 py-2 text-graphite-border">{desc}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </DocSection>
+
+          <DocSection id="scroll-counter" tag="v2.0.0" heading="scrollCounter">
+            <p className="text-sm text-graphite-border leading-relaxed mb-2">
+              Animate a number displayed in a DOM element from <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">from</code> to <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">to</code> as it scrolls into view.
+            </p>
+            <CodeBlock file="index.js">
+{`import { scrollCounter } from 'svg-scroll-draw';
+
+// Simple counter
+scrollCounter('#user-count', { to: 50000 });
+
+// Formatted with locale
+scrollCounter('#revenue', {
+  to:     1_250_000,
+  format: n => '$' + Math.round(n).toLocaleString(),
+  easing: 'ease-out',
+  once:   true,
+});
+
+// Percentage with decimal
+scrollCounter('#conversion', {
+  from:     0,
+  to:       94.7,
+  decimals: 1,
+  format:   n => n.toFixed(1) + '%',
+});
+
+// React
+import { ScrollCounter } from 'svg-scroll-draw/react';
+<ScrollCounter to={50000} format={n => n.toLocaleString()} once />`}
+            </CodeBlock>
+          </DocSection>
+
+          <DocSection id="scroll-parallax" tag="v2.0.0" heading="scrollParallax">
+            <p className="text-sm text-graphite-border leading-relaxed mb-2">
+              Move any element at a different rate than scroll. <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">speed</code> is a multiplier relative to element size — <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">0.5</code> = half scroll speed, <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">-0.2</code> = opposite direction.
+            </p>
+            <CodeBlock file="index.js">
+{`import { scrollParallax } from 'svg-scroll-draw';
+
+scrollParallax('#hero-bg-image', { speed: 0.4 });
+scrollParallax('#floating-element', { speed: -0.2 }); // moves opposite
+scrollParallax('#side-badge', { speed: 0.3, axis: 'x' }); // horizontal`}
+            </CodeBlock>
+          </DocSection>
+
+          <DocSection id="scroll-video" tag="v2.1.0" heading="scrollVideo">
+            <p className="text-sm text-graphite-border leading-relaxed mb-2">
+              Tie a <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">{'<video>'}</code> element&apos;s <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">currentTime</code> to scroll position. The Apple product page pattern — ships free.
+            </p>
+            <CodeBlock file="index.js">
+{`import { scrollVideo } from 'svg-scroll-draw/video';
+
+// Full scrub — plays as user scrolls through section
+scrollVideo('#hero-video', {
+  trigger: { start: 'top top', end: 'bottom top' },
+});
+
+// Scrub only the first 3 seconds
+scrollVideo('#product-reveal', {
+  from:    0,
+  to:      3,
+  trigger: { start: 'top 80%', end: 'top 20%' },
+  easing:  'ease-in-out',
+});
+
+// React
+import { ScrollVideo } from 'svg-scroll-draw/react';
+<ScrollVideo src="/hero.mp4" trigger={{ start: 'top top', end: 'bottom top' }} />`}
+            </CodeBlock>
+            <p className="text-[12px] text-graphite-border mt-3">
+              <strong>Video encoding tip:</strong> Use H.264 for broadest support. Add <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">muted playsinline preload=&quot;auto&quot;</code> attributes for smooth scrubbing.
+            </p>
+          </DocSection>
+
+          <DocSection id="scroll-text" tag="v2.1.0" heading="scrollText">
+            <p className="text-sm text-graphite-border leading-relaxed mb-2">
+              Split any text element into chars, words, or lines and animate each piece on scroll. Free replacement for GSAP SplitText (which requires a $150+/yr Club GreenSock subscription).
+            </p>
+            <CodeBlock file="index.js">
+{`import { scrollText } from 'svg-scroll-draw/text';
+
+// Words fade up one by one
+scrollText('#headline', {
+  split:   'words',
+  stagger: 0.05,
+  from:    { opacity: 0, y: 24 },
+  easing:  'ease-out',
+  once:    true,
+});
+
+// Characters with rotation
+scrollText('#tagline', {
+  split:   'chars',
+  stagger: 0.025,
+  from:    { opacity: 0, y: 32, rotate: 8 },
+  once:    true,
+});
+
+// React
+import { ScrollText } from 'svg-scroll-draw/react';
+<ScrollText split="words" stagger={0.05} from={{ opacity: 0, y: 24 }} once>
+  Animate this headline.
+</ScrollText>`}
+            </CodeBlock>
+            <p className="text-[12px] text-graphite-border mt-3">
+              Accessibility: the original text is preserved in <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">aria-label</code> on the container. All split spans have <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">aria-hidden=&quot;true&quot;</code>. <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">destroy()</code> restores the original HTML.
+            </p>
+          </DocSection>
+
+          <DocSection id="devtools" tag="v2.2.0" heading="DevTools Overlay">
+            <p className="text-sm text-graphite-border leading-relaxed mb-2">
+              Visual debug overlay that shows every active animation&apos;s trigger window, current progress, and type — color-coded in a fixed panel. Zero production bytes (tree-shaken away in production builds).
+            </p>
+            <CodeBlock file="main.js">
+{`import { devtools } from 'svg-scroll-draw/devtools';
+
+// Enable once — instruments all active instances
+devtools.enable();
+
+// Keyboard shortcut: Cmd+Shift+S / Ctrl+Shift+S to toggle
+// Or toggle programmatically:
+devtools.toggle();
+
+// Highlight a specific element for 2 seconds
+devtools.highlight('#my-animated-element');`}
+            </CodeBlock>
+            <p className="text-[12px] text-graphite-border mt-3">
+              <strong>Note:</strong> The devtools panel only activates when <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">process.env.NODE_ENV !== &apos;production&apos;</code>. In production builds, the import resolves to a no-op.
+            </p>
           </DocSection>
 
           {/* ── TypeScript ───────────────────────────────────── */}
