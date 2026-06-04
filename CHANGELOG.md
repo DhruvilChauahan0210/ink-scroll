@@ -4,7 +4,7 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ---
 
-## [2.2.0] — 2026-06-04
+## [2.2.0] — 2026-06-04 · **published**
 
 ### Added — v2 Phase 2 + Phase 3
 - **`scrollVideo(target, options)`** — tie `<video>.currentTime` to scroll position. Ships as `svg-scroll-draw/video`. Supports `from`/`to` in seconds, `preload`, `onReady`, all lifecycle callbacks and instance methods. Auto-pauses on init, handles `loadedmetadata` lazily.

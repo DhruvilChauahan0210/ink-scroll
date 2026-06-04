@@ -1,6 +1,6 @@
 # svg-scroll-draw — Roadmap
 
-> Last updated: 2026-06-04 — v2.0.0
+> Last updated: 2026-06-04 — v2.2.0 (published)
 >
 > Items marked ✓ are shipped. Remaining items are ordered by value/effort ratio.
 
@@ -97,40 +97,35 @@
 13 examples including logo reveal, line chart, signature, flowchart, map route, network diagram, group, sequence, timeline, Vue, Svelte, Solid.
 
 #### More blog posts — ongoing
-- "Zero-JS SVG scroll animations with native CSS" — deep-dive on the `animation-timeline` fast path
-- "Scroll-driven path morphing" — uses the `morphTo` option with real examples
+- [x] "Zero-JS SVG scroll animations with native CSS" — `/blog/native-css-svg-scroll-animations`
+- [x] "Scroll-driven path morphing with morphTo" — `/blog/scroll-path-morphing`
+- [x] "5 scroll animation patterns in under 10 lines" — `/blog/5-patterns-under-10-lines`
+- [x] "Replace GSAP ScrollTrigger with scrollAnimate" — `/blog/replace-gsap-scrolltrigger`
 
 ---
 
+## Remaining (v2.3.0+)
+
 ### Library
 
-#### Vue/Svelte/Solid wrappers for v2 APIs — v2.3.0 (future)
+#### Vue/Svelte/Solid v2 wrappers — v2.3.0
 - [ ] `scrollAnimate`, `scrollCounter`, `scrollParallax`, `scrollVideo`, `scrollText` wrappers for Vue, Svelte, and Solid
+- Vue: composables + components (`useScrollAnimate`, `<ScrollAnimate>`)
+- Svelte: action wrappers + store helpers
+- Solid: `useScrollAnimate`, `createScrollCounter`
 
-#### `scrollDrawTimeline` demo — scrub bar ✓ shipped
-`TimelineDemo` in `ExamplesPage.tsx` now shows per-track progress bars + global scroll position live below the chart.
+### Demo Site
 
-#### `scrollDrawTimeline` API improvements — medium effort
-Potential future improvements to the API itself:
-- Per-entry easing override (currently per-track easing works, but no looping)
-- Looping timeline support
+#### Interactive scrollText demo — medium effort
+Build `ScrollTextInteractive` on the home page. Split selector, stagger slider, from-state presets, live preview + code. Same pattern as `ScrollAnimateInteractive`.
 
-#### Presets / theme system — medium effort
-Ship a small collection of named preset configs (e.g. `'sketch'`, `'typewriter'`, `'reveal'`) that set sane defaults for common use cases. Zero breaking changes — just named option bags.
-```ts
-scrollDraw('#path', { preset: 'sketch' })
-```
-
-#### CLI / init tool — larger effort
-`npx svg-scroll-draw init` scaffolds framework-specific boilerplate (React component, Vue SFC, Svelte file) with a starter SVG already wired up. Reduces the "how do I set this up" friction from the docs.
+#### Changelog page v2 milestone callout — small effort
+Visual separator or highlighted callout between v2.x and v1.x sections to make the major version shift visually clear.
 
 ---
 
 ## Priority Order
 
-1. `/blog` index page — 1 hour, fixes a broken discoverability gap
-2. More demo examples — logo + signature immediately make the site more convincing
-3. `scrollDrawTimeline` scrub UI — elevates the most unique API
-4. Presets — lowers the bar for new users
-5. More blog posts — compound SEO value over time
-6. CLI init tool — largest effort, highest long-term DX payoff
+1. Vue/Svelte/Solid v2 wrappers — completes framework parity
+2. Interactive scrollText demo — highest-impact home page improvement
+3. Changelog v2 visual callout — polish
