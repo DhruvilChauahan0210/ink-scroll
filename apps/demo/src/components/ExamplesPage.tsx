@@ -431,26 +431,44 @@ function SequenceDemo() {
   );
 }
 
+const TL_TRACKS = [
+  { label: 'Axes',  from: 0,    to: 0.28, color: '#aaa'     },
+  { label: 'Q1',    from: 0.1,  to: 0.42, color: '#ff90e8'  },
+  { label: 'Q2',    from: 0.26, to: 0.56, color: '#ffc900'  },
+  { label: 'Q3',    from: 0.42, to: 0.72, color: '#5865F2'  },
+  { label: 'Q4',    from: 0.58, to: 0.88, color: '#22c55e'  },
+  { label: 'Trend', from: 0.75, to: 1.0,  color: '#111'     },
+] as const;
+
 function TimelineDemo() {
   const ref = useRef<HTMLDivElement>(null);
+  const [progress, setProgress] = useState(0);
+  const rafRef = useRef<number>(0);
 
   useEffect(() => {
     if (!ref.current) return;
     const instance = scrollDrawTimeline(ref.current, {
       trigger: TRIGGER,
       tracks: [
-        // Axes first
-        { selector: '.tl-axis', from: 0,    to: 0.28, easing: 'ease-out' },
-        // Bars staggered, each with its own window
-        { selector: '.tl-b1',   from: 0.1,  to: 0.42, easing: 'ease-out' },
-        { selector: '.tl-b2',   from: 0.26, to: 0.56, easing: 'ease-out' },
-        { selector: '.tl-b3',   from: 0.42, to: 0.72, easing: 'ease-out' },
-        { selector: '.tl-b4',   from: 0.58, to: 0.88, easing: 'ease-out' },
-        // Trend line last, after all bars are visible
-        { selector: '.tl-trend', from: 0.75, to: 1.0,  easing: 'spring'  },
+        { selector: '.tl-axis',  from: 0,    to: 0.28, easing: 'ease-out' },
+        { selector: '.tl-b1',    from: 0.1,  to: 0.42, easing: 'ease-out' },
+        { selector: '.tl-b2',    from: 0.26, to: 0.56, easing: 'ease-out' },
+        { selector: '.tl-b3',    from: 0.42, to: 0.72, easing: 'ease-out' },
+        { selector: '.tl-b4',    from: 0.58, to: 0.88, easing: 'ease-out' },
+        { selector: '.tl-trend', from: 0.75, to: 1.0,  easing: 'spring'   },
       ],
     });
-    return () => instance.destroy();
+
+    function poll() {
+      setProgress(instance.getProgress());
+      rafRef.current = requestAnimationFrame(poll);
+    }
+    rafRef.current = requestAnimationFrame(poll);
+
+    return () => {
+      instance.destroy();
+      cancelAnimationFrame(rafRef.current);
+    };
   }, []);
 
   const bars = [
@@ -529,6 +547,67 @@ function TimelineDemo() {
           Each bar is an independent track
         </text>
       </svg>
+
+      {/* Scrub bar — shows each track's window and live fill */}
+      <div style={{ width: '100%', padding: '12px 0 4px', display: 'flex', flexDirection: 'column', gap: 5 }}>
+        {TL_TRACKS.map((track) => {
+          const localRaw = track.to > track.from
+            ? Math.min(1, Math.max(0, (progress - track.from) / (track.to - track.from)))
+            : 0;
+          const isActive = progress >= track.from && progress < track.to;
+          return (
+            <div key={track.label} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{
+                fontFamily: 'monospace', fontSize: 9, color: isActive ? track.color : '#aaa',
+                width: 32, textAlign: 'right', flexShrink: 0,
+                fontWeight: isActive ? 700 : 400,
+                transition: 'color 0.1s',
+              }}>{track.label}</span>
+              {/* Track window container */}
+              <div style={{ flex: 1, height: 4, background: '#f0f0f0', borderRadius: 2, position: 'relative' }}>
+                {/* Track window highlight */}
+                <div style={{
+                  position: 'absolute',
+                  left: `${track.from * 100}%`,
+                  width: `${(track.to - track.from) * 100}%`,
+                  height: '100%',
+                  background: track.color + '30',
+                  borderRadius: 2,
+                }} />
+                {/* Live fill within the window */}
+                <div style={{
+                  position: 'absolute',
+                  left: `${track.from * 100}%`,
+                  width: `${(track.to - track.from) * localRaw * 100}%`,
+                  height: '100%',
+                  background: track.color,
+                  borderRadius: 2,
+                  transition: 'width 0.05s linear',
+                }} />
+              </div>
+              <span style={{
+                fontFamily: 'monospace', fontSize: 9, color: '#ccc',
+                width: 28, flexShrink: 0,
+              }}>{Math.round(localRaw * 100)}%</span>
+            </div>
+          );
+        })}
+        {/* Global progress tick */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 2 }}>
+          <span style={{ fontFamily: 'monospace', fontSize: 9, color: '#888', width: 32, textAlign: 'right', flexShrink: 0 }}>scroll</span>
+          <div style={{ flex: 1, height: 2, background: '#e8e8e8', borderRadius: 1, position: 'relative' }}>
+            <div style={{
+              position: 'absolute', left: 0,
+              width: `${progress * 100}%`,
+              height: '100%', background: '#111', borderRadius: 1,
+              transition: 'width 0.05s linear',
+            }} />
+          </div>
+          <span style={{ fontFamily: 'monospace', fontSize: 9, color: '#888', width: 28, flexShrink: 0 }}>
+            {Math.round(progress * 100)}%
+          </span>
+        </div>
+      </div>
     </div>
   );
 }
@@ -1146,6 +1225,7 @@ export function ExamplesPage() {
         <div className="hidden lg:flex items-center gap-2">
           <Link href="/" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Home</Link>
           <Link href="/docs" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Docs</Link>
+          <Link href="/blog" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Blog</Link>
           <Link href="/changelog" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Changelog</Link>
           <Link href="/playground" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">⚡ Playground</Link>
         </div>

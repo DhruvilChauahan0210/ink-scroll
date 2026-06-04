@@ -27,7 +27,26 @@ export interface ScrollDrawTimelineOptions {
   tracks: TimelineTrack[];
   /** Fires when all tracks have reached their full draw progress. */
   onComplete?: () => void;
+  /**
+   * Replay the timeline N times (or 'infinite') after it completes. Works with
+   * `once: true` — after completion + delay, paths reset and the animation plays
+   * again on the next scroll-into-view. With `once: false` (default) the timeline
+   * already reverses naturally on scroll-up, so repeat is a no-op.
+   */
+  repeat?: number | 'infinite';
+  /** Milliseconds to wait before each repeat. Default 0. */
+  repeatDelay?: number;
+  /**
+   * Show a developer overlay panel visualising each track's window and live
+   * fill progress. Injected into document.body as a fixed HUD, removed on destroy().
+   * Useful for tuning `from`/`to` values without guessing.
+   */
+  debug?: boolean;
+  /** Label shown in the debug panel header. Defaults to the target selector string. */
+  label?: string;
 }
+
+const DEBUG_COLORS = ['#ff90e8', '#ffc900', '#5865F2', '#22c55e', '#f59e0b', '#ef4444', '#aaa', '#60a5fa'];
 
 /**
  * Animate multiple path groups with independent start/end windows within a
@@ -61,16 +80,23 @@ export function scrollDrawTimeline(
   const container = containerOrNull;
 
   const {
-    trigger     = {},
-    speed       = 1,
-    once        = false,
-    axis        = 'y',
+    trigger      = {},
+    speed        = 1,
+    once         = false,
+    axis         = 'y',
     tracks,
     onComplete,
+    repeat,
+    repeatDelay  = 0,
+    debug        = false,
+    label,
   } = options;
 
   const startConfig = parseTrigger(trigger.start ?? 'top bottom');
   const endConfig   = parseTrigger(trigger.end   ?? 'bottom top');
+
+  let repeatCount: number = repeat === 'infinite' ? Infinity : (repeat ?? 0);
+  let repeatTimer: ReturnType<typeof setTimeout> | undefined;
 
   // Resolve each track's elements + lengths up front
   const trackData = tracks.map((track) => {
@@ -90,6 +116,67 @@ export function scrollDrawTimeline(
   let tStart = 0, tEnd = 0;
   let isVisible = false, paused = false, rafId = 0;
   let completed = false, frozenAlpha = -1, currentAlpha = 0;
+
+  // ── Debug overlay ─────────────────────────────────────────────────────────
+  let debugEl: HTMLDivElement | null = null;
+  if (debug) {
+    debugEl = document.createElement('div');
+    Object.assign(debugEl.style, {
+      position: 'fixed',
+      bottom: '16px',
+      left: '16px',
+      zIndex: '9999',
+      background: 'rgba(0,0,0,0.88)',
+      backdropFilter: 'blur(8px)',
+      border: '1px solid rgba(255,255,255,0.1)',
+      borderRadius: '10px',
+      padding: '10px 14px',
+      fontFamily: 'monospace',
+      fontSize: '11px',
+      color: '#fff',
+      minWidth: '240px',
+      pointerEvents: 'none',
+      lineHeight: '1.4',
+    });
+    document.body.appendChild(debugEl);
+  }
+
+  function updateDebug(globalAlpha: number) {
+    if (!debugEl) return;
+    const panelLabel = label ?? (typeof target === 'string' ? target : 'timeline');
+    const rows = tracks.map(({ selector, from, to }, i) => {
+      const color    = DEBUG_COLORS[i % DEBUG_COLORS.length];
+      const localRaw = to > from ? Math.min(1, Math.max(0, (globalAlpha - from) / (to - from))) : 0;
+      const pct      = Math.round(localRaw * 100);
+      return `<div style="margin:4px 0">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px">
+          <span style="color:${color};max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${selector}</span>
+          <span style="color:#666;margin-left:8px">${pct}%</span>
+        </div>
+        <div style="height:3px;background:#2a2a2a;border-radius:2px;position:relative;overflow:hidden">
+          <div style="position:absolute;left:${from * 100}%;width:${(to - from) * 100}%;height:100%;background:${color}33;border-radius:2px"></div>
+          <div style="position:absolute;left:${from * 100}%;width:${(to - from) * localRaw * 100}%;height:100%;background:${color};border-radius:2px;transition:width 0.05s linear"></div>
+        </div>
+      </div>`;
+    }).join('');
+
+    debugEl.innerHTML = `
+      <div style="color:#555;margin-bottom:8px;font-size:10px;text-transform:uppercase;letter-spacing:0.12em;border-bottom:1px solid rgba(255,255,255,0.06);padding-bottom:6px">
+        scrollDrawTimeline · ${panelLabel}
+      </div>
+      ${rows}
+      <div style="margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.06)">
+        <div style="display:flex;justify-content:space-between;margin-bottom:2px">
+          <span style="color:#555">scroll</span>
+          <span style="color:#666">${Math.round(globalAlpha * 100)}%</span>
+        </div>
+        <div style="height:2px;background:#2a2a2a;border-radius:1px;overflow:hidden">
+          <div style="height:100%;background:#fff;border-radius:1px;width:${globalAlpha * 100}%;transition:width 0.05s linear"></div>
+        </div>
+      </div>`;
+  }
+
+  // ── Core ──────────────────────────────────────────────────────────────────
 
   function scrollPos() { return axis === 'x' ? window.scrollX : window.scrollY; }
   function vpSize()    { return axis === 'x' ? window.innerWidth : window.innerHeight; }
@@ -115,6 +202,19 @@ export function scrollDrawTimeline(
         if (fade) el.style.opacity = String(localAlpha);
       });
     });
+    updateDebug(globalAlpha);
+  }
+
+  function doReset() {
+    frozenAlpha = -1;
+    completed   = false;
+    trackData.forEach(({ elements, lengths, fade }) => {
+      elements.forEach((el, i) => {
+        el.style.strokeDashoffset = `${lengths[i]}`;
+        if (fade) el.style.opacity = '0';
+      });
+    });
+    (container as HTMLElement).style.setProperty('--scroll-draw-progress', '0');
   }
 
   function update() {
@@ -123,8 +223,19 @@ export function scrollDrawTimeline(
     if (once) { frozenAlpha = Math.max(frozenAlpha, alpha); alpha = frozenAlpha; }
     currentAlpha = alpha;
     applyGlobalAlpha(alpha);
-    if (alpha >= 1 && !completed) { completed = true; onComplete?.(); }
-    else if (alpha < 1 && !once)   { completed = false; }
+
+    if (alpha >= 1 && !completed) {
+      completed = true;
+      onComplete?.();
+      if (repeatCount > 0 && once) {
+        repeatTimer = setTimeout(() => {
+          if (repeatCount !== Infinity) repeatCount--;
+          doReset();
+        }, repeatDelay);
+      }
+    } else if (alpha < 1 && !once) {
+      completed = false;
+    }
     rafId = requestAnimationFrame(update);
   }
 
@@ -162,19 +273,17 @@ export function scrollDrawTimeline(
     destroy() {
       cancelAnimationFrame(rafId);
       clearTimeout(resizeTimer);
+      clearTimeout(repeatTimer);
       observer.disconnect();
       window.removeEventListener('resize', onResize);
       window.removeEventListener('orientationchange', onResize);
+      if (debugEl) { debugEl.remove(); debugEl = null; }
     },
     replay() {
-      frozenAlpha = -1; completed = false; paused = false;
-      trackData.forEach(({ elements, lengths, fade }) => {
-        elements.forEach((el, i) => {
-          el.style.strokeDashoffset = `${lengths[i]}`;
-          if (fade) el.style.opacity = '0';
-        });
-      });
-      (container as HTMLElement).style.setProperty('--scroll-draw-progress', '0');
+      repeatCount = repeat === 'infinite' ? Infinity : (repeat ?? 0);
+      clearTimeout(repeatTimer);
+      doReset();
+      paused = false;
     },
     pause()  { paused = true;  cancelAnimationFrame(rafId); },
     resume() { if (!paused) return; paused = false; if (isVisible) rafId = requestAnimationFrame(update); },

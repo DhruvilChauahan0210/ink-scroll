@@ -4,6 +4,36 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ---
 
+## [1.5.0] — 2026-06-04
+
+### Added
+- **`repeat` option for `scrollDrawTimeline`** — replay the timeline N times or `'infinite'` after it completes. Works with `once: true`: after completion + `repeatDelay` ms, all paths reset and the animation plays again on the next scroll-into-view.
+  ```js
+  scrollDrawTimeline('#diagram', {
+    tracks: [...],
+    once: true,
+    repeat: 3,
+    repeatDelay: 800,
+  });
+  ```
+- **`repeatDelay` option for `scrollDrawTimeline`** — milliseconds to wait before each repeat (default `0`).
+- **`debug` option for `scrollDrawTimeline`** — injects a fixed HUD panel into `document.body` showing each track's scroll window as a coloured progress bar, live fill, and global progress. Removed automatically on `destroy()`. Designed for tuning `from`/`to` values without guesswork.
+  ```js
+  scrollDrawTimeline('#diagram', {
+    tracks: [...],
+    debug: true,
+    label: 'hero diagram',
+  });
+  ```
+- **`label` option for `scrollDrawTimeline`** — string shown in the debug panel header. Defaults to the target selector.
+- **8 new tests** covering `repeat` reset, `repeat` + `onComplete` multi-fire, timer cancellation on `destroy`, `replay()` resetting the repeat counter, debug overlay injection, and debug overlay removal. **262 tests total.**
+- **Blog post: "Zero-JS SVG scroll animations with native CSS"** — `/blog/native-css-svg-scroll-animations`. Deep-dive on the `animation-timeline: view()` fast path: eligibility rules, browser support matrix, performance benefits, opt-out, and instance API.
+
+### Notes
+- Fully backward compatible — `repeat`, `repeatDelay`, `debug`, `label` all default to off/undefined.
+
+---
+
 ## [1.4.0] — 2026-05-31
 
 ### Added

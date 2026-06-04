@@ -11,8 +11,9 @@ const NAV_LINKS = [
   { num: '01', href: '/',           label: 'Home' },
   { num: '02', href: '/docs',       label: 'Docs' },
   { num: '03', href: '/examples',   label: 'Examples' },
-  { num: '04', href: '/playground', label: 'Playground' },
-  { num: '05', href: '/changelog',  label: 'Changelog' },
+  { num: '04', href: '/blog',       label: 'Blog' },
+  { num: '05', href: '/playground', label: 'Playground' },
+  { num: '06', href: '/changelog',  label: 'Changelog' },
 ];
 
 export function MobileMenu() {
@@ -147,7 +148,7 @@ export function MobileMenu() {
             fontSize: 11, color: 'var(--color-graphite-border, #888)',
             letterSpacing: '0.05em',
           }}>
-            v1.2.0 · MIT · ~4.4 KB
+            v1.4.0 · MIT · ~4.4 KB
           </span>
         </div>
       </div>

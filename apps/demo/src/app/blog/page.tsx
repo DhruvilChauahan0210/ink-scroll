@@ -21,6 +21,16 @@ export const metadata: Metadata = {
 
 const POSTS = [
   {
+    slug: 'native-css-svg-scroll-animations',
+    title: 'Zero-JS SVG scroll animations with native CSS',
+    description:
+      'How svg-scroll-draw uses animation-timeline: view() to run SVG path animations on the browser compositor — zero per-frame JavaScript, no scroll listeners, 60fps guaranteed.',
+    tag: 'Performance',
+    tagColor: '#22c55e',
+    readTime: '7 min read',
+    date: 'June 2026',
+  },
+  {
     slug: 'gsap-drawsvg-alternative',
     title: 'svg-scroll-draw vs GSAP DrawSVG',
     description:

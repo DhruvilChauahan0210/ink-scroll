@@ -330,3 +330,154 @@ describe('scrollDrawTimeline — resume when not paused', () => {
     expect(raf.schedule.mock.calls.length).toBe(callsBefore);
   });
 });
+
+describe('scrollDrawTimeline — repeat option', () => {
+  beforeEach(() => { vi.useFakeTimers(); });
+  afterEach(()  => { vi.useRealTimers(); });
+
+  it('resets paths after completion when repeat:1 and once:true', () => {
+    const container = makeContainer([{ cls: 'p' }]);
+    scrollDrawTimeline(container, {
+      tracks:      [{ selector: '.p', from: 0, to: 1 }],
+      once:        true,
+      repeat:      1,
+      repeatDelay: 100,
+    });
+
+    // Complete the timeline
+    vi.stubGlobal('scrollY', 10000);
+    FakeIO.instances[0].trigger(true);
+    raf.tick();
+
+    const path = container.querySelector('.p') as SVGPathElement;
+    // After completion, path is fully drawn
+    expect(parseFloat(path.style.strokeDashoffset)).toBeCloseTo(0, 0);
+
+    // Advance past repeatDelay — paths should reset
+    vi.advanceTimersByTime(150);
+    expect(parseFloat(path.style.strokeDashoffset)).toBe(100);
+  });
+
+  it('fires onComplete on each repeat cycle', () => {
+    const onComplete = vi.fn();
+    const container  = makeContainer([{ cls: 'p' }]);
+    scrollDrawTimeline(container, {
+      tracks:      [{ selector: '.p', from: 0, to: 1 }],
+      once:        true,
+      repeat:      2,
+      repeatDelay: 0,
+      onComplete,
+    });
+
+    // First completion
+    vi.stubGlobal('scrollY', 10000);
+    FakeIO.instances[0].trigger(true);
+    raf.tick();
+    expect(onComplete).toHaveBeenCalledTimes(1);
+
+    // After reset, scroll is still past trigger → completes again
+    vi.advanceTimersByTime(0);
+    raf.tick();
+    expect(onComplete).toHaveBeenCalledTimes(2);
+  });
+
+  it('does not reset when repeat is not set', () => {
+    const container = makeContainer([{ cls: 'p' }]);
+    scrollDrawTimeline(container, {
+      tracks: [{ selector: '.p', from: 0, to: 1 }],
+      once:   true,
+    });
+
+    vi.stubGlobal('scrollY', 10000);
+    FakeIO.instances[0].trigger(true);
+    raf.tick();
+
+    const path = container.querySelector('.p') as SVGPathElement;
+    vi.advanceTimersByTime(500);
+    // No repeat set — offset stays at 0 (fully drawn)
+    expect(parseFloat(path.style.strokeDashoffset)).toBeCloseTo(0, 0);
+  });
+
+  it('destroy() cancels a pending repeat timer', () => {
+    const container = makeContainer([{ cls: 'p' }]);
+    const instance  = scrollDrawTimeline(container, {
+      tracks:      [{ selector: '.p', from: 0, to: 1 }],
+      once:        true,
+      repeat:      1,
+      repeatDelay: 500,
+    });
+
+    vi.stubGlobal('scrollY', 10000);
+    FakeIO.instances[0].trigger(true);
+    raf.tick();
+
+    const path = container.querySelector('.p') as SVGPathElement;
+    const offsetAfterComplete = parseFloat(path.style.strokeDashoffset);
+
+    // Destroy before the timer fires
+    instance.destroy();
+    vi.advanceTimersByTime(600);
+
+    // Offset should NOT have reset — timer was cancelled
+    expect(parseFloat(path.style.strokeDashoffset)).toBe(offsetAfterComplete);
+  });
+
+  it('replay() resets the repeat counter', () => {
+    const onComplete = vi.fn();
+    const container  = makeContainer([{ cls: 'p' }]);
+    const instance   = scrollDrawTimeline(container, {
+      tracks:      [{ selector: '.p', from: 0, to: 1 }],
+      once:        true,
+      repeat:      1,
+      repeatDelay: 0,
+      onComplete,
+    });
+
+    // Complete once (uses up the 1 repeat)
+    vi.stubGlobal('scrollY', 10000);
+    FakeIO.instances[0].trigger(true);
+    raf.tick();
+    vi.advanceTimersByTime(0);
+    raf.tick(); // second completion uses up the repeat slot
+
+    // Manually replay — repeat counter should be restored
+    instance.replay();
+    vi.stubGlobal('scrollY', 10000);
+    raf.tick();
+    expect(onComplete).toHaveBeenCalledTimes(3); // original + repeat + after replay
+  });
+});
+
+describe('scrollDrawTimeline — debug overlay', () => {
+  it('injects a debug overlay into document.body when debug:true', () => {
+    const container = makeContainer([{ cls: 'p' }]);
+    const countBefore = document.body.children.length;
+    scrollDrawTimeline(container, {
+      tracks: [{ selector: '.p', from: 0, to: 1 }],
+      debug:  true,
+    });
+    expect(document.body.children.length).toBe(countBefore + 1);
+  });
+
+  it('removes the debug overlay on destroy()', () => {
+    const container = makeContainer([{ cls: 'p' }]);
+    const countBefore = document.body.children.length;
+    const instance = scrollDrawTimeline(container, {
+      tracks: [{ selector: '.p', from: 0, to: 1 }],
+      debug:  true,
+    });
+    expect(document.body.children.length).toBe(countBefore + 1);
+    instance.destroy();
+    expect(document.body.children.length).toBe(countBefore);
+  });
+
+  it('does not inject any overlay when debug is false (default)', () => {
+    const container   = makeContainer([{ cls: 'p' }]);
+    const countBefore = document.body.children.length;
+    scrollDrawTimeline(container, {
+      tracks: [{ selector: '.p', from: 0, to: 1 }],
+    });
+    // Only the container itself was appended in makeContainer — no extra overlay
+    expect(document.body.children.length).toBe(countBefore);
+  });
+});
