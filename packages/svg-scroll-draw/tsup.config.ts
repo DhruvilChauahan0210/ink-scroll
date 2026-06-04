@@ -32,4 +32,14 @@ export default defineConfig([
     minify: true,
     clean: false,
   },
+  {
+    entry: { 'cli/init': 'src/cli/init.ts' },
+    format: ['cjs'],
+    outExtension: () => ({ js: '.js' }),
+    banner: { js: '#!/usr/bin/env node' },
+    dts: false,
+    minify: false,
+    clean: false,
+    platform: 'node',
+  },
 ]);

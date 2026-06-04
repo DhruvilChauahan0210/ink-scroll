@@ -1,5 +1,6 @@
 import type { ScrollDrawOptions, ScrollDrawInstance } from './types';
 import { EASINGS, parseTrigger, computeProgress, computeTriggers, getElementLength, lerpColor } from './utils';
+import { PRESETS } from './presets';
 
 function warnDev(msg: string, el: Element): void {
   if (process.env.NODE_ENV !== 'production') console.warn(`[svg-scroll-draw] ${msg}`, el);
@@ -63,11 +64,17 @@ function morphPath(from: string, to: string, t: number): string {
 
 export function createEngine(
   container: Element,
-  options: ScrollDrawOptions = {}
+  rawOptions: ScrollDrawOptions = {}
 ): ScrollDrawInstance {
   if (typeof window === 'undefined') {
     return { destroy: () => {}, replay: () => {}, pause: () => {}, resume: () => {}, seek: () => {}, getProgress: () => 0 };
   }
+
+  // Apply preset as base — user options always win
+  const { preset, ...userOptions } = rawOptions;
+  const options: ScrollDrawOptions = preset
+    ? { ...PRESETS[preset], ...userOptions }
+    : userOptions;
 
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 

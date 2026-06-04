@@ -41,6 +41,23 @@ interface ScrollDrawTimelineOptions {
     tracks: TimelineTrack[];
     /** Fires when all tracks have reached their full draw progress. */
     onComplete?: () => void;
+    /**
+     * Replay the timeline N times (or 'infinite') after it completes. Works with
+     * `once: true` — after completion + delay, paths reset and the animation plays
+     * again on the next scroll-into-view. With `once: false` (default) the timeline
+     * already reverses naturally on scroll-up, so repeat is a no-op.
+     */
+    repeat?: number | 'infinite';
+    /** Milliseconds to wait before each repeat. Default 0. */
+    repeatDelay?: number;
+    /**
+     * Show a developer overlay panel visualising each track's window and live
+     * fill progress. Injected into document.body as a fixed HUD, removed on destroy().
+     * Useful for tuning `from`/`to` values without guessing.
+     */
+    debug?: boolean;
+    /** Label shown in the debug panel header. Defaults to the target selector string. */
+    label?: string;
 }
 /**
  * Animate multiple path groups with independent start/end windows within a

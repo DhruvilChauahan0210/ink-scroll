@@ -21,6 +21,16 @@ export const metadata: Metadata = {
 
 const POSTS = [
   {
+    slug: 'scroll-path-morphing',
+    title: 'Scroll-driven SVG path morphing with morphTo',
+    description:
+      'How to interpolate SVG path shapes as you scroll using the morphTo option. Path compatibility, use cases, combining with fade and strokeColor, and a full API reference.',
+    tag: 'Deep Dive',
+    tagColor: '#5865F2',
+    readTime: '6 min read',
+    date: 'June 2026',
+  },
+  {
     slug: 'native-css-svg-scroll-animations',
     title: 'Zero-JS SVG scroll animations with native CSS',
     description:

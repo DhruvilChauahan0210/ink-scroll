@@ -14,7 +14,16 @@ The demo site is fully built with all pages, components, and SEO infrastructure 
 
 ---
 
-## Completed this session (v1.5.0)
+## Completed this session (v1.6.0)
+
+- [x] `preset` option — sketch, reveal, typewriter, cinematic, spring
+- [x] `PRESETS` export — inspect/extend presets directly
+- [x] CLI init tool — `src/cli/init.ts`, `bin` in package.json, tsup CJS build
+- [x] 5 new preset tests (267 total)
+- [x] Blog post: "Scroll-driven path morphing with morphTo" at `/blog/scroll-path-morphing`
+- [x] Blog index now shows 3 posts; sitemap updated
+
+## Previous session (v1.5.0)
 
 - [x] `scrollDrawTimeline` — `repeat`, `repeatDelay`, `debug`, `label` options
 - [x] 8 new tests (262 total)
@@ -31,8 +40,12 @@ The demo site is fully built with all pages, components, and SEO infrastructure 
 
 ## Remaining code tasks
 
-### TASK 0 — npm publish v1.5.0
-Bump `packages/svg-scroll-draw/package.json` version from `1.4.0` → `1.5.0`, then run `npm publish --access public` from that directory.
+### TASK 0 — npm publish v1.6.0
+```bash
+cd packages/svg-scroll-draw
+npm version 1.6.0
+npm publish --access public
+```
 
 ### TASK 1 — More blog posts
 Technical content compounds over time. Good next article:

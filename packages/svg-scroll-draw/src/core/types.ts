@@ -1,11 +1,23 @@
 export type EasingName = 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | 'spring' | 'bounce' | 'elastic';
 
+export type PresetName = 'sketch' | 'reveal' | 'typewriter' | 'cinematic' | 'spring';
+
 export interface TriggerConfig {
   start?: string;
   end?: string;
 }
 
 export interface ScrollDrawOptions {
+  /**
+   * Apply a named preset as the base configuration. User-supplied options
+   * always override the preset. Available presets:
+   * - `'sketch'`     — staggered ease-in draw, pencil feel
+   * - `'reveal'`     — fade + ease-out, draws once on viewport entry
+   * - `'typewriter'` — fast linear draw with stagger
+   * - `'cinematic'`  — slow ease-in-out with fade, dramatic entrance
+   * - `'spring'`     — spring easing, bouncy organic feel
+   */
+  preset?: PresetName;
   selector?: string;
   speed?: number;
   fade?: boolean;

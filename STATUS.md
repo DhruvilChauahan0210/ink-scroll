@@ -1,7 +1,7 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **1.5.0** (not yet published — bump `packages/svg-scroll-draw/package.json` before next npm publish)
-> Tests: **262 passing** across 8 test suites
+> Current version: **1.6.0** (not yet published — bump `packages/svg-scroll-draw/package.json` before next npm publish)
+> Tests: **267 passing** across 8 test suites
 > Last updated: 2026-06-04
 
 ---
@@ -153,4 +153,7 @@
 - [x] Timeline scrub bar — `TimelineDemo` in `ExamplesPage.tsx` now shows per-track progress bars + global scroll position live
 - [x] More demo examples — 13 examples including logo reveal, line chart, signature, flowchart, map route, network diagram, group, sequence, timeline, Vue, Svelte, Solid
 - [x] Blog post: "Zero-JS SVG scroll animations with native CSS" — `/blog/native-css-svg-scroll-animations`
-- [ ] npm publish v1.5.0 — bump `packages/svg-scroll-draw/package.json` version before publishing
+- [x] `preset` option — 5 named presets (sketch, reveal, typewriter, cinematic, spring); `PRESETS` exported
+- [x] CLI init tool — `npx svg-scroll-draw init` scaffolds starter files for all frameworks
+- [x] Blog post: "Scroll-driven path morphing with morphTo" — `/blog/scroll-path-morphing`
+- [ ] npm publish v1.6.0 — bump `packages/svg-scroll-draw/package.json` then `npm publish --access public`

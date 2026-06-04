@@ -1,9 +1,20 @@
 type EasingName = 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | 'spring' | 'bounce' | 'elastic';
+type PresetName$1 = 'sketch' | 'reveal' | 'typewriter' | 'cinematic' | 'spring';
 interface TriggerConfig {
     start?: string;
     end?: string;
 }
 interface ScrollDrawOptions {
+    /**
+     * Apply a named preset as the base configuration. User-supplied options
+     * always override the preset. Available presets:
+     * - `'sketch'`     — staggered ease-in draw, pencil feel
+     * - `'reveal'`     — fade + ease-out, draws once on viewport entry
+     * - `'typewriter'` — fast linear draw with stagger
+     * - `'cinematic'`  — slow ease-in-out with fade, dramatic entrance
+     * - `'spring'`     — spring easing, bouncy organic feel
+     */
+    preset?: PresetName$1;
     selector?: string;
     speed?: number;
     fade?: boolean;
@@ -107,6 +118,17 @@ interface ScrollDrawInstance {
     /** Returns current draw progress (0–1). */
     getProgress: () => number;
 }
+
+type PresetName = 'sketch' | 'reveal' | 'typewriter' | 'cinematic' | 'spring';
+/**
+ * Named option bags for common scroll-draw patterns.
+ * User options always override preset values.
+ *
+ * @example
+ * scrollDraw('#logo', { preset: 'reveal' });
+ * scrollDraw('#logo', { preset: 'sketch', easing: 'ease-out' }); // easing overrides preset
+ */
+declare const PRESETS: Record<PresetName, Partial<Omit<ScrollDrawOptions, 'preset'>>>;
 
 /**
  * Returns a custom spring easing function.
@@ -223,4 +245,4 @@ declare class Cinematic {
 
 declare function scrollDraw(target: string | Element, options?: ScrollDrawOptions): ScrollDrawInstance;
 
-export { Cinematic, type CinematicInstance, type CinematicOptions, type DrawAnimation, type FadeAnimation, type ScrollDrawInstance, type ScrollDrawOptions, type Story, type StoryAnimation, type StoryEasing, type StoryScene, createBounce, createElastic, createSpring, scrollDraw };
+export { Cinematic, type CinematicInstance, type CinematicOptions, type DrawAnimation, type FadeAnimation, PRESETS, type PresetName$1 as PresetName, type ScrollDrawInstance, type ScrollDrawOptions, type Story, type StoryAnimation, type StoryEasing, type StoryScene, createBounce, createElastic, createSpring, scrollDraw };

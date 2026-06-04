@@ -4,6 +4,33 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ---
 
+## [1.6.0] — 2026-06-04
+
+### Added
+- **`preset` option** — apply a named option bag as the base config. User options always override. Five presets:
+  - `'sketch'` — staggered ease-in draw, pencil feel
+  - `'reveal'` — fade + ease-out, draws once on viewport entry
+  - `'typewriter'` — fast linear draw with stagger
+  - `'cinematic'` — slow ease-in-out with fade, dramatic entrance
+  - `'spring'` — spring easing, bouncy organic feel
+  ```js
+  scrollDraw('#logo', { preset: 'reveal' });
+  scrollDraw('#logo', { preset: 'sketch', easing: 'ease-out' }); // easing overrides preset
+  ```
+- **`PRESETS` export** — the preset definitions are exported so you can inspect or extend them:
+  ```js
+  import { PRESETS } from 'svg-scroll-draw';
+  console.log(PRESETS.reveal); // { easing: 'ease-out', fade: true, speed: 1.2, once: true }
+  ```
+- **CLI init tool** (`npx svg-scroll-draw init`) — interactive scaffolder that generates a starter file for your framework. Asks for framework (React/Vue/Svelte/Solid/Vanilla), preset, easing, and selector. Writes a ready-to-use component file.
+- **5 new tests** for preset option — 267 tests total.
+- **Blog post: "Scroll-driven SVG path morphing with morphTo"** — `/blog/scroll-path-morphing`. Covers path compatibility rules, use cases (icon transitions, data viz, blobs), combining with fade/strokeColor, limitations, and full API reference.
+
+### Notes
+- Fully backward compatible — `preset` defaults to undefined (no change in behaviour).
+
+---
+
 ## [1.5.0] — 2026-06-04
 
 ### Added

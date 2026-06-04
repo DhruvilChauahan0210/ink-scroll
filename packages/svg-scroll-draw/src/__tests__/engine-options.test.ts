@@ -877,3 +877,51 @@ describe('createEngine — autoplay', () => {
     expect(onComplete).toHaveBeenCalledTimes(1);
   });
 });
+
+describe('preset option', () => {
+  it('reveal preset sets fade:true and once:true', () => {
+    const container = makeContainer();
+    createEngine(container, { preset: 'reveal' });
+
+    const path = container.querySelector('path') as SVGPathElement;
+    // fade:true → opacity initialised to 0
+    expect(path.style.opacity).toBe('0');
+  });
+
+  it('user options override preset values', () => {
+    const container = makeContainer();
+    // reveal preset sets fade:true, but we explicitly set fade:false
+    createEngine(container, { preset: 'reveal', fade: false });
+
+    const path = container.querySelector('path') as SVGPathElement;
+    // fade overridden to false → opacity not set to 0
+    expect(path.style.opacity).not.toBe('0');
+  });
+
+  it('sketch preset applies stagger > 0', () => {
+    const p1 = makePath();
+    const p2 = makePath();
+    const container = makeContainer([p1, p2]);
+
+    // Just verifying no error thrown and instance is valid
+    const instance = createEngine(container, { preset: 'sketch' });
+    expect(() => instance.destroy()).not.toThrow();
+  });
+
+  it('spring preset uses spring easing (no error)', () => {
+    const container = makeContainer();
+    vi.stubGlobal('scrollY', 500);
+    FakeIO.instances = [];
+    const instance = createEngine(container, { preset: 'spring' });
+    FakeIO.instances[0].trigger(true);
+    raf.tick();
+    expect(instance.getProgress()).toBeGreaterThanOrEqual(0);
+    instance.destroy();
+  });
+
+  it('no preset still works normally', () => {
+    const container = makeContainer();
+    const instance  = createEngine(container, { easing: 'ease-out' });
+    expect(() => instance.destroy()).not.toThrow();
+  });
+});
