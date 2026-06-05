@@ -131,6 +131,13 @@ interface ScrollAnimateOptions {
     onProgress?: (alpha: number) => void;
     onComplete?: () => void;
 }
+interface ScrollParallaxOptions {
+    speed?: number;
+    axis?: 'x' | 'y';
+    easing?: EasingName | ((t: number) => number);
+    trigger?: TriggerConfig;
+    onProgress?: (alpha: number) => void;
+}
 
 /**
  * Animate multiple SVG containers simultaneously with the same options.
@@ -202,5 +209,19 @@ declare function scrollAnimateGroup(targets: Array<string | Element>, options: S
  * );
  */
 declare function scrollAnimateSequence(targets: Array<string | Element>, options: ScrollAnimateOptions): ScrollDrawInstance;
+/**
+ * Apply a parallax effect to multiple elements simultaneously.
+ * Each element moves at `speed × elementHeight` pixels independently.
+ *
+ * @example
+ * import { scrollParallaxGroup } from 'svg-scroll-draw/group';
+ *
+ * // Three background layers at the same speed
+ * scrollParallaxGroup(['#layer-far', '#layer-mid', '#layer-near'], { speed: 0.4 });
+ *
+ * // Opposite direction (floats upward as you scroll down)
+ * scrollParallaxGroup(['#badge', '#tag'], { speed: -0.2 });
+ */
+declare function scrollParallaxGroup(targets: Array<string | Element>, options?: ScrollParallaxOptions): ScrollDrawInstance;
 
-export { type ScrollAnimateOptions, type ScrollDrawOptions, scrollAnimateGroup, scrollAnimateSequence, scrollDrawGroup, scrollDrawSequence };
+export { type ScrollAnimateOptions, type ScrollDrawOptions, type ScrollParallaxOptions, scrollAnimateGroup, scrollAnimateSequence, scrollDrawGroup, scrollDrawSequence, scrollParallaxGroup };
