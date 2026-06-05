@@ -119,14 +119,63 @@ interface ScrollDrawInstance {
     getProgress: () => number;
 }
 
+interface ScrollAnimateOptions {
+    props: Record<string, string | number | [string | number, string | number]>;
+    trigger?: TriggerConfig;
+    easing?: EasingName | ((t: number) => number);
+    speed?: number;
+    once?: boolean;
+    axis?: 'x' | 'y';
+    scrollContainer?: string | Element;
+    native?: boolean;
+    onProgress?: (alpha: number) => void;
+    onComplete?: () => void;
+}
+
+interface ScrollCounterOptions {
+    from?: number;
+    to: number;
+    format?: (value: number) => string;
+    easing?: EasingName | ((t: number) => number);
+    trigger?: TriggerConfig;
+    once?: boolean;
+    decimals?: number;
+    onComplete?: () => void;
+}
+
+interface ScrollVideoOptions {
+    trigger?: TriggerConfig;
+    from?: number;
+    to?: number;
+    easing?: EasingName | ((t: number) => number);
+    once?: boolean;
+    axis?: 'x' | 'y';
+    preload?: 'auto' | 'metadata';
+    onReady?: () => void;
+    onComplete?: () => void;
+    onProgress?: (alpha: number) => void;
+}
+
+interface ScrollTextOptions {
+    split?: 'chars' | 'words' | 'lines';
+    stagger?: number;
+    easing?: EasingName | ((t: number) => number);
+    from?: {
+        opacity?: number;
+        y?: number;
+        x?: number;
+        rotate?: number;
+        scale?: number;
+    };
+    trigger?: TriggerConfig;
+    once?: boolean;
+    onComplete?: () => void;
+}
+
 /**
  * Svelte action — apply to any container element wrapping an SVG.
  *
  * @example
- * <script>
- *   import { scrollDraw } from 'svg-scroll-draw/svelte';
- * </script>
- *
  * <div use:scrollDraw={{ easing: 'ease-out', speed: 1.2, fade: true }}>
  *   <svg>...</svg>
  * </div>
@@ -136,18 +185,14 @@ declare function scrollDraw(node: HTMLElement, options?: ScrollDrawOptions): {
     destroy(): void;
 };
 /**
- * Composable helper — returns an action and the live instance so you can
- * call `instance.replay()` from your Svelte component logic.
+ * Returns an action and a getter for the live instance.
  *
  * @example
  * <script>
  *   import { createScrollDraw } from 'svg-scroll-draw/svelte';
  *   const { action, getInstance } = createScrollDraw({ easing: 'spring' });
  * </script>
- *
- * <div use:action>
- *   <svg>...</svg>
- * </div>
+ * <div use:action><svg>...</svg></div>
  * <button on:click={() => getInstance()?.replay()}>Replay</button>
  */
 declare function createScrollDraw(options?: ScrollDrawOptions): {
@@ -156,5 +201,117 @@ declare function createScrollDraw(options?: ScrollDrawOptions): {
     };
     getInstance: () => ScrollDrawInstance | null;
 };
+/**
+ * Svelte action — animate any CSS property on any element driven by scroll.
+ *
+ * @example
+ * <div use:scrollAnimate={{ props: { opacity: [0, 1], transform: ['translateY(40px)', 'translateY(0)'] }, easing: 'ease-out', once: true }}>
+ *   ...
+ * </div>
+ */
+declare function scrollAnimate(node: HTMLElement, options: ScrollAnimateOptions): {
+    update(newOptions: ScrollAnimateOptions): void;
+    destroy(): void;
+};
+/**
+ * Returns an action and a getter for the live instance.
+ *
+ * @example
+ * <script>
+ *   import { createScrollAnimate } from 'svg-scroll-draw/svelte';
+ *   const { action, getInstance } = createScrollAnimate({
+ *     props: { opacity: [0, 1] }, easing: 'ease-out', once: true,
+ *   });
+ * </script>
+ * <div use:action>...</div>
+ * <button on:click={() => getInstance()?.replay()}>Replay</button>
+ */
+declare function createScrollAnimate(options: ScrollAnimateOptions): {
+    action: (node: HTMLElement) => {
+        destroy(): void;
+    };
+    getInstance: () => ScrollDrawInstance | null;
+};
+/**
+ * Svelte action — animate a number from `from` to `to` as the element scrolls in.
+ *
+ * @example
+ * <span use:scrollCounterAction={{ to: 1250000, format: n => '$' + Math.round(n).toLocaleString(), once: true }} />
+ */
+declare function scrollCounterAction(node: HTMLElement, options: ScrollCounterOptions): {
+    update(newOptions: ScrollCounterOptions): void;
+    destroy(): void;
+};
+/**
+ * Returns an action and a getter for the live counter instance.
+ *
+ * @example
+ * <script>
+ *   import { createScrollCounter } from 'svg-scroll-draw/svelte';
+ *   const { action, getInstance } = createScrollCounter({ to: 1000, once: true });
+ * </script>
+ * <span use:action />
+ */
+declare function createScrollCounter(options: ScrollCounterOptions): {
+    action: (node: HTMLElement) => {
+        destroy(): void;
+    };
+    getInstance: () => ScrollDrawInstance | null;
+};
+/**
+ * Svelte action — tie a <video> element's currentTime to scroll.
+ *
+ * @example
+ * <video use:scrollVideoAction={{ trigger: { start: 'top top', end: 'bottom top' } }}
+ *   src="/hero.mp4" muted playsinline preload="auto" />
+ */
+declare function scrollVideoAction(node: HTMLVideoElement, options?: ScrollVideoOptions): {
+    update(newOptions: ScrollVideoOptions): void;
+    destroy(): void;
+};
+/**
+ * Returns an action and a getter for the live video instance.
+ *
+ * @example
+ * <script>
+ *   import { createScrollVideo } from 'svg-scroll-draw/svelte';
+ *   const { action, getInstance } = createScrollVideo({ once: false });
+ * </script>
+ * <video use:action src="/hero.mp4" muted playsinline preload="auto" />
+ */
+declare function createScrollVideo(options?: ScrollVideoOptions): {
+    action: (node: HTMLVideoElement) => {
+        destroy(): void;
+    };
+    getInstance: () => ScrollDrawInstance | null;
+};
+/**
+ * Svelte action — split text and stagger-animate each piece on scroll.
+ *
+ * @example
+ * <h2 use:scrollTextAction={{ split: 'words', stagger: 0.05, once: true }}>
+ *   Animate on scroll.
+ * </h2>
+ */
+declare function scrollTextAction(node: HTMLElement, options?: ScrollTextOptions): {
+    update(newOptions: ScrollTextOptions): void;
+    destroy(): void;
+};
+/**
+ * Returns an action and a getter for the live text instance.
+ *
+ * @example
+ * <script>
+ *   import { createScrollText } from 'svg-scroll-draw/svelte';
+ *   const { action, getInstance } = createScrollText({ split: 'chars', stagger: 0.03 });
+ * </script>
+ * <p use:action>Hello world.</p>
+ */
+declare function createScrollText(options?: ScrollTextOptions): {
+    action: (node: HTMLElement) => {
+        destroy(): void;
+    };
+    getInstance: () => ScrollDrawInstance | null;
+};
 
-export { type ScrollDrawOptions, createScrollDraw, scrollDraw };
+export { type ScrollAnimateOptions, type ScrollCounterOptions, type ScrollDrawOptions, type ScrollTextOptions, type ScrollVideoOptions, createScrollAnimate, createScrollCounter, createScrollDraw, createScrollText, createScrollVideo, scrollAnimate, scrollCounterAction, scrollDraw, scrollTextAction, scrollVideoAction };

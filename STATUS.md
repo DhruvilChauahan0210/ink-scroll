@@ -1,9 +1,9 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **2.2.0** — published on npm
+> Current version: **2.6.0** — local (not yet published to npm)
 > Tests: **358 passing** across 12 test suites
 > Bundle: **~9 KB gzipped** (main) · zero runtime dependencies
-> Last updated: 2026-06-04
+> Last updated: 2026-06-05
 
 ---
 
@@ -38,6 +38,13 @@
 - [x] `devtools` overlay — progress panel + trigger lines, color-coded by type. Ships as `svg-scroll-draw/devtools`. Dev-only.
 - [x] Global instance registry (`src/core/registry.ts`) — all engines self-register; devtools reads it.
 - [x] React wrappers — `ScrollAnimate`, `ScrollCounter`, `ScrollVideo`, `ScrollText` in `svg-scroll-draw/react`
+- [x] Vue 3 v2 wrappers — `useScrollAnimate`, `useScrollCounter`, `useScrollVideo`, `useScrollText` + matching components in `svg-scroll-draw/vue`
+- [x] Svelte v2 wrappers — `scrollAnimate`, `scrollCounterAction`, `scrollVideoAction`, `scrollTextAction` actions + `create*` helpers in `svg-scroll-draw/svelte`
+- [x] Solid v2 wrappers — `useScrollAnimate`, `useScrollCounter`, `useScrollVideo`, `useScrollText` + `create*` variants in `svg-scroll-draw/solid`
+- [x] Angular v2 wrappers — `ScrollAnimateRef`, `ScrollCounterRef`, `ScrollVideoRef`, `ScrollTextRef` in `svg-scroll-draw/angular`
+- [x] Astro v2 — `initScrollAnimate`, `initScrollCounter`, `initScrollText`, `initAll` in `svg-scroll-draw/astro`
+- [x] Nuxt v2 — all v2 composables/components re-exported, plugin registers all 5 components
+- [x] `scrollAnimateGroup` + `scrollAnimateSequence` + `scrollParallaxGroup` in `svg-scroll-draw/group`
 
 ### Testing
 - [x] 358 tests across 12 suites — `engine`, `engine-options`, `engine-native`, `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollText` (19)

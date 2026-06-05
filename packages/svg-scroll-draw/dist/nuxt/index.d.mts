@@ -109,6 +109,59 @@ interface ScrollDrawOptions {
     native?: boolean;
 }
 
+interface ScrollAnimateOptions {
+    props: Record<string, string | number | [string | number, string | number]>;
+    trigger?: TriggerConfig;
+    easing?: EasingName | ((t: number) => number);
+    speed?: number;
+    once?: boolean;
+    axis?: 'x' | 'y';
+    scrollContainer?: string | Element;
+    native?: boolean;
+    onProgress?: (alpha: number) => void;
+    onComplete?: () => void;
+}
+
+interface ScrollCounterOptions {
+    from?: number;
+    to: number;
+    format?: (value: number) => string;
+    easing?: EasingName | ((t: number) => number);
+    trigger?: TriggerConfig;
+    once?: boolean;
+    decimals?: number;
+    onComplete?: () => void;
+}
+
+interface ScrollVideoOptions {
+    trigger?: TriggerConfig;
+    from?: number;
+    to?: number;
+    easing?: EasingName | ((t: number) => number);
+    once?: boolean;
+    axis?: 'x' | 'y';
+    preload?: 'auto' | 'metadata';
+    onReady?: () => void;
+    onComplete?: () => void;
+    onProgress?: (alpha: number) => void;
+}
+
+interface ScrollTextOptions {
+    split?: 'chars' | 'words' | 'lines';
+    stagger?: number;
+    easing?: EasingName | ((t: number) => number);
+    from?: {
+        opacity?: number;
+        y?: number;
+        x?: number;
+        rotate?: number;
+        scale?: number;
+    };
+    trigger?: TriggerConfig;
+    once?: boolean;
+    onComplete?: () => void;
+}
+
 /** Composable — attach to any container ref. */
 declare function useScrollDraw(options?: ScrollDrawOptions): vue.Ref<HTMLElement | null, HTMLElement | null>;
 /** Component — wraps children in a <div> and initialises the engine. */
@@ -193,16 +246,226 @@ declare const ScrollDraw: vue.DefineComponent<vue.ExtractPropTypes<{
     once: boolean;
     debug: boolean;
 }, {}, {}, {}, string, vue.ComponentProvideOptions, true, {}, any>;
+/**
+ * Composable — call with a full options object and bind the returned ref to
+ * whichever element you want to animate.
+ *
+ * @example
+ * <script setup>
+ *   import { useScrollAnimate } from 'svg-scroll-draw/vue';
+ *   const el = useScrollAnimate({ props: { opacity: [0, 1] }, easing: 'ease-out', once: true });
+ * </script>
+ * <div :ref="el">...</div>
+ */
+declare function useScrollAnimate(options: ScrollAnimateOptions): vue.Ref<HTMLElement | null, HTMLElement | null>;
+/**
+ * Component — accepts a single `:options` prop and wraps children in a <div>.
+ *
+ * @example
+ * <ScrollAnimate :options="{ props: { opacity: [0, 1] }, easing: 'ease-out' }">
+ *   <div>...</div>
+ * </ScrollAnimate>
+ */
+declare const ScrollAnimate: vue.DefineComponent<vue.ExtractPropTypes<{
+    options: {
+        type: () => ScrollAnimateOptions;
+        required: true;
+    };
+}>, () => vue.VNode<vue.RendererNode, vue.RendererElement, {
+    [key: string]: any;
+}>, {}, {}, {}, vue.ComponentOptionsMixin, vue.ComponentOptionsMixin, {}, string, vue.PublicProps, Readonly<vue.ExtractPropTypes<{
+    options: {
+        type: () => ScrollAnimateOptions;
+        required: true;
+    };
+}>> & Readonly<{}>, {}, {}, {}, {}, string, vue.ComponentProvideOptions, true, {}, any>;
+/**
+ * Composable — returns a ref to bind to a span/element that will count up on scroll.
+ *
+ * @example
+ * <script setup>
+ *   import { useScrollCounter } from 'svg-scroll-draw/vue';
+ *   const el = useScrollCounter({ to: 1000, easing: 'ease-out', once: true });
+ * </script>
+ * <span :ref="el" />
+ */
+declare function useScrollCounter(options: ScrollCounterOptions): vue.Ref<HTMLElement | null, HTMLElement | null>;
+/**
+ * Component — renders a <span> that counts from `from` to `to` on scroll.
+ *
+ * @example
+ * <ScrollCounter :to="1250000" :format="n => '$' + Math.round(n).toLocaleString()" />
+ */
+declare const ScrollCounter: vue.DefineComponent<vue.ExtractPropTypes<{
+    to: {
+        type: NumberConstructor;
+        required: true;
+    };
+    from: {
+        type: NumberConstructor;
+    };
+    format: {
+        type: () => ScrollCounterOptions["format"];
+    };
+    easing: {
+        type: (StringConstructor | FunctionConstructor)[];
+    };
+    trigger: {
+        type: ObjectConstructor;
+    };
+    once: {
+        type: BooleanConstructor;
+    };
+    decimals: {
+        type: NumberConstructor;
+    };
+    onComplete: {
+        type: FunctionConstructor;
+    };
+}>, () => vue.VNode<vue.RendererNode, vue.RendererElement, {
+    [key: string]: any;
+}>, {}, {}, {}, vue.ComponentOptionsMixin, vue.ComponentOptionsMixin, {}, string, vue.PublicProps, Readonly<vue.ExtractPropTypes<{
+    to: {
+        type: NumberConstructor;
+        required: true;
+    };
+    from: {
+        type: NumberConstructor;
+    };
+    format: {
+        type: () => ScrollCounterOptions["format"];
+    };
+    easing: {
+        type: (StringConstructor | FunctionConstructor)[];
+    };
+    trigger: {
+        type: ObjectConstructor;
+    };
+    once: {
+        type: BooleanConstructor;
+    };
+    decimals: {
+        type: NumberConstructor;
+    };
+    onComplete: {
+        type: FunctionConstructor;
+    };
+}>> & Readonly<{}>, {
+    once: boolean;
+}, {}, {}, {}, string, vue.ComponentProvideOptions, true, {}, any>;
+/**
+ * Composable — returns a ref to bind to a <video> element.
+ *
+ * @example
+ * <script setup>
+ *   import { useScrollVideo } from 'svg-scroll-draw/vue';
+ *   const vid = useScrollVideo({ trigger: { start: 'top top', end: 'bottom top' } });
+ * </script>
+ * <video :ref="vid" src="..." muted playsinline preload="auto" />
+ */
+declare function useScrollVideo(options?: ScrollVideoOptions): vue.Ref<HTMLVideoElement | null, HTMLVideoElement | null>;
+/**
+ * Component — renders a <video> scrubbed by scroll position.
+ *
+ * @example
+ * <ScrollVideo src="/hero.mp4" :options="{ trigger: { start: 'top top', end: 'bottom top' } }" />
+ */
+declare const ScrollVideo: vue.DefineComponent<vue.ExtractPropTypes<{
+    src: {
+        type: StringConstructor;
+        required: true;
+    };
+    options: {
+        type: () => ScrollVideoOptions;
+    };
+    muted: {
+        type: BooleanConstructor;
+        default: boolean;
+    };
+    playsInline: {
+        type: BooleanConstructor;
+        default: boolean;
+    };
+    class: {
+        type: StringConstructor;
+    };
+}>, () => vue.VNode<vue.RendererNode, vue.RendererElement, {
+    [key: string]: any;
+}>, {}, {}, {}, vue.ComponentOptionsMixin, vue.ComponentOptionsMixin, {}, string, vue.PublicProps, Readonly<vue.ExtractPropTypes<{
+    src: {
+        type: StringConstructor;
+        required: true;
+    };
+    options: {
+        type: () => ScrollVideoOptions;
+    };
+    muted: {
+        type: BooleanConstructor;
+        default: boolean;
+    };
+    playsInline: {
+        type: BooleanConstructor;
+        default: boolean;
+    };
+    class: {
+        type: StringConstructor;
+    };
+}>> & Readonly<{}>, {
+    muted: boolean;
+    playsInline: boolean;
+}, {}, {}, {}, string, vue.ComponentProvideOptions, true, {}, any>;
+/**
+ * Composable — returns a ref to bind to any text element; splits and animates on scroll.
+ *
+ * @example
+ * <script setup>
+ *   import { useScrollText } from 'svg-scroll-draw/vue';
+ *   const el = useScrollText({ split: 'words', stagger: 0.05, once: true });
+ * </script>
+ * <h2 :ref="el">Animate on scroll.</h2>
+ */
+declare function useScrollText(options?: ScrollTextOptions): vue.Ref<HTMLElement | null, HTMLElement | null>;
+/**
+ * Component — wraps text content in a <p> (or any tag) and animates it on scroll.
+ *
+ * @example
+ * <ScrollText :options="{ split: 'words', stagger: 0.05 }" tag="h2">
+ *   Animate on scroll.
+ * </ScrollText>
+ */
+declare const ScrollText: vue.DefineComponent<vue.ExtractPropTypes<{
+    options: {
+        type: () => ScrollTextOptions;
+    };
+    tag: {
+        type: StringConstructor;
+        default: string;
+    };
+}>, () => vue.VNode<vue.RendererNode, vue.RendererElement, {
+    [key: string]: any;
+}>, {}, {}, {}, vue.ComponentOptionsMixin, vue.ComponentOptionsMixin, {}, string, vue.PublicProps, Readonly<vue.ExtractPropTypes<{
+    options: {
+        type: () => ScrollTextOptions;
+    };
+    tag: {
+        type: StringConstructor;
+        default: string;
+    };
+}>> & Readonly<{}>, {
+    tag: string;
+}, {}, {}, {}, string, vue.ComponentProvideOptions, true, {}, any>;
 
 /**
  * Nuxt 3 integration for svg-scroll-draw.
  *
- * Re-exports the Vue composable and component for direct use, plus a
- * plugin factory for global auto-registration.
+ * Re-exports all Vue composables and components (v1 + v2) for direct use,
+ * plus a plugin factory for global auto-registration.
  *
  * ## Option A — Import per component (recommended)
  * ```ts
  * import { useScrollDraw, ScrollDraw } from 'svg-scroll-draw/nuxt';
+ * import { useScrollAnimate, ScrollAnimate } from 'svg-scroll-draw/nuxt';
+ * import { useScrollText, useScrollCounter } from 'svg-scroll-draw/nuxt';
  * ```
  *
  * ## Option B — Global auto-registration via Nuxt plugin
@@ -214,15 +477,17 @@ declare const ScrollDraw: vue.DefineComponent<vue.ExtractPropTypes<{
  * });
  * ```
  *
- * Then use <ScrollDraw> globally with no imports.
+ * Then use <ScrollDraw>, <ScrollAnimate>, <ScrollCounter>, etc. globally.
  */
 
 /**
- * Vue plugin that globally registers the <ScrollDraw> component.
+ * Vue plugin that globally registers all svg-scroll-draw components.
  * Pass to nuxtApp.vueApp.use() inside a Nuxt plugin.
+ *
+ * Registers: <ScrollDraw>, <ScrollAnimate>, <ScrollCounter>, <ScrollVideo>, <ScrollText>
  */
 declare function createScrollDrawPlugin(): {
     install(app: App): void;
 };
 
-export { ScrollDraw, type ScrollDrawOptions, createScrollDrawPlugin, useScrollDraw };
+export { ScrollAnimate, type ScrollAnimateOptions, ScrollCounter, type ScrollCounterOptions, ScrollDraw, type ScrollDrawOptions, ScrollText, type ScrollTextOptions, ScrollVideo, type ScrollVideoOptions, createScrollDrawPlugin, useScrollAnimate, useScrollCounter, useScrollDraw, useScrollText, useScrollVideo };

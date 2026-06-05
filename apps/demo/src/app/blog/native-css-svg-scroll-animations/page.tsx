@@ -111,7 +111,9 @@ export default function Page() {
             <Link href="/blog"       className="text-xs px-3.5 py-1.5 rounded-full border border-pitch-black bg-pitch-black text-light-linen font-medium">Blog</Link>
             <Link href="/playground" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium">⚡ Playground</Link>
           </div>
-          <MobileMenu />
+          <div className="flex lg:hidden">
+            <MobileMenu />
+          </div>
         </nav>
 
         {/* Hero */}

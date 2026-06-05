@@ -11,6 +11,7 @@ import { MobileMenu } from './MobileMenu';
 import { scrollAnimate, scrollCounter, scrollParallax } from 'svg-scroll-draw';
 import { ScrollAnimate } from 'svg-scroll-draw/react';
 import { scrollText } from 'svg-scroll-draw/text';
+import { scrollAnimateGroup } from 'svg-scroll-draw/group';
 
 function CodeBlock({ filename, children }: { filename: string; children: string }) {
   return (
@@ -1081,6 +1082,390 @@ function HeadlineReveal() {
   );
 }
 
+// scrollVideo — product video scrub concept (mock preview, real API code)
+// Canvas frame scrubber — simulates Apple-style video scrub where each scroll
+// position maps to a distinct rendered frame. This is exactly what scrollVideo
+// does: video.currentTime = scroll_progress * video.duration.
+function VideoScrubDemo() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const wrapRef   = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const wrap   = wrapRef.current;
+    if (!canvas || !wrap) return;
+
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const W = 320, H = 260;
+    canvas.width  = W * dpr;
+    canvas.height = H * dpr;
+    canvas.style.width  = '100%';
+    canvas.style.height = H + 'px';
+    const ctx = canvas.getContext('2d')!;
+    ctx.scale(dpr, dpr);
+
+    // ── helpers ──────────────────────────────────────────────────────────────
+    const lerp  = (a: number, b: number, t: number) => a + (b - a) * t;
+    const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
+    const ease  = (t: number) => t < 0.5 ? 2*t*t : -1+(4-2*t)*t;
+    // scene(progress, rangeStart, rangeEnd) → 0..1 within that range
+    const sc    = (p: number, a: number, b: number) => ease(clamp((p - a) / (b - a), 0, 1));
+
+    function phoneRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y); ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r); ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h); ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r); ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+    }
+
+    // ── main render — called every scroll tick ────────────────────────────────
+    function render(p: number) {
+      ctx.clearRect(0, 0, W, H);
+
+      // Background: pitch black → very dark blue-black
+      const bgB = Math.floor(lerp(0, 8, p));
+      ctx.fillStyle = `rgb(0,0,${bgB})`;
+      ctx.fillRect(0, 0, W, H);
+
+      const cx = W / 2, cy = H / 2 - 4;
+
+      // Phase timeline:
+      // 0.00–0.20  phone outline emerges from black
+      // 0.15–0.45  screen ignites (gradient washes in)
+      // 0.35–0.65  UI content renders frame by frame (app icons)
+      // 0.50–0.80  device tilts to 3/4 view + glow bloom
+      // 0.70–1.00  feature callout lines animate in
+
+      const p1 = sc(p, 0.00, 0.20); // outline emerge
+      const p2 = sc(p, 0.15, 0.45); // screen ignite
+      const p3 = sc(p, 0.35, 0.65); // UI content
+      const p4 = sc(p, 0.50, 0.80); // tilt + glow
+      const p5 = sc(p, 0.70, 1.00); // callouts
+
+      const PW = 80, PH = 148, PR = 14;
+      // tilt: starts at 0, tilts to ~10deg right then settles at 5deg
+      const tilt = lerp(0, 0.14, p4) * Math.sin(Math.PI * clamp(p4, 0, 1));
+      const tiltFinal = lerp(0, 0.08, p4);
+      const angle = tilt + tiltFinal;
+
+      // Ambient glow halo (behind phone)
+      if (p2 > 0.1) {
+        const glowSize = lerp(60, 110, p4);
+        const g = ctx.createRadialGradient(cx, cy, 8, cx, cy, glowSize);
+        g.addColorStop(0, `rgba(60,100,255,${p2 * 0.35})`);
+        g.addColorStop(0.5, `rgba(100,60,200,${p2 * 0.15})`);
+        g.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, glowSize, glowSize * 0.7, 0, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(angle);
+
+      // ── Phone body ──────────────────────────────────────────────────────────
+      // Shadow
+      if (p1 > 0.3) {
+        ctx.shadowColor = `rgba(80,120,255,${p1 * 0.4})`;
+        ctx.shadowBlur = 24 * p1;
+      }
+      phoneRect(ctx, -PW/2, -PH/2, PW, PH, PR);
+      ctx.fillStyle = `rgba(10,10,18,${p1})`;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+
+      // Border — glows brighter as screen turns on
+      const borderAlpha = lerp(p1 * 0.5, p1 * 0.95, p2);
+      const borderBlue  = Math.floor(lerp(140, 200, p2));
+      ctx.strokeStyle = `rgba(${borderBlue},${Math.floor(lerp(140,160,p2))},255,${borderAlpha})`;
+      ctx.lineWidth = 1.5;
+      phoneRect(ctx, -PW/2, -PH/2, PW, PH, PR);
+      ctx.stroke();
+
+      // ── Screen ──────────────────────────────────────────────────────────────
+      if (p2 > 0) {
+        phoneRect(ctx, -PW/2+6, -PH/2+14, PW-12, PH-28, 8);
+        // Gradient shifts: blue → purple/indigo as content loads
+        const sg = ctx.createLinearGradient(-PW/2, -PH/2, PW/2, PH/2);
+        const sr = Math.floor(lerp(15, 60, p3));
+        const sg1 = Math.floor(lerp(25, 15, p3));
+        const sb = Math.floor(lerp(80, 140, p3));
+        sg.addColorStop(0, `rgba(${sr},${sg1},${sb},${p2})`);
+        sg.addColorStop(1, `rgba(${Math.floor(sr*0.5)},${Math.floor(sg1*2)},${Math.floor(sb*1.3)},${p2})`);
+        ctx.fillStyle = sg;
+        ctx.fill();
+
+        // Wallpaper shimmer lines (like video decompressing)
+        if (p2 > 0.3 && p3 < 0.8) {
+          const shimmerA = (1 - p3) * (p2 - 0.3) / 0.7 * 0.08;
+          for (let i = 0; i < 6; i++) {
+            const ly = -PH/2 + 20 + i * 18 + (p * 12) % 18;
+            if (ly > PH/2 - 14) continue;
+            ctx.fillStyle = `rgba(255,255,255,${shimmerA})`;
+            ctx.fillRect(-PW/2+6, ly, PW-12, 2);
+          }
+        }
+
+        // App icons grid (materializes frame by frame as p3 rises)
+        if (p3 > 0.15) {
+          const ICON_COLORS = ['#FF6B6B','#FFD93D','#6BCB77','#4D96FF','#C77DFF','#FF6BB5','#FF9A3C','#00D4FF'];
+          const gridA = (p3 - 0.15) / 0.85;
+          for (let row = 0; row < 4; row++) {
+            for (let col = 0; col < 3; col++) {
+              // Stagger reveal: each icon appears slightly after the previous
+              const iconIdx = row * 3 + col;
+              const iconA = clamp((gridA - iconIdx * 0.04) / 0.5, 0, 1);
+              if (iconA <= 0) continue;
+              const ix = -PW/2 + 10 + col * 20;
+              const iy = -PH/2 + 22 + row * 26;
+              phoneRect(ctx, ix, iy, 16, 20, 4);
+              const col2 = ICON_COLORS[iconIdx % ICON_COLORS.length];
+              // Parse hex color to rgba
+              const r2 = parseInt(col2.slice(1,3), 16);
+              const g2 = parseInt(col2.slice(3,5), 16);
+              const b2 = parseInt(col2.slice(5,7), 16);
+              ctx.fillStyle = `rgba(${r2},${g2},${b2},${iconA})`;
+              ctx.fill();
+              // Icon shine
+              if (iconA > 0.5) {
+                phoneRect(ctx, ix, iy, 16, 9, 4);
+                ctx.fillStyle = `rgba(255,255,255,${iconA * 0.15})`;
+                ctx.fill();
+              }
+            }
+          }
+        }
+
+        // Home indicator
+        ctx.beginPath();
+        ctx.roundRect(-16, PH/2 - 20, 32, 4, 2);
+        ctx.fillStyle = `rgba(255,255,255,${p2 * 0.4})`;
+        ctx.fill();
+      }
+
+      // Dynamic Island
+      if (p1 > 0.5) {
+        const niA = (p1 - 0.5) * 2;
+        ctx.beginPath();
+        ctx.roundRect(-15, -PH/2 + 16, 30, 10, 5);
+        ctx.fillStyle = `rgba(0,0,0,${niA})`;
+        ctx.fill();
+        // Camera dot
+        ctx.beginPath();
+        ctx.arc(8, -PH/2 + 21, 2.5, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(30,30,40,${niA})`;
+        ctx.fill();
+      }
+
+      // Side button
+      phoneRect(ctx, PW/2, -22, 3, 38, 2);
+      ctx.fillStyle = `rgba(80,100,140,${p1 * 0.7})`;
+      ctx.fill();
+
+      ctx.restore();
+
+      // ── Feature callout lines ────────────────────────────────────────────────
+      if (p5 > 0) {
+        ctx.font = '8px -apple-system, "SF Pro Display", system-ui, monospace';
+
+        // Callout 1: upper right — camera
+        const c1 = clamp(p5 / 0.55, 0, 1);
+        if (c1 > 0) {
+          const ox = cx + Math.cos(angle) * (PW/2 - 4) + 4;
+          const oy = cy - 52;
+          ctx.beginPath();
+          ctx.moveTo(ox + 2, oy);
+          ctx.lineTo(ox + 50 * c1, oy - 20 * c1);
+          ctx.strokeStyle = `rgba(160,200,255,${p5 * 0.65})`;
+          ctx.lineWidth = 1;
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.arc(ox + 2, oy, 2.5, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(160,200,255,${p5})`;
+          ctx.fill();
+          if (c1 > 0.65) {
+            const ta = (c1 - 0.65) / 0.35;
+            ctx.fillStyle = `rgba(160,200,255,${p5 * ta})`;
+            ctx.fillText('48 MP camera', ox + 54, oy - 22);
+          }
+        }
+
+        // Callout 2: lower left — chip
+        const c2 = clamp((p5 - 0.35) / 0.65, 0, 1);
+        if (c2 > 0) {
+          const ox2 = cx - PW/2 - 2;
+          const oy2 = cy + 18;
+          ctx.beginPath();
+          ctx.moveTo(ox2, oy2);
+          ctx.lineTo(ox2 - 48 * c2, oy2 + 16 * c2);
+          ctx.strokeStyle = `rgba(190,140,255,${p5 * 0.65})`;
+          ctx.lineWidth = 1;
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.arc(ox2, oy2, 2.5, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(190,140,255,${p5})`;
+          ctx.fill();
+          if (c2 > 0.65) {
+            const ta2 = (c2 - 0.65) / 0.35;
+            ctx.fillStyle = `rgba(190,140,255,${p5 * ta2})`;
+            ctx.fillText('A18 Pro chip', ox2 - 130, oy2 + 22);
+          }
+        }
+      }
+
+      // ── Scrub bar + frame counter ────────────────────────────────────────────
+      const TOTAL_FRAMES = 180;
+      const frame = Math.round(p * TOTAL_FRAMES);
+      const secs  = (p * 9).toFixed(1);
+
+      ctx.fillStyle = 'rgba(255,255,255,0.07)';
+      ctx.beginPath(); ctx.roundRect(16, H - 20, W - 32, 3, 2); ctx.fill();
+
+      // Scrubbed portion
+      ctx.fillStyle = 'rgba(120,160,255,0.75)';
+      ctx.beginPath(); ctx.roundRect(16, H - 20, (W - 32) * p, 3, 2); ctx.fill();
+
+      // Playhead dot
+      const dotX = 16 + (W - 32) * p;
+      ctx.beginPath();
+      ctx.arc(dotX, H - 18.5, 4, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(160,200,255,0.9)';
+      ctx.fill();
+
+      ctx.fillStyle = 'rgba(255,255,255,0.3)';
+      ctx.font = '8px monospace';
+      ctx.fillText(`${secs}s`, 16, H - 6);
+
+      ctx.fillStyle = 'rgba(255,255,255,0.2)';
+      ctx.textAlign = 'right';
+      ctx.fillText(`frame ${frame} / ${TOTAL_FRAMES}`, W - 16, H - 6);
+      ctx.textAlign = 'left';
+    }
+
+    // ── Drive render from scroll ─────────────────────────────────────────────
+    function onScroll() {
+      const rect = wrap!.getBoundingClientRect();
+      const vh   = window.innerHeight;
+      const start = vh * 0.85, end = vh * 0.18;
+      const prog  = Math.max(0, Math.min(1, (start - rect.top) / (start - end)));
+      render(prog);
+    }
+
+    render(0);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  return (
+    <div ref={wrapRef} style={{ width: '100%', background: '#000', borderRadius: 12, overflow: 'hidden', position: 'relative' }}>
+      <canvas ref={canvasRef} style={{ display: 'block' }} />
+      <div style={{
+        position: 'absolute', top: 10, left: 12,
+        fontFamily: 'monospace', fontSize: 9,
+        color: 'rgba(100,150,255,0.45)',
+        letterSpacing: '0.14em', textTransform: 'uppercase',
+        pointerEvents: 'none',
+      }}>
+        scroll to scrub ↓
+      </div>
+    </div>
+  );
+}
+
+// scrollText lines — marketing feature section
+function FeatureLinesDemo() {
+  const features = [
+    { icon: '⚡', text: 'Native CSS compositor path. Zero JS on Chrome.' },
+    { icon: '🧩', text: 'React, Vue, Svelte, Solid, Angular, Astro, Nuxt.' },
+    { icon: '📦', text: '~9 KB gzipped. Zero runtime dependencies.' },
+    { icon: '♿', text: 'aria-label, aria-hidden, prefers-reduced-motion.' },
+  ];
+  const refs = [
+    useRef<HTMLDivElement>(null),
+    useRef<HTMLDivElement>(null),
+    useRef<HTMLDivElement>(null),
+    useRef<HTMLDivElement>(null),
+  ];
+
+  useEffect(() => {
+    const insts = refs.map((r, i) =>
+      r.current && scrollAnimate(r.current, {
+        props: { opacity: [0, 1], transform: ['translateX(-20px)', 'translateX(0)'] },
+        trigger: { start: `top ${90 - i * 5}%`, end: `top ${60 - i * 5}%` },
+        easing: 'ease-out', once: true, native: false,
+      })
+    ).filter(Boolean);
+    return () => insts.forEach(i => i?.destroy());
+  }, []);
+
+  return (
+    <div style={{ width: '100%', background: '#fafaf8', padding: '24px 20px', borderRadius: 12 }}>
+      <div style={{ fontFamily: 'var(--font-geist-mono, monospace)', fontSize: 10, fontWeight: 600, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#999', marginBottom: 20 }}>
+        Why developers choose it
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        {features.map((f, i) => (
+          <div key={i} ref={refs[i]} style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+            <span style={{ fontSize: 18, flexShrink: 0, lineHeight: 1.3 }}>{f.icon}</span>
+            <span style={{ fontFamily: 'system-ui', fontSize: 14, color: '#333', lineHeight: 1.5 }}>{f.text}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// scrollAnimateGroup — fan-out card grid
+function AnimateGroupDemo() {
+  const refs = [
+    useRef<HTMLDivElement>(null),
+    useRef<HTMLDivElement>(null),
+    useRef<HTMLDivElement>(null),
+    useRef<HTMLDivElement>(null),
+  ];
+  const cards = [
+    { icon: '🎯', label: 'scrollAnimate', color: '#ff90e8', desc: 'Any CSS property' },
+    { icon: '🔢', label: 'scrollCounter', color: '#ffc900', desc: 'Animated numbers' },
+    { icon: '📝', label: 'scrollText',    color: '#5865F2', desc: 'Split + stagger'  },
+    { icon: '🎬', label: 'scrollVideo',   color: '#22c55e', desc: 'Scrub video'      },
+  ];
+
+  useEffect(() => {
+    const els = refs.map(r => r.current).filter(Boolean) as Element[];
+    const group = scrollAnimateGroup(els, {
+      props: { opacity: [0, 1], transform: ['translateY(28px)', 'translateY(0)'] },
+      easing: 'ease-out',
+      once: true,
+      trigger: TRIGGER,
+      native: false,
+    });
+    return () => group.destroy();
+  }, []);
+
+  return (
+    <div style={{ width: '100%', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, padding: '8px 0' }}>
+      {cards.map((c, i) => (
+        <div key={c.label} ref={refs[i]} style={{
+          background: '#fff', borderRadius: 12,
+          border: `1.5px solid ${c.color}30`,
+          padding: '16px 14px',
+          display: 'flex', flexDirection: 'column', gap: 6,
+        }}>
+          <span style={{ fontSize: 22 }}>{c.icon}</span>
+          <code style={{ fontFamily: 'monospace', fontSize: 10, fontWeight: 700, color: c.color }}>{c.label}</code>
+          <span style={{ fontFamily: 'system-ui', fontSize: 11, color: '#666' }}>{c.desc}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 /* ── Example cards data ───────────────────────────────────── */
 
 const EXAMPLES = [
@@ -1595,6 +1980,100 @@ scrollCounter('#deps', { to: 0, once: true });`,
   },
 
   {
+    id: 'scroll-video',
+    label: 'Product Video Scrub',
+    tag: 'v2 · scrollVideo · currentTime',
+    darkPreview: true,
+    description:
+      'Tie a <video> element\'s currentTime to scroll position — the Apple and Stripe product-page pattern. One function call. Supports from/to in seconds, preload strategy, onReady callback, and the full pause/resume/seek/replay instance API.',
+    preview: <VideoScrubDemo />,
+    code: `import { scrollVideo } from 'svg-scroll-draw/video';
+
+// The full Apple / Stripe product scrub pattern.
+// video.currentTime is tied directly to scroll position.
+scrollVideo('#hero-video', {
+  // Animate across the full sticky section
+  trigger: { start: 'top top', end: 'bottom top' },
+
+  // Optionally scrub only a clip of the video
+  from: 0,    // seconds
+  to:   12.5, // seconds (defaults to video.duration)
+
+  easing: 'linear', // linear feels most natural for scrub
+  once:   false,    // reverse on scroll-up
+
+  onReady:    () => console.log('metadata loaded'),
+  onProgress: p  => progressBar.style.width = p * 100 + '%',
+  onComplete: () => console.log('reached end'),
+});`,
+  },
+
+  {
+    id: 'scroll-text-lines',
+    label: 'Feature List Reveal',
+    tag: 'v2 · scrollAnimate · staggered list',
+    description:
+      'Four feature rows slide in from the left on scroll with staggered scrollAnimate calls — each row has its own trigger offset for a natural cascade. The same pattern works with scrollText split: "lines" for text blocks.',
+    preview: <FeatureLinesDemo />,
+    code: `import { scrollAnimate } from 'svg-scroll-draw';
+
+// Each row has its own trigger offset — a 5% stagger
+// in start position creates a natural waterfall effect.
+const rows = document.querySelectorAll('.feature-row');
+
+rows.forEach((row, i) => {
+  scrollAnimate(row, {
+    props: {
+      opacity:   [0, 1],
+      transform: ['translateX(-20px)', 'translateX(0)'],
+    },
+    trigger: {
+      start: \`top \${90 - i * 5}%\`,
+      end:   \`top \${60 - i * 5}%\`,
+    },
+    easing: 'ease-out',
+    once:   true,
+  });
+});
+
+// Or use scrollText with split: 'lines' for text blocks:
+// scrollText('#features', {
+//   split: 'lines', stagger: 0.08,
+//   from: { opacity: 0, x: -20 },
+//   once: true,
+// });`,
+  },
+
+  {
+    id: 'scroll-animate-group',
+    label: 'Animate Group',
+    tag: 'v2 · scrollAnimateGroup · fan-out',
+    description:
+      'Animate multiple HTML elements simultaneously with one call using scrollAnimateGroup. All four v2 API cards reveal together on scroll. Same options, same scroll timeline, zero boilerplate — the v2 parallel to scrollDrawGroup.',
+    preview: <AnimateGroupDemo />,
+    code: `import { scrollAnimateGroup } from 'svg-scroll-draw/group';
+
+// All four cards animate simultaneously — same props,
+// same trigger, one call.
+const group = scrollAnimateGroup(
+  [card1El, card2El, card3El, card4El],
+  {
+    props: {
+      opacity:   [0, 1],
+      transform: ['translateY(28px)', 'translateY(0)'],
+    },
+    easing: 'ease-out',
+    once:   true,
+  }
+);
+
+// Full instance API works across the entire group
+group.replay();   // replay all
+group.pause();    // pause all
+group.destroy();  // cleanup on unmount`,
+  },
+
+  {
     id: 'scroll-text',
     label: 'Hero Headline Reveal',
     tag: 'v2 · scrollText · words + chars',
@@ -1648,10 +2127,13 @@ const EXAMPLE_FRAMEWORKS: Record<string, string[]> = {
   'svelte':       ['svelte'],
   'solid':        ['solid'],
   'sequence-api':    ['api'],
-  'scroll-animate':  ['react', 'vanilla'],
-  'scroll-counter':  ['vanilla', 'react'],
-  'scroll-text':     ['react', 'vanilla'],
-  'presets':      ['api'],
+  'scroll-animate':        ['react', 'vanilla'],
+  'scroll-counter':        ['vanilla', 'react'],
+  'scroll-video':          ['vanilla', 'react'],
+  'scroll-text-lines':     ['vanilla', 'react'],
+  'scroll-animate-group':  ['api', 'vanilla'],
+  'scroll-text':           ['react', 'vanilla'],
+  'presets':               ['api'],
 };
 
 const FILTERS = [
@@ -1689,7 +2171,9 @@ export function ExamplesPage() {
         </div>
 
         {/* Mobile / tablet */}
-        <MobileMenu />
+        <div className="flex lg:hidden">
+          <MobileMenu />
+        </div>
       </nav>
 
       {/* Header */}
@@ -1706,7 +2190,7 @@ export function ExamplesPage() {
             </span>
           </h1>
           <p className="text-sm sm:text-base md:text-lg text-graphite-border max-w-2xl leading-relaxed break-words">
-            Fourteen production-ready patterns — logo reveals, charts, signatures, diagrams, presets, Vue 3, Svelte, Solid.js, Timeline API, Group API, Sequence API, and more.
+            Seventeen production-ready patterns — logo reveals, charts, signatures, video scrub, scrollAnimateGroup, feature reveals, Vue 3, Svelte, Solid.js, Timeline API, Group API, Sequence API, and more.
             Each one is powered by <code className="inline font-mono text-pitch-black text-[0.9em] bg-marketplace-gray border border-subtle-ash px-1.5 py-0.5 rounded-md break-all">svg-scroll-draw</code> and
             works in React, Vue 3, Svelte, Solid, and vanilla JS.
             Scroll down to see them draw live.

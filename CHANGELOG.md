@@ -4,6 +4,113 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ---
 
+## [2.6.0] — 2026-06-05
+
+### Added
+
+- **Playground v2 tab** — new `v2 ✦` tab in the SVG Playground. Live interactive demos for three APIs:
+  - `scrollAnimate`: 5 effect presets (Fade+Slide, Scale+Fade, Slide Left, Rotate In, Color Shift), 5 easings, scrubber, replay, live card preview.
+  - `scrollText`: split mode picker (words/chars/lines), stagger slider, 3 from-presets (Fade Up, Rotate In, Scale), scrubber, dark-bg headline preview.
+  - `scrollCounter`: 4 format presets (users, revenue, satisfaction, tests), scrubber, replay.
+  - Each panel generates a copy-ready code snippet.
+- **Blog post** — "Animate multiple elements on scroll — one call" at `/blog/scroll-animation-groups`. Covers all 5 group functions with real-world patterns.
+- **README exports table** — updated `svg-scroll-draw/vue`, `/svelte`, `/solid`, `/angular`, `/astro`, `/nuxt`, `/group` rows to list all v2 exports.
+
+### Fixed
+
+- JSON-LD `softwareVersion` on home page corrected from `1.2.0` to `2.6.0`.
+
+---
+
+## [2.5.0] — 2026-06-05
+
+### Added
+
+- **`scrollParallaxGroup(targets, options)`** — fan-out `scrollParallax` across multiple elements simultaneously. Returns the same combined `destroy`/`replay`/`pause`/`resume`/`seek` instance as `scrollAnimateGroup`. Ships in `svg-scroll-draw/group`.
+- **DocsPage Angular v2** — `ScrollAnimateRef`, `ScrollCounterRef`, `ScrollVideoRef`, `ScrollTextRef` with Angular `@ViewChild` component lifecycle examples.
+- **DocsPage Nuxt v2** — `useScrollAnimate`, `useScrollText`, `useScrollCounter` composables, component wrappers, and `createScrollDrawPlugin`. Full parity with Vue/Svelte/Solid docs depth.
+- **DocsPage Astro v2** — `initScrollAnimate`, `initScrollText`, `initScrollCounter`, `initAll` with complete data-attribute code examples.
+
+### Fixed
+
+- Desktop nav duplicate burger menu — `<MobileMenu />` was rendering on desktop on 7 pages (blog index, 5 blog posts, ExamplesPage). All now wrapped in `lg:hidden`.
+
+---
+
+## [2.4.0] — 2026-06-05
+
+### Added — Angular/Astro/Nuxt v2 + scrollAnimateGroup + examples + blog
+
+**Angular v2 wrappers** (`svg-scroll-draw/angular`)
+- `ScrollAnimateRef` — class with `init(element, options)` / `replay()` / `pause()` / `resume()` / `seek()` / `destroy()`.
+- `ScrollCounterRef` — same class API wrapping `scrollCounter`.
+- `ScrollVideoRef` — same class API wrapping `scrollVideo` for `<video>` elements.
+- `ScrollTextRef` — same class API wrapping `scrollText`.
+
+**Astro v2** (`svg-scroll-draw/astro`)
+- `initScrollAnimate(root?)` — finds all `[data-scroll-animate]` elements and initialises `createAnimateEngine` from the JSON in `data-scroll-animate-options`.
+- `initScrollCounter(root?)` — same pattern for `[data-scroll-counter]`.
+- `initScrollText(root?)` — same pattern for `[data-scroll-text]`.
+- `initAll(root?)` — convenience that runs all four inits and returns `{ draw, animate, counter, text }`.
+
+**Nuxt v2** (`svg-scroll-draw/nuxt`)
+- Re-exports all v2 Vue composables: `useScrollAnimate`, `useScrollCounter`, `useScrollVideo`, `useScrollText`.
+- Re-exports all v2 Vue components: `ScrollAnimate`, `ScrollCounter`, `ScrollVideo`, `ScrollText`.
+- `createScrollDrawPlugin()` now globally registers all five components (`ScrollDraw` + v2 set).
+
+**Group API** (`svg-scroll-draw/group`)
+- `scrollAnimateGroup(targets, options)` — fan-out `scrollAnimate` across multiple elements simultaneously. Returns a combined instance with full `destroy`/`replay`/`pause`/`resume`/`seek` API.
+- `scrollAnimateSequence(targets, options)` — chain `scrollAnimate` across elements in strict sequence.
+
+**ExamplesPage**
+- Product Video Scrub — `scrollVideo` concept with mock timeline, timestamp counter, saturation transition.
+- Feature List Reveal — staggered `scrollAnimate` row-by-row entrance.
+- Animate Group — `scrollAnimateGroup` fan-out of four v2 API cards.
+- Header count updated to 17 examples.
+
+**Blog**
+- New post: "scrollAnimate in Vue 3, Svelte, and Solid.js — v2 framework guide" at `/blog/vue-svelte-solid-v2`. Composables, actions, hooks, component wrappers, real-world patterns (staggered card grid, marketing headline), Nuxt plugin, Astro data-attributes, summary table.
+
+---
+
+## [2.3.0] — 2026-06-05
+
+### Added — v2 framework wrappers + interactive demo
+
+**Vue 3 v2 composables** (`svg-scroll-draw/vue`)
+- `useScrollAnimate(options)` — returns a ref; bind to any element to animate CSS props on scroll.
+- `useScrollCounter(options)` — returns a ref; bind to a `<span>` or any element to count up on scroll.
+- `useScrollVideo(options)` — returns a ref; bind to a `<video>` to scrub `currentTime` on scroll.
+- `useScrollText(options)` — returns a ref; bind to any text element to split and stagger-animate on scroll.
+- `<ScrollAnimate :options="...">` — convenience component; wraps children in a `<div>` and animates.
+- `<ScrollCounter :to="..." ...>` — renders a `<span>` counter.
+- `<ScrollVideo src="..." :options="...">` — renders a `<video>` scrubbed by scroll.
+- `<ScrollText :options="..." tag="h2">` — renders any tag with text split and animated.
+
+**Svelte v2 actions** (`svg-scroll-draw/svelte`)
+- `scrollAnimate` — Svelte `use:` action for `createAnimateEngine`. `update()` reinitialises on option change.
+- `scrollCounterAction` — Svelte action for `scrollCounter`.
+- `scrollVideoAction` — Svelte action for `scrollVideo`.
+- `scrollTextAction` — Svelte action for `scrollText`.
+- `createScrollAnimate(options)` — returns `{ action, getInstance }` for imperative control.
+- `createScrollCounter`, `createScrollVideo`, `createScrollText` — same pattern.
+
+**Solid v2 hooks** (`svg-scroll-draw/solid`)
+- `useScrollAnimate(options)` — returns ref setter for any element.
+- `useScrollCounter(options)` — returns ref setter for a counter element.
+- `useScrollVideo(options)` — returns ref setter for a `<video>` element.
+- `useScrollText(options)` — returns ref setter for a text element.
+- `createScrollAnimate`, `createScrollCounter`, `createScrollVideo`, `createScrollText` — return `{ ref, getInstance }` for imperative control.
+
+**Demo site**
+- `ScrollTextInteractive` — interactive home page section for `scrollText`: split mode picker (chars/words/lines), stagger slider (0–0.10), from-preset selector (Fade Up / Rotate In / Scale), scrubber, replay button, live code block.
+- Changelog page: "v2 — The Platform Shift" visual callout separating v2.x and v1.x entries.
+- DocsPage: new `v2.3.0` nav group with full usage docs for Vue 3 v2 composables/components, Svelte v2 actions, and Solid v2 hooks.
+- FrameworkTabs: Vue 3, Svelte, and Solid tabs updated to showcase v2 API (`useScrollAnimate`, `scrollAnimate` action, `useScrollText`, etc.) alongside v1 comment.
+- All version badges updated to v2.3.0.
+
+---
+
 ## [2.2.0] — 2026-06-04 · **published**
 
 ### Added — v2 Phase 2 + Phase 3

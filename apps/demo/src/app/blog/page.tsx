@@ -21,6 +21,26 @@ export const metadata: Metadata = {
 
 const POSTS = [
   {
+    slug: 'scroll-animation-groups',
+    title: 'Animate multiple elements on scroll — one call',
+    description:
+      'scrollAnimateGroup, scrollAnimateSequence, scrollParallaxGroup, scrollDrawGroup — the complete guide to fan-out, cascade, and parallax animations across multiple elements. Real-world patterns for pricing grids, hero sections, and feature lists.',
+    tag: 'Patterns',
+    tagColor: '#ffc900',
+    readTime: '7 min read',
+    date: 'June 2026',
+  },
+  {
+    slug: 'vue-svelte-solid-v2',
+    title: 'scrollAnimate in Vue 3, Svelte, and Solid.js — v2 framework guide',
+    description:
+      'Full guide to using svg-scroll-draw v2 APIs in Vue 3, Svelte, and Solid.js. Composables, use: actions, hooks, component wrappers — with copy-paste examples for scrollAnimate, scrollText, scrollCounter, and scrollVideo.',
+    tag: 'Framework Guide',
+    tagColor: '#42b883',
+    readTime: '9 min read',
+    date: 'June 2026',
+  },
+  {
     slug: 'replace-gsap-scrolltrigger',
     title: 'Replace GSAP ScrollTrigger with scrollAnimate',
     description:
@@ -88,7 +108,9 @@ export default function BlogPage() {
           <Link href="/changelog" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Changelog</Link>
           <Link href="/playground" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">⚡ Playground</Link>
         </div>
-        <MobileMenu />
+        <div className="flex lg:hidden">
+          <MobileMenu />
+        </div>
       </nav>
 
       {/* Header */}

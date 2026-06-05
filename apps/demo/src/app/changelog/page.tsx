@@ -1,3 +1,4 @@
+import React from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ThemeToggle } from '@/components/ThemeToggle';
@@ -27,10 +28,63 @@ const NPM = 'https://www.npmjs.com/package/svg-scroll-draw';
 
 const RELEASES = [
   {
-    version: '2.2.0',
+    version: '2.6.0',
     date: 'June 2026',
     tag: 'Latest',
     tagColor: 'bg-lime-glow',
+    items: [
+      { type: 'new', text: 'Playground v2 tab — new "v2 ✦" tab in the SVG Playground with live interactive demos for scrollAnimate (5 effect presets, 5 easings, scrubber), scrollText (split/stagger/from-preset), and scrollCounter (4 format presets). Each panel has replay, scrubber, and a copy-ready code snippet.' },
+      { type: 'new', text: 'Blog post: "Animate multiple elements on scroll — one call" at /blog/scroll-animation-groups. Covers scrollAnimateGroup, scrollAnimateSequence, scrollParallaxGroup, scrollDrawGroup, scrollDrawSequence with real-world patterns for pricing grids, hero sections, and feature lists.' },
+      { type: 'new', text: 'README sub-path exports table updated — all v2 wrappers for Vue, Svelte, Solid, Angular, Astro, Nuxt, and group APIs documented.' },
+      { type: 'fix', text: 'JSON-LD structured data on home page: softwareVersion updated from 1.2.0 to 2.6.0.' },
+    ],
+  },
+  {
+    version: '2.5.0',
+    date: 'June 2026',
+    tag: null,
+    tagColor: '',
+    items: [
+      { type: 'new', text: 'scrollParallaxGroup — fan-out scrollParallax across multiple elements simultaneously. Same combined instance API as scrollAnimateGroup. Ships in svg-scroll-draw/group.' },
+      { type: 'new', text: 'DocsPage Angular v2 — full docs for ScrollAnimateRef, ScrollCounterRef, ScrollVideoRef, ScrollTextRef with Angular component examples.' },
+      { type: 'new', text: 'DocsPage Nuxt v2 — useScrollAnimate, useScrollText, useScrollCounter composables + component wrappers + createScrollDrawPlugin. Full parity with Vue/Svelte/Solid docs.' },
+      { type: 'new', text: 'DocsPage Astro v2 — initScrollAnimate, initScrollText, initScrollCounter, initAll data-attribute API with full code examples.' },
+      { type: 'fix', text: 'Desktop nav bug — burger menu was rendering on desktop across 7 pages (blog index, 5 blog posts, ExamplesPage). Wrapped all bare <MobileMenu /> in lg:hidden containers.' },
+    ],
+  },
+  {
+    version: '2.4.0',
+    date: 'June 2026',
+    tag: null,
+    tagColor: '',
+    items: [
+      { type: 'new', text: 'Angular v2 wrappers — ScrollAnimateRef, ScrollCounterRef, ScrollVideoRef, ScrollTextRef classes. Same class-based init(element, options)/destroy() pattern as ScrollDrawRef. Ships in svg-scroll-draw/angular.' },
+      { type: 'new', text: 'Astro v2 — initScrollAnimate(), initScrollText(), initScrollCounter() data-attribute auto-init functions. Plus initAll() convenience that runs all four inits in one call. Ships in svg-scroll-draw/astro.' },
+      { type: 'new', text: 'Nuxt v2 — svg-scroll-draw/nuxt now re-exports all v2 Vue composables (useScrollAnimate, useScrollCounter, useScrollVideo, useScrollText) and components. createScrollDrawPlugin() globally registers all five components.' },
+      { type: 'new', text: 'scrollAnimateGroup — animate multiple HTML/SVG elements simultaneously with scrollAnimate options. Same fan-out + combined instance API as scrollDrawGroup. Ships in svg-scroll-draw/group.' },
+      { type: 'new', text: 'scrollAnimateSequence — animate multiple elements in strict sequence, each starting only after the previous reaches 100%. Ships in svg-scroll-draw/group.' },
+      { type: 'new', text: 'ExamplesPage — three new v2 examples: Product Video Scrub (scrollVideo), Feature List Reveal (staggered scrollAnimate rows), Animate Group (scrollAnimateGroup fan-out).' },
+      { type: 'new', text: 'Blog post: "scrollAnimate in Vue 3, Svelte, and Solid.js — v2 framework guide" at /blog/vue-svelte-solid-v2. Covers composables, actions, hooks, component wrappers, real-world patterns, Nuxt plugin, Astro data-attributes.' },
+    ],
+  },
+  {
+    version: '2.3.0',
+    date: 'June 2026',
+    tag: null,
+    tagColor: '',
+    items: [
+      { type: 'new', text: 'Vue 3 v2 composables — useScrollAnimate, useScrollCounter, useScrollVideo, useScrollText. Each returns a ref to bind to any element. Ships in svg-scroll-draw/vue alongside the existing useScrollDraw.' },
+      { type: 'new', text: 'Vue 3 v2 components — <ScrollAnimate :options="...">, <ScrollCounter :to="...">, <ScrollVideo src="..." :options="...">, <ScrollText :options="..." tag="h2">. Ships in svg-scroll-draw/vue.' },
+      { type: 'new', text: 'Svelte v2 actions — scrollAnimate, scrollCounterAction, scrollVideoAction, scrollTextAction Svelte use: actions + createScrollAnimate, createScrollCounter, createScrollVideo, createScrollText helpers that expose getInstance(). Ships in svg-scroll-draw/svelte.' },
+      { type: 'new', text: 'Solid v2 hooks — useScrollAnimate, useScrollCounter, useScrollVideo, useScrollText returning ref setters + createScrollAnimate, createScrollCounter, createScrollVideo, createScrollText exposing getInstance(). Ships in svg-scroll-draw/solid.' },
+      { type: 'new', text: 'ScrollTextInteractive demo — interactive home page section for scrollText: split mode picker (chars/words/lines), stagger slider (0–0.10), from-preset selector (Fade Up / Rotate In / Scale), scrubber, replay button, and live code block.' },
+    ],
+  },
+  {
+    version: '2.2.0',
+    date: 'June 2026',
+    tag: null,
+    tagColor: '',
     items: [
       { type: 'new', text: 'scrollVideo — tie <video>.currentTime to scroll position. Ships as svg-scroll-draw/video. The Apple / Stripe product-page scrub pattern. Supports from/to in seconds, preload strategy, onReady callback, and the full pause/resume/seek/replay/getProgress instance API.' },
       { type: 'new', text: 'scrollText — split any element into chars, words, or lines and stagger-animate each unit on scroll. Ships as svg-scroll-draw/text. Free replacement for GSAP SplitText ($150+/yr). Accessibility: aria-label on container, aria-hidden on spans, destroy() restores original HTML.' },
@@ -295,7 +349,7 @@ export default function ChangelogPage() {
           <Link href="/examples" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Examples</Link>
           <Link href="/blog" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Blog</Link>
           <Link href="/playground" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">⚡ Playground</Link>
-          <a href={NPM} target="_blank" rel="noopener noreferrer" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono whitespace-nowrap">v2.2.0</a>
+          <a href={NPM} target="_blank" rel="noopener noreferrer" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono whitespace-nowrap">v2.6.0</a>
           <a href={GH} target="_blank" rel="noopener noreferrer" className="text-sm px-4 py-1.5 rounded-full bg-pitch-black text-light-linen hover:bg-graphite-border transition-colors font-medium whitespace-nowrap">GitHub →</a>
         </div>
 
@@ -322,7 +376,36 @@ export default function ChangelogPage() {
       {/* Releases */}
       <div className="max-w-3xl mx-auto px-4 sm:px-6 md:px-12 py-10 sm:py-12 space-y-0">
         {RELEASES.map((release, i) => (
-          <div key={release.version} className="relative flex gap-4 sm:gap-6 md:gap-10 pb-10 sm:pb-12">
+          <React.Fragment key={release.version}>
+
+            {/* v2 → v1 platform shift separator — sits between v2.0.0 (index 2) and v1.8.0 (index 3) */}
+            {i === 3 && (
+              <div className="relative flex gap-4 sm:gap-6 md:gap-10 pb-10 sm:pb-12">
+                {/* Timeline line continuation */}
+                <div className="absolute left-[13px] top-0 bottom-0 w-px bg-subtle-ash" />
+                <div className="shrink-0 w-7" />
+                <div className="flex-1 min-w-0">
+                  <div className="rounded-2xl border-2 border-pitch-black bg-pitch-black text-light-linen px-6 py-5 shadow-[4px_4px_0px_rgba(0,0,0,0.15)]">
+                    <div className="flex flex-wrap items-center gap-3 mb-2">
+                      <span className="text-[10px] font-bold uppercase tracking-[0.2em] bg-creator-pink text-pitch-black px-2.5 py-0.5 rounded-full">v2.0 — The Platform Shift</span>
+                      <span className="text-[11px] font-mono text-light-linen/50">June 2026</span>
+                    </div>
+                    <p className="text-[13px] text-light-linen/70 leading-relaxed">
+                      svg-scroll-draw grew from an SVG path drawing tool into a full scroll animation platform.
+                      Six new APIs — <code className="font-mono text-[12px] text-creator-pink">scrollAnimate</code>,{' '}
+                      <code className="font-mono text-[12px] text-creator-pink">scrollCounter</code>,{' '}
+                      <code className="font-mono text-[12px] text-creator-pink">scrollParallax</code>,{' '}
+                      <code className="font-mono text-[12px] text-creator-pink">scrollVideo</code>,{' '}
+                      <code className="font-mono text-[12px] text-creator-pink">scrollText</code>, and{' '}
+                      <code className="font-mono text-[12px] text-creator-pink">devtools</code> — added in v2.0–v2.2.
+                      Everything below this line is the original SVG draw library.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+          <div className="relative flex gap-4 sm:gap-6 md:gap-10 pb-10 sm:pb-12">
             {/* Timeline line */}
             {i < RELEASES.length - 1 && (
               <div className="absolute left-[13px] top-8 bottom-0 w-px bg-subtle-ash" />
@@ -368,6 +451,7 @@ export default function ChangelogPage() {
               </ul>
             </div>
           </div>
+          </React.Fragment>
         ))}
       </div>
 

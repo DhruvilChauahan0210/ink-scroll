@@ -17,6 +17,7 @@ const ProgressHookDemo = dynamic(() => import('@/components/ProgressHookDemo').t
 const FillOpacityDemo = dynamic(() => import('@/components/FillOpacityDemo').then(m => ({ default: m.FillOpacityDemo })));
 const ClipModeDemo = dynamic(() => import('@/components/ClipModeDemo').then(m => ({ default: m.ClipModeDemo })));
 const ScrollAnimateInteractive = dynamic(() => import('@/components/ScrollAnimateInteractive').then(m => ({ default: m.ScrollAnimateInteractive })));
+const ScrollTextInteractive = dynamic(() => import('@/components/ScrollTextInteractive').then(m => ({ default: m.ScrollTextInteractive })));
 
 const GH  = 'https://github.com/DhruvilChauahan0210/ink-scroll';
 const NPM = 'https://www.npmjs.com/package/svg-scroll-draw';
@@ -33,7 +34,7 @@ const jsonLd = {
   downloadUrl: 'https://www.npmjs.com/package/svg-scroll-draw',
   codeRepository: 'https://github.com/DhruvilChauahan0210/ink-scroll',
   license: 'https://opensource.org/licenses/MIT',
-  softwareVersion: '1.2.0',
+  softwareVersion: '2.5.0',
   programmingLanguage: ['JavaScript', 'TypeScript'],
   author: {
     '@type': 'Person',
@@ -142,7 +143,7 @@ export default function Home() {
           <a href="/blog" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Blog</a>
           <a href="/changelog" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Changelog</a>
           <a href="/playground" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">⚡ Playground</a>
-          <a href={NPM} target="_blank" rel="noopener noreferrer" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono whitespace-nowrap">v2.2.0</a>
+          <a href={NPM} target="_blank" rel="noopener noreferrer" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono whitespace-nowrap">v2.6.0</a>
           <a href={GH} target="_blank" rel="noopener noreferrer" className="text-sm px-4 py-1.5 rounded-full bg-pitch-black text-light-linen hover:bg-graphite-border transition-colors font-medium whitespace-nowrap">GitHub →</a>
         </div>
 
@@ -949,7 +950,7 @@ const seq = scrollDrawSequence(
                 code: `// 40% of scroll speed\nscrollParallax('#bg', {\n  speed: 0.4,\n});\n\n// Opposite direction\nscrollParallax('#badge', {\n  speed: -0.3,\n});`,
               },
               {
-                version: 'v2.2.0',
+                version: 'v2.6.0',
                 name: 'devtools',
                 sub: 'overlay · dev-only',
                 desc: 'Visual panel showing every active animation\'s trigger window, progress, and type. Zero production bytes.',
@@ -972,6 +973,9 @@ const seq = scrollDrawSequence(
 
       {/* ── scrollAnimate interactive ─────────────────────────────────── */}
       <ScrollAnimateInteractive />
+
+      {/* ── scrollText interactive ────────────────────────────────────── */}
+      <ScrollTextInteractive />
 
       {/* ── CTA ───────────────────────────────────────────────────────── */}
       <section data-mascot="big-dance" className="relative bg-sunshine-yellow border-b border-pitch-black px-4 sm:px-6 md:px-12 py-16 sm:py-20 md:py-24 text-center overflow-hidden">
@@ -1041,7 +1045,7 @@ const seq = scrollDrawSequence(
               </svg>
               npm
             </a>
-            <span className="text-[11px] font-mono text-graphite-border">v2.2.0</span>
+            <span className="text-[11px] font-mono text-graphite-border">v2.6.0</span>
           </div>
         </div>
 

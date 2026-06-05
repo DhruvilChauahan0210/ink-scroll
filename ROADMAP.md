@@ -1,6 +1,6 @@
 # svg-scroll-draw — Roadmap
 
-> Last updated: 2026-06-04 — v2.2.0 (published)
+> Last updated: 2026-06-05 — v2.4.0
 >
 > Items marked ✓ are shipped. Remaining items are ordered by value/effort ratio.
 
@@ -63,11 +63,24 @@
 - [x] Visual DevTools overlay — `svg-scroll-draw/devtools`, progress panel + trigger lines, dev-only
 - [x] Global instance registry in `src/core/registry.ts`
 
+### v2 APIs (Phase 5 — v2.4.0)
+- [x] Angular v2 wrappers — `ScrollAnimateRef`, `ScrollCounterRef`, `ScrollVideoRef`, `ScrollTextRef`
+- [x] Astro v2 — `initScrollAnimate`, `initScrollCounter`, `initScrollText`, `initAll`
+- [x] Nuxt v2 — all v2 composables/components re-exported + plugin
+- [x] `scrollAnimateGroup` + `scrollAnimateSequence` in `svg-scroll-draw/group`
+
+### v2 APIs (Phase 4 — v2.3.0)
+- [x] Vue 3 v2 wrappers — `useScrollAnimate`, `useScrollCounter`, `useScrollVideo`, `useScrollText` + `<ScrollAnimate>`, `<ScrollCounter>`, `<ScrollVideo>`, `<ScrollText>` components
+- [x] Svelte v2 wrappers — `scrollAnimate`, `scrollCounterAction`, `scrollVideoAction`, `scrollTextAction` actions + `create*` helpers
+- [x] Solid v2 wrappers — `useScrollAnimate`, `useScrollCounter`, `useScrollVideo`, `useScrollText` + `create*` variants
+
 ### Demo site (v2)
 - [x] Home page v2 section — 6-card grid with code snippets for all new APIs
 - [x] DocsPage — v2.0–2.2 nav group with full option tables for all 6 new APIs
 - [x] ExamplesPage — 3 new v2 example cards (scrollAnimate, scrollCounter, scrollText)
 - [x] Blog post: "Replace GSAP ScrollTrigger with scrollAnimate" at `/blog/replace-gsap-scrolltrigger`
+- [x] `ScrollTextInteractive` — interactive home page demo for `scrollText` (split mode, stagger, presets)
+- [x] Changelog page v2 callout — "v2 — The Platform Shift" separator between v2.x and v1.x entries
 
 ### Demo Site
 - [x] Home page — hero, 15+ demos, API table, framework tabs, bundle comparison, live stats

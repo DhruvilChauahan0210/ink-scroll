@@ -57,6 +57,14 @@ const NAV_GROUPS = [
     items: [{ id: 'use-scroll-draw-progress', label: 'useScrollDrawProgress' }],
   },
   {
+    label: 'v2.6.0',
+    items: [
+      { id: 'v2-vue',    label: 'Vue 3 v2' },
+      { id: 'v2-svelte', label: 'Svelte v2' },
+      { id: 'v2-solid',  label: 'Solid v2' },
+    ],
+  },
+  {
     label: 'v2.0–2.2',
     items: [
       { id: 'scroll-animate',   label: 'scrollAnimate' },
@@ -216,7 +224,7 @@ export function DocsPage() {
           <Link href="/examples" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Examples</Link>
           <Link href="/blog" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Blog</Link>
           <Link href="/playground" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">⚡ Playground</Link>
-          <a href={NPM} target="_blank" rel="noopener noreferrer" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono whitespace-nowrap">v2.2.0</a>
+          <a href={NPM} target="_blank" rel="noopener noreferrer" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono whitespace-nowrap">v2.6.0</a>
           <a href={GH} target="_blank" rel="noopener noreferrer" className="text-sm px-4 py-1.5 rounded-full bg-pitch-black text-light-linen hover:bg-graphite-border transition-colors font-medium whitespace-nowrap">GitHub →</a>
         </div>
 
@@ -721,24 +729,19 @@ function HeroWithReplay() {
           {/* ── Angular ──────────────────────────────────────── */}
           <DocSection id="angular" tag="Frameworks" heading="Angular">
             <p className="text-sm text-graphite-border leading-relaxed mb-2">
-              A <code className="font-mono text-pitch-black">ScrollDrawRef</code> class integrates with
-              Angular's component lifecycle — no peer dependency on{' '}
+              All v2 APIs are available as class-based <code className="font-mono text-pitch-black">Ref</code> objects
+              that integrate with Angular&apos;s component lifecycle. No peer dependency on{' '}
               <code className="font-mono text-pitch-black">@angular/core</code> is required in the library.
             </p>
+
+            <Sub>ScrollDrawRef — SVG path drawing (v1)</Sub>
             <CodeBlock file="hero.component.ts">
 {`import { Component, ViewChild, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
 import { ScrollDrawRef } from 'svg-scroll-draw/angular';
 
 @Component({
   selector: 'app-hero',
-  template: \`
-    <div #container>
-      <svg viewBox="0 0 200 100" fill="none">
-        <path d="M10 50 Q100 10 190 50" stroke="black" stroke-width="2" />
-      </svg>
-    </div>
-    <button (click)="replay()">Replay</button>
-  \`,
+  template: \`<div #container><svg>...</svg></div>\`,
 })
 export class HeroComponent implements AfterViewInit, OnDestroy {
   @ViewChild('container') containerRef!: ElementRef<HTMLElement>;
@@ -746,10 +749,7 @@ export class HeroComponent implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit() {
     this.draw.init(this.containerRef.nativeElement, {
-      easing: 'ease-out',
-      speed:  1.2,
-      fade:   true,
-      once:   true,
+      easing: 'ease-out', speed: 1.2, fade: true, once: true,
     });
   }
 
@@ -757,52 +757,168 @@ export class HeroComponent implements AfterViewInit, OnDestroy {
   ngOnDestroy() { this.draw.destroy(); }
 }`}
             </CodeBlock>
+
+            <Sub>ScrollAnimateRef — animate any CSS property (v2)</Sub>
+            <CodeBlock file="card.component.ts">
+{`import { ScrollAnimateRef } from 'svg-scroll-draw/angular';
+
+@Component({
+  selector: 'app-card',
+  template: \`<div #el>...</div>\`,
+})
+export class CardComponent implements AfterViewInit, OnDestroy {
+  @ViewChild('el') elRef!: ElementRef<HTMLElement>;
+  private animate = new ScrollAnimateRef();
+
+  ngAfterViewInit() {
+    this.animate.init(this.elRef.nativeElement, {
+      props: {
+        opacity:   [0, 1],
+        transform: ['translateY(40px)', 'translateY(0)'],
+      },
+      easing: 'ease-out',
+      once:   true,
+    });
+  }
+
+  ngOnDestroy() { this.animate.destroy(); }
+}`}
+            </CodeBlock>
+
+            <Sub>ScrollCounterRef — animated number (v2)</Sub>
+            <CodeBlock file="stats.component.ts">
+{`import { ScrollCounterRef } from 'svg-scroll-draw/angular';
+
+@Component({
+  selector: 'app-stats',
+  template: \`<span #counter></span>\`,
+})
+export class StatsComponent implements AfterViewInit, OnDestroy {
+  @ViewChild('counter') counterRef!: ElementRef<HTMLElement>;
+  private counter = new ScrollCounterRef();
+
+  ngAfterViewInit() {
+    this.counter.init(this.counterRef.nativeElement, {
+      to:     1_250_000,
+      format: n => '$' + Math.round(n).toLocaleString(),
+      once:   true,
+    });
+  }
+
+  ngOnDestroy() { this.counter.destroy(); }
+}`}
+            </CodeBlock>
+
+            <Sub>ScrollTextRef — split text animation (v2)</Sub>
+            <CodeBlock file="headline.component.ts">
+{`import { ScrollTextRef } from 'svg-scroll-draw/angular';
+
+@Component({
+  selector: 'app-headline',
+  template: \`<h2 #headline>Animate on scroll.</h2>\`,
+})
+export class HeadlineComponent implements AfterViewInit, OnDestroy {
+  @ViewChild('headline') headlineRef!: ElementRef<HTMLElement>;
+  private text = new ScrollTextRef();
+
+  ngAfterViewInit() {
+    this.text.init(this.headlineRef.nativeElement, {
+      split:   'words',
+      stagger: 0.05,
+      from:    { opacity: 0, y: 24 },
+      once:    true,
+    });
+  }
+
+  ngOnDestroy() { this.text.destroy(); }
+}`}
+            </CodeBlock>
+            <Note>
+              All Ref classes expose the full instance API: <code className="font-mono">replay()</code>,{' '}
+              <code className="font-mono">pause()</code>, <code className="font-mono">resume()</code>,{' '}
+              <code className="font-mono">seek(p)</code>, <code className="font-mono">getProgress()</code>,{' '}
+              <code className="font-mono">destroy()</code>. <code className="font-mono">ScrollVideoRef</code> follows the same pattern for{' '}
+              <code className="font-mono">&lt;video&gt;</code> elements.
+            </Note>
           </DocSection>
 
           {/* ── Nuxt ─────────────────────────────────────────── */}
           <DocSection id="nuxt" tag="Frameworks" heading="Nuxt">
             <p className="text-sm text-graphite-border leading-relaxed mb-2">
-              Re-exports the Vue composable and component, plus a plugin factory for global registration.
+              <code className="font-mono text-pitch-black">svg-scroll-draw/nuxt</code> re-exports all v1 and v2 Vue composables and components, plus a plugin factory that globally registers all of them at once.
             </p>
-            <Sub>Per-component import (recommended)</Sub>
+
+            <Sub>v2 composables — per-component import (recommended)</Sub>
             <CodeBlock file="pages/index.vue">
 {`<script setup>
-import { ScrollDraw } from 'svg-scroll-draw/nuxt';
+import { useScrollAnimate, useScrollText, useScrollCounter } from 'svg-scroll-draw/nuxt';
+
+// Animate any CSS property
+const card = useScrollAnimate({
+  props: { opacity: [0, 1], transform: ['translateY(40px)', 'translateY(0)'] },
+  easing: 'ease-out',
+  once:   true,
+});
+
+// Split text and stagger animate
+const headline = useScrollText({ split: 'words', stagger: 0.05, once: true });
+
+// Animated counter
+const revenue = useScrollCounter({
+  to:     1_250_000,
+  format: n => '$' + Math.round(n).toLocaleString(),
+  once:   true,
+});
 </script>
 
 <template>
-  <ScrollDraw easing="ease-out" :speed="1.2" fade once>
-    <svg viewBox="0 0 200 100" fill="none">
-      <path d="M10 50 Q100 10 190 50" stroke="black" stroke-width="2" />
-    </svg>
-  </ScrollDraw>
+  <div :ref="card">...</div>
+  <h2 :ref="headline">Animate on scroll.</h2>
+  <span :ref="revenue" />
 </template>`}
             </CodeBlock>
+
+            <Sub>v2 components</Sub>
+            <CodeBlock file="pages/index.vue">
+{`<script setup>
+import { ScrollAnimate, ScrollText, ScrollCounter } from 'svg-scroll-draw/nuxt';
+</script>
+
+<template>
+  <ScrollAnimate :options="{ props: { opacity: [0,1] }, easing: 'ease-out', once: true }">
+    <MyCard />
+  </ScrollAnimate>
+
+  <ScrollText :options="{ split: 'words', stagger: 0.05 }" tag="h2">
+    Animate on scroll.
+  </ScrollText>
+
+  <ScrollCounter :to="1250000" :format="n => '$' + Math.round(n).toLocaleString()" :once="true" />
+</template>`}
+            </CodeBlock>
+
             <Sub>Global registration via Nuxt plugin</Sub>
             <CodeBlock file="plugins/svg-scroll-draw.ts">
 {`import { createScrollDrawPlugin } from 'svg-scroll-draw/nuxt';
 
 export default defineNuxtPlugin((nuxtApp) => {
+  // Registers <ScrollDraw>, <ScrollAnimate>, <ScrollCounter>,
+  // <ScrollVideo>, <ScrollText> globally — no per-component imports.
   nuxtApp.vueApp.use(createScrollDrawPlugin());
-});
-
-// <ScrollDraw> is now available globally — no per-component imports needed`}
+});`}
             </CodeBlock>
           </DocSection>
 
           {/* ── Astro ────────────────────────────────────────── */}
           <DocSection id="astro" tag="Frameworks" heading="Astro">
             <p className="text-sm text-graphite-border leading-relaxed mb-2">
-              <code className="font-mono text-pitch-black">initScrollDraw()</code> auto-initialises all elements
-              with a <code className="font-mono text-pitch-black">data-scroll-draw</code> attribute.
-              Options are read from a JSON attribute.
+              Data-attribute APIs for all v2 animations — no framework runtime needed server-side.
+              Options are passed as inline JSON; a single client script scans and initialises everything.
             </p>
-            <CodeBlock file="src/pages/index.astro">
-{`---
-// no server-side code needed
----
 
-<div
+            <Sub>initScrollDraw — SVG path drawing (v1)</Sub>
+            <CodeBlock file="src/pages/index.astro">
+{`<div
   data-scroll-draw
   data-scroll-draw-options='{"easing":"ease-out","fade":true,"once":true}'
 >
@@ -813,12 +929,60 @@ export default defineNuxtPlugin((nuxtApp) => {
 
 <script>
   import { initScrollDraw } from 'svg-scroll-draw/astro';
-  initScrollDraw(); // scans the whole document for [data-scroll-draw]
+  initScrollDraw();
+</script>`}
+            </CodeBlock>
+
+            <Sub>initScrollAnimate — animate any CSS property (v2)</Sub>
+            <CodeBlock file="src/pages/index.astro">
+{`<div
+  data-scroll-animate
+  data-scroll-animate-options='{
+    "props": { "opacity": [0,1], "transform": ["translateY(40px)","translateY(0)"] },
+    "easing": "ease-out",
+    "once": true
+  }'
+>
+  Fades and slides in on scroll.
+</div>
+
+<script>
+  import { initScrollAnimate } from 'svg-scroll-draw/astro';
+  initScrollAnimate();
+</script>`}
+            </CodeBlock>
+
+            <Sub>initScrollText — split text animation (v2)</Sub>
+            <CodeBlock file="src/pages/index.astro">
+{`<h2
+  data-scroll-text
+  data-scroll-text-options='{"split":"words","stagger":0.05,"once":true}'
+>
+  Animate on scroll.
+</h2>
+
+<script>
+  import { initScrollText } from 'svg-scroll-draw/astro';
+  initScrollText();
+</script>`}
+            </CodeBlock>
+
+            <Sub>initAll — run every init in one call</Sub>
+            <CodeBlock file="src/pages/index.astro">
+{`<!-- Mix any combination of data-scroll-* attributes on the page -->
+<div data-scroll-draw data-scroll-draw-options='{"easing":"ease-out"}'><svg>...</svg></div>
+<div data-scroll-animate data-scroll-animate-options='{"props":{"opacity":[0,1]},"once":true}'>...</div>
+<h2  data-scroll-text  data-scroll-text-options='{"split":"words","stagger":0.05}'>..</h2>
+<span data-scroll-counter data-scroll-counter-options='{"to":50000,"once":true}'></span>
+
+<script>
+  import { initAll } from 'svg-scroll-draw/astro';
+  // Initialises scrollDraw + scrollAnimate + scrollText + scrollCounter in one call
+  const { draw, animate, text, counter } = initAll();
 </script>`}
             </CodeBlock>
             <Note>
-              Pass a root element to <code className="font-mono">initScrollDraw(root)</code> to scope
-              initialisation to a specific subtree.
+              Pass a root element to any init function — e.g. <code className="font-mono">initAll(document.querySelector(&apos;main&apos;))</code> — to scope initialisation to a specific subtree.
             </Note>
           </DocSection>
 
@@ -1289,6 +1453,237 @@ scrollDraw('#hero-svg', { easing: 'ease-out', once: true });
           </DocSection>
 
           {/* ── v2 APIs ──────────────────────────────────────── */}
+          {/* ── v2.6.0 — Vue 3 v2 ─────────────────────────── */}
+          <DocSection id="v2-vue" tag="v2.6.0" heading="Vue 3 — v2 composables &amp; components">
+            <p className="text-sm text-graphite-border leading-relaxed mb-4">
+              All v2 APIs now have first-class Vue 3 support. Each API ships as a composable (returns a ref to bind to any element) and a convenience component wrapper. Imports from <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">svg-scroll-draw/vue</code>.
+            </p>
+
+            <Sub>useScrollAnimate + &lt;ScrollAnimate&gt;</Sub>
+            <CodeBlock file="Hero.vue">
+{`<script setup>
+import { useScrollAnimate } from 'svg-scroll-draw/vue';
+
+const el = useScrollAnimate({
+  props: { opacity: [0, 1], transform: ['translateY(40px)', 'translateY(0)'] },
+  easing: 'ease-out',
+  once: true,
+});
+</script>
+
+<template>
+  <div :ref="el">Animates on scroll.</div>
+</template>
+
+<!-- Or use the component wrapper: -->
+<ScrollAnimate :options="{ props: { opacity: [0, 1] }, easing: 'ease-out', once: true }">
+  <div>Animates on scroll.</div>
+</ScrollAnimate>`}
+            </CodeBlock>
+
+            <Sub>useScrollCounter + &lt;ScrollCounter&gt;</Sub>
+            <CodeBlock file="Stats.vue">
+{`<script setup>
+import { useScrollCounter } from 'svg-scroll-draw/vue';
+
+const el = useScrollCounter({
+  to: 1_250_000,
+  format: n => '$' + Math.round(n).toLocaleString(),
+  easing: 'ease-out',
+  once: true,
+});
+</script>
+
+<template>
+  <span :ref="el" />
+</template>
+
+<!-- Or use the component: -->
+<ScrollCounter
+  :to="1250000"
+  :format="n => '$' + Math.round(n).toLocaleString()"
+  easing="ease-out"
+  :once="true"
+/>`}
+            </CodeBlock>
+
+            <Sub>useScrollVideo + &lt;ScrollVideo&gt;</Sub>
+            <CodeBlock file="HeroVideo.vue">
+{`<script setup>
+import { useScrollVideo } from 'svg-scroll-draw/vue';
+
+const vid = useScrollVideo({
+  trigger: { start: 'top top', end: 'bottom top' },
+});
+</script>
+
+<template>
+  <video :ref="vid" src="/hero.mp4" muted playsinline preload="auto" />
+</template>
+
+<!-- Or use the component: -->
+<ScrollVideo
+  src="/hero.mp4"
+  :options="{ trigger: { start: 'top top', end: 'bottom top' } }"
+/>`}
+            </CodeBlock>
+
+            <Sub>useScrollText + &lt;ScrollText&gt;</Sub>
+            <CodeBlock file="Headline.vue">
+{`<script setup>
+import { useScrollText } from 'svg-scroll-draw/vue';
+
+const el = useScrollText({
+  split: 'words',
+  stagger: 0.05,
+  from: { opacity: 0, y: 24 },
+  once: true,
+});
+</script>
+
+<template>
+  <h2 :ref="el">Animate on scroll.</h2>
+</template>
+
+<!-- Or use the component (tag defaults to "p"): -->
+<ScrollText :options="{ split: 'words', stagger: 0.05 }" tag="h2">
+  Animate on scroll.
+</ScrollText>`}
+            </CodeBlock>
+          </DocSection>
+
+          {/* ── v2.6.0 — Svelte v2 ────────────────────────── */}
+          <DocSection id="v2-svelte" tag="v2.6.0" heading="Svelte — v2 actions &amp; helpers">
+            <p className="text-sm text-graphite-border leading-relaxed mb-4">
+              All v2 APIs are available as Svelte <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">use:</code> actions. Each has a matching <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">create*</code> helper that exposes the live instance for imperative control. Imports from <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">svg-scroll-draw/svelte</code>.
+            </p>
+
+            <Sub>scrollAnimate action</Sub>
+            <CodeBlock file="Hero.svelte">
+{`<script>
+  import { scrollAnimate } from 'svg-scroll-draw/svelte';
+
+  const opts = {
+    props: { opacity: [0, 1], transform: ['translateY(40px)', 'translateY(0)'] },
+    easing: 'ease-out',
+    once: true,
+  };
+</script>
+
+<div use:scrollAnimate={opts}>Animates on scroll.</div>`}
+            </CodeBlock>
+
+            <Sub>scrollCounterAction action</Sub>
+            <CodeBlock file="Stats.svelte">
+{`<script>
+  import { scrollCounterAction } from 'svg-scroll-draw/svelte';
+</script>
+
+<span use:scrollCounterAction={{ to: 1250000, format: n => '$' + Math.round(n).toLocaleString(), once: true }} />`}
+            </CodeBlock>
+
+            <Sub>scrollTextAction action</Sub>
+            <CodeBlock file="Headline.svelte">
+{`<script>
+  import { scrollTextAction } from 'svg-scroll-draw/svelte';
+</script>
+
+<h2 use:scrollTextAction={{ split: 'words', stagger: 0.05, once: true }}>
+  Animate on scroll.
+</h2>`}
+            </CodeBlock>
+
+            <Sub>createScrollAnimate — imperative control</Sub>
+            <CodeBlock file="Hero.svelte">
+{`<script>
+  import { createScrollAnimate } from 'svg-scroll-draw/svelte';
+
+  const { action, getInstance } = createScrollAnimate({
+    props: { opacity: [0, 1] },
+    easing: 'ease-out',
+    once: true,
+  });
+</script>
+
+<div use:action>...</div>
+<button on:click={() => getInstance()?.replay()}>Replay</button>`}
+            </CodeBlock>
+
+            <Note>The same <code className="font-mono text-[0.85em]">create*</code> pattern is available for all v2 actions: <code className="font-mono text-[0.85em]">createScrollCounter</code>, <code className="font-mono text-[0.85em]">createScrollVideo</code>, <code className="font-mono text-[0.85em]">createScrollText</code>.</Note>
+          </DocSection>
+
+          {/* ── v2.6.0 — Solid v2 ─────────────────────────── */}
+          <DocSection id="v2-solid" tag="v2.6.0" heading="Solid.js — v2 hooks">
+            <p className="text-sm text-graphite-border leading-relaxed mb-4">
+              All v2 APIs are available as SolidJS hooks. Each <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">use*</code> hook returns a ref setter. The matching <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">create*</code> variant returns <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">{'{ ref, getInstance }'}</code> for imperative control. Imports from <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">svg-scroll-draw/solid</code>.
+            </p>
+
+            <Sub>useScrollAnimate</Sub>
+            <CodeBlock file="Hero.tsx">
+{`import { useScrollAnimate } from 'svg-scroll-draw/solid';
+
+function Hero() {
+  const ref = useScrollAnimate({
+    props: { opacity: [0, 1], transform: ['translateY(40px)', 'translateY(0)'] },
+    easing: 'ease-out',
+    once: true,
+  });
+  return <div ref={ref}>Animates on scroll.</div>;
+}`}
+            </CodeBlock>
+
+            <Sub>useScrollCounter</Sub>
+            <CodeBlock file="Stats.tsx">
+{`import { useScrollCounter } from 'svg-scroll-draw/solid';
+
+function Revenue() {
+  const ref = useScrollCounter({
+    to: 1_250_000,
+    format: n => '$' + Math.round(n).toLocaleString(),
+    easing: 'ease-out',
+    once: true,
+  });
+  return <span ref={ref} />;
+}`}
+            </CodeBlock>
+
+            <Sub>useScrollText</Sub>
+            <CodeBlock file="Headline.tsx">
+{`import { useScrollText } from 'svg-scroll-draw/solid';
+
+function Headline() {
+  const ref = useScrollText({
+    split: 'words',
+    stagger: 0.05,
+    from: { opacity: 0, y: 24 },
+    once: true,
+  });
+  return <h2 ref={ref}>Animate on scroll.</h2>;
+}`}
+            </CodeBlock>
+
+            <Sub>createScrollAnimate — imperative control</Sub>
+            <CodeBlock file="Hero.tsx">
+{`import { createScrollAnimate } from 'svg-scroll-draw/solid';
+
+function Hero() {
+  const { ref, getInstance } = createScrollAnimate({
+    props: { opacity: [0, 1] },
+    easing: 'ease-out',
+    once: true,
+  });
+  return (
+    <>
+      <div ref={ref}>...</div>
+      <button onClick={() => getInstance()?.replay()}>Replay</button>
+    </>
+  );
+}`}
+            </CodeBlock>
+
+            <Note>The same <code className="font-mono text-[0.85em]">create*</code> pattern is available for all v2 hooks: <code className="font-mono text-[0.85em]">createScrollCounter</code>, <code className="font-mono text-[0.85em]">createScrollVideo</code>, <code className="font-mono text-[0.85em]">createScrollText</code>.</Note>
+          </DocSection>
+
           <DocSection id="scroll-animate" tag="v2.0.0" heading="scrollAnimate">
             <p className="text-sm text-graphite-border leading-relaxed mb-2">
               Animate any CSS property on any DOM or SVG element driven by scroll position. The direct replacement for <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">gsap.to(el, {'{'} scrollTrigger {'}'})</code> for the 80% case.

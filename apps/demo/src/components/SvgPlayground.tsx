@@ -3,12 +3,14 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { createBounce, createElastic } from 'svg-scroll-draw';
 import { MobileMenu } from './MobileMenu';
 import { CopyButton } from './CopyButton';
+import { PlaygroundV2Content } from './PlaygroundV2Content';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
 type EasingName = 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | 'spring' | 'bounce' | 'elastic';
 type ClipDir    = 'left' | 'right' | 'top' | 'bottom' | 'center';
 type Tab        = 'motion' | 'visual' | 'effects' | 'code';
+type Mode       = 'v1' | 'v2';
 
 interface PlayState {
   svg: string;
@@ -333,6 +335,7 @@ export function SvgPlayground() {
   const [shareMsg, setShareMsg]     = useState('');
   const [activeExample, setActiveExample] = useState(0);
   const [activeTab, setActiveTab]   = useState<Tab>('motion');
+  const [mode, setMode]             = useState<Mode>('v1');
 
   const previewRef   = useRef<HTMLDivElement>(null);
   const psRef        = useRef(ps);
@@ -510,7 +513,7 @@ export function SvgPlayground() {
           </a>
           <span className="text-subtle-ash text-sm hidden sm:inline">/</span>
           <h1 className="text-sm hidden sm:inline text-graphite-border font-medium m-0 p-0">Playground</h1>
-          {activeFeatureTags.length > 0 && (
+          {mode === 'v1' && activeFeatureTags.length > 0 && (
             <div className="hidden md:flex items-center gap-1.5 ml-2">
               {activeFeatureTags.map(t => (
                 <span key={t} className="text-[9px] font-mono font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-creator-pink/20 border border-creator-pink/40 text-pitch-black">
@@ -521,21 +524,45 @@ export function SvgPlayground() {
           )}
         </div>
         <div className="flex items-center gap-2">
-          <span className="hidden sm:inline text-[11px] font-mono text-graphite-border">{pct}%</span>
-          <button
-            onClick={handleShare}
-            className={`text-[12px] font-mono px-3 py-1.5 rounded-full border font-medium transition-all ${
-              shareMsg ? 'bg-lime-glow border-lime-glow' : 'border-pitch-black hover:bg-pitch-black hover:text-light-linen'
-            }`}
-          >
-            {shareMsg || 'Share ↗'}
-          </button>
+          {/* v1 / v2 mode toggle */}
+          <div className="flex items-center rounded-full border border-pitch-black overflow-hidden shadow-[1px_1px_0px_#000]">
+            <button
+              onClick={() => setMode('v1')}
+              className={`px-3 py-1 text-[11px] font-bold font-mono transition-all ${
+                mode === 'v1' ? 'bg-pitch-black text-light-linen' : 'text-graphite-border hover:text-pitch-black'
+              }`}
+            >
+              v1
+            </button>
+            <button
+              onClick={() => setMode('v2')}
+              className={`px-3 py-1 text-[11px] font-bold font-mono transition-all ${
+                mode === 'v2' ? 'bg-creator-pink text-pitch-black' : 'text-graphite-border hover:text-pitch-black'
+              }`}
+            >
+              v2
+            </button>
+          </div>
+          {mode === 'v1' && <span className="hidden sm:inline text-[11px] font-mono text-graphite-border">{pct}%</span>}
+          {mode === 'v1' && (
+            <button
+              onClick={handleShare}
+              className={`text-[12px] font-mono px-3 py-1.5 rounded-full border font-medium transition-all ${
+                shareMsg ? 'bg-lime-glow border-lime-glow' : 'border-pitch-black hover:bg-pitch-black hover:text-light-linen'
+              }`}
+            >
+              {shareMsg || 'Share ↗'}
+            </button>
+          )}
           <div className="lg:hidden"><MobileMenu /></div>
         </div>
       </nav>
 
-      {/* ── Three-panel layout ──────────────────────────────────────────── */}
-      <div className="flex flex-col lg:flex-row flex-1 min-h-0 overflow-hidden">
+      {/* ── v2 mode ─────────────────────────────────────────────────────── */}
+      {mode === 'v2' && <PlaygroundV2Content />}
+
+      {/* ── v1 Three-panel layout ───────────────────────────────────────── */}
+      {mode === 'v1' && <div className="flex flex-col lg:flex-row flex-1 min-h-0 overflow-hidden">
 
         {/* ── Panel 1: Editor ─────────────────────────────────────────── */}
         <div className="flex flex-col lg:w-[38%] xl:w-[36%] border-b lg:border-b-0 lg:border-r border-pitch-black min-h-0 max-h-[35vh] lg:max-h-none">
@@ -957,7 +984,7 @@ export function SvgPlayground() {
           </div>
         </div>
 
-      </div>
+      </div>}
     </div>
   );
 }

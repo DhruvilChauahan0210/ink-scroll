@@ -79,7 +79,9 @@ export default function Page() {
             ⚡ Playground
           </Link>
         </div>
-        <MobileMenu />
+        <div className="flex lg:hidden">
+          <MobileMenu />
+        </div>
       </nav>
 
       {/* Hero */}

@@ -429,15 +429,15 @@ devtools.highlight('#my-element'); // outline for 2 seconds
 |---|---|
 | `svg-scroll-draw` | `scrollDraw`, `scrollAnimate`, `scrollCounter`, `scrollParallax`, `PRESETS`, easing factories |
 | `svg-scroll-draw/react` | `ScrollDraw`, `ScrollAnimate`, `ScrollCounter`, `ScrollVideo`, `ScrollText`, `useScrollDrawProgress` |
-| `svg-scroll-draw/vue` | `ScrollDraw`, `useScrollDraw` |
-| `svg-scroll-draw/svelte` | `scrollDraw` action, `createScrollDraw` |
-| `svg-scroll-draw/solid` | `useScrollDraw`, `createScrollDraw` |
-| `svg-scroll-draw/angular` | `ScrollDrawRef` |
-| `svg-scroll-draw/astro` | `initScrollDraw()` |
-| `svg-scroll-draw/nuxt` | `useScrollDraw()` composable |
+| `svg-scroll-draw/vue` | `ScrollDraw`, `useScrollDraw` · **v2:** `ScrollAnimate`, `ScrollCounter`, `ScrollVideo`, `ScrollText`, `useScrollAnimate`, `useScrollCounter`, `useScrollVideo`, `useScrollText` |
+| `svg-scroll-draw/svelte` | `scrollDraw` action, `createScrollDraw` · **v2:** `scrollAnimate`, `scrollCounterAction`, `scrollVideoAction`, `scrollTextAction`, `createScrollAnimate`, `createScrollCounter`, `createScrollVideo`, `createScrollText` |
+| `svg-scroll-draw/solid` | `useScrollDraw`, `createScrollDraw` · **v2:** `useScrollAnimate`, `useScrollCounter`, `useScrollVideo`, `useScrollText`, `createScrollAnimate`, `createScrollCounter`, `createScrollVideo`, `createScrollText` |
+| `svg-scroll-draw/angular` | `ScrollDrawRef` · **v2:** `ScrollAnimateRef`, `ScrollCounterRef`, `ScrollVideoRef`, `ScrollTextRef` |
+| `svg-scroll-draw/astro` | `initScrollDraw()` · **v2:** `initScrollAnimate()`, `initScrollCounter()`, `initScrollText()`, `initAll()` |
+| `svg-scroll-draw/nuxt` | All Vue v1+v2 composables and components, `createScrollDrawPlugin()` |
 | `svg-scroll-draw/video` | `scrollVideo` |
 | `svg-scroll-draw/text` | `scrollText` |
-| `svg-scroll-draw/group` | `scrollDrawGroup`, `scrollDrawSequence` |
+| `svg-scroll-draw/group` | `scrollDrawGroup`, `scrollDrawSequence` · **v2:** `scrollAnimateGroup`, `scrollAnimateSequence`, `scrollParallaxGroup` |
 | `svg-scroll-draw/timeline` | `scrollDrawTimeline` |
 | `svg-scroll-draw/cinematic` | `Cinematic` |
 | `svg-scroll-draw/devtools` | `devtools` (dev-only) |

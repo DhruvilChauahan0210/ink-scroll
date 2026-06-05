@@ -119,14 +119,64 @@ interface ScrollDrawInstance {
     getProgress: () => number;
 }
 
+interface ScrollAnimateOptions {
+    props: Record<string, string | number | [string | number, string | number]>;
+    trigger?: TriggerConfig;
+    easing?: EasingName | ((t: number) => number);
+    speed?: number;
+    once?: boolean;
+    axis?: 'x' | 'y';
+    scrollContainer?: string | Element;
+    native?: boolean;
+    onProgress?: (alpha: number) => void;
+    onComplete?: () => void;
+}
+
+interface ScrollCounterOptions {
+    from?: number;
+    to: number;
+    format?: (value: number) => string;
+    easing?: EasingName | ((t: number) => number);
+    trigger?: TriggerConfig;
+    once?: boolean;
+    decimals?: number;
+    onComplete?: () => void;
+}
+
+interface ScrollVideoOptions {
+    trigger?: TriggerConfig;
+    from?: number;
+    to?: number;
+    easing?: EasingName | ((t: number) => number);
+    once?: boolean;
+    axis?: 'x' | 'y';
+    preload?: 'auto' | 'metadata';
+    onReady?: () => void;
+    onComplete?: () => void;
+    onProgress?: (alpha: number) => void;
+}
+
+interface ScrollTextOptions {
+    split?: 'chars' | 'words' | 'lines';
+    stagger?: number;
+    easing?: EasingName | ((t: number) => number);
+    from?: {
+        opacity?: number;
+        y?: number;
+        x?: number;
+        rotate?: number;
+        scale?: number;
+    };
+    trigger?: TriggerConfig;
+    once?: boolean;
+    onComplete?: () => void;
+}
+
 /**
  * Framework-agnostic class for use in Angular components.
  * No @angular/core dependency required.
  *
  * @example
- * // In your Angular component:
- * import { ScrollDrawRef } from 'svg-scroll-draw/angular';
- *
  * @Component({ template: '<div #container><svg>...</svg></div>' })
  * export class HeroComponent implements AfterViewInit, OnDestroy {
  *   @ViewChild('container') containerRef!: ElementRef<HTMLElement>;
@@ -134,22 +184,141 @@ interface ScrollDrawInstance {
  *
  *   ngAfterViewInit() {
  *     this.draw.init(this.containerRef.nativeElement, {
- *       easing: 'ease-out',
- *       speed: 1.2,
- *       fade: true,
+ *       easing: 'ease-out', speed: 1.2, fade: true,
  *     });
  *   }
  *
  *   ngOnDestroy() { this.draw.destroy(); }
- *
- *   replay() { this.draw.replay(); }
  * }
  */
 declare class ScrollDrawRef {
     private instance;
     init(element: HTMLElement, options?: ScrollDrawOptions): this;
     replay(): this;
+    pause(): this;
+    resume(): this;
+    seek(p: number): this;
+    getProgress(): number;
+    destroy(): this;
+}
+/**
+ * Animate any CSS property on any element driven by scroll — Angular class-based API.
+ *
+ * @example
+ * @Component({ template: '<div #el>...</div>' })
+ * export class CardComponent implements AfterViewInit, OnDestroy {
+ *   @ViewChild('el') elRef!: ElementRef<HTMLElement>;
+ *   private animate = new ScrollAnimateRef();
+ *
+ *   ngAfterViewInit() {
+ *     this.animate.init(this.elRef.nativeElement, {
+ *       props: { opacity: [0, 1], transform: ['translateY(40px)', 'translateY(0)'] },
+ *       easing: 'ease-out',
+ *       once: true,
+ *     });
+ *   }
+ *
+ *   ngOnDestroy() { this.animate.destroy(); }
+ * }
+ */
+declare class ScrollAnimateRef {
+    private instance;
+    init(element: HTMLElement, options: ScrollAnimateOptions): this;
+    replay(): this;
+    pause(): this;
+    resume(): this;
+    seek(p: number): this;
+    getProgress(): number;
+    destroy(): this;
+}
+/**
+ * Animate a number from `from` to `to` as the element scrolls into view — Angular class-based API.
+ *
+ * @example
+ * @Component({ template: '<span #counter></span>' })
+ * export class StatsComponent implements AfterViewInit, OnDestroy {
+ *   @ViewChild('counter') counterRef!: ElementRef<HTMLElement>;
+ *   private counter = new ScrollCounterRef();
+ *
+ *   ngAfterViewInit() {
+ *     this.counter.init(this.counterRef.nativeElement, {
+ *       to: 1_250_000,
+ *       format: n => '$' + Math.round(n).toLocaleString(),
+ *       once: true,
+ *     });
+ *   }
+ *
+ *   ngOnDestroy() { this.counter.destroy(); }
+ * }
+ */
+declare class ScrollCounterRef {
+    private instance;
+    init(element: HTMLElement, options: ScrollCounterOptions): this;
+    replay(): this;
+    pause(): this;
+    resume(): this;
+    seek(p: number): this;
+    getProgress(): number;
+    destroy(): this;
+}
+/**
+ * Tie a <video> element's currentTime to scroll — Angular class-based API.
+ *
+ * @example
+ * @Component({ template: '<video #vid src="/hero.mp4" muted playsinline preload="auto"></video>' })
+ * export class HeroVideoComponent implements AfterViewInit, OnDestroy {
+ *   @ViewChild('vid') vidRef!: ElementRef<HTMLVideoElement>;
+ *   private video = new ScrollVideoRef();
+ *
+ *   ngAfterViewInit() {
+ *     this.video.init(this.vidRef.nativeElement, {
+ *       trigger: { start: 'top top', end: 'bottom top' },
+ *     });
+ *   }
+ *
+ *   ngOnDestroy() { this.video.destroy(); }
+ * }
+ */
+declare class ScrollVideoRef {
+    private instance;
+    init(element: HTMLVideoElement, options?: ScrollVideoOptions): this;
+    replay(): this;
+    pause(): this;
+    resume(): this;
+    seek(p: number): this;
+    getProgress(): number;
+    destroy(): this;
+}
+/**
+ * Split text and stagger-animate each piece on scroll — Angular class-based API.
+ *
+ * @example
+ * @Component({ template: '<h2 #headline>Animate on scroll.</h2>' })
+ * export class HeroComponent implements AfterViewInit, OnDestroy {
+ *   @ViewChild('headline') headlineRef!: ElementRef<HTMLElement>;
+ *   private text = new ScrollTextRef();
+ *
+ *   ngAfterViewInit() {
+ *     this.text.init(this.headlineRef.nativeElement, {
+ *       split: 'words',
+ *       stagger: 0.05,
+ *       from: { opacity: 0, y: 24 },
+ *       once: true,
+ *     });
+ *   }
+ *
+ *   ngOnDestroy() { this.text.destroy(); }
+ * }
+ */
+declare class ScrollTextRef {
+    private instance;
+    init(element: HTMLElement, options?: ScrollTextOptions): this;
+    replay(): this;
+    pause(): this;
+    resume(): this;
+    seek(p: number): this;
+    getProgress(): number;
     destroy(): this;
 }
 
-export { type ScrollDrawInstance, type ScrollDrawOptions, ScrollDrawRef };
+export { type ScrollAnimateOptions, ScrollAnimateRef, type ScrollCounterOptions, ScrollCounterRef, type ScrollDrawInstance, type ScrollDrawOptions, ScrollDrawRef, type ScrollTextOptions, ScrollTextRef, type ScrollVideoOptions, ScrollVideoRef };

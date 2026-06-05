@@ -37,13 +37,25 @@ export default function Hero() {
     label: 'Vue 3',
     filename: 'Hero.vue',
     code: `<script setup>
-import { ScrollDraw } from 'svg-scroll-draw/vue';
+import { useScrollAnimate, useScrollText } from 'svg-scroll-draw/vue';
+
+// Animate any CSS property on any element
+const card = useScrollAnimate({
+  props: { opacity: [0, 1], transform: ['translateY(40px)', 'translateY(0)'] },
+  easing: 'ease-out',
+  once: true,
+});
+
+// Split text and stagger-animate on scroll
+const headline = useScrollText({ split: 'words', stagger: 0.05, once: true });
 </script>
 
 <template>
-  <ScrollDraw easing="ease-out" :speed="1.2">
-    <svg>...</svg>
-  </ScrollDraw>
+  <div :ref="card">...</div>
+  <h2 :ref="headline">Animate on scroll.</h2>
+
+  <!-- SVG path drawing (v1) -->
+  <!-- <ScrollDraw easing="ease-out" :speed="1.2"><svg>...</svg></ScrollDraw> -->
 </template>`,
   },
   {
@@ -51,25 +63,48 @@ import { ScrollDraw } from 'svg-scroll-draw/vue';
     label: 'Svelte',
     filename: 'Hero.svelte',
     code: `<script>
-  import { scrollDraw } from 'svg-scroll-draw/svelte';
+  import { scrollAnimate, scrollTextAction } from 'svg-scroll-draw/svelte';
+
+  const animOpts = {
+    props: { opacity: [0, 1], transform: ['translateY(40px)', 'translateY(0)'] },
+    easing: 'ease-out',
+    once: true,
+  };
 </script>
 
-<div use:scrollDraw={{ easing: 'ease-out', speed: 1.2 }}>
-  <svg>...</svg>
-</div>`,
+<!-- Animate any CSS property -->
+<div use:scrollAnimate={animOpts}>...</div>
+
+<!-- Split text and stagger -->
+<h2 use:scrollTextAction={{ split: 'words', stagger: 0.05, once: true }}>
+  Animate on scroll.
+</h2>
+
+<!-- SVG path drawing (v1) -->
+<!-- <div use:scrollDraw={{ easing: 'ease-out', speed: 1.2 }}><svg>...</svg></div> -->`,
   },
   {
     id: 'solid',
     label: 'SolidJS',
     filename: 'Hero.tsx',
-    code: `import { useScrollDraw } from 'svg-scroll-draw/solid';
+    code: `import { useScrollAnimate, useScrollText } from 'svg-scroll-draw/solid';
 
 function Hero() {
-  const ref = useScrollDraw({ easing: 'spring', fade: true });
+  // Animate any CSS property on any element
+  const cardRef = useScrollAnimate({
+    props: { opacity: [0, 1], transform: ['translateY(40px)', 'translateY(0)'] },
+    easing: 'ease-out',
+    once: true,
+  });
+
+  // Split text and stagger-animate on scroll
+  const headlineRef = useScrollText({ split: 'words', stagger: 0.05, once: true });
+
   return (
-    <div ref={ref}>
-      <svg>...</svg>
-    </div>
+    <>
+      <div ref={cardRef}>...</div>
+      <h2 ref={headlineRef}>Animate on scroll.</h2>
+    </>
   );
 }`,
   },

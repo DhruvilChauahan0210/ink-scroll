@@ -119,6 +119,19 @@ interface ScrollDrawInstance {
     getProgress: () => number;
 }
 
+interface ScrollAnimateOptions {
+    props: Record<string, string | number | [string | number, string | number]>;
+    trigger?: TriggerConfig;
+    easing?: EasingName | ((t: number) => number);
+    speed?: number;
+    once?: boolean;
+    axis?: 'x' | 'y';
+    scrollContainer?: string | Element;
+    native?: boolean;
+    onProgress?: (alpha: number) => void;
+    onComplete?: () => void;
+}
+
 /**
  * Animate multiple SVG containers simultaneously with the same options.
  * Each container tracks its own scroll position independently.
@@ -152,5 +165,42 @@ declare function scrollDrawGroup(targets: Array<string | Element>, options?: Scr
  * });
  */
 declare function scrollDrawSequence(targets: Array<string | Element>, options?: ScrollDrawOptions): ScrollDrawInstance;
+/**
+ * Animate multiple HTML/SVG elements simultaneously with scrollAnimate options.
+ * Each element tracks its own scroll position independently. Perfect for
+ * staggered card reveals, feature grids, or any multi-element entrance.
+ *
+ * @example
+ * import { scrollAnimateGroup } from 'svg-scroll-draw/group';
+ *
+ * const group = scrollAnimateGroup(
+ *   [card1El, card2El, card3El],
+ *   {
+ *     props: { opacity: [0, 1], transform: ['translateY(40px)', 'translateY(0)'] },
+ *     easing: 'ease-out',
+ *     once: true,
+ *   }
+ * );
+ *
+ * group.replay();
+ * group.destroy();
+ */
+declare function scrollAnimateGroup(targets: Array<string | Element>, options: ScrollAnimateOptions): ScrollDrawInstance;
+/**
+ * Fan-out scrollAnimate in sequence — each element starts animating only after
+ * the previous one has reached 100%. Useful for step-by-step reveals.
+ *
+ * @example
+ * import { scrollAnimateSequence } from 'svg-scroll-draw/group';
+ *
+ * scrollAnimateSequence(
+ *   [step1El, step2El, step3El],
+ *   {
+ *     props: { opacity: [0, 1], transform: ['translateY(32px)', 'translateY(0)'] },
+ *     easing: 'ease-out',
+ *   }
+ * );
+ */
+declare function scrollAnimateSequence(targets: Array<string | Element>, options: ScrollAnimateOptions): ScrollDrawInstance;
 
-export { type ScrollDrawOptions, scrollDrawGroup, scrollDrawSequence };
+export { type ScrollAnimateOptions, type ScrollDrawOptions, scrollAnimateGroup, scrollAnimateSequence, scrollDrawGroup, scrollDrawSequence };

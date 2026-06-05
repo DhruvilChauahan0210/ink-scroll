@@ -119,6 +119,59 @@ interface ScrollDrawInstance {
     getProgress: () => number;
 }
 
+interface ScrollAnimateOptions {
+    props: Record<string, string | number | [string | number, string | number]>;
+    trigger?: TriggerConfig;
+    easing?: EasingName | ((t: number) => number);
+    speed?: number;
+    once?: boolean;
+    axis?: 'x' | 'y';
+    scrollContainer?: string | Element;
+    native?: boolean;
+    onProgress?: (alpha: number) => void;
+    onComplete?: () => void;
+}
+
+interface ScrollCounterOptions {
+    from?: number;
+    to: number;
+    format?: (value: number) => string;
+    easing?: EasingName | ((t: number) => number);
+    trigger?: TriggerConfig;
+    once?: boolean;
+    decimals?: number;
+    onComplete?: () => void;
+}
+
+interface ScrollVideoOptions {
+    trigger?: TriggerConfig;
+    from?: number;
+    to?: number;
+    easing?: EasingName | ((t: number) => number);
+    once?: boolean;
+    axis?: 'x' | 'y';
+    preload?: 'auto' | 'metadata';
+    onReady?: () => void;
+    onComplete?: () => void;
+    onProgress?: (alpha: number) => void;
+}
+
+interface ScrollTextOptions {
+    split?: 'chars' | 'words' | 'lines';
+    stagger?: number;
+    easing?: EasingName | ((t: number) => number);
+    from?: {
+        opacity?: number;
+        y?: number;
+        x?: number;
+        rotate?: number;
+        scale?: number;
+    };
+    trigger?: TriggerConfig;
+    once?: boolean;
+    onComplete?: () => void;
+}
+
 /**
  * SolidJS hook — returns a ref setter to attach to any container element.
  *
@@ -144,5 +197,106 @@ declare function createScrollDraw(options?: ScrollDrawOptions): {
     ref: (node: HTMLElement) => void;
     getInstance: () => ScrollDrawInstance | undefined;
 };
+/**
+ * SolidJS hook — animate any CSS property on any element driven by scroll.
+ *
+ * @example
+ * import { useScrollAnimate } from 'svg-scroll-draw/solid';
+ *
+ * function Card() {
+ *   const ref = useScrollAnimate({
+ *     props: { opacity: [0, 1], transform: ['translateY(40px)', 'translateY(0)'] },
+ *     easing: 'ease-out',
+ *     once: true,
+ *   });
+ *   return <div ref={ref}>...</div>;
+ * }
+ */
+declare function useScrollAnimate(options: ScrollAnimateOptions): (node: HTMLElement) => void;
+/**
+ * Returns both the ref setter and a getter for the live instance.
+ *
+ * @example
+ * const { ref, getInstance } = createScrollAnimate({
+ *   props: { opacity: [0, 1] }, easing: 'ease-out', once: true,
+ * });
+ * <div ref={ref}>...</div>
+ * <button onClick={() => getInstance()?.replay()}>Replay</button>
+ */
+declare function createScrollAnimate(options: ScrollAnimateOptions): {
+    ref: (node: HTMLElement) => void;
+    getInstance: () => ScrollDrawInstance | undefined;
+};
+/**
+ * SolidJS hook — animate a number from `from` to `to` as the element scrolls in.
+ *
+ * @example
+ * import { useScrollCounter } from 'svg-scroll-draw/solid';
+ *
+ * function Stats() {
+ *   const ref = useScrollCounter({ to: 1_250_000, format: n => '$' + Math.round(n).toLocaleString(), once: true });
+ *   return <span ref={ref} />;
+ * }
+ */
+declare function useScrollCounter(options: ScrollCounterOptions): (node: HTMLElement) => void;
+/**
+ * Returns both the ref setter and a getter for the live counter instance.
+ *
+ * @example
+ * const { ref, getInstance } = createScrollCounter({ to: 1000, once: true });
+ * <span ref={ref} />
+ * <button onClick={() => getInstance()?.replay()}>Replay</button>
+ */
+declare function createScrollCounter(options: ScrollCounterOptions): {
+    ref: (node: HTMLElement) => void;
+    getInstance: () => ScrollDrawInstance | undefined;
+};
+/**
+ * SolidJS hook — tie a <video> element's currentTime to scroll position.
+ *
+ * @example
+ * import { useScrollVideo } from 'svg-scroll-draw/solid';
+ *
+ * function HeroSection() {
+ *   const ref = useScrollVideo({ trigger: { start: 'top top', end: 'bottom top' } });
+ *   return <video ref={ref} src="/hero.mp4" muted playsinline preload="auto" />;
+ * }
+ */
+declare function useScrollVideo(options?: ScrollVideoOptions): (node: HTMLVideoElement) => void;
+/**
+ * Returns both the ref setter and a getter for the live video instance.
+ *
+ * @example
+ * const { ref, getInstance } = createScrollVideo({ once: false });
+ * <video ref={ref} src="/hero.mp4" muted playsinline preload="auto" />
+ */
+declare function createScrollVideo(options?: ScrollVideoOptions): {
+    ref: (node: HTMLVideoElement) => void;
+    getInstance: () => ScrollDrawInstance | undefined;
+};
+/**
+ * SolidJS hook — split text and stagger-animate each piece on scroll.
+ *
+ * @example
+ * import { useScrollText } from 'svg-scroll-draw/solid';
+ *
+ * function Headline() {
+ *   const ref = useScrollText({ split: 'words', stagger: 0.05, once: true });
+ *   return <h2 ref={ref}>Animate on scroll.</h2>;
+ * }
+ */
+declare function useScrollText(options?: ScrollTextOptions): (node: HTMLElement) => void;
+/**
+ * Returns both the ref setter and a getter for the live text instance.
+ *
+ * @example
+ * const { ref, getInstance } = createScrollText({ split: 'chars', stagger: 0.03 });
+ * <p ref={ref}>Hello world.</p>
+ * <button onClick={() => getInstance()?.replay()}>Replay</button>
+ */
+declare function createScrollText(options?: ScrollTextOptions): {
+    ref: (node: HTMLElement) => void;
+    getInstance: () => ScrollDrawInstance | undefined;
+};
 
-export { type ScrollDrawOptions, createScrollDraw, useScrollDraw };
+export { type ScrollAnimateOptions, type ScrollCounterOptions, type ScrollDrawOptions, type ScrollTextOptions, type ScrollVideoOptions, createScrollAnimate, createScrollCounter, createScrollDraw, createScrollText, createScrollVideo, useScrollAnimate, useScrollCounter, useScrollDraw, useScrollText, useScrollVideo };
