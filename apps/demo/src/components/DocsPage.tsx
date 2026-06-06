@@ -57,6 +57,22 @@ const NAV_GROUPS = [
     items: [{ id: 'use-scroll-draw-progress', label: 'useScrollDrawProgress' }],
   },
   {
+    label: 'v2.8.0',
+    items: [
+      { id: 'scroll-reveal',   label: 'scrollReveal' },
+      { id: 'velocity-scale',  label: 'velocityScale' },
+    ],
+  },
+  {
+    label: 'v2.7.0',
+    items: [
+      { id: 'scroll-pin',       label: 'scrollPin' },
+      { id: 'scroll-snap',      label: 'scrollSnap' },
+      { id: 'scroll-callbacks', label: 'Scroll Callbacks' },
+      { id: 'lenis-adapter',    label: 'Lenis Adapter' },
+    ],
+  },
+  {
     label: 'v2.6.0',
     items: [
       { id: 'v2-vue',    label: 'Vue 3 v2' },
@@ -224,7 +240,7 @@ export function DocsPage() {
           <Link href="/examples" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Examples</Link>
           <Link href="/blog" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Blog</Link>
           <Link href="/playground" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">⚡ Playground</Link>
-          <a href={NPM} target="_blank" rel="noopener noreferrer" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono whitespace-nowrap">v2.6.0</a>
+          <a href={NPM} target="_blank" rel="noopener noreferrer" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono whitespace-nowrap">v2.8.0</a>
           <a href={GH} target="_blank" rel="noopener noreferrer" className="text-sm px-4 py-1.5 rounded-full bg-pitch-black text-light-linen hover:bg-graphite-border transition-colors font-medium whitespace-nowrap">GitHub →</a>
         </div>
 
@@ -1684,6 +1700,314 @@ function Hero() {
             <Note>The same <code className="font-mono text-[0.85em]">create*</code> pattern is available for all v2 hooks: <code className="font-mono text-[0.85em]">createScrollCounter</code>, <code className="font-mono text-[0.85em]">createScrollVideo</code>, <code className="font-mono text-[0.85em]">createScrollText</code>.</Note>
           </DocSection>
 
+          {/* ── v2.8.0 — scrollReveal ───────────────────────── */}
+          <DocSection id="scroll-reveal" tag="v2.8.0" heading="scrollReveal">
+            <p className="text-sm text-graphite-border leading-relaxed mb-2">
+              Reveal elements as they scroll into view. One-line replacement for AOS and ScrollReveal.js —
+              no data attributes, fully typed, 7 named presets, stagger, and custom easing.
+            </p>
+            <CodeBlock file="index.js">
+{`import { scrollReveal } from 'svg-scroll-draw/reveal';
+
+// Default: fade up
+scrollReveal('.card');
+
+// Named preset
+scrollReveal('.feature', { preset: 'scale' });
+
+// Custom from state
+scrollReveal('.item', {
+  from:    { opacity: 0, y: 40, scale: 0.95 },
+  stagger: 0.1,
+  easing:  'ease-out',
+  once:    true,
+});
+
+// Presets: 'fadeUp' | 'fadeDown' | 'fadeLeft' | 'fadeRight' | 'scale' | 'flip' | 'flipX'
+
+// Cleanup
+const instance = scrollReveal('.card', { preset: 'fadeUp' });
+instance.destroy();`}
+            </CodeBlock>
+            <div className="overflow-x-auto mt-4">
+              <table className="w-full text-[13px] border border-subtle-ash rounded-xl overflow-hidden">
+                <thead>
+                  <tr className="bg-pitch-black text-light-linen text-[11px] uppercase tracking-wide">
+                    <th className="text-left px-4 py-2 font-medium">Option</th>
+                    <th className="text-left px-4 py-2 font-medium">Type</th>
+                    <th className="text-left px-4 py-2 font-medium">Default</th>
+                    <th className="text-left px-4 py-2 font-medium">Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    ['preset',   'ScrollRevealPreset', '"fadeUp"',    'Named start state. fadeUp | fadeDown | fadeLeft | fadeRight | scale | flip | flipX'],
+                    ['from',     'ScrollRevealFrom',   '—',           'Custom start state: { opacity, x, y, scale, rotate, rotateX, rotateY }. Merges with preset.'],
+                    ['stagger',  'number',             '0.08',        'Viewport-% offset per element — creates cascade for lists.'],
+                    ['easing',   'EasingName | fn',    '"ease-out"',  'Animation easing.'],
+                    ['once',     'boolean',            'true',        'Freeze at max progress — don\'t reverse on scroll back.'],
+                    ['trigger',  'TriggerConfig',      'auto',        'Override trigger window. Default computed per element.'],
+                    ['onEnter',  '() => void',         '—',           'Fires when the first element enters its trigger zone.'],
+                    ['onLeave',  '() => void',         '—',           'Fires when the last element leaves its trigger zone.'],
+                  ].map(([opt, type, def, desc]) => (
+                    <tr key={opt} className="border-t border-subtle-ash">
+                      <td className="px-4 py-2 font-mono font-semibold text-[12px]">{opt}</td>
+                      <td className="px-4 py-2 font-mono text-graphite-border text-[11px]">{type}</td>
+                      <td className="px-4 py-2 font-mono text-graphite-border text-[11px]">{def}</td>
+                      <td className="px-4 py-2 text-graphite-border">{desc}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </DocSection>
+
+          {/* ── v2.8.0 — velocityScale on scrollAnimate ──────── */}
+          <DocSection id="velocity-scale" tag="v2.8.0" heading="velocityScale">
+            <p className="text-sm text-graphite-border leading-relaxed mb-2">
+              Scale animation speed by scroll velocity — the faster the user scrolls, the faster the animation progresses.
+              Available on <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">scrollAnimate</code>
+              {' '}(and already on <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">scrollDraw</code>).
+              Pass <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">true</code> for default sensitivity
+              or a number to tune it.
+            </p>
+            <CodeBlock file="index.js">
+{`import { scrollAnimate } from 'svg-scroll-draw';
+
+// Default sensitivity (1) — moderate speed-up on fast scroll
+scrollAnimate('#hero', {
+  props: { opacity: [0, 1], transform: ['translateY(32px)', 'translateY(0)'] },
+  velocityScale: true,
+});
+
+// High sensitivity (3) — very responsive to scroll speed
+scrollAnimate('#kinetic-bg', {
+  props: { transform: ['translateY(0px)', 'translateY(-200px)'] },
+  velocityScale: 3,
+  easing: 'linear',
+});
+
+// velocityScale is available on scrollDraw too:
+scrollDraw('#logo', {
+  easing:        'ease-out',
+  velocityScale: 1.5,
+});`}
+            </CodeBlock>
+            <Note>
+              <code className="font-mono text-[0.85em]">velocityScale</code> forces the JS engine — the native CSS fast path
+              is skipped because velocity requires per-frame measurement.
+            </Note>
+          </DocSection>
+
+          {/* ── v2.7.0 — scrollPin ───────────────────────────── */}
+          <DocSection id="scroll-pin" tag="v2.7.0" heading="scrollPin">
+            <p className="text-sm text-graphite-border leading-relaxed mb-2">
+              Pin any element at a viewport position while the page scrolls past it. Wrapper-based — inserts a spacer to prevent layout shift. Full lifecycle callbacks mirror GSAP ScrollTrigger&apos;s <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">pin: true</code>.
+            </p>
+            <CodeBlock file="index.js">
+{`import { scrollPin } from 'svg-scroll-draw/pin';
+
+// Pin at top of viewport for one viewport-height of scroll
+const pin = scrollPin('#panel', {
+  pinDistance: window.innerHeight,
+  onEnter:     () => panel.classList.add('active'),
+  onLeave:     () => panel.classList.remove('active'),
+  onEnterBack: () => panel.classList.add('active'),
+  onLeaveBack: () => panel.classList.remove('active'),
+  onProgress:  (p) => console.log('progress', p), // 0–1 through pin zone
+});
+
+// Apple-style: pin image, scroll text past it
+scrollPin('#product-image', {
+  top:         80,    // pin 80px from viewport top (below a fixed nav)
+  pinDistance: 800,   // hold for 800px of scroll
+});
+
+// Recalculate after layout change (accordion, dynamic content)
+pin.refresh();
+
+// Remove on unmount / route change
+pin.destroy();`}
+            </CodeBlock>
+            <div className="overflow-x-auto mt-4">
+              <table className="w-full text-[13px] border border-subtle-ash rounded-xl overflow-hidden">
+                <thead>
+                  <tr className="bg-pitch-black text-light-linen text-[11px] uppercase tracking-wide">
+                    <th className="text-left px-4 py-2 font-medium">Option</th>
+                    <th className="text-left px-4 py-2 font-medium">Type</th>
+                    <th className="text-left px-4 py-2 font-medium">Default</th>
+                    <th className="text-left px-4 py-2 font-medium">Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    ['pinDistance',  'number',           'window.innerHeight', 'Pixels of scroll to stay pinned.'],
+                    ['top',          'number',           '0',                  'Viewport Y (px) to pin at. 0 = top of viewport.'],
+                    ['scrollContainer', 'string|Element','—',                  'Custom scroll container. Default: window.'],
+                    ['onEnter',      '() => void',       '—',                  'Fires when scroll enters the pin zone (scrolling down).'],
+                    ['onLeave',      '() => void',       '—',                  'Fires when scroll exits the pin zone at the end.'],
+                    ['onEnterBack',  '() => void',       '—',                  'Fires when scroll re-enters the pin zone (scrolling up).'],
+                    ['onLeaveBack',  '() => void',       '—',                  'Fires when scroll exits the pin zone at the start.'],
+                    ['onProgress',   '(p: number) => void', '—',               'Progress 0–1 through the pin zone, every frame.'],
+                  ].map(([opt, type, def, desc]) => (
+                    <tr key={opt} className="border-t border-subtle-ash">
+                      <td className="px-4 py-2 font-mono font-semibold text-[12px]">{opt}</td>
+                      <td className="px-4 py-2 font-mono text-graphite-border text-[11px]">{type}</td>
+                      <td className="px-4 py-2 font-mono text-graphite-border text-[11px]">{def}</td>
+                      <td className="px-4 py-2 text-graphite-border">{desc}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <Note>Instance API: <code className="font-mono text-[0.85em]">destroy()</code> restores the original DOM and removes all listeners. <code className="font-mono text-[0.85em]">refresh()</code> recalculates pin dimensions — call it after layout changes.</Note>
+          </DocSection>
+
+          {/* ── v2.7.0 — scrollSnap ──────────────────────────── */}
+          <DocSection id="scroll-snap" tag="v2.7.0" heading="scrollSnap">
+            <p className="text-sm text-graphite-border leading-relaxed mb-2">
+              JS-powered section snapping with custom easing and a configurable threshold. Works on vertical and horizontal axes with any scroll container. Unlike CSS <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">scroll-snap-type</code>, you get callbacks, programmatic control, and custom easing curves.
+            </p>
+            <CodeBlock file="index.js">
+{`import { scrollSnap } from 'svg-scroll-draw/snap';
+
+// Basic vertical snap between fullscreen sections
+const snap = scrollSnap('.section', {
+  duration:  600,
+  easing:    'ease-in-out',
+  threshold: 0.3,           // snap forward if user scrolled >30% of a section
+  onSnap:    (index) => console.log('snapped to section', index),
+});
+
+// Horizontal snap (e.g. feature carousel)
+scrollSnap('.card', {
+  direction: 'horizontal',
+  duration:  400,
+  easing:    'ease-out',
+  onSnap:    (i) => setActiveCard(i),
+});
+
+// Programmatic control
+snap.snapTo(2);          // scroll to section index 2
+snap.getCurrentIndex();  // → current snapped index
+
+// Cleanup
+snap.destroy();`}
+            </CodeBlock>
+            <div className="overflow-x-auto mt-4">
+              <table className="w-full text-[13px] border border-subtle-ash rounded-xl overflow-hidden">
+                <thead>
+                  <tr className="bg-pitch-black text-light-linen text-[11px] uppercase tracking-wide">
+                    <th className="text-left px-4 py-2 font-medium">Option</th>
+                    <th className="text-left px-4 py-2 font-medium">Type</th>
+                    <th className="text-left px-4 py-2 font-medium">Default</th>
+                    <th className="text-left px-4 py-2 font-medium">Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    ['direction',       '"vertical" | "horizontal"', '"vertical"',    'Scroll axis.'],
+                    ['duration',        'number',                    '600',           'Snap animation duration in ms.'],
+                    ['easing',          'EasingName | fn',           '"ease-in-out"', 'Easing for the snap scroll animation.'],
+                    ['threshold',       'number',                    '0.3',           'Fraction of a section size the user must scroll past to snap forward (0–1).'],
+                    ['scrollContainer', 'string | Element',          '—',             'Custom scroll container. Default: window.'],
+                    ['onSnap',          '(index: number) => void',   '—',             'Fires after each snap with the target section index.'],
+                  ].map(([opt, type, def, desc]) => (
+                    <tr key={opt} className="border-t border-subtle-ash">
+                      <td className="px-4 py-2 font-mono font-semibold text-[12px]">{opt}</td>
+                      <td className="px-4 py-2 font-mono text-graphite-border text-[11px]">{type}</td>
+                      <td className="px-4 py-2 font-mono text-graphite-border text-[11px]">{def}</td>
+                      <td className="px-4 py-2 text-graphite-border">{desc}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </DocSection>
+
+          {/* ── v2.7.0 — Scroll Callbacks ────────────────────── */}
+          <DocSection id="scroll-callbacks" tag="v2.7.0" heading="Scroll Callbacks">
+            <p className="text-sm text-graphite-border leading-relaxed mb-2">
+              <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">onEnter</code>,{' '}
+              <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">onLeave</code>,{' '}
+              <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">onEnterBack</code>, and{' '}
+              <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">onLeaveBack</code> are available on both <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">scrollAnimate</code> and <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">scrollDraw</code>. They fire exactly once per crossing — same semantics as GSAP ScrollTrigger.
+            </p>
+            <CodeBlock file="index.js">
+{`import { scrollAnimate } from 'svg-scroll-draw';
+
+// Activate/deactivate a section as it enters and leaves view
+scrollAnimate('#feature-section', {
+  props: { opacity: [0.4, 1] },
+  trigger: { start: 'top center', end: 'bottom center' },
+  onEnter:     () => nav.setActive('feature'),   // scrolling down, entering
+  onLeave:     () => nav.clearActive('feature'),  // scrolling down, leaving
+  onEnterBack: () => nav.setActive('feature'),   // scrolling up, re-entering
+  onLeaveBack: () => nav.clearActive('feature'),  // scrolling up, leaving from top
+});
+
+// Lazy-load an image when it first enters view
+scrollAnimate('#hero-img', {
+  props: { opacity: [0, 1] },
+  once: true,
+  onEnter: () => {
+    document.querySelector('#hero-img')
+      .setAttribute('src', '/hero.webp');
+  },
+});`}
+            </CodeBlock>
+            <Note>
+              Adding any of these callbacks forces the JS engine — the native CSS{' '}
+              <code className="font-mono text-[0.85em]">animation-timeline</code> fast path is skipped because
+              callbacks require per-frame JavaScript.
+            </Note>
+          </DocSection>
+
+          {/* ── v2.7.0 — Lenis Adapter ───────────────────────── */}
+          <DocSection id="lenis-adapter" tag="v2.7.0" heading="Lenis Adapter">
+            <p className="text-sm text-graphite-border leading-relaxed mb-2">
+              Lenis v2+ patches <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">window.scrollY</code> natively — no adapter needed, svg-scroll-draw works out of the box.
+              For Lenis v1 (which uses a virtual scroll value), use <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">createLenisAdapter</code> to keep all engines in sync.
+            </p>
+            <CodeBlock file="index.js">
+{`import Lenis from '@studio-freight/lenis'; // Lenis v1
+import { createLenisAdapter } from 'svg-scroll-draw/lenis';
+import { scrollAnimate } from 'svg-scroll-draw';
+
+// 1. Create Lenis
+const lenis = new Lenis({ duration: 1.2, easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)) });
+
+// 2. Patch window.scrollY so all svg-scroll-draw engines read the virtual scroll
+const adapter = createLenisAdapter(lenis);
+
+// 3. Use svg-scroll-draw as normal
+scrollAnimate('#hero', {
+  props: { opacity: [0, 1], transform: ['translateY(40px)', 'translateY(0)'] },
+  once: true,
+});
+
+// 4. Drive Lenis with rAF
+function raf(time) {
+  lenis.raf(time);
+  requestAnimationFrame(raf);
+}
+requestAnimationFrame(raf);
+
+// 5. Cleanup
+adapter.destroy();
+lenis.destroy();
+
+// ── Lenis v2 (no adapter needed) ──────────────────────────────────
+import Lenis from 'lenis'; // v2 patches window.scrollY natively
+
+const lenis = new Lenis();
+lenis.on('scroll', ScrollTrigger.update); // optional if mixing with other libs
+
+// svg-scroll-draw just works
+scrollAnimate('#hero', { props: { opacity: [0, 1] }, once: true });`}
+            </CodeBlock>
+          </DocSection>
+
           <DocSection id="scroll-animate" tag="v2.0.0" heading="scrollAnimate">
             <p className="text-sm text-graphite-border leading-relaxed mb-2">
               Animate any CSS property on any DOM or SVG element driven by scroll position. The direct replacement for <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">gsap.to(el, {'{'} scrollTrigger {'}'})</code> for the 80% case.
@@ -1739,8 +2063,12 @@ import { ScrollAnimate } from 'svg-scroll-draw/react';
                     ['once', 'boolean', 'false', 'Freeze at max progress — does not reverse on scroll back.'],
                     ['axis', '"x" | "y"', '"y"', 'Scroll axis.'],
                     ['native', 'boolean', 'true', 'Use CSS animation-timeline: view() fast path when eligible.'],
-                    ['onProgress', '(n) => void', '—', 'Called every frame with alpha 0–1.'],
-                    ['onComplete', '() => void', '—', 'Fires when alpha reaches 1.'],
+                    ['onProgress',   '(n) => void', '—', 'Called every frame with alpha 0–1.'],
+                    ['onComplete',   '() => void', '—', 'Fires when alpha reaches 1.'],
+                    ['onEnter',      '() => void', '—', 'Fires when scroll enters the trigger zone (scrolling forward). Forces JS engine.'],
+                    ['onLeave',      '() => void', '—', 'Fires when scroll exits the trigger zone at the end (scrolling forward).'],
+                    ['onEnterBack',  '() => void', '—', 'Fires when scroll re-enters the trigger zone from the end (scrolling back).'],
+                    ['onLeaveBack',  '() => void', '—', 'Fires when scroll exits the trigger zone at the start (scrolling back).'],
                   ].map(([opt, type, def, desc]) => (
                     <tr key={opt} className="border-t border-subtle-ash">
                       <td className="px-4 py-2 font-mono font-semibold text-[12px]">{opt}</td>

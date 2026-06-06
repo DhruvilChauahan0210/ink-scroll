@@ -12,6 +12,8 @@ import { scrollAnimate, scrollCounter, scrollParallax } from 'svg-scroll-draw';
 import { ScrollAnimate } from 'svg-scroll-draw/react';
 import { scrollText } from 'svg-scroll-draw/text';
 import { scrollAnimateGroup } from 'svg-scroll-draw/group';
+import { scrollPin } from 'svg-scroll-draw/pin';
+import { scrollSnap } from 'svg-scroll-draw/snap';
 
 function CodeBlock({ filename, children }: { filename: string; children: string }) {
   return (
@@ -1468,6 +1470,125 @@ function AnimateGroupDemo() {
 
 /* ── Example cards data ───────────────────────────────────── */
 
+// scrollPin — sticky feature panel demo
+function StickyFeaturePanel() {
+  const wrapRef  = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const badgeRef = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    if (!wrapRef.current || !panelRef.current || !badgeRef.current) return;
+    const badge = badgeRef.current;
+
+    const inst = scrollPin(panelRef.current, {
+      top:             0,
+      pinDistance:     400,
+      scrollContainer: wrapRef.current,
+      onEnter:     () => { badge.textContent = 'PINNED'; badge.style.background = '#4ade80'; badge.style.color = '#000'; },
+      onLeave:     () => { badge.textContent = 'RELEASED'; badge.style.background = '#f59e0b'; badge.style.color = '#000'; },
+      onEnterBack: () => { badge.textContent = 'PINNED'; badge.style.background = '#4ade80'; badge.style.color = '#000'; },
+      onLeaveBack: () => { badge.textContent = 'BEFORE'; badge.style.background = '#e5e7eb'; badge.style.color = '#444'; },
+    });
+    return () => inst.destroy();
+  }, []);
+
+  const FEATURES = [
+    { title: 'One function call', body: 'scrollPin wraps the target in a spacer — no layout shift.' },
+    { title: 'Full callbacks', body: 'onEnter, onLeave, onEnterBack, onLeaveBack — same as GSAP.' },
+    { title: 'Refresh on resize', body: 'Call pin.refresh() after any layout change to recalculate.' },
+  ];
+
+  return (
+    <div ref={wrapRef} style={{ width: '100%', height: 320, overflowY: 'auto', background: '#0d0d0d', position: 'relative' }}>
+      <div style={{ display: 'flex', gap: 0, minHeight: 720 }}>
+        {/* Pinned panel */}
+        <div ref={panelRef} style={{ width: 140, flexShrink: 0, background: '#1a1a1a', borderRight: '1px solid #2a2a2a', padding: '20px 14px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ width: 48, height: 48, borderRadius: 10, background: '#ff90e8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>📌</div>
+          <div style={{ fontFamily: 'system-ui', fontWeight: 700, fontSize: 13, color: '#f5f5f5', lineHeight: 1.3 }}>Product Image</div>
+          <div style={{ fontFamily: 'monospace', fontSize: 9, color: '#555', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Stays fixed →</div>
+          <span ref={badgeRef} style={{ display: 'inline-block', fontFamily: 'monospace', fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', background: '#e5e7eb', color: '#444', borderRadius: 20, padding: '3px 8px', width: 'fit-content', transition: 'background 0.2s, color 0.2s' }}>
+            BEFORE
+          </span>
+        </div>
+
+        {/* Scrollable features */}
+        <div style={{ flex: 1, padding: '0 20px' }}>
+          {FEATURES.map((f, i) => (
+            <div key={i} style={{ height: 200, display: 'flex', flexDirection: 'column', justifyContent: 'center', borderBottom: i < 2 ? '1px solid #1e1e1e' : 'none', paddingBottom: 16 }}>
+              <div style={{ fontFamily: 'system-ui', fontWeight: 700, fontSize: 14, color: '#f5f5f5', marginBottom: 6 }}>{f.title}</div>
+              <div style={{ fontFamily: 'system-ui', fontSize: 12, color: '#666', lineHeight: 1.5 }}>{f.body}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// scrollSnap — horizontal card carousel demo
+function HorizontalSnapCarousel() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [activeIdx, setActiveIdx] = useState(0);
+
+  const CARDS = [
+    { label: '01', title: 'Scroll Pin', color: '#ff90e8', icon: '📌' },
+    { label: '02', title: 'Scroll Snap', color: '#60a5fa', icon: '⚡' },
+    { label: '03', title: 'Callbacks', color: '#4ade80', icon: '🎯' },
+    { label: '04', title: 'Lenis', color: '#fbbf24', icon: '🌊' },
+  ];
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const sections = Array.from(containerRef.current.querySelectorAll<HTMLElement>('.snap-card'));
+    const inst = scrollSnap(sections, {
+      direction:       'horizontal',
+      duration:        400,
+      easing:          'ease-out',
+      scrollContainer: containerRef.current,
+      onSnap:          (i) => setActiveIdx(i),
+    });
+    return () => inst.destroy();
+  }, []);
+
+  return (
+    <div style={{ width: '100%', background: '#0d0d0d', padding: '20px 0 16px' }}>
+      {/* Scroll container */}
+      <div
+        ref={containerRef}
+        style={{
+          display: 'flex', overflowX: 'auto', scrollSnapType: 'x mandatory',
+          scrollbarWidth: 'none', gap: 0,
+        }}
+      >
+        {CARDS.map((c, i) => (
+          <div
+            key={c.label}
+            className="snap-card"
+            style={{
+              minWidth: '100%', scrollSnapAlign: 'start',
+              padding: '28px 24px',
+              display: 'flex', flexDirection: 'column', gap: 10,
+              borderRight: i < CARDS.length - 1 ? '1px solid #1e1e1e' : 'none',
+            }}
+          >
+            <div style={{ fontSize: 28 }}>{c.icon}</div>
+            <div style={{ fontFamily: 'monospace', fontSize: 10, color: '#555', letterSpacing: '0.16em', textTransform: 'uppercase' }}>{c.label} / {CARDS.length}</div>
+            <div style={{ fontFamily: 'system-ui', fontWeight: 800, fontSize: 20, color: c.color, letterSpacing: '-0.02em' }}>{c.title}</div>
+            <div style={{ fontFamily: 'system-ui', fontSize: 12, color: '#555' }}>Swipe or drag to snap →</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Dot indicators */}
+      <div style={{ display: 'flex', justifyContent: 'center', gap: 6, marginTop: 12 }}>
+        {CARDS.map((_, i) => (
+          <div key={i} style={{ width: i === activeIdx ? 16 : 6, height: 6, borderRadius: 3, background: i === activeIdx ? '#ff90e8' : '#333', transition: 'all 0.2s ease' }} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 const EXAMPLES = [
   {
     id: 'logo-reveal',
@@ -2111,6 +2232,70 @@ scrollText('#subtitle', {
   once:    true,
 });`,
   },
+  {
+    id: 'scroll-pin',
+    label: 'Sticky Feature Panel',
+    tag: 'v2.7 · scrollPin · onEnter / onLeave',
+    darkPreview: true,
+    description:
+      'Product image stays pinned while feature descriptions scroll past — the Apple / Stripe product walkthrough pattern. Uses scrollPin with lifecycle callbacks. Scroll inside the preview to see the pin state change.',
+    preview: <StickyFeaturePanel />,
+    code: `import { scrollPin } from 'svg-scroll-draw/pin';
+
+// Pin the product image while features scroll past
+const pin = scrollPin('#product-image', {
+  top:         80,           // 80px below top (under a fixed nav)
+  pinDistance: window.innerHeight * 3,
+  onEnter:     () => image.classList.add('active'),
+  onLeave:     () => image.classList.remove('active'),
+  onEnterBack: () => image.classList.add('active'),
+  onLeaveBack: () => image.classList.remove('active'),
+  onProgress:  (p) => progressBar.style.width = p * 100 + '%',
+});
+
+// Animate each feature block as it scrolls in
+document.querySelectorAll('.feature').forEach(el =>
+  scrollAnimate(el, {
+    props: { opacity: [0, 1], transform: ['translateY(32px)', 'translateY(0)'] },
+    easing: 'ease-out', once: true,
+  })
+);
+
+// Recalculate after layout change (accordion, content load)
+pin.refresh();
+pin.destroy(); // removes pin and restores DOM`,
+  },
+  {
+    id: 'scroll-snap',
+    label: 'Horizontal Snap Carousel',
+    tag: 'v2.7 · scrollSnap · horizontal',
+    darkPreview: true,
+    description:
+      'Drag or swipe between cards — scrollSnap detects when you pass the threshold and smoothly animates to the nearest card with custom easing. Dot indicators update via onSnap callback.',
+    preview: <HorizontalSnapCarousel />,
+    code: `import { scrollSnap } from 'svg-scroll-draw/snap';
+
+// Horizontal card carousel with custom easing
+const snap = scrollSnap('.card', {
+  direction:  'horizontal',
+  duration:   400,
+  easing:     'ease-out',
+  threshold:  0.3,       // snap if user dragged >30% of card width
+  onSnap:     (index) => setActiveCard(index),
+});
+
+// Vertical section snapping (fullscreen sections)
+scrollSnap('.section', {
+  duration: 600,
+  easing:   'ease-in-out',
+  onSnap:   (i) => history.replaceState(null, '', \`#section-\${i}\`),
+});
+
+// Programmatic control
+snap.snapTo(2);             // jump to index 2 with animation
+snap.getCurrentIndex();     // → currently snapped index
+snap.destroy();`,
+  },
 ];
 
 const EXAMPLE_FRAMEWORKS: Record<string, string[]> = {
@@ -2134,6 +2319,8 @@ const EXAMPLE_FRAMEWORKS: Record<string, string[]> = {
   'scroll-animate-group':  ['api', 'vanilla'],
   'scroll-text':           ['react', 'vanilla'],
   'presets':               ['api'],
+  'scroll-pin':            ['vanilla', 'react'],
+  'scroll-snap':           ['vanilla', 'react'],
 };
 
 const FILTERS = [

@@ -168,6 +168,17 @@ export function scrollPin(
   window.addEventListener('resize', onResize);
   window.addEventListener('orientationchange', onResize);
 
+  // ResizeObserver — auto-refresh when the element or document layout changes
+  let ro: ResizeObserver | null = null;
+  if (typeof ResizeObserver !== 'undefined') {
+    ro = new ResizeObserver(() => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => { measure(); scheduleUpdate(); }, 100);
+    });
+    ro.observe(wrapper);
+    ro.observe(document.documentElement);
+  }
+
   measure();
   scheduleUpdate();
 
@@ -184,6 +195,7 @@ export function scrollPin(
       scrollTarget.removeEventListener('scroll', scheduleUpdate);
       window.removeEventListener('resize', onResize);
       window.removeEventListener('orientationchange', onResize);
+      ro?.disconnect();
 
       // Restore original styles
       htmlEl.style.position  = savedStyles.position;

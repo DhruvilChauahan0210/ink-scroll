@@ -1,7 +1,7 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **2.7.0** — local (not yet published)
-> Tests: **388 passing** across 16 test suites
+> Current version: **2.8.0** — local (not yet published)
+> Tests: **407 passing** across 18 test suites
 > Bundle: **~9 KB gzipped** (main) · zero runtime dependencies
 > Last updated: 2026-06-05
 
@@ -83,9 +83,22 @@
 - [x] `scrollSnap` (`svg-scroll-draw/snap`) — JS section snapping, custom easing, `snapTo()`, `onSnap`
 - [x] `createLenisAdapter` (`svg-scroll-draw/lenis`) — Lenis v1 smooth-scroll adapter
 
+### Demo Site (v2.7.0)
+- [x] `/vs-gsap` comparison page — bundle size bars, feature matrix, side-by-side API, license comparison
+- [x] scrollPin / scrollSnap / callbacks added to home page v2 API grid (9 cards now)
+- [x] Blog post: "Pin sections on scroll without GSAP" at `/blog/scroll-pin-without-gsap`
+- [x] Blog index updated with new post
+- [x] Home page bundle chart links to `/vs-gsap` instead of DrawSVG article
+- [x] `softwareVersion` JSON-LD updated to 2.7.0
+- [x] MobileMenu version badge updated to v2.7.0
+
 ## Remaining / Next
 
-- [ ] **Publish v2.7.0 to npm**
-- [ ] **`/vs-gsap` comparison page** — bundle, FPS, license, side-by-side API
-- [ ] **scrollPin + scrollSnap demos** on home/examples page
-- [ ] **Blog post** — "Pin sections on scroll without GSAP"
+- [x] **Published v2.7.0 to npm**
+
+### Demo Site (post-publish)
+- [x] Docs page v2.7.0 nav group — `scrollPin`, `scrollSnap`, Scroll Callbacks, Lenis Adapter with full option tables
+- [x] scrollAnimate docs table updated with 4 new callback options
+- [x] Docs version badge → v2.7.0
+- [x] Examples page — `scrollPin` (sticky feature panel) + `scrollSnap` (horizontal carousel) live demos
+- [x] Examples page EXAMPLE_FRAMEWORKS updated

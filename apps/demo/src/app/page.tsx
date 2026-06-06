@@ -34,7 +34,7 @@ const jsonLd = {
   downloadUrl: 'https://www.npmjs.com/package/svg-scroll-draw',
   codeRepository: 'https://github.com/DhruvilChauahan0210/ink-scroll',
   license: 'https://opensource.org/licenses/MIT',
-  softwareVersion: '2.5.0',
+  softwareVersion: '2.7.0',
   programmingLanguage: ['JavaScript', 'TypeScript'],
   author: {
     '@type': 'Person',
@@ -326,8 +326,8 @@ export default function Home() {
 
           <p className="mt-6 text-[13px] text-graphite-border">
             Sizes are minified + gzipped. GSAP DrawSVG requires a paid Club GreenSock license for commercial use.{' '}
-            <a href="/blog/gsap-drawsvg-alternative" className="underline underline-offset-2 hover:text-pitch-black transition-colors whitespace-nowrap">
-              Full comparison →
+            <a href="/vs-gsap" className="underline underline-offset-2 hover:text-pitch-black transition-colors whitespace-nowrap">
+              Full GSAP comparison →
             </a>
           </p>
         </div>
@@ -955,6 +955,34 @@ const seq = scrollDrawSequence(
                 sub: 'overlay · dev-only',
                 desc: 'Visual panel showing every active animation\'s trigger window, progress, and type. Zero production bytes.',
                 code: `import { devtools }\n  from 'svg-scroll-draw/devtools';\n\n// Cmd+Shift+S to toggle\ndevtools.enable();`,
+              },
+              {
+                version: 'v2.7.0',
+                name: 'scrollPin',
+                sub: 'pin · sticky · fixed',
+                desc: 'Pin any element at a viewport position while the page scrolls past it. Wrapper-based — no layout shift. Full lifecycle callbacks.',
+                code: `import { scrollPin }\n  from 'svg-scroll-draw/pin';\n\nscrollPin('#panel', {\n  pinDistance: 800,\n  onEnter:    () => activate(),\n  onLeave:    () => deactivate(),\n  onEnterBack: () => activate(),\n});`,
+              },
+              {
+                version: 'v2.7.0',
+                name: 'scrollSnap',
+                sub: 'snap · sections · js',
+                desc: 'JS-powered section snapping with custom easing, configurable threshold, and onSnap callback. Vertical and horizontal.',
+                code: `import { scrollSnap }\n  from 'svg-scroll-draw/snap';\n\nscrollSnap('.section', {\n  duration:  600,\n  easing:    'ease-in-out',\n  threshold: 0.3,\n  onSnap: (i) =>\n    console.log('section', i),\n});`,
+              },
+              {
+                version: 'v2.7.0',
+                name: 'onEnter / onLeave',
+                sub: 'callbacks · lifecycle',
+                desc: 'Fire code when scroll enters or exits any trigger zone — in either direction. Works on scrollAnimate and scrollDraw.',
+                code: `scrollAnimate('#section', {\n  props: { opacity: [0.3, 1] },\n  onEnter:     () => activate(),\n  onLeave:     () => deactivate(),\n  onEnterBack: () => activate(),\n  onLeaveBack: () => deactivate(),\n});`,
+              },
+              {
+                version: 'v2.8.0',
+                name: 'scrollReveal',
+                sub: 'reveal · presets · stagger',
+                desc: 'One-line replacement for AOS and ScrollReveal.js. 7 presets, stagger, custom easing. No data attributes — pure JS.',
+                code: `import { scrollReveal }\n  from 'svg-scroll-draw/reveal';\n\n// Fade up (default)\nscrollReveal('.card');\n\n// Custom from state\nscrollReveal('.feature', {\n  from: { opacity: 0, y: 40, scale: 0.95 },\n  stagger: 0.1,\n});`,
               },
             ].map(({ version, name, sub, desc, code }) => (
               <div key={name} className="bg-light-linen p-5 flex flex-col gap-3">

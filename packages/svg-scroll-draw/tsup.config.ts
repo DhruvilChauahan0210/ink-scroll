@@ -30,6 +30,7 @@ export default defineConfig([
   base({ 'pin/index':     'src/pin/index.ts'       }),
   base({ 'snap/index':    'src/snap/index.ts'      }),
   base({ 'lenis/index':   'src/lenis/index.ts'     }),
+  base({ 'reveal/index':  'src/reveal/index.ts'    }),
   {
     entry: { 'svg-scroll-draw': 'src/cdn.ts' },
     format: ['iife'],

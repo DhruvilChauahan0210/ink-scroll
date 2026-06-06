@@ -13,6 +13,12 @@ export interface ScrollAnimateOptions {
   axis?: 'x' | 'y';
   scrollContainer?: string | Element;
   native?: boolean;
+  /**
+   * Scale animation speed by scroll velocity — faster scrolling = faster animation.
+   * Pass `true` for default sensitivity (1) or a number to control it.
+   * Higher values = more dramatic speed-up. Default sensitivity: 1.
+   */
+  velocityScale?: boolean | number;
   onProgress?: (alpha: number) => void;
   onComplete?: () => void;
   /** Fires when scroll enters the trigger zone (scrolling forward). */
@@ -152,6 +158,7 @@ export function createAnimateEngine(
     axis     = 'y',
     scrollContainer,
     native   = true,
+    velocityScale = false,
     onProgress,
     onComplete,
     onEnter,
@@ -210,6 +217,7 @@ export function createAnimateEngine(
     if (once) return false;
     if (speed !== 1) return false;
     if (onProgress || onComplete || onEnter || onLeave || onEnterBack || onLeaveBack) return false;
+    if (velocityScale !== false) return false;
     if ((trigger.start ?? 'top bottom').trim() !== 'top bottom') return false;
     if ((trigger.end   ?? 'bottom top').trim() !== 'bottom top') return false;
     for (const entry of entries) {
@@ -280,6 +288,8 @@ export function createAnimateEngine(
   let currentAlpha     = 0;
   let completed        = false;
   let prevRawProgress  = NaN;
+  let prevVelScroll    = -1;
+  let prevVelTime      = 0;
 
   const scrollPos = (): number => {
     if (scrollEl) return axis === 'x' ? scrollEl.scrollLeft : scrollEl.scrollTop;
@@ -326,9 +336,22 @@ export function createAnimateEngine(
 
   function update(): void {
     if (!isVisible || paused) return;
-    const raw = tEnd === tStart ? 0 : (scrollPos() - tStart) / (tEnd - tStart);
+    const now           = performance.now();
+    const currentScroll = scrollPos();
+
+    let effectiveSpeed = speed;
+    if (velocityScale !== false) {
+      const dt  = now - prevVelTime;
+      const vel = dt > 0 ? Math.abs(currentScroll - (prevVelScroll < 0 ? currentScroll : prevVelScroll)) / dt : 0;
+      const sensitivity = typeof velocityScale === 'number' ? velocityScale : 1;
+      effectiveSpeed = speed * Math.max(0.2, 1 + vel * sensitivity * 0.04);
+    }
+    prevVelScroll = currentScroll;
+    prevVelTime   = now;
+
+    const raw = tEnd === tStart ? 0 : (currentScroll - tStart) / (tEnd - tStart);
     fireScrollCallbacks(raw);
-    let alpha = easeFn(computeProgress(scrollPos(), tStart, tEnd, speed));
+    let alpha = easeFn(computeProgress(currentScroll, tStart, tEnd, effectiveSpeed));
     if (once) {
       frozenAlpha = Math.max(frozenAlpha, alpha);
       alpha = frozenAlpha;

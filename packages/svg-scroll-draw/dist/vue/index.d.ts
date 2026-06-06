@@ -125,6 +125,12 @@ interface ScrollAnimateOptions {
     axis?: 'x' | 'y';
     scrollContainer?: string | Element;
     native?: boolean;
+    /**
+     * Scale animation speed by scroll velocity — faster scrolling = faster animation.
+     * Pass `true` for default sensitivity (1) or a number to control it.
+     * Higher values = more dramatic speed-up. Default sensitivity: 1.
+     */
+    velocityScale?: boolean | number;
     onProgress?: (alpha: number) => void;
     onComplete?: () => void;
     /** Fires when scroll enters the trigger zone (scrolling forward). */

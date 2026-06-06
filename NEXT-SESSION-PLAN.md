@@ -14,27 +14,53 @@ Full scroll animation platform. Phase 1 GSAP-parity features shipped.
 
 ## What shipped this session (v2.6.0 → v2.7.0)
 
+### Library
 - [x] **Scroll callbacks** — `onEnter`, `onLeave`, `onEnterBack`, `onLeaveBack` on `scrollAnimate` + `scrollDraw`
 - [x] **`scrollPin`** (`svg-scroll-draw/pin`) — wrapper-based element pin with full lifecycle callbacks
 - [x] **`scrollSnap`** (`svg-scroll-draw/snap`) — JS section snapping with `snapTo()` + `onSnap`
 - [x] **`createLenisAdapter`** (`svg-scroll-draw/lenis`) — Lenis v1 `window.scrollY` patcher
-- [x] 30 new tests (callbacks × 6, pin × 11, snap × 7, lenis × 6) → 388 total
+- [x] 30 new tests → 388 total, build clean
+
+### Demo site
+- [x] **`/vs-gsap` page** — bundle bars, feature matrix (20 rows), side-by-side API code, license comparison, CTA
+- [x] **Home page v2 grid** — 3 new cards: `scrollPin`, `scrollSnap`, `onEnter/onLeave`
+- [x] **Blog post** — "Pin sections on scroll without GSAP" at `/blog/scroll-pin-without-gsap`
+- [x] Blog index updated, bundle chart links to `/vs-gsap`, JSON-LD v2.7.0, MobileMenu v2.7.0
 
 ---
 
+## What also shipped this session
+
+- [x] Docs page v2.7.0 section — scrollPin, scrollSnap, Scroll Callbacks, Lenis Adapter (full option tables)
+- [x] scrollAnimate docs table updated with onEnter/onLeave/onEnterBack/onLeaveBack
+- [x] Docs version badge → v2.7.0
+- [x] Examples page — scrollPin "Sticky Feature Panel" + scrollSnap "Horizontal Snap Carousel" live demos
+- [x] v2.7.0 published to npm
+
+## What also shipped (v2.8.0)
+
+- [x] `scrollReveal` (`svg-scroll-draw/reveal`) — 7 presets, stagger, custom from state, onEnter/onLeave
+- [x] `velocityScale` on `scrollAnimate` — speed scales with scroll velocity
+- [x] `ResizeObserver` auto-refresh on `scrollPin`
+- [x] 407 tests passing, build clean
+- [x] Blog post: "Replace AOS / ScrollReveal.js" at `/blog/replace-aos-scrollreveal`
+- [x] Home page grid: 10 API cards (added scrollReveal v2.8.0)
+- [x] Docs: v2.8.0 nav group (scrollReveal + velocityScale), badge → v2.8.0
+
 ## Remaining tasks
 
-### TASK 1 — Publish v2.7.0 to npm
-Run `npm login` then `cd packages/svg-scroll-draw && npm publish`.
+### TASK 1 — Publish v2.8.0 to npm
 
-### TASK 2 — `/vs-gsap` comparison page on the demo site
-Single biggest SEO lever. Bundle size, FPS benchmark, license cost, side-by-side API code.
+### TASK 2 — Phase 3 ideas
+- Horizontal scroll sections (`scrollPin` with `axis: 'x'`)
+- Velocity/momentum detection on `scrollAnimate`
+- `ResizeObserver` auto-refresh on `scrollPin`
+- More blog posts targeting "GSAP alternative" searches
 
-### TASK 3 — scrollPin + scrollSnap demos on home/examples page
-Show the new APIs in action. Most visually impressive new features.
-
-### TASK 4 — Blog post: "Pin sections on scroll without GSAP: scrollPin"
-Target "GSAP pin alternative" search intent.
+### TASK 2 — Distribution & growth
+- Post to Reddit r/webdev, Product Hunt, dev.to
+- Submit to "awesome scroll animation" GitHub lists
+- Cross-post the `/vs-gsap` page in GSAP-related communities
 
 ---
 

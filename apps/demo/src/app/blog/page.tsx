@@ -21,6 +21,26 @@ export const metadata: Metadata = {
 
 const POSTS = [
   {
+    slug: 'replace-aos-scrollreveal',
+    title: 'Replace AOS / ScrollReveal.js with one function call',
+    description:
+      'scrollReveal from svg-scroll-draw: 7 presets, stagger, custom easing, no data attributes, no config files. Drop-in replacement for AOS and ScrollReveal.js — fully typed, part of a larger platform.',
+    tag: 'Migration',
+    tagColor: '#ef4444',
+    readTime: '6 min read',
+    date: 'June 2026',
+  },
+  {
+    slug: 'scroll-pin-without-gsap',
+    title: 'Pin sections on scroll without GSAP — scrollPin',
+    description:
+      'How to pin any element at a viewport position while the page scrolls past it. Wrapper-based layout, zero layout shift, full lifecycle callbacks (onEnter/onLeave/onEnterBack/onLeaveBack). No GSAP. ~9 KB total.',
+    tag: 'How-To',
+    tagColor: '#f59e0b',
+    readTime: '7 min read',
+    date: 'June 2026',
+  },
+  {
     slug: 'scroll-animation-groups',
     title: 'Animate multiple elements on scroll — one call',
     description:
