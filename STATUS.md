@@ -1,6 +1,6 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **2.9.0** — local (v2.8.0 last published)
+> Current version: **2.9.0** — published to npm
 > Tests: **423 passing** across 20 test suites
 > Bundle: **~9 KB gzipped** (main) · zero runtime dependencies
 > Last updated: 2026-06-05

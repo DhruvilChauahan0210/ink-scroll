@@ -6,9 +6,9 @@
 
 ## Current state
 
-**Library: v2.7.0 — local build. 388 tests passing.**
+**Library: v2.9.0 — published to npm. 423 tests passing.**
 
-Full scroll animation platform. Phase 1 GSAP-parity features shipped.
+Full scroll animation platform. v2.7.0 → v2.9.0 all published.
 
 ---
 
@@ -62,9 +62,21 @@ Full scroll animation platform. Phase 1 GSAP-parity features shipped.
 - [x] Home page: 12 API cards (added scrollProgress + scrollHorizontal v2.9.0)
 - [x] Docs: v2.9.0 nav group + DocSections, badge → v2.9.0, MobileMenu → v2.9.0
 
+## Track B distribution content shipped
+
+- [x] **v2.9.0 published**
+- [x] `/react-scroll-animation` — React landing page targeting "react scroll animation library"
+- [x] `/nextjs-scroll-animation` — Next.js landing page targeting "next.js scroll animation"
+- [x] `/vs-aos` — comparison vs AOS + ScrollReveal.js
+- [x] `/vs-framer-motion` — comparison vs Framer Motion
+- [x] Blog: "Complete guide to scroll animations in 2025" (cornerstone, 12 patterns)
+- [x] Blog: "Scroll animation performance — native CSS vs JS"
+- [x] Home page: Compare + Framework guides section (6 links)
+- [x] Blog index: 14 posts total
+
 ## Remaining tasks
 
-### TASK 1 — Publish v2.9.0 to npm (bro you know the drill)
+### What's left
 - Horizontal scroll sections (`scrollPin` with `axis: 'x'`)
 - Velocity/momentum detection on `scrollAnimate`
 - `ResizeObserver` auto-refresh on `scrollPin`
@@ -78,10 +90,7 @@ Full scroll animation platform. Phase 1 GSAP-parity features shipped.
 ---
 
 ## Guardrails
-- **Don't publish without bumping version** — v2.7.0 is ready to publish
+- **Don't publish without bumping version** — next publish = v2.10.0
 - **Don't post to external platforms** — user posts manually
 - **Always update STATUS.md + ROADMAP.md + CHANGELOG.md + NEXT-SESSION-PLAN.md after any code change**
-- Accuracy: ~9 KB gzipped, 388 tests, zero dependencies, MIT, v2.7.0
-- **Don't post to external platforms** — user posts manually
-- **Always update STATUS.md + ROADMAP.md + CHANGELOG.md + NEXT-SESSION-PLAN.md after any code change**
-- Accuracy: ~9 KB gzipped, 358 tests, zero dependencies, MIT, v2.6.0
+- Accuracy: ~9 KB gzipped, 423 tests, zero dependencies, MIT, v2.9.0

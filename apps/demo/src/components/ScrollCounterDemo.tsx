@@ -7,7 +7,7 @@ import { ScrollAnimate } from 'svg-scroll-draw/react';
 const STATS = [
   { id: 'stat-users',     from: 0,   to: 50000,  label: 'developers',    format: (n: number) => Math.round(n).toLocaleString() + '+' },
   { id: 'stat-size',      from: 40,  to: 9,      label: 'KB gzipped',    format: (n: number) => '~' + Math.round(n) },
-  { id: 'stat-tests',     from: 0,   to: 358,    label: 'tests passing', format: (n: number) => Math.round(n).toString() },
+  { id: 'stat-tests',     from: 0,   to: 423,    label: 'tests passing', format: (n: number) => Math.round(n).toString() },
   { id: 'stat-deps',      from: 10,  to: 0,      label: 'dependencies',  format: (n: number) => Math.round(n).toString() },
 ];
 

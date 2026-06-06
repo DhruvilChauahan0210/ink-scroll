@@ -38,7 +38,7 @@ const COUNTER_PRESETS: Record<CounterPreset, { to: number; format: (n: number) =
   users:        { to: 50000,   format: n => Math.round(n).toLocaleString() + '+',           label: 'Users',        code: "format: n => Math.round(n).toLocaleString() + '+'" },
   revenue:      { to: 1250000, format: n => '$' + Math.round(n).toLocaleString(),            label: 'Revenue',      code: "format: n => '$' + Math.round(n).toLocaleString()" },
   satisfaction: { to: 94.7,    format: n => n.toFixed(1) + '%',                              label: 'Satisfaction', code: "format: n => n.toFixed(1) + '%'" },
-  tests:        { to: 358,     format: n => Math.round(n).toString(),                        label: 'Tests',        code: "format: n => Math.round(n).toString()" },
+  tests:        { to: 423,     format: n => Math.round(n).toString(),                        label: 'Tests',        code: "format: n => Math.round(n).toString()" },
 };
 
 // ── Code generators ───────────────────────────────────────────────────────────

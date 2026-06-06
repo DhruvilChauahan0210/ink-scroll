@@ -34,7 +34,7 @@ const jsonLd = {
   downloadUrl: 'https://www.npmjs.com/package/svg-scroll-draw',
   codeRepository: 'https://github.com/DhruvilChauahan0210/ink-scroll',
   license: 'https://opensource.org/licenses/MIT',
-  softwareVersion: '2.7.0',
+  softwareVersion: '2.9.0',
   programmingLanguage: ['JavaScript', 'TypeScript'],
   author: {
     '@type': 'Person',
@@ -85,7 +85,7 @@ const MARQUEE_ITEMS = [
   'IntersectionObserver',
   '~9 KB Gzipped',
   'Zero Dependencies',
-  '358 Tests Passing',
+  '423 Tests Passing',
   'scrollAnimate',
   'scrollCounter',
   'scrollText',
@@ -143,7 +143,7 @@ export default function Home() {
           <a href="/blog" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Blog</a>
           <a href="/changelog" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Changelog</a>
           <a href="/playground" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">⚡ Playground</a>
-          <a href={NPM} target="_blank" rel="noopener noreferrer" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono whitespace-nowrap">v2.6.0</a>
+          <a href={NPM} target="_blank" rel="noopener noreferrer" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono whitespace-nowrap">v2.9.0</a>
           <a href={GH} target="_blank" rel="noopener noreferrer" className="text-sm px-4 py-1.5 rounded-full bg-pitch-black text-light-linen hover:bg-graphite-border transition-colors font-medium whitespace-nowrap">GitHub →</a>
         </div>
 
@@ -206,7 +206,7 @@ export default function Home() {
             ['~9 KB', 'gzipped'],
             ['0', 'dependencies'],
             ['SSR', 'safe'],
-            ['358', 'tests ✓'],
+            ['423', 'tests ✓'],
           ].map(([val, label]) => (
             <div key={val} className="flex items-center gap-1.5 border border-pitch-black bg-light-linen rounded-full px-3 sm:px-4 py-1.5 shadow-[1px_1px_0px_#000]">
               <span className="font-display font-bold text-xs sm:text-sm">{val}</span>
@@ -1019,6 +1019,53 @@ const seq = scrollDrawSequence(
       {/* ── scrollText interactive ────────────────────────────────────── */}
       <ScrollTextInteractive />
 
+      {/* ── Compare + Framework landing pages ───────────────────────── */}
+      <section className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-12 sm:py-16">
+        <div className="max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Comparison links */}
+            <div>
+              <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-4 font-medium">Compare</p>
+              <div className="space-y-2">
+                {[
+                  { href: '/vs-gsap',          label: 'svg-scroll-draw vs GSAP',          sub: 'bundle, license, feature matrix' },
+                  { href: '/vs-aos',            label: 'vs AOS + ScrollReveal.js',          sub: 'no data attributes, typed API' },
+                  { href: '/vs-framer-motion',  label: 'vs Framer Motion',                 sub: '4× smaller, framework-agnostic' },
+                ].map(({ href, label, sub }) => (
+                  <a key={href} href={href} className="flex items-center justify-between p-4 rounded-xl border border-subtle-ash hover:border-pitch-black hover:shadow-[2px_2px_0_#000] transition-all bg-white group">
+                    <div>
+                      <p className="font-semibold text-sm group-hover:underline underline-offset-2">{label}</p>
+                      <p className="text-[11px] font-mono text-graphite-border mt-0.5">{sub}</p>
+                    </div>
+                    <span className="text-graphite-border group-hover:text-pitch-black transition-colors">→</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            {/* Framework guides */}
+            <div>
+              <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-4 font-medium">Framework guides</p>
+              <div className="space-y-2">
+                {[
+                  { href: '/react-scroll-animation',  label: 'React scroll animations',   sub: 'components, hooks, patterns' },
+                  { href: '/nextjs-scroll-animation',  label: 'Next.js scroll animations', sub: 'App Router, SSR-safe, dynamic import' },
+                  { href: '/blog/complete-guide-scroll-animations-2025', label: 'Complete guide 2025', sub: '12 patterns, all code included' },
+                ].map(({ href, label, sub }) => (
+                  <a key={href} href={href} className="flex items-center justify-between p-4 rounded-xl border border-subtle-ash hover:border-pitch-black hover:shadow-[2px_2px_0_#000] transition-all bg-white group">
+                    <div>
+                      <p className="font-semibold text-sm group-hover:underline underline-offset-2">{label}</p>
+                      <p className="text-[11px] font-mono text-graphite-border mt-0.5">{sub}</p>
+                    </div>
+                    <span className="text-graphite-border group-hover:text-pitch-black transition-colors">→</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── CTA ───────────────────────────────────────────────────────── */}
       <section data-mascot="big-dance" className="relative bg-sunshine-yellow border-b border-pitch-black px-4 sm:px-6 md:px-12 py-16 sm:py-20 md:py-24 text-center overflow-hidden">
         <CtaBoldMark />
@@ -1087,7 +1134,7 @@ const seq = scrollDrawSequence(
               </svg>
               npm
             </a>
-            <span className="text-[11px] font-mono text-graphite-border">v2.6.0</span>
+            <span className="text-[11px] font-mono text-graphite-border">v2.9.0</span>
           </div>
         </div>
 

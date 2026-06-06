@@ -91,7 +91,7 @@ function CounterCard({ stat }: { stat: StatDef }) {
 const COUNTER_STATS: StatDef[] = [
   { to: 50000, label: 'users',      fmt: (n) => Math.round(n).toLocaleString() + '+' },
   { to: 9,     label: 'KB gzipped', fmt: (n) => '~' + Math.round(n) },
-  { to: 358,   label: 'tests',      fmt: (n) => Math.round(n).toString() },
+  { to: 423,   label: 'tests',       fmt: (n) => Math.round(n).toString() },
   { to: 0,     label: 'zero deps',  fmt: (n) => Math.round(n).toString() },
 ];
 

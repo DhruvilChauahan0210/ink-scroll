@@ -21,6 +21,26 @@ export const metadata: Metadata = {
 
 const POSTS = [
   {
+    slug: 'complete-guide-scroll-animations-2025',
+    title: 'The complete guide to scroll animations in 2025',
+    description:
+      'Every scroll animation pattern — fade reveal, parallax, sticky pin, section snap, text split, video scrub, horizontal sections, CSS variables — with copy-paste code. 12 patterns, one library.',
+    tag: 'Guide',
+    tagColor: '#111',
+    readTime: '15 min read',
+    date: 'June 2026',
+  },
+  {
+    slug: 'scroll-animation-performance',
+    title: 'Scroll animation performance — native CSS vs JavaScript',
+    description:
+      'How svg-scroll-draw uses animation-timeline: view() for zero-JS scroll animations on the compositor. When native CSS wins, when JS wins, and how the eligibility check works.',
+    tag: 'Performance',
+    tagColor: '#22c55e',
+    readTime: '8 min read',
+    date: 'June 2026',
+  },
+  {
     slug: 'horizontal-scroll-sections',
     title: 'Horizontal scroll sections without GSAP — scrollHorizontal',
     description:

@@ -1,6 +1,6 @@
 # svg-scroll-draw — Roadmap
 
-> Last updated: 2026-06-06 — v2.7.0
+> Last updated: 2026-06-06 — v2.9.0
 >
 > Items marked ✓ are shipped. Remaining items are ordered by value/effort ratio.
 

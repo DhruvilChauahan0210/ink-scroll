@@ -904,7 +904,7 @@ function SocialProofStats() {
   const STATS = [
     { to: 50000, label: 'developers',  fmt: (n: number) => Math.round(n).toLocaleString() + '+' },
     { to: 9,     label: 'KB gzipped',  fmt: (n: number) => '~' + Math.round(n) },
-    { to: 358,   label: 'tests green', fmt: (n: number) => Math.round(n).toString() },
+    { to: 423,   label: 'tests green', fmt: (n: number) => Math.round(n).toString() },
     { to: 0,     label: 'dependencies', fmt: (n: number) => Math.round(n).toString() },
   ];
 
