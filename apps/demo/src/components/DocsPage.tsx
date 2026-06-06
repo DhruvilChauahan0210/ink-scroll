@@ -57,6 +57,13 @@ const NAV_GROUPS = [
     items: [{ id: 'use-scroll-draw-progress', label: 'useScrollDrawProgress' }],
   },
   {
+    label: 'v2.9.0',
+    items: [
+      { id: 'scroll-progress',    label: 'scrollProgress' },
+      { id: 'scroll-horizontal',  label: 'scrollHorizontal' },
+    ],
+  },
+  {
     label: 'v2.8.0',
     items: [
       { id: 'scroll-reveal',   label: 'scrollReveal' },
@@ -240,7 +247,7 @@ export function DocsPage() {
           <Link href="/examples" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Examples</Link>
           <Link href="/blog" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Blog</Link>
           <Link href="/playground" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">⚡ Playground</Link>
-          <a href={NPM} target="_blank" rel="noopener noreferrer" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono whitespace-nowrap">v2.8.0</a>
+          <a href={NPM} target="_blank" rel="noopener noreferrer" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono whitespace-nowrap">v2.9.0</a>
           <a href={GH} target="_blank" rel="noopener noreferrer" className="text-sm px-4 py-1.5 rounded-full bg-pitch-black text-light-linen hover:bg-graphite-border transition-colors font-medium whitespace-nowrap">GitHub →</a>
         </div>
 
@@ -1698,6 +1705,106 @@ function Hero() {
             </CodeBlock>
 
             <Note>The same <code className="font-mono text-[0.85em]">create*</code> pattern is available for all v2 hooks: <code className="font-mono text-[0.85em]">createScrollCounter</code>, <code className="font-mono text-[0.85em]">createScrollVideo</code>, <code className="font-mono text-[0.85em]">createScrollText</code>.</Note>
+          </DocSection>
+
+          {/* ── v2.9.0 — scrollProgress ─────────────────────── */}
+          <DocSection id="scroll-progress" tag="v2.9.0" heading="scrollProgress">
+            <p className="text-sm text-graphite-border leading-relaxed mb-2">
+              Expose scroll progress as CSS custom properties on a target element.
+              Drive opacity, transforms, colors, gradients — anything CSS can express — directly from{' '}
+              <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">calc()</code> expressions with zero per-frame JS beyond the variable write.
+              Two properties are set: raw (linear) and eased.
+            </p>
+            <CodeBlock file="index.js">
+{`import { scrollProgress } from 'svg-scroll-draw/progress';
+
+// Set --scroll-progress (raw) and --scroll-progress-eased on the element
+scrollProgress('#hero', { easing: 'ease-in-out' });
+
+// Custom variable names
+scrollProgress('#section', {
+  variable:      '--my-progress',
+  easedVariable: '--my-progress-eased',
+  trigger: { start: 'top 80%', end: 'bottom 20%' },
+});
+
+// Use in CSS
+// #hero {
+//   opacity: calc(var(--scroll-progress-eased));
+//   transform: translateY(
+//     calc((1 - var(--scroll-progress-eased)) * 40px)
+//   );
+// }`}
+            </CodeBlock>
+            <div className="overflow-x-auto mt-4">
+              <table className="w-full text-[13px] border border-subtle-ash rounded-xl overflow-hidden">
+                <thead>
+                  <tr className="bg-pitch-black text-light-linen text-[11px] uppercase tracking-wide">
+                    <th className="text-left px-4 py-2 font-medium">Option</th>
+                    <th className="text-left px-4 py-2 font-medium">Type</th>
+                    <th className="text-left px-4 py-2 font-medium">Default</th>
+                    <th className="text-left px-4 py-2 font-medium">Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    ['variable',       'string',            '"--scroll-progress"',       'Raw (linear) 0–1 progress property.'],
+                    ['easedVariable',  'string | null',     '"--scroll-progress-eased"', 'Eased 0–1 progress property. Set to null to skip.'],
+                    ['trigger',        'TriggerConfig',     'top bottom / bottom top',   'Scroll window for 0→1 mapping.'],
+                    ['easing',         'EasingName | fn',   '"linear"',                  'Easing applied to the eased variable.'],
+                    ['speed',          'number',            '1',                         'Animation speed scale.'],
+                    ['axis',           '"x" | "y"',         '"y"',                       'Scroll axis.'],
+                    ['scrollContainer','string | Element',  '—',                         'Custom scroll container.'],
+                    ['onProgress',     '(raw, eased) => void','—',                       'Callback fired every frame with both values.'],
+                  ].map(([opt, type, def, desc]) => (
+                    <tr key={opt} className="border-t border-subtle-ash">
+                      <td className="px-4 py-2 font-mono font-semibold text-[12px]">{opt}</td>
+                      <td className="px-4 py-2 font-mono text-graphite-border text-[11px]">{type}</td>
+                      <td className="px-4 py-2 font-mono text-graphite-border text-[11px]">{def}</td>
+                      <td className="px-4 py-2 text-graphite-border">{desc}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </DocSection>
+
+          {/* ── v2.9.0 — scrollHorizontal ───────────────────── */}
+          <DocSection id="scroll-horizontal" tag="v2.9.0" heading="scrollHorizontal">
+            <p className="text-sm text-graphite-border leading-relaxed mb-2">
+              Drive horizontal <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">translateX</code> from vertical scroll —
+              the Apple / Stripe &ldquo;scroll sideways&rdquo; pattern. You handle the sticky CSS;
+              <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">scrollHorizontal</code> drives the transform.
+            </p>
+            <CodeBlock file="index.js">
+{`import { scrollHorizontal } from 'svg-scroll-draw/horizontal';
+
+// Minimal CSS:
+// .outer  { height: 400vh; }
+// .sticky { position: sticky; top: 0; height: 100vh; overflow: hidden; }
+// .track  { display: flex; width: max-content; }
+
+const inst = scrollHorizontal('.track', {
+  distance: window.innerWidth * 3,  // total horizontal travel
+  easing:   'linear',               // scrub feel
+  trigger: {
+    start: 'top top',
+    end:   'bottom bottom',
+  },
+  onProgress: (p) => dots.setActive(Math.round(p * 3)),
+});
+
+// React
+useEffect(() => {
+  const inst = scrollHorizontal(trackRef.current, {
+    distance: trackRef.current.scrollWidth - window.innerWidth,
+  });
+  return () => inst.destroy();
+}, []);
+
+inst.refresh();  // recalculate after layout change
+inst.destroy();  // cleanup`}
+            </CodeBlock>
           </DocSection>
 
           {/* ── v2.8.0 — scrollReveal ───────────────────────── */}

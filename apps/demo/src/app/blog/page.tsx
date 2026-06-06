@@ -21,6 +21,16 @@ export const metadata: Metadata = {
 
 const POSTS = [
   {
+    slug: 'horizontal-scroll-sections',
+    title: 'Horizontal scroll sections without GSAP — scrollHorizontal',
+    description:
+      'The Apple / Stripe product page pattern: vertical scroll drives horizontal movement. Build it with scrollHorizontal from svg-scroll-draw — one call, CSS setup, zero GSAP. Includes React example and sticky layout guide.',
+    tag: 'How-To',
+    tagColor: '#60a5fa',
+    readTime: '6 min read',
+    date: 'June 2026',
+  },
+  {
     slug: 'replace-aos-scrollreveal',
     title: 'Replace AOS / ScrollReveal.js with one function call',
     description:

@@ -14,6 +14,7 @@ import { scrollText } from 'svg-scroll-draw/text';
 import { scrollAnimateGroup } from 'svg-scroll-draw/group';
 import { scrollPin } from 'svg-scroll-draw/pin';
 import { scrollSnap } from 'svg-scroll-draw/snap';
+import { scrollReveal } from 'svg-scroll-draw/reveal';
 
 function CodeBlock({ filename, children }: { filename: string; children: string }) {
   return (
@@ -1470,26 +1471,84 @@ function AnimateGroupDemo() {
 
 /* ── Example cards data ───────────────────────────────────── */
 
+// scrollReveal — cascading card reveal
+function ScrollRevealDemo() {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const cards = Array.from(containerRef.current.querySelectorAll<HTMLElement>('.reveal-card'));
+    const inst = scrollReveal(cards, {
+      preset:  'fadeUp',
+      stagger: 0.12,
+      once:    true,
+    });
+    return () => inst.destroy();
+  }, []);
+
+  const ITEMS = [
+    { icon: '🎯', label: 'scrollReveal', color: '#ff90e8' },
+    { icon: '⚡', label: 'fadeUp preset', color: '#60a5fa' },
+    { icon: '🌊', label: 'stagger: 0.12', color: '#4ade80' },
+    { icon: '🔒', label: 'once: true', color: '#fbbf24' },
+    { icon: '🎨', label: '7 presets', color: '#c084fc' },
+    { icon: '📦', label: '~9 KB total', color: '#fb923c' },
+  ];
+
+  return (
+    <div ref={containerRef} style={{ width: '100%', background: '#0d0d0d', padding: '28px 20px' }}>
+      <div style={{ fontFamily: 'monospace', fontSize: 10, color: '#444', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 20 }}>
+        scrollReveal('.reveal-card', {'{'} preset: 'fadeUp', stagger: 0.12 {'}'})
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+        {ITEMS.map((item, i) => (
+          <div key={i} className="reveal-card" style={{
+            background: '#1a1a1a', borderRadius: 10, padding: '16px 12px',
+            display: 'flex', flexDirection: 'column', gap: 8,
+            border: '1px solid #2a2a2a',
+          }}>
+            <div style={{ fontSize: 20 }}>{item.icon}</div>
+            <div style={{ fontFamily: 'system-ui', fontWeight: 700, fontSize: 11, color: item.color, lineHeight: 1.2 }}>{item.label}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // scrollPin — sticky feature panel demo
 function StickyFeaturePanel() {
   const wrapRef  = useRef<HTMLDivElement>(null);
-  const panelRef = useRef<HTMLDivElement>(null);
   const badgeRef = useRef<HTMLSpanElement>(null);
 
+  // Use CSS position:sticky for the panel (scrollPin uses position:fixed which
+  // escapes the card to the viewport — not usable inside a fixed-height preview).
+  // Drive the badge via a scroll listener to show the lifecycle concept.
   useEffect(() => {
-    if (!wrapRef.current || !panelRef.current || !badgeRef.current) return;
-    const badge = badgeRef.current;
+    if (!wrapRef.current || !badgeRef.current) return;
+    const wrap  = wrapRef.current!;
+    const badge = badgeRef.current!;
 
-    const inst = scrollPin(panelRef.current, {
-      top:             0,
-      pinDistance:     400,
-      scrollContainer: wrapRef.current,
-      onEnter:     () => { badge.textContent = 'PINNED'; badge.style.background = '#4ade80'; badge.style.color = '#000'; },
-      onLeave:     () => { badge.textContent = 'RELEASED'; badge.style.background = '#f59e0b'; badge.style.color = '#000'; },
-      onEnterBack: () => { badge.textContent = 'PINNED'; badge.style.background = '#4ade80'; badge.style.color = '#000'; },
-      onLeaveBack: () => { badge.textContent = 'BEFORE'; badge.style.background = '#e5e7eb'; badge.style.color = '#444'; },
-    });
-    return () => inst.destroy();
+    function onScroll() {
+      const scrollTop = wrap.scrollTop;
+      const maxScroll = wrap.scrollHeight - wrap.clientHeight;
+      if (scrollTop < 30) {
+        badge.textContent = 'BEFORE';
+        badge.style.background = '#e5e7eb';
+        badge.style.color = '#444';
+      } else if (scrollTop > maxScroll - 30) {
+        badge.textContent = 'RELEASED';
+        badge.style.background = '#f59e0b';
+        badge.style.color = '#000';
+      } else {
+        badge.textContent = 'PINNED';
+        badge.style.background = '#4ade80';
+        badge.style.color = '#000';
+      }
+    }
+
+    wrap.addEventListener('scroll', onScroll, { passive: true });
+    return () => wrap.removeEventListener('scroll', onScroll);
   }, []);
 
   const FEATURES = [
@@ -1499,22 +1558,37 @@ function StickyFeaturePanel() {
   ];
 
   return (
-    <div ref={wrapRef} style={{ width: '100%', height: 320, overflowY: 'auto', background: '#0d0d0d', position: 'relative' }}>
-      <div style={{ display: 'flex', gap: 0, minHeight: 720 }}>
-        {/* Pinned panel */}
-        <div ref={panelRef} style={{ width: 140, flexShrink: 0, background: '#1a1a1a', borderRight: '1px solid #2a2a2a', padding: '20px 14px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+    <div ref={wrapRef} style={{ width: '100%', height: 320, overflowY: 'auto', background: '#0d0d0d' }}>
+      <div style={{ display: 'flex', minHeight: 660 }}>
+        {/* CSS sticky panel — same visual result as scrollPin within a scroll container */}
+        <div style={{
+          width: 140, flexShrink: 0, background: '#1a1a1a', borderRight: '1px solid #2a2a2a',
+          padding: '20px 14px', display: 'flex', flexDirection: 'column', gap: 12,
+          position: 'sticky', top: 0, alignSelf: 'flex-start', height: 320,
+        }}>
           <div style={{ width: 48, height: 48, borderRadius: 10, background: '#ff90e8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>📌</div>
           <div style={{ fontFamily: 'system-ui', fontWeight: 700, fontSize: 13, color: '#f5f5f5', lineHeight: 1.3 }}>Product Image</div>
           <div style={{ fontFamily: 'monospace', fontSize: 9, color: '#555', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Stays fixed →</div>
-          <span ref={badgeRef} style={{ display: 'inline-block', fontFamily: 'monospace', fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', background: '#e5e7eb', color: '#444', borderRadius: 20, padding: '3px 8px', width: 'fit-content', transition: 'background 0.2s, color 0.2s' }}>
+          <span ref={badgeRef} style={{
+            display: 'inline-block', fontFamily: 'monospace', fontSize: 9, fontWeight: 700,
+            letterSpacing: '0.12em', textTransform: 'uppercase', background: '#e5e7eb',
+            color: '#444', borderRadius: 20, padding: '3px 8px', width: 'fit-content',
+            transition: 'background 0.2s, color 0.2s',
+          }}>
             BEFORE
           </span>
+          <div style={{ fontFamily: 'monospace', fontSize: 8, color: '#333', marginTop: 4, lineHeight: 1.5 }}>
+            ↑ Scroll the preview to see pin state
+          </div>
         </div>
 
-        {/* Scrollable features */}
+        {/* Scrolling features */}
         <div style={{ flex: 1, padding: '0 20px' }}>
           {FEATURES.map((f, i) => (
-            <div key={i} style={{ height: 200, display: 'flex', flexDirection: 'column', justifyContent: 'center', borderBottom: i < 2 ? '1px solid #1e1e1e' : 'none', paddingBottom: 16 }}>
+            <div key={i} style={{
+              height: 220, display: 'flex', flexDirection: 'column', justifyContent: 'center',
+              borderBottom: i < 2 ? '1px solid #1e1e1e' : 'none',
+            }}>
               <div style={{ fontFamily: 'system-ui', fontWeight: 700, fontSize: 14, color: '#f5f5f5', marginBottom: 6 }}>{f.title}</div>
               <div style={{ fontFamily: 'system-ui', fontSize: 12, color: '#666', lineHeight: 1.5 }}>{f.body}</div>
             </div>
@@ -1526,6 +1600,8 @@ function StickyFeaturePanel() {
 }
 
 // scrollSnap — horizontal card carousel demo
+// Preview uses native CSS scroll-snap (smooth, no JS fighting CSS).
+// The scrollSnap JS API is shown in the code example below.
 function HorizontalSnapCarousel() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [activeIdx, setActiveIdx] = useState(0);
@@ -1537,35 +1613,35 @@ function HorizontalSnapCarousel() {
     { label: '04', title: 'Lenis', color: '#fbbf24', icon: '🌊' },
   ];
 
+  // Drive dot indicators from native CSS scroll position — no JS snap fighting CSS snap
   useEffect(() => {
     if (!containerRef.current) return;
-    const sections = Array.from(containerRef.current.querySelectorAll<HTMLElement>('.snap-card'));
-    const inst = scrollSnap(sections, {
-      direction:       'horizontal',
-      duration:        400,
-      easing:          'ease-out',
-      scrollContainer: containerRef.current,
-      onSnap:          (i) => setActiveIdx(i),
-    });
-    return () => inst.destroy();
+    const el = containerRef.current!;
+    function onScroll() {
+      const cardWidth = el.clientWidth;
+      if (cardWidth > 0) setActiveIdx(Math.round(el.scrollLeft / cardWidth));
+    }
+    el.addEventListener('scroll', onScroll, { passive: true });
+    return () => el.removeEventListener('scroll', onScroll);
   }, []);
 
   return (
     <div style={{ width: '100%', background: '#0d0d0d', padding: '20px 0 16px' }}>
-      {/* Scroll container */}
+      {/* Native CSS scroll snap — butter-smooth, no JS conflict */}
       <div
         ref={containerRef}
         style={{
-          display: 'flex', overflowX: 'auto', scrollSnapType: 'x mandatory',
+          display: 'flex', overflowX: 'auto',
+          scrollSnapType: 'x mandatory', scrollBehavior: 'smooth',
+          WebkitOverflowScrolling: 'touch',
           scrollbarWidth: 'none', gap: 0,
         }}
       >
         {CARDS.map((c, i) => (
           <div
             key={c.label}
-            className="snap-card"
             style={{
-              minWidth: '100%', scrollSnapAlign: 'start',
+              minWidth: '100%', flexShrink: 0, scrollSnapAlign: 'start',
               padding: '28px 24px',
               display: 'flex', flexDirection: 'column', gap: 10,
               borderRight: i < CARDS.length - 1 ? '1px solid #1e1e1e' : 'none',
@@ -1574,7 +1650,7 @@ function HorizontalSnapCarousel() {
             <div style={{ fontSize: 28 }}>{c.icon}</div>
             <div style={{ fontFamily: 'monospace', fontSize: 10, color: '#555', letterSpacing: '0.16em', textTransform: 'uppercase' }}>{c.label} / {CARDS.length}</div>
             <div style={{ fontFamily: 'system-ui', fontWeight: 800, fontSize: 20, color: c.color, letterSpacing: '-0.02em' }}>{c.title}</div>
-            <div style={{ fontFamily: 'system-ui', fontSize: 12, color: '#555' }}>Swipe or drag to snap →</div>
+            <div style={{ fontFamily: 'system-ui', fontSize: 12, color: '#555' }}>← Drag or swipe to snap →</div>
           </div>
         ))}
       </div>
@@ -2233,6 +2309,37 @@ scrollText('#subtitle', {
 });`,
   },
   {
+    id: 'scroll-reveal',
+    label: 'Card Cascade Reveal',
+    tag: 'v2.8 · scrollReveal · stagger',
+    darkPreview: true,
+    description:
+      'Six cards fade up and cascade into view as you scroll past — one scrollReveal call, no data attributes. The zero-config replacement for AOS and ScrollReveal.js. Scroll into the preview to see it trigger.',
+    preview: <ScrollRevealDemo />,
+    code: `import { scrollReveal } from 'svg-scroll-draw/reveal';
+
+// Fade up (default preset) with stagger
+scrollReveal('.card');
+
+// Custom from state
+scrollReveal('.feature', {
+  from:    { opacity: 0, y: 40, scale: 0.95 },
+  stagger: 0.1,
+  easing:  'ease-out',
+  once:    true,
+});
+
+// Named presets: fadeUp | fadeDown | fadeLeft
+//                fadeRight | scale | flip | flipX
+scrollReveal('.badge',  { preset: 'scale'    });
+scrollReveal('.panel',  { preset: 'flip'     });
+scrollReveal('.sidebar',{ preset: 'fadeLeft' });
+
+// Cleanup
+const instance = scrollReveal('.card');
+instance.destroy();`,
+  },
+  {
     id: 'scroll-pin',
     label: 'Sticky Feature Panel',
     tag: 'v2.7 · scrollPin · onEnter / onLeave',
@@ -2319,6 +2426,7 @@ const EXAMPLE_FRAMEWORKS: Record<string, string[]> = {
   'scroll-animate-group':  ['api', 'vanilla'],
   'scroll-text':           ['react', 'vanilla'],
   'presets':               ['api'],
+  'scroll-reveal':         ['vanilla', 'react'],
   'scroll-pin':            ['vanilla', 'react'],
   'scroll-snap':           ['vanilla', 'react'],
 };

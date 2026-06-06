@@ -978,6 +978,20 @@ const seq = scrollDrawSequence(
                 code: `scrollAnimate('#section', {\n  props: { opacity: [0.3, 1] },\n  onEnter:     () => activate(),\n  onLeave:     () => deactivate(),\n  onEnterBack: () => activate(),\n  onLeaveBack: () => deactivate(),\n});`,
               },
               {
+                version: 'v2.9.0',
+                name: 'scrollProgress',
+                sub: 'css variable · calc()',
+                desc: 'Expose scroll progress as --scroll-progress CSS custom property. Drive opacity, transforms, backgrounds — anything — directly from CSS calc() with zero per-frame JS.',
+                code: `import { scrollProgress }\n  from 'svg-scroll-draw/progress';\n\nscrollProgress('#hero');\n\n// Then in CSS:\n// #hero {\n//   opacity: calc(\n//     var(--scroll-progress-eased)\n//   );\n// }`,
+              },
+              {
+                version: 'v2.9.0',
+                name: 'scrollHorizontal',
+                sub: 'horizontal · apple-style',
+                desc: 'Drive horizontal translateX from vertical scroll. The Apple / Stripe "scroll sideways" pattern. One call — you handle the sticky CSS.',
+                code: `import { scrollHorizontal }\n  from 'svg-scroll-draw/horizontal';\n\nscrollHorizontal('.track', {\n  distance: window.innerWidth * 3,\n  easing:   'linear',\n});`,
+              },
+              {
                 version: 'v2.8.0',
                 name: 'scrollReveal',
                 sub: 'reveal · presets · stagger',

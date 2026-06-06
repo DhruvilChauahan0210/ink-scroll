@@ -47,11 +47,24 @@ Full scroll animation platform. Phase 1 GSAP-parity features shipped.
 - [x] Home page grid: 10 API cards (added scrollReveal v2.8.0)
 - [x] Docs: v2.8.0 nav group (scrollReveal + velocityScale), badge → v2.8.0
 
+## What shipped (v2.9.0)
+
+### Library
+- [x] `scrollProgress` (`/progress`) — CSS custom property binding (`--scroll-progress`, `--scroll-progress-eased`)
+- [x] `scrollHorizontal` (`/horizontal`) — Apple-style vertical→horizontal scroll sections
+- [x] 423 tests passing, build + TS clean
+
+### Demo site
+- [x] scrollReveal example card on ExamplesPage (cascade demo)
+- [x] `/vs-aos` — svg-scroll-draw vs AOS vs ScrollReveal.js comparison page
+- [x] `/vs-framer-motion` — comparison page with side-by-side API + honest "when FM wins"
+- [x] Blog: "Horizontal scroll sections without GSAP" at `/blog/horizontal-scroll-sections`
+- [x] Home page: 12 API cards (added scrollProgress + scrollHorizontal v2.9.0)
+- [x] Docs: v2.9.0 nav group + DocSections, badge → v2.9.0, MobileMenu → v2.9.0
+
 ## Remaining tasks
 
-### TASK 1 — Publish v2.8.0 to npm
-
-### TASK 2 — Phase 3 ideas
+### TASK 1 — Publish v2.9.0 to npm (bro you know the drill)
 - Horizontal scroll sections (`scrollPin` with `axis: 'x'`)
 - Velocity/momentum detection on `scrollAnimate`
 - `ResizeObserver` auto-refresh on `scrollPin`
