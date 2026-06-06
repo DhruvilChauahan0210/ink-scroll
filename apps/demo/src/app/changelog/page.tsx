@@ -28,10 +28,58 @@ const NPM = 'https://www.npmjs.com/package/svg-scroll-draw';
 
 const RELEASES = [
   {
-    version: '2.6.0',
+    version: '2.9.0',
     date: 'June 2026',
     tag: 'Latest',
     tagColor: 'bg-lime-glow',
+    items: [
+      { type: 'new', text: 'scrollProgress (svg-scroll-draw/progress) — expose scroll progress as CSS custom properties (--scroll-progress, --scroll-progress-eased) on any element. Drive CSS animations, calc() expressions, and gradients with zero per-frame JS beyond the variable write.' },
+      { type: 'new', text: 'scrollHorizontal (svg-scroll-draw/horizontal) — drive translateX from vertical scroll. The Apple / Stripe horizontal scroll pattern. Supports distance, easing, trigger, onProgress, refresh().' },
+      { type: 'new', text: '/vs-aos comparison page — svg-scroll-draw vs AOS vs ScrollReveal.js. 20-row feature matrix, side-by-side code, bundle bars.' },
+      { type: 'new', text: '/vs-framer-motion comparison page — feature matrix, bundle comparison, side-by-side API, honest "when Framer Motion wins" section.' },
+      { type: 'new', text: '/react-scroll-animation landing page — React-focused guide covering ScrollAnimate, ScrollText, ScrollCounter, ScrollPin components, hooks, and real-world patterns with copy-ready code.' },
+      { type: 'new', text: '/nextjs-scroll-animation landing page — Next.js App Router guide covering SSR-safe usage, "use client" pattern, dynamic imports, and all v2 APIs.' },
+      { type: 'new', text: 'Blog post: "Horizontal scroll sections without GSAP" at /blog/horizontal-scroll-sections.' },
+      { type: 'new', text: 'Blog post: "Complete guide to scroll animations (2025)" at /blog/complete-guide-scroll-animations-2025. 12 patterns, all code included.' },
+      { type: 'new', text: 'Blog post: "Scroll animation performance" at /blog/scroll-animation-performance. Deep-dive on rAF budgets, native fast path, and avoiding layout thrash.' },
+      { type: 'new', text: 'Home page — "Compare" + "Framework guides" section linking to all comparison pages and the React/Next.js landing pages.' },
+      { type: 'new', text: 'Lenis dist types — dist/lenis/index.d.ts and .d.mts shipped so svg-scroll-draw/lenis resolves TypeScript types without manual paths config.' },
+      { type: 'new', text: '16 new tests — scrollProgress (8), scrollHorizontal (7), + velocity (1 updated). Total: 423.' },
+    ],
+  },
+  {
+    version: '2.8.0',
+    date: 'June 2026',
+    tag: null,
+    tagColor: '',
+    items: [
+      { type: 'new', text: 'scrollReveal (svg-scroll-draw/reveal) — one-line reveal animations. 7 presets (fadeUp/Down/Left/Right, scale, flip, flipX), custom from state (opacity, x, y, scale, rotate, rotateX, rotateY), stagger, easing, onEnter/onLeave. Drop-in replacement for AOS and ScrollReveal.js.' },
+      { type: 'new', text: 'velocityScale on scrollAnimate — scale animation speed by scroll velocity. Pass true (default sensitivity) or a number. Forces JS engine.' },
+      { type: 'new', text: 'ResizeObserver on scrollPin — auto-refresh pin dimensions when the element or document layout changes. No more manual refresh() calls on accordion/modal open.' },
+      { type: 'new', text: 'Blog post: "Replace AOS / ScrollReveal.js" at /blog/replace-aos-scrollreveal.' },
+      { type: 'new', text: '19 new tests — scrollReveal (15), velocityScale (4). Total: 407.' },
+    ],
+  },
+  {
+    version: '2.7.0',
+    date: 'June 2026',
+    tag: null,
+    tagColor: '',
+    items: [
+      { type: 'new', text: 'Scroll callbacks — onEnter, onLeave, onEnterBack, onLeaveBack added to both ScrollDrawOptions and ScrollAnimateOptions. Fire when scroll position crosses the trigger zone boundary in either direction. Forces JS engine.' },
+      { type: 'new', text: 'scrollPin (svg-scroll-draw/pin) — pin any element at a viewport position while the page scrolls past it. Wrapper-based layout (no layout shift). Supports pinDistance, top, all lifecycle callbacks, onProgress, refresh().' },
+      { type: 'new', text: 'scrollSnap (svg-scroll-draw/snap) — JS-powered section snapping with custom easing, configurable threshold, snapTo(index), getCurrentIndex(), and onSnap callback. Works on vertical and horizontal axes.' },
+      { type: 'new', text: 'createLenisAdapter (svg-scroll-draw/lenis) — Lenis v1 smooth-scroll adapter. Patches window.scrollY / window.pageYOffset with Lenis\'s virtual scroll value so all engines stay in sync. Lenis v2+ works out of the box without the adapter.' },
+      { type: 'new', text: '/vs-gsap comparison page — bundle size bars, 20-row feature matrix, side-by-side API code for every major use case, license comparison, CTA.' },
+      { type: 'new', text: 'Blog post: "Pin sections on scroll without GSAP — scrollPin" at /blog/scroll-pin-without-gsap.' },
+      { type: 'new', text: '30 new tests — scrollCallbacks (6), scrollPin (11), scrollSnap (7), lenis (6). Total: 388.' },
+    ],
+  },
+  {
+    version: '2.6.0',
+    date: 'June 2026',
+    tag: null,
+    tagColor: '',
     items: [
       { type: 'new', text: 'Playground v2 tab — new "v2 ✦" tab in the SVG Playground with live interactive demos for scrollAnimate (5 effect presets, 5 easings, scrubber), scrollText (split/stagger/from-preset), and scrollCounter (4 format presets). Each panel has replay, scrubber, and a copy-ready code snippet.' },
       { type: 'new', text: 'Blog post: "Animate multiple elements on scroll — one call" at /blog/scroll-animation-groups. Covers scrollAnimateGroup, scrollAnimateSequence, scrollParallaxGroup, scrollDrawGroup, scrollDrawSequence with real-world patterns for pricing grids, hero sections, and feature lists.' },
@@ -349,7 +397,7 @@ export default function ChangelogPage() {
           <Link href="/examples" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Examples</Link>
           <Link href="/blog" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Blog</Link>
           <Link href="/playground" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">⚡ Playground</Link>
-          <a href={NPM} target="_blank" rel="noopener noreferrer" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono whitespace-nowrap">v2.6.0</a>
+          <a href={NPM} target="_blank" rel="noopener noreferrer" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono whitespace-nowrap">v2.9.0</a>
           <a href={GH} target="_blank" rel="noopener noreferrer" className="text-sm px-4 py-1.5 rounded-full bg-pitch-black text-light-linen hover:bg-graphite-border transition-colors font-medium whitespace-nowrap">GitHub →</a>
         </div>
 
@@ -378,8 +426,8 @@ export default function ChangelogPage() {
         {RELEASES.map((release, i) => (
           <React.Fragment key={release.version}>
 
-            {/* v2 → v1 platform shift separator — sits between v2.0.0 (index 2) and v1.8.0 (index 3) */}
-            {i === 3 && (
+            {/* v2 → v1 platform shift separator — sits between v2.0.0 (index 8) and v1.8.0 (index 9) */}
+            {i === 9 && (
               <div className="relative flex gap-4 sm:gap-6 md:gap-10 pb-10 sm:pb-12">
                 {/* Timeline line continuation */}
                 <div className="absolute left-[13px] top-0 bottom-0 w-px bg-subtle-ash" />
