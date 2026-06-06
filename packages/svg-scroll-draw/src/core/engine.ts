@@ -109,6 +109,10 @@ export function createEngine(
     onProgress,
     onStart,
     onComplete,
+    onEnter,
+    onLeave,
+    onEnterBack,
+    onLeaveBack,
   } = options;
 
   const clipDirection: 'left' | 'right' | 'top' | 'bottom' | 'center' | false =
@@ -166,8 +170,9 @@ export function createEngine(
   const firedWaypoints = new Set<number>();
 
   // velocity tracking
-  let prevVelScroll = -1;
-  let prevVelTime   = performance.now();
+  let prevVelScroll    = -1;
+  let prevVelTime      = performance.now();
+  let prevRawProgress  = NaN;
 
   // ── Axis / container helpers ──────────────────────────────────────────────
 
@@ -321,7 +326,7 @@ export function createEngine(
     if (waypoints) return false;
     if (repeat) return false;
     if (delay > 0) return false;
-    if (onProgress || onStart || onComplete) return false;  // need JS frames
+    if (onProgress || onStart || onComplete || onEnter || onLeave || onEnterBack || onLeaveBack) return false;
     if (strokeColor != null || strokeWidth != null || fillOpacity != null) return false;
     // Only the default trigger maps cleanly to the CSS `cover` range.
     if ((trigger.start ?? 'top bottom').trim() !== 'top bottom') return false;
@@ -624,6 +629,16 @@ export function createEngine(
 
     const range = tEnd - tStart;
     let allComplete = true;
+
+    // ── Scroll callbacks (onEnter / onLeave / onEnterBack / onLeaveBack) ───────
+    const rawProgress = range === 0 ? 0 : (currentScroll - tStart) / range;
+    if (!isNaN(prevRawProgress)) {
+      if (prevRawProgress <= 0 && rawProgress > 0) onEnter?.();
+      else if (prevRawProgress > 0 && rawProgress <= 0) onLeaveBack?.();
+      if (prevRawProgress < 1 && rawProgress >= 1) onLeave?.();
+      else if (prevRawProgress >= 1 && rawProgress < 1) onEnterBack?.();
+    }
+    prevRawProgress = rawProgress;
 
     // ── Clip mode: animate clipPath on container, skip per-path logic ─────────
     if (clipDirection) {

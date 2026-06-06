@@ -1,7 +1,7 @@
 // Global instance registry — populated by engines, read by DevTools.
 // Imported lazily so it adds zero bytes to bundles that don't need it.
 
-export type InstanceType = 'draw' | 'animate' | 'counter' | 'video' | 'text';
+export type InstanceType = 'draw' | 'animate' | 'counter' | 'video' | 'text' | 'pin' | 'snap';
 
 export interface RegistryEntry {
   type: InstanceType;

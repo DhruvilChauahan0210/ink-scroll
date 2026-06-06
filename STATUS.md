@@ -1,7 +1,7 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **2.6.0** — local (not yet published to npm)
-> Tests: **358 passing** across 12 test suites
+> Current version: **2.7.0** — local (not yet published)
+> Tests: **388 passing** across 16 test suites
 > Bundle: **~9 KB gzipped** (main) · zero runtime dependencies
 > Last updated: 2026-06-05
 
@@ -77,8 +77,15 @@
 
 ---
 
+### v2 Phase 1 — GSAP parity features (v2.7.0)
+- [x] Scroll callbacks — `onEnter` / `onLeave` / `onEnterBack` / `onLeaveBack` on `scrollAnimate` + `scrollDraw`
+- [x] `scrollPin` (`svg-scroll-draw/pin`) — wrapper-based pin, full lifecycle callbacks, `refresh()`
+- [x] `scrollSnap` (`svg-scroll-draw/snap`) — JS section snapping, custom easing, `snapTo()`, `onSnap`
+- [x] `createLenisAdapter` (`svg-scroll-draw/lenis`) — Lenis v1 smooth-scroll adapter
+
 ## Remaining / Next
 
-- [ ] **Vue/Svelte/Solid v2 wrappers** — `scrollAnimate`, `scrollCounter`, `scrollParallax`, `scrollVideo`, `scrollText` wrappers for Vue, Svelte, Solid. Ships as v2.3.0.
-- [ ] **Changelog page UI** — add a visual "v2 milestone" callout to visually separate v2.x from v1.x history.
-- [ ] **Interactive scrollText demo** on home page — similar to `ScrollAnimateInteractive` but for text reveal (split selector, stagger slider).
+- [ ] **Publish v2.7.0 to npm**
+- [ ] **`/vs-gsap` comparison page** — bundle, FPS, license, side-by-side API
+- [ ] **scrollPin + scrollSnap demos** on home/examples page
+- [ ] **Blog post** — "Pin sections on scroll without GSAP"

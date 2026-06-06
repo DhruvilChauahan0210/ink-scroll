@@ -27,6 +27,9 @@ export default defineConfig([
   base({ 'video/index':    'src/video/index.ts'    }),
   base({ 'text/index':     'src/text/index.ts'     }),
   base({ 'devtools/index': 'src/devtools/index.ts' }),
+  base({ 'pin/index':     'src/pin/index.ts'       }),
+  base({ 'snap/index':    'src/snap/index.ts'      }),
+  base({ 'lenis/index':   'src/lenis/index.ts'     }),
   {
     entry: { 'svg-scroll-draw': 'src/cdn.ts' },
     format: ['iife'],

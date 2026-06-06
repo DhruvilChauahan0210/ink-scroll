@@ -6,30 +6,43 @@
 
 ## Current state
 
-**Library: v2.6.0 — local build. 358 tests passing.**
+**Library: v2.7.0 — local build. 388 tests passing.**
 
-Full scroll animation platform. Complete framework coverage. Playground now covers v2 APIs.
+Full scroll animation platform. Phase 1 GSAP-parity features shipped.
 
 ---
 
-## What shipped this session (v2.5.0 → v2.6.0)
+## What shipped this session (v2.6.0 → v2.7.0)
 
-- [x] JSON-LD `softwareVersion` on home page: `1.2.0` → `2.6.0`
-- [x] README sub-path exports table: all v2 wrappers listed for every framework
-- [x] Blog post: "Animate multiple elements on scroll — one call" at `/blog/scroll-animation-groups`
-- [x] Playground v2 tab — `scrollAnimate` (5 effects, 5 easings), `scrollText` (split/stagger/presets), `scrollCounter` (4 format presets). Each with scrubber, replay, and copy-ready code.
+- [x] **Scroll callbacks** — `onEnter`, `onLeave`, `onEnterBack`, `onLeaveBack` on `scrollAnimate` + `scrollDraw`
+- [x] **`scrollPin`** (`svg-scroll-draw/pin`) — wrapper-based element pin with full lifecycle callbacks
+- [x] **`scrollSnap`** (`svg-scroll-draw/snap`) — JS section snapping with `snapTo()` + `onSnap`
+- [x] **`createLenisAdapter`** (`svg-scroll-draw/lenis`) — Lenis v1 `window.scrollY` patcher
+- [x] 30 new tests (callbacks × 6, pin × 11, snap × 7, lenis × 6) → 388 total
 
 ---
 
 ## Remaining tasks
 
-### TASK 1 — Publish to npm
-v2.6.0 is ready. Run `npm login` then `cd packages/svg-scroll-draw && npm publish`.
+### TASK 1 — Publish v2.7.0 to npm
+Run `npm login` then `cd packages/svg-scroll-draw && npm publish`.
+
+### TASK 2 — `/vs-gsap` comparison page on the demo site
+Single biggest SEO lever. Bundle size, FPS benchmark, license cost, side-by-side API code.
+
+### TASK 3 — scrollPin + scrollSnap demos on home/examples page
+Show the new APIs in action. Most visually impressive new features.
+
+### TASK 4 — Blog post: "Pin sections on scroll without GSAP: scrollPin"
+Target "GSAP pin alternative" search intent.
 
 ---
 
 ## Guardrails
-- **Don't publish without bumping version** — v2.6.0 is ready to publish
+- **Don't publish without bumping version** — v2.7.0 is ready to publish
+- **Don't post to external platforms** — user posts manually
+- **Always update STATUS.md + ROADMAP.md + CHANGELOG.md + NEXT-SESSION-PLAN.md after any code change**
+- Accuracy: ~9 KB gzipped, 388 tests, zero dependencies, MIT, v2.7.0
 - **Don't post to external platforms** — user posts manually
 - **Always update STATUS.md + ROADMAP.md + CHANGELOG.md + NEXT-SESSION-PLAN.md after any code change**
 - Accuracy: ~9 KB gzipped, 358 tests, zero dependencies, MIT, v2.6.0

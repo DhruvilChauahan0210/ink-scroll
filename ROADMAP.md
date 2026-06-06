@@ -1,6 +1,6 @@
 # svg-scroll-draw — Roadmap
 
-> Last updated: 2026-06-05 — v2.4.0
+> Last updated: 2026-06-06 — v2.7.0
 >
 > Items marked ✓ are shipped. Remaining items are ordered by value/effort ratio.
 
@@ -117,28 +117,32 @@
 
 ---
 
-## Remaining (v2.3.0+)
+### v2 APIs (Phase 6 — v2.7.0) ✓
+- [x] **Scroll callbacks** — `onEnter`, `onLeave`, `onEnterBack`, `onLeaveBack` on `ScrollDrawOptions` + `ScrollAnimateOptions`
+- [x] **`scrollPin`** (`svg-scroll-draw/pin`) — pin elements at a viewport position with wrapper-based layout, `pinDistance`, `top`, full lifecycle callbacks, `refresh()`
+- [x] **`scrollSnap`** (`svg-scroll-draw/snap`) — JS section snapping with custom easing, threshold, `snapTo()`, `getCurrentIndex()`, `onSnap`
+- [x] **`createLenisAdapter`** (`svg-scroll-draw/lenis`) — Lenis v1 adapter that patches `window.scrollY`
 
-### Library
+---
 
-#### Vue/Svelte/Solid v2 wrappers — v2.3.0
-- [ ] `scrollAnimate`, `scrollCounter`, `scrollParallax`, `scrollVideo`, `scrollText` wrappers for Vue, Svelte, and Solid
-- Vue: composables + components (`useScrollAnimate`, `<ScrollAnimate>`)
-- Svelte: action wrappers + store helpers
-- Solid: `useScrollAnimate`, `createScrollCounter`
+## Remaining
+
+### Library — next batch (v2.8.0+)
+- [ ] **`/vs-gsap` comparison page** — bundle size, FPS benchmark, license cost, API side-by-side
+- [ ] **GSAP migration guide** — `gsap.to()` → `scrollAnimate`, `ScrollTrigger` → `scrollPin`/callbacks
+- [ ] **Horizontal scroll sections** — `scrollPin` with horizontal axis
+- [ ] **Velocity / momentum detection** on `scrollAnimate`
+- [ ] **`scrollPin.refresh()`** auto-call on dynamic content changes (ResizeObserver)
 
 ### Demo Site
-
-#### Interactive scrollText demo — medium effort
-Build `ScrollTextInteractive` on the home page. Split selector, stagger slider, from-state presets, live preview + code. Same pattern as `ScrollAnimateInteractive`.
-
-#### Changelog page v2 milestone callout — small effort
-Visual separator or highlighted callout between v2.x and v1.x sections to make the major version shift visually clear.
+- [ ] **`/vs-gsap` page** on demo site — side-by-side code + live demos
+- [ ] **scrollPin + scrollSnap demos** on home page and examples page
+- [ ] **Blog post** — "Pin sections on scroll without GSAP: scrollPin"
 
 ---
 
 ## Priority Order
 
-1. Vue/Svelte/Solid v2 wrappers — completes framework parity
-2. Interactive scrollText demo — highest-impact home page improvement
-3. Changelog v2 visual callout — polish
+1. `/vs-gsap` page — single biggest SEO + conversion driver
+2. Demo page for scrollPin — most visually impressive new feature
+3. GSAP migration guide — captures "GSAP alternative" search intent

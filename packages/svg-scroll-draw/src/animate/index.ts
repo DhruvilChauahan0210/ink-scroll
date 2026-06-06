@@ -15,6 +15,14 @@ export interface ScrollAnimateOptions {
   native?: boolean;
   onProgress?: (alpha: number) => void;
   onComplete?: () => void;
+  /** Fires when scroll enters the trigger zone (scrolling forward). */
+  onEnter?: () => void;
+  /** Fires when scroll exits the trigger zone at the end (scrolling forward). */
+  onLeave?: () => void;
+  /** Fires when scroll re-enters the trigger zone from the end (scrolling back). */
+  onEnterBack?: () => void;
+  /** Fires when scroll exits the trigger zone at the start (scrolling back). */
+  onLeaveBack?: () => void;
 }
 
 export interface ScrollParallaxOptions {
@@ -146,6 +154,10 @@ export function createAnimateEngine(
     native   = true,
     onProgress,
     onComplete,
+    onEnter,
+    onLeave,
+    onEnterBack,
+    onLeaveBack,
   } = options;
 
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -197,7 +209,7 @@ export function createAnimateEngine(
     if (scrollEl) return false;
     if (once) return false;
     if (speed !== 1) return false;
-    if (onProgress || onComplete) return false;
+    if (onProgress || onComplete || onEnter || onLeave || onEnterBack || onLeaveBack) return false;
     if ((trigger.start ?? 'top bottom').trim() !== 'top bottom') return false;
     if ((trigger.end   ?? 'bottom top').trim() !== 'bottom top') return false;
     for (const entry of entries) {
@@ -259,14 +271,15 @@ export function createAnimateEngine(
 
   // ── JS scroll engine ────────────────────────────────────────────────────────
 
-  let tStart       = 0;
-  let tEnd         = 0;
-  let rafId        = 0;
-  let isVisible    = false;
-  let paused       = false;
-  let frozenAlpha  = -1;
-  let currentAlpha = 0;
-  let completed    = false;
+  let tStart           = 0;
+  let tEnd             = 0;
+  let rafId            = 0;
+  let isVisible        = false;
+  let paused           = false;
+  let frozenAlpha      = -1;
+  let currentAlpha     = 0;
+  let completed        = false;
+  let prevRawProgress  = NaN;
 
   const scrollPos = (): number => {
     if (scrollEl) return axis === 'x' ? scrollEl.scrollLeft : scrollEl.scrollTop;
@@ -302,8 +315,19 @@ export function createAnimateEngine(
     onProgress?.(alpha);
   }
 
+  function fireScrollCallbacks(raw: number): void {
+    if (isNaN(prevRawProgress)) { prevRawProgress = raw; return; }
+    if (prevRawProgress <= 0 && raw > 0) onEnter?.();
+    else if (prevRawProgress > 0 && raw <= 0) onLeaveBack?.();
+    if (prevRawProgress < 1 && raw >= 1) onLeave?.();
+    else if (prevRawProgress >= 1 && raw < 1) onEnterBack?.();
+    prevRawProgress = raw;
+  }
+
   function update(): void {
     if (!isVisible || paused) return;
+    const raw = tEnd === tStart ? 0 : (scrollPos() - tStart) / (tEnd - tStart);
+    fireScrollCallbacks(raw);
     let alpha = easeFn(computeProgress(scrollPos(), tStart, tEnd, speed));
     if (once) {
       frozenAlpha = Math.max(frozenAlpha, alpha);
