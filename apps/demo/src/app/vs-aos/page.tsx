@@ -19,13 +19,44 @@ export const metadata: Metadata = {
     'ScrollReveal replacement',
     'data-aos alternative',
   ],
-  alternates: { canonical: '/vs-aos' },
+  alternates: { canonical: 'https://svg-scroll-draw.vercel.app/vs-aos' },
   openGraph: {
     title: 'svg-scroll-draw vs AOS vs ScrollReveal.js',
     description: 'No data attributes. Typed. One call. Replaces both.',
     url: 'https://svg-scroll-draw.vercel.app/vs-aos',
   },
   twitter: { card: 'summary_large_image', title: 'svg-scroll-draw vs AOS vs ScrollReveal.js', description: 'No data attributes. Typed. One call.' },
+};
+
+const pageJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'Is there a better alternative to AOS (Animate On Scroll)?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Yes. svg-scroll-draw\'s scrollReveal function replaces AOS with a typed JavaScript API — no data-aos HTML attributes required, no config files, 7 built-in presets, stagger support, and custom easing. All in ~9 KB total.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'How is svg-scroll-draw different from AOS and ScrollReveal.js?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Unlike AOS and ScrollReveal.js which rely on HTML data attributes (data-aos="fade-up"), svg-scroll-draw uses a pure JavaScript API: scrollReveal(".card", { preset: "fadeUp" }). This gives you TypeScript types, tree-shaking, and no markup coupling.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Can I migrate from AOS to svg-scroll-draw?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Yes. Remove data-aos attributes and replace the AOS.init() call with scrollReveal() targeting the same elements. The 7 built-in presets (fadeUp, fadeDown, fadeLeft, fadeRight, zoomIn, slideIn, flipIn) cover all common AOS animations.',
+      },
+    },
+  ],
 };
 
 function Nav() {
@@ -88,6 +119,8 @@ function Cell({ val }: { val: boolean | string | undefined }) {
 
 export default function VsAosPage() {
   return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(pageJsonLd) }} />
     <div className="bg-light-linen text-pitch-black min-h-screen">
       <Nav />
 
@@ -221,5 +254,6 @@ export default function VsAosPage() {
         svg-scroll-draw · MIT · ~9 KB ·{' '}<a href="https://github.com/DhruvilChauahan0210/ink-scroll" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-pitch-black transition-colors">GitHub</a>
       </footer>
     </div>
+    </>
   );
 }

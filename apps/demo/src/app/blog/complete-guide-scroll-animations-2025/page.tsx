@@ -19,12 +19,26 @@ export const metadata: Metadata = {
     'sticky scroll section',
     'scroll animation react',
   ],
-  alternates: { canonical: '/blog/complete-guide-scroll-animations-2025' },
+  alternates: { canonical: 'https://svg-scroll-draw.vercel.app/blog/complete-guide-scroll-animations-2025' },
   openGraph: {
     title: 'The Complete Guide to Scroll Animations in 2025',
     description: 'Every pattern, every technique, with code. Fade, parallax, pin, snap, text, video, horizontal — all in one place.',
     url: 'https://svg-scroll-draw.vercel.app/blog/complete-guide-scroll-animations-2025',
   },
+};
+
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'TechArticle',
+  headline: 'The Complete Guide to Scroll Animations in 2025',
+  description: 'Every scroll animation pattern explained: fade reveal, parallax, pin/sticky, section snap, text split, video scrub, horizontal scroll, CSS variables.',
+  url: 'https://svg-scroll-draw.vercel.app/blog/complete-guide-scroll-animations-2025',
+  datePublished: '2026-06-06',
+  dateModified: '2026-06-06',
+  author: { '@type': 'Person', name: 'Dhruvil Chauhan', url: 'https://github.com/DhruvilChauahan0210' },
+  publisher: { '@type': 'Organization', name: 'svg-scroll-draw', url: 'https://svg-scroll-draw.vercel.app' },
+  image: 'https://svg-scroll-draw.vercel.app/opengraph-image',
+  mainEntityOfPage: { '@type': 'WebPage', '@id': 'https://svg-scroll-draw.vercel.app/blog/complete-guide-scroll-animations-2025' },
 };
 
 function CodeBlock({ file, children }: { file: string; children: string }) {
@@ -52,6 +66,8 @@ function Section({ num, title, children }: { num: string; title: string; childre
 
 export default function CompletGuidePage() {
   return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }} />
     <div className="bg-light-linen text-pitch-black min-h-screen">
 
       <nav className="sticky top-0 z-50 bg-light-linen/95 backdrop-blur-sm border-b border-pitch-black flex items-center justify-between px-4 md:px-12 h-14">
@@ -349,5 +365,6 @@ scrollAnimate('#section', {
         svg-scroll-draw · MIT · ~9 KB ·{' '}<a href="https://github.com/DhruvilChauahan0210/ink-scroll" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-pitch-black transition-colors">GitHub</a>
       </footer>
     </div>
+    </>
   );
 }

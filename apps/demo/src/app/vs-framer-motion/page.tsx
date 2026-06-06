@@ -18,13 +18,44 @@ export const metadata: Metadata = {
     'framer motion replacement',
     'scroll animation library 2025',
   ],
-  alternates: { canonical: '/vs-framer-motion' },
+  alternates: { canonical: 'https://svg-scroll-draw.vercel.app/vs-framer-motion' },
   openGraph: {
     title: 'svg-scroll-draw vs Framer Motion',
     description: '4× smaller. Framework-agnostic. Native CSS fast path.',
     url: 'https://svg-scroll-draw.vercel.app/vs-framer-motion',
   },
   twitter: { card: 'summary_large_image', title: 'svg-scroll-draw vs Framer Motion', description: '4× smaller. Works outside React. Native CSS fast path.' },
+};
+
+const pageJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'What is a good alternative to Framer Motion for scroll animations?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'svg-scroll-draw is a 4× smaller alternative to Framer Motion for scroll-driven animations. It is framework-agnostic (works in React, Vue, Svelte, vanilla JS), MIT licensed, and uses native CSS animation-timeline when possible for zero per-frame JavaScript.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Can svg-scroll-draw be used outside of React?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Yes. Unlike Framer Motion which is React-only, svg-scroll-draw works with React, Next.js, Vue 3, Svelte, Solid.js, Angular, Astro, Nuxt, and plain vanilla JavaScript.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'How much smaller is svg-scroll-draw compared to Framer Motion?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'svg-scroll-draw is ~9 KB gzipped. Framer Motion is ~35 KB gzipped — approximately 4× larger. For projects that only need scroll-driven animations, svg-scroll-draw eliminates the bundle overhead entirely.',
+      },
+    },
+  ],
 };
 
 function Nav() {
@@ -82,6 +113,8 @@ const FEATURES = [
 
 export default function VsFramerMotionPage() {
   return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(pageJsonLd) }} />
     <div className="bg-light-linen text-pitch-black min-h-screen">
       <Nav />
 
@@ -305,5 +338,6 @@ scrollProgress('#hero', { easing: 'ease-in-out' });`}</CodeBlock>
         svg-scroll-draw · MIT · ~9 KB ·{' '}<a href="https://github.com/DhruvilChauahan0210/ink-scroll" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-pitch-black transition-colors">GitHub</a>
       </footer>
     </div>
+    </>
   );
 }

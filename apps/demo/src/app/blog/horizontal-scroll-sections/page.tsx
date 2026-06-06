@@ -18,12 +18,26 @@ export const metadata: Metadata = {
     'translate x on scroll javascript',
     'scroll driven horizontal animation',
   ],
-  alternates: { canonical: '/blog/horizontal-scroll-sections' },
+  alternates: { canonical: 'https://svg-scroll-draw.vercel.app/blog/horizontal-scroll-sections' },
   openGraph: {
     title: 'Horizontal scroll sections without GSAP',
     description: 'scrollHorizontal: vertical scroll → horizontal motion. Apple-style pattern. One call.',
     url: 'https://svg-scroll-draw.vercel.app/blog/horizontal-scroll-sections',
   },
+};
+
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'TechArticle',
+  headline: 'Horizontal scroll sections without GSAP — scrollHorizontal',
+  description: 'Build the Apple / Stripe "scroll sideways" pattern without GSAP. scrollHorizontal drives translateX from vertical scroll — one call, sticky CSS, zero dependencies.',
+  url: 'https://svg-scroll-draw.vercel.app/blog/horizontal-scroll-sections',
+  datePublished: '2026-06-06',
+  dateModified: '2026-06-06',
+  author: { '@type': 'Person', name: 'Dhruvil Chauhan', url: 'https://github.com/DhruvilChauahan0210' },
+  publisher: { '@type': 'Organization', name: 'svg-scroll-draw', url: 'https://svg-scroll-draw.vercel.app' },
+  image: 'https://svg-scroll-draw.vercel.app/opengraph-image',
+  mainEntityOfPage: { '@type': 'WebPage', '@id': 'https://svg-scroll-draw.vercel.app/blog/horizontal-scroll-sections' },
 };
 
 function CodeBlock({ file, children }: { file: string; children: string }) {
@@ -51,6 +65,8 @@ function Callout({ children }: { children: React.ReactNode }) {
 
 export default function Page() {
   return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }} />
     <div className="bg-light-linen text-pitch-black min-h-screen">
 
       <nav className="sticky top-0 z-50 bg-light-linen/95 backdrop-blur-sm border-b border-pitch-black flex items-center justify-between px-4 md:px-12 h-14">
@@ -276,5 +292,6 @@ scrollProgress('#track', {
         <a href="https://github.com/DhruvilChauahan0210/ink-scroll" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-pitch-black transition-colors">GitHub</a>
       </footer>
     </div>
+    </>
   );
 }

@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     'scroll pin alternative',
     'gsap free alternative',
   ],
-  alternates: { canonical: '/vs-gsap' },
+  alternates: { canonical: 'https://svg-scroll-draw.vercel.app/vs-gsap' },
   openGraph: {
     title: 'svg-scroll-draw vs GSAP',
     description: '5.5× smaller. MIT license. Same power. Full feature comparison.',
@@ -30,6 +30,45 @@ export const metadata: Metadata = {
     title: 'svg-scroll-draw vs GSAP',
     description: '5.5× smaller bundle. Free for commercial use. Direct feature-for-feature comparison.',
   },
+};
+
+const pageJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'Is svg-scroll-draw free to use commercially?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Yes. svg-scroll-draw is MIT licensed — free for commercial use with no attribution required. GSAP DrawSVG requires a paid Club GreenSock subscription for commercial projects.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'How does svg-scroll-draw compare to GSAP in bundle size?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'svg-scroll-draw is ~9 KB gzipped. GSAP + ScrollTrigger is ~40 KB gzipped — making svg-scroll-draw approximately 5.5× smaller.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Can svg-scroll-draw replace GSAP ScrollTrigger?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'svg-scroll-draw covers 95% of ScrollTrigger use cases including scroll-driven animations, parallax, pin/sticky sections, text splits, and video scrubbing — with a simpler API and zero dependencies.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Does svg-scroll-draw work with React, Vue, and Svelte?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Yes. svg-scroll-draw provides framework-specific adapters for React, Next.js, Vue 3, Svelte, Solid.js, Angular, Astro, and Nuxt, as well as vanilla JavaScript.',
+      },
+    },
+  ],
 };
 
 function Nav() {
@@ -108,6 +147,8 @@ const FEATURES = [
 
 export default function VsGsapPage() {
   return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(pageJsonLd) }} />
     <div className="bg-light-linen text-pitch-black min-h-screen">
       <Nav />
 
@@ -515,5 +556,6 @@ scrollText('#h1', {
         </a>
       </footer>
     </div>
+    </>
   );
 }

@@ -1,5 +1,10 @@
+import type { Metadata } from 'next';
 import dynamic from 'next/dynamic';
 import { BundleGraphLine, CtaBoldMark } from '@/components/BackgroundDecor';
+
+export const metadata: Metadata = {
+  alternates: { canonical: 'https://svg-scroll-draw.vercel.app' },
+};
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { MobileMenu } from '@/components/MobileMenu';
 import { LiveStats } from '@/components/LiveStats';

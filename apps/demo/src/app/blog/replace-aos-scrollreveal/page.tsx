@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     'scroll driven animation',
     'intersection observer animation',
   ],
-  alternates: { canonical: '/blog/replace-aos-scrollreveal' },
+  alternates: { canonical: 'https://svg-scroll-draw.vercel.app/blog/replace-aos-scrollreveal' },
   openGraph: {
     title: 'Replace AOS / ScrollReveal.js with one function call',
     description: 'scrollReveal — 7 presets, stagger, custom easing, no data attributes. Part of svg-scroll-draw (~9 KB).',
@@ -32,6 +32,20 @@ export const metadata: Metadata = {
     title: 'Replace AOS / ScrollReveal.js with one function call',
     description: 'One import. One call. 7 presets. Zero config files.',
   },
+};
+
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'TechArticle',
+  headline: 'Replace AOS / ScrollReveal.js — svg-scroll-draw scrollReveal',
+  description: 'Drop-in replacement for AOS and ScrollReveal.js. One function call, 7 named presets, stagger, custom easing — no data attributes.',
+  url: 'https://svg-scroll-draw.vercel.app/blog/replace-aos-scrollreveal',
+  datePublished: '2026-06-06',
+  dateModified: '2026-06-06',
+  author: { '@type': 'Person', name: 'Dhruvil Chauhan', url: 'https://github.com/DhruvilChauahan0210' },
+  publisher: { '@type': 'Organization', name: 'svg-scroll-draw', url: 'https://svg-scroll-draw.vercel.app' },
+  image: 'https://svg-scroll-draw.vercel.app/opengraph-image',
+  mainEntityOfPage: { '@type': 'WebPage', '@id': 'https://svg-scroll-draw.vercel.app/blog/replace-aos-scrollreveal' },
 };
 
 function CodeBlock({ file, children }: { file: string; children: string }) {
@@ -63,6 +77,8 @@ function Callout({ children }: { children: React.ReactNode }) {
 
 export default function Page() {
   return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }} />
     <div className="bg-light-linen text-pitch-black min-h-screen">
 
       {/* Nav */}
@@ -334,5 +350,6 @@ instance.destroy(); // removes all animations, restores original styles`}</CodeB
         </a>
       </footer>
     </div>
+    </>
   );
 }

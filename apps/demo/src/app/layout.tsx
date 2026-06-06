@@ -55,9 +55,6 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Dhruvil Chauhan", url: SITE_URL }],
   creator: "Dhruvil Chauhan",
-  alternates: {
-    canonical: "/",
-  },
   openGraph: {
     type: "website",
     url: SITE_URL,

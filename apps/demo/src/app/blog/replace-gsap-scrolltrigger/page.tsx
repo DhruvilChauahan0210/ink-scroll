@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     'fade in on scroll javascript',
     'animate on scroll without gsap',
   ],
-  alternates: { canonical: '/blog/replace-gsap-scrolltrigger' },
+  alternates: { canonical: 'https://svg-scroll-draw.vercel.app/blog/replace-gsap-scrolltrigger' },
   openGraph: {
     title: 'Replace GSAP ScrollTrigger with scrollAnimate',
     description: 'scrollAnimate covers 95% of ScrollTrigger use cases. 9× smaller. Zero deps. One function call.',
@@ -30,6 +30,20 @@ export const metadata: Metadata = {
     title: 'Replace GSAP ScrollTrigger with scrollAnimate',
     description: '9× smaller than GSAP. Zero deps. Same expressive API. Full migration guide.',
   },
+};
+
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'TechArticle',
+  headline: 'Replace GSAP ScrollTrigger with scrollAnimate — svg-scroll-draw v2',
+  description: 'scrollAnimate replaces gsap.to() + ScrollTrigger for 95% of scroll animation use cases. Zero GSAP dependency, 9× smaller, same one-call API. Full migration guide with side-by-side code.',
+  url: 'https://svg-scroll-draw.vercel.app/blog/replace-gsap-scrolltrigger',
+  datePublished: '2026-06-06',
+  dateModified: '2026-06-06',
+  author: { '@type': 'Person', name: 'Dhruvil Chauhan', url: 'https://github.com/DhruvilChauahan0210' },
+  publisher: { '@type': 'Organization', name: 'svg-scroll-draw', url: 'https://svg-scroll-draw.vercel.app' },
+  image: 'https://svg-scroll-draw.vercel.app/opengraph-image',
+  mainEntityOfPage: { '@type': 'WebPage', '@id': 'https://svg-scroll-draw.vercel.app/blog/replace-gsap-scrolltrigger' },
 };
 
 function CodeBlock({ file, children }: { file: string; children: string }) {
@@ -61,6 +75,8 @@ function Callout({ children }: { children: React.ReactNode }) {
 
 export default function Page() {
   return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }} />
     <div className="bg-light-linen text-pitch-black min-h-screen">
 
       {/* Nav */}
@@ -253,5 +269,6 @@ anim.destroy();         // remove all listeners`}</CodeBlock>
       </footer>
 
     </div>
+    </>
   );
 }

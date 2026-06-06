@@ -18,12 +18,26 @@ export const metadata: Metadata = {
     'scroll animation jank',
     'scroll animation optimization',
   ],
-  alternates: { canonical: '/blog/scroll-animation-performance' },
+  alternates: { canonical: 'https://svg-scroll-draw.vercel.app/blog/scroll-animation-performance' },
   openGraph: {
     title: 'Scroll Animation Performance — Native CSS vs JavaScript',
     description: 'Zero-JS scroll animations on the compositor. How animation-timeline: view() works and when to use it.',
     url: 'https://svg-scroll-draw.vercel.app/blog/scroll-animation-performance',
   },
+};
+
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'TechArticle',
+  headline: 'Scroll Animation Performance — Native CSS vs JavaScript',
+  description: 'How svg-scroll-draw uses animation-timeline: view() for zero-JS scroll animations on the compositor. When native CSS wins, when JS wins, and how to get 60fps scroll animations every time.',
+  url: 'https://svg-scroll-draw.vercel.app/blog/scroll-animation-performance',
+  datePublished: '2026-06-06',
+  dateModified: '2026-06-06',
+  author: { '@type': 'Person', name: 'Dhruvil Chauhan', url: 'https://github.com/DhruvilChauahan0210' },
+  publisher: { '@type': 'Organization', name: 'svg-scroll-draw', url: 'https://svg-scroll-draw.vercel.app' },
+  image: 'https://svg-scroll-draw.vercel.app/opengraph-image',
+  mainEntityOfPage: { '@type': 'WebPage', '@id': 'https://svg-scroll-draw.vercel.app/blog/scroll-animation-performance' },
 };
 
 function CodeBlock({ file, children }: { file: string; children: string }) {
@@ -41,6 +55,8 @@ function CodeBlock({ file, children }: { file: string; children: string }) {
 
 export default function ScrollPerformancePage() {
   return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }} />
     <div className="bg-light-linen text-pitch-black min-h-screen">
       <nav className="sticky top-0 z-50 bg-light-linen/95 backdrop-blur-sm border-b border-pitch-black flex items-center justify-between px-4 md:px-12 h-14">
         <Link href="/" className="font-display font-bold text-sm tracking-tight hover:opacity-70 transition-opacity shrink-0">svg-scroll-draw</Link>
@@ -195,5 +211,6 @@ scrollAnimate('#card', {
         svg-scroll-draw · MIT · ~9 KB ·{' '}<a href="https://github.com/DhruvilChauahan0210/ink-scroll" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-pitch-black transition-colors">GitHub</a>
       </footer>
     </div>
+    </>
   );
 }
