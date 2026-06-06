@@ -71,6 +71,14 @@ interface ScrollDrawOptions {
     onProgress?: (alpha: number) => void;
     onStart?: () => void;
     onComplete?: () => void;
+    /** Fires when scroll position enters the trigger zone (scrolling forward). */
+    onEnter?: () => void;
+    /** Fires when scroll position exits the trigger zone at the end (scrolling forward). */
+    onLeave?: () => void;
+    /** Fires when scroll position re-enters the trigger zone from the end (scrolling back). */
+    onEnterBack?: () => void;
+    /** Fires when scroll position exits the trigger zone at the start (scrolling back). */
+    onLeaveBack?: () => void;
     /**
      * Trigger the animation when the element enters the viewport instead of
      * tying it to scroll position. The draw runs over `duration` milliseconds,
@@ -130,6 +138,14 @@ interface ScrollAnimateOptions {
     native?: boolean;
     onProgress?: (alpha: number) => void;
     onComplete?: () => void;
+    /** Fires when scroll enters the trigger zone (scrolling forward). */
+    onEnter?: () => void;
+    /** Fires when scroll exits the trigger zone at the end (scrolling forward). */
+    onLeave?: () => void;
+    /** Fires when scroll re-enters the trigger zone from the end (scrolling back). */
+    onEnterBack?: () => void;
+    /** Fires when scroll exits the trigger zone at the start (scrolling back). */
+    onLeaveBack?: () => void;
 }
 interface ScrollParallaxOptions {
     speed?: number;

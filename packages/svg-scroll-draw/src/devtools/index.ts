@@ -11,6 +11,8 @@ const TYPE_COLOR: Record<InstanceType, string> = {
   counter: '#fbbf24',  // yellow
   video:   '#c084fc',  // purple
   text:    '#fb923c',  // orange
+  pin:     '#f43f5e',  // rose
+  snap:    '#22d3ee',  // cyan
 };
 
 let panelEl: HTMLElement | null = null;

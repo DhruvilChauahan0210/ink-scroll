@@ -80,8 +80,8 @@ export function createLenisAdapter(lenis: LenisLike): LenisAdapterInstance {
       lenis.off('scroll', handler);
       // Restore native descriptors
       try {
-        delete (window as Record<string, unknown>).scrollY;
-        delete (window as Record<string, unknown>).pageYOffset;
+        delete (window as unknown as Record<string, unknown>).scrollY;
+        delete (window as unknown as Record<string, unknown>).pageYOffset;
       } catch {
         // Ignore if not deletable
       }
