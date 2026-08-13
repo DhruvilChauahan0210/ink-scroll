@@ -8,9 +8,12 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### Fixed
 
-- **`autoplay` animations could freeze permanently.** Leaving the viewport assigned
-  `startTime = null`, so a later `pause()` computed `NaN` and `resume()` stamped a
-  `NaN` start time. Replaced with an explicit run-state flag.
+- **`autoplay` animations could complete invisibly.** Leaving the viewport assigned
+  `startTime = null`. Since `null` coerces to `0`, a later `pause()` recorded the
+  whole timestamp since page load as `pausedElapsed` instead of an elapsed duration,
+  and `resume()` then began a run already "elapsed" far past its own duration — so
+  the draw finished instantly while still off-screen. Scrolling down revealed a
+  static, already-drawn SVG. Replaced with an explicit run-state flag.
 - **`getProgress()` always returned `0`** for `autoplay` stroke animations —
   `currentAlpha` was only ever set on the clip-path branch.
 - **`replay()` reported the previous run's progress** until the next frame landed.
@@ -27,7 +30,7 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 - **Corrected every size and count claim in the README and the npm description.**
   The package advertised `~4.4 KB gzipped` against a real 8.9 KB main entry, plus
-  `272 tests` (really 425) and `13 examples` (really 23). The size section is now a
+  `272 tests` (really 461) and `13 examples` (really 23). The size section is now a
   measured 21-entry table showing that per-API entry points start at 0.2 KB.
 - Coverage thresholds now reflect measured reality (85/85/77/79 against 85.9% lines).
   They previously demanded 90/90/85/80 against an actual 74%, so the required CI

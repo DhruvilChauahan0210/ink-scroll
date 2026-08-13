@@ -844,10 +844,14 @@ describe('createEngine — autoplay', () => {
     expect(() => instance.destroy()).not.toThrow();
   });
 
-  // Regression: leaving the viewport used to set startTime = null, so a later
-  // pause() computed `now - null` = NaN and resume() then produced a startTime
-  // of NaN — freezing the animation permanently at whatever frame it was on.
-  it('survives pause()/resume() after leaving the viewport', () => {
+  // Regression: leaving the viewport used to set `startTime = null`. `null`
+  // coerces to 0 in arithmetic, so a later pause() recorded
+  // `pausedElapsed = performance.now() - 0` — the whole timestamp since page
+  // load rather than an elapsed duration. resume() then started a run already
+  // "elapsed" far past its duration, so the animation completed instantly
+  // while still off-screen. The user scrolled down to a static, already-drawn
+  // SVG and never saw it animate.
+  it('does not restart a run when paused and resumed off-screen', () => {
     const t = mockPerformanceNow();
     const path = makePath();
     const container = makeContainer([path]);
@@ -856,20 +860,21 @@ describe('createEngine — autoplay', () => {
     t.now = 0;
     FakeIO.instances[0].trigger(true);   // enter → run starts
     t.now = 200;
-    raf.tick();
-    FakeIO.instances[0].trigger(false);  // leave → run stops
+    raf.tick();                          // 20% drawn
+    FakeIO.instances[0].trigger(false);  // leave viewport → run stops
 
-    t.now = 300;
-    instance.pause();                    // must not stamp NaN
-    t.now = 400;
+    const framesScheduled = raf.schedule.mock.calls.length;
+
+    // A long while later — the page has been open a few seconds.
+    t.now = 5000;
+    instance.pause();
+    t.now = 5100;
     instance.resume();
 
-    t.now = 900;
-    raf.tick();
-
-    // A NaN startTime makes every derived value NaN — assert real numbers.
-    expect(instance.getProgress()).not.toBeNaN();
-    expect(Number(path.style.strokeDashoffset)).not.toBeNaN();
+    // resume() must not kick off a frame loop for an element that is not
+    // running. Previously it did, with a startTime derived from a bogus
+    // `pausedElapsed`, so the draw completed instantly and invisibly.
+    expect(raf.schedule.mock.calls.length).toBe(framesScheduled);
   });
 
   // Re-entering the viewport must produce a fresh, finite run.
