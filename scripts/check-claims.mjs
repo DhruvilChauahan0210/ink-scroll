@@ -8,8 +8,9 @@
  * build failure instead of a credibility problem discovered by a stranger.
  *
  * Checked:
- *   - "<N> tests" in README + demo strings == actual vitest test count
- *   - "<N> Examples" in README            == entries in ExamplesPage EXAMPLES
+ *   - "<N> tests" in README + demo strings  == actual vitest test count
+ *   - "<N> browser tests" in the same docs  == actual Playwright test count
+ *   - "<N> Examples" in README              == entries in ExamplesPage EXAMPLES
  *
  * Bundle sizes are covered separately by packages/svg-scroll-draw/scripts/size.mjs.
  *
@@ -45,6 +46,47 @@ function actualTestCount() {
   return json.numTotalTests;
 }
 
+/**
+ * Browser tests per engine, straight from Playwright's own collection.
+ *
+ * One project only: the three projects run the same specs, so "per engine" is the
+ * meaningful figure and multiplying by the project count would just invite a
+ * different flavour of wrong number in the docs. `--list` collects without
+ * launching a browser or the fixture server, so this costs well under a second.
+ *
+ * Returns null when Playwright is not installed, since the unit-test claims are
+ * still worth checking on a machine that cannot run the browser suite.
+ */
+function actualBrowserTestCount() {
+  try {
+    const out = execFileSync(
+      'npx',
+      [
+        'playwright', 'test',
+        '--config', 'e2e/playwright.config.ts',
+        '--project=chromium',
+        '--list', '--reporter=json',
+      ],
+      {
+        cwd: join(ROOT, 'packages/svg-scroll-draw'),
+        encoding: 'utf8',
+        maxBuffer: 64 * 1024 * 1024,
+        stdio: ['ignore', 'pipe', 'ignore'],
+      },
+    );
+    const json = JSON.parse(out.slice(out.indexOf('{')));
+    let n = 0;
+    const walk = (suite) => {
+      n += (suite.specs ?? []).length;
+      (suite.suites ?? []).forEach(walk);
+    };
+    (json.suites ?? []).forEach(walk);
+    return n;
+  } catch {
+    return null;
+  }
+}
+
 // ── Actual example count, straight from the demo source ──────────────────────
 
 function actualExampleCount() {
@@ -68,9 +110,14 @@ function actualExampleCount() {
 // ── Checks ───────────────────────────────────────────────────────────────────
 
 const tests = actualTestCount();
+const browserTests = actualBrowserTestCount();
 const examples = actualExampleCount();
 
-console.log(`Reality: ${tests} tests, ${examples} examples`);
+console.log(
+  `Reality: ${tests} tests, ` +
+    `${browserTests ?? 'unknown'} browser tests per engine, ` +
+    `${examples} examples`,
+);
 
 for (const rel of FILES_WITH_TEST_COUNTS) {
   const path = join(ROOT, rel);
@@ -85,6 +132,18 @@ for (const rel of FILES_WITH_TEST_COUNTS) {
   for (const [, n] of src.matchAll(/\*\*(\d{2,4})\s+passing\*\*/g)) {
     if (Number(n) !== tests) {
       failures.push(`${rel}: claims "**${n} passing**" but the suite has ${tests}`);
+    }
+  }
+  // "browser tests" is a separate figure and must not be conflated with the unit
+  // count — the two differ by an order of magnitude, and quoting either one as
+  // "tests" is how a reader ends up with the wrong impression of the coverage.
+  if (browserTests !== null) {
+    for (const [, n] of src.matchAll(/(\d{2,4})\s+browser tests\b/g)) {
+      if (Number(n) !== browserTests) {
+        failures.push(
+          `${rel}: claims "${n} browser tests" but the suite has ${browserTests} per engine`,
+        );
+      }
     }
   }
 }
