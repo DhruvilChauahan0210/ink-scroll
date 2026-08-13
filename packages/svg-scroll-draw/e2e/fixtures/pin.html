@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>scrollPin — wrapper injection, pin boundaries, refresh</title>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+
+  #before { height: 600px; background: #eee; }
+  #marker { position: absolute; top: 400px; left: 0; height: 10px; width: 100%; }
+  #panel  { height: 400px; background: #cde; }
+  #after  { height: 2000px; background: #f4f4f4; }
+</style>
+</head>
+<body>
+
+<div id="before"><div id="marker"></div></div>
+<div id="panel">pinned panel</div>
+<div id="after"></div>
+
+<script type="module">
+import { scrollPin } from '/dist/pin/index.mjs';
+import { publish } from './_probe.mjs';
+
+const panel  = document.querySelector('#panel');
+const marker = document.querySelector('#marker');
+
+// Measured BEFORE the wrapper is injected. A pin implementation that shifts the
+// page on init is a classic layout-shift bug, and it is invisible unless you
+// capture the geometry on both sides of the constructor.
+const preInit = {
+  panelTop:  panel.getBoundingClientRect().top,
+  markerTop: marker.getBoundingClientRect().top,
+  docHeight: document.documentElement.scrollHeight,
+};
+
+const events = [];
+
+const inst = scrollPin('#panel', {
+  onEnter:      () => events.push('enter'),
+  onLeave:      () => events.push('leave'),
+  onEnterBack:  () => events.push('enterBack'),
+  onLeaveBack:  () => events.push('leaveBack'),
+});
+
+const postInit = {
+  panelTop:  panel.getBoundingClientRect().top,
+  markerTop: marker.getBoundingClientRect().top,
+  docHeight: document.documentElement.scrollHeight,
+};
+
+const wrapper = () => document.querySelector('[data-ssd-pin-wrapper]');
+
+publish({
+  read: () => {
+    const cs = getComputedStyle(panel);
+    const rect = panel.getBoundingClientRect();
+    return {
+      scrollY:  window.scrollY,
+      progress: inst.getProgress(),
+      position: cs.position,
+      top:      rect.top,
+      left:     rect.left,
+      width:    rect.width,
+      wrapperHeight: wrapper() ? wrapper().offsetHeight : null,
+      hasWrapper: !!wrapper(),
+    };
+  },
+
+  shift: () => ({ preInit, postInit }),
+
+  events: () => events.slice(),
+  clearEvents: () => { events.length = 0; },
+
+  /**
+   * Grow the panel and refresh, reading the wrapper height at each step in ONE
+   * synchronous task. ResizeObserver callbacks are delivered asynchronously, so
+   * they cannot interleave here — which is the only way to prove `refresh()`
+   * itself did the work rather than the observer's 100ms debounce doing it.
+   */
+  refreshAfterGrow: (h) => {
+    const before = wrapper().offsetHeight;
+    panel.style.height = `${h}px`;
+    const stale = wrapper().offsetHeight; // forces layout, still the old height
+    inst.refresh();
+    return { before, stale, after: wrapper().offsetHeight, panelHeight: panel.offsetHeight };
+  },
+
+  /** Same growth, but WITHOUT calling refresh — the observer must catch it. */
+  growOnly: (h) => { panel.style.height = `${h}px`; return wrapper().offsetHeight; },
+  wrapperHeight: () => wrapper().offsetHeight,
+
+  destroyPin: () => {
+    inst.destroy();
+    return {
+      hasWrapper: !!wrapper(),
+      inlinePosition: panel.style.position,
+      inlineTop: panel.style.top,
+      inlineWidth: panel.style.width,
+      parentId: panel.parentElement.id || panel.parentElement.tagName,
+      docHeight: document.documentElement.scrollHeight,
+    };
+  },
+});
+</script>
+</body>
+</html>
