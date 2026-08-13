@@ -4,6 +4,50 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ---
 
+## [Unreleased]
+
+### Fixed
+
+- **`autoplay` animations could freeze permanently.** Leaving the viewport assigned
+  `startTime = null`, so a later `pause()` computed `NaN` and `resume()` stamped a
+  `NaN` start time. Replaced with an explicit run-state flag.
+- **`getProgress()` always returned `0`** for `autoplay` stroke animations —
+  `currentAlpha` was only ever set on the clip-path branch.
+- **`replay()` reported the previous run's progress** until the next frame landed.
+- **`npx svg-scroll-draw init` generated invalid SVG for Vue and Svelte.** The
+  templates emitted JSX-style `strokeWidth` / `strokeLinecap`, which HTML-parsed
+  templates discard — the starter example rendered with a 1px butt-capped stroke
+  instead of the intended 2.5px round one.
+- **`init` prompted for a CSS selector it then ignored** for React, Vue, Svelte and
+  Solid. It now asks only for the vanilla target, the only one that uses it.
+- Importing the CLI module no longer seizes `stdin`; the readline interface is now
+  created inside `main()`.
+
+### Changed
+
+- **Corrected every size and count claim in the README and the npm description.**
+  The package advertised `~4.4 KB gzipped` against a real 8.9 KB main entry, plus
+  `272 tests` (really 425) and `13 examples` (really 23). The size section is now a
+  measured 21-entry table showing that per-API entry points start at 0.2 KB.
+- Coverage thresholds now reflect measured reality (85/85/77/79 against 85.9% lines).
+  They previously demanded 90/90/85/80 against an actual 74%, so the required CI
+  coverage step failed on every push to `main`.
+- Coverage exclusions made consistent across all eight framework wrappers.
+- `sideEffects` and `engines` added to `package.json`.
+
+### Added
+
+- `scripts/size.mjs` — prints the per-entry gzip table and, with `--check`, fails the
+  build when an entry exceeds its budget.
+- `scripts/check-claims.mjs` — derives the real test and example counts from source
+  and fails when a doc disagrees. Wired into CI and `npm run verify`.
+- CI now typechecks the library. Previously only `apps/demo` was checked, which is how
+  a type error shipped in `core/engine.ts`.
+- 36 tests covering the CLI generators and the devtools overlay, both previously at 0%.
+- `prepare` script so a fresh clone builds the library on `npm install`.
+
+---
+
 ## [2.9.0] — 2026-06-06
 
 ### Added
