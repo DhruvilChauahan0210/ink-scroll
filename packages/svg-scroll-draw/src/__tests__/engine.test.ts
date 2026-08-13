@@ -360,4 +360,52 @@ describe('scrollDraw', () => {
     expect(instance).toHaveProperty('destroy');
     expect(() => instance.destroy()).not.toThrow();
   });
+
+  // ── Layout invalidation ─────────────────────────────────────────────────────
+  // Trigger points were cached at init and only recomputed on a window resize.
+  // But an element's document position moves for reasons that are not a window
+  // resize — lazy images above it, fonts swapping, hydration, an accordion
+  // opening — and the stale cache left the whole draw at a constant offset for
+  // the rest of the page's life. Measured at 0.0201 of the draw on the demo's own
+  // /verify page, against a native CSS path that stayed correct.
+
+  describe('layout invalidation', () => {
+    it('observes the document element and the container for layout changes', () => {
+      const observed: Element[] = [];
+      class FakeRO {
+        static instances: FakeRO[] = [];
+        constructor(public cb: () => void) { FakeRO.instances.push(this); }
+        observe = vi.fn((el: Element) => { observed.push(el); });
+        disconnect = vi.fn();
+      }
+      vi.stubGlobal('ResizeObserver', FakeRO);
+
+      const container = makeContainer([makeSvgPath()]);
+      createEngine(container);
+
+      expect(FakeRO.instances.length).toBe(1);
+      expect(observed).toContain(document.documentElement);
+      expect(observed).toContain(container);
+    });
+
+    it('disconnects the layout observer on destroy', () => {
+      const disconnect = vi.fn();
+      class FakeRO {
+        constructor(public cb: () => void) {}
+        observe = vi.fn();
+        disconnect = disconnect;
+      }
+      vi.stubGlobal('ResizeObserver', FakeRO);
+
+      const instance = createEngine(makeContainer([makeSvgPath()]));
+      instance.destroy();
+      expect(disconnect).toHaveBeenCalled();
+    });
+
+    it('works when ResizeObserver is unavailable', () => {
+      vi.stubGlobal('ResizeObserver', undefined);
+      const container = makeContainer([makeSvgPath()]);
+      expect(() => createEngine(container).destroy()).not.toThrow();
+    });
+  });
 });

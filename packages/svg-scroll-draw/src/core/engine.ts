@@ -933,7 +933,7 @@ export function createEngine(
     { root: scrollEl ?? null, threshold, rootMargin }
   );
 
-  // ── Resize ────────────────────────────────────────────────────────────────
+  // ── Resize / layout invalidation ──────────────────────────────────────────
 
   let resizeTimer: ReturnType<typeof setTimeout>;
   function onResize(): void {
@@ -953,6 +953,28 @@ export function createEngine(
   window.addEventListener('resize', onResize);
   window.addEventListener('orientationchange', onResize);
 
+  // Trigger points were cached once at init and only recomputed on a window
+  // resize. But an element's document position changes for many reasons that are
+  // not a window resize: lazy-loaded images above it, web fonts swapping in,
+  // framework hydration, an accordion opening, async content arriving. When that
+  // happened the cached triggers went stale and the whole draw sat at a constant
+  // offset for the rest of the page's life — measured at 0.0201 of the draw on
+  // the demo's own /verify page, against a native CSS path that stays correct
+  // because its view-timeline is live.
+  //
+  // A ResizeObserver on the document element catches document-height changes, and
+  // one on the container catches the element's own box changing.
+  let layoutObserver: ResizeObserver | undefined;
+  if (typeof ResizeObserver !== 'undefined') {
+    layoutObserver = new ResizeObserver(() => onResize());
+    // documentElement alone is not enough: its observed box does not track content
+    // growth in a scrolling document (measured — a 21px page growth produced no
+    // callback). body does.
+    layoutObserver.observe(document.body);
+    layoutObserver.observe(document.documentElement);
+    layoutObserver.observe(container);
+  }
+
   if (delay > 0) setTimeout(() => observer.observe(container), delay);
   else observer.observe(container);
 
@@ -964,6 +986,7 @@ export function createEngine(
       clearTimeout(repeatTimer);
       stopLoop();
       observer.disconnect();
+      layoutObserver?.disconnect();
       window.removeEventListener('resize', onResize);
       window.removeEventListener('orientationchange', onResize);
       clearTimeout(resizeTimer);

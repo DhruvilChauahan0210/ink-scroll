@@ -27,7 +27,7 @@ Works in **React · Next.js · Vue 3 · Svelte · Solid · Angular · Nuxt · As
 - **30+ options** — easing, stagger, fade, stroke color/width lerp, fill opacity, clip reveal, morphTo, velocityScale, waypoints, callbacks, repeat, autoReverse, and more
 - **Group / Sequence / Timeline APIs** — animate multiple containers simultaneously, one-after-another, or on independent scroll windows with `loop` for auto-looping after scroll completion
 - **CSS custom property** — `--scroll-draw-progress` is set on every frame so you can drive any CSS animation without a callback
-- **475 tests across 23 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
+- **478 tests across 23 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
 
 ---
 

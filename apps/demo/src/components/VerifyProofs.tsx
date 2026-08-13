@@ -9,17 +9,31 @@ import { scrollDraw } from 'svg-scroll-draw';
 
 const PATH_D = 'M10 50 C 40 10, 80 10, 100 50 S 160 90, 190 50';
 
-function Verdict({ ok, children }: { ok: boolean; children: React.ReactNode }) {
+/**
+ * `ok: null` means "not measured yet" and renders as WAIT, not BUG.
+ *
+ * This distinction matters more than it looks. An earlier version of this page
+ * had two proofs whose verdict was simply "have I observed the good thing yet",
+ * so scrolling straight past them rendered a red BUG badge for working code —
+ * and elsewhere, a guard that recorded nothing rendered identically to a genuine
+ * pass. On a page whose whole purpose is honest verification, conflating
+ * "unmeasured" with a result is the worst available failure mode.
+ */
+function Verdict({ ok, children }: { ok: boolean | null; children: React.ReactNode }) {
+  const tone =
+    ok === null
+      ? { bg: 'rgba(0,0,0,0.04)', border: '#d1d5dc', fg: '#6b6b6b', label: 'WAIT' }
+      : ok
+        ? { bg: 'rgba(241,243,51,0.18)', border: '#c9cb1e', fg: '#5c5e00', label: 'PASS' }
+        : { bg: 'rgba(220,52,0,0.10)', border: '#dc3400', fg: '#dc3400', label: 'BUG' };
+
   return (
     <div
       className="flex items-start gap-2.5 rounded-xl px-4 py-3 text-[13px] leading-relaxed"
-      style={{
-        background: ok ? 'rgba(241,243,51,0.18)' : 'rgba(220,52,0,0.10)',
-        border: `1px solid ${ok ? '#c9cb1e' : '#dc3400'}`,
-      }}
+      style={{ background: tone.bg, border: `1px solid ${tone.border}` }}
     >
-      <span className="font-mono font-bold shrink-0" style={{ color: ok ? '#5c5e00' : '#dc3400' }}>
-        {ok ? 'PASS' : 'BUG'}
+      <span className="font-mono font-bold shrink-0" style={{ color: tone.fg }}>
+        {tone.label}
       </span>
       <span className="text-pitch-black">{children}</span>
     </div>
@@ -236,7 +250,7 @@ export function GetProgressProof() {
         </div>
       </div>
 
-      <Verdict ok={peak > 0.01}>
+      <Verdict ok={peak > 0.01 ? true : null}>
         {peak > 0.01 ? (
           <>
             <code className="font-mono">getProgress()</code> is tracking the autoplay run — peak{' '}
@@ -247,7 +261,10 @@ export function GetProgressProof() {
             that reset was also missing.
           </>
         ) : (
-          <>Waiting for the first frame…</>
+          <>
+            Not measured yet — this autoplay only starts once its container enters the
+            viewport. Scroll it fully into view and the readout above will begin ticking.
+          </>
         )}
       </Verdict>
     </div>
