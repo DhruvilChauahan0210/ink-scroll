@@ -263,18 +263,90 @@ export default function VerifyPage() {
 
       <Section
         num="06"
-        title="What this page cannot show you."
-        lead="Being straight about the limits of visual verification."
+        title="Phase 1: what a real browser found."
+        lead={
+          <>
+            The section below used to say the headline claim was unverified. A
+            Playwright suite across Chromium, Firefox and WebKit now runs on every
+            CI build, and the first thing it did was disprove that claim. These are
+            measured numbers, not estimates.
+          </>
+        }
+      >
+        <div className="space-y-4">
+          {[
+            {
+              title: 'Native CSS did NOT match the JS engine',
+              detail:
+                'animation-timeline: view() was on each <path>, making every path its own timeline subject. A path bbox is not its container box, so the ranges differed: 880→1900 vs 940→1840.',
+              before: 'Chromium 0.063 apart · WebKit 0.114 apart',
+              after: '0.0000 apart at every sampled offset',
+            },
+            {
+              title: 'The CDN build crashed in a plain browser',
+              detail:
+                'A bare process.env.NODE_ENV guarded every dev warning. Style a stroke with CSS instead of an attribute and the "no stroke" warning threw ReferenceError, taking down the call.',
+              before: 'THREW: process is not defined',
+              after: 'loads and runs; guarded IS_DEV in core/env.ts',
+            },
+            {
+              title: 'The JS engine worked while the page sat still',
+              detail:
+                '8 instances parked in the viewport, zero scrolling, one second. This is the path Firefox and every pre-115 browser always take.',
+              before: '6.4 ms of JS per second',
+              after: '2.0–3.0 ms — 7× to 41× below active cost',
+            },
+            {
+              title: 'scrollSnap overrode prefers-reduced-motion',
+              detail:
+                'It animates window.scrollTo over a duration, taking over the user’s scrolling, with no check at all. Now jumps instantly instead; snapping still happens.',
+              before: 'animated scroll regardless of preference',
+              after: 'instant snap, live preference tracking',
+            },
+          ].map(({ title, detail, before, after }) => (
+            <div key={title} className="rounded-2xl border border-pitch-black p-4 sm:p-5">
+              <p className="font-display font-bold text-[15px] mb-1.5">{title}</p>
+              <p className="text-[13px] text-graphite-border leading-relaxed mb-3">{detail}</p>
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 text-[12px] font-mono">
+                <span className="text-firecracker-orange line-through">{before}</span>
+                <span className="hidden sm:inline text-graphite-border">→</span>
+                <span className="font-bold">{after}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      <Section
+        num="07"
+        title="What still is not proven."
+        lead="The limits, kept up to date rather than quietly dropped."
       >
         <ul className="space-y-3 text-[14px] leading-relaxed">
           {[
-            ['CI going green', 'Only visible on GitHub Actions once the branch is pushed. Locally: npm run verify.'],
-            ['The README rewrite', 'Renders on github.com and npmjs.com, not on this site.'],
-            ['Typecheck fix', 'npm run typecheck in packages/svg-scroll-draw — silence is the pass.'],
-            ['461 unit tests', 'They all run in jsdom with getTotalLength stubbed to a constant. They prove internal arithmetic, not browser behaviour.'],
             [
-              'Native CSS vs JS parity',
-              'Still unverified. The headline claim — that animation-timeline: view() reproduces the JS engine exactly — has no test behind it. That is Phase 1, and it needs Playwright across Chromium, WebKit and Firefox.',
+              'CI going green',
+              'Only visible on GitHub Actions once the branch is pushed. Locally: npm run verify && npm run test:e2e.',
+            ],
+            [
+              'The README rewrite and the release workflow',
+              'Render on github.com and npmjs.com, not on this site. Provenance only becomes real on the first tagged release.',
+            ],
+            [
+              '475 unit tests are still jsdom',
+              'getTotalLength is stubbed to a constant and IntersectionObserver is faked. They verify engine arithmetic. The 30 Playwright tests are what cover browser behaviour — and they cover the draw engine, not yet every API.',
+            ],
+            [
+              'Most APIs have no browser coverage yet',
+              'scrollReveal, scrollPin, scrollText, scrollCounter, scrollVideo, scrollHorizontal and scrollProgress are unit-tested only. The e2e suite so far covers scrollDraw parity and idle cost.',
+            ],
+            [
+              'The framework wrappers are untested end to end',
+              'React, Vue, Svelte, Solid, Angular, Astro and Nuxt are excluded from coverage because jsdom cannot mount them, and no e2e fixture renders them yet.',
+            ],
+            [
+              'Dev warnings are silent in CDN builds',
+              'Without a bundler there is no NODE_ENV to read, so IS_DEV is false and warnings are suppressed. Safe, but a separate dev CDN build would be better.',
             ],
           ].map(([t, d]) => (
             <li key={t} className="flex gap-3">
@@ -291,8 +363,9 @@ export default function VerifyPage() {
       <footer className="px-4 sm:px-6 md:px-12 py-12">
         <div className="max-w-4xl mx-auto">
           <p className="text-[12px] font-mono text-graphite-border">
-            Branch <code>phase0-production-ready</code> · 6 commits ·{' '}
-            <code>npm run verify</code> exits 0
+            Branch <code>phase0-production-ready</code> · 475 unit tests + 30 browser
+            tests · <code>npm run verify</code> and <code>npm run test:e2e</code> both
+            exit 0
           </p>
         </div>
       </footer>
