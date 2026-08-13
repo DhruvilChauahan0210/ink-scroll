@@ -1,7 +1,9 @@
 # Project Status — svg-scroll-draw
 
 > Current version: **2.9.0** — published to npm
-> Tests: **478 passing** across 23 test suites
+> Tests: **478 unit** across 23 suites · **76 browser tests** per engine (228 runs
+> across Chromium/Firefox/WebKit) · **27 mutations**, each caught by the one test
+> named for it
 > Bundle: **9.0 KB gzipped** (main entry; per-API entries from 0.2 KB) · zero runtime dependencies
 > Last updated: 2026-08-13
 
@@ -49,6 +51,31 @@
 ### Testing
 - [x] 478 tests across 23 suites — `engine`, `engine-options`, `engine-native`, `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollText` (19)
 - [x] Initial state fix — `createAnimateEngine` and `scrollCounter` now apply correct alpha immediately on init (no flash before IO fires)
+
+### Browser tests (Phase 2, `packages/svg-scroll-draw/e2e`)
+76 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
+`helpers.ts` (deterministic sweep — scroll to a fixed offset, wait two frames,
+read) and `fixtures/_probe.mjs` (parsing stays in the page, so specs assert on
+numbers).
+
+- [x] `parity` — native CSS fast path vs JS engine (Phase 1)
+- [x] `idle` — idle cost of the JS engine (Phase 1)
+- [x] `reveal` — resolved transforms, stagger cascade, `once` latching, reduced motion, destroy restores styles
+- [x] `pin` — no layout shift on wrapper injection, pin/unpin boundaries, parked position and width, progress, all four lifecycle callbacks, `refresh()`, ResizeObserver auto-refresh, destroy unwraps
+- [x] `snap` — exact section landing, index clamping, threshold both directions, one section per gesture, animated vs **real** reduced-motion instant snap, destroy
+- [x] `text` — split preserves rendered text exactly, `aria-label` + `aria-hidden` spans, stagger cascade, no re-split/reflow loop over 30 frames, reduced motion, destroy restores markup byte-for-byte including nested elements
+- [x] `counter` — from-value at construction, formatting/decimals/custom format at the final value, well-formed text every frame (no NaN/exponential/out-of-range), `once` hold, reduced motion, destroy
+- [x] `progress` — accurate raw value across the window, **dependent CSS resolving the variables through `calc()`**, eased ≠ raw, `onProgress`, renamed variable, `easedVariable: null`, clamping, destroy removes the properties
+- [x] `parallax` — travel = speed x height, negative speed reverses, `axis: 'x'` uses width, reverses on the way back, reduced motion, destroy restores
+- [x] `video` — real metadata, `currentTime` tracks scroll, **painted frame verified against `currentTime`** by canvas readback, no write before `loadedmetadata`, reduced motion, destroy
+- [x] `horizontal` — translateX travel matches the sticky track width, every panel measurably reachable, `onProgress`, reverses, reduced motion keeps scrubbing, `refresh()` after a widened track, destroy
+- [x] `scripts/mutation-check.mjs` — 23 one-line source mutations, each required to fail the single test named for it
+- [x] `scripts/make-fixture-video.mjs` — reproducible 4s scrub clip, no system tooling needed
+
+### Browser tests still missing
+- [ ] Group / Sequence / Timeline, `Cinematic`
+- [ ] `scrollAnimate`'s own native CSS fast path (parity covers `scrollDraw`'s only)
+- [ ] Framework wrappers (Priority 2 — ~1,000 lines still excluded from coverage)
 
 ---
 

@@ -1,6 +1,6 @@
 # svg-scroll-draw — Roadmap
 
-> Last updated: 2026-06-06 — v2.9.0
+> Last updated: 2026-08-13 — v2.9.0 published; Phase 2 correctness work unreleased
 >
 > Items marked ✓ are shipped. Remaining items are ordered by value/effort ratio.
 
@@ -127,22 +127,42 @@
 
 ## Remaining
 
-### Library — next batch (v2.8.0+)
-- [ ] **`/vs-gsap` comparison page** — bundle size, FPS benchmark, license cost, API side-by-side
-- [ ] **GSAP migration guide** — `gsap.to()` → `scrollAnimate`, `ScrollTrigger` → `scrollPin`/callbacks
-- [ ] **Horizontal scroll sections** — `scrollPin` with horizontal axis
-- [ ] **Velocity / momentum detection** on `scrollAnimate`
-- [ ] **`scrollPin.refresh()`** auto-call on dynamic content changes (ResizeObserver)
+Removed from this section because they shipped: the `/vs-gsap` page (library and
+demo site), horizontal scroll sections (`scrollHorizontal`), velocity detection
+(`velocityScale`), `scrollPin` ResizeObserver auto-refresh, and the
+scrollPin/scrollSnap demos and blog post.
 
-### Demo Site
-- [ ] **`/vs-gsap` page** on demo site — side-by-side code + live demos
-- [ ] **scrollPin + scrollSnap demos** on home page and examples page
-- [ ] **Blog post** — "Pin sections on scroll without GSAP: scrollPin"
+Work is now ordered by `PHASE-2-PLAN.md`, whose premise is that correctness comes
+before reach: every bug found in Phase 1 was invisible to jsdom, and five came out
+of examining a single API in a real browser.
+
+### Correctness (Phase 2, Priorities 1–3)
+- [x] Browser coverage for `scrollReveal`, `scrollPin`, `scrollSnap`, `scrollText`, `scrollCounter`, `scrollProgress`, `scrollParallax`, `scrollVideo`
+- [x] Mutation harness proving each new test fails against a deliberately broken build (27 mutations)
+- [x] `scrollHorizontal` — reduced-motion decision (keeps scrubbing), the zero-length-trigger fix, and browser tests
+- [ ] Browser tests for Group / Sequence / Timeline and `Cinematic`
+- [ ] Parity test for `scrollAnimate`'s own native CSS fast path — it has one and it has never been checked
+- [ ] **Framework wrapper e2e** — ~1,000 lines across 8 wrappers, excluded from coverage because jsdom cannot mount them
+- [ ] Expose `refresh()` on `scrollDraw` (`scrollPin` and `scrollHorizontal` have it)
+- [ ] Ship a `*.dev.js` CDN build — without a bundler `IS_DEV` is false, so CDN users get no diagnostics at all
+- [ ] Ratchet coverage: `group` 50% lines, `snap` 79%, `text` 80%, `devtools` 47%
+
+### Release (Phase 2, Priority 6)
+- [ ] Push `phase0-production-ready`, watch CI go green remotely for the first time
+- [ ] Cut 2.10.0 — user-visible fixes plus new behaviour, no breaking API change
+
+### Reach (Phase 2, Priorities 4–5 — deliberately after the above)
+- [ ] **Naming decision** — repo `ink-scroll`, package `svg-scroll-draw`, docs "a scroll animation platform". 21 entry points, most unrelated to SVG; nobody searching npm for "scroll reveal" finds `svg-scroll-draw`. Recommended: publish under a new name, keeping `svg-scroll-draw` as a deprecated alias that re-exports.
+- [ ] **Migration guides** from GSAP ScrollTrigger, AOS and ScrollReveal.js — the highest-intent traffic there is
+- [ ] **Real-world recipes** instead of option tables: animated logo, sticky feature section, horizontal case-study strip, animated stat row, scrubbed explainer video
+- [ ] Auto-generate the README size table from `npm run size` rather than pasting it
+- [ ] Document the known jump-scroll asymmetry in the docs, not only in a test comment
 
 ---
 
 ## Priority Order
 
-1. `/vs-gsap` page — single biggest SEO + conversion driver
-2. Demo page for scrollPin — most visually impressive new feature
-3. GSAP migration guide — captures "GSAP alternative" search intent
+1. Finish Priority 1 browser coverage — Group / Sequence / Timeline, Cinematic, `scrollAnimate` native parity
+2. Framework wrapper e2e — thin adapters nobody has tested, and what most users actually touch
+3. Correctness debt, then push + green CI + release 2.10.0
+4. Rename, then migration guides and recipes — highest-intent traffic, but building it on unverified code is building on sand

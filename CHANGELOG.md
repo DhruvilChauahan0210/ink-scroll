@@ -8,6 +8,51 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### Fixed
 
+- **`scrollHorizontal` never moved the track, in its own documented setup.** The
+  default trigger window (`top top` → `bottom bottom`) was measured against the
+  track, and a `position: sticky` stage pins the track at exactly one viewport
+  tall — so both ends resolved to the same scroll position. A zero-length window
+  clamps progress at 0 forever: the API was inert in the exact CSS arrangement its
+  own JSDoc prescribes. It had 100% line coverage in jsdom, where every rect is 0
+  and the window is equally degenerate, which is indistinguishable from working.
+  The trigger is now measured from the element that actually holds the scroll room
+  — the container of the nearest sticky ancestor — overridable with the new
+  `triggerElement` option, and falling back to the previous behaviour when there is
+  no sticky ancestor.
+- **A zero-length trigger window is now a development warning** rather than a
+  silently inert element. This defect is invisible: everything looks configured and
+  nothing ever moves.
+
+- **`destroy()` left the last animated frame's inline styles on the element.**
+  `createAnimateEngine` writes `opacity` / `transform` (and
+  `--scroll-draw-progress`) inline every frame and removed none of them on
+  teardown, so destroying anything mid-animation froze it there permanently — a
+  card destroyed at 34% stayed at `opacity: 0.34; translateY(21px)` for the rest
+  of the page's life, which is worse than never having animated it. It also made
+  `scrollReveal`'s documented "restore original styles" untrue. The engine now
+  captures the element's inline values before its first write and restores them on
+  `destroy()`, on both the native and JS paths and under reduced motion. Affects
+  `scrollReveal`, `scrollAnimate` and `scrollParallax`.
+- **`scrollSnap` fired `onSnap` twice for a single snap.** The scroll event
+  produced by its *own* animated scroll was treated as a fresh user gesture, and
+  the resulting `snapTo(currentIndex)` took the "already there" early return —
+  firing the callback again. Guaranteed under reduced motion, where one instant
+  jump emits one unmistakable scroll event; intermittent otherwise, since a snap
+  whose final frame lands where it already was emits no trailing event at all. A
+  public callback that fires once or twice depending on the easing curve is worse
+  than either. The scroll handler now ignores a position already parked on the
+  current section.
+
+### Removed
+
+- Dead initial write in `scrollCounter`: `el.textContent = fmt(from)` ran a few
+  lines before `applyAlpha(initAlpha)` overwrote it in the same task, so no frame
+  could ever show it. The surviving write is the correct one — it renders the value
+  for the current scroll position, which for an element already scrolled past is
+  its final value rather than `from`.
+
+### Fixed (earlier in this cycle)
+
 - **The native CSS fast path did not match the JS engine.** `buildNative()` put
   `animation-timeline: view()` on each `<path>`, making every path its own timeline
   subject. A path's bounding box is almost never its container's box, so the two
@@ -75,10 +120,38 @@ All notable changes to `svg-scroll-draw` are documented here.
 ### Added
 
 - **Playwright test suite across Chromium, Firefox and WebKit** (`npm run test:e2e`),
-  run in CI. The 475 unit tests run in jsdom with `getTotalLength` stubbed and
+  run in CI. The 478 unit tests run in jsdom with `getTotalLength` stubbed and
   `IntersectionObserver` faked, so they verify engine arithmetic and nothing about
-  browser behaviour. These cover native-vs-JS parity and idle cost.
+  browser behaviour. Now 76 browser tests per engine (228 runs) covering
+  native-vs-JS parity, idle cost, and `scrollReveal`, `scrollPin`, `scrollSnap`,
+  `scrollText`, `scrollCounter`, `scrollProgress`, `scrollParallax`, `scrollVideo`
+  and `scrollHorizontal`. Notable: reduced motion is exercised through Playwright's real
+  media emulation rather than a stubbed `matchMedia`; `scrollProgress` is checked
+  by driving real `calc()` widths off its custom properties, not by reading the
+  value back in JS; and `scrollVideo` verifies the *painted* frame against
+  `currentTime` via a canvas readback, so a scrub that sets the property without
+  repainting cannot pass.
+- **`scripts/mutation-check.mjs`** — patches one line of source per run, rebuilds,
+  and requires the single test named for that behaviour to fail. 27 mutations, all
+  caught. `CONTRIBUTING.md` requires new tests to be watched failing against a
+  broken build; this makes that a command instead of a claim that decays.
+- **`scripts/make-fixture-video.mjs`** — regenerates `e2e/fixtures/clip.webm`, the
+  4-second scrub target (one solid grey per frame, every frame a keyframe, so a
+  painted pixel identifies the decoded frame). Uses Playwright's own browser and
+  bundled ffmpeg, so it needs no system tooling.
 - `respectReducedMotion` option on `scrollSnap` (default `true`).
+- `respectReducedMotion` option on `scrollAnimate` (default `true`) and on
+  `scrollHorizontal` (default **`false`**). Horizontal scrubbing opts out
+  deliberately: the transform advances only as the user scrolls, 1:1 with their
+  input, so it is direct manipulation rather than autonomous motion — and applying
+  a final state instead leaves every panel but the last unreachable inside the
+  sticky `overflow: hidden` container, hiding the content from exactly the people
+  who asked for less motion.
+- `triggerElement` option on `scrollHorizontal` (and on `scrollAnimate`, for the
+  same purpose): measure the trigger window from an element other than the animated
+  one. Required whenever the animated element is sticky-pinned and therefore cannot
+  supply the scroll length itself. Setting it disables the native CSS fast path,
+  since `animation-timeline: view()` can only measure its own subject.
 - `SECURITY.md` with a stated threat model, `CONTRIBUTING.md`, issue and PR
   templates, and Dependabot.
 - **Release workflow with npm provenance.** Publishing was manual from a laptop;
@@ -97,6 +170,16 @@ All notable changes to `svg-scroll-draw` are documented here.
   coverage step failed on every push to `main`.
 - Coverage exclusions made consistent across all eight framework wrappers.
 - `sideEffects` and `engines` added to `package.json`.
+- **The e2e viewport is now genuinely fixed at 900x800.** It was set at the top
+  level of the Playwright config, where each project's `devices[...]` spread
+  overrode it — leaving Chromium and Firefox at 1280x720 and WebKit at 1280x700.
+  Any fixture doing arithmetic from the viewport height was therefore subtly wrong
+  in exactly one browser.
+- **The e2e static server honours HTTP Range requests.** Without `Accept-Ranges`
+  and 206 replies, Chromium reports media as non-seekable: `video.seekable` stays
+  empty and every assignment to `currentTime` is silently dropped. That made a
+  correct `scrollVideo` look completely broken — the exact class of false negative
+  this phase exists to remove.
 
 ### Added
 
