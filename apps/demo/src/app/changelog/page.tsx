@@ -28,6 +28,25 @@ const NPM = 'https://www.npmjs.com/package/svg-scroll-draw';
 
 const RELEASES = [
   {
+    // Publish checklist: move `tag: 'Latest'` / `tagColor: 'bg-lime-glow'` down to
+    // this entry from 2.9.0, and set the real date. The item list is final.
+    version: '2.10.0',
+    date: 'Unreleased',
+    tag: 'Next',
+    tagColor: 'bg-subtle-ash',
+    items: [
+      { type: 'fix', text: 'scrollHorizontal never moved the track in its own documented setup. The default trigger window was measured against the track, and a position:sticky stage pins that track at exactly one stage tall — so both ends resolved to the same scroll position, clamping progress at 0 forever. It had 100% line coverage in jsdom the whole time it was broken: every rect there is 0, so the window is equally degenerate and looks identical to a working one. The trigger is now measured from the container that actually holds the scroll room.' },
+      { type: 'new', text: 'triggerElement on scrollHorizontal and scrollAnimate — measure the trigger window from an element other than the animated one. Needed when the animated element is sticky-pinned and cannot supply the scroll length itself. Setting it disables the native CSS fast path, since animation-timeline: view() can only measure its own subject.' },
+      { type: 'new', text: 'respectReducedMotion on scrollAnimate (default true) and scrollHorizontal (default false). Horizontal scrubbing opts out deliberately: the transform advances only as the user scrolls, 1:1 with their input, so it is direct manipulation rather than motion that plays at them — and holding a final state instead would leave every panel but one unreachable inside the sticky overflow:hidden container, hiding the content from exactly the people who asked for less motion.' },
+      { type: 'fix', text: 'destroy() left the last animated frame’s inline styles on the element. Destroying anything mid-animation froze it there permanently — a card destroyed at 34% stayed at opacity 0.34 and offset by 21px for the rest of the page’s life, which is worse than never having animated it. Affects scrollReveal, scrollAnimate and scrollParallax, and it also made scrollReveal’s documented "restore original styles" untrue.' },
+      { type: 'fix', text: 'scrollSnap fired onSnap twice for a single snap. The scroll event produced by its own animated scroll was treated as a fresh user gesture. Guaranteed under reduced motion and easing-dependent otherwise — a public callback that fires once or twice depending on the curve is worse than either.' },
+      { type: 'new', text: 'A zero-length trigger window is now a development warning rather than a silently inert element. That is the defect class above: everything looks configured and nothing ever moves.' },
+      { type: 'new', text: '46 new browser tests — 30 to 76 per engine, on Chromium, Firefox and WebKit. scrollReveal, scrollPin, scrollSnap, scrollText, scrollCounter, scrollProgress, scrollParallax, scrollVideo and scrollHorizontal all gained real-browser coverage. scrollVideo verifies the painted frame against currentTime by canvas readback; scrollProgress drives real calc() widths off its custom properties instead of reading the values back in JS.' },
+      { type: 'new', text: 'Mutation harness (scripts/mutation-check.mjs) — patches one line of source, rebuilds, and requires the single test named for that behaviour to fail. 27 mutations, all caught, including a regression guard for every fix above.' },
+      { type: 'fix', text: 'Two test-harness faults that were producing false results: the "fixed" e2e viewport was silently overridden per browser project, leaving WebKit 100px shorter than the others, and the fixture server refused HTTP Range requests — which makes Chromium report media as non-seekable, so a correct scrollVideo looked completely inert.' },
+    ],
+  },
+  {
     version: '2.9.0',
     date: 'June 2026',
     tag: 'Latest',

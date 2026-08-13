@@ -131,6 +131,7 @@ const FEATURES = [
   { feature: 'Pin / sticky sections',                us: true,  gsap: true,  note: '' },
   { feature: 'Section snapping',                     us: true,  gsap: true,  note: '' },
   { feature: 'onEnter / onLeave / onEnterBack / onLeaveBack', us: true, gsap: true, note: '' },
+  { feature: 'Honours prefers-reduced-motion by default', us: true, gsap: 'partial', note: 'GSAP ships gsap.matchMedia() for this, but you write the reduced-motion variant of each animation yourself. Here it is the default, with a documented per-API opt-out.' },
   { feature: 'Native CSS scroll-driven animation',   us: true,  gsap: false, note: 'GSAP always runs JS' },
   { feature: 'Parallax',                             us: true,  gsap: true,  note: '' },
   { feature: 'Path morphing on scroll',              us: true,  gsap: true,  note: '' },

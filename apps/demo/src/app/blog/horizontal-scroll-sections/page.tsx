@@ -163,6 +163,14 @@ scrollHorizontal(track, {
 
           <p className="text-graphite-border leading-relaxed mb-4">That&apos;s it. The trigger defaults to <code className="font-mono text-sm bg-marketplace-gray px-1 rounded">top top → bottom bottom</code> which maps the full scroll height of the outer container to the full horizontal travel distance.</p>
 
+          <p className="text-graphite-border leading-relaxed mb-4">Note <em>which</em> element that window is measured from: the outer container, not the track. The track can&apos;t supply it — the sticky stage pins the track at exactly one viewport tall, so measuring against it would put the start and end of the window at the same scroll position, and nothing would move. <code className="font-mono text-sm bg-marketplace-gray px-1 rounded">scrollHorizontal</code> finds the outer container for you by walking up to the nearest <code className="font-mono text-sm bg-marketplace-gray px-1 rounded">position: sticky</code> ancestor and taking its parent, which is the structure above.</p>
+
+          <p className="text-graphite-border leading-relaxed mb-4">If your layout doesn&apos;t use a sticky stage — a custom pinning approach, or a nested scroll container — pass the element that owns the scroll length explicitly:</p>
+          <CodeBlock file="app.js">{`scrollHorizontal(track, {
+  distance:       track.scrollWidth - window.innerWidth,
+  triggerElement: '#outer',   // the element whose height is the scroll runway
+});`}</CodeBlock>
+
           <h2 className="font-display font-extrabold text-2xl sm:text-3xl tracking-[-0.02em] mb-4 mt-12">React version</h2>
           <CodeBlock file="HorizontalScroll.tsx">{`'use client';
 import { useEffect, useRef } from 'react';
@@ -264,6 +272,8 @@ scrollProgress('#track', {
                   ['easing',   'EasingName | fn', 'Easing for horizontal movement. Default: linear'],
                   ['trigger',  'TriggerConfig',   'Scroll window. Default: top top → bottom bottom'],
                   ['scrollContainer', 'string | Element', 'Custom scroll container. Default: window'],
+                  ['triggerElement', 'string | Element', 'Element whose height is the scroll runway. Default: the container of the nearest position:sticky ancestor'],
+                  ['respectReducedMotion', 'boolean', 'Default: false. The scrub advances only as the user scrolls, and holding a final state would hide every panel but one'],
                   ['onProgress', '(p: number) => void', 'Progress 0–1 through the horizontal travel'],
                 ].map(([opt, type, desc]) => (
                   <tr key={opt} className="border-b border-subtle-ash">
