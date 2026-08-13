@@ -39,8 +39,45 @@ createServer(async (req, res) => {
     }
 
     const body = await readFile(path);
+    const type = TYPES[extname(path)] ?? 'application/octet-stream';
+
+    /*
+     * Range support exists for one reason: <video> seeking.
+     *
+     * Without `Accept-Ranges` and 206 replies, Chromium reports the media as
+     * non-seekable — `video.seekable` stays empty and every assignment to
+     * `currentTime` is silently ignored. That made the whole scrollVideo suite
+     * read as "the library never scrubs", when in fact the library was writing
+     * the right values and the server was refusing to let the decoder move. A
+     * fixture server that cannot serve media honestly produces exactly the kind
+     * of false negative this phase is supposed to eliminate.
+     */
+    const range = /^bytes=(\d*)-(\d*)$/.exec(req.headers.range ?? '');
+    if (range) {
+      const start = range[1] === '' ? Math.max(0, body.length - Number(range[2])) : Number(range[1]);
+      const end = range[1] === '' || range[2] === '' ? body.length - 1 : Number(range[2]);
+
+      if (Number.isNaN(start) || Number.isNaN(end) || start > end || start >= body.length) {
+        res.writeHead(416, { 'Content-Range': `bytes */${body.length}` }).end();
+        return;
+      }
+
+      const slice = body.subarray(start, end + 1);
+      res.writeHead(206, {
+        'Content-Type': type,
+        'Content-Range': `bytes ${start}-${end}/${body.length}`,
+        'Content-Length': slice.length,
+        'Accept-Ranges': 'bytes',
+        'Cache-Control': 'no-store',
+      });
+      res.end(slice);
+      return;
+    }
+
     res.writeHead(200, {
-      'Content-Type': TYPES[extname(path)] ?? 'application/octet-stream',
+      'Content-Type': type,
+      'Content-Length': body.length,
+      'Accept-Ranges': 'bytes',
       'Cache-Control': 'no-store',
     });
     res.end(body);

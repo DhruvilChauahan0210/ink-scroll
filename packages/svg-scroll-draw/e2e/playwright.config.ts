@@ -16,6 +16,9 @@ import { defineConfig, devices } from '@playwright/test';
  */
 const PORT = Number(process.env.E2E_PORT ?? 4173);
 
+/** Every fixture's scroll arithmetic is written against this exact size. */
+const VIEWPORT = { width: 900, height: 800 };
+
 export default defineConfig({
   testDir: '.',
   testMatch: '**/*.spec.ts',
@@ -27,14 +30,21 @@ export default defineConfig({
   use: {
     baseURL: `http://localhost:${PORT}`,
     trace: 'retain-on-failure',
-    // A fixed viewport keeps the scroll maths in the fixtures deterministic.
-    viewport: { width: 900, height: 800 },
   },
 
+  /**
+   * A fixed viewport keeps the scroll maths in the fixtures deterministic, and it
+   * has to be re-applied *after* each device spread: project-level `use` wins over
+   * top-level `use`, and every device preset carries its own viewport. Setting it
+   * only at the top level silently left Chromium and Firefox at 1280x720 and
+   * WebKit at 1280x700 — so the same fixture offset meant a different position in
+   * WebKit than in the other two, and any fixture doing arithmetic from the
+   * viewport height would be subtly wrong in exactly one browser.
+   */
   projects: [
-    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
-    { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
-    { name: 'webkit', use: { ...devices['Desktop Safari'] } },
+    { name: 'chromium', use: { ...devices['Desktop Chrome'], viewport: VIEWPORT } },
+    { name: 'firefox', use: { ...devices['Desktop Firefox'], viewport: VIEWPORT } },
+    { name: 'webkit', use: { ...devices['Desktop Safari'], viewport: VIEWPORT } },
   ],
 
   webServer: {
