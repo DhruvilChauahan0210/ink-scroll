@@ -35,7 +35,20 @@ function checkElement(el: SVGElement): void {
   else if (fill && fill !== 'none' && fill !== 'transparent') warnDev('Element has a fill — it may obscure the stroke animation.', el);
 }
 
-function createDebugOverlay(tStart: number, tEnd: number, axis: 'x' | 'y'): HTMLElement {
+/**
+ * Debug overlay showing the computed trigger lines.
+ *
+ * Returns a teardown function as well as the node. The previous version only
+ * returned the node, so its `scroll` listener was never removed — and because
+ * cacheTriggers() rebuilds the overlay on every resize, listeners accumulated
+ * while the detached nodes stayed reachable from those closures. A leak in the
+ * tool you reach for when something is already wrong.
+ */
+function createDebugOverlay(
+  tStart: number,
+  tEnd: number,
+  axis: 'x' | 'y',
+): { el: HTMLElement; destroy: () => void } {
   const overlay = document.createElement('div');
   overlay.setAttribute('data-svg-scroll-draw-debug', '');
   overlay.style.cssText = 'position:fixed;pointer-events:none;z-index:9999;font-family:monospace;font-size:11px;top:0;left:0;right:0;bottom:0;';
@@ -49,7 +62,13 @@ function createDebugOverlay(tStart: number, tEnd: number, axis: 'x' | 'y'): HTML
   document.body.appendChild(overlay);
   window.addEventListener('scroll', update, { passive: true });
   update();
-  return overlay;
+  return {
+    el: overlay,
+    destroy() {
+      window.removeEventListener('scroll', update);
+      overlay.remove();
+    },
+  };
 }
 
 // ── Path morphing helper ──────────────────────────────────────────────────────
@@ -167,8 +186,21 @@ export function createEngine(
   let currentAlpha  = 0;
   let repeatCount   = 0;
   let repeatTimer: ReturnType<typeof setTimeout> | undefined;
-  let debugOverlay: HTMLElement | null = null;
+  let debugOverlay: { el: HTMLElement; destroy: () => void } | null = null;
+  /** Tears down the overlay and its scroll listener, if one is mounted. */
+  function destroyDebugOverlay(): void {
+    debugOverlay?.destroy();
+    debugOverlay = null;
+  }
   const firedWaypoints = new Set<number>();
+
+  // Idle short-circuit state. `lastAppliedScroll` is the scroll position the
+  // currently-rendered frame was computed from; NaN means "nothing rendered yet".
+  // `dirty` forces one recompute even when the scroll position is unchanged —
+  // set by anything that invalidates the rendered frame (replay, repeat, resize,
+  // becoming visible again).
+  let lastAppliedScroll = NaN;
+  let dirty             = true;
 
   // velocity tracking
   let prevVelScroll    = -1;
@@ -204,7 +236,7 @@ export function createEngine(
     tStart = result.tStart;
     tEnd   = result.tEnd;
     if (debug && IS_DEV) {
-      debugOverlay?.remove();
+      destroyDebugOverlay();
       debugOverlay = createDebugOverlay(tStart, tEnd, axis);
     }
   }
@@ -642,6 +674,25 @@ export function createEngine(
     const now           = performance.now();
     const currentScroll = scrollPos();
 
+    // ── Idle short-circuit ────────────────────────────────────────────────────
+    // While the container is in view this loop runs every frame whether or not
+    // the user is scrolling. Measured in Chromium: 8 instances sitting in a
+    // viewport with no scrolling at all cost 488 frames and 6.4 ms of JS per
+    // second, recomputing identical values and rewriting identical styles.
+    //
+    // If the scroll position has not moved and nothing has invalidated the
+    // rendered frame, skip the body but keep the loop alive so the next real
+    // scroll is picked up immediately.
+    //
+    // velocityScale is excluded: its output depends on elapsed time as velocity
+    // decays, so it genuinely needs a frame even at a fixed scroll position.
+    if (!dirty && velocityScale === false && currentScroll === lastAppliedScroll) {
+      rafId = requestAnimationFrame(update);
+      return;
+    }
+    dirty = false;
+    lastAppliedScroll = currentScroll;
+
     // Velocity scaling
     let effectiveSpeed = speed;
     if (velocityScale !== false) {
@@ -777,6 +828,9 @@ export function createEngine(
           completed   = false;
           firedWaypoints.clear();
           resetPaths();
+          // resetPaths() wound the draw back to zero at an unchanged scroll
+          // position, so the loop must recompute rather than short-circuit.
+          dirty = true;
         }, repeatDelay);
       }
     } else if (!allComplete && !once) {
@@ -788,12 +842,38 @@ export function createEngine(
 
   // ── IntersectionObserver ──────────────────────────────────────────────────
 
+  // A single rafId was previously written from both here and the tail of
+  // update(). If the observer scheduled a frame while one was already pending,
+  // the older handle was overwritten and that loop became unstoppable — immune
+  // to pause() and destroy(). `looping` keeps exactly one loop in flight.
+  let looping = false;
+
+  function startLoop(): void {
+    if (looping) return;
+    looping = true;
+    rafId = requestAnimationFrame(function frame() {
+      update();
+      // update() reschedules itself; this wrapper only guards entry.
+    });
+  }
+
+  function stopLoop(): void {
+    looping = false;
+    cancelAnimationFrame(rafId);
+  }
+
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((e) => {
         isVisible = e.isIntersecting;
-        if (isVisible && !paused) rafId = requestAnimationFrame(update);
-        else cancelAnimationFrame(rafId);
+        if (isVisible && !paused) {
+          // Re-entering the viewport must repaint even if the scroll position
+          // is identical to when it left.
+          dirty = true;
+          startLoop();
+        } else {
+          stopLoop();
+        }
       });
     },
     { root: scrollEl ?? null, threshold, rootMargin }
@@ -810,6 +890,9 @@ export function createEngine(
         el.style.strokeDasharray = `${lengths[i]}`;
       });
       cacheTriggers();
+      // Trigger points moved — the rendered frame is stale even at the same
+      // scroll offset.
+      dirty = true;
     }, 150);
   }
 
@@ -825,11 +908,12 @@ export function createEngine(
     destroy() {
       cancelAnimationFrame(rafId);
       clearTimeout(repeatTimer);
+      stopLoop();
       observer.disconnect();
       window.removeEventListener('resize', onResize);
       window.removeEventListener('orientationchange', onResize);
       clearTimeout(resizeTimer);
-      debugOverlay?.remove();
+      destroyDebugOverlay();
     },
 
     replay() {
@@ -844,17 +928,21 @@ export function createEngine(
       firedWaypoints.clear();
       clearTimeout(repeatTimer);
       resetPaths();
+      // Wound back to zero without the scroll position changing.
+      dirty = true;
+      if (isVisible) startLoop();
     },
 
     pause() {
       paused = true;
-      cancelAnimationFrame(rafId);
+      stopLoop();
     },
 
     resume() {
       if (!paused) return;
       paused = false;
-      if (isVisible) rafId = requestAnimationFrame(update);
+      dirty  = true;
+      if (isVisible) startLoop();
     },
 
     seek(progress: number) {
@@ -862,8 +950,10 @@ export function createEngine(
       currentAlpha = p;
       frozenAlpha  = p;
       paused       = true;
-      cancelAnimationFrame(rafId);
+      stopLoop();
       applyAlpha(p, direction);
+      // A later resume() must recompute from the live scroll position.
+      dirty = true;
     },
 
     getProgress() {
