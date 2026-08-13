@@ -1,0 +1,27 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      # The library ships zero runtime dependencies, so everything here is dev
+      # tooling. Grouping keeps the PR volume sane on a small project.
+      dev-tooling:
+        patterns: ["*"]
+        update-types: [minor, patch]
+    ignore:
+      # Majors for these change build output or test semantics — worth doing
+      # deliberately rather than as an automated PR.
+      - dependency-name: tsup
+        update-types: [version-update:semver-major]
+      - dependency-name: vitest
+        update-types: [version-update:semver-major]
+      - dependency-name: "@playwright/test"
+        update-types: [version-update:semver-major]
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: monthly

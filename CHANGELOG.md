@@ -8,6 +8,41 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### Fixed
 
+- **The native CSS fast path did not match the JS engine.** `buildNative()` put
+  `animation-timeline: view()` on each `<path>`, making every path its own timeline
+  subject. A path's bounding box is almost never its container's box, so the two
+  engines measured different scroll ranges and drew different amounts at the same
+  offset — up to 0.063 apart in Chromium and 0.114 in WebKit, with multi-path SVGs
+  drifting from each other as well. The timeline is now a named `view-timeline`
+  declared on the container, which reproduces the JS trigger window exactly
+  (0.0000 divergence at every sampled offset). This was the library's headline
+  claim and nothing had ever verified it.
+- **`ReferenceError: process is not defined` in any browser without a bundler.**
+  Every dev warning was guarded by a bare `process.env.NODE_ENV` check. Reaching
+  one threw instead of logging — which broke the advertised CDN / `<script type=
+  "module">` usage. Repro: style a path's stroke with CSS rather than a `stroke`
+  attribute, and the engine's "no stroke" warning took the whole call down. All 13
+  affected modules now use a guarded `IS_DEV` from `core/env.ts`, enforced by a test.
+- **`scrollSnap` ignored `prefers-reduced-motion`.** It animates
+  `window.scrollTo` over a duration, taking over the user's scrolling, with no
+  check at all. It now jumps straight to the target section when reduced motion is
+  requested; snapping still happens, only the animated scroll is dropped.
+- **The reduced-motion preference was read once at construction**, so toggling the
+  OS setting did nothing until a reload. Now tracked live via
+  `core/motion.ts`, with the listener removed on `destroy()`.
+- **`morphTo` produced silently wrong shapes.** Interpolation pairs coordinates
+  positionally, so mismatched command sequences never reach the target —
+  `'M10 10 L90 90'` → `'M10 10 C20 20, 40 40, 90 90'` ends at `'M10 10 L20 20'`.
+  Now warns in development on a command or coordinate-count mismatch, and on
+  `morphTo` applied to a non-`<path>` element.
+- **The debug overlay leaked a scroll listener.** `destroy()` removed the node but
+  not the listener, and `cacheTriggers()` rebuilt the overlay on every resize, so
+  listeners accumulated while detached nodes stayed reachable.
+- **A single `rafId` was written from two places** — the IntersectionObserver
+  callback and the tail of `update()`. If the observer scheduled a frame while one
+  was pending, the older handle was lost and that loop became unstoppable, immune
+  to `pause()` and `destroy()`.
+
 - **`autoplay` animations could complete invisibly.** Leaving the viewport assigned
   `startTime = null`. Since `null` coerces to `0`, a later `pause()` recorded the
   whole timestamp since page load as `pausedElapsed` instead of an elapsed duration,
@@ -25,6 +60,31 @@ All notable changes to `svg-scroll-draw` are documented here.
   Solid. It now asks only for the vanilla target, the only one that uses it.
 - Importing the CLI module no longer seizes `stdin`; the readline interface is now
   created inside `main()`.
+
+### Performance
+
+- **The JS engine no longer recomputes while the page is still.** The rAF loop ran
+  every frame for as long as the container was in view, whether or not the scroll
+  position had moved: 8 instances parked in a viewport cost 488 frames and 6.4 ms
+  of JavaScript per second in Chromium. `update()` now short-circuits when the
+  scroll position is unchanged and nothing has invalidated the frame. Measured
+  idle vs actively-scrolling afterwards — Chromium 2.8 ms vs 20 ms, Firefox 3.0 vs
+  51, WebKit 2.0 vs 83. This is the path Firefox and every pre-115 browser always
+  take.
+
+### Added
+
+- **Playwright test suite across Chromium, Firefox and WebKit** (`npm run test:e2e`),
+  run in CI. The 475 unit tests run in jsdom with `getTotalLength` stubbed and
+  `IntersectionObserver` faked, so they verify engine arithmetic and nothing about
+  browser behaviour. These cover native-vs-JS parity and idle cost.
+- `respectReducedMotion` option on `scrollSnap` (default `true`).
+- `SECURITY.md` with a stated threat model, `CONTRIBUTING.md`, issue and PR
+  templates, and Dependabot.
+- **Release workflow with npm provenance.** Publishing was manual from a laptop;
+  releases are now tagged, fully verified including browser tests, and
+  cryptographically attested to the commit that produced them
+  (`npm audit signatures`).
 
 ### Changed
 

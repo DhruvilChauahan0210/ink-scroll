@@ -1,0 +1,34 @@
+name: Feature request
+description: Suggest a capability or an API change
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to build?
+      description: The end result you want, rather than the API you have in mind. It often turns out an existing option covers it.
+    validations:
+      required: true
+
+  - type: textarea
+    id: current
+    attributes:
+      label: What did you try?
+      description: Which APIs or options you already attempted, and where they fell short.
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed API
+      description: Optional. Rough code is fine.
+      render: javascript
+
+  - type: dropdown
+    id: size
+    attributes:
+      label: Does this belong in the main entry or its own?
+      description: Every entry point is separately importable so users only ship what they use. New surface area usually earns its own subpath.
+      options:
+        - Its own entry point (svg-scroll-draw/something)
+        - Main entry — it is small and core to drawing
+        - Not sure
