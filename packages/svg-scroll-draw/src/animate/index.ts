@@ -20,6 +20,33 @@ export interface ScrollAnimateOptions {
    * Higher values = more dramatic speed-up. Default sensitivity: 1.
    */
   velocityScale?: boolean | number;
+  /**
+   * Honour `prefers-reduced-motion: reduce` by applying the final state and not
+   * animating. Default: `true`.
+   *
+   * Set to `false` only when the movement is *scroll-linked scrubbing* rather
+   * than autonomous motion — it advances solely as the user scrolls, 1:1 with
+   * their input, so it is direct manipulation rather than something that plays at
+   * them. `scrollHorizontal` sets this, because jumping to the final state there
+   * would leave every panel but the last unreachable inside the sticky
+   * `overflow: hidden` container.
+   */
+  respectReducedMotion?: boolean;
+  /**
+   * Element whose geometry defines the trigger window, when that is not the
+   * element being animated. Defaults to the animated element.
+   *
+   * Needed whenever the animated element cannot supply the scroll length itself —
+   * the case that matters is a `position: sticky` stage, where the pinned element
+   * is exactly one viewport tall and all of the scroll room belongs to its
+   * container. Resolving `top top` → `bottom bottom` against the pinned element
+   * there yields tStart === tEnd, a zero-length window, and no movement at all.
+   *
+   * Setting this disables the native CSS fast path: `animation-timeline: view()`
+   * always measures the element the animation is attached to, so it cannot express
+   * a separate subject.
+   */
+  triggerElement?: Element;
   onProgress?: (alpha: number) => void;
   onComplete?: () => void;
   /** Fires when scroll enters the trigger zone (scrolling forward). */
@@ -163,6 +190,8 @@ export function createAnimateEngine(
     scrollContainer,
     native   = true,
     velocityScale = false,
+    respectReducedMotion = true,
+    triggerElement,
     onProgress,
     onComplete,
     onEnter,
@@ -171,10 +200,14 @@ export function createAnimateEngine(
     onLeaveBack,
   } = options;
 
-  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const prefersReduced =
+    respectReducedMotion && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const easeFn         = typeof easing === 'function' ? easing : (EASINGS[easing] ?? EASINGS['ease-out']);
   const startConfig    = parseTrigger(trigger.start ?? 'top bottom');
   const endConfig      = parseTrigger(trigger.end   ?? 'bottom top');
+
+  /** Element the trigger window is measured from — the animated one unless overridden. */
+  const triggerEl: Element = triggerElement ?? el;
 
   const scrollEl: Element | null =
     typeof scrollContainer === 'string'
@@ -243,6 +276,9 @@ export function createAnimateEngine(
     if (typeof easing !== 'string' || !(easing in CSS_ANIMATE_EASINGS)) return false;
     if (axis !== 'y') return false;
     if (scrollEl) return false;
+    // `animation-timeline: view()` always measures the element the animation is
+    // attached to, so a separate trigger subject cannot be expressed in CSS.
+    if (triggerEl !== el) return false;
     if (once) return false;
     if (speed !== 1) return false;
     if (onProgress || onComplete || onEnter || onLeave || onEnterBack || onLeaveBack) return false;
@@ -335,7 +371,7 @@ export function createAnimateEngine(
   };
 
   function cacheTriggers(): void {
-    const rect = el.getBoundingClientRect();
+    const rect = triggerEl.getBoundingClientRect();
     let pos: number, size: number;
     if (scrollEl) {
       const cr = scrollEl.getBoundingClientRect();
@@ -401,6 +437,22 @@ export function createAnimateEngine(
   }
 
   cacheTriggers();
+
+  // A zero-length trigger window can never produce progress above 0, so the
+  // element is silently inert — it looks configured, and nothing ever moves. This
+  // is how `scrollHorizontal` shipped broken: its default `top top` → `bottom
+  // bottom` window was measured against a sticky-pinned track exactly one
+  // viewport tall, which collapses both ends onto the same scroll position.
+  // Cheap to detect here, and it names the likely cause.
+  if (tEnd === tStart) {
+    warn(
+      'scrollAnimate: the trigger window has zero length (start and end resolve to the ' +
+        'same scroll position), so this element will never animate. If the target is ' +
+        'inside a position:sticky stage, measure the trigger from the container that ' +
+        'holds the scroll room via `triggerElement`.',
+      el,
+    );
+  }
 
   // Apply initial state immediately so elements never flash at their "to" value
   // before the IntersectionObserver fires for the first time.

@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>scrollHorizontal — travel matches the sticky track width</title>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+
+  /* The documented CSS contract for this API, verbatim from its JSDoc:
+       .outer  { height: 400vh; }
+       .sticky { position: sticky; top: 0; height: 100vh; overflow: hidden; }
+       .track  { display: flex; width: max-content; }
+     Viewport is 900x800, so #outer is 3200 tall and the sticky stage is 800. */
+  #lead   { height: 800px; background: #eee; }
+  #outer  { height: 400vh; }
+  #sticky { position: sticky; top: 0; height: 100vh; overflow: hidden; }
+  #track  { display: flex; width: max-content; height: 100%; }
+  .panel  { width: 900px; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 48px; }
+  .panel:nth-child(odd)  { background: #cdd; }
+  .panel:nth-child(even) { background: #dcd; }
+  #tail   { height: 800px; background: #eee; }
+</style>
+</head>
+<body>
+
+<div id="lead"></div>
+<div id="outer">
+  <div id="sticky">
+    <div id="track">
+      <div class="panel" id="p0">0</div>
+      <div class="panel" id="p1">1</div>
+      <div class="panel" id="p2">2</div>
+      <div class="panel" id="p3">3</div>
+    </div>
+  </div>
+</div>
+<div id="tail"></div>
+
+<script type="module">
+import { scrollHorizontal } from '/dist/horizontal/index.mjs';
+import { transformOf, docTop, publish } from './_probe.mjs';
+
+const outer  = document.querySelector('#outer');
+const track  = document.querySelector('#track');
+const panels = [...document.querySelectorAll('.panel')];
+
+const reported = [];
+const inst = scrollHorizontal('#track', { onProgress: (p) => reported.push(p) });
+
+publish({
+  read: () => ({
+    scrollY: window.scrollY,
+    x: transformOf(track).x,
+    progress: inst.getProgress(),
+    // Which panel is actually centred in the sticky stage right now. Derived from
+    // real geometry, so it catches a transform that moves the wrong distance even
+    // when the raw translateX looks plausible.
+    centredPanel: panels.findIndex((p) => {
+      const r = p.getBoundingClientRect();
+      return r.left <= 450 && r.right > 450;
+    }),
+    lastReported: reported.length ? reported[reported.length - 1] : null,
+  }),
+
+  geometry: () => ({
+    outerTop: docTop(outer),
+    outerHeight: outer.offsetHeight,
+    trackScrollWidth: track.scrollWidth,
+    viewportWidth: window.innerWidth,
+    viewportHeight: window.innerHeight,
+    // The default distance: full content width minus one viewport.
+    expectedDistance: track.scrollWidth - window.innerWidth,
+  }),
+
+  /** Widen the track, then refresh, reading distance either side in one task. */
+  refreshAfterGrow: () => {
+    const before = track.scrollWidth - window.innerWidth;
+    const extra = document.createElement('div');
+    extra.className = 'panel';
+    extra.textContent = '4';
+    track.appendChild(extra);
+    const grown = track.scrollWidth - window.innerWidth;
+    inst.refresh();
+    return { before, grown };
+  },
+
+  destroyTrack: () => inst.destroy(),
+});
+</script>
+</body>
+</html>
