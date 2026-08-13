@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>scrollSnap — real landing positions, threshold, reduced motion</title>
+<style>
+  * { box-sizing: border-box; }
+  /* `scroll-behavior: smooth` would fight the library's own rAF scroll animation
+     and make every landing position non-deterministic. */
+  html { scroll-behavior: auto; }
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+
+  /* One section per viewport height, so section i sits at exactly y = i * 800. */
+  section { height: 800px; display: flex; align-items: center; justify-content: center; font-size: 40px; }
+  section:nth-child(odd)  { background: #dde; }
+  section:nth-child(even) { background: #eed; }
+</style>
+</head>
+<body>
+
+<section>0</section>
+<section>1</section>
+<section>2</section>
+<section>3</section>
+
+<script type="module">
+import { scrollSnap } from '/dist/snap/index.mjs';
+import { docTop, publish } from './_probe.mjs';
+
+const sections = [...document.querySelectorAll('section')];
+const snaps = [];
+
+// 300ms rather than the 600ms default: long enough that an animated snap is
+// clearly not instantaneous (which is what the reduced-motion test turns on),
+// short enough to keep the scroll-driven tests quick.
+const inst = scrollSnap(sections, {
+  duration: 300,
+  onSnap: (i) => snaps.push(i),
+});
+
+publish({
+  read: () => ({
+    scrollY: window.scrollY,
+    index: inst.getCurrentIndex(),
+    snaps: snaps.slice(),
+  }),
+  geometry: () => ({
+    tops: sections.map(docTop),
+    viewport: window.innerHeight,
+    maxScroll: document.documentElement.scrollHeight - window.innerHeight,
+  }),
+  clearSnaps: () => { snaps.length = 0; },
+
+  /**
+   * Call snapTo and read the scroll position back in the SAME synchronous task.
+   * An animated snap cannot have moved yet (its first step runs on the next
+   * frame); a reduced-motion snap has already landed. That difference is the
+   * whole assertion, and it needs no timing tolerance.
+   */
+  snapToSync: (i) => {
+    inst.snapTo(i);
+    return { scrollY: window.scrollY, index: inst.getCurrentIndex() };
+  },
+  snapTo: (i) => inst.snapTo(i),
+  destroySnap: () => inst.destroy(),
+});
+</script>
+</body>
+</html>
