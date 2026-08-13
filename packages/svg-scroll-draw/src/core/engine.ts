@@ -427,6 +427,9 @@ export function createEngine(
     const effectiveDuration = Math.max(1, duration);
     let startTime    = 0;
     let pausedElapsed = 0;
+    // Whether a run is currently in flight. Guards pause()/resume() against
+    // reading a stale startTime while the element sits outside the viewport.
+    let running      = false;
 
     function applyAutoAlpha(elapsed: number): boolean {
       let allDone = true;
@@ -464,6 +467,9 @@ export function createEngine(
             el.setAttribute('d', morphPath(originalDs[i], morphTo, alpha));
 
           if (i === 0) {
+            // The first path is the canonical progress for the instance —
+            // without this, getProgress() stayed at 0 for the whole autoplay run.
+            currentAlpha = alpha;
             onProgress?.(alpha);
             (container as HTMLElement).style.setProperty('--scroll-draw-progress', String(alpha));
           }
@@ -525,6 +531,8 @@ export function createEngine(
       started       = false;
       completed     = false;
       repeatCount   = 0;
+      running       = true;
+      currentAlpha  = 0;
       firedWaypoints.clear();
       resetPaths();
       rafId = requestAnimationFrame(tick);
@@ -538,7 +546,10 @@ export function createEngine(
           } else if (!e.isIntersecting && !once && !completed) {
             cancelAnimationFrame(rafId);
             clearTimeout(repeatTimer);
-            startTime = null;
+            // The next viewport entry calls startAnimation(), which re-stamps
+            // startTime. Just mark the run as stopped — nulling startTime here
+            // made pause() compute NaN and froze the animation permanently.
+            running = false;
           }
         });
       },
@@ -575,7 +586,7 @@ export function createEngine(
         startAnimation();
       },
       pause() {
-        if (paused) return;
+        if (paused || !running) return;
         paused        = true;
         pausedElapsed = performance.now() - startTime;
         cancelAnimationFrame(rafId);
@@ -583,6 +594,7 @@ export function createEngine(
       resume() {
         if (!paused) return;
         paused    = false;
+        running   = true;
         startTime = performance.now() - pausedElapsed;
         rafId     = requestAnimationFrame(tick);
       },
@@ -809,6 +821,7 @@ export function createEngine(
       completed    = false;
       repeatCount  = 0;
       paused       = false;
+      currentAlpha = 0;
       firedWaypoints.clear();
       clearTimeout(repeatTimer);
       resetPaths();

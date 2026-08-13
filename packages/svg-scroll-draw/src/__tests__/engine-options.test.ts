@@ -844,6 +844,56 @@ describe('createEngine — autoplay', () => {
     expect(() => instance.destroy()).not.toThrow();
   });
 
+  // Regression: leaving the viewport used to set startTime = null, so a later
+  // pause() computed `now - null` = NaN and resume() then produced a startTime
+  // of NaN — freezing the animation permanently at whatever frame it was on.
+  it('survives pause()/resume() after leaving the viewport', () => {
+    const t = mockPerformanceNow();
+    const path = makePath();
+    const container = makeContainer([path]);
+    const instance = createEngine(container, { autoplay: true, duration: 1000 });
+
+    t.now = 0;
+    FakeIO.instances[0].trigger(true);   // enter → run starts
+    t.now = 200;
+    raf.tick();
+    FakeIO.instances[0].trigger(false);  // leave → run stops
+
+    t.now = 300;
+    instance.pause();                    // must not stamp NaN
+    t.now = 400;
+    instance.resume();
+
+    t.now = 900;
+    raf.tick();
+
+    // A NaN startTime makes every derived value NaN — assert real numbers.
+    expect(instance.getProgress()).not.toBeNaN();
+    expect(Number(path.style.strokeDashoffset)).not.toBeNaN();
+  });
+
+  // Re-entering the viewport must produce a fresh, finite run.
+  it('restarts cleanly after leaving and re-entering the viewport', () => {
+    const t = mockPerformanceNow();
+    const path = makePath();
+    const container = makeContainer([path]);
+    const instance = createEngine(container, { autoplay: true, duration: 1000 });
+
+    t.now = 0;
+    FakeIO.instances[0].trigger(true);
+    t.now = 400;
+    raf.tick();
+    FakeIO.instances[0].trigger(false);
+
+    t.now = 1000;
+    FakeIO.instances[0].trigger(true);   // re-enter → startAnimation() re-stamps
+    expect(instance.getProgress()).toBe(0);
+
+    t.now = 1500;
+    raf.tick();
+    expect(instance.getProgress()).toBeCloseTo(0.5, 1);
+  });
+
   it('uses clip-path in autoplay clip mode', () => {
     const t = mockPerformanceNow();
     const container = makeContainer();
