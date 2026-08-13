@@ -118,7 +118,7 @@ export default function OgImage() {
 
         {/* stats row */}
         <div style={{ display: "flex", gap: 24 }}>
-          {["~9 KB gzipped", "Zero deps", "461 tests", "React · Vue · Solid · More"].map(
+          {["~9 KB gzipped", "Zero deps", "470 tests", "React · Vue · Solid · More"].map(
             (label) => (
               <div
                 key={label}

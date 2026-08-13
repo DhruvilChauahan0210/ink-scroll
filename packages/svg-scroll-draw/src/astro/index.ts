@@ -6,6 +6,7 @@ import type { ScrollDrawOptions, ScrollDrawInstance } from '../core/types';
 import type { ScrollAnimateOptions } from '../animate';
 import type { ScrollCounterOptions } from '../counter';
 import type { ScrollTextOptions } from '../text';
+import { warn } from '../core/env';
 
 export { scrollDraw } from '../index';
 export type { ScrollDrawOptions, ScrollDrawInstance };
@@ -94,9 +95,7 @@ export function initScrollCounter(root: Element | Document = document): ScrollDr
       if (raw) opts = JSON.parse(raw) as Partial<ScrollCounterOptions>;
     } catch { /* ignore invalid JSON */ }
     if (!opts.to && opts.to !== 0) {
-      if (process.env.NODE_ENV !== 'production') {
-        console.warn('[svg-scroll-draw] initScrollCounter: element missing "to" in options JSON:', el);
-      }
+      warn('initScrollCounter: element missing "to" in options JSON:', el);
       opts.to = 0;
     }
     return scrollCounter(el, opts as ScrollCounterOptions);

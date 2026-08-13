@@ -110,14 +110,18 @@ describe('devtools', () => {
     expect(container.style.outline).toBe('');
   });
 
-  it('stays inert in production builds', () => {
-    const prev = process.env.NODE_ENV;
-    process.env.NODE_ENV = 'production';
-    try {
-      devtools.enable();
-      expect(overlayNodes()).toHaveLength(0);
-    } finally {
-      process.env.NODE_ENV = prev;
-    }
+  // IS_DEV is a module-level constant so bundlers can fold it away, which means
+  // it cannot be toggled by mutating process.env at runtime. Mock the env module
+  // and re-import devtools to exercise the production branch.
+  it('stays inert in production builds', async () => {
+    vi.resetModules();
+    vi.doMock('../core/env', () => ({ IS_DEV: false, warn: () => {} }));
+    const { devtools: prodDevtools } = await import('../devtools');
+
+    prodDevtools.enable();
+    expect(overlayNodes()).toHaveLength(0);
+
+    vi.doUnmock('../core/env');
+    vi.resetModules();
   });
 });

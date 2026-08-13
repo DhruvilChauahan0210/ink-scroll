@@ -1,6 +1,7 @@
 import type { EasingName, ScrollDrawInstance, TriggerConfig } from '../core/types';
 import { EASINGS, parseTrigger, computeProgress, computeTriggers } from '../core/utils';
 import { _register, _unregister } from '../core/registry';
+import { warn } from '../core/env';
 
 // ── Public types ──────────────────────────────────────────────────────────────
 
@@ -35,9 +36,7 @@ export function scrollVideo(
     : target) as HTMLVideoElement | null;
 
   if (!raw || raw.tagName.toLowerCase() !== 'video') {
-    if (process.env.NODE_ENV !== 'production') {
-      console.warn('[svg-scroll-draw] scrollVideo: <video> element not found:', target);
-    }
+    warn('scrollVideo: <video> element not found:', target);
     return NOOP;
   }
 

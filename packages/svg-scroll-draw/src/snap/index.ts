@@ -1,5 +1,6 @@
 import type { EasingName } from '../core/types';
 import { EASINGS, clamp } from '../core/utils';
+import { warn } from '../core/env';
 
 export interface ScrollSnapOptions {
   /** Scroll axis. Default: 'vertical'. */
@@ -52,9 +53,7 @@ export function scrollSnap(
 
   const els = resolveElements(sections);
   if (!els.length) {
-    if (process.env.NODE_ENV !== 'production') {
-      console.warn('[svg-scroll-draw] scrollSnap: no sections found');
-    }
+    warn('scrollSnap: no sections found');
     return NOOP;
   }
 

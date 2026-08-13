@@ -1,6 +1,7 @@
 import type { EasingName, ScrollDrawInstance, TriggerConfig } from '../core/types';
 import { EASINGS, parseTrigger, computeProgress, computeTriggers, lerpColor } from '../core/utils';
 import { _register, _unregister } from '../core/registry';
+import { warn } from '../core/env';
 
 // ── Public types ──────────────────────────────────────────────────────────────
 
@@ -455,9 +456,7 @@ export function scrollAnimate(
   if (typeof window === 'undefined') return NOOP;
   const el = typeof target === 'string' ? document.querySelector(target) : target;
   if (!el) {
-    if (process.env.NODE_ENV !== 'production') {
-      console.warn('[svg-scroll-draw] scrollAnimate: element not found:', target);
-    }
+    warn('scrollAnimate: element not found:', target);
     return NOOP;
   }
   return createAnimateEngine(el, options);
@@ -470,9 +469,7 @@ export function scrollParallax(
   if (typeof window === 'undefined') return NOOP;
   const el = typeof target === 'string' ? document.querySelector(target) : target;
   if (!el) {
-    if (process.env.NODE_ENV !== 'production') {
-      console.warn('[svg-scroll-draw] scrollParallax: element not found:', target);
-    }
+    warn('scrollParallax: element not found:', target);
     return NOOP;
   }
 

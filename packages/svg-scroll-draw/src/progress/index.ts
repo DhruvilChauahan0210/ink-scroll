@@ -1,6 +1,7 @@
 import type { EasingName, TriggerConfig, ScrollDrawInstance } from '../core/types';
 import { EASINGS, parseTrigger, computeProgress, computeTriggers } from '../core/utils';
 import { _register, _unregister } from '../core/registry';
+import { warn } from '../core/env';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -57,9 +58,7 @@ export function scrollProgress(
 
   const el = typeof target === 'string' ? document.querySelector(target) : target;
   if (!el) {
-    if (process.env.NODE_ENV !== 'production') {
-      console.warn('[svg-scroll-draw] scrollProgress: element not found:', target);
-    }
+    warn('scrollProgress: element not found:', target);
     return NOOP;
   }
 

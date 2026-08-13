@@ -6,7 +6,7 @@
 
 ## Current state
 
-**Library: v2.9.0 — published to npm. 461 tests passing.**
+**Library: v2.9.0 — published to npm. 470 tests passing.**
 
 Full scroll animation platform. v2.7.0 → v2.9.0 all published.
 
@@ -52,7 +52,7 @@ Full scroll animation platform. v2.7.0 → v2.9.0 all published.
 ### Library
 - [x] `scrollProgress` (`/progress`) — CSS custom property binding (`--scroll-progress`, `--scroll-progress-eased`)
 - [x] `scrollHorizontal` (`/horizontal`) — Apple-style vertical→horizontal scroll sections
-- [x] 461 tests passing, build + TS clean
+- [x] 470 tests passing, build + TS clean
 
 ### Demo site
 - [x] scrollReveal example card on ExamplesPage (cascade demo)
@@ -93,4 +93,4 @@ Full scroll animation platform. v2.7.0 → v2.9.0 all published.
 - **Don't publish without bumping version** — next publish = v2.10.0
 - **Don't post to external platforms** — user posts manually
 - **Always update STATUS.md + ROADMAP.md + CHANGELOG.md + NEXT-SESSION-PLAN.md after any code change**
-- Accuracy: ~9 KB gzipped, 461 tests, zero dependencies, MIT, v2.9.0
+- Accuracy: ~9 KB gzipped, 470 tests, zero dependencies, MIT, v2.9.0

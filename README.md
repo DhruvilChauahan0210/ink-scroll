@@ -19,7 +19,7 @@ Works in **React · Next.js · Vue 3 · Svelte · Solid · Angular · Nuxt · As
 ## Features at a glance
 
 - **9.0 KB gzipped** for the whole main entry — and you rarely need all of it. Every API is a separate entry point: `scrollReveal` is 3.9 KB, `scrollPin` 1.5 KB, `scrollSnap` 1.3 KB. [Full size table below](#bundle-sizes), measured by `npm run size` and enforced in CI.
-- **Native CSS fast path** — on Chrome/Edge/Firefox 115+ the draw runs as `animation-timeline: view()` with zero per-frame JavaScript; falls back to the JS engine automatically (Safari has no scroll-driven animation support yet, so it always uses the JS engine)
+- **Native CSS fast path** — where the browser supports scroll-driven animations the draw runs on a CSS `view-timeline` with zero per-frame JavaScript, and falls back to the JS engine automatically everywhere else. Both engines are [verified to produce the same output](#native-css-rendering) by a cross-browser test suite rather than assumed to.
 - **Zero dependencies** — no GSAP, no ScrollTrigger, no heavyweight runtime
 - **Full playback API** — `pause`, `resume`, `seek`, `replay`, `getProgress`, `destroy`
 - **Presets** — `{ preset: 'reveal' }` for instant one-liner setup; five named presets: `sketch`, `reveal`, `typewriter`, `cinematic`, `spring`
@@ -27,7 +27,7 @@ Works in **React · Next.js · Vue 3 · Svelte · Solid · Angular · Nuxt · As
 - **30+ options** — easing, stagger, fade, stroke color/width lerp, fill opacity, clip reveal, morphTo, velocityScale, waypoints, callbacks, repeat, autoReverse, and more
 - **Group / Sequence / Timeline APIs** — animate multiple containers simultaneously, one-after-another, or on independent scroll windows with `loop` for auto-looping after scroll completion
 - **CSS custom property** — `--scroll-draw-progress` is set on every frame so you can drive any CSS animation without a callback
-- **461 tests across 22 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
+- **470 tests across 23 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
 
 ---
 
@@ -258,9 +258,26 @@ import { createScrollDrawPlugin } from 'svg-scroll-draw/nuxt';
 
 ## Native CSS rendering
 
-On Chrome 115+, Edge 115+, and Firefox 110+ the simple draw case runs as a native
-[`animation-timeline: view()`](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-timeline)
-animation — **zero per-frame JavaScript, no scroll or resize listeners, compositor-driven.**
+Where the browser supports [scroll-driven animations](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-timeline),
+the simple draw case runs as a native CSS `view-timeline` animation — **zero
+per-frame JavaScript, no scroll or resize listeners, compositor-driven.**
+
+Support as measured by the e2e suite (`npm run test:e2e`), which asks the browser
+directly rather than relying on a version table:
+
+| Engine | Native fast path |
+|---|---|
+| Chromium / Chrome / Edge 115+ | ✅ |
+| Safari / WebKit 26+ | ✅ |
+| Firefox | ❌ — scroll-driven animations are still behind a pref, so Firefox runs the JS engine |
+
+The timeline is a **named `view-timeline` declared on the container**, which the
+path animations then reference. That detail matters: putting
+`animation-timeline: view()` directly on the paths makes each path its own
+timeline subject, and since a path's bounding box is rarely its container's box,
+the native and JS engines then disagree — up to 0.06 of the draw in Chromium and
+0.11 in WebKit. `e2e/parity.spec.ts` runs both engines side by side at a dozen
+scroll offsets in all three browsers and asserts they agree.
 
 ```js
 // Native path is used automatically — nothing extra to configure
@@ -600,9 +617,17 @@ runs as a native CSS scroll animation with no JS on the critical path at all.
 
 ## Browser support
 
-Chrome 80+, Safari 14+, Firefox 75+, Edge 80+
+The JS engine needs `IntersectionObserver` and `SVGGeometryElement.getTotalLength` —
+Chrome 80+, Safari 14+, Firefox 75+, Edge 80+.
 
-Native CSS fast path requires Chrome/Edge 115+ or Firefox 110+. Falls back to the JS engine automatically on older browsers.
+The native CSS fast path needs scroll-driven animation support (`view-timeline-name`
+plus `animation-timeline`). Chromium 115+ and WebKit/Safari 26+ have it; Firefox
+does not yet ship it on by default. Everything else falls back to the JS engine
+automatically, and the two are tested for equivalence — see
+[Native CSS rendering](#native-css-rendering).
+
+The e2e suite runs against Chromium, Firefox and WebKit on every CI run, so this
+table is checked rather than remembered.
 
 ---
 

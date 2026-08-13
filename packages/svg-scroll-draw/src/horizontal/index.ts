@@ -1,5 +1,6 @@
 import type { EasingName, TriggerConfig, ScrollDrawInstance } from '../core/types';
 import { createAnimateEngine } from '../animate';
+import { warn } from '../core/env';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -57,9 +58,7 @@ export function scrollHorizontal(
 
   const el = typeof track === 'string' ? document.querySelector(track) : track;
   if (!el) {
-    if (process.env.NODE_ENV !== 'production') {
-      console.warn('[svg-scroll-draw] scrollHorizontal: track element not found:', track);
-    }
+    warn('scrollHorizontal: track element not found:', track);
     return NOOP;
   }
 

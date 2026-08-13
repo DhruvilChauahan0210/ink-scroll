@@ -1,7 +1,10 @@
 {
   "name": "ink-scroll",
   "private": true,
-  "workspaces": ["packages/*", "apps/*"],
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
   "scripts": {
     "dev": "npm run dev --workspace=apps/demo",
     "build:lib": "npm run build --workspace=packages/svg-scroll-draw",
@@ -11,6 +14,7 @@
     "typecheck": "npm run typecheck --workspace=packages/svg-scroll-draw && tsc --noEmit --project apps/demo",
     "size": "npm run size --workspace=packages/svg-scroll-draw",
     "check:claims": "node scripts/check-claims.mjs",
-    "verify": "npm run typecheck && npm run test && npm run build:lib && npm run size --workspace=packages/svg-scroll-draw -- --check && npm run check:claims"
+    "verify": "npm run typecheck && npm run test && npm run build:lib && npm run size --workspace=packages/svg-scroll-draw -- --check && npm run check:claims",
+    "test:e2e": "npm run test:e2e --workspace=packages/svg-scroll-draw"
   }
 }

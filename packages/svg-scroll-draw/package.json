@@ -1,7 +1,7 @@
 {
   "name": "svg-scroll-draw",
   "version": "2.9.0",
-  "description": "Scroll-driven animation for the web — draw SVG paths, reveal elements, pin sections, scrub video. Zero dependencies, native CSS fast path, works with React, Vue, Svelte, Solid, Angular, Astro and vanilla JS",
+  "description": "Scroll-driven animation for the web \u2014 draw SVG paths, reveal elements, pin sections, scrub video. Zero dependencies, native CSS fast path, works with React, Vue, Svelte, Solid, Angular, Astro and vanilla JS",
   "keywords": [
     "svg",
     "scroll",
@@ -183,9 +183,12 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "prepublishOnly": "npm run typecheck && npm run build && npm run test && npm run size:check"
+    "prepublishOnly": "npm run typecheck && npm run build && npm run test && npm run size:check",
+    "test:e2e": "playwright test --config e2e/playwright.config.ts",
+    "test:e2e:ui": "playwright test --config e2e/playwright.config.ts --ui"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "@types/react": "^18.0.0",
     "@vitest/coverage-v8": "^2.0.0",
     "jsdom": "^25.0.0",
@@ -204,8 +207,8 @@
   },
   "peerDependencies": {
     "react": ">=17",
-    "vue": ">=3",
-    "solid-js": ">=1"
+    "solid-js": ">=1",
+    "vue": ">=3"
   },
   "peerDependenciesMeta": {
     "react": {

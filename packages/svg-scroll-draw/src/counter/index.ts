@@ -1,6 +1,7 @@
 import type { EasingName, ScrollDrawInstance, TriggerConfig } from '../core/types';
 import { EASINGS, parseTrigger, computeProgress, computeTriggers } from '../core/utils';
 import { _register, _unregister } from '../core/registry';
+import { warn } from '../core/env';
 
 // ── Public types ──────────────────────────────────────────────────────────────
 
@@ -30,9 +31,7 @@ export function scrollCounter(
 
   const raw = (typeof target === 'string' ? document.querySelector(target) : target) as HTMLElement | null;
   if (!raw) {
-    if (process.env.NODE_ENV !== 'production') {
-      console.warn('[svg-scroll-draw] scrollCounter: element not found:', target);
-    }
+    warn('scrollCounter: element not found:', target);
     return NOOP;
   }
   const el = raw;

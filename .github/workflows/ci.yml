@@ -57,3 +57,37 @@ jobs:
       # from the real numbers.
       - name: Check doc claims
         run: npm run check:claims
+
+  e2e:
+    name: Browser tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium firefox webkit
+        working-directory: packages/svg-scroll-draw
+
+      # The unit tests run in jsdom with getTotalLength stubbed and
+      # IntersectionObserver faked, so they cannot verify browser behaviour. These
+      # do — including that the native CSS fast path and the JS engine produce the
+      # same output, which is the library's headline claim.
+      - name: Run e2e tests
+        run: npm run test:e2e
+        working-directory: packages/svg-scroll-draw
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: packages/svg-scroll-draw/playwright-report/
+          retention-days: 14
