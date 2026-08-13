@@ -176,10 +176,14 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "prepare": "npm run build",
+    "size": "node scripts/size.mjs",
+    "size:check": "node scripts/size.mjs --check",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "prepublishOnly": "npm run build && npm run test"
+    "prepublishOnly": "npm run typecheck && npm run build && npm run test && npm run size:check"
   },
   "devDependencies": {
     "@types/react": "^18.0.0",
@@ -190,6 +194,13 @@
     "typescript": "^5.0.0",
     "vitest": "^2.0.0",
     "vue": "^3.5.34"
+  },
+  "sideEffects": [
+    "./dist/web-component/*",
+    "./dist/cdn/*"
+  ],
+  "engines": {
+    "node": ">=18"
   },
   "peerDependencies": {
     "react": ">=17",
