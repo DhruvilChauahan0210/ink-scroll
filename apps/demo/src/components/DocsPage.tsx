@@ -1805,6 +1805,36 @@ useEffect(() => {
 inst.refresh();  // recalculate after layout change
 inst.destroy();  // cleanup`}
             </CodeBlock>
+            <div className="overflow-x-auto mt-4">
+              <table className="w-full text-[13px] border border-subtle-ash rounded-xl overflow-hidden">
+                <thead>
+                  <tr className="bg-pitch-black text-light-linen text-[11px] uppercase tracking-wide">
+                    <th className="text-left px-4 py-2 font-medium">Option</th>
+                    <th className="text-left px-4 py-2 font-medium">Type</th>
+                    <th className="text-left px-4 py-2 font-medium">Default</th>
+                    <th className="text-left px-4 py-2 font-medium">Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    ['distance',             'number',                    'scrollWidth − innerWidth', 'Total horizontal travel in px. Defaults to the full content width minus one viewport.'],
+                    ['trigger',              'TriggerConfig',             '{ start: "top top", end: "bottom bottom" }', 'Scroll window the travel is mapped across.'],
+                    ['easing',               'EasingName | fn',           '"linear"',      'Easing for the movement. Linear gives the scrub feel.'],
+                    ['triggerElement',       'string | Element',          'sticky parent', 'Element whose height defines the scroll window. Defaults to the container of the track’s nearest position:sticky ancestor — the element that actually holds the scroll room. A sticky-pinned track is only one viewport tall, so measuring against it would give a zero-length window and no movement.'],
+                    ['respectReducedMotion', 'boolean',                   'false',         'Unlike other APIs here, defaults to false. The transform is scroll-linked scrubbing — it advances only as the user scrolls — and holding a final state instead would leave every panel but one unreachable inside the sticky container. Set true if you have a non-transform fallback.'],
+                    ['scrollContainer',      'string | Element',          'window',        'Custom scroll container.'],
+                    ['onProgress',           '(p: number) => void',       '—',             'Fires every frame with 0–1 progress through the window.'],
+                  ].map(([opt, type, def, desc]) => (
+                    <tr key={opt} className="border-t border-subtle-ash">
+                      <td className="px-4 py-2 font-mono font-semibold text-[12px]">{opt}</td>
+                      <td className="px-4 py-2 font-mono text-graphite-border text-[11px]">{type}</td>
+                      <td className="px-4 py-2 font-mono text-graphite-border text-[11px]">{def}</td>
+                      <td className="px-4 py-2 text-graphite-border">{desc}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </DocSection>
 
           {/* ── v2.8.0 — scrollReveal ───────────────────────── */}
@@ -2018,7 +2048,8 @@ snap.destroy();`}
                     ['easing',          'EasingName | fn',           '"ease-in-out"', 'Easing for the snap scroll animation.'],
                     ['threshold',       'number',                    '0.3',           'Fraction of a section size the user must scroll past to snap forward (0–1).'],
                     ['scrollContainer', 'string | Element',          '—',             'Custom scroll container. Default: window.'],
-                    ['onSnap',          '(index: number) => void',   '—',             'Fires after each snap with the target section index.'],
+                    ['respectReducedMotion', 'boolean',              'true',          'Honour prefers-reduced-motion by jumping straight to the target section. Snapping still happens — only the animated scroll is dropped. Tracked live, so toggling the OS setting takes effect without a reload.'],
+                    ['onSnap',          '(index: number) => void',   '—',             'Fires after each snap with the target section index. Fires once per snap.'],
                   ].map(([opt, type, def, desc]) => (
                     <tr key={opt} className="border-t border-subtle-ash">
                       <td className="px-4 py-2 font-mono font-semibold text-[12px]">{opt}</td>
@@ -2170,6 +2201,8 @@ import { ScrollAnimate } from 'svg-scroll-draw/react';
                     ['once', 'boolean', 'false', 'Freeze at max progress — does not reverse on scroll back.'],
                     ['axis', '"x" | "y"', '"y"', 'Scroll axis.'],
                     ['native', 'boolean', 'true', 'Use CSS animation-timeline: view() fast path when eligible.'],
+                    ['respectReducedMotion', 'boolean', 'true', 'Honour prefers-reduced-motion by applying the final state instead of animating. Set false only for scroll-linked scrubbing, which advances 1:1 with the user’s own scrolling rather than playing on its own.'],
+                    ['triggerElement', 'Element', 'the animated element', 'Measure the trigger window from a different element. Needed when the animated element cannot supply the scroll length itself — a position:sticky element is only one viewport tall, so its window collapses to zero. Setting this disables the native CSS fast path, which can only measure its own subject.'],
                     ['onProgress',   '(n) => void', '—', 'Called every frame with alpha 0–1.'],
                     ['onComplete',   '() => void', '—', 'Fires when alpha reaches 1.'],
                     ['onEnter',      '() => void', '—', 'Fires when scroll enters the trigger zone (scrolling forward). Forces JS engine.'],
