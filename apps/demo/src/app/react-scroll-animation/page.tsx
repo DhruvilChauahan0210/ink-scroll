@@ -288,7 +288,7 @@ export default function Page() {
           <h2 className="font-display font-extrabold text-[clamp(28px,6vw,56px)] leading-[0.92] tracking-[-0.04em] mb-4">
             Drop-in for React + Next.js.
           </h2>
-          <p className="text-graphite-border text-sm sm:text-base mb-8">MIT. Zero deps. TypeScript. 470 tests. Works everywhere React works.</p>
+          <p className="text-graphite-border text-sm sm:text-base mb-8">MIT. Zero deps. TypeScript. 475 tests. Works everywhere React works.</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <div className="flex items-center gap-2 bg-white/10 rounded-full px-5 py-3 text-sm font-mono"><span className="opacity-50">$</span><span>npm i svg-scroll-draw</span></div>
             <Link href="/docs" className="px-5 py-3 rounded-full border-2 border-white text-sm font-semibold hover:bg-white hover:text-pitch-black transition-colors text-center">Full API docs →</Link>

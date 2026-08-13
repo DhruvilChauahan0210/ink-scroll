@@ -39,7 +39,28 @@ beforeEach(() => {
   vi.stubGlobal('scrollTo', vi.fn((opts: ScrollToOptions) => {
     if (opts.top !== undefined) vi.stubGlobal('scrollY', opts.top);
   }));
+  setReducedMotion(false);
 });
+
+/**
+ * jsdom does not implement matchMedia, so stub it. `listeners` is exposed so a
+ * test can flip the preference at runtime and assert the change is picked up.
+ */
+let motionListeners: Array<(e: { matches: boolean }) => void> = [];
+function setReducedMotion(matches: boolean) {
+  motionListeners = [];
+  vi.stubGlobal('matchMedia', vi.fn((query: string) => ({
+    matches: query.includes('prefers-reduced-motion') ? matches : false,
+    media: query,
+    addEventListener: (_: string, cb: (e: { matches: boolean }) => void) => { motionListeners.push(cb); },
+    removeEventListener: (_: string, cb: (e: { matches: boolean }) => void) => {
+      motionListeners = motionListeners.filter((l) => l !== cb);
+    },
+  })));
+}
+function emitReducedMotion(matches: boolean) {
+  motionListeners.forEach((cb) => cb({ matches }));
+}
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -131,5 +152,76 @@ describe('scrollSnap', () => {
     // Only one snapTo is running
     expect(onSnap).not.toHaveBeenCalled(); // still animating
     instance.destroy();
+  });
+
+  // ── prefers-reduced-motion ──────────────────────────────────────────────────
+  // scrollSnap animates window.scrollTo over a duration, which is precisely the
+  // motion this media query exists to suppress. It previously ignored it.
+
+  describe('prefers-reduced-motion', () => {
+    it('jumps straight to the section instead of animating the scroll', () => {
+      setReducedMotion(true);
+      const onSnap = vi.fn();
+      const instance = scrollSnap(makeSections(3), { onSnap });
+
+      instance.snapTo(2);
+
+      // Landed immediately, with no rAF animation scheduled.
+      expect(window.scrollY).toBe(1600);
+      expect(instance.getCurrentIndex()).toBe(2);
+      expect(onSnap).toHaveBeenCalledWith(2);
+      expect(rafCallbacks).toHaveLength(0);
+
+      instance.destroy();
+    });
+
+    it('still animates when the user has no preference', () => {
+      setReducedMotion(false);
+      const instance = scrollSnap(makeSections(3), { duration: 400 });
+
+      instance.snapTo(2);
+
+      // An animation frame was scheduled rather than jumping.
+      expect(rafCallbacks.length).toBeGreaterThan(0);
+      expect(instance.getCurrentIndex()).toBe(0);
+
+      instance.destroy();
+    });
+
+    it('respectReducedMotion: false overrides the preference', () => {
+      setReducedMotion(true);
+      const instance = scrollSnap(makeSections(3), {
+        duration: 400,
+        respectReducedMotion: false,
+      });
+
+      instance.snapTo(2);
+
+      expect(rafCallbacks.length).toBeGreaterThan(0);
+      instance.destroy();
+    });
+
+    it('picks up a preference change without needing a reload', () => {
+      setReducedMotion(false);
+      const instance = scrollSnap(makeSections(3), { duration: 400 });
+
+      // User turns reduced motion on while the page is open.
+      emitReducedMotion(true);
+      instance.snapTo(2);
+
+      expect(window.scrollY).toBe(1600);
+      expect(rafCallbacks).toHaveLength(0);
+
+      instance.destroy();
+    });
+
+    it('removes its media-query listener on destroy', () => {
+      setReducedMotion(false);
+      const instance = scrollSnap(makeSections(3));
+      expect(motionListeners.length).toBe(1);
+
+      instance.destroy();
+      expect(motionListeners.length).toBe(0);
+    });
   });
 });

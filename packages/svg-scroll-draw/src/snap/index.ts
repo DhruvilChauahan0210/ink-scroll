@@ -1,6 +1,7 @@
 import type { EasingName } from '../core/types';
 import { EASINGS, clamp } from '../core/utils';
 import { warn } from '../core/env';
+import { prefersReducedMotion, watchReducedMotion } from '../core/motion';
 
 export interface ScrollSnapOptions {
   /** Scroll axis. Default: 'vertical'. */
@@ -18,6 +19,14 @@ export interface ScrollSnapOptions {
   scrollContainer?: string | Element;
   /** Fires after each snap with the target section index. */
   onSnap?: (index: number) => void;
+  /**
+   * Honour `prefers-reduced-motion: reduce` by jumping straight to the target
+   * section instead of animating the scroll. Default: `true`.
+   *
+   * Snapping still happens — only the animated scroll is dropped. Set to `false`
+   * only if you have a specific reason to override the user's stated preference.
+   */
+  respectReducedMotion?: boolean;
 }
 
 export interface ScrollSnapInstance {
@@ -64,7 +73,17 @@ export function scrollSnap(
     threshold  = 0.3,
     scrollContainer,
     onSnap,
+    respectReducedMotion = true,
   } = options;
+
+  // Animating window.scrollTo over a duration is exactly the kind of motion
+  // `prefers-reduced-motion` is about, and this module previously ignored it
+  // entirely. Tracked live so toggling the OS setting takes effect without a
+  // reload.
+  let reduceMotion = respectReducedMotion && prefersReducedMotion();
+  const unwatchMotion = respectReducedMotion
+    ? watchReducedMotion((reduced) => { reduceMotion = reduced; })
+    : () => {};
 
   const easeFn = typeof easing === 'function' ? easing : (EASINGS[easing] ?? EASINGS['ease-in-out']);
   const isHorizontal = direction === 'horizontal';
@@ -120,6 +139,15 @@ export function scrollSnap(
     const endScroll   = offsets[targetIndex];
 
     if (Math.abs(startScroll - endScroll) < 1) {
+      isAnimating  = false;
+      currentIndex = targetIndex;
+      onSnap?.(targetIndex);
+      return;
+    }
+
+    // Reduced motion: land on the section immediately, no animated scroll.
+    if (reduceMotion) {
+      setScroll(endScroll);
       isAnimating  = false;
       currentIndex = targetIndex;
       onSnap?.(targetIndex);
@@ -186,6 +214,7 @@ export function scrollSnap(
       cancelAnimationFrame(animRafId);
       clearTimeout(debounceTimer);
       scrollTarget.removeEventListener('scroll', onScroll);
+      unwatchMotion();
     },
     snapTo,
     getCurrentIndex() { return currentIndex; },

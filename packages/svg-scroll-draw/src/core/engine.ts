@@ -71,7 +71,52 @@ function createDebugOverlay(
   };
 }
 
-// ── Path morphing helper ──────────────────────────────────────────────────────
+// ── Path morphing helpers ─────────────────────────────────────────────────────
+
+const PATH_NUMBER = /[-+]?(?:\d*\.)?\d+(?:[eE][-+]?\d+)?/g;
+const PATH_COMMAND = /[MmLlHhVvCcSsQqTtAaZz]/g;
+
+/**
+ * Warns when two path strings cannot be interpolated coordinate-for-coordinate.
+ *
+ * morphPath() walks the numbers in `from` and pairs each with the number at the
+ * same index in `to`. That is only meaningful when both paths have the same
+ * command sequence and the same number count. When they differ the result is
+ * silently wrong and never reaches the target shape:
+ *
+ *   'M10 10 L90 90' -> 'M10 10 C20 20, 40 40, 90 90'  ends at 'M10 10 L20 20'
+ *   'M10 10 L50 50 L90 90' -> 'M20 20 L80 80'         ends at 'M20 20 L80 80 L90 90'
+ *
+ * Dev-only, and checked once at init rather than per frame.
+ */
+function checkMorphCompatible(from: string, to: string, el: SVGElement): void {
+  if (!IS_DEV) return;
+
+  const fromCmds = (from.match(PATH_COMMAND) ?? []).join('').toUpperCase();
+  const toCmds   = (to.match(PATH_COMMAND) ?? []).join('').toUpperCase();
+  const fromNums = (from.match(PATH_NUMBER) ?? []).length;
+  const toNums   = (to.match(PATH_NUMBER) ?? []).length;
+
+  if (fromCmds !== toCmds) {
+    warnDev(
+      `morphTo: command sequence differs (${fromCmds || '∅'} → ${toCmds || '∅'}). ` +
+        `Interpolation is coordinate-for-coordinate, so the result will not reach ` +
+        `the target shape. Redraw both paths with the same commands.`,
+      el,
+    );
+    return;
+  }
+
+  if (fromNums !== toNums) {
+    warnDev(
+      `morphTo: coordinate count differs (${fromNums} → ${toNums}). ` +
+        `Extra coordinates are ignored and missing ones hold their start value, ` +
+        `so the result will not reach the target shape.`,
+      el,
+    );
+  }
+}
+
 function morphPath(from: string, to: string, t: number): string {
   const toNums = (to.match(/[-+]?(?:\d*\.)?\d+(?:[eE][-+]?\d+)?/g) ?? []).map(Number);
   let idx = 0;
@@ -300,8 +345,17 @@ export function createEngine(
     checkElement(el);
     const len = getElementLength(el);
     lengths.push(len);
-    if (el.tagName.toLowerCase() === 'path') originalDs.push(el.getAttribute('d') ?? '');
+    const isPath = el.tagName.toLowerCase() === 'path';
+    if (isPath) originalDs.push(el.getAttribute('d') ?? '');
     else originalDs.push('');
+
+    if (morphTo) {
+      if (!isPath) {
+        warnDev(`morphTo only applies to <path> elements — ignored on <${el.tagName}>.`, el);
+      } else {
+        checkMorphCompatible(originalDs[originalDs.length - 1], morphTo, el);
+      }
+    }
 
     if (prefersReduced) {
       el.style.strokeDasharray  = `${len}`;

@@ -301,7 +301,7 @@ ink-scroll/
 │   ├── src/timeline/           ← Timeline API
 │   ├── src/web-component/      ← Custom element
 │   ├── src/cdn.ts              ← CDN bundle entry
-│   └── src/__tests__/          ← 470 tests
+│   └── src/__tests__/          ← 475 tests
 └── apps/demo/                  ← Next.js site (vercel.app)
     └── src/app/                ← 7 pages + OG images
 ```
