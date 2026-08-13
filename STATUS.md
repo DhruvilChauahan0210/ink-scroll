@@ -1,9 +1,9 @@
 # Project Status — svg-scroll-draw
 
 > Current version: **2.9.0** — published to npm
-> Tests: **423 passing** across 20 test suites
-> Bundle: **~9 KB gzipped** (main) · zero runtime dependencies
-> Last updated: 2026-06-05
+> Tests: **425 passing** across 20 test suites
+> Bundle: **9.0 KB gzipped** (main entry; per-API entries from 0.2 KB) · zero runtime dependencies
+> Last updated: 2026-08-13
 
 ---
 
@@ -47,7 +47,7 @@
 - [x] `scrollAnimateGroup` + `scrollAnimateSequence` + `scrollParallaxGroup` in `svg-scroll-draw/group`
 
 ### Testing
-- [x] 358 tests across 12 suites — `engine`, `engine-options`, `engine-native`, `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollText` (19)
+- [x] 425 tests across 20 suites — `engine`, `engine-options`, `engine-native`, `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollText` (19)
 - [x] Initial state fix — `createAnimateEngine` and `scrollCounter` now apply correct alpha immediately on init (no flash before IO fires)
 
 ---
@@ -56,7 +56,7 @@
 
 ### Pages
 - [x] `/` — hero, scroll demos, interactive `scrollAnimate` demo, v2 API grid, API reference, framework tabs, bundle chart, live stats, CTA
-- [x] `/examples` — 17 examples (14 v1 SVG + 3 v2: Pricing Card Reveal, Social Proof Strip, Hero Headline Reveal) with framework filter
+- [x] `/examples` — 23 examples with framework filter
 - [x] `/docs` — full API reference including v2.0–2.2 nav group with all 6 new APIs documented
 - [x] `/playground` — interactive SVG editor
 - [x] `/changelog` — full version history v0.1.0 → v2.2.0 with visual timeline

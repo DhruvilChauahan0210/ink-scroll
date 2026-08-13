@@ -6,9 +6,9 @@
 [![license](https://img.shields.io/npm/l/svg-scroll-draw)](./LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/DhruvilChauahan0210/ink-scroll?style=flat)](https://github.com/DhruvilChauahan0210/ink-scroll/stargazers)
 
-> Animate SVG paths as you scroll. ~4.4 KB gzipped. Zero dependencies. Native CSS fast path on modern browsers.
+> Scroll-driven animation for the web. Draw SVG paths, reveal elements, pin sections, scrub video. Zero dependencies. Native CSS fast path on modern browsers.
 
-**[Live Demo](https://svg-scroll-draw.vercel.app)** · **[13 Examples](https://svg-scroll-draw.vercel.app/examples)** · **[Docs](https://svg-scroll-draw.vercel.app/docs)** · **[⚡ Playground](https://svg-scroll-draw.vercel.app/playground)** · [npm](https://www.npmjs.com/package/svg-scroll-draw)
+**[Live Demo](https://svg-scroll-draw.vercel.app)** · **[23 Examples](https://svg-scroll-draw.vercel.app/examples)** · **[Docs](https://svg-scroll-draw.vercel.app/docs)** · **[⚡ Playground](https://svg-scroll-draw.vercel.app/playground)** · [npm](https://www.npmjs.com/package/svg-scroll-draw)
 
 ![svg-scroll-draw demo](https://raw.githubusercontent.com/DhruvilChauahan0210/ink-scroll/main/demo.gif)
 
@@ -18,8 +18,8 @@ Works in **React · Next.js · Vue 3 · Svelte · Solid · Angular · Nuxt · As
 
 ## Features at a glance
 
-- **~4.4 KB gzipped** — 8–10× smaller than GSAP DrawSVG or Framer Motion
-- **Native CSS fast path** — on Chrome/Edge/Firefox 115+ the draw runs as `animation-timeline: view()` with zero per-frame JavaScript; falls back to the JS engine automatically
+- **9.0 KB gzipped** for the whole main entry — and you rarely need all of it. Every API is a separate entry point: `scrollReveal` is 3.9 KB, `scrollPin` 1.5 KB, `scrollSnap` 1.3 KB. [Full size table below](#bundle-sizes), measured by `npm run size` and enforced in CI.
+- **Native CSS fast path** — on Chrome/Edge/Firefox 115+ the draw runs as `animation-timeline: view()` with zero per-frame JavaScript; falls back to the JS engine automatically (Safari has no scroll-driven animation support yet, so it always uses the JS engine)
 - **Zero dependencies** — no GSAP, no ScrollTrigger, no heavyweight runtime
 - **Full playback API** — `pause`, `resume`, `seek`, `replay`, `getProgress`, `destroy`
 - **Presets** — `{ preset: 'reveal' }` for instant one-liner setup; five named presets: `sketch`, `reveal`, `typewriter`, `cinematic`, `spring`
@@ -27,7 +27,7 @@ Works in **React · Next.js · Vue 3 · Svelte · Solid · Angular · Nuxt · As
 - **30+ options** — easing, stagger, fade, stroke color/width lerp, fill opacity, clip reveal, morphTo, velocityScale, waypoints, callbacks, repeat, autoReverse, and more
 - **Group / Sequence / Timeline APIs** — animate multiple containers simultaneously, one-after-another, or on independent scroll windows with `loop` for auto-looping after scroll completion
 - **CSS custom property** — `--scroll-draw-progress` is set on every frame so you can drive any CSS animation without a callback
-- **272 tests across 8 suites** — engine, options, group, timeline, framework wrappers, cinematic
+- **425 tests across 20 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
 
 ---
 
@@ -560,14 +560,41 @@ function Section() {
 
 ## Bundle sizes
 
-| Format | Minified | Gzipped |
-|---|---|---|
-| ESM (`.mjs`) | 11.9 KB | ~4.4 KB |
-| CJS (`.cjs`) | 11.9 KB | ~4.4 KB |
-| React (`/react`) | 13.4 KB | ~4.8 KB |
-| IIFE / CDN (`.global.js`) | 12.9 KB | ~4.8 KB |
+Every API is its own entry point, so you only ship what you import. Figures below are
+measured from the built output — regenerate them any time with `npm run size`, and CI
+fails the build if any entry outgrows its budget.
 
-8–10× smaller than GSAP DrawSVG (~40 KB) or Framer Motion (~35 KB). On supporting browsers the simple draw case runs as a native CSS scroll animation — zero JS on the critical path.
+| Entry point                     | Raw | Gzipped |
+|---------------------------------|----:|--------:|
+| `svg-scroll-draw/nuxt`          | 32.5 KB | **10.1 KB** |
+| `svg-scroll-draw/vue`           | 32.3 KB | **10.0 KB** |
+| `svg-scroll-draw/react`         | 31.7 KB | **10.0 KB** |
+| `svg-scroll-draw/svelte`        | 30.2 KB | **9.5 KB** |
+| `svg-scroll-draw/solid`         | 30.3 KB | **9.5 KB** |
+| `svg-scroll-draw/angular`       | 30.9 KB | **9.5 KB** |
+| `svg-scroll-draw/astro`         | 28.0 KB | **9.0 KB** |
+| `svg-scroll-draw`               | 27.1 KB | **9.0 KB** |
+| `svg-scroll-draw/group`         | 23.6 KB | **7.6 KB** |
+| `svg-scroll-draw/web-component` | 15.7 KB | **5.6 KB** |
+| `svg-scroll-draw/reveal`        | 9.2 KB | **3.9 KB** |
+| `svg-scroll-draw/horizontal`    | 8.6 KB | **3.7 KB** |
+| `svg-scroll-draw/timeline`      | 7.0 KB | **3.0 KB** |
+| `svg-scroll-draw/text`          | 5.4 KB | **2.3 KB** |
+| `svg-scroll-draw/video`         | 3.9 KB | **1.9 KB** |
+| `svg-scroll-draw/cinematic`     | 3.8 KB | **1.8 KB** |
+| `svg-scroll-draw/progress`      | 3.7 KB | **1.7 KB** |
+| `svg-scroll-draw/devtools`      | 3.5 KB | **1.6 KB** |
+| `svg-scroll-draw/pin`           | 3.3 KB | **1.5 KB** |
+| `svg-scroll-draw/snap`          | 2.5 KB | **1.3 KB** |
+| `svg-scroll-draw/lenis`         | 0.4 KB | **0.2 KB** |
+
+The framework entries are larger because each re-exports the full API surface for that
+framework; importing a single API from one of them tree-shakes down considerably.
+
+For comparison, GSAP core + DrawSVGPlugin lands around 40 KB gzipped and Framer Motion
+around 35 KB — so the full main entry here is roughly 4× smaller, and a single-purpose
+import like `scrollReveal` is closer to 10×. On supporting browsers the simple draw case
+runs as a native CSS scroll animation with no JS on the critical path at all.
 
 ---
 

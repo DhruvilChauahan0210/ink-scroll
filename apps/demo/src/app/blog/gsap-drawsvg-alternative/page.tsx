@@ -616,7 +616,7 @@ scrollDraw('#hero', {
               href="/examples"
               className="px-5 sm:px-6 py-3 rounded-full border-2 border-pitch-black bg-transparent text-pitch-black text-sm font-semibold hover:bg-pitch-black hover:text-creator-pink transition-colors shadow-[3px_3px_0px_rgba(0,0,0,0.2)] w-full sm:w-auto text-center"
             >
-              See 13 Examples →
+              See 23 Examples →
             </Link>
           </div>
         </section>

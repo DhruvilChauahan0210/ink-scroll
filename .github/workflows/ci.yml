@@ -52,3 +52,8 @@ jobs:
       - name: Check bundle size budgets
         run: npm run size:check
         working-directory: packages/svg-scroll-draw
+
+      # Fails if the test/example counts quoted in the README or demo drift
+      # from the real numbers.
+      - name: Check doc claims
+        run: npm run check:claims

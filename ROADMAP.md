@@ -84,7 +84,7 @@
 
 ### Demo Site
 - [x] Home page — hero, 15+ demos, API table, framework tabs, bundle comparison, live stats
-- [x] `/examples` — 13 examples with framework filter (All / React / Vue / Svelte / Solid / Vanilla / API)
+- [x] `/examples` — 23 examples with framework filter (All / React / Vue / Svelte / Solid / Vanilla / API)
 - [x] `/docs` — full API reference
 - [x] `/playground` — interactive SVG editor
 - [x] `/changelog` — version history
@@ -107,7 +107,7 @@
 `/blog/page.tsx` exists with post card listing. "Blog" added to all nav instances.
 
 #### ~~More demo examples~~ — ✓ shipped
-13 examples including logo reveal, line chart, signature, flowchart, map route, network diagram, group, sequence, timeline, Vue, Svelte, Solid.
+23 examples including logo reveal, line chart, signature, flowchart, map route, network diagram, group, sequence, timeline, Vue, Svelte, Solid.
 
 #### More blog posts — ongoing
 - [x] "Zero-JS SVG scroll animations with native CSS" — `/blog/native-css-svg-scroll-animations`
