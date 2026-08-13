@@ -12,9 +12,14 @@ import {
   IdleCostProof,
   ReducedMotionProof,
 } from '@/components/VerifyPhase1';
+import {
+  DestroyRestoreProof,
+  SnapCallbackProof,
+  HorizontalTriggerProof,
+} from '@/components/VerifyPhase2';
 
 export const metadata: Metadata = {
-  title: 'Verify — live proof of the Phase 0 and Phase 1 fixes',
+  title: 'Verify — live proof of the Phase 0, 1 and 2 fixes',
   description:
     'Internal verification page. Renders each correctness fix live in the browser so it can be checked by eye rather than taken on trust.',
   // Internal engineering page — must not compete with the real docs in search.
@@ -151,14 +156,14 @@ export default function VerifyPage() {
             Verify.
           </h1>
           <p className="text-base sm:text-lg text-graphite-border leading-relaxed max-w-2xl mb-8">
-            Two phases of correctness work, most of which has no UI surface — engine
+            Three phases of correctness work, most of which has no UI surface — engine
             internals, CI gates, packaging, README numbers. This page renders the parts
             that <em>can</em> be seen, so they can be checked by eye instead of taken on
             trust. Every section states what was broken, then demonstrates it live in
             this browser.
           </p>
 
-          <div className="grid sm:grid-cols-2 gap-4">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {[
               {
                 tag: 'Phase 0',
@@ -171,6 +176,12 @@ export default function VerifyPage() {
                 heading: 'Real browsers',
                 items: ['native CSS ≠ JS engine', 'CDN build crashed', 'idle CPU burn', 'scrollSnap ignored a11y', 'morphTo silently wrong'],
                 sections: '06 – 09',
+              },
+              {
+                tag: 'Phase 2',
+                heading: 'The rest of the surface',
+                items: ['scrollHorizontal never moved', 'destroy() abandoned styles', 'onSnap fired twice', 'viewport override in the harness', 'no Range support = dead video'],
+                sections: '10 – 12',
               },
             ].map(({ tag, heading, items, sections }) => (
               <div key={tag} className="rounded-2xl border border-pitch-black p-5">
@@ -426,8 +437,69 @@ export default function VerifyPage() {
         <ReducedMotionProof />
       </Section>
 
+      <PhaseBanner
+        phase="Phase 2 · sections 10 – 12"
+        title="The other nine APIs."
+        blurb="Phase 1 examined one API in a real browser and found five bugs. Nine were still unexamined, so this phase extended browser coverage across the surface — scrollReveal, scrollPin, scrollSnap, scrollText, scrollCounter, scrollProgress, scrollParallax, scrollVideo and scrollHorizontal. It also found the worst defect of the three phases: an API that did nothing at all in the arrangement its own documentation prescribed."
+        bullets={[
+          ['Browser tests', '30 → 76, on all three engines'],
+          ['Defects found', '4 in the library, 2 in the test harness'],
+          ['Worst of them', 'scrollHorizontal never moved the track'],
+          ['New guard', 'every test must fail against a broken build'],
+        ]}
+      />
+
       <Section
         num="10"
+        title="scrollHorizontal never moved the track."
+        lead={
+          <>
+            The worst defect in three phases of this work. The default trigger window was
+            measured against the track itself — and a <code className="font-mono">sticky</code>{' '}
+            stage pins that track at exactly one stage tall, so both ends of the window
+            resolved to the same scroll position. Progress was then clamped at zero
+            forever. The API did nothing, in precisely the CSS setup its own docs
+            prescribe.
+          </>
+        }
+      >
+        <HorizontalTriggerProof />
+      </Section>
+
+      <Section
+        num="11"
+        title="destroy() left elements stranded mid-animation."
+        lead={
+          <>
+            The engine wrote <code className="font-mono">opacity</code> and{' '}
+            <code className="font-mono">transform</code> inline every frame and removed
+            neither on teardown. Destroy a component while its reveal was half-finished and
+            it stayed half-finished — permanently faded and offset, with nothing left running
+            to correct it. Worse for the visitor than never animating at all.
+          </>
+        }
+      >
+        <DestroyRestoreProof />
+      </Section>
+
+      <Section
+        num="12"
+        title="onSnap fired twice for a single snap."
+        lead={
+          <>
+            <code className="font-mono">scrollSnap</code> reacted to the scroll event its own
+            animated scroll produced, treating it as a fresh user gesture and announcing a
+            snap it had already announced. Guaranteed under reduced motion, intermittent
+            otherwise — a public callback that fires once or twice depending on the easing
+            curve.
+          </>
+        }
+      >
+        <SnapCallbackProof />
+      </Section>
+
+      <Section
+        num="13"
         title="What still is not proven."
         lead="The limits, kept up to date rather than quietly dropped as they shrink."
       >
@@ -443,15 +515,11 @@ export default function VerifyPage() {
             ],
             [
               '478 unit tests are still jsdom',
-              'getTotalLength is stubbed to a constant and IntersectionObserver is faked. They verify engine arithmetic. The 30 Playwright tests are what cover browser behaviour — and they cover the draw engine, not yet every API.',
+              'getTotalLength is stubbed to a constant and IntersectionObserver is faked. They verify engine arithmetic. The 76 Playwright tests are what cover browser behaviour.',
             ],
             [
-              'Most APIs have no browser coverage yet',
-              'scrollReveal, scrollPin, scrollText, scrollCounter, scrollVideo, scrollHorizontal and scrollProgress are unit-tested only. The e2e suite so far covers scrollDraw parity and idle cost.',
-            ],
-            [
-              'The framework wrappers are untested end to end',
-              'React, Vue, Svelte, Solid, Angular, Astro and Nuxt are excluded from coverage because jsdom cannot mount them, and no e2e fixture renders them yet.',
+              'Three APIs still have no browser coverage',
+              'Group / Sequence / Timeline and Cinematic are unit-tested only, and scrollAnimate has its own native CSS fast path that has never been checked for parity — the existing parity test covers scrollDraw’s. Every other entry point now has browser coverage.',
             ],
             [
               'This page found a bug the e2e suite missed',
@@ -459,7 +527,15 @@ export default function VerifyPage() {
             ],
             [
               'Dev warnings are silent in CDN builds',
-              'Without a bundler there is no NODE_ENV to read, so IS_DEV is false and warnings are suppressed. Safe, but a separate dev CDN build would be better.',
+              'Without a bundler there is no NODE_ENV to read, so IS_DEV is false and warnings are suppressed. Safe, but a separate dev CDN build would be better. This now matters more: a zero-length trigger window — the scrollHorizontal defect in section 10 — is reported as a dev warning, and a CDN user would never see it.',
+            ],
+            [
+              'The framework wrappers are still untested end to end',
+              'Around 1,000 lines across React, Vue, Svelte, Solid, Angular, Astro and Nuxt, excluded from coverage because jsdom cannot mount them. They are thin adapters, but "thin" is an assumption nobody has tested, and they are what most users actually touch.',
+            ],
+            [
+              'scrollHorizontal’s default distance ignores scrollContainer',
+              'It subtracts window.innerWidth even when a nested scroll container is passed, so those callers have to supply distance by hand — as section 10 does. Found while building that section; not yet fixed.',
             ],
           ].map(([t, d]) => (
             <li key={t} className="flex gap-3">
@@ -476,9 +552,9 @@ export default function VerifyPage() {
       <footer className="px-4 sm:px-6 md:px-12 py-12">
         <div className="max-w-4xl mx-auto">
           <p className="text-[12px] font-mono text-graphite-border">
-            Branch <code>phase0-production-ready</code> · 478 unit tests + 30 browser
-            tests · <code>npm run verify</code> and <code>npm run test:e2e</code> both
-            exit 0
+            Branch <code>phase0-production-ready</code> · 478 unit tests + 76 browser
+            tests per engine · 27 mutations, each caught by the one test named for it ·{' '}
+            <code>npm run verify</code> and <code>npm run test:e2e</code> both exit 0
           </p>
         </div>
       </footer>
