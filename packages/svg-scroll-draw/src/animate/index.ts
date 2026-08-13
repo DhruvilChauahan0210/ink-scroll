@@ -130,6 +130,9 @@ const NATIVE_SAFE_PROPS = new Set([
 
 let animateNativeUid = 0;
 
+/** Custom property the engine mirrors progress into, for CSS to read. */
+const PROGRESS_VAR = '--scroll-draw-progress';
+
 function supportsNativeTimeline(): boolean {
   return (
     typeof CSS !== 'undefined' &&
@@ -199,10 +202,35 @@ export function createAnimateEngine(
     }
   }
 
+  /**
+   * Inline styles as they were before this engine touched the element.
+   *
+   * Captured before the first write so `destroy()` can put them back. Without
+   * this the engine leaves whatever the last frame wrote: destroy an element
+   * mid-animation and it stays frozen at, say, opacity 0.34 and translateY(21px)
+   * for the rest of the page's life — permanently faded and offset, which is
+   * worse for the user than never having animated at all. `scrollPin` and
+   * `scrollText` both restore on destroy; this one silently did not, which also
+   * made `scrollReveal`'s documented "restore original styles" untrue.
+   */
+  const savedInline = new Map<string, string>();
+  for (const prop of [...entries.map((e) => e.prop), PROGRESS_VAR]) {
+    savedInline.set(prop, (el as HTMLElement).style.getPropertyValue(prop));
+  }
+
+  function restoreInline(): void {
+    for (const [prop, value] of savedInline) {
+      if (value) (el as HTMLElement).style.setProperty(prop, value);
+      else (el as HTMLElement).style.removeProperty(prop);
+    }
+  }
+
   if (prefersReduced) {
     applyFinal();
     onComplete?.();
-    return NOOP;
+    // Nothing to tear down, but destroy() must still undo the styles it wrote —
+    // otherwise the contract depends on the visitor's motion preference.
+    return { ...NOOP, destroy: restoreInline, getProgress: () => 1 };
   }
 
   resolveFromValues();
@@ -249,6 +277,10 @@ export function createAnimateEngine(
       destroy() {
         (el as HTMLElement).classList.remove(cls);
         style.remove();
+        // seek()/pause() on this path write inline styles too, so the same
+        // restore applies whether or not the animation was ever scrubbed.
+        (el as HTMLElement).style.animationPlayState = '';
+        restoreInline();
       },
       replay() {
         (el as HTMLElement).classList.remove(cls);
@@ -319,7 +351,7 @@ export function createAnimateEngine(
   }
 
   function applyAlpha(alpha: number): void {
-    (el as HTMLElement).style.setProperty('--scroll-draw-progress', String(alpha));
+    (el as HTMLElement).style.setProperty(PROGRESS_VAR, String(alpha));
     for (const entry of entries) {
       (el as HTMLElement).style.setProperty(entry.prop, interpolateValue(entry.from, entry.to, alpha));
     }
@@ -412,6 +444,7 @@ export function createAnimateEngine(
       window.removeEventListener('resize', onResize);
       window.removeEventListener('orientationchange', onResize);
       clearTimeout(resizeTimer);
+      restoreInline();
       _unregister(el);
     },
     replay() {

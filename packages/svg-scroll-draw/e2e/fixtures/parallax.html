@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>scrollParallax — travel distance and direction</title>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+  .spacer { height: 1200px; }
+  .tail   { height: 2000px; }
+
+  /* Every target is 300px tall and starts at document top 1200, so travel is a
+     function of `speed` alone and the three cases are directly comparable. */
+  .row { display: flex; gap: 20px; padding: 0 20px; }
+  .layer { flex: 1; height: 300px; background: #dedede; overflow: hidden; }
+</style>
+</head>
+<body>
+
+<div class="spacer"></div>
+<div class="row" id="row">
+  <div class="layer" id="half"></div>
+  <div class="layer" id="negative"></div>
+  <div class="layer" id="horizontal"></div>
+</div>
+<div class="tail"></div>
+
+<script type="module">
+import { scrollParallax } from '/dist/index.mjs';
+import { transformOf, docTop, publish } from './_probe.mjs';
+
+const half       = document.querySelector('#half');
+const negative   = document.querySelector('#negative');
+const horizontal = document.querySelector('#horizontal');
+
+const instances = [
+  // travel = speed * height = 0.5 * 300 = 150px, upward (negative translateY).
+  scrollParallax('#half', { speed: 0.5 }),
+  // A negative speed must reverse the direction, not just scale it.
+  scrollParallax('#negative', { speed: -0.5 }),
+  // axis:'x' measures the element's WIDTH, not its height.
+  scrollParallax('#horizontal', { speed: 0.5, axis: 'x' }),
+];
+
+publish({
+  read: () => ({
+    scrollY: window.scrollY,
+    half: transformOf(half),
+    negative: transformOf(negative),
+    horizontal: transformOf(horizontal),
+  }),
+  geometry: () => ({
+    rowTop: docTop(document.querySelector('#row')),
+    height: half.offsetHeight,
+    width: half.offsetWidth,
+    viewport: window.innerHeight,
+  }),
+  destroyAll: () => instances.forEach((i) => i.destroy()),
+});
+</script>
+</body>
+</html>

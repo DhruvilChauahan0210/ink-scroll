@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>scrollReveal — real transforms, stagger cascade, once latching</title>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+
+  .spacer { height: 1200px; }
+  .tail   { height: 1600px; }
+
+  /* Cards sit in a row, so every card in a row shares one document Y. That makes
+     the stagger offset the ONLY thing that can make their progress differ —
+     stacked cards would differ simply by being at different heights, which would
+     pass whether stagger worked or not. Same trick as parity.html. */
+  .row { display: flex; gap: 20px; padding: 0 20px; }
+  .card, .rev { flex: 1; height: 120px; background: #cde; }
+</style>
+</head>
+<body>
+
+<div class="spacer"></div>
+
+<!-- rowA: document top 1200 -->
+<div class="row" id="rowA">
+  <div class="card"></div>
+  <div class="card"></div>
+  <div class="card"></div>
+  <div class="card"></div>
+</div>
+
+<div class="spacer"></div>
+
+<!-- rowB: document top 2520 -->
+<div class="row" id="rowB">
+  <div class="rev"></div>
+  <div class="rev"></div>
+</div>
+
+<div class="tail"></div>
+
+<script type="module">
+import { scrollReveal } from '/dist/reveal/index.mjs';
+import { transformOf, opacityOf, docTop, publish } from './_probe.mjs';
+
+const cards = [...document.querySelectorAll('.card')];
+const revs  = [...document.querySelectorAll('.rev')];
+
+// stagger: 1 pins the engine at its maximum 4%-of-viewport step per element.
+// The default 0.08 works out to a 2.5px trigger offset at this viewport, which
+// is below the noise floor — a cascade test using the default would pass on a
+// build where stagger did nothing at all.
+const staggered = scrollReveal(cards, { stagger: 1, once: true });
+
+// once:false — must genuinely reverse on the way back up.
+const reversing = scrollReveal(revs, { preset: 'scale', once: false });
+
+const state = (el) => ({
+  opacity: opacityOf(el),
+  ...transformOf(el),
+  inlineOpacity:   el.style.opacity,
+  inlineTransform: el.style.transform,
+});
+
+publish({
+  read: () => ({
+    scrollY: window.scrollY,
+    cards: cards.map(state),
+    revs:  revs.map(state),
+  }),
+  geometry: () => ({
+    rowATop: docTop(document.querySelector('#rowA')),
+    rowBTop: docTop(document.querySelector('#rowB')),
+    viewport: window.innerHeight,
+  }),
+  destroyStaggered: () => staggered.destroy(),
+  destroyReversing: () => reversing.destroy(),
+});
+</script>
+</body>
+</html>
