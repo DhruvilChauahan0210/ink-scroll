@@ -44,6 +44,28 @@
 
 <div class="spacer"></div>
 
+<!-- A second pair, identical except for a non-linear easing. scrollDraw defaults
+     to `linear`, so the pair above compares the two engines with no easing curve
+     involved at all — which is exactly how a wrong easing mapping survived. -->
+<div class="row">
+  <div class="cell">
+    <div class="box" id="nativeE">
+      <svg viewBox="0 0 200 100" preserveAspectRatio="none">
+        <path d="M10 50 C 40 10, 80 10, 100 50 S 160 90, 190 50"></path>
+      </svg>
+    </div>
+  </div>
+  <div class="cell">
+    <div class="box" id="jsE">
+      <svg viewBox="0 0 200 100" preserveAspectRatio="none">
+        <path d="M10 50 C 40 10, 80 10, 100 50 S 160 90, 190 50"></path>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<div class="spacer"></div>
+
 <script type="module">
 import { scrollDraw } from '/dist/index.mjs';
 
@@ -60,8 +82,15 @@ const supportsNative =
   typeof CSS.supports === 'function' &&
   CSS.supports('animation-timeline: view()');
 
+// Same two engines, same geometry, but with `ease-out` — the curve CSS has a
+// same-named keyword for that is not the same curve.
+const nativeEasedInst = scrollDraw('#nativeE', { native: true,  easing: 'ease-out' });
+const jsEasedInst     = scrollDraw('#jsE',     { native: false, easing: 'ease-out' });
+
 const nativePath = document.querySelector('#native path');
 const jsPath     = document.querySelector('#js path');
+const nativeEasedPath = document.querySelector('#nativeE path');
+const jsEasedPath     = document.querySelector('#jsE path');
 
 /** Current stroke-dashoffset as a fraction of total length: 0 = undrawn, 1 = drawn. */
 function drawnFraction(el) {
@@ -82,6 +111,23 @@ window.__probe = {
   }),
   progress: () => ({ native: nativeInst.getProgress(), js: jsInst.getProgress() }),
   totalLength: () => nativePath.getTotalLength(),
+
+  // The `ease-out` pair, and where its trigger window sits in the document.
+  readEased: () => ({
+    native: drawnFraction(nativeEasedPath),
+    js: drawnFraction(jsEasedPath),
+    scrollY: window.scrollY,
+  }),
+  easedGeometry: () => {
+    const box = document.querySelector('#nativeE');
+    const top = box.getBoundingClientRect().top + window.scrollY;
+    return {
+      top,
+      height: box.offsetHeight,
+      sameTop: top === document.querySelector('#jsE').getBoundingClientRect().top + window.scrollY,
+      easedProgress: { native: nativeEasedInst.getProgress(), js: jsEasedInst.getProgress() },
+    };
+  },
 };
 
 window.__ready = true;

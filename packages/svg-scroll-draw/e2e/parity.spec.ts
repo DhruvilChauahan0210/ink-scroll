@@ -34,6 +34,13 @@ type Probe = {
   nativeEngaged: () => boolean;
   read: () => { native: number; js: number; scrollY: number };
   totalLength: () => number;
+  readEased: () => { native: number; js: number; scrollY: number };
+  easedGeometry: () => {
+    top: number;
+    height: number;
+    sameTop: boolean;
+    easedProgress: { native: number; js: number };
+  };
 };
 
 declare global {
@@ -177,6 +184,69 @@ test.describe('native CSS fast path vs JS engine', () => {
     const recovered = await page.evaluate(() => window.__probe.read());
     expect(recovered.js).toBeGreaterThanOrEqual(0.95);
     expect(Math.abs(recovered.native - recovered.js)).toBeLessThanOrEqual(TOLERANCE);
+  });
+
+  /**
+   * The same claim, with an easing curve involved.
+   *
+   * Everything above compares the two engines on `scrollDraw`'s default easing,
+   * `linear` — where there is no curve to get wrong. That is how the fast path
+   * shipped for three versions handing CSS the keyword of the same name as the
+   * JS easing: `ease-out` became `animation-timing-function: ease-out`. The
+   * keywords are fixed cubic-béziers and these easings are quadratics, so the
+   * two engines rendered curves up to 0.069 apart — around 7 points of progress
+   * mid-scroll, in the middle of the range where anyone would notice.
+   *
+   * Fixture: the eased pair sits below the linear one, 300 tall, so its window
+   * is `top = 3500`, tStart = 2700, tEnd = 3800.
+   */
+  test('a non-linear easing renders the same curve on both engines', async ({ page }) => {
+    await open(page);
+
+    const geo = await page.evaluate(() => window.__probe.easedGeometry());
+    expect(geo.top, 'eased pair is not where this test thinks').toBe(3500);
+    expect(geo.height).toBe(300);
+    expect(geo.sameTop, 'eased cells are not vertically aligned').toBe(true);
+
+    /** The JS engine's `ease-out`: a quadratic, not the CSS keyword's bézier. */
+    const easeOut = (t: number) => t * (2 - t);
+    const alphaAt = (y: number) => Math.min(1, Math.max(0, (y - 2700) / (3800 - 2700)));
+
+    const rows: { y: number; native: number; js: number; want: number }[] = [];
+    for (let y = 2700; y <= 3800; y += 100) {
+      await page.evaluate((to) => window.scrollTo(0, to), y);
+      await settle(page);
+      const v = await page.evaluate(() => window.__probe.readEased());
+      rows.push({ y, native: v.native, js: v.js, want: easeOut(alphaAt(y)) });
+    }
+
+    const shown = rows
+      .map(
+        (r) =>
+          `  y=${String(r.y).padStart(4)}  native=${r.native.toFixed(4)}  js=${r.js.toFixed(4)}` +
+          `  want=${r.want.toFixed(4)}`,
+      )
+      .join('\n');
+
+    // Both are held to the same analytic expectation: two engines agreeing on
+    // the wrong curve would otherwise pass.
+    const worstJs = rows.reduce((a, b) => (Math.abs(b.js - b.want) > Math.abs(a.js - a.want) ? b : a));
+    expect(
+      Math.abs(worstJs.js - worstJs.want),
+      `the JS engine does not match its own ease-out at y=${worstJs.y}\n${shown}`,
+    ).toBeLessThanOrEqual(TOLERANCE);
+
+    const worstNative = rows.reduce((a, b) =>
+      Math.abs(b.native - b.want) > Math.abs(a.native - a.want) ? b : a,
+    );
+    expect(
+      Math.abs(worstNative.native - worstNative.want),
+      `the native CSS path renders a different easing curve from the JS engine ` +
+        `at y=${worstNative.y}\n${shown}`,
+    ).toBeLessThanOrEqual(TOLERANCE);
+
+    // Not vacuous: the sweep has to include genuinely partial draws.
+    expect(rows.filter((r) => r.want > 0.05 && r.want < 0.95).length, shown).toBeGreaterThanOrEqual(3);
   });
 
   test('scrolling back up reverses both engines together', async ({ page }) => {

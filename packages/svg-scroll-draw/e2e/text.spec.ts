@@ -164,3 +164,55 @@ test.describe('scrollText', () => {
     expect(after.ariaLabel).toBeNull();
   });
 });
+
+/**
+ * `split: 'lines'`, which nothing covered until now.
+ *
+ * It is the only mode whose units depend on layout — it splits into words, reads
+ * each word's `offsetTop`, and regroups them per visual line. In jsdom every
+ * `offsetTop` is 0, so there is exactly one line and nothing to get wrong; the
+ * regrouping only has real work to do in a browser.
+ *
+ * It moved the word spans into their line span and left behind the whitespace
+ * spans that `splitIntoWords` emits to hold the gaps open, then cleared the
+ * element — so every space inside a line was discarded and
+ * "Every word here…" rendered as "Everywordhere…".
+ */
+test.describe('scrollText — split: lines', () => {
+  type LinesReport = {
+    text: string;
+    originalText: string;
+    lineSpans: number;
+    ariaLabel: string | null;
+    height: number;
+    progress: number;
+  };
+
+  test('the fixture really wraps onto more than one line', async ({ page }) => {
+    await openFixture(page, 'text.html');
+    const r = await call<LinesReport>(page, 'linesReport');
+    expect(
+      r.lineSpans,
+      'the paragraph fits on one line, so the grouping is never exercised',
+    ).toBeGreaterThan(1);
+  });
+
+  test('preserves the spaces between words on a line', async ({ page }) => {
+    await openFixture(page, 'text.html');
+    const r = await call<LinesReport>(page, 'linesReport');
+
+    expect(r.text, `split: 'lines' changed the rendered text`).toBe(r.originalText);
+    expect(r.ariaLabel, 'the accessible name was not set from the original text').toBe(
+      r.originalText,
+    );
+  });
+
+  test('destroy() puts the paragraph back', async ({ page }) => {
+    await openFixture(page, 'text.html');
+    const before = await call<LinesReport>(page, 'linesReport');
+
+    const after = await call<{ text: string; html: string }>(page, 'destroyLines');
+    expect(after.text).toBe(before.originalText);
+    expect(after.html, 'spans were left behind').not.toContain('<span');
+  });
+});

@@ -57,6 +57,21 @@ async function open(page: import('@playwright/test').Page, n: number) {
 }
 
 test.describe('idle cost of the JS engine', () => {
+  /*
+   * The only timing measurement in this suite, and the only place retries are
+   * justified. `cbMs` is wall-clock JavaScript time, sampled while up to five
+   * other browsers run the rest of the suite on the same machine — so one
+   * contended sample can exceed the absolute ceiling below without anything
+   * having regressed. That started happening once the framework fixtures roughly
+   * doubled the size of the suite.
+   *
+   * Retrying is the honest fix rather than raising the ceiling: the thresholds
+   * still mean exactly what they say, and three contended samples in a row would
+   * be real evidence. The relative assertion is load-independent and is not the
+   * reason this is here.
+   */
+  test.describe.configure({ retries: 2 });
+
   test('costs far less while parked than while scrolling', async ({ page }) => {
     await open(page, INSTANCES);
 

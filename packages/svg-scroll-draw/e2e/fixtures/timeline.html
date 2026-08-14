@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>scrollDrawTimeline — per-track windows</title>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+
+  #diagram { height: 400px; margin: 0 40px; }
+  #loopy   { height: 300px; margin: 0 40px; }
+  #hud     { height: 300px; margin: 0 40px; }
+
+  svg  { width: 100%; height: 100%; display: block; overflow: visible; }
+  path { fill: none; stroke: #000; stroke-width: 3; }
+</style>
+</head>
+<body>
+
+<div style="height:1000px"></div>
+
+<div id="diagram">
+  <svg viewBox="0 0 200 100" preserveAspectRatio="none">
+    <!-- Two paths on the first track: a track is a selector, so it must drive
+         every element it matches, not just the first. -->
+    <path class="t1" d="M10 20 L190 20"></path>
+    <path class="t1" d="M10 35 L190 35"></path>
+    <path class="t2" d="M10 55 C 60 20, 140 90, 190 55"></path>
+    <path class="t3" d="M10 80 L190 80"></path>
+  </svg>
+</div>
+
+<div style="height:800px"></div>
+
+<div id="loopy">
+  <svg viewBox="0 0 200 100" preserveAspectRatio="none">
+    <path class="lp" d="M10 50 L190 50"></path>
+  </svg>
+</div>
+
+<div style="height:800px"></div>
+
+<div id="hud">
+  <svg viewBox="0 0 200 100" preserveAspectRatio="none">
+    <path class="dbg" d="M10 50 L190 50"></path>
+  </svg>
+</div>
+
+<div style="height:1000px"></div>
+
+<script type="module">
+import { scrollDrawTimeline } from '/dist/timeline/index.mjs';
+import { drawnFraction, opacityOf, docTop, publish } from './_probe.mjs';
+
+const completions = [];
+
+const timeline = scrollDrawTimeline('#diagram', {
+  tracks: [
+    { selector: '.t1', from: 0,   to: 0.5 },
+    { selector: '.t2', from: 0.3, to: 0.8, fade: true },
+    { selector: '.t3', from: 0.7, to: 1.0, easing: 'ease-out' },
+  ],
+  onComplete: () => completions.push(window.scrollY),
+});
+
+// A second timeline whose animation continues on a timer once the scroll-driven
+// pass finishes — the only part of this module that is not scroll-linked.
+const loop = scrollDrawTimeline('#loopy', {
+  tracks: [{ selector: '.lp', from: 0, to: 1 }],
+  // Ends at `bottom bottom` rather than the default `bottom top` so the element
+  // is still on screen — and therefore still being driven by its rAF loop — at
+  // the moment it completes. With the default window, completion and leaving the
+  // viewport are the same offset, and the time-driven loop would never get a
+  // frame to run in.
+  trigger: { end: 'bottom bottom' },
+  loop: 1,
+  loopDuration: 300,
+});
+
+const debugTimeline = scrollDrawTimeline('#hud', {
+  tracks: [{ selector: '.dbg', from: 0, to: 1 }],
+  debug: true,
+  label: 'hud-under-test',
+});
+
+const paths = (sel) => [...document.querySelectorAll(sel)];
+
+/*
+ * The loop is time-driven, so sampling it from the spec is a race: the replay
+ * can start and finish between two `read()` calls. Instead the page watches it
+ * every frame and counts the movement that can only come from a timer — a change
+ * in drawn fraction across a frame in which the page did not scroll at all.
+ *
+ * A wind-back in particular is unambiguous: with `loop` set the engine latches
+ * progress monotonically, so the only thing that can lower it is the loop's own
+ * reset.
+ */
+const lpPath = document.querySelector('.lp');
+const motion = { dipsWithoutScroll: 0, risesWithoutScroll: 0 };
+let prevDrawn = drawnFraction(lpPath);
+let prevScroll = window.scrollY;
+(function watchLoop() {
+  const v = drawnFraction(lpPath);
+  const y = window.scrollY;
+  if (y === prevScroll) {
+    if (v < prevDrawn - 0.05) motion.dipsWithoutScroll++;
+    if (v > prevDrawn + 0.05) motion.risesWithoutScroll++;
+  }
+  prevDrawn = v;
+  prevScroll = y;
+  requestAnimationFrame(watchLoop);
+})();
+
+const geometry = {
+  viewportHeight: window.innerHeight,
+  diagramTop: docTop(document.querySelector('#diagram')),
+  diagramHeight: document.querySelector('#diagram').offsetHeight,
+  loopTop: docTop(document.querySelector('#loopy')),
+  hudTop: docTop(document.querySelector('#hud')),
+  // Real measured lengths. In jsdom every one of these is a stubbed constant,
+  // which is why none of the arithmetic below was ever really checked.
+  lengths: {
+    t1: paths('.t1').map((p) => p.getTotalLength()),
+    t2: paths('.t2').map((p) => p.getTotalLength()),
+    t3: paths('.t3').map((p) => p.getTotalLength()),
+  },
+};
+
+publish({
+  read: () => ({
+    scrollY: window.scrollY,
+    // Every element of every track, so a track that drives only its first match
+    // is visible as a difference within the row.
+    t1: paths('.t1').map(drawnFraction),
+    t2: paths('.t2').map(drawnFraction),
+    t3: paths('.t3').map(drawnFraction),
+    fade: paths('.t2').map(opacityOf),
+    progress: timeline.getProgress(),
+    // The custom property the container publishes for dependent CSS.
+    cssVar: document.querySelector('#diagram').style.getPropertyValue('--scroll-draw-progress'),
+    completions: completions.length,
+    loopDrawn: drawnFraction(lpPath),
+    loopMotion: { ...motion },
+    // Empty once destroy() has put a path back the way it found it.
+    inlineStyles: paths('.t1, .t2, .t3').map((p) => p.getAttribute('style') ?? ''),
+    containerVar: document.querySelector('#diagram').style.getPropertyValue('--scroll-draw-progress'),
+    debugPanels: document.querySelectorAll('body > div[style*="position: fixed"]').length,
+  }),
+
+  geometry: () => geometry,
+
+  seek: (p) => timeline.seek(p),
+  replay: () => timeline.replay(),
+  pause: () => timeline.pause(),
+  destroy: () => timeline.destroy(),
+
+  /**
+   * Lengthen one path on the first track without touching the document height, so
+   * neither the resize listener nor the document ResizeObserver can fire — the
+   * case refresh() exists for.
+   */
+  growPathThenRefresh: () => {
+    const p = paths('.t1')[0];
+    const before = p.getTotalLength();
+    p.setAttribute('d', 'M10 20 L190 20 L190 30 L10 30');
+    const grown = p.getTotalLength();
+    timeline.refresh();
+    return { before, grown, dasharray: parseFloat(p.style.strokeDasharray) };
+  },
+  destroyDebug: () => debugTimeline.destroy(),
+  destroyLoop: () => loop.destroy(),
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>scrollHorizontal — inside a custom scroll container</title>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+
+  /* The same documented arrangement as horizontal.html, but nested inside an
+     element that owns the scrolling instead of the window. The container is
+     deliberately narrower than the viewport (700 vs 900), which is what makes
+     the difference between "minus the window" and "minus the container"
+     measurable rather than theoretical. */
+  #scroller { width: 700px; height: 600px; overflow: auto; position: relative; }
+  #lead   { height: 600px; background: #eee; }
+  #outer  { height: 2400px; }
+  #sticky { position: sticky; top: 0; height: 600px; overflow: hidden; }
+  #track  { display: flex; width: max-content; height: 100%; }
+  .panel  { width: 700px; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 40px; }
+  .panel:nth-child(odd)  { background: #cdd; }
+  .panel:nth-child(even) { background: #dcd; }
+  #tail   { height: 600px; background: #eee; }
+</style>
+</head>
+<body>
+
+<div id="scroller">
+  <div id="lead"></div>
+  <div id="outer">
+    <div id="sticky">
+      <div id="track">
+        <div class="panel" id="p0">0</div>
+        <div class="panel" id="p1">1</div>
+        <div class="panel" id="p2">2</div>
+        <div class="panel" id="p3">3</div>
+      </div>
+    </div>
+  </div>
+  <div id="tail"></div>
+</div>
+
+<script type="module">
+import { scrollHorizontal } from '/dist/horizontal/index.mjs';
+import { transformOf, publish } from './_probe.mjs';
+
+const scroller = document.querySelector('#scroller');
+const track    = document.querySelector('#track');
+const panels   = [...document.querySelectorAll('.panel')];
+
+const inst = scrollHorizontal('#track', {
+  scrollContainer: '#scroller',
+  triggerElement: '#outer',
+});
+
+publish({
+  read: () => ({
+    scrollTop: scroller.scrollTop,
+    x: transformOf(track).x,
+    progress: inst.getProgress(),
+    // Which panel is centred in the sticky stage, measured from real rects.
+    centredPanel: panels.findIndex((p) => {
+      const r = p.getBoundingClientRect();
+      const mid = scroller.getBoundingClientRect().left + scroller.clientWidth / 2;
+      return r.left <= mid && r.right > mid;
+    }),
+  }),
+
+  geometry: () => ({
+    trackScrollWidth: track.scrollWidth,
+    // The width the track is actually seen through. Not the window's — and not a
+    // constant either, since scrollbar width differs per engine.
+    containerClientWidth: scroller.clientWidth,
+    containerClientHeight: scroller.clientHeight,
+    windowInnerWidth: window.innerWidth,
+    expectedDistance: track.scrollWidth - scroller.clientWidth,
+    // What the old behaviour would have produced, for the failure message.
+    windowBasedDistance: track.scrollWidth - window.innerWidth,
+  }),
+
+  scrollContainerTo: (top) => {
+    scroller.scrollTop = top;
+    return scroller.scrollTop;
+  },
+});
+</script>
+</body>
+</html>

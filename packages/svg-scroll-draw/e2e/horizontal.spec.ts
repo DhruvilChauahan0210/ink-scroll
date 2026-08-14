@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { openFixture, collectErrors, scrollToY, read, call, sweep, table } from './helpers';
+import { openFixture, collectErrors, scrollToY, read, call, sweep, settle, table } from './helpers';
 
 /**
  * `scrollHorizontal` in real browsers.
@@ -158,5 +158,132 @@ test.describe('scrollHorizontal', () => {
 
     await call(page, 'destroyTrack');
     expect((await read<Row>(page)).x, 'track left displaced after destroy').toBeCloseTo(0, 0);
+  });
+});
+
+/**
+ * The same API driven by a custom `scrollContainer` rather than the window.
+ *
+ * Fixture: a 700x600 `overflow: auto` container — deliberately narrower than the
+ * 900px viewport — holding the documented sticky arrangement. Inside it the
+ * trigger window is 600 → 2400 in container scroll units.
+ */
+type ContainerRow = { scrollTop: number; x: number; progress: number; centredPanel: number };
+type ContainerGeometry = {
+  trackScrollWidth: number;
+  containerClientWidth: number;
+  containerClientHeight: number;
+  windowInnerWidth: number;
+  expectedDistance: number;
+  windowBasedDistance: number;
+};
+
+const C_START = 600;
+const C_END = 2400;
+const cAlphaAt = (top: number) => Math.min(1, Math.max(0, (top - C_START) / (C_END - C_START)));
+
+/** Scroll the fixture's container (not the page) and settle two frames. */
+async function scrollContainer(page: import('@playwright/test').Page, top: number): Promise<void> {
+  await call(page, 'scrollContainerTo', top);
+  await settle(page);
+}
+
+test.describe('scrollHorizontal inside a scroll container', () => {
+  test('loads, and the container is genuinely narrower than the window', async ({ page }) => {
+    const errors = collectErrors(page);
+    await openFixture(page, 'horizontal-container.html');
+    expect(errors).toEqual([]);
+
+    const geo = await call<ContainerGeometry>(page, 'geometry');
+    expect(geo.trackScrollWidth).toBe(2800);
+    expect(geo.containerClientHeight).toBe(600);
+    expect(geo.windowInnerWidth).toBe(900);
+    // Not asserted as a constant: scrollbar width differs per engine, which is
+    // exactly why the expectation is computed in the page.
+    expect(geo.containerClientWidth).toBeLessThanOrEqual(700);
+    expect(
+      geo.expectedDistance,
+      'the two candidate distances are identical — this fixture proves nothing',
+    ).not.toBe(geo.windowBasedDistance);
+  });
+
+  /**
+   * The defect this fixture exists for: the default `distance` subtracted
+   * `window.innerWidth` whatever the caller scrolled. Inside a container narrower
+   * than the window that overshoots — the strip runs past the last panel and
+   * parks on empty space — and every nested-container caller had to pass
+   * `distance` by hand, which is not what the option's default claims.
+   */
+  test('default distance is measured against the container, not the window', async ({ page }) => {
+    await openFixture(page, 'horizontal-container.html');
+    const geo = await call<ContainerGeometry>(page, 'geometry');
+
+    await scrollContainer(page, C_END);
+    const end = await read<ContainerRow>(page);
+
+    expect(
+      end.x,
+      `travelled ${(-end.x).toFixed(0)}px; container-based is ${geo.expectedDistance}, ` +
+        `window-based is ${geo.windowBasedDistance}`,
+    ).toBeCloseTo(-geo.expectedDistance, 0);
+
+    // Ends flush: the last panel's right edge meets the container's, with no
+    // empty space dragged in behind it.
+    expect(end.centredPanel).toBe(3);
+  });
+
+  test('scrubs across the container’s own trigger window', async ({ page }) => {
+    await openFixture(page, 'horizontal-container.html');
+    const geo = await call<ContainerGeometry>(page, 'geometry');
+
+    for (const top of [C_START, 1050, 1500, 1950, C_END]) {
+      await scrollContainer(page, top);
+      const row = await read<ContainerRow>(page);
+      expect(row.scrollTop, 'the container did not scroll where it was told').toBe(top);
+      expect(row.x, `at container scrollTop=${top}`).toBeCloseTo(
+        -geo.expectedDistance * cAlphaAt(top),
+        0,
+      );
+    }
+  });
+
+  test('every panel becomes reachable inside the container', async ({ page }) => {
+    await openFixture(page, 'horizontal-container.html');
+
+    const seen = new Set<number>();
+    for (let top = C_START; top <= C_END; top += 100) {
+      await scrollContainer(page, top);
+      seen.add((await read<ContainerRow>(page)).centredPanel);
+    }
+    expect([...seen].sort(), `panels reached: ${[...seen].join(',')}`).toEqual([0, 1, 2, 3]);
+  });
+
+  /**
+   * Re-measuring must not move the window. `cacheTriggers()` runs again on every
+   * resize, and for a custom scroll container it composes the element's offset
+   * inside the scroll content — which already includes the scroll position — with
+   * the scroll position a second time. At scrollTop 0 the two agree, so this only
+   * shows up after the user has scrolled and something re-measures.
+   */
+  test('re-measuring while scrolled does not shift the trigger window', async ({ page }) => {
+    await openFixture(page, 'horizontal-container.html');
+    const geo = await call<ContainerGeometry>(page, 'geometry');
+
+    await scrollContainer(page, 1500);
+    const before = await read<ContainerRow>(page);
+    expect(before.x).toBeCloseTo(-geo.expectedDistance * cAlphaAt(1500), 0);
+
+    // The listener the engine actually subscribes to, so no layout changes and
+    // nothing else can explain a difference.
+    await page.evaluate(() => window.dispatchEvent(new Event('resize')));
+    await page.waitForTimeout(250); // the re-measure is debounced by 150ms
+    await settle(page);
+
+    const after = await read<ContainerRow>(page);
+    expect(
+      after.x,
+      `re-measure moved the track from ${before.x.toFixed(1)} to ${after.x.toFixed(1)} ` +
+        `without any scrolling`,
+    ).toBeCloseTo(before.x, 0);
   });
 });

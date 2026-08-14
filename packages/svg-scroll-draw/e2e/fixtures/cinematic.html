@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Cinematic — story JSON to scene timing</title>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+  /* Nothing here styles the experience: Cinematic builds and sizes its own
+     structure from the story, and that is part of what this fixture checks. */
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+<div id="tiny"></div>
+<div style="height:800px"></div>
+
+<script type="module">
+import { Cinematic } from '/dist/index.mjs';
+import { drawnFraction, opacityOf, publish } from './_probe.mjs';
+
+/** 1x1 transparent GIF, so the background layer needs no network. */
+const PIXEL = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
+
+/**
+ * A story in the shape Cinematic Studio exports. The windows are deliberately
+ * disjoint (`0–40%` and `60–100%`) with a gap between them, so a runtime that
+ * ignored `start`/`end` and drove everything off global progress would show up
+ * immediately.
+ */
+const story = {
+  version: 1,
+  totalHeight: '400vh',
+  canvas: { width: 200, height: 100 },
+  scenes: [
+    {
+      id: 'scene-1',
+      background: PIXEL,
+      animations: [
+        {
+          type: 'draw', target: '#p-early', d: 'M10 20 L190 20', length: 180,
+          start: '0%', end: '40%', stroke: '#111', strokeWidth: 3, easing: 'linear',
+        },
+        {
+          type: 'draw', target: '#p-late', d: 'M10 60 L190 60', length: 180,
+          start: '60%', end: '100%', stroke: '#222', strokeWidth: 5, easing: 'linear',
+        },
+        // length 0 → the runtime must measure the path itself. An exporter that
+        // omits the pre-measured length is the case that would otherwise draw
+        // nothing at all.
+        {
+          type: 'draw', target: '#p-measured', d: 'M10 90 L190 90', length: 0,
+          start: '0%', end: '100%', stroke: '#333', strokeWidth: 2, easing: 'linear',
+        },
+        { type: 'fade', target: '#cinematic-photo', start: '10%', end: '50%', from: 0, to: 1 },
+      ],
+    },
+  ],
+};
+
+/** A story shorter than the viewport: there is no scroll room to scrub through. */
+const tinyStory = {
+  version: 1,
+  totalHeight: '50vh',
+  canvas: { width: 200, height: 100 },
+  scenes: [
+    {
+      id: 'only',
+      animations: [
+        {
+          type: 'draw', target: '#p-tiny', d: 'M10 50 L190 50', length: 180,
+          start: '0%', end: '100%', stroke: '#000', strokeWidth: 3, easing: 'linear',
+        },
+      ],
+    },
+  ],
+};
+
+const instance = new Cinematic({ wrapper: '#app' }).loadStory(story);
+const tiny = new Cinematic({ wrapper: '#tiny' }).loadStory(tinyStory);
+
+const el = (sel) => document.querySelector(sel);
+const mount = el('#app');
+
+publish({
+  read: () => ({
+    scrollY: window.scrollY,
+    early: drawnFraction(el('#p-early')),
+    late: drawnFraction(el('#p-late')),
+    measured: drawnFraction(el('#p-measured')),
+    photo: opacityOf(el('#cinematic-photo')),
+    progress: instance.getProgress(),
+    tiny: drawnFraction(el('#p-tiny')),
+    tinyProgress: tiny.getProgress(),
+  }),
+
+  /** Everything the loader built out of the story, rather than out of the page. */
+  structure: () => {
+    const stage = mount.querySelector('[data-cinematic-stage]');
+    const svg = stage.querySelector('svg');
+    const photo = el('#cinematic-photo');
+    return {
+      mountPosition: getComputedStyle(mount).position,
+      mountHeight: mount.offsetHeight,
+      stageExists: !!stage,
+      stagePosition: getComputedStyle(stage).position,
+      stageHeight: stage.offsetHeight,
+      stageOverflow: getComputedStyle(stage).overflow,
+      viewBox: svg.getAttribute('viewBox'),
+      pathIds: [...svg.querySelectorAll('path')].map((p) => p.id),
+      strokeWidths: [...svg.querySelectorAll('path')].map((p) => p.getAttribute('stroke-width')),
+      dasharrays: [...svg.querySelectorAll('path')].map((p) => p.style.strokeDasharray),
+      measuredLength: el('#p-measured').getTotalLength(),
+      photoIsImage: photo?.tagName,
+      photoAlt: photo?.getAttribute('alt'),
+    };
+  },
+
+  destroy: () => instance.destroy(),
+  stageStillThere: () => !!mount.querySelector('[data-cinematic-stage]'),
+});
+</script>
+</body>
+</html>

@@ -30,6 +30,20 @@ export function opacityOf(el) {
   return parseFloat(getComputedStyle(el).opacity);
 }
 
+/**
+ * How much of a path is drawn: 0 = undrawn, 1 = fully drawn.
+ *
+ * Read from the *computed* dashoffset over the element's real length, so it works
+ * for both engines — the JS path writes the offset inline every frame while the
+ * native CSS path animates it on the compositor with nothing inline to read.
+ */
+export function drawnFraction(el) {
+  const len = el.getTotalLength();
+  if (!len) return 0;
+  const offset = parseFloat(getComputedStyle(el).strokeDashoffset) || 0;
+  return 1 - offset / len;
+}
+
 /** Inline (author-set) values only — used to check destroy() cleans up after itself. */
 export function inlineOf(el, ...props) {
   const out = {};
@@ -40,6 +54,46 @@ export function inlineOf(el, ...props) {
 /** Document-space top of an element, independent of current scroll. */
 export function docTop(el) {
   return el.getBoundingClientRect().top + window.scrollY;
+}
+
+/**
+ * Wrap `requestAnimationFrame` and `IntersectionObserver` so a fixture can ask
+ * whether anything is still running after it tore its components down.
+ *
+ * This is what "unmount cleanly" means for the framework wrappers: not just that
+ * the element left the DOM, but that the engine behind it stopped. A leaked rAF
+ * loop is invisible — the page looks right and burns a frame's work forever, on
+ * every route change, for as long as the tab is open.
+ *
+ * Must be installed before anything is mounted. `ticksOver` deliberately waits on
+ * the *original* rAF, so the sampling loop does not count itself.
+ */
+export function installLeakCounters() {
+  const nativeRaf = window.requestAnimationFrame.bind(window);
+  let ticks = 0;
+  window.requestAnimationFrame = (cb) => nativeRaf((t) => { ticks++; return cb(t); });
+
+  const NativeIO = window.IntersectionObserver;
+  let live = 0;
+  window.IntersectionObserver = class extends NativeIO {
+    #observed = 0;
+    observe(el, opts) { this.#observed++; live++; return super.observe(el, opts); }
+    unobserve(el) {
+      if (this.#observed > 0) { this.#observed--; live--; }
+      return super.unobserve(el);
+    }
+    disconnect() { live -= this.#observed; this.#observed = 0; return super.disconnect(); }
+  };
+
+  return {
+    liveObservers: () => live,
+    /** Frames of animation work observed across `n` real frames. */
+    async ticksOver(n) {
+      const before = ticks;
+      for (let i = 0; i < n; i++) await new Promise((r) => nativeRaf(r));
+      return ticks - before;
+    },
+  };
 }
 
 /**

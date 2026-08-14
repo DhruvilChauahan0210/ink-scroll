@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>scrollAnimateGroup / scrollAnimateSequence / scrollParallaxGroup</title>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+
+  .card { height: 200px; margin: 0 40px; background: #0a7; }
+  .gap  { height: 200px; }
+
+  /* Parallax members share a top but differ in height, because travel is
+     `speed x element height` — three identical boxes would pass even if the
+     engine ignored the size entirely, which is exactly what jsdom's zero-height
+     rects let happen. */
+  #prow { display: flex; align-items: flex-start; gap: 40px; padding: 0 40px; height: 300px; }
+  #p0 { flex: 1; height: 100px; background: #a07; }
+  #p1 { flex: 1; height: 200px; background: #70a; }
+  #p2 { flex: 1; height: 300px; background: #07a; }
+</style>
+</head>
+<body>
+
+<div style="height:1000px"></div>
+
+<div class="card" id="a0"></div>
+<div class="gap"></div>
+<div class="card" id="a1"></div>
+<div class="gap"></div>
+<div class="card" id="a2"></div>
+
+<div style="height:600px"></div>
+
+<div class="card" id="q0"></div>
+<div class="gap"></div>
+<div class="card" id="q1"></div>
+<div class="gap"></div>
+<div class="card" id="q2"></div>
+
+<div style="height:600px"></div>
+
+<div id="prow">
+  <div id="p0"></div>
+  <div id="p1"></div>
+  <div id="p2"></div>
+</div>
+
+<div style="height:1000px"></div>
+
+<script type="module">
+import { scrollAnimateGroup, scrollAnimateSequence, scrollParallaxGroup } from '/dist/group/index.mjs';
+import { transformOf, opacityOf, docTop, publish } from './_probe.mjs';
+
+const groupSel    = ['#a0', '#a1', '#a2'];
+const sequenceSel = ['#q0', '#q1', '#q2'];
+const parallaxSel = ['#p0', '#p1', '#p2'];
+
+// Default options throughout: this is what a caller gets, native fast path and
+// `ease-out` included.
+const group = scrollAnimateGroup(groupSel, { props: { opacity: [0, 1] } });
+
+const completions = [];
+const sequence = scrollAnimateSequence(sequenceSel, {
+  props: { opacity: [0, 1] },
+  onComplete: () => completions.push(window.scrollY),
+});
+
+const PARALLAX_SPEED = 0.4;
+const parallax = scrollParallaxGroup(parallaxSel, { speed: PARALLAX_SPEED });
+
+const el = (s) => document.querySelector(s);
+
+// Captured before any scroll, so no transform has moved anything yet.
+const geometry = {
+  viewportHeight: window.innerHeight,
+  group:    groupSel.map((s) => ({ top: docTop(el(s)), height: el(s).offsetHeight })),
+  sequence: sequenceSel.map((s) => ({ top: docTop(el(s)), height: el(s).offsetHeight })),
+  parallax: parallaxSel.map((s) => ({
+    top: docTop(el(s)),
+    height: el(s).offsetHeight,
+    expectedTravel: PARALLAX_SPEED * el(s).offsetHeight,
+  })),
+};
+
+publish({
+  read: () => ({
+    scrollY: window.scrollY,
+    group:    groupSel.map((s) => opacityOf(el(s))),
+    sequence: sequenceSel.map((s) => opacityOf(el(s))),
+    parallax: parallaxSel.map((s) => transformOf(el(s)).y),
+    groupProgress: group.getProgress(),
+    sequenceProgress: sequence.getProgress(),
+    completions: completions.length,
+    // Empty once destroy() has put the element back the way it found it.
+    groupInline: groupSel.map((s) => el(s).style.getPropertyValue('opacity')),
+    // Viewport-relative, so a spec can ask whether a difference in value is one
+    // a visitor could actually see.
+    groupRects: groupSel.map((s) => {
+      const r = el(s).getBoundingClientRect();
+      return { top: r.top, bottom: r.bottom };
+    }),
+  }),
+
+  geometry: () => geometry,
+
+  seekGroup:    (p) => group.seek(p),
+  replayGroup:  () => group.replay(),
+  destroyGroup: () => group.destroy(),
+  destroySequence: () => sequence.destroy(),
+  destroyParallax: () => parallax.destroy(),
+  seekParallax: (p) => parallax.seek(p),
+});
+</script>
+</body>
+</html>
