@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Angular wrapper — the ref classes a component drives</title>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+
+  /* Identical geometry in every framework fixture, so one spec can hold all
+     eight wrappers to the same numbers:
+       .fw-draw  top 1000, 300 tall → trigger window  200 → 1300
+       .fw-anim  top 1300, 200 tall → trigger window  500 → 1500 */
+  #lead { height: 1000px; }
+  .fw-draw { height: 300px; margin: 0 40px; }
+  .fw-anim { height: 200px; margin: 0 40px; background: #0a7; }
+  #tail { height: 2000px; }
+</style>
+</head>
+<body>
+
+<div id="lead"></div>
+<div id="root"></div>
+<div id="tail"></div>
+
+<script type="module">
+/*
+ * The Angular wrapper is deliberately framework-agnostic: `ScrollDrawRef` and
+ * friends are plain classes with `init(element, options)` and `destroy()`, so a
+ * component calls them from `ngAfterViewInit` / `ngOnDestroy`. That is the whole
+ * public surface, and it needs no @angular/core to exercise honestly — which is
+ * the point of shipping it this way.
+ */
+import { ScrollDrawRef, ScrollAnimateRef } from '/dist/angular/index.mjs';
+import { setupFramework, DRAW_SVG, DRAW_OPTIONS, ANIM_OPTIONS } from './_fw.mjs';
+
+const root = document.querySelector('#root');
+const draw = new ScrollDrawRef();
+const anim = new ScrollAnimateRef();
+let speed = 1;
+
+setupFramework({
+  // `init()` can be called again, but nothing calls it for you when an @Input
+  // changes — that is the component's job, so from the wrapper's side an option
+  // change does not reach the engine.
+  reactiveOptions: false,
+
+  mount() {
+    const drawEl = document.createElement('div');
+    drawEl.className = 'fw-draw';
+    drawEl.innerHTML = DRAW_SVG;
+    const animEl = document.createElement('div');
+    animEl.className = 'fw-anim';
+    root.append(drawEl, animEl);
+
+    draw.init(drawEl, { ...DRAW_OPTIONS, speed });
+    anim.init(animEl, ANIM_OPTIONS);
+  },
+
+  unmount() {
+    draw.destroy();
+    anim.destroy();
+    root.replaceChildren();
+  },
+
+  setSpeed(v) { speed = v; },
+});
+</script>
+</body>
+</html>

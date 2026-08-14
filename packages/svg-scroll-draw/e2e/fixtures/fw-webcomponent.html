@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Web component — <scroll-draw> connect and disconnect</title>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+
+  /* Identical geometry in every framework fixture, so one spec can hold all
+     eight wrappers to the same numbers:
+       .fw-draw  top 1000, 300 tall → trigger window  200 → 1300
+       .fw-anim  top 1300, 200 tall → trigger window  500 → 1500 */
+  #lead { height: 1000px; }
+  .fw-draw { height: 300px; margin: 0 40px; }
+  .fw-anim { height: 200px; margin: 0 40px; background: #0a7; }
+  #tail { height: 2000px; }
+  /* Custom elements are inline by default, so the height above would do nothing. */
+  scroll-draw { display: block; }
+</style>
+</head>
+<body>
+
+<div id="lead"></div>
+<div id="root"></div>
+<div id="tail"></div>
+
+<script type="module">
+/*
+ * The custom element, driven the only way it can be: by putting it in the
+ * document and taking it out again. `connectedCallback` starts the engine and
+ * `disconnectedCallback` destroys it, so "unmount" here is a real DOM removal —
+ * the same thing every framework ultimately does.
+ *
+ * `stagger` is set for one reason: it disqualifies the native CSS fast path, so
+ * this fixture always runs the JS engine and the leaked-frame-loop assertion has
+ * something to detect. With a single path it changes nothing about the drawing.
+ *
+ * There is no `.fw-anim` here — the package ships one custom element, and this
+ * is it. The shared spec skips the fade assertions for that reason.
+ */
+import '/dist/web-component/index.mjs';
+import { setupFramework, DRAW_SVG } from './_fw.mjs';
+
+const root = document.querySelector('#root');
+let speed = 1;
+
+setupFramework({
+  reactiveOptions: false,
+  hasAnim: false,
+
+  mount() {
+    const el = document.createElement('scroll-draw');
+    el.className = 'fw-draw';
+    el.setAttribute('easing', 'linear');
+    el.setAttribute('stagger', '0.05');
+    el.setAttribute('speed', String(speed));
+    el.innerHTML = DRAW_SVG;
+    // Appending is what runs connectedCallback.
+    root.append(el);
+  },
+
+  unmount() {
+    // Removal is what runs disconnectedCallback; nothing else tears it down.
+    root.replaceChildren();
+  },
+
+  setSpeed(v) { speed = v; },
+});
+</script>
+</body>
+</html>

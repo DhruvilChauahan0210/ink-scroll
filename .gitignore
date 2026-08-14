@@ -15,6 +15,10 @@ coverage/
 # build output
 packages/*/dist/
 
+# Framework fixture bundles for the browser suite — a build artefact of a build
+# artefact, rebuilt by e2e/global-setup.ts on every run.
+packages/*/e2e/fixtures/build/
+
 # next.js
 /.next/
 /out/

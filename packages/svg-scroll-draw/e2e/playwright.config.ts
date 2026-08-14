@@ -22,6 +22,9 @@ const VIEWPORT = { width: 900, height: 800 };
 export default defineConfig({
   testDir: '.',
   testMatch: '**/*.spec.ts',
+  // Bundles the React / Vue / Solid / Nuxt fixture entries. See global-setup.ts
+  // for why it is not part of the webServer command.
+  globalSetup: './global-setup.ts',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,

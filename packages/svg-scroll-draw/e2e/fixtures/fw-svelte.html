@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Svelte wrapper — actions applied to real nodes</title>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+
+  /* Identical geometry in every framework fixture, so one spec can hold all
+     eight wrappers to the same numbers:
+       .fw-draw  top 1000, 300 tall → trigger window  200 → 1300
+       .fw-anim  top 1300, 200 tall → trigger window  500 → 1500 */
+  #lead { height: 1000px; }
+  .fw-draw { height: 300px; margin: 0 40px; }
+  .fw-anim { height: 200px; margin: 0 40px; background: #0a7; }
+  #tail { height: 2000px; }
+</style>
+</head>
+<body>
+
+<div id="lead"></div>
+<div id="root"></div>
+<div id="tail"></div>
+
+<script type="module">
+/*
+ * Svelte actions are plain functions — `(node, params) => { update, destroy }` —
+ * so this is not a stand-in for Svelte: it is exactly the call Svelte makes for
+ * `use:scrollDraw={options}`, including `update()` when the parameters change
+ * and `destroy()` when the element is removed.
+ *
+ * That also makes this the one wrapper where changing an option reaches the
+ * running engine, because `update()` tears the engine down and builds a new one.
+ */
+import { scrollDraw, scrollAnimate } from '/dist/svelte/index.mjs';
+import { setupFramework, DRAW_SVG, DRAW_OPTIONS, ANIM_OPTIONS } from './_fw.mjs';
+
+const root = document.querySelector('#root');
+let drawAction = null;
+let animAction = null;
+let speed = 1;
+
+setupFramework({
+  reactiveOptions: true,
+
+  mount() {
+    const draw = document.createElement('div');
+    draw.className = 'fw-draw';
+    draw.innerHTML = DRAW_SVG;
+    const anim = document.createElement('div');
+    anim.className = 'fw-anim';
+    root.append(draw, anim);
+
+    drawAction = scrollDraw(draw, { ...DRAW_OPTIONS, speed });
+    animAction = scrollAnimate(anim, ANIM_OPTIONS);
+  },
+
+  unmount() {
+    // The order Svelte uses: run the action's destroy, then drop the node.
+    drawAction?.destroy();
+    animAction?.destroy();
+    drawAction = animAction = null;
+    root.replaceChildren();
+  },
+
+  setSpeed(v) {
+    speed = v;
+    drawAction?.update({ ...DRAW_OPTIONS, speed });
+  },
+});
+</script>
+</body>
+</html>
