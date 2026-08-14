@@ -7,7 +7,9 @@ import { warn } from '../core/env';
 export interface ScrollHorizontalOptions {
   /**
    * Total horizontal travel distance in pixels.
-   * Default: `track.scrollWidth - window.innerWidth` (full content width minus viewport).
+   *
+   * Default: `track.scrollWidth` minus the width it is seen through — the
+   * viewport, or the `scrollContainer`'s client width when one is given.
    */
   distance?: number;
   /**
@@ -101,8 +103,27 @@ export function scrollHorizontal(
     onProgress,
   } = options;
 
+  /**
+   * The width the track is seen through.
+   *
+   * With a custom `scrollContainer` that is the container's own client width, not
+   * the window's. Measuring against `window.innerWidth` regardless made the
+   * default `distance` wrong by the difference for every nested-container caller:
+   * on a container narrower than the window it overshoots, dragging the last panel
+   * past the left edge and leaving empty space where content should be, and on a
+   * wider one it stops short. Callers had to pass `distance` by hand, which is not
+   * what the option's documented default says.
+   */
+  function viewportWidth(): number {
+    const scrollEl =
+      typeof scrollContainer === 'string'
+        ? document.querySelector(scrollContainer)
+        : (scrollContainer ?? null);
+    return scrollEl ? scrollEl.clientWidth : window.innerWidth;
+  }
+
   function resolveDistance(): number {
-    return options.distance ?? (htmlEl.scrollWidth - window.innerWidth);
+    return options.distance ?? (htmlEl.scrollWidth - viewportWidth());
   }
 
   /**

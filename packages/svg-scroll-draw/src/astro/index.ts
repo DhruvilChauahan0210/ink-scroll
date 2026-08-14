@@ -11,6 +11,20 @@ import { warn } from '../core/env';
 export { scrollDraw } from '../index';
 export type { ScrollDrawOptions, ScrollDrawInstance };
 
+/**
+ * The document, or null when there isn't one.
+ *
+ * Astro is a server-first framework: its components run on the server by
+ * default, and `root: Element | Document = document` is evaluated at call time —
+ * so calling any of these from component frontmatter, rather than from a client
+ * `<script>`, threw `ReferenceError: document is not defined` and took the render
+ * with it. Every other entry point in this library degrades to a no-op without a
+ * DOM; this one is the most likely to be called without one.
+ */
+function defaultRoot(): Element | Document | null {
+  return typeof document === 'undefined' ? null : document;
+}
+
 // ── initScrollDraw ────────────────────────────────────────────────────────────
 
 /**
@@ -28,7 +42,8 @@ export type { ScrollDrawOptions, ScrollDrawInstance };
  *   initScrollDraw();
  * </script>
  */
-export function initScrollDraw(root: Element | Document = document): ScrollDrawInstance[] {
+export function initScrollDraw(root: Element | Document | null = defaultRoot()): ScrollDrawInstance[] {
+  if (!root) return [];
   return Array.from(root.querySelectorAll<HTMLElement>('[data-scroll-draw]')).map((el) => {
     let opts: ScrollDrawOptions = {};
     try {
@@ -58,7 +73,8 @@ export function initScrollDraw(root: Element | Document = document): ScrollDrawI
  *   initScrollAnimate();
  * </script>
  */
-export function initScrollAnimate(root: Element | Document = document): ScrollDrawInstance[] {
+export function initScrollAnimate(root: Element | Document | null = defaultRoot()): ScrollDrawInstance[] {
+  if (!root) return [];
   return Array.from(root.querySelectorAll<HTMLElement>('[data-scroll-animate]')).map((el) => {
     let opts: ScrollAnimateOptions = { props: {} };
     try {
@@ -87,7 +103,8 @@ export function initScrollAnimate(root: Element | Document = document): ScrollDr
  *   initScrollCounter();
  * </script>
  */
-export function initScrollCounter(root: Element | Document = document): ScrollDrawInstance[] {
+export function initScrollCounter(root: Element | Document | null = defaultRoot()): ScrollDrawInstance[] {
+  if (!root) return [];
   return Array.from(root.querySelectorAll<HTMLElement>('[data-scroll-counter]')).map((el) => {
     let opts: Partial<ScrollCounterOptions> = {};
     try {
@@ -121,7 +138,8 @@ export function initScrollCounter(root: Element | Document = document): ScrollDr
  *   initScrollText();
  * </script>
  */
-export function initScrollText(root: Element | Document = document): ScrollDrawInstance[] {
+export function initScrollText(root: Element | Document | null = defaultRoot()): ScrollDrawInstance[] {
+  if (!root) return [];
   return Array.from(root.querySelectorAll<HTMLElement>('[data-scroll-text]')).map((el) => {
     let opts: ScrollTextOptions = {};
     try {
@@ -144,7 +162,7 @@ export function initScrollText(root: Element | Document = document): ScrollDrawI
  *   initAll(); // Initialises scrollDraw, scrollAnimate, scrollCounter, scrollText
  * </script>
  */
-export function initAll(root: Element | Document = document): {
+export function initAll(root: Element | Document | null = defaultRoot()): {
   draw: ScrollDrawInstance[];
   animate: ScrollDrawInstance[];
   counter: ScrollDrawInstance[];

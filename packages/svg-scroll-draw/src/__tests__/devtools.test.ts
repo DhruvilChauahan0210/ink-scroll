@@ -7,6 +7,8 @@
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { devtools } from '../devtools';
+import { _register, _unregister, _getRegistry } from '../core/registry';
+import type { RegistryEntry } from '../core/registry';
 
 /** Everything devtools appended to <body>, i.e. anything but our test target. */
 function overlayNodes(): Element[] {
@@ -123,5 +125,121 @@ describe('devtools', () => {
 
     vi.doUnmock('../core/env');
     vi.resetModules();
+  });
+});
+
+/*
+ * The rendering half.
+ *
+ * Everything above mounts and unmounts an *empty* overlay, which is why this
+ * module sat at 47% lines — `renderTriggerLines()` and `renderPanel()` only do
+ * anything once something is registered, and nothing was ever registered. A
+ * debugging aid that draws the wrong thing is worse than one that draws nothing,
+ * so the drawing is worth pinning.
+ */
+describe('devtools — rendering registered instances', () => {
+  /** Register a fake instance directly: this is the contract the engines use. */
+  function register(el: Element, over: Partial<RegistryEntry> = {}): void {
+    _register(el, {
+      type: 'draw',
+      getProgress: () => 0.42,
+      getTrigger: () => ({ tStart: 100, tEnd: 900 }),
+      ...over,
+    } as RegistryEntry);
+  }
+
+  /** Run one frame of the render loop by hand. */
+  function tick(): void {
+    const loop = rafSpy.mock.calls.at(-1)?.[0] as (() => void) | undefined;
+    loop?.();
+  }
+
+  beforeEach(() => {
+    for (const [el] of _getRegistry()) _unregister(el);
+    vi.stubGlobal('scrollY', 0);
+    vi.stubGlobal('innerHeight', 800);
+  });
+
+  afterEach(() => {
+    for (const [el] of _getRegistry()) _unregister(el);
+  });
+
+  it('says so when there is nothing to show', () => {
+    devtools.enable();
+    tick();
+    expect(document.body.textContent).toContain('No active instances');
+  });
+
+  it('draws a start and an end line for a registered instance', () => {
+    register(container);
+    devtools.enable();
+    tick();
+
+    const overlay = overlayNodes()[0];
+    // Two trigger lines, each with its badge.
+    expect(overlay.children.length).toBe(2);
+    expect(overlay.textContent).toMatch(/start/i);
+    expect(overlay.textContent).toMatch(/end/i);
+  });
+
+  it('positions the lines relative to the current scroll', () => {
+    register(container);
+    devtools.enable();
+    tick();
+
+    const topsAt = (): number[] =>
+      Array.from(overlayNodes()[0].children).map((c) => parseFloat((c as HTMLElement).style.top));
+    expect(topsAt()).toEqual([100, 900]);
+
+    // Scrolled down 100px, the same absolute triggers are 100px higher on screen.
+    vi.stubGlobal('scrollY', 100);
+    tick();
+    expect(topsAt()).toEqual([0, 800]);
+  });
+
+  it('skips instances whose trigger window is nowhere near the viewport', () => {
+    register(container, { getTrigger: () => ({ tStart: 90000, tEnd: 99000 }) });
+    devtools.enable();
+    tick();
+    expect(overlayNodes()[0].children.length).toBe(0);
+  });
+
+  it('lists each instance in the panel with its live progress', () => {
+    register(container);
+    devtools.enable();
+    tick();
+
+    const panel = overlayNodes().find((n) => n.textContent?.includes('%'))!;
+    expect(panel, 'no panel row was rendered').toBeTruthy();
+    expect(panel.textContent).toContain('draw');
+    expect(panel.textContent).toContain('42');
+  });
+
+  it('re-renders rather than appending on every frame', () => {
+    register(container);
+    devtools.enable();
+    tick();
+    const after1 = overlayNodes().map((n) => n.children.length);
+    tick();
+    tick();
+    expect(overlayNodes().map((n) => n.children.length), 'rows accumulated').toEqual(after1);
+  });
+
+  it('highlight() outlines a registered element and clears it again', () => {
+    vi.useFakeTimers();
+    try {
+      register(container);
+      devtools.enable();
+      devtools.highlight('#target');
+
+      expect(container.style.outline, 'no outline was applied').not.toBe('');
+      expect(container.style.outlineOffset).toBe('2px');
+
+      vi.advanceTimersByTime(2100);
+      expect(container.style.outline, 'the outline was left on the element').toBe('');
+      expect(container.style.outlineOffset).toBe('');
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });

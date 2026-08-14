@@ -21,6 +21,9 @@ const DIST = join(ROOT, 'dist');
 // Budget = current size + ~15% headroom, rounded. Tighten as the library shrinks.
 const BUDGETS_KB = {
   '.':              10.5,
+  // The whole library in one IIFE, web component included — the single file a
+  // `<script src>` user downloads, and until now the only entry with no budget.
+  cdn:              11.5,
   react:            11.5,
   vue:              11.5,
   nuxt:             11.5,
@@ -31,7 +34,8 @@ const BUDGETS_KB = {
   group:             9.0,
   'web-component':   6.5,
   reveal:            4.6,
-  horizontal:        4.3,
+  // 4.30 after teaching the default `distance` about `scrollContainer`.
+  horizontal:        4.5,
   timeline:          3.5,
   text:              2.8,
   video:             2.2,
@@ -61,6 +65,16 @@ function findEntries() {
     const candidate = join(DIST, name, 'index.mjs');
     if (existsSync(candidate)) entries.set(name, candidate);
   }
+
+  /*
+   * The CDN bundle is an IIFE, so the index.mjs scan above never saw it — the one
+   * file a script-tag user actually downloads was the one file with no size
+   * budget. Its dev twin stays out: unminified on purpose, and nobody should be
+   * shipping it.
+   */
+  const cdn = join(DIST, 'cdn', 'svg-scroll-draw.global.js');
+  if (existsSync(cdn)) entries.set('cdn', cdn);
+
   return entries;
 }
 

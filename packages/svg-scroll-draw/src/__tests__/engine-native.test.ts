@@ -184,9 +184,35 @@ describe('native fast path — activation', () => {
     expect(css).toContain('opacity:1');
   });
 
-  it('maps named easings to a CSS timing-function', () => {
+  /**
+   * The CSS keyword of the same name is NOT this library's curve — the keywords
+   * are fixed cubic-béziers and these easings are quadratics, differing by up to
+   * 0.069. See core/css-easing; the emitted timing function is checked against
+   * the JS curve itself in css-easing.test.ts.
+   */
+  it('maps named easings to a timing function that matches the JS curve', () => {
+    createEngine(makeContainer(), { easing: 'ease-out' });
+    const css = nativeStyle()!.textContent ?? '';
+    expect(css).toContain('animation-timing-function:cubic-bezier(0.333333, 0.666667, 0.666667, 1)');
+    expect(css).not.toContain('animation-timing-function:ease-out;');
+  });
+
+  it('expresses ease-in-out — which no cubic-bézier can — as sampled linear()', () => {
     createEngine(makeContainer(), { easing: 'ease-in-out' });
-    expect(nativeStyle()!.textContent).toContain('animation-timing-function:ease-in-out');
+    const css = nativeStyle()!.textContent ?? '';
+    expect(css).toMatch(/animation-timing-function:linear\(0,/);
+    expect(css).not.toContain('animation-timing-function:ease-in-out');
+  });
+
+  it('stays on the JS engine when linear() is unavailable to express ease-in-out', () => {
+    // Everything supported except the one thing that curve needs.
+    vi.stubGlobal('CSS', {
+      supports: vi.fn((q: string) => !q.includes('linear(')),
+    });
+    createEngine(makeContainer(), { easing: 'ease-in-out' });
+
+    expect(nativeStyle()).toBeNull();
+    expect(FakeIO.instances.length).toBe(1);
   });
 });
 

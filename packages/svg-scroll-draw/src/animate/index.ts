@@ -1,5 +1,8 @@
 import type { EasingName, ScrollDrawInstance, TriggerConfig } from '../core/types';
-import { EASINGS, parseTrigger, computeProgress, computeTriggers, lerpColor } from '../core/utils';
+import {
+  EASINGS, parseTrigger, computeProgress, computeTriggers, measureTriggerFrame, lerpColor,
+} from '../core/utils';
+import { cssTimingFor } from '../core/css-easing';
 import { _register, _unregister } from '../core/registry';
 import { warn } from '../core/env';
 
@@ -143,13 +146,6 @@ interface PropEntry {
 
 // ── Native CSS fast path ──────────────────────────────────────────────────────
 
-const CSS_ANIMATE_EASINGS: Record<string, string> = {
-  linear: 'linear',
-  'ease-in': 'ease-in',
-  'ease-out': 'ease-out',
-  'ease-in-out': 'ease-in-out',
-};
-
 const NATIVE_SAFE_PROPS = new Set([
   'opacity', 'transform', 'background-color', 'color',
   'filter', 'scale', 'translate', 'rotate',
@@ -270,10 +266,17 @@ export function createAnimateEngine(
 
   // ── Native fast path ────────────────────────────────────────────────────────
 
+  /**
+   * The CSS timing function that reproduces this instance's easing, or null
+   * when there is none — see core/css-easing. Resolved once, because it is both
+   * the eligibility test and the value the stylesheet needs.
+   */
+  const cssTiming = typeof easing === 'string' ? cssTimingFor(easing) : null;
+
   function nativeEligible(): boolean {
     if (!native) return false;
     if (!supportsNativeTimeline()) return false;
-    if (typeof easing !== 'string' || !(easing in CSS_ANIMATE_EASINGS)) return false;
+    if (!cssTiming) return false;
     if (axis !== 'y') return false;
     if (scrollEl) return false;
     // `animation-timeline: view()` always measures the element the animation is
@@ -300,7 +303,7 @@ export function createAnimateEngine(
     style.textContent =
       `@keyframes ${cls}{from{${fromBody}}to{${toBody}}}` +
       `.${cls}{animation-name:${cls};animation-duration:auto;` +
-      `animation-timing-function:${CSS_ANIMATE_EASINGS[easing as string]};` +
+      `animation-timing-function:${cssTiming};` +
       `animation-fill-mode:both;animation-timeline:view();` +
       `animation-range:cover 0% cover 100%;}`;
     document.head.appendChild(style);
@@ -371,17 +374,8 @@ export function createAnimateEngine(
   };
 
   function cacheTriggers(): void {
-    const rect = triggerEl.getBoundingClientRect();
-    let pos: number, size: number;
-    if (scrollEl) {
-      const cr = scrollEl.getBoundingClientRect();
-      pos  = axis === 'x' ? rect.left - cr.left + scrollEl.scrollLeft : rect.top - cr.top + scrollEl.scrollTop;
-      size = axis === 'x' ? rect.width : rect.height;
-    } else {
-      pos  = axis === 'x' ? rect.left : rect.top;
-      size = axis === 'x' ? rect.width : rect.height;
-    }
-    const result = computeTriggers({ top: pos, height: size }, scrollPos(), vpSize(), startConfig, endConfig);
+    const frame  = measureTriggerFrame(triggerEl, scrollEl, axis);
+    const result = computeTriggers(frame, frame.scroll, vpSize(), startConfig, endConfig);
     tStart = result.tStart;
     tEnd   = result.tEnd;
   }

@@ -33,6 +33,19 @@ export default defineConfig([
   base({ 'reveal/index':    'src/reveal/index.ts'      }),
   base({ 'progress/index':  'src/progress/index.ts'   }),
   base({ 'horizontal/index': 'src/horizontal/index.ts' }),
+  /*
+   * Two CDN builds from the same entry.
+   *
+   * Production is minified with the dev flag defined to `false`, so every
+   * `if (IS_DEV)` body is dropped at build time rather than shipped and skipped.
+   *
+   * The dev build is the point of the pair. `IS_DEV` is derived from
+   * `process.env.NODE_ENV`, and `process` does not exist in a browser without a
+   * bundler — so a `<script src="…">` user got no warnings at all, ever, which is
+   * how a zero-length trigger window could make an API silently inert. Left
+   * unminified: someone reading a console warning is about to go and look at the
+   * code that produced it.
+   */
   {
     entry: { 'svg-scroll-draw': 'src/cdn.ts' },
     format: ['iife'],
@@ -40,6 +53,16 @@ export default defineConfig([
     outDir: 'dist/cdn',
     minify: true,
     clean: false,
+    define: { __SVG_SCROLL_DRAW_DEV__: 'false' },
+  },
+  {
+    entry: { 'svg-scroll-draw.dev': 'src/cdn.ts' },
+    format: ['iife'],
+    globalName: 'SvgScrollDraw',
+    outDir: 'dist/cdn',
+    minify: false,
+    clean: false,
+    define: { __SVG_SCROLL_DRAW_DEV__: 'true' },
   },
   {
     entry: { 'cli/init': 'src/cli/init.ts' },

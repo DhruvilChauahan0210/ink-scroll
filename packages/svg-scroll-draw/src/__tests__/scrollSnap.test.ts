@@ -225,3 +225,125 @@ describe('scrollSnap', () => {
     });
   });
 });
+
+/*
+ * The scroll handler itself, and the custom-container branch.
+ *
+ * Both were uncovered: the browser suite drives real gestures, and every unit
+ * test here called `snapTo()` directly, so the debounced `onScroll` — which is
+ * what decides *whether* to snap and in which direction — was never entered.
+ */
+describe('scrollSnap — reacting to a user scroll', () => {
+  beforeEach(() => vi.useFakeTimers());
+  afterEach(() => vi.useRealTimers());
+
+  /**
+   * Run the queued animation frames to completion.
+   *
+   * The snap itself is a rAF animation over `duration`, and `onSnap` only fires
+   * on its last frame — so a test that only advances timers sees nothing at all.
+   * A timestamp well past the duration finishes it in one frame.
+   */
+  function flushAnimation(): void {
+    let guard = 0;
+    while (rafCallbacks.length && guard++ < 50) {
+      rafCallbacks.shift()!(performance.now() + 10_000);
+    }
+  }
+
+  /** Move the page and fire the event the engine listens for. */
+  function userScrollTo(y: number): void {
+    vi.stubGlobal('scrollY', y);
+    window.dispatchEvent(new Event('scroll'));
+    vi.advanceTimersByTime(150); // past the 100ms debounce
+    flushAnimation();
+  }
+
+  it('snaps forward once the user is past the threshold', () => {
+    const sections = makeSections(3);
+    const snapped: number[] = [];
+    scrollSnap(sections, { threshold: 0.3, onSnap: (i) => snapped.push(i) });
+
+    // 40% into the first section — past a 30% threshold.
+    userScrollTo(320);
+    expect(snapped, 'no snap happened').toContain(1);
+  });
+
+  it('stays put when the user has not passed the threshold', () => {
+    const sections = makeSections(3);
+    const snapped: number[] = [];
+    scrollSnap(sections, { threshold: 0.5, onSnap: (i) => snapped.push(i) });
+
+    userScrollTo(100); // 12.5% in, threshold is 50%
+    expect(snapped.filter((i) => i !== 0), 'snapped to another section too early').toEqual([]);
+  });
+
+  it('snaps backward when the user scrolls up past the threshold', () => {
+    const sections = makeSections(3);
+    const snapped: number[] = [];
+    const instance = scrollSnap(sections, { threshold: 0.3, onSnap: (i) => snapped.push(i) });
+
+    instance.snapTo(2);
+    flushAnimation();
+    snapped.length = 0;
+
+    userScrollTo(1600 - 320); // 40% back up out of section 2
+    expect(snapped, 'never snapped back').toContain(1);
+  });
+
+  it('ignores a scroll that is already parked on the current section', () => {
+    const sections = makeSections(3);
+    const snapped: number[] = [];
+    scrollSnap(sections, { onSnap: (i) => snapped.push(i) });
+
+    // The event our own snap produces: the position already matches the section.
+    userScrollTo(0);
+    expect(snapped, 'onSnap fired for a scroll that changed nothing').toEqual([]);
+  });
+
+  it('measures sections against a custom scroll container', () => {
+    const scroller = document.createElement('div');
+    scroller.id = 'scroller';
+    document.body.appendChild(scroller);
+    Object.defineProperty(scroller, 'getBoundingClientRect', {
+      value: () => ({ top: 0, bottom: 600, left: 0, right: 800, width: 800, height: 600 }),
+      configurable: true,
+    });
+    Object.defineProperty(scroller, 'clientHeight', { get: () => 600, configurable: true });
+
+    // Sections positioned inside the container's scroll space, not the page's:
+    // their client rects move with the container's own scrollTop.
+    const sections = [0, 1, 2].map((i) => {
+      const el = document.createElement('div');
+      scroller.appendChild(el);
+      Object.defineProperty(el, 'getBoundingClientRect', {
+        value: () => ({
+          top: i * 600 - scroller.scrollTop,
+          bottom: (i + 1) * 600 - scroller.scrollTop,
+          left: 0, right: 800, width: 800, height: 600,
+        }),
+        configurable: true,
+      });
+      Object.defineProperty(el, 'offsetHeight', { get: () => 600, configurable: true });
+      Object.defineProperty(el, 'offsetWidth', { get: () => 800, configurable: true });
+      return el;
+    });
+
+    const snapped: number[] = [];
+    scrollSnap(sections, {
+      scrollContainer: '#scroller',
+      threshold: 0.3,
+      onSnap: (i) => snapped.push(i),
+    });
+
+    // 42% into the first section, and the listener is on the container.
+    scroller.scrollTop = 250;
+    scroller.dispatchEvent(new Event('scroll'));
+    vi.advanceTimersByTime(150);
+    flushAnimation();
+
+    expect(snapped, 'the container scroll was never handled').toContain(1);
+    // Landed by writing the container's scrollTop, not the window's.
+    expect(scroller.scrollTop, 'the container was not scrolled to the section').toBe(600);
+  });
+});

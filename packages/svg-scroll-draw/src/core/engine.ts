@@ -1,17 +1,16 @@
 import type { ScrollDrawOptions, ScrollDrawInstance } from './types';
-import { EASINGS, parseTrigger, computeProgress, computeTriggers, getElementLength, lerpColor } from './utils';
+import {
+  EASINGS, parseTrigger, computeProgress, computeTriggers, measureTriggerFrame,
+  getElementLength, lerpColor,
+} from './utils';
 import { PRESETS } from './presets';
 import { IS_DEV, warn as warnDev } from './env';
+import { cssTimingFor } from './css-easing';
 
 // ── Native CSS scroll-driven animation (animation-timeline: view()) ───────────
-// Easing names that have a 1:1 CSS timing-function. 'spring' and custom function
-// easings have no CSS equivalent, so those configs stay on the JS engine.
-const CSS_EASINGS: Record<string, string> = {
-  linear:        'linear',
-  'ease-in':     'ease-in',
-  'ease-out':    'ease-out',
-  'ease-in-out': 'ease-in-out',
-};
+// Which easings the fast path can express, and as what, lives in core/css-easing.
+// 'spring', 'bounce', 'elastic' and custom function easings have no equivalent,
+// so those configs stay on the JS engine.
 
 // Unique keyframes name per native instance so multiple draws don't collide.
 let nativeUid = 0;
@@ -265,19 +264,8 @@ export function createEngine(
   }
 
   function cacheTriggers(): void {
-    const rect = container.getBoundingClientRect();
-    let pos: number, size: number, scroll: number;
-    if (scrollEl) {
-      const cr = scrollEl.getBoundingClientRect();
-      pos    = axis === 'x' ? rect.left - cr.left + scrollEl.scrollLeft : rect.top - cr.top + scrollEl.scrollTop;
-      size   = axis === 'x' ? rect.width : rect.height;
-      scroll = scrollPos();
-    } else {
-      pos    = axis === 'x' ? rect.left : rect.top;
-      size   = axis === 'x' ? rect.width : rect.height;
-      scroll = scrollPos();
-    }
-    const result = computeTriggers({ top: pos, height: size }, scroll, vpSize(), startConfig, endConfig);
+    const frame  = measureTriggerFrame(container, scrollEl, axis);
+    const result = computeTriggers(frame, frame.scroll, vpSize(), startConfig, endConfig);
     tStart = result.tStart;
     tEnd   = result.tEnd;
     if (debug && IS_DEV) {
@@ -402,12 +390,19 @@ export function createEngine(
   // path. Anchoring the timeline to the container is what actually makes the
   // native substitution equivalent to the JS trigger range.
 
+  /**
+   * The CSS timing function reproducing this instance's easing, or null when
+   * there is none. Resolved once: it is both the eligibility test and the value
+   * the generated stylesheet needs.
+   */
+  const cssTiming = typeof easing === 'string' ? cssTimingFor(easing) : null;
+
   function nativeEligible(): boolean {
     if (native === false) return false;
     if (!supportsNativeTimeline()) return false;
     if (!paths.length) return false;
-    // Only string easings with a CSS equivalent (no 'spring', no custom fn).
-    if (typeof easing !== 'string' || !(easing in CSS_EASINGS)) return false;
+    // Only easings CSS can reproduce (no 'spring', no custom fn).
+    if (!cssTiming) return false;
     // Features with no declarative CSS equivalent → stay on the JS engine.
     if (clipDirection) return false;
     if (axis !== 'y') return false;          // view() block axis only
@@ -452,7 +447,7 @@ export function createEngine(
       // the JS engine's `top bottom` → `bottom top` window exactly.
       `.${containerCls}{view-timeline-name:${timeline};view-timeline-axis:block;}` +
       `.${cls}{animation-name:${cls};animation-duration:auto;` +
-      `animation-timing-function:${CSS_EASINGS[easing as string]};` +
+      `animation-timing-function:${cssTiming};` +
       `animation-fill-mode:both;animation-timeline:${timeline};` +
       `animation-range:cover 0% cover 100%;}`;
     document.head.appendChild(style);
@@ -520,6 +515,21 @@ export function createEngine(
       },
       getProgress() {
         return liveProgress();
+      },
+      /**
+       * Re-measure the path lengths.
+       *
+       * There is no trigger window to refresh on this path — the browser's own
+       * view-timeline is live and never goes stale — but `--ssd-len` is a number
+       * baked in at attach time, and the keyframes interpolate from it. A path
+       * that changed length keeps animating to the old one until this is called.
+       */
+      refresh() {
+        paths.forEach((el, i) => {
+          lengths[i] = getElementLength(el);
+          el.style.setProperty('--ssd-len', String(lengths[i]));
+          el.style.strokeDasharray = `${lengths[i]}`;
+        });
       },
     };
   }
@@ -713,6 +723,14 @@ export function createEngine(
         applyAutoAlpha(pausedElapsed);
       },
       getProgress() { return currentAlpha; },
+      /** No trigger window on this path — it runs on time — so lengths only. */
+      refresh() {
+        clearTimeout(resizeTimer);
+        paths.forEach((el, i) => {
+          lengths[i] = getElementLength(el);
+          el.style.strokeDasharray = `${lengths[i]}`;
+        });
+      },
     };
   }
 
@@ -935,19 +953,22 @@ export function createEngine(
 
   // ── Resize / layout invalidation ──────────────────────────────────────────
 
+  /** Everything that depends on layout, re-read. Shared by resize and refresh(). */
+  function remeasure(): void {
+    paths.forEach((el, i) => {
+      lengths[i] = getElementLength(el);
+      el.style.strokeDasharray = `${lengths[i]}`;
+    });
+    cacheTriggers();
+    // Trigger points moved — the rendered frame is stale even at the same
+    // scroll offset.
+    dirty = true;
+  }
+
   let resizeTimer: ReturnType<typeof setTimeout>;
   function onResize(): void {
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => {
-      paths.forEach((el, i) => {
-        lengths[i] = getElementLength(el);
-        el.style.strokeDasharray = `${lengths[i]}`;
-      });
-      cacheTriggers();
-      // Trigger points moved — the rendered frame is stale even at the same
-      // scroll offset.
-      dirty = true;
-    }, 150);
+    resizeTimer = setTimeout(remeasure, 150);
   }
 
   window.addEventListener('resize', onResize);
@@ -1035,6 +1056,19 @@ export function createEngine(
 
     getProgress() {
       return currentAlpha;
+    },
+
+    /**
+     * Re-measure now, rather than waiting for a resize that may never come.
+     *
+     * Same work the debounced resize handler does — path lengths and the trigger
+     * window — run immediately and marked dirty so the next frame repaints from
+     * the new numbers.
+     */
+    refresh() {
+      clearTimeout(resizeTimer);
+      remeasure();
+      if (isVisible && !paused) startLoop();
     },
   };
 }

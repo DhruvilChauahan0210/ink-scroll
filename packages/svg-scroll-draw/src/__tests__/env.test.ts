@@ -48,6 +48,27 @@ describe('dev-warning environment guard', () => {
     ).toEqual([]);
   });
 
+  /**
+   * Every diagnostic has to go through `warn()`, or it cannot be turned off in
+   * production and cannot be turned *on* for the CDN dev build — which is the
+   * whole point of shipping one. Two modules were calling `console.warn`
+   * directly, so their "container not found" message shipped to every production
+   * user and was the only thing a `<script src>` user could ever see.
+   */
+  it('no module calls console.warn directly', () => {
+    const offenders = tsFiles(SRC)
+      .filter((f) => !f.endsWith(join('core', 'env.ts')))
+      .filter((f) => !f.includes(`${join('src', 'cli')}`) && !f.includes(`/cli/`))
+      .filter((f) => /console\s*\.\s*warn/.test(readFileSync(f, 'utf8')))
+      .map((f) => f.slice(SRC.length + 1));
+
+    expect(
+      offenders,
+      'These files call console.warn directly, so the warning cannot be stripped ' +
+        'from production or enabled in the dev CDN build. Use warn() from core/env.',
+    ).toEqual([]);
+  });
+
   it('core/env.ts guards its process access with typeof', () => {
     const src = readFileSync(join(SRC, 'core', 'env.ts'), 'utf8');
     expect(src).toMatch(/typeof process !== 'undefined'/);

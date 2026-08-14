@@ -1,4 +1,6 @@
 import { EASINGS, parseTrigger, computeProgress, computeTriggers, getElementLength } from '../core/utils';
+import { prefersReducedMotion, watchReducedMotion } from '../core/motion';
+import { warn } from '../core/env';
 import type { ScrollDrawInstance, EasingName } from '../core/types';
 
 export interface TimelineTrack {
@@ -55,6 +57,22 @@ export interface ScrollDrawTimelineOptions {
   debug?: boolean;
   /** Label shown in the debug panel header. Defaults to the target selector string. */
   label?: string;
+  /**
+   * Honour `prefers-reduced-motion: reduce` for the time-driven `loop` only.
+   * Default: `true`.
+   *
+   * The two halves of this API deserve different answers. Scroll scrubbing
+   * advances 1:1 with the user's own input — direct manipulation, not motion
+   * played at them — and suppressing it would freeze the drawing at whatever
+   * fraction the first paint happened to compute, so it keeps scrubbing. `loop`
+   * is the opposite: it replays the whole timeline off `performance.now()` with
+   * no scroll input at all, which is autonomous motion by any definition and had
+   * no check whatsoever. With reduced motion requested, the scroll pass runs
+   * normally and the loop simply does not start.
+   *
+   * Set to `false` to loop regardless of the preference.
+   */
+  respectReducedMotion?: boolean;
 }
 
 const DEBUG_COLORS = ['#ff90e8', '#ffc900', '#5865F2', '#22c55e', '#f59e0b', '#ef4444', '#aaa', '#60a5fa'];
@@ -85,7 +103,7 @@ export function scrollDrawTimeline(
 
   const containerOrNull = typeof target === 'string' ? document.querySelector(target) : target;
   if (!containerOrNull) {
-    console.warn('[svg-scroll-draw/timeline] Container not found:', target);
+    warn('timeline: Container not found:', target);
     return noop;
   }
   const container = containerOrNull;
@@ -103,6 +121,7 @@ export function scrollDrawTimeline(
     loopDuration = 1500,
     debug        = false,
     label,
+    respectReducedMotion = true,
   } = options;
 
   const startConfig = parseTrigger(trigger.start ?? 'top bottom');
@@ -117,6 +136,36 @@ export function scrollDrawTimeline(
   let loopStart  = 0;
   let loopsLeft  = maxLoops;
 
+  /**
+   * The time-driven replay is the one part of this module that is not
+   * scroll-linked, and therefore the one part `prefers-reduced-motion` applies to
+   * — see the option's docs. Tracked live rather than read once, so toggling the
+   * OS setting takes effect without a reload, and a loop already in flight is
+   * abandoned rather than finishing its iteration.
+   */
+  let motionReduced = respectReducedMotion && prefersReducedMotion();
+  const stopWatchingMotion = watchReducedMotion((reduced) => {
+    motionReduced = respectReducedMotion && reduced;
+    if (!motionReduced) return;
+    looping = false;
+    clearTimeout(repeatTimer);
+    repeatTimer = undefined;
+  });
+
+  /** Whether this instance should behave as though `loop` were set at all. */
+  const loopActive = (): boolean => maxLoops > 0 && !motionReduced;
+
+  /**
+   * Inline styles as they were before this instance touched anything.
+   *
+   * Without this, `destroy()` left every path frozen at whatever dashoffset the
+   * last frame wrote — a diagram destroyed mid-scroll stayed half-drawn (and with
+   * `fade`, half-transparent) for the rest of the page's life. `scrollAnimate`,
+   * `scrollPin` and `scrollText` all restore what they wrote; this module was the
+   * last one that did not.
+   */
+  const savedInline = new Map<SVGElement, string>();
+
   // Resolve each track's elements + lengths up front
   const trackData = tracks.map((track) => {
     const easeFn = typeof track.easing === 'function'
@@ -125,12 +174,20 @@ export function scrollDrawTimeline(
     const elements = Array.from(container.querySelectorAll<SVGElement>(track.selector));
     const lengths  = elements.map((el) => getElementLength(el));
     elements.forEach((el, i) => {
+      if (!savedInline.has(el)) savedInline.set(el, el.getAttribute('style') ?? '');
       el.style.strokeDasharray  = `${lengths[i]}`;
       el.style.strokeDashoffset = `${lengths[i]}`;
       if (track.fade) el.style.opacity = '0';
     });
     return { ...track, elements, lengths, easeFn };
   });
+
+  function restoreInline(): void {
+    for (const [el, style] of savedInline) {
+      if (style) el.setAttribute('style', style);
+      else el.removeAttribute('style');
+    }
+  }
 
   let tStart = 0, tEnd = 0;
   let isVisible = false, paused = false, rafId = 0;
@@ -245,7 +302,7 @@ export function scrollDrawTimeline(
       alpha = Math.min(1, (performance.now() - loopStart) / loopDuration);
     } else {
       alpha = computeProgress(scrollPos(), tStart, tEnd, speed);
-      if (once || maxLoops > 0) { frozenAlpha = Math.max(frozenAlpha, alpha); alpha = frozenAlpha; }
+      if (once || loopActive()) { frozenAlpha = Math.max(frozenAlpha, alpha); alpha = frozenAlpha; }
     }
 
     currentAlpha = alpha;
@@ -255,7 +312,7 @@ export function scrollDrawTimeline(
       completed = true;
       onComplete?.();
 
-      if (maxLoops > 0 && !looping && !repeatTimer) {
+      if (loopActive() && !looping && !repeatTimer) {
         // First completion (scroll-driven) — start time-driven loop after delay
         repeatTimer = setTimeout(() => {
           repeatTimer = undefined;
@@ -279,7 +336,7 @@ export function scrollDrawTimeline(
     // End of a loop iteration — reset and continue or stop
     if (looping && alpha >= 1 && !repeatTimer) {
       completed = false;
-      if (loopsLeft > 0) {
+      if (loopsLeft > 0 && loopActive()) {
         repeatTimer = setTimeout(() => {
           repeatTimer = undefined;
           if (loopsLeft !== Infinity) loopsLeft--;
@@ -308,18 +365,21 @@ export function scrollDrawTimeline(
   );
   observer.observe(container);
 
+  /** Everything layout-dependent, re-read. Shared by resize and refresh(). */
+  function remeasure() {
+    trackData.forEach(({ elements, lengths }) => {
+      elements.forEach((el, i) => {
+        lengths[i] = getElementLength(el);
+        el.style.strokeDasharray = `${lengths[i]}`;
+      });
+    });
+    cacheTriggers();
+  }
+
   let resizeTimer: ReturnType<typeof setTimeout>;
   function onResize() {
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => {
-      trackData.forEach(({ elements, lengths }) => {
-        elements.forEach((el, i) => {
-          lengths[i] = getElementLength(el);
-          el.style.strokeDasharray = `${lengths[i]}`;
-        });
-      });
-      cacheTriggers();
-    }, 150);
+    resizeTimer = setTimeout(remeasure, 150);
   }
   window.addEventListener('resize', onResize);
   window.addEventListener('orientationchange', onResize);
@@ -332,7 +392,17 @@ export function scrollDrawTimeline(
       observer.disconnect();
       window.removeEventListener('resize', onResize);
       window.removeEventListener('orientationchange', onResize);
+      stopWatchingMotion();
       if (debugEl) { debugEl.remove(); debugEl = null; }
+      // Put the paths back the way they were found, rather than leaving them
+      // frozen on the last frame this instance happened to write.
+      restoreInline();
+      (container as HTMLElement).style.removeProperty('--scroll-draw-progress');
+    },
+    /** Re-measure path lengths and the trigger window after a layout change. */
+    refresh() {
+      clearTimeout(resizeTimer);
+      remeasure();
     },
     replay() {
       repeatCount = repeat === 'infinite' ? Infinity : (repeat ?? 0);

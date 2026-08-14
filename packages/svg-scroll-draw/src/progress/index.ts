@@ -1,5 +1,7 @@
 import type { EasingName, TriggerConfig, ScrollDrawInstance } from '../core/types';
-import { EASINGS, parseTrigger, computeProgress, computeTriggers } from '../core/utils';
+import {
+  EASINGS, parseTrigger, computeProgress, computeTriggers, measureTriggerFrame,
+} from '../core/utils';
 import { _register, _unregister } from '../core/registry';
 import { warn } from '../core/env';
 
@@ -101,17 +103,8 @@ export function scrollProgress(
   };
 
   function cacheTriggers(): void {
-    const rect = htmlEl.getBoundingClientRect();
-    let pos: number, size: number;
-    if (scrollEl) {
-      const cr = scrollEl.getBoundingClientRect();
-      pos  = axis === 'x' ? rect.left - cr.left + scrollEl.scrollLeft : rect.top - cr.top + scrollEl.scrollTop;
-      size = axis === 'x' ? rect.width : rect.height;
-    } else {
-      pos  = axis === 'x' ? rect.left : rect.top;
-      size = axis === 'x' ? rect.width : rect.height;
-    }
-    const result = computeTriggers({ top: pos, height: size }, scrollPos(), vpSize(), startConfig, endConfig);
+    const frame  = measureTriggerFrame(htmlEl, scrollEl, axis);
+    const result = computeTriggers(frame, frame.scroll, vpSize(), startConfig, endConfig);
     tStart = result.tStart;
     tEnd   = result.tEnd;
   }

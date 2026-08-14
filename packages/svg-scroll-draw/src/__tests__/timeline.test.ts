@@ -412,14 +412,24 @@ describe('scrollDrawTimeline — repeat option', () => {
     raf.tick();
 
     const path = container.querySelector('.p') as SVGPathElement;
-    const offsetAfterComplete = parseFloat(path.style.strokeDashoffset);
+    expect(path.getAttribute('style'), 'nothing was written, so nothing proves anything').not.toBe(
+      '',
+    );
 
     // Destroy before the timer fires
     instance.destroy();
     vi.advanceTimersByTime(600);
 
-    // Offset should NOT have reset — timer was cancelled
-    expect(parseFloat(path.style.strokeDashoffset)).toBe(offsetAfterComplete);
+    /*
+     * destroy() restores the inline styles it wrote, so "the offset did not
+     * change" is no longer the signal — an empty style attribute is. A repeat
+     * timer that survived teardown would run doReset(), which writes
+     * strokeDasharray and strokeDashoffset straight back onto the path.
+     */
+    expect(
+      path.getAttribute('style') ?? '',
+      'a repeat timer fired after destroy() and rewrote the path',
+    ).toBe('');
   });
 
   it('replay() resets the repeat counter', () => {

@@ -1,5 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { scrollDrawGroup, scrollDrawSequence } from '../group/index';
+import {
+  scrollDrawGroup, scrollDrawSequence,
+  scrollAnimateGroup, scrollAnimateSequence, scrollParallaxGroup,
+} from '../group/index';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -387,5 +390,228 @@ describe('scrollDrawSequence — replay', () => {
     // engine[1] observer fires — should still be paused after replay
     FakeIO.instances[1].trigger(true);
     expect(raf.schedule.mock.calls.length).toBe(callsBefore);
+  });
+});
+
+// ── The animate-based fan-outs ────────────────────────────────────────────────
+//
+// These three entry points had no unit coverage at all, which is most of why
+// this module sat at 50% lines — the lowest in the library. The browser suite
+// (`e2e/group.spec.ts`) covers what they look like on screen; these cover the
+// wiring that jsdom can see, and the SSR and empty-input paths a browser cannot
+// reach at all.
+
+/** A plain element for the animate/parallax APIs, which need no SVG. */
+function makeBox(): HTMLDivElement {
+  const div = document.createElement('div');
+  document.body.appendChild(div);
+  return div;
+}
+
+const FADE_IN = { props: { opacity: [0, 1] as [number, number] } };
+
+describe('scrollAnimateGroup', () => {
+  it('returns a noop instance when window is undefined', () => {
+    const original = globalThis.window;
+    // @ts-expect-error deliberately removing window to take the SSR branch
+    delete globalThis.window;
+    try {
+      const instance = scrollAnimateGroup(['#a'], FADE_IN);
+      expect(() => {
+        instance.destroy(); instance.replay(); instance.pause();
+        instance.resume(); instance.seek(0.5);
+      }).not.toThrow();
+      expect(instance.getProgress()).toBe(0);
+    } finally {
+      globalThis.window = original;
+    }
+  });
+
+  it('creates one engine per matched element and ignores the rest', () => {
+    const a = makeBox();
+    const b = makeBox();
+    scrollAnimateGroup([a, b, '#not-in-the-dom'], FADE_IN);
+    expect(FakeIO.instances.length).toBe(2);
+  });
+
+  it('writes an initial frame to every member, not just the first', () => {
+    const a = makeBox();
+    const b = makeBox();
+    scrollAnimateGroup([a, b], FADE_IN);
+
+    // Every element shares one stubbed rect here, so the *value* is a jsdom
+    // artefact — what this pins is that both members were written at all, and
+    // written the same. The real per-member cascade is in e2e/group.spec.ts,
+    // where the elements have their own geometry.
+    expect(a.style.opacity, 'the first member was never initialised').not.toBe('');
+    expect(b.style.opacity, 'the second member was never initialised').toBe(a.style.opacity);
+  });
+
+  it('seek() reaches every member', () => {
+    const a = makeBox();
+    const b = makeBox();
+    const instance = scrollAnimateGroup([a, b], FADE_IN);
+
+    instance.seek(0.5);
+    expect(parseFloat(a.style.opacity)).toBeCloseTo(0.5, 2);
+    expect(parseFloat(b.style.opacity)).toBeCloseTo(0.5, 2);
+    expect(instance.getProgress()).toBeCloseTo(0.5, 2);
+  });
+
+  it('destroy() restores the inline styles of every member', () => {
+    const a = makeBox();
+    const b = makeBox();
+    const instance = scrollAnimateGroup([a, b], FADE_IN);
+    instance.seek(0.5);
+
+    instance.destroy();
+    expect(a.style.opacity).toBe('');
+    expect(b.style.opacity).toBe('');
+  });
+
+  it('replay() and pause()/resume() reach every member', () => {
+    const a = makeBox();
+    const b = makeBox();
+    const instance = scrollAnimateGroup([a, b], FADE_IN);
+
+    instance.seek(0.8);
+    instance.replay();
+    expect(parseFloat(a.style.opacity)).toBeCloseTo(0, 2);
+    expect(parseFloat(b.style.opacity)).toBeCloseTo(0, 2);
+
+    instance.pause();
+    const callsBefore = raf.schedule.mock.calls.length;
+    FakeIO.instances[0].trigger(true);
+    expect(raf.schedule.mock.calls.length, 'a paused member scheduled a frame').toBe(callsBefore);
+
+    instance.resume();
+    FakeIO.instances[0].trigger(true);
+    expect(raf.schedule.mock.calls.length).toBeGreaterThan(callsBefore);
+  });
+
+  it('refresh() is forwarded to every member without throwing', () => {
+    const instance = scrollAnimateGroup([makeBox(), makeBox()], FADE_IN);
+    expect(() => instance.refresh?.()).not.toThrow();
+  });
+});
+
+describe('scrollAnimateSequence', () => {
+  it('returns a noop instance when no target matches', () => {
+    const instance = scrollAnimateSequence(['#nope', '#also-nope'], FADE_IN);
+    expect(instance.getProgress()).toBe(0);
+    expect(() => instance.destroy()).not.toThrow();
+  });
+
+  it('holds every card but the first until the one before it completes', () => {
+    const a = makeBox();
+    const b = makeBox();
+    scrollAnimateSequence([a, b], FADE_IN);
+
+    // Card 1's observer fires while card 0 is still mid-flight: it must not
+    // schedule a frame, and must stay at its from-state.
+    const callsBefore = raf.schedule.mock.calls.length;
+    FakeIO.instances[1].trigger(true);
+    expect(raf.schedule.mock.calls.length, 'a later card started early').toBe(callsBefore);
+
+    // Its opacity is whatever the shared stubbed rect produced at construction;
+    // the gate being tested here is that no frame loop started for it. What the
+    // card actually looks like while it waits is asserted in the browser suite.
+    expect(b.style.opacity).not.toBe('');
+  });
+
+  it('hands over to the next card when the previous one completes', () => {
+    const a = makeBox();
+    const b = makeBox();
+    const completions: number[] = [];
+    const instance = scrollAnimateSequence([a, b], {
+      ...FADE_IN,
+      onComplete: () => completions.push(1),
+    });
+
+    FakeIO.instances[1].trigger(true); // paused, no effect
+    vi.stubGlobal('scrollY', 5000);    // well past the trigger window
+    FakeIO.instances[0].trigger(true);
+    raf.tick();
+
+    expect(completions.length, 'the first card never completed').toBeGreaterThan(0);
+    expect(parseFloat(a.style.opacity)).toBeCloseTo(1, 2);
+
+    // The cursor moved on, so the instance now speaks for the second card.
+    instance.seek(0.25);
+    expect(parseFloat(b.style.opacity)).toBeCloseTo(0.25, 2);
+    expect(parseFloat(a.style.opacity), 'seek() reached a finished card').toBeCloseTo(1, 2);
+  });
+
+  it('a finished chain reports 100%, not 0%', () => {
+    const a = makeBox();
+    const instance = scrollAnimateSequence([a], FADE_IN);
+
+    vi.stubGlobal('scrollY', 5000);
+    FakeIO.instances[0].trigger(true);
+    raf.tick();
+
+    // The cursor must stay on the last card rather than walking off the end,
+    // where every instance method silently addresses nothing.
+    expect(instance.getProgress()).toBeCloseTo(1, 2);
+  });
+
+  it('destroy() tears down every card', () => {
+    const a = makeBox();
+    const b = makeBox();
+    const instance = scrollAnimateSequence([a, b], FADE_IN);
+
+    instance.destroy();
+    for (const io of FakeIO.instances) expect(io.disconnect).toHaveBeenCalled();
+    expect(a.style.opacity).toBe('');
+    expect(b.style.opacity).toBe('');
+  });
+});
+
+describe('scrollParallaxGroup', () => {
+  it('returns a noop instance when window is undefined', () => {
+    const original = globalThis.window;
+    // @ts-expect-error deliberately removing window to take the SSR branch
+    delete globalThis.window;
+    try {
+      const instance = scrollParallaxGroup(['#a']);
+      expect(instance.getProgress()).toBe(0);
+      expect(() => instance.destroy()).not.toThrow();
+    } finally {
+      globalThis.window = original;
+    }
+  });
+
+  it('creates one engine per member', () => {
+    scrollParallaxGroup([makeBox(), makeBox(), makeBox()]);
+    expect(FakeIO.instances.length).toBe(3);
+  });
+
+  it('translates every member, in the direction the speed asks for', () => {
+    const a = makeBox();
+    const b = makeBox();
+    const instance = scrollParallaxGroup([a, b], { speed: 0.5 });
+
+    instance.seek(1);
+    // Rect height is stubbed at 500, so travel is 0.5 x 500 = 250, upward.
+    expect(a.style.transform).toContain('translateY(-250');
+    expect(b.style.transform).toContain('translateY(-250');
+  });
+
+  it('a negative speed moves the other way', () => {
+    const a = makeBox();
+    const instance = scrollParallaxGroup([a], { speed: -0.2 });
+    instance.seek(1);
+    expect(a.style.transform).toContain('translateY(100');
+  });
+
+  it('destroy() restores every member', () => {
+    const a = makeBox();
+    const b = makeBox();
+    const instance = scrollParallaxGroup([a, b], { speed: 0.5 });
+    instance.seek(1);
+
+    instance.destroy();
+    expect(a.style.transform).toBe('');
+    expect(b.style.transform).toBe('');
   });
 });

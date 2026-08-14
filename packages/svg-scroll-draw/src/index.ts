@@ -1,5 +1,6 @@
 import { createEngine } from './core/engine';
 import type { ScrollDrawOptions, ScrollDrawInstance } from './core/types';
+import { warn } from './core/env';
 
 export function scrollDraw(
   target: string | Element,
@@ -14,7 +15,7 @@ export function scrollDraw(
       : target;
 
   if (!container) {
-    console.warn('[svg-scroll-draw] Container not found:', target);
+    warn('Container not found:', target);
     return noop;
   }
 

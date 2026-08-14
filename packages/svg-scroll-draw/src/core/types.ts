@@ -129,4 +129,19 @@ export interface ScrollDrawInstance {
   seek: (progress: number) => void;
   /** Returns current draw progress (0–1). */
   getProgress: () => number;
+  /**
+   * Re-measure after a layout change: path lengths, and the scroll trigger window.
+   *
+   * The engine already re-measures on `resize`, on `orientationchange`, and via a
+   * `ResizeObserver` on the document element — but none of those fire for a layout
+   * change that leaves the document height alone, such as a tab switching, a
+   * sibling collapsing, or a font swapping inside a fixed-height box. Call this
+   * after one of those.
+   *
+   * Optional on this shared type because several instances here are fan-outs over
+   * other instances or SSR no-op stubs. `scrollDraw`, `scrollPin`,
+   * `scrollHorizontal`, `scrollDrawTimeline` and the group APIs all provide it;
+   * use `instance.refresh?.()` if you hold an instance of unknown origin.
+   */
+  refresh?: () => void;
 }
