@@ -64,7 +64,23 @@ Unit coverage was ratcheted alongside: `group` 50→96%, `snap` 81→95%, `text`
 - [ ] Confirm the Vercel deploy from `main` shows v2.10.0 and the new docs
       sections render.
 
-### 2. Site catch-up — `/verify` stops three fixes short
+### 2. Accuracy pass on the comparison pages — see `CLAIMS-AUDIT.md`
+The highest-priority item in the repo right now, and the only one that involves
+somebody else's project. The comparison pages state that GSAP's DrawSVG and
+SplitText require a paid Club GreenSock subscription. That stopped being true in
+2025 — the plugins ship in the public npm tarball under a no-charge licence — and
+the claim is repeated in six places including the whole `/vs-gsap` pitch.
+
+Measured in the same pass: AOS is 6.7 KB and ScrollReveal 5.6 KB against our 10.0
+KB, so both are *smaller* than us, not larger as the pages claim; ScrollReveal is
+GPL-3.0, not MIT; and our own "honours prefers-reduced-motion by default" is a
+blanket claim with three exceptions.
+
+`CLAIMS-AUDIT.md` has every finding with the command that produced it, the
+proposed replacement, and the order to do them in. Nothing there has been
+actioned.
+
+### 3. Site catch-up — `/verify` stops three fixes short
 `/verify` is the page that shows each claim being true in a real browser, and it
 still ends at the horizontal-scroll fix. Missing sections, in rough order of how
 convincing they are:
@@ -81,7 +97,7 @@ native-CSS section now names the four easings the fast path accepts and says the
 are emitted as this library's curves rather than the CSS keywords. What is
 missing is the *demonstration*, which is what `/verify` is for.
 
-### 3. Option reactivity across the wrappers — a decision, not a bug
+### 4. Option reactivity across the wrappers — a decision, not a bug
 The framework spec pins today's behaviour: only the **Svelte** actions re-create
 the engine when their options change, because Svelte calls `update()` for you.
 React, Vue, Solid and Angular all read their options once on mount
