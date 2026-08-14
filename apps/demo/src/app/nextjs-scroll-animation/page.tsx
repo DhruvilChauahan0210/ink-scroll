@@ -6,7 +6,7 @@ import { CopyButton } from '@/components/CopyButton';
 export const metadata: Metadata = {
   title: 'Next.js Scroll Animations — svg-scroll-draw',
   description:
-    'Scroll animations for Next.js App Router. SSR-safe, TypeScript, use client pattern, dynamic imports, ~9 KB. Replaces GSAP + Framer Motion for scroll-driven effects.',
+    'Scroll animations for Next.js App Router. SSR-safe, TypeScript, use client pattern, dynamic imports, ~10 KB. Replaces GSAP + Framer Motion for scroll-driven effects.',
   keywords: [
     'next.js scroll animation',
     'nextjs scroll animation library',
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   alternates: { canonical: '/nextjs-scroll-animation' },
   openGraph: {
     title: 'Next.js Scroll Animations — svg-scroll-draw',
-    description: 'SSR-safe, App Router ready, ~9 KB. The scroll animation library built for Next.js.',
+    description: 'SSR-safe, App Router ready, ~10 KB. The scroll animation library built for Next.js.',
     url: 'https://svg-scroll-draw.vercel.app/nextjs-scroll-animation',
   },
 };
@@ -223,7 +223,7 @@ export function AnimatedPage({ children }: { children: React.ReactNode }) {
             {[
               { name: 'GSAP + ScrollTrigger', size: '~50 KB', ssr: '✗ needs guards', typed: '~', note: 'Commercial license for SplitText' },
               { name: 'Framer Motion', size: '~35 KB', ssr: '✓', typed: '✓', note: 'React-only. No SVG draw, no pin/snap.' },
-              { name: 'svg-scroll-draw', size: '~9 KB', ssr: '✓', typed: '✓', note: 'MIT. Everything. Works everywhere.', highlight: true },
+              { name: 'svg-scroll-draw', size: '~10 KB', ssr: '✓', typed: '✓', note: 'MIT. Everything. Works everywhere.', highlight: true },
             ].map(({ name, size, ssr, typed, note, highlight }) => (
               <div key={name} className={`p-5 rounded-xl border ${highlight ? 'border-2 border-creator-pink bg-creator-pink/5' : 'border-subtle-ash bg-white'}`}>
                 <p className="font-display font-extrabold text-base mb-3">{name}</p>
@@ -242,7 +242,7 @@ export function AnimatedPage({ children }: { children: React.ReactNode }) {
       <section className="bg-pitch-black text-light-linen px-4 sm:px-6 md:px-12 py-16 sm:py-20 text-center">
         <div className="max-w-2xl mx-auto">
           <h2 className="font-display font-extrabold text-[clamp(28px,6vw,56px)] leading-[0.92] tracking-[-0.04em] mb-4">Built for Next.js.</h2>
-          <p className="text-graphite-border text-sm sm:text-base mb-8">SSR-safe by default. App Router ready. MIT. ~9 KB.</p>
+          <p className="text-graphite-border text-sm sm:text-base mb-8">SSR-safe by default. App Router ready. MIT. ~10 KB.</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <div className="flex items-center gap-2 bg-white/10 rounded-full px-5 py-3 text-sm font-mono"><span className="opacity-50">$</span><span>npm i svg-scroll-draw</span></div>
             <Link href="/docs" className="px-5 py-3 rounded-full border-2 border-white text-sm font-semibold hover:bg-white hover:text-pitch-black transition-colors text-center">Full docs →</Link>
@@ -251,7 +251,7 @@ export function AnimatedPage({ children }: { children: React.ReactNode }) {
       </section>
 
       <footer className="px-6 md:px-12 py-6 border-t border-subtle-ash text-center text-[11px] font-mono text-graphite-border">
-        svg-scroll-draw · MIT · ~9 KB ·{' '}<a href="https://github.com/DhruvilChauahan0210/ink-scroll" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-pitch-black transition-colors">GitHub</a>
+        svg-scroll-draw · MIT · ~10 KB ·{' '}<a href="https://github.com/DhruvilChauahan0210/ink-scroll" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-pitch-black transition-colors">GitHub</a>
       </footer>
     </div>
   );

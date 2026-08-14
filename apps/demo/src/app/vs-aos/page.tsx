@@ -37,7 +37,7 @@ const pageJsonLd = {
       name: 'Is there a better alternative to AOS (Animate On Scroll)?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Yes. svg-scroll-draw\'s scrollReveal function replaces AOS with a typed JavaScript API — no data-aos HTML attributes required, no config files, 7 built-in presets, stagger support, and custom easing. All in ~9 KB total.',
+        text: 'Yes. svg-scroll-draw\'s scrollReveal function replaces AOS with a typed JavaScript API — no data-aos HTML attributes required, no config files, 7 built-in presets, stagger support, and custom easing. All in ~10 KB total.',
       },
     },
     {
@@ -149,8 +149,8 @@ export default function VsAosPage() {
           <h2 className="font-display font-extrabold text-3xl sm:text-4xl tracking-[-0.03em] mb-8">Bundle size.</h2>
           <div className="space-y-4 mb-6">
             {[
-              { label: 'svg-scroll-draw', size: '~9 KB',  pct: 64, color: '#ff90e8', badge: 'yours' },
-              { label: 'ScrollReveal.js', size: '~9 KB',  pct: 64, color: '#e0e0e0', badge: null },
+              { label: 'svg-scroll-draw', size: '~10 KB',  pct: 64, color: '#ff90e8', badge: 'yours' },
+              { label: 'ScrollReveal.js', size: '~10 KB',  pct: 64, color: '#e0e0e0', badge: null },
               { label: 'AOS',             size: '~14 KB', pct: 100, color: '#c8c8c8', badge: null },
             ].map(({ label, size, pct, color, badge }) => (
               <div key={label} className="flex items-center gap-4">
@@ -252,7 +252,7 @@ export default function VsAosPage() {
       </section>
 
       <footer className="px-6 md:px-12 py-6 border-t border-subtle-ash text-center text-[11px] font-mono text-graphite-border">
-        svg-scroll-draw · MIT · ~9 KB ·{' '}<a href="https://github.com/DhruvilChauahan0210/ink-scroll" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-pitch-black transition-colors">GitHub</a>
+        svg-scroll-draw · MIT · ~10 KB ·{' '}<a href="https://github.com/DhruvilChauahan0210/ink-scroll" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-pitch-black transition-colors">GitHub</a>
       </footer>
     </div>
     </>

@@ -6,7 +6,7 @@ import { CopyButton } from '@/components/CopyButton';
 export const metadata: Metadata = {
   title: 'Replace AOS / ScrollReveal.js — svg-scroll-draw scrollReveal',
   description:
-    'Drop-in replacement for AOS and ScrollReveal.js. One function call, 7 named presets, stagger, custom easing — no data attributes, no config files. Part of svg-scroll-draw, ~9 KB total.',
+    'Drop-in replacement for AOS and ScrollReveal.js. One function call, 7 named presets, stagger, custom easing — no data attributes, no config files. Part of svg-scroll-draw, ~10 KB total.',
   keywords: [
     'AOS alternative',
     'ScrollReveal.js alternative',
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://svg-scroll-draw.vercel.app/blog/replace-aos-scrollreveal' },
   openGraph: {
     title: 'Replace AOS / ScrollReveal.js with one function call',
-    description: 'scrollReveal — 7 presets, stagger, custom easing, no data attributes. Part of svg-scroll-draw (~9 KB).',
+    description: 'scrollReveal — 7 presets, stagger, custom easing, no data attributes. Part of svg-scroll-draw (~10 KB).',
     url: 'https://svg-scroll-draw.vercel.app/blog/replace-aos-scrollreveal',
   },
   twitter: {
@@ -344,7 +344,7 @@ instance.destroy(); // removes all animations, restores original styles`}</CodeB
       </article>
 
       <footer className="px-6 md:px-12 py-6 border-t border-subtle-ash text-center text-[11px] font-mono text-graphite-border">
-        svg-scroll-draw · MIT · ~9 KB gzipped ·{' '}
+        svg-scroll-draw · MIT · ~10 KB gzipped ·{' '}
         <a href="https://github.com/DhruvilChauahan0210/ink-scroll" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-pitch-black transition-colors">
           GitHub
         </a>

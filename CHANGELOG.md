@@ -12,11 +12,14 @@ found by writing that coverage rather than by a bug report.
 
 ### Fixed
 
-- **The CDN bundle silently dropped the `<scroll-draw>` web component.** The
-  `sideEffects` field listed only the built output (`./dist/web-component/*`),
-  but the bundle is built from `src/` — so the bare `import './web-component'`
-  in the CDN entry was tree-shaken away as side-effect-free. The custom element
-  never registered in the one file the README tells `<script src>` users to load.
+- **The CDN bundle dropped the `<scroll-draw>` web component** — caught before
+  release, so no published version was affected. The `sideEffects` field added
+  during this cycle listed only the built output (`./dist/web-component/*`), but
+  the bundle is built from `src/`, so the bare `import './web-component'` in the
+  CDN entry was tree-shaken away as side-effect-free. Verified against the
+  published 2.9.0 tarball, which registers the element correctly: this was a
+  regression introduced by the tree-shaking work and found by the new CDN spec,
+  not something users ever downloaded.
 - **Importing `svg-scroll-draw/web-component` on a server threw.**
   `class ScrollDrawElement extends HTMLElement` was evaluated at module scope, and
   `HTMLElement` does not exist on a server, so an SSR render died with

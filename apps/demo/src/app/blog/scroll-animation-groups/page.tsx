@@ -415,7 +415,7 @@ scrollAnimateSequence(
         {/* Footer */}
         <div className="mt-16 pt-6 border-t border-subtle-ash flex flex-wrap items-center justify-between gap-4">
           <Link href="/blog" className="text-[13px] text-graphite-border hover:text-pitch-black transition-colors">← Back to blog</Link>
-          <span className="text-[11px] font-mono text-graphite-border">svg-scroll-draw · MIT · ~9 KB</span>
+          <span className="text-[11px] font-mono text-graphite-border">svg-scroll-draw · MIT · ~10 KB</span>
         </div>
 
       </article>

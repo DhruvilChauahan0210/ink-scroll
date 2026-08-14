@@ -93,7 +93,7 @@ export default function CompletGuidePage() {
           <p className="text-base sm:text-lg text-graphite-border leading-relaxed max-w-2xl">
             Every scroll animation pattern — fade reveal, parallax, sticky pin, section snap, text split,
             video scrub, horizontal sections, and CSS variable binding — explained with copy-paste code.
-            All examples use svg-scroll-draw, a single ~9 KB library that covers all of them.
+            All examples use svg-scroll-draw, a single ~10 KB library that covers all of them.
           </p>
         </div>
       </header>
@@ -362,7 +362,7 @@ scrollAnimate('#section', {
       </article>
 
       <footer className="px-6 md:px-12 py-6 border-t border-subtle-ash text-center text-[11px] font-mono text-graphite-border">
-        svg-scroll-draw · MIT · ~9 KB ·{' '}<a href="https://github.com/DhruvilChauahan0210/ink-scroll" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-pitch-black transition-colors">GitHub</a>
+        svg-scroll-draw · MIT · ~10 KB ·{' '}<a href="https://github.com/DhruvilChauahan0210/ink-scroll" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-pitch-black transition-colors">GitHub</a>
       </footer>
     </div>
     </>

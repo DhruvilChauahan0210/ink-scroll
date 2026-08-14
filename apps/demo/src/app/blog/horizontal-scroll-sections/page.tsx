@@ -298,7 +298,7 @@ scrollProgress('#track', {
       </article>
 
       <footer className="px-6 md:px-12 py-6 border-t border-subtle-ash text-center text-[11px] font-mono text-graphite-border">
-        svg-scroll-draw · MIT · ~9 KB gzipped ·{' '}
+        svg-scroll-draw · MIT · ~10 KB gzipped ·{' '}
         <a href="https://github.com/DhruvilChauahan0210/ink-scroll" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-pitch-black transition-colors">GitHub</a>
       </footer>
     </div>

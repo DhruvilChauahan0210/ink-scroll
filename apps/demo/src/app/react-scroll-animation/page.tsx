@@ -6,7 +6,7 @@ import { CopyButton } from '@/components/CopyButton';
 export const metadata: Metadata = {
   title: 'React Scroll Animation Library — svg-scroll-draw',
   description:
-    'The best scroll animation library for React. ScrollAnimate, ScrollText, ScrollCounter, ScrollPin components + hooks. Typed, tree-shakeable, ~9 KB. Works with Next.js App Router.',
+    'The best scroll animation library for React. ScrollAnimate, ScrollText, ScrollCounter, ScrollPin components + hooks. Typed, tree-shakeable, ~10 KB. Works with Next.js App Router.',
   keywords: [
     'react scroll animation',
     'react scroll animation library',
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   alternates: { canonical: '/react-scroll-animation' },
   openGraph: {
     title: 'React Scroll Animation Library — svg-scroll-draw',
-    description: 'Typed components + hooks for every scroll animation pattern. ~9 KB. Works with Next.js.',
+    description: 'Typed components + hooks for every scroll animation pattern. ~10 KB. Works with Next.js.',
     url: 'https://svg-scroll-draw.vercel.app/react-scroll-animation',
   },
 };
@@ -298,7 +298,7 @@ export default function Page() {
       </section>
 
       <footer className="px-6 md:px-12 py-6 border-t border-subtle-ash text-center text-[11px] font-mono text-graphite-border">
-        svg-scroll-draw · MIT · ~9 KB ·{' '}<a href="https://github.com/DhruvilChauahan0210/ink-scroll" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-pitch-black transition-colors">GitHub</a>
+        svg-scroll-draw · MIT · ~10 KB ·{' '}<a href="https://github.com/DhruvilChauahan0210/ink-scroll" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-pitch-black transition-colors">GitHub</a>
       </footer>
     </div>
   );

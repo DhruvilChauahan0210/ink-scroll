@@ -11,13 +11,19 @@
  *   - "<N> tests" in README + demo strings  == actual vitest test count
  *   - "<N> browser tests" in the same docs  == actual Playwright test count
  *   - "<N> Examples" in README              == entries in ExamplesPage EXAMPLES
+ *   - the main entry's size claim            == the real gzipped size of dist
  *
- * Bundle sizes are covered separately by packages/svg-scroll-draw/scripts/size.mjs.
+ * size.mjs enforces the size *budget*; this enforces the size *claim*. Those are
+ * different jobs, and the gap between them shipped: 2.10.0 grew the main entry
+ * from 9.0 to 10.0 KB, comfortably inside the 10.5 KB budget, while the README,
+ * STATUS and 21 files across the demo went on advertising 9 KB. Exactly the drift
+ * this script exists to prevent, in the one dimension it was not looking at.
  *
  * Historical CHANGELOG entries are intentionally exempt: they record what was
  * true at the time of a release and must not be rewritten.
  */
 import { readFileSync, existsSync } from 'node:fs';
+import { gzipSync } from 'node:zlib';
 import { execFileSync } from 'node:child_process';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -29,6 +35,16 @@ const FILES_WITH_TEST_COUNTS = [
   'STATUS.md',
   'apps/demo/src/app/opengraph-image.tsx',
   'apps/demo/src/app/react-scroll-animation/page.tsx',
+];
+
+/** Everywhere the main entry's size is advertised in round numbers. */
+const SIZE_CLAIM_FILES = [
+  'README.md',
+  'STATUS.md',
+  'apps/demo/src/app/layout.tsx',
+  'apps/demo/src/app/page.tsx',
+  'apps/demo/src/app/opengraph-image.tsx',
+  'apps/demo/src/components/MobileMenu.tsx',
 ];
 
 const failures = [];
@@ -87,6 +103,18 @@ function actualBrowserTestCount() {
   }
 }
 
+/**
+ * Real gzipped size of the main entry, in KB to one decimal.
+ *
+ * Returns null when dist/ has not been built — the count claims are still worth
+ * checking on a machine that has not run a build.
+ */
+function actualMainEntryKb() {
+  const dist = join(ROOT, 'packages/svg-scroll-draw/dist/index.mjs');
+  if (!existsSync(dist)) return null;
+  return Math.round((gzipSync(readFileSync(dist), { level: 9 }).length / 1024) * 10) / 10;
+}
+
 // ── Actual example count, straight from the demo source ──────────────────────
 
 function actualExampleCount() {
@@ -112,11 +140,13 @@ function actualExampleCount() {
 const tests = actualTestCount();
 const browserTests = actualBrowserTestCount();
 const examples = actualExampleCount();
+const mainKb = actualMainEntryKb();
 
 console.log(
   `Reality: ${tests} tests, ` +
     `${browserTests ?? 'unknown'} browser tests per engine, ` +
-    `${examples} examples`,
+    `${examples} examples, ` +
+    `main entry ${mainKb ?? 'unbuilt'} KB gzipped`,
 );
 
 for (const rel of FILES_WITH_TEST_COUNTS) {
@@ -158,8 +188,56 @@ for (const [, n] of readme.matchAll(/\[(\d{1,3})\s+Examples\]/gi)) {
 // Any resurrected 4.4 KB claim is an instant fail.
 for (const rel of ['README.md', 'packages/svg-scroll-draw/package.json']) {
   const src = readFileSync(join(ROOT, rel), 'utf8');
-  if (/4\.4\s?KB/.test(src)) {
-    failures.push(`${rel}: contains the stale "4.4 KB" size claim (real main entry is 9.0 KB)`);
+  if (/~4\.4\s?KB|4\.4\s?KB gzipped/.test(src)) {
+    failures.push(
+      `${rel}: contains the stale "4.4 KB" size claim (real main entry is ${mainKb ?? '?'} KB)`,
+    );
+  }
+}
+
+/*
+ * The main entry's size, claimed two ways.
+ *
+ * The exact form ("10.0 KB gzipped") has to match to a decimal; the approximate
+ * one the marketing copy uses ("~10 KB") has to match when rounded. Both are
+ * checked because both were wrong at once, in 21 files, through a release.
+ */
+if (mainKb !== null) {
+  const approx = Math.round(mainKb);
+
+  for (const rel of ['README.md', 'STATUS.md']) {
+    const src = readFileSync(join(ROOT, rel), 'utf8');
+    for (const [, n] of src.matchAll(/\*\*(\d+\.\d)\s?KB gzipped\*\*/g)) {
+      if (Number(n) !== mainKb) {
+        failures.push(`${rel}: claims the main entry is "${n} KB gzipped" but it is ${mainKb} KB`);
+      }
+    }
+  }
+
+  for (const rel of SIZE_CLAIM_FILES) {
+    const path = join(ROOT, rel);
+    if (!existsSync(path)) continue;
+    const src = readFileSync(path, 'utf8');
+    const lines = src.split('\n');
+    const COMPETITOR = /gsap|greensock|framer|motion|aos\b|scroll-svg|scrollreveal|drawsvg/i;
+
+    for (const [i, line] of lines.entries()) {
+      /*
+       * Competitor sizes live in these same files — comparison tables, bar
+       * charts, the "why this exists" cards — and are not ours to derive. The
+       * name is often a few lines above the size in an object literal, so the
+       * window covers the surrounding entry rather than the single line.
+       */
+      if (lines.slice(Math.max(0, i - 4), i + 2).some((l) => COMPETITOR.test(l))) continue;
+
+      for (const [, n] of line.matchAll(/~(\d{1,3})\s?KB/g)) {
+        if (Number(n) !== approx) {
+          failures.push(
+            `${rel}: claims "~${n} KB" but the main entry is ${mainKb} KB (~${approx} KB)`,
+          );
+        }
+      }
+    }
   }
 }
 

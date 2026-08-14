@@ -34,7 +34,7 @@ const RELEASES = [
     tagColor: 'bg-lime-glow',
     items: [
       { type: 'fix', text: 'Both native CSS fast paths ran a different easing curve from the JS engine they replace. ease-in and ease-out here are quadratics; the CSS keywords of the same name are fixed cubic-beziers, and they differ by up to 0.069 — around 7 points of progress mid-scroll. The fast path only engages where the browser supports animation-timeline: view(), so the same page animated one way in Chrome and Firefox and a measurably different way in Safari, which always falls back to the JS engine. scrollAnimate defaults to ease-out, so this was the default configuration. Both engines now emit a timing function that reproduces the JS curve exactly.' },
-      { type: 'fix', text: 'The CDN bundle silently dropped the <scroll-draw> web component. The package marked only the built output as having side effects, so the bundler tree-shook the custom element out of the very file the README tells CDN users to load — the element simply never registered.' },
+      { type: 'fix', text: 'The CDN bundle dropped the <scroll-draw> web component — caught before release, so no published version shipped without it. The sideEffects field added during this cycle listed only the built output, while the bundle is built from source, so the bundler tree-shook the custom element out of the very file the README tells CDN users to load. Verified against the published 2.9.0 tarball, which registers the element correctly.' },
       { type: 'fix', text: 'Importing svg-scroll-draw/web-component on a server threw ReferenceError: HTMLElement is not defined, taking the whole render down. The class is now defined inside the same guard as the registration, so it degrades to a no-op like every other entry point.' },
       { type: 'fix', text: 'A finished scrollDrawSequence or scrollAnimateSequence reported 0% progress: the active-step cursor walked past the end of the array, so getProgress() returned 0 at the exact moment everything had completed, and pause(), resume() and seek() became silent no-ops.' },
       { type: 'fix', text: 'Any re-measure while scrolled shifted the trigger window for custom scrollContainer callers. The element offset inside a scroll container already includes the scroll position, and it was being added a second time — so a resize mid-scroll moved the window by however far the user had scrolled. A scrollHorizontal strip scrubbed halfway snapped back to its first panel with no scrolling at all. Three engines had their own copy of the arithmetic, and all three of it.' },
@@ -535,7 +535,7 @@ export default function ChangelogPage() {
 
       {/* Footer */}
       <footer className="border-t border-subtle-ash px-6 md:px-12 py-6 text-center text-[11px] font-mono text-graphite-border">
-        svg-scroll-draw · MIT · ~9 KB gzipped ·{' '}
+        svg-scroll-draw · MIT · ~10 KB gzipped ·{' '}
         <a href={GH} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-pitch-black transition-colors">
           GitHub
         </a>

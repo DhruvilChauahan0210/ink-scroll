@@ -348,7 +348,7 @@ function GroupDemo() {
           <line x1="32" y1="52" x2="32" y2="57" stroke="#ffc900" strokeWidth="2" strokeLinecap="round" />
           <line x1="12" y1="32" x2="7"  y2="32" stroke="#ffc900" strokeWidth="2" strokeLinecap="round" />
         </svg>
-        <span style={{ fontFamily: 'system-ui', fontSize: 11, color: '#999', letterSpacing: '0.08em', textTransform: 'uppercase' }}>~9 KB</span>
+        <span style={{ fontFamily: 'system-ui', fontSize: 11, color: '#999', letterSpacing: '0.08em', textTransform: 'uppercase' }}>~10 KB</span>
       </div>
 
       {/* Framework */}
@@ -1386,7 +1386,7 @@ function FeatureLinesDemo() {
   const features = [
     { icon: '⚡', text: 'Native CSS compositor path. Zero JS on Chrome.' },
     { icon: '🧩', text: 'React, Vue, Svelte, Solid, Angular, Astro, Nuxt.' },
-    { icon: '📦', text: '~9 KB gzipped. Zero runtime dependencies.' },
+    { icon: '📦', text: '~10 KB gzipped. Zero runtime dependencies.' },
     { icon: '♿', text: 'aria-label, aria-hidden, prefers-reduced-motion.' },
   ];
   const refs = [
@@ -1492,7 +1492,7 @@ function ScrollRevealDemo() {
     { icon: '🌊', label: 'stagger: 0.12', color: '#4ade80' },
     { icon: '🔒', label: 'once: true', color: '#fbbf24' },
     { icon: '🎨', label: '7 presets', color: '#c084fc' },
-    { icon: '📦', label: '~9 KB total', color: '#fb923c' },
+    { icon: '📦', label: '~10 KB total', color: '#fb923c' },
   ];
 
   return (
@@ -2580,7 +2580,7 @@ export function ExamplesPage() {
 
       {/* Footer */}
       <footer className="px-6 md:px-12 py-6 border-t border-subtle-ash text-center text-[11px] font-mono text-graphite-border">
-        svg-scroll-draw · MIT · ~9 KB gzipped ·{' '}
+        svg-scroll-draw · MIT · ~10 KB gzipped ·{' '}
         <a href="https://github.com/DhruvilChauahan0210/ink-scroll" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-pitch-black transition-colors">
           GitHub
         </a>

@@ -49,7 +49,7 @@ const pageJsonLd = {
       name: 'How does svg-scroll-draw compare to GSAP in bundle size?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'svg-scroll-draw is ~9 KB gzipped. GSAP + ScrollTrigger is ~40 KB gzipped — making svg-scroll-draw approximately 5.5× smaller.',
+        text: 'svg-scroll-draw is ~10 KB gzipped. GSAP + ScrollTrigger is ~40 KB gzipped — making svg-scroll-draw approximately 5.5× smaller.',
       },
     },
     {
@@ -143,7 +143,7 @@ const FEATURES = [
   { feature: 'MIT license (free for commercial use)', us: true, gsap: false, note: 'GSAP requires paid license for SplitText' },
   { feature: 'Visual DevTools overlay',              us: true,  gsap: false, note: 'GSAP has no built-in overlay; third-party only' },
   { feature: 'Lenis smooth-scroll adapter',         us: true,  gsap: 'partial', note: 'GSAP works with Lenis but no dedicated adapter' },
-  { feature: 'Bundle size (minified + gzipped)',     us: '~9 KB', gsap: '~50 KB', note: '' },
+  { feature: 'Bundle size (minified + gzipped)',     us: '~10 KB', gsap: '~45 KB', note: 'gsap 3.15 core 27.7 + ScrollTrigger 17.6, measured' },
 ];
 
 export default function VsGsapPage() {
@@ -188,7 +188,7 @@ export default function VsGsapPage() {
 
           <div className="space-y-4 mb-8">
             {[
-              { label: 'svg-scroll-draw', size: '~9 KB', pct: 18, color: '#ff90e8', badge: 'yours' },
+              { label: 'svg-scroll-draw', size: '~10 KB', pct: 22, color: '#ff90e8', badge: 'yours' },
               { label: 'GSAP core',       size: '~28 KB', pct: 56, color: '#e0e0e0', badge: null },
               { label: 'GSAP + ScrollTrigger', size: '~50 KB', pct: 100, color: '#d0d0d0', badge: 'common setup' },
               { label: 'GSAP + ScrollTrigger + SplitText', size: '~68 KB', pct: 100, color: '#bbb', badge: 'full suite' },
@@ -551,7 +551,7 @@ scrollText('#h1', {
       </section>
 
       <footer className="px-6 md:px-12 py-6 border-t border-subtle-ash text-center text-[11px] font-mono text-graphite-border">
-        svg-scroll-draw · MIT · ~9 KB gzipped ·{' '}
+        svg-scroll-draw · MIT · ~10 KB gzipped ·{' '}
         <a href="https://github.com/DhruvilChauahan0210/ink-scroll" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-pitch-black transition-colors">
           GitHub
         </a>

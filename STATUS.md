@@ -4,7 +4,7 @@
 > Tests: **531 unit** across 25 suites · **175 browser tests** per engine (525 runs
 > across Chromium/Firefox/WebKit) · **56 mutations**, each caught by the one test
 > named for it · **91.3% line coverage** (gate 90/90/82/82)
-> Bundle: **9.0 KB gzipped** (main entry; per-API entries from 0.2 KB) · zero runtime dependencies
+> Bundle: **10.0 KB gzipped** (main entry; per-API entries from 0.2 KB) · zero runtime dependencies
 > Last updated: 2026-08-14
 
 ---
@@ -103,7 +103,7 @@ at all.
 
 ### Version sync (all files)
 - [x] Version badges — `v2.2.0` across home, docs, mobile menu, changelog
-- [x] Bundle size — `~9 KB gzipped` everywhere (was `~4.4 KB`)
+- [x] Bundle size claim corrected to the measured figure — the README had advertised `~4.4 KB` against 8.9 KB real. Now derived: `check-claims` fails the build when the advertised size and `dist/index.mjs` disagree
 - [x] Test count — `358` everywhere (was `241`)
 - [x] Description — "scroll animation platform" everywhere (was "SVG scroll draw library")
 - [x] GSAP comparison — "4× smaller" (was "9×"), bar `pct: 22` (was `11`)

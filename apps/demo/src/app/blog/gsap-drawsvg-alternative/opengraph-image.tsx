@@ -39,7 +39,7 @@ export default function OgImage() {
           padding: '6px 16px', fontSize: 13, color: '#666',
           marginBottom: 36, letterSpacing: '0.15em', textTransform: 'uppercase',
         }}>
-          Free Alternative · MIT · ~9 KB
+          Free Alternative · MIT · ~10 KB
         </div>
 
         {/* Headline */}
@@ -54,7 +54,7 @@ export default function OgImage() {
         {/* Comparison pills */}
         <div style={{ display: 'flex', gap: 12, marginBottom: 48 }}>
           {[
-            { label: '~9 KB',    sub: 'vs ~40 KB',       bg: '#ff90e8', text: '#111' },
+            { label: '~10 KB',    sub: 'vs ~40 KB',       bg: '#ff90e8', text: '#111' },
             { label: 'MIT',        sub: 'vs Club GreenSock', bg: '#22c55e', text: '#111' },
             { label: 'Zero deps',  sub: 'vs 3 packages',    bg: '#fff',    text: '#111' },
             { label: 'Native CSS', sub: 'compositor-driven', bg: '#5865F2', text: '#fff' },

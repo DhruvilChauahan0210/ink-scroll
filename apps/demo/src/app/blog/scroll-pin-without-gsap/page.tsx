@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   alternates: { canonical: '/blog/scroll-pin-without-gsap' },
   openGraph: {
     title: 'Pin sections on scroll without GSAP — scrollPin',
-    description: 'A wrapper-based pin implementation with full lifecycle callbacks. Zero GSAP. ~9 KB total.',
+    description: 'A wrapper-based pin implementation with full lifecycle callbacks. Zero GSAP. ~10 KB total.',
     url: 'https://svg-scroll-draw.vercel.app/blog/scroll-pin-without-gsap',
   },
   twitter: {
@@ -98,7 +98,7 @@ export default function Page() {
             The Apple product page. The Stripe feature walkthrough. The sticky image with scrolling text.
             These all use the same pattern: pin an element in place while the page scrolls past it.
             Here&apos;s how to do it without GSAP — in{' '}
-            <code className="font-mono text-[0.9em] bg-marketplace-gray px-1.5 py-0.5 rounded">~9 KB</code> total.
+            <code className="font-mono text-[0.9em] bg-marketplace-gray px-1.5 py-0.5 rounded">~10 KB</code> total.
           </p>
         </div>
       </header>
@@ -363,7 +363,7 @@ window.addEventListener('beforeunload', () => pin.destroy());`}</CodeBlock>
       </article>
 
       <footer className="px-6 md:px-12 py-6 border-t border-subtle-ash text-center text-[11px] font-mono text-graphite-border">
-        svg-scroll-draw · MIT · ~9 KB gzipped ·{' '}
+        svg-scroll-draw · MIT · ~10 KB gzipped ·{' '}
         <a href="https://github.com/DhruvilChauahan0210/ink-scroll" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-pitch-black transition-colors">
           GitHub
         </a>

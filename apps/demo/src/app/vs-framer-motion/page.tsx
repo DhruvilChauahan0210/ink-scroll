@@ -52,7 +52,7 @@ const pageJsonLd = {
       name: 'How much smaller is svg-scroll-draw compared to Framer Motion?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'svg-scroll-draw is ~9 KB gzipped. Framer Motion is ~35 KB gzipped — approximately 4× larger. For projects that only need scroll-driven animations, svg-scroll-draw eliminates the bundle overhead entirely.',
+        text: 'svg-scroll-draw is ~10 KB gzipped. Framer Motion is ~35 KB gzipped — approximately 4× larger. For projects that only need scroll-driven animations, svg-scroll-draw eliminates the bundle overhead entirely.',
       },
     },
   ],
@@ -109,7 +109,7 @@ const FEATURES = [
   { f: 'Velocity-scaled animation',      us: true,  fm: false,  note: '' },
   { f: 'Lenis smooth scroll adapter',    us: true,  fm: 'partial', note: '' },
   { f: 'MIT license',                    us: true,  fm: true,   note: '' },
-  { f: 'Bundle size (gzipped)',          us: '~9 KB', fm: '~35 KB', note: '' },
+  { f: 'Bundle size (gzipped)',          us: '~10 KB', fm: '~35 KB', note: '' },
 ];
 
 export default function VsFramerMotionPage() {
@@ -143,7 +143,7 @@ export default function VsFramerMotionPage() {
           <h2 className="font-display font-extrabold text-3xl sm:text-4xl tracking-[-0.03em] mb-8">Bundle size.</h2>
           <div className="space-y-4 mb-6">
             {[
-              { label: 'svg-scroll-draw', size: '~9 KB',  pct: 26, color: '#ff90e8', badge: 'yours' },
+              { label: 'svg-scroll-draw', size: '~10 KB', pct: 29, color: '#ff90e8', badge: 'yours' },
               { label: 'Framer Motion',   size: '~35 KB', pct: 100, color: '#e0e0e0', badge: null },
             ].map(({ label, size, pct, color, badge }) => (
               <div key={label} className="flex items-center gap-4">
@@ -326,7 +326,7 @@ scrollProgress('#hero', { easing: 'ease-in-out' });`}</CodeBlock>
       <section className="bg-pitch-black text-light-linen px-4 sm:px-6 md:px-12 py-16 sm:py-20 text-center">
         <div className="max-w-2xl mx-auto">
           <h2 className="font-display font-extrabold text-[clamp(28px,6vw,56px)] leading-[0.92] tracking-[-0.04em] mb-4">Scroll animations, solved.</h2>
-          <p className="text-graphite-border text-sm sm:text-base mb-8">~9 KB. Framework-agnostic. MIT. Works everywhere Framer Motion doesn&apos;t.</p>
+          <p className="text-graphite-border text-sm sm:text-base mb-8">~10 KB. Framework-agnostic. MIT. Works everywhere Framer Motion doesn&apos;t.</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <div className="flex items-center gap-2 bg-white/10 rounded-full px-5 py-3 text-sm font-mono"><span className="opacity-50">$</span><span>npm i svg-scroll-draw</span></div>
             <Link href="/" className="px-5 py-3 rounded-full border-2 border-white text-sm font-semibold hover:bg-white hover:text-pitch-black transition-colors text-center">Read the docs →</Link>
@@ -336,7 +336,7 @@ scrollProgress('#hero', { easing: 'ease-in-out' });`}</CodeBlock>
       </section>
 
       <footer className="px-6 md:px-12 py-6 border-t border-subtle-ash text-center text-[11px] font-mono text-graphite-border">
-        svg-scroll-draw · MIT · ~9 KB ·{' '}<a href="https://github.com/DhruvilChauahan0210/ink-scroll" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-pitch-black transition-colors">GitHub</a>
+        svg-scroll-draw · MIT · ~10 KB ·{' '}<a href="https://github.com/DhruvilChauahan0210/ink-scroll" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-pitch-black transition-colors">GitHub</a>
       </footer>
     </div>
     </>

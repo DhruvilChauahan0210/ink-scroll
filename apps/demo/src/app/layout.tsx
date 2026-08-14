@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     template: "%s | svg-scroll-draw",
   },
   description:
-    "The scroll animation platform. Animate SVG paths, CSS properties, counters, video, and text — all scroll-driven. ~9 KB. Zero dependencies. Works with React, Next.js, Vue 3, and vanilla JS.",
+    "The scroll animation platform. Animate SVG paths, CSS properties, counters, video, and text — all scroll-driven. ~10 KB. Zero dependencies. Works with React, Next.js, Vue 3, and vanilla JS.",
   keywords: [
     "scroll draw",
     "svg scroll draw",
@@ -61,7 +61,7 @@ export const metadata: Metadata = {
     siteName: "svg-scroll-draw",
     title: "svg-scroll-draw — SVG Scroll Draw Animation Library",
     description:
-      "The scroll animation platform. Animate SVG paths, CSS properties, counters, video, and text — all scroll-driven. ~9 KB. Zero dependencies. Works with React, Next.js, Vue 3, and vanilla JS.",
+      "The scroll animation platform. Animate SVG paths, CSS properties, counters, video, and text — all scroll-driven. ~10 KB. Zero dependencies. Works with React, Next.js, Vue 3, and vanilla JS.",
     images: [
       {
         url: `${SITE_URL}/opengraph-image`,
@@ -75,7 +75,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "svg-scroll-draw — SVG Scroll Draw Animation Library",
     description:
-      "The scroll animation platform. Animate SVG paths, CSS properties, counters, video, and text — all scroll-driven. ~9 KB. Zero dependencies.",
+      "The scroll animation platform. Animate SVG paths, CSS properties, counters, video, and text — all scroll-driven. ~10 KB. Zero dependencies.",
     images: [`${SITE_URL}/opengraph-image`],
   },
   verification: {

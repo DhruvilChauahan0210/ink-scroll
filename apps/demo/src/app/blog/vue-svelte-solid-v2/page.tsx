@@ -444,7 +444,7 @@ onMounted(() => {
 </h1>
 
 <p use:scrollTextAction={{ split: 'chars', stagger: 0.012, from: { opacity: 0 }, once: true }}>
-  Vue · Svelte · Solid · React · ~9 KB
+  Vue · Svelte · Solid · React · ~10 KB
 </p>`}
         </CodeBlock>
 
@@ -542,7 +542,7 @@ export default defineNuxtPlugin((nuxtApp) => {
         {/* Footer */}
         <div className="mt-16 pt-6 border-t border-subtle-ash flex flex-wrap items-center justify-between gap-4">
           <Link href="/blog" className="text-[13px] text-graphite-border hover:text-pitch-black transition-colors">← Back to blog</Link>
-          <span className="text-[11px] font-mono text-graphite-border">svg-scroll-draw · MIT · ~9 KB</span>
+          <span className="text-[11px] font-mono text-graphite-border">svg-scroll-draw · MIT · ~10 KB</span>
         </div>
 
       </article>

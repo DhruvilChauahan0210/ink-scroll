@@ -64,7 +64,7 @@ const POSTS = [
     slug: 'scroll-pin-without-gsap',
     title: 'Pin sections on scroll without GSAP — scrollPin',
     description:
-      'How to pin any element at a viewport position while the page scrolls past it. Wrapper-based layout, zero layout shift, full lifecycle callbacks (onEnter/onLeave/onEnterBack/onLeaveBack). No GSAP. ~9 KB total.',
+      'How to pin any element at a viewport position while the page scrolls past it. Wrapper-based layout, zero layout shift, full lifecycle callbacks (onEnter/onLeave/onEnterBack/onLeaveBack). No GSAP. ~10 KB total.',
     tag: 'How-To',
     tagColor: '#f59e0b',
     readTime: '7 min read',
@@ -215,7 +215,7 @@ export default function BlogPage() {
 
       {/* Footer */}
       <footer className="px-6 md:px-12 py-6 border-t border-subtle-ash text-center text-[11px] font-mono text-graphite-border">
-        svg-scroll-draw · MIT · ~9 KB gzipped ·{' '}
+        svg-scroll-draw · MIT · ~10 KB gzipped ·{' '}
         <a href="https://github.com/DhruvilChauahan0210/ink-scroll" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-pitch-black transition-colors">
           GitHub
         </a>

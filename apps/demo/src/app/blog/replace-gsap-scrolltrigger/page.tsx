@@ -154,7 +154,7 @@ gsap.to('#hero-text', {
   },
 });`}</CodeBlock>
 
-          <CodeBlock file="svg-scroll-draw-after.js">{`// svg-scroll-draw v2 — ~9 KB total, one import, no plugin registration
+          <CodeBlock file="svg-scroll-draw-after.js">{`// svg-scroll-draw v2 — ~10 KB total, one import, no plugin registration
 import { scrollAnimate } from 'svg-scroll-draw';
 
 scrollAnimate('#hero-text', {
@@ -168,7 +168,7 @@ scrollAnimate('#hero-text', {
 });`}</CodeBlock>
 
           <Callout>
-            <strong>Bundle impact:</strong> GSAP core + ScrollTrigger = ~40 KB gzipped. svg-scroll-draw v2 full bundle = ~9 KB gzipped. For scroll animations only, that is a <strong>4–5× size reduction</strong> in real-world projects.
+            <strong>Bundle impact:</strong> GSAP core + ScrollTrigger = ~40 KB gzipped. svg-scroll-draw v2 full bundle = ~10 KB gzipped. For scroll animations only, that is a <strong>4–5× size reduction</strong> in real-world projects.
           </Callout>
 
           <h2 className="font-display font-extrabold text-2xl sm:text-3xl tracking-[-0.02em] mb-4 mt-10">Common patterns, migrated</h2>
@@ -262,7 +262,7 @@ anim.destroy();         // remove all listeners`}</CodeBlock>
 
       {/* Footer */}
       <footer className="px-6 md:px-12 py-6 border-t border-subtle-ash text-center text-[11px] font-mono text-graphite-border">
-        svg-scroll-draw · MIT · ~9 KB gzipped ·{' '}
+        svg-scroll-draw · MIT · ~10 KB gzipped ·{' '}
         <a href="https://github.com/DhruvilChauahan0210/ink-scroll" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-pitch-black transition-colors">
           GitHub
         </a>

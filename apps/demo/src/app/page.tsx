@@ -32,7 +32,7 @@ const jsonLd = {
   '@type': 'SoftwareApplication',
   name: 'svg-scroll-draw',
   description:
-    'The scroll animation platform. Animate SVG paths, CSS properties, counters, video, and text on scroll. ~9 KB. Zero dependencies.',
+    'The scroll animation platform. Animate SVG paths, CSS properties, counters, video, and text on scroll. ~10 KB. Zero dependencies.',
   applicationCategory: 'DeveloperApplication',
   operatingSystem: 'Web',
   url: 'https://svg-scroll-draw.vercel.app',
@@ -88,7 +88,7 @@ const MARQUEE_ITEMS = [
   'SSR Safe',
   'requestAnimationFrame',
   'IntersectionObserver',
-  '~9 KB Gzipped',
+  '~10 KB Gzipped',
   'Zero Dependencies',
   '423 Tests Passing',
   'scrollAnimate',
@@ -190,7 +190,7 @@ export default function Home() {
 
         {/* Sub */}
         <p className="relative z-10 text-sm sm:text-base md:text-lg text-graphite-border max-w-sm sm:max-w-md mx-auto mb-8 sm:mb-10 leading-relaxed">
-          The scroll animation platform. ~9 KB gzipped.
+          The scroll animation platform. ~10 KB gzipped.
           Works in React, Vue 3, Svelte, Solid, and more.
         </p>
 
@@ -208,7 +208,7 @@ export default function Home() {
         {/* Stats */}
         <div className="relative z-10 flex flex-wrap items-center justify-center gap-2">
           {[
-            ['~9 KB', 'gzipped'],
+            ['~10 KB', 'gzipped'],
             ['0', 'dependencies'],
             ['SSR', 'safe'],
             ['423', 'tests ✓'],
@@ -300,12 +300,12 @@ export default function Home() {
         <div className="max-w-5xl mx-auto">
           <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-3 font-medium">Bundle size</p>
           <h2 className="font-display font-extrabold text-[clamp(28px,5vw,56px)] leading-[0.95] tracking-[-0.03em] mb-8 sm:mb-12">
-            ~9 KB.<br />Not 40 KB.
+            ~10 KB.<br />Not 40 KB.
           </h2>
 
           <div className="space-y-5">
             {[
-              { name: 'svg-scroll-draw', size: '~9 KB',   pct: 22,   color: 'bg-creator-pink',    badge: '✓ yours' },
+              { name: 'svg-scroll-draw', size: '~10 KB',  pct: 25,   color: 'bg-creator-pink',    badge: '✓ yours' },
               { name: 'Framer Motion',   size: '~35 KB', pct: 87.5, color: 'bg-sunshine-yellow', badge: null },
               { name: 'GSAP DrawSVG',    size: '~40 KB', pct: 100,  color: 'bg-[#e0e0e0] dark:bg-[#333]', badge: null },
             ].map(({ name, size, pct, color, badge }) => (
@@ -1107,7 +1107,7 @@ const seq = scrollDrawSequence(
           <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-5 text-[13px] text-graphite-border">
             <span>MIT License</span>
             <span className="text-subtle-ash">·</span>
-            <span>~9 KB gzipped</span>
+            <span>~10 KB gzipped</span>
             <span className="text-subtle-ash">·</span>
             <span>Zero dependencies</span>
           </div>
@@ -1166,7 +1166,7 @@ const seq = scrollDrawSequence(
                   svg-scroll-draw
                 </h3>
                 <p style={{ margin: '4px 0 0', fontSize: 14, color: 'rgb(102,102,102)', lineHeight: 1.4 }}>
-                  The scroll animation platform. Zero deps. ~9 KB.
+                  The scroll animation platform. Zero deps. ~10 KB.
                 </p>
               </div>
             </div>
