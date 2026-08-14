@@ -1,6 +1,7 @@
 import type { EasingName, ScrollDrawInstance, TriggerConfig } from '../core/types';
 import { EASINGS, parseTrigger, computeProgress, computeTriggers } from '../core/utils';
 import { _register, _unregister } from '../core/registry';
+import { warn } from '../core/env';
 
 // ── Public types ──────────────────────────────────────────────────────────────
 
@@ -76,19 +77,36 @@ function splitIntoLines(el: Element): HTMLSpanElement[] {
     const lineSpan = document.createElement('span');
     lineSpan.setAttribute('aria-hidden', 'true');
     lineSpan.style.display = 'inline-block';
-    // Move word spans into line span
-    for (const ws of words) {
+
+    words.forEach((ws, i) => {
+      /*
+       * The gap after this word, if there is one.
+       *
+       * `splitIntoWords` emits a `white-space: pre` span for every run of
+       * whitespace and then filters those out of what it returns — so the array
+       * being moved here is words only. Moving just the words and then clearing
+       * the element threw every gap away, and "Hello world foo bar" rendered as
+       * "Helloworldfoobar". Read before the move: appending re-parents the node
+       * and changes what its sibling is.
+       */
+      const gap = ws.nextElementSibling as HTMLElement | null;
       lineSpan.appendChild(ws);
-    }
+      if (i < words.length - 1 && gap && gap.style.whiteSpace === 'pre') {
+        lineSpan.appendChild(gap);
+      }
+    });
+
     lineSpans.push(lineSpan);
   }
 
   // Clear el and add line spans back
   el.textContent = '';
-  for (const ls of lineSpans) {
+  lineSpans.forEach((ls, i) => {
     el.appendChild(ls);
-    el.appendChild(document.createTextNode(' '));
-  }
+    // Between lines only. A trailing separator leaves the element's text one
+    // space longer than the text it was given.
+    if (i < lineSpans.length - 1) el.appendChild(document.createTextNode(' '));
+  });
 
   return lineSpans;
 }
@@ -134,9 +152,7 @@ export function scrollText(
 
   const raw = typeof target === 'string' ? document.querySelector(target) : target;
   if (!raw) {
-    if (process.env.NODE_ENV !== 'production') {
-      console.warn('[svg-scroll-draw] scrollText: element not found:', target);
-    }
+    warn('scrollText: element not found:', target);
     return NOOP;
   }
 

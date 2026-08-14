@@ -1,20 +1,16 @@
 import type { ScrollDrawOptions, ScrollDrawInstance } from './types';
-import { EASINGS, parseTrigger, computeProgress, computeTriggers, getElementLength, lerpColor } from './utils';
+import {
+  EASINGS, parseTrigger, computeProgress, computeTriggers, measureTriggerFrame,
+  getElementLength, lerpColor,
+} from './utils';
 import { PRESETS } from './presets';
-
-function warnDev(msg: string, el: Element): void {
-  if (process.env.NODE_ENV !== 'production') console.warn(`[svg-scroll-draw] ${msg}`, el);
-}
+import { IS_DEV, warn as warnDev } from './env';
+import { cssTimingFor } from './css-easing';
 
 // ── Native CSS scroll-driven animation (animation-timeline: view()) ───────────
-// Easing names that have a 1:1 CSS timing-function. 'spring' and custom function
-// easings have no CSS equivalent, so those configs stay on the JS engine.
-const CSS_EASINGS: Record<string, string> = {
-  linear:        'linear',
-  'ease-in':     'ease-in',
-  'ease-out':    'ease-out',
-  'ease-in-out': 'ease-in-out',
-};
+// Which easings the fast path can express, and as what, lives in core/css-easing.
+// 'spring', 'bounce', 'elastic' and custom function easings have no equivalent,
+// so those configs stay on the JS engine.
 
 // Unique keyframes name per native instance so multiple draws don't collide.
 let nativeUid = 0;
@@ -23,7 +19,11 @@ function supportsNativeTimeline(): boolean {
   return (
     typeof CSS !== 'undefined' &&
     typeof CSS.supports === 'function' &&
-    CSS.supports('animation-timeline: view()')
+    CSS.supports('animation-timeline: view()') &&
+    // The fast path anchors the timeline to the container via a named
+    // view-timeline, so named-timeline support is also required — without it the
+    // animation-timeline reference would not resolve and nothing would animate.
+    CSS.supports('view-timeline-name: --x')
   );
 }
 
@@ -34,7 +34,20 @@ function checkElement(el: SVGElement): void {
   else if (fill && fill !== 'none' && fill !== 'transparent') warnDev('Element has a fill — it may obscure the stroke animation.', el);
 }
 
-function createDebugOverlay(tStart: number, tEnd: number, axis: 'x' | 'y'): HTMLElement {
+/**
+ * Debug overlay showing the computed trigger lines.
+ *
+ * Returns a teardown function as well as the node. The previous version only
+ * returned the node, so its `scroll` listener was never removed — and because
+ * cacheTriggers() rebuilds the overlay on every resize, listeners accumulated
+ * while the detached nodes stayed reachable from those closures. A leak in the
+ * tool you reach for when something is already wrong.
+ */
+function createDebugOverlay(
+  tStart: number,
+  tEnd: number,
+  axis: 'x' | 'y',
+): { el: HTMLElement; destroy: () => void } {
   const overlay = document.createElement('div');
   overlay.setAttribute('data-svg-scroll-draw-debug', '');
   overlay.style.cssText = 'position:fixed;pointer-events:none;z-index:9999;font-family:monospace;font-size:11px;top:0;left:0;right:0;bottom:0;';
@@ -48,10 +61,61 @@ function createDebugOverlay(tStart: number, tEnd: number, axis: 'x' | 'y'): HTML
   document.body.appendChild(overlay);
   window.addEventListener('scroll', update, { passive: true });
   update();
-  return overlay;
+  return {
+    el: overlay,
+    destroy() {
+      window.removeEventListener('scroll', update);
+      overlay.remove();
+    },
+  };
 }
 
-// ── Path morphing helper ──────────────────────────────────────────────────────
+// ── Path morphing helpers ─────────────────────────────────────────────────────
+
+const PATH_NUMBER = /[-+]?(?:\d*\.)?\d+(?:[eE][-+]?\d+)?/g;
+const PATH_COMMAND = /[MmLlHhVvCcSsQqTtAaZz]/g;
+
+/**
+ * Warns when two path strings cannot be interpolated coordinate-for-coordinate.
+ *
+ * morphPath() walks the numbers in `from` and pairs each with the number at the
+ * same index in `to`. That is only meaningful when both paths have the same
+ * command sequence and the same number count. When they differ the result is
+ * silently wrong and never reaches the target shape:
+ *
+ *   'M10 10 L90 90' -> 'M10 10 C20 20, 40 40, 90 90'  ends at 'M10 10 L20 20'
+ *   'M10 10 L50 50 L90 90' -> 'M20 20 L80 80'         ends at 'M20 20 L80 80 L90 90'
+ *
+ * Dev-only, and checked once at init rather than per frame.
+ */
+function checkMorphCompatible(from: string, to: string, el: SVGElement): void {
+  if (!IS_DEV) return;
+
+  const fromCmds = (from.match(PATH_COMMAND) ?? []).join('').toUpperCase();
+  const toCmds   = (to.match(PATH_COMMAND) ?? []).join('').toUpperCase();
+  const fromNums = (from.match(PATH_NUMBER) ?? []).length;
+  const toNums   = (to.match(PATH_NUMBER) ?? []).length;
+
+  if (fromCmds !== toCmds) {
+    warnDev(
+      `morphTo: command sequence differs (${fromCmds || '∅'} → ${toCmds || '∅'}). ` +
+        `Interpolation is coordinate-for-coordinate, so the result will not reach ` +
+        `the target shape. Redraw both paths with the same commands.`,
+      el,
+    );
+    return;
+  }
+
+  if (fromNums !== toNums) {
+    warnDev(
+      `morphTo: coordinate count differs (${fromNums} → ${toNums}). ` +
+        `Extra coordinates are ignored and missing ones hold their start value, ` +
+        `so the result will not reach the target shape.`,
+      el,
+    );
+  }
+}
+
 function morphPath(from: string, to: string, t: number): string {
   const toNums = (to.match(/[-+]?(?:\d*\.)?\d+(?:[eE][-+]?\d+)?/g) ?? []).map(Number);
   let idx = 0;
@@ -166,8 +230,21 @@ export function createEngine(
   let currentAlpha  = 0;
   let repeatCount   = 0;
   let repeatTimer: ReturnType<typeof setTimeout> | undefined;
-  let debugOverlay: HTMLElement | null = null;
+  let debugOverlay: { el: HTMLElement; destroy: () => void } | null = null;
+  /** Tears down the overlay and its scroll listener, if one is mounted. */
+  function destroyDebugOverlay(): void {
+    debugOverlay?.destroy();
+    debugOverlay = null;
+  }
   const firedWaypoints = new Set<number>();
+
+  // Idle short-circuit state. `lastAppliedScroll` is the scroll position the
+  // currently-rendered frame was computed from; NaN means "nothing rendered yet".
+  // `dirty` forces one recompute even when the scroll position is unchanged —
+  // set by anything that invalidates the rendered frame (replay, repeat, resize,
+  // becoming visible again).
+  let lastAppliedScroll = NaN;
+  let dirty             = true;
 
   // velocity tracking
   let prevVelScroll    = -1;
@@ -187,23 +264,12 @@ export function createEngine(
   }
 
   function cacheTriggers(): void {
-    const rect = container.getBoundingClientRect();
-    let pos: number, size: number, scroll: number;
-    if (scrollEl) {
-      const cr = scrollEl.getBoundingClientRect();
-      pos    = axis === 'x' ? rect.left - cr.left + scrollEl.scrollLeft : rect.top - cr.top + scrollEl.scrollTop;
-      size   = axis === 'x' ? rect.width : rect.height;
-      scroll = scrollPos();
-    } else {
-      pos    = axis === 'x' ? rect.left : rect.top;
-      size   = axis === 'x' ? rect.width : rect.height;
-      scroll = scrollPos();
-    }
-    const result = computeTriggers({ top: pos, height: size }, scroll, vpSize(), startConfig, endConfig);
+    const frame  = measureTriggerFrame(container, scrollEl, axis);
+    const result = computeTriggers(frame, frame.scroll, vpSize(), startConfig, endConfig);
     tStart = result.tStart;
     tEnd   = result.tEnd;
-    if (debug && process.env.NODE_ENV !== 'production') {
-      debugOverlay?.remove();
+    if (debug && IS_DEV) {
+      destroyDebugOverlay();
       debugOverlay = createDebugOverlay(tStart, tEnd, axis);
     }
   }
@@ -267,8 +333,17 @@ export function createEngine(
     checkElement(el);
     const len = getElementLength(el);
     lengths.push(len);
-    if (el.tagName.toLowerCase() === 'path') originalDs.push(el.getAttribute('d') ?? '');
+    const isPath = el.tagName.toLowerCase() === 'path';
+    if (isPath) originalDs.push(el.getAttribute('d') ?? '');
     else originalDs.push('');
+
+    if (morphTo) {
+      if (!isPath) {
+        warnDev(`morphTo only applies to <path> elements — ignored on <${el.tagName}>.`, el);
+      } else {
+        checkMorphCompatible(originalDs[originalDs.length - 1], morphTo, el);
+      }
+    }
 
     if (prefersReduced) {
       el.style.strokeDasharray  = `${len}`;
@@ -303,16 +378,31 @@ export function createEngine(
 
   // ── Native CSS fast path ──────────────────────────────────────────────────
   // Hand the draw to the compositor when the config is simple enough that CSS
-  // `animation-timeline: view()` reproduces it exactly. Anything CSS can't
-  // express keeps the JS engine below. The default trigger maps precisely to
-  // the CSS `cover` range, which is what makes this substitution safe.
+  // reproduces it exactly. Anything CSS can't express keeps the JS engine below.
+  //
+  // The timeline is a NAMED `view-timeline` declared on the container, which the
+  // paths then reference. This matters: an earlier version put
+  // `animation-timeline: view()` directly on each path, which makes each path
+  // its own timeline subject. Since a path's bounding box is almost never the
+  // same as its container's box, the native and JS engines silently disagreed —
+  // measured at up to 6 percentage points apart in Chromium and 11 in WebKit
+  // mid-scroll — and multi-path SVGs additionally got a different timeline per
+  // path. Anchoring the timeline to the container is what actually makes the
+  // native substitution equivalent to the JS trigger range.
+
+  /**
+   * The CSS timing function reproducing this instance's easing, or null when
+   * there is none. Resolved once: it is both the eligibility test and the value
+   * the generated stylesheet needs.
+   */
+  const cssTiming = typeof easing === 'string' ? cssTimingFor(easing) : null;
 
   function nativeEligible(): boolean {
     if (native === false) return false;
     if (!supportsNativeTimeline()) return false;
     if (!paths.length) return false;
-    // Only string easings with a CSS equivalent (no 'spring', no custom fn).
-    if (typeof easing !== 'string' || !(easing in CSS_EASINGS)) return false;
+    // Only easings CSS can reproduce (no 'spring', no custom fn).
+    if (!cssTiming) return false;
     // Features with no declarative CSS equivalent → stay on the JS engine.
     if (clipDirection) return false;
     if (axis !== 'y') return false;          // view() block axis only
@@ -335,7 +425,11 @@ export function createEngine(
   }
 
   function buildNative(): ScrollDrawInstance {
-    const cls    = `svg-scroll-draw-${++nativeUid}`;
+    const uid          = ++nativeUid;
+    const cls          = `svg-scroll-draw-${uid}`;
+    const containerCls = `svg-scroll-draw-host-${uid}`;
+    const timeline     = `--svg-scroll-draw-${uid}`;
+
     const fromO  = direction === 'reverse' ? '0' : 'var(--ssd-len)';
     const toO    = direction === 'reverse' ? 'var(--ssd-len)' : '0';
     let fromBody = `stroke-dashoffset:${fromO};`;
@@ -349,11 +443,16 @@ export function createEngine(
     style.setAttribute('data-svg-scroll-draw', '');
     style.textContent =
       `@keyframes ${cls}{from{${fromBody}}to{${toBody}}}` +
+      // The container owns the timeline, so its box defines the range — matching
+      // the JS engine's `top bottom` → `bottom top` window exactly.
+      `.${containerCls}{view-timeline-name:${timeline};view-timeline-axis:block;}` +
       `.${cls}{animation-name:${cls};animation-duration:auto;` +
-      `animation-timing-function:${CSS_EASINGS[easing as string]};` +
-      `animation-fill-mode:both;animation-timeline:view();` +
+      `animation-timing-function:${cssTiming};` +
+      `animation-fill-mode:both;animation-timeline:${timeline};` +
       `animation-range:cover 0% cover 100%;}`;
     document.head.appendChild(style);
+
+    container.classList.add(containerCls);
 
     function attach(el: SVGElement, i: number): void {
       el.style.setProperty('--ssd-len', String(lengths[i]));
@@ -380,6 +479,7 @@ export function createEngine(
 
     return {
       destroy() {
+        container.classList.remove(containerCls);
         paths.forEach((el) => {
           el.classList.remove(cls);
           el.style.removeProperty('--ssd-len');
@@ -416,6 +516,21 @@ export function createEngine(
       getProgress() {
         return liveProgress();
       },
+      /**
+       * Re-measure the path lengths.
+       *
+       * There is no trigger window to refresh on this path — the browser's own
+       * view-timeline is live and never goes stale — but `--ssd-len` is a number
+       * baked in at attach time, and the keyframes interpolate from it. A path
+       * that changed length keeps animating to the old one until this is called.
+       */
+      refresh() {
+        paths.forEach((el, i) => {
+          lengths[i] = getElementLength(el);
+          el.style.setProperty('--ssd-len', String(lengths[i]));
+          el.style.strokeDasharray = `${lengths[i]}`;
+        });
+      },
     };
   }
 
@@ -427,6 +542,9 @@ export function createEngine(
     const effectiveDuration = Math.max(1, duration);
     let startTime    = 0;
     let pausedElapsed = 0;
+    // Whether a run is currently in flight. Guards pause()/resume() against
+    // reading a stale startTime while the element sits outside the viewport.
+    let running      = false;
 
     function applyAutoAlpha(elapsed: number): boolean {
       let allDone = true;
@@ -464,6 +582,9 @@ export function createEngine(
             el.setAttribute('d', morphPath(originalDs[i], morphTo, alpha));
 
           if (i === 0) {
+            // The first path is the canonical progress for the instance —
+            // without this, getProgress() stayed at 0 for the whole autoplay run.
+            currentAlpha = alpha;
             onProgress?.(alpha);
             (container as HTMLElement).style.setProperty('--scroll-draw-progress', String(alpha));
           }
@@ -525,6 +646,8 @@ export function createEngine(
       started       = false;
       completed     = false;
       repeatCount   = 0;
+      running       = true;
+      currentAlpha  = 0;
       firedWaypoints.clear();
       resetPaths();
       rafId = requestAnimationFrame(tick);
@@ -538,7 +661,10 @@ export function createEngine(
           } else if (!e.isIntersecting && !once && !completed) {
             cancelAnimationFrame(rafId);
             clearTimeout(repeatTimer);
-            startTime = null;
+            // The next viewport entry calls startAnimation(), which re-stamps
+            // startTime. Just mark the run as stopped — nulling startTime here
+            // made pause() compute NaN and froze the animation permanently.
+            running = false;
           }
         });
       },
@@ -575,7 +701,7 @@ export function createEngine(
         startAnimation();
       },
       pause() {
-        if (paused) return;
+        if (paused || !running) return;
         paused        = true;
         pausedElapsed = performance.now() - startTime;
         cancelAnimationFrame(rafId);
@@ -583,6 +709,7 @@ export function createEngine(
       resume() {
         if (!paused) return;
         paused    = false;
+        running   = true;
         startTime = performance.now() - pausedElapsed;
         rafId     = requestAnimationFrame(tick);
       },
@@ -596,6 +723,14 @@ export function createEngine(
         applyAutoAlpha(pausedElapsed);
       },
       getProgress() { return currentAlpha; },
+      /** No trigger window on this path — it runs on time — so lengths only. */
+      refresh() {
+        clearTimeout(resizeTimer);
+        paths.forEach((el, i) => {
+          lengths[i] = getElementLength(el);
+          el.style.strokeDasharray = `${lengths[i]}`;
+        });
+      },
     };
   }
 
@@ -610,6 +745,25 @@ export function createEngine(
 
     const now           = performance.now();
     const currentScroll = scrollPos();
+
+    // ── Idle short-circuit ────────────────────────────────────────────────────
+    // While the container is in view this loop runs every frame whether or not
+    // the user is scrolling. Measured in Chromium: 8 instances sitting in a
+    // viewport with no scrolling at all cost 488 frames and 6.4 ms of JS per
+    // second, recomputing identical values and rewriting identical styles.
+    //
+    // If the scroll position has not moved and nothing has invalidated the
+    // rendered frame, skip the body but keep the loop alive so the next real
+    // scroll is picked up immediately.
+    //
+    // velocityScale is excluded: its output depends on elapsed time as velocity
+    // decays, so it genuinely needs a frame even at a fixed scroll position.
+    if (!dirty && velocityScale === false && currentScroll === lastAppliedScroll) {
+      rafId = requestAnimationFrame(update);
+      return;
+    }
+    dirty = false;
+    lastAppliedScroll = currentScroll;
 
     // Velocity scaling
     let effectiveSpeed = speed;
@@ -746,6 +900,9 @@ export function createEngine(
           completed   = false;
           firedWaypoints.clear();
           resetPaths();
+          // resetPaths() wound the draw back to zero at an unchanged scroll
+          // position, so the loop must recompute rather than short-circuit.
+          dirty = true;
         }, repeatDelay);
       }
     } else if (!allComplete && !once) {
@@ -757,33 +914,87 @@ export function createEngine(
 
   // ── IntersectionObserver ──────────────────────────────────────────────────
 
+  // A single rafId was previously written from both here and the tail of
+  // update(). If the observer scheduled a frame while one was already pending,
+  // the older handle was overwritten and that loop became unstoppable — immune
+  // to pause() and destroy(). `looping` keeps exactly one loop in flight.
+  let looping = false;
+
+  function startLoop(): void {
+    if (looping) return;
+    looping = true;
+    rafId = requestAnimationFrame(function frame() {
+      update();
+      // update() reschedules itself; this wrapper only guards entry.
+    });
+  }
+
+  function stopLoop(): void {
+    looping = false;
+    cancelAnimationFrame(rafId);
+  }
+
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((e) => {
         isVisible = e.isIntersecting;
-        if (isVisible && !paused) rafId = requestAnimationFrame(update);
-        else cancelAnimationFrame(rafId);
+        if (isVisible && !paused) {
+          // Re-entering the viewport must repaint even if the scroll position
+          // is identical to when it left.
+          dirty = true;
+          startLoop();
+        } else {
+          stopLoop();
+        }
       });
     },
     { root: scrollEl ?? null, threshold, rootMargin }
   );
 
-  // ── Resize ────────────────────────────────────────────────────────────────
+  // ── Resize / layout invalidation ──────────────────────────────────────────
+
+  /** Everything that depends on layout, re-read. Shared by resize and refresh(). */
+  function remeasure(): void {
+    paths.forEach((el, i) => {
+      lengths[i] = getElementLength(el);
+      el.style.strokeDasharray = `${lengths[i]}`;
+    });
+    cacheTriggers();
+    // Trigger points moved — the rendered frame is stale even at the same
+    // scroll offset.
+    dirty = true;
+  }
 
   let resizeTimer: ReturnType<typeof setTimeout>;
   function onResize(): void {
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => {
-      paths.forEach((el, i) => {
-        lengths[i] = getElementLength(el);
-        el.style.strokeDasharray = `${lengths[i]}`;
-      });
-      cacheTriggers();
-    }, 150);
+    resizeTimer = setTimeout(remeasure, 150);
   }
 
   window.addEventListener('resize', onResize);
   window.addEventListener('orientationchange', onResize);
+
+  // Trigger points were cached once at init and only recomputed on a window
+  // resize. But an element's document position changes for many reasons that are
+  // not a window resize: lazy-loaded images above it, web fonts swapping in,
+  // framework hydration, an accordion opening, async content arriving. When that
+  // happened the cached triggers went stale and the whole draw sat at a constant
+  // offset for the rest of the page's life — measured at 0.0201 of the draw on
+  // the demo's own /verify page, against a native CSS path that stays correct
+  // because its view-timeline is live.
+  //
+  // A ResizeObserver on the document element catches document-height changes, and
+  // one on the container catches the element's own box changing.
+  let layoutObserver: ResizeObserver | undefined;
+  if (typeof ResizeObserver !== 'undefined') {
+    layoutObserver = new ResizeObserver(() => onResize());
+    // documentElement alone is not enough: its observed box does not track content
+    // growth in a scrolling document (measured — a 21px page growth produced no
+    // callback). body does.
+    layoutObserver.observe(document.body);
+    layoutObserver.observe(document.documentElement);
+    layoutObserver.observe(container);
+  }
 
   if (delay > 0) setTimeout(() => observer.observe(container), delay);
   else observer.observe(container);
@@ -794,11 +1005,13 @@ export function createEngine(
     destroy() {
       cancelAnimationFrame(rafId);
       clearTimeout(repeatTimer);
+      stopLoop();
       observer.disconnect();
+      layoutObserver?.disconnect();
       window.removeEventListener('resize', onResize);
       window.removeEventListener('orientationchange', onResize);
       clearTimeout(resizeTimer);
-      debugOverlay?.remove();
+      destroyDebugOverlay();
     },
 
     replay() {
@@ -809,20 +1022,25 @@ export function createEngine(
       completed    = false;
       repeatCount  = 0;
       paused       = false;
+      currentAlpha = 0;
       firedWaypoints.clear();
       clearTimeout(repeatTimer);
       resetPaths();
+      // Wound back to zero without the scroll position changing.
+      dirty = true;
+      if (isVisible) startLoop();
     },
 
     pause() {
       paused = true;
-      cancelAnimationFrame(rafId);
+      stopLoop();
     },
 
     resume() {
       if (!paused) return;
       paused = false;
-      if (isVisible) rafId = requestAnimationFrame(update);
+      dirty  = true;
+      if (isVisible) startLoop();
     },
 
     seek(progress: number) {
@@ -830,12 +1048,27 @@ export function createEngine(
       currentAlpha = p;
       frozenAlpha  = p;
       paused       = true;
-      cancelAnimationFrame(rafId);
+      stopLoop();
       applyAlpha(p, direction);
+      // A later resume() must recompute from the live scroll position.
+      dirty = true;
     },
 
     getProgress() {
       return currentAlpha;
+    },
+
+    /**
+     * Re-measure now, rather than waiting for a resize that may never come.
+     *
+     * Same work the debounced resize handler does — path lengths and the trigger
+     * window — run immediately and marked dirty so the next frame repaints from
+     * the new numbers.
+     */
+    refresh() {
+      clearTimeout(resizeTimer);
+      remeasure();
+      if (isVisible && !paused) startLoop();
     },
   };
 }

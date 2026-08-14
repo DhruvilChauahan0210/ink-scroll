@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Solid wrapper — mount, unmount, cleanup</title>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+
+  /* Identical geometry in every framework fixture, so one spec can hold all
+     eight wrappers to the same numbers:
+       .fw-draw  top 1000, 300 tall → trigger window  200 → 1300
+       .fw-anim  top 1300, 200 tall → trigger window  500 → 1500 */
+  #lead { height: 1000px; }
+  .fw-draw { height: 300px; margin: 0 40px; }
+  .fw-anim { height: 200px; margin: 0 40px; background: #0a7; }
+  #tail { height: 2000px; }
+</style>
+</head>
+<body>
+
+<div id="lead"></div>
+<div id="root"></div>
+<div id="tail"></div>
+
+<script type="module">
+import { api } from './build/solid.mjs';
+import { setupFramework } from './_fw.mjs';
+
+setupFramework(api);
+</script>
+</body>
+</html>

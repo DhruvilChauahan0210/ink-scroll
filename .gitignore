@@ -1,13 +1,23 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
+node_modules/
 /.pnp
 .pnp.js
 
 # testing
-/coverage
+# Unanchored so this also covers packages/*/coverage. The root-anchored
+# `/coverage` left 27 generated HTML files tracked in packages/svg-scroll-draw,
+# so every local test run dirtied the working tree.
+coverage/
 **/.vite/
+
+# build output
+packages/*/dist/
+
+# Framework fixture bundles for the browser suite — a build artefact of a build
+# artefact, rebuilt by e2e/global-setup.ts on every run.
+packages/*/e2e/fixtures/build/
 
 # next.js
 /.next/
@@ -36,3 +46,8 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 .env*
+
+# playwright
+packages/*/test-results/
+packages/*/playwright-report/
+packages/*/blob-report/

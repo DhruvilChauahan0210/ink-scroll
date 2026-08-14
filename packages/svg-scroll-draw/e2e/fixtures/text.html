@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>scrollText — split integrity, a11y, exact restore</title>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+
+  .spacer { height: 1200px; }
+  .tail   { height: 2000px; }
+  p { margin: 0; font-size: 24px; line-height: 40px; }
+  /* Narrow enough that the sentence below wraps onto several real lines, which
+     is the only way `split: 'lines'` has more than one line to group. */
+  #lines { width: 320px; font-size: 20px; }
+</style>
+</head>
+<body>
+
+<div class="spacer"></div>
+<!-- Nested markup on purpose: splitting flattens it, so destroy() restoring
+     "the original markup exactly" is a real claim with something to get wrong. -->
+<p id="words">Ship <strong>real</strong> browser tests</p>
+<p id="chars">Phase two</p>
+<p id="lines">Every word here has to keep the space that follows it</p>
+<div class="tail"></div>
+
+<script type="module">
+import { scrollText } from '/dist/text/index.mjs';
+import { opacityOf, transformOf, docTop, publish } from './_probe.mjs';
+
+const words = document.querySelector('#words');
+const chars = document.querySelector('#chars');
+const lines = document.querySelector('#lines');
+
+// Captured before splitting, so the restore assertion compares against the real
+// original rather than against whatever the library decided to remember.
+const original = {
+  wordsHTML: words.innerHTML,
+  wordsText: words.textContent,
+  charsText: chars.textContent,
+  linesText: lines.textContent,
+  linesWidth: lines.getBoundingClientRect().width,
+};
+
+// stagger 0.06 over a handful of units keeps the per-unit windows wide enough to
+// measure while still overlapping, which is what a cascade should look like.
+const wordsInst = scrollText('#words', { split: 'words', stagger: 0.06 });
+const charsInst = scrollText('#chars', { split: 'chars', stagger: 0.06 });
+const linesInst = scrollText('#lines', { split: 'lines', stagger: 0.1 });
+
+/** Every span the splitter created, animated or not. */
+const spansOf = (el) => [...el.querySelectorAll('span')];
+
+/**
+ * Only the spans the engine actually animates.
+ *
+ * The splitter also emits a span per run of whitespace, to hold the gaps open,
+ * and deliberately leaves those out of the animated set — they stay at their
+ * natural opacity forever. Counting them as units made a first draft of this
+ * fixture report "word 1 is already visible at scroll 0" as a library bug when it
+ * was a bug in the measurement. The animated ones are the ones the engine writes
+ * an inline opacity onto.
+ */
+const unitsOf = (el) => spansOf(el).filter((s) => s.style.opacity !== '');
+
+const describe = (el) => {
+  const units = unitsOf(el);
+  return {
+    text: el.textContent,
+    ariaLabel: el.getAttribute('aria-label'),
+    unitCount: units.length,
+    spanCount: spansOf(el).length,
+    // A visible unit that a screen reader would read twice is the failure this
+    // guards: the label carries the text, so every span must be hidden.
+    allHidden: spansOf(el).every((s) => s.getAttribute('aria-hidden') === 'true'),
+    opacities: units.map(opacityOf),
+    firstY: units.length ? transformOf(units[0]).y : 0,
+    height: el.offsetHeight,
+  };
+};
+
+publish({
+  read: () => ({
+    scrollY: window.scrollY,
+    words: describe(words),
+    chars: describe(chars),
+  }),
+  original: () => original,
+
+  /**
+   * The `lines` split, measured against the text it was given.
+   *
+   * It groups word spans by offsetTop — which means it moves the words and left
+   * the whitespace spans behind, so every gap inside a line was thrown away.
+   * Only visible with real layout: in jsdom every offsetTop is 0, so there is one
+   * line and nothing to notice.
+   */
+  linesReport: () => ({
+    text: lines.textContent,
+    originalText: original.linesText,
+    lineSpans: [...lines.children].filter((c) => c.tagName === 'SPAN').length,
+    ariaLabel: lines.getAttribute('aria-label'),
+    // Rendered width of the paragraph's first line, which collapses if the
+    // spaces are gone.
+    height: lines.offsetHeight,
+    progress: linesInst.getProgress(),
+  }),
+
+  destroyLines: () => {
+    linesInst.destroy();
+    return { text: lines.textContent, html: lines.innerHTML };
+  },
+  geometry: () => ({ wordsTop: docTop(words), viewport: window.innerHeight }),
+
+  /** Span count and height across N frames — a re-split loop would drift. */
+  stability: async (frames) => {
+    const samples = [];
+    for (let i = 0; i < frames; i++) {
+      await new Promise((r) => requestAnimationFrame(r));
+      samples.push({
+        units: unitsOf(words).length,
+        spans: spansOf(words).length,
+        height: words.offsetHeight,
+        text: words.textContent,
+      });
+    }
+    return samples;
+  },
+
+  destroyText: () => {
+    wordsInst.destroy();
+    return {
+      html: words.innerHTML,
+      text: words.textContent,
+      ariaLabel: words.getAttribute('aria-label'),
+      spanCount: spansOf(words).length,
+      strongCount: words.querySelectorAll('strong').length,
+    };
+  },
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>parity — native CSS vs JS engine</title>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+
+  /* Spacers make the trigger range fully scrollable in both directions. */
+  .spacer { height: 1600px; }
+
+  /* Both containers share identical vertical geometry — same top, same height —
+     so at any scroll offset the expected progress is identical for both. That is
+     what makes a value-for-value comparison meaningful. */
+  .row { display: flex; gap: 40px; padding: 0 40px; }
+  .cell { flex: 1; }
+  .box { height: 300px; }
+  svg { width: 100%; height: 100%; display: block; overflow: visible; }
+  path { fill: none; stroke: #000; stroke-width: 3; }
+</style>
+</head>
+<body>
+
+<div class="spacer"></div>
+
+<div class="row">
+  <div class="cell">
+    <div class="box" id="native">
+      <svg viewBox="0 0 200 100" preserveAspectRatio="none">
+        <path d="M10 50 C 40 10, 80 10, 100 50 S 160 90, 190 50"></path>
+      </svg>
+    </div>
+  </div>
+  <div class="cell">
+    <div class="box" id="js">
+      <svg viewBox="0 0 200 100" preserveAspectRatio="none">
+        <path d="M10 50 C 40 10, 80 10, 100 50 S 160 90, 190 50"></path>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<div class="spacer"></div>
+
+<!-- A second pair, identical except for a non-linear easing. scrollDraw defaults
+     to `linear`, so the pair above compares the two engines with no easing curve
+     involved at all — which is exactly how a wrong easing mapping survived. -->
+<div class="row">
+  <div class="cell">
+    <div class="box" id="nativeE">
+      <svg viewBox="0 0 200 100" preserveAspectRatio="none">
+        <path d="M10 50 C 40 10, 80 10, 100 50 S 160 90, 190 50"></path>
+      </svg>
+    </div>
+  </div>
+  <div class="cell">
+    <div class="box" id="jsE">
+      <svg viewBox="0 0 200 100" preserveAspectRatio="none">
+        <path d="M10 50 C 40 10, 80 10, 100 50 S 160 90, 190 50"></path>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<div class="spacer"></div>
+
+<script type="module">
+import { scrollDraw } from '/dist/index.mjs';
+
+// Left: whatever the browser supports — native CSS fast path when available.
+// Right: JS engine forced. Identical options otherwise.
+const nativeInst = scrollDraw('#native', { native: true });
+const jsInst     = scrollDraw('#js',     { native: false });
+
+// Did the native path actually engage? The engine only takes it when the browser
+// supports `animation-timeline: view()`, so this tells the test which of the two
+// modes it is really comparing.
+const supportsNative =
+  typeof CSS !== 'undefined' &&
+  typeof CSS.supports === 'function' &&
+  CSS.supports('animation-timeline: view()');
+
+// Same two engines, same geometry, but with `ease-out` — the curve CSS has a
+// same-named keyword for that is not the same curve.
+const nativeEasedInst = scrollDraw('#nativeE', { native: true,  easing: 'ease-out' });
+const jsEasedInst     = scrollDraw('#jsE',     { native: false, easing: 'ease-out' });
+
+const nativePath = document.querySelector('#native path');
+const jsPath     = document.querySelector('#js path');
+const nativeEasedPath = document.querySelector('#nativeE path');
+const jsEasedPath     = document.querySelector('#jsE path');
+
+/** Current stroke-dashoffset as a fraction of total length: 0 = undrawn, 1 = drawn. */
+function drawnFraction(el) {
+  const cs = getComputedStyle(el);
+  const len = el.getTotalLength();
+  const offset = parseFloat(cs.strokeDashoffset) || 0;
+  return 1 - offset / len;
+}
+
+window.__probe = {
+  supportsNative,
+  // True when the engine attached its native CSS class to the path.
+  nativeEngaged: () => nativePath.className.baseVal.includes('svg-scroll-draw-'),
+  read: () => ({
+    native: drawnFraction(nativePath),
+    js: drawnFraction(jsPath),
+    scrollY: window.scrollY,
+  }),
+  progress: () => ({ native: nativeInst.getProgress(), js: jsInst.getProgress() }),
+  totalLength: () => nativePath.getTotalLength(),
+
+  // The `ease-out` pair, and where its trigger window sits in the document.
+  readEased: () => ({
+    native: drawnFraction(nativeEasedPath),
+    js: drawnFraction(jsEasedPath),
+    scrollY: window.scrollY,
+  }),
+  easedGeometry: () => {
+    const box = document.querySelector('#nativeE');
+    const top = box.getBoundingClientRect().top + window.scrollY;
+    return {
+      top,
+      height: box.offsetHeight,
+      sameTop: top === document.querySelector('#jsE').getBoundingClientRect().top + window.scrollY,
+      easedProgress: { native: nativeEasedInst.getProgress(), js: jsEasedInst.getProgress() },
+    };
+  },
+};
+
+window.__ready = true;
+</script>
+</body>
+</html>

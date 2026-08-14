@@ -6,9 +6,9 @@
 [![license](https://img.shields.io/npm/l/svg-scroll-draw)](./LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/DhruvilChauahan0210/ink-scroll?style=flat)](https://github.com/DhruvilChauahan0210/ink-scroll/stargazers)
 
-> Animate SVG paths as you scroll. ~4.4 KB gzipped. Zero dependencies. Native CSS fast path on modern browsers.
+> Scroll-driven animation for the web. Draw SVG paths, reveal elements, pin sections, scrub video. Zero dependencies. Native CSS fast path on modern browsers.
 
-**[Live Demo](https://svg-scroll-draw.vercel.app)** · **[13 Examples](https://svg-scroll-draw.vercel.app/examples)** · **[Docs](https://svg-scroll-draw.vercel.app/docs)** · **[⚡ Playground](https://svg-scroll-draw.vercel.app/playground)** · [npm](https://www.npmjs.com/package/svg-scroll-draw)
+**[Live Demo](https://svg-scroll-draw.vercel.app)** · **[23 Examples](https://svg-scroll-draw.vercel.app/examples)** · **[Docs](https://svg-scroll-draw.vercel.app/docs)** · **[⚡ Playground](https://svg-scroll-draw.vercel.app/playground)** · [npm](https://www.npmjs.com/package/svg-scroll-draw)
 
 ![svg-scroll-draw demo](https://raw.githubusercontent.com/DhruvilChauahan0210/ink-scroll/main/demo.gif)
 
@@ -18,8 +18,8 @@ Works in **React · Next.js · Vue 3 · Svelte · Solid · Angular · Nuxt · As
 
 ## Features at a glance
 
-- **~4.4 KB gzipped** — 8–10× smaller than GSAP DrawSVG or Framer Motion
-- **Native CSS fast path** — on Chrome/Edge/Firefox 115+ the draw runs as `animation-timeline: view()` with zero per-frame JavaScript; falls back to the JS engine automatically
+- **9.0 KB gzipped** for the whole main entry — and you rarely need all of it. Every API is a separate entry point: `scrollReveal` is 3.9 KB, `scrollPin` 1.5 KB, `scrollSnap` 1.3 KB. [Full size table below](#bundle-sizes), measured by `npm run size` and enforced in CI.
+- **Native CSS fast path** — where the browser supports scroll-driven animations the draw runs on a CSS `view-timeline` with zero per-frame JavaScript, and falls back to the JS engine automatically everywhere else. Both engines are [verified to produce the same output](#native-css-rendering) by a cross-browser test suite rather than assumed to.
 - **Zero dependencies** — no GSAP, no ScrollTrigger, no heavyweight runtime
 - **Full playback API** — `pause`, `resume`, `seek`, `replay`, `getProgress`, `destroy`
 - **Presets** — `{ preset: 'reveal' }` for instant one-liner setup; five named presets: `sketch`, `reveal`, `typewriter`, `cinematic`, `spring`
@@ -27,7 +27,8 @@ Works in **React · Next.js · Vue 3 · Svelte · Solid · Angular · Nuxt · As
 - **30+ options** — easing, stagger, fade, stroke color/width lerp, fill opacity, clip reveal, morphTo, velocityScale, waypoints, callbacks, repeat, autoReverse, and more
 - **Group / Sequence / Timeline APIs** — animate multiple containers simultaneously, one-after-another, or on independent scroll windows with `loop` for auto-looping after scroll completion
 - **CSS custom property** — `--scroll-draw-progress` is set on every frame so you can drive any CSS animation without a callback
-- **272 tests across 8 suites** — engine, options, group, timeline, framework wrappers, cinematic
+- **531 tests across 25 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
+- **175 browser tests on top of those**, run against Chromium, Firefox and WebKit in CI. The unit suite runs in jsdom, where `getTotalLength` is stubbed and `IntersectionObserver` is faked — it can check the engine's arithmetic but nothing about real browser behaviour. Both counts are derived from the suites themselves and enforced in CI, so neither can quietly drift out of date
 
 ---
 
@@ -254,13 +255,43 @@ import { createScrollDrawPlugin } from 'svg-scroll-draw/nuxt';
 </scroll-draw>
 ```
 
+While you are building, load the **development build** instead:
+
+```html
+<script src="https://unpkg.com/svg-scroll-draw/dist/cdn/svg-scroll-draw.dev.global.js"></script>
+```
+
+Same API, unminified, and it actually reports mistakes — a path with no stroke, a
+selector that matches nothing, a trigger window with zero length (an element that
+looks configured and will never move). The production build above has those
+warnings removed at build time, and until 2.10.0 there was no other build, so a
+`<script src>` user could not see them at all: the warnings were gated on
+`process.env.NODE_ENV`, and `process` does not exist in a browser.
+
 ---
 
 ## Native CSS rendering
 
-On Chrome 115+, Edge 115+, and Firefox 110+ the simple draw case runs as a native
-[`animation-timeline: view()`](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-timeline)
-animation — **zero per-frame JavaScript, no scroll or resize listeners, compositor-driven.**
+Where the browser supports [scroll-driven animations](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-timeline),
+the simple draw case runs as a native CSS `view-timeline` animation — **zero
+per-frame JavaScript, no scroll or resize listeners, compositor-driven.**
+
+Support as measured by the e2e suite (`npm run test:e2e`), which asks the browser
+directly rather than relying on a version table:
+
+| Engine | Native fast path |
+|---|---|
+| Chromium / Chrome / Edge 115+ | ✅ |
+| Safari / WebKit 26+ | ✅ |
+| Firefox | ❌ — scroll-driven animations are still behind a pref, so Firefox runs the JS engine |
+
+The timeline is a **named `view-timeline` declared on the container**, which the
+path animations then reference. That detail matters: putting
+`animation-timeline: view()` directly on the paths makes each path its own
+timeline subject, and since a path's bounding box is rarely its container's box,
+the native and JS engines then disagree — up to 0.06 of the draw in Chromium and
+0.11 in WebKit. `e2e/parity.spec.ts` runs both engines side by side at a dozen
+scroll offsets in all three browsers and asserts they agree.
 
 ```js
 // Native path is used automatically — nothing extra to configure
@@ -560,22 +591,57 @@ function Section() {
 
 ## Bundle sizes
 
-| Format | Minified | Gzipped |
-|---|---|---|
-| ESM (`.mjs`) | 11.9 KB | ~4.4 KB |
-| CJS (`.cjs`) | 11.9 KB | ~4.4 KB |
-| React (`/react`) | 13.4 KB | ~4.8 KB |
-| IIFE / CDN (`.global.js`) | 12.9 KB | ~4.8 KB |
+Every API is its own entry point, so you only ship what you import. Figures below are
+measured from the built output — regenerate them any time with `npm run size`, and CI
+fails the build if any entry outgrows its budget.
 
-8–10× smaller than GSAP DrawSVG (~40 KB) or Framer Motion (~35 KB). On supporting browsers the simple draw case runs as a native CSS scroll animation — zero JS on the critical path.
+| Entry point                     | Raw | Gzipped |
+|---------------------------------|----:|--------:|
+| `svg-scroll-draw/nuxt`          | 32.5 KB | **10.1 KB** |
+| `svg-scroll-draw/vue`           | 32.3 KB | **10.0 KB** |
+| `svg-scroll-draw/react`         | 31.7 KB | **10.0 KB** |
+| `svg-scroll-draw/svelte`        | 30.2 KB | **9.5 KB** |
+| `svg-scroll-draw/solid`         | 30.3 KB | **9.5 KB** |
+| `svg-scroll-draw/angular`       | 30.9 KB | **9.5 KB** |
+| `svg-scroll-draw/astro`         | 28.0 KB | **9.0 KB** |
+| `svg-scroll-draw`               | 27.1 KB | **9.0 KB** |
+| `svg-scroll-draw/group`         | 23.6 KB | **7.6 KB** |
+| `svg-scroll-draw/web-component` | 15.7 KB | **5.6 KB** |
+| `svg-scroll-draw/reveal`        | 9.2 KB | **3.9 KB** |
+| `svg-scroll-draw/horizontal`    | 8.6 KB | **3.7 KB** |
+| `svg-scroll-draw/timeline`      | 7.0 KB | **3.0 KB** |
+| `svg-scroll-draw/text`          | 5.4 KB | **2.3 KB** |
+| `svg-scroll-draw/video`         | 3.9 KB | **1.9 KB** |
+| `svg-scroll-draw/cinematic`     | 3.8 KB | **1.8 KB** |
+| `svg-scroll-draw/progress`      | 3.7 KB | **1.7 KB** |
+| `svg-scroll-draw/devtools`      | 3.5 KB | **1.6 KB** |
+| `svg-scroll-draw/pin`           | 3.3 KB | **1.5 KB** |
+| `svg-scroll-draw/snap`          | 2.5 KB | **1.3 KB** |
+| `svg-scroll-draw/lenis`         | 0.4 KB | **0.2 KB** |
+
+The framework entries are larger because each re-exports the full API surface for that
+framework; importing a single API from one of them tree-shakes down considerably.
+
+For comparison, GSAP core + DrawSVGPlugin lands around 40 KB gzipped and Framer Motion
+around 35 KB — so the full main entry here is roughly 4× smaller, and a single-purpose
+import like `scrollReveal` is closer to 10×. On supporting browsers the simple draw case
+runs as a native CSS scroll animation with no JS on the critical path at all.
 
 ---
 
 ## Browser support
 
-Chrome 80+, Safari 14+, Firefox 75+, Edge 80+
+The JS engine needs `IntersectionObserver` and `SVGGeometryElement.getTotalLength` —
+Chrome 80+, Safari 14+, Firefox 75+, Edge 80+.
 
-Native CSS fast path requires Chrome/Edge 115+ or Firefox 110+. Falls back to the JS engine automatically on older browsers.
+The native CSS fast path needs scroll-driven animation support (`view-timeline-name`
+plus `animation-timeline`). Chromium 115+ and WebKit/Safari 26+ have it; Firefox
+does not yet ship it on by default. Everything else falls back to the JS engine
+automatically, and the two are tested for equivalence — see
+[Native CSS rendering](#native-css-rendering).
+
+The e2e suite runs against Chromium, Firefox and WebKit on every CI run, so this
+table is checked rather than remembered.
 
 ---
 

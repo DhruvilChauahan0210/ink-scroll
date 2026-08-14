@@ -4,6 +4,313 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ---
 
+## [2.10.0] — 2026-08-14
+
+The correctness release. Every entry point in the library, including all eight
+framework wrappers, now has real-browser coverage; almost everything below was
+found by writing that coverage rather than by a bug report.
+
+### Fixed
+
+- **The CDN bundle silently dropped the `<scroll-draw>` web component.** The
+  `sideEffects` field listed only the built output (`./dist/web-component/*`),
+  but the bundle is built from `src/` — so the bare `import './web-component'`
+  in the CDN entry was tree-shaken away as side-effect-free. The custom element
+  never registered in the one file the README tells `<script src>` users to load.
+- **Importing `svg-scroll-draw/web-component` on a server threw.**
+  `class ScrollDrawElement extends HTMLElement` was evaluated at module scope, and
+  `HTMLElement` does not exist on a server, so an SSR render died with
+  `ReferenceError: HTMLElement is not defined` instead of degrading. The class now
+  lives inside the same guard as the registration.
+- **Any re-measure while scrolled shifted the trigger window for
+  `scrollContainer` callers.** The element's offset inside a scroll container
+  already includes the scroll position, and `computeTriggers` added it again — so
+  a resize, an orientation change or a `refresh()` mid-scroll moved the window by
+  however far the user had scrolled. Measured: a `scrollHorizontal` strip scrubbed
+  halfway snapped back to its first panel with no scrolling at all. Three engines
+  each had their own copy of the arithmetic and therefore three copies of the
+  defect; it now lives once, in `core/utils`.
+- **`scrollHorizontal`'s default `distance` ignored `scrollContainer`**,
+  subtracting `window.innerWidth` regardless. Inside a container narrower than the
+  viewport that overshoots — the strip runs past the last panel and parks on empty
+  space — and every nested-container caller had to pass `distance` by hand, which
+  is not what the option's documented default says.
+- **`split: 'lines'` threw away the spaces between words.** `scrollText` groups
+  word spans by `offsetTop` and moved only the words, leaving behind the
+  whitespace spans the splitter emits to hold the gaps open, then cleared the
+  element — so "Every word here" rendered as "Everywordhere". Invisible to the
+  unit suite: in jsdom every `offsetTop` is 0, so there is one line and no gaps to
+  lose.
+- **`scrollDrawTimeline.destroy()` left the paths frozen on their last frame** —
+  and, with `fade`, half-transparent — for the rest of the page's life. It was the
+  last module that did not restore what it wrote.
+- **Both native CSS fast paths ran a different easing curve from the JS engine
+  they replace.** `ease-in` and `ease-out` here are quadratics (`t²` and
+  `t(2-t)`); the engines handed CSS the *keyword* of the same name, which is a
+  fixed cubic-bézier — `ease-out` is `cubic-bezier(0, 0, 0.58, 1)`. The two differ
+  by up to **0.069**, close to 7 points of progress mid-scroll. Because the fast
+  path only engages where the browser supports `animation-timeline: view()`, the
+  same page animated one way in Chrome and Firefox and a measurably different way
+  in Safari, which always falls back to the JS engine. `scrollAnimate` defaults to
+  `ease-out`, so this was the default configuration rather than an exotic one.
+  The new `core/css-easing` module emits timing functions that reproduce the JS
+  curves: exact cubic-béziers for `ease-in` / `ease-out` (error 3e-7) and a sampled
+  `linear()` for `ease-in-out`, which no single cubic-bézier can express (error
+  5e-4). An easing with no CSS equivalent now declines the fast path rather than
+  substituting a curve the caller did not ask for. Affects `scrollDraw` and
+  `scrollAnimate`, and therefore `scrollReveal` and the group APIs built on them.
+  The existing parity suite could not have caught it — `scrollDraw` defaults to
+  `linear`, so every comparison it made was on the one curve where CSS and JS
+  agree. Both parity fixtures now carry a non-linear pair.
+- **A finished `scrollDrawSequence` / `scrollAnimateSequence` reported 0%
+  progress.** When the last step completed, the internal cursor advanced past the
+  end of the instance array — so `getProgress()` read from `undefined` and returned
+  0 at the exact moment everything had finished, and `pause()`, `resume()` and
+  `seek()` became silent no-ops for the rest of the page's life. The cursor is now
+  clamped to the last step.
+- **`scrollHorizontal` never moved the track, in its own documented setup.** The
+  default trigger window (`top top` → `bottom bottom`) was measured against the
+  track, and a `position: sticky` stage pins the track at exactly one viewport
+  tall — so both ends resolved to the same scroll position. A zero-length window
+  clamps progress at 0 forever: the API was inert in the exact CSS arrangement its
+  own JSDoc prescribes. It had 100% line coverage in jsdom, where every rect is 0
+  and the window is equally degenerate, which is indistinguishable from working.
+  The trigger is now measured from the element that actually holds the scroll room
+  — the container of the nearest sticky ancestor — overridable with the new
+  `triggerElement` option, and falling back to the previous behaviour when there is
+  no sticky ancestor.
+- **A zero-length trigger window is now a development warning** rather than a
+  silently inert element. This defect is invisible: everything looks configured and
+  nothing ever moves.
+
+- **`destroy()` left the last animated frame's inline styles on the element.**
+  `createAnimateEngine` writes `opacity` / `transform` (and
+  `--scroll-draw-progress`) inline every frame and removed none of them on
+  teardown, so destroying anything mid-animation froze it there permanently — a
+  card destroyed at 34% stayed at `opacity: 0.34; translateY(21px)` for the rest
+  of the page's life, which is worse than never having animated it. It also made
+  `scrollReveal`'s documented "restore original styles" untrue. The engine now
+  captures the element's inline values before its first write and restores them on
+  `destroy()`, on both the native and JS paths and under reduced motion. Affects
+  `scrollReveal`, `scrollAnimate` and `scrollParallax`.
+- **`scrollSnap` fired `onSnap` twice for a single snap.** The scroll event
+  produced by its *own* animated scroll was treated as a fresh user gesture, and
+  the resulting `snapTo(currentIndex)` took the "already there" early return —
+  firing the callback again. Guaranteed under reduced motion, where one instant
+  jump emits one unmistakable scroll event; intermittent otherwise, since a snap
+  whose final frame lands where it already was emits no trailing event at all. A
+  public callback that fires once or twice depending on the easing curve is worse
+  than either. The scroll handler now ignores a position already parked on the
+  current section.
+
+### Removed
+
+- Dead initial write in `scrollCounter`: `el.textContent = fmt(from)` ran a few
+  lines before `applyAlpha(initAlpha)` overwrote it in the same task, so no frame
+  could ever show it. The surviving write is the correct one — it renders the value
+  for the current scroll position, which for an element already scrolled past is
+  its final value rather than `from`.
+
+### Fixed (earlier in this cycle)
+
+- **The native CSS fast path did not match the JS engine.** `buildNative()` put
+  `animation-timeline: view()` on each `<path>`, making every path its own timeline
+  subject. A path's bounding box is almost never its container's box, so the two
+  engines measured different scroll ranges and drew different amounts at the same
+  offset — up to 0.063 apart in Chromium and 0.114 in WebKit, with multi-path SVGs
+  drifting from each other as well. The timeline is now a named `view-timeline`
+  declared on the container, which reproduces the JS trigger window exactly
+  (0.0000 divergence at every sampled offset). This was the library's headline
+  claim and nothing had ever verified it.
+- **`ReferenceError: process is not defined` in any browser without a bundler.**
+  Every dev warning was guarded by a bare `process.env.NODE_ENV` check. Reaching
+  one threw instead of logging — which broke the advertised CDN / `<script type=
+  "module">` usage. Repro: style a path's stroke with CSS rather than a `stroke`
+  attribute, and the engine's "no stroke" warning took the whole call down. All 13
+  affected modules now use a guarded `IS_DEV` from `core/env.ts`, enforced by a test.
+- **`scrollSnap` ignored `prefers-reduced-motion`.** It animates
+  `window.scrollTo` over a duration, taking over the user's scrolling, with no
+  check at all. It now jumps straight to the target section when reduced motion is
+  requested; snapping still happens, only the animated scroll is dropped.
+- **The reduced-motion preference was read once at construction**, so toggling the
+  OS setting did nothing until a reload. Now tracked live via
+  `core/motion.ts`, with the listener removed on `destroy()`.
+- **`morphTo` produced silently wrong shapes.** Interpolation pairs coordinates
+  positionally, so mismatched command sequences never reach the target —
+  `'M10 10 L90 90'` → `'M10 10 C20 20, 40 40, 90 90'` ends at `'M10 10 L20 20'`.
+  Now warns in development on a command or coordinate-count mismatch, and on
+  `morphTo` applied to a non-`<path>` element.
+- **The debug overlay leaked a scroll listener.** `destroy()` removed the node but
+  not the listener, and `cacheTriggers()` rebuilt the overlay on every resize, so
+  listeners accumulated while detached nodes stayed reachable.
+- **A single `rafId` was written from two places** — the IntersectionObserver
+  callback and the tail of `update()`. If the observer scheduled a frame while one
+  was pending, the older handle was lost and that loop became unstoppable, immune
+  to `pause()` and `destroy()`.
+
+- **`autoplay` animations could complete invisibly.** Leaving the viewport assigned
+  `startTime = null`. Since `null` coerces to `0`, a later `pause()` recorded the
+  whole timestamp since page load as `pausedElapsed` instead of an elapsed duration,
+  and `resume()` then began a run already "elapsed" far past its own duration — so
+  the draw finished instantly while still off-screen. Scrolling down revealed a
+  static, already-drawn SVG. Replaced with an explicit run-state flag.
+- **`getProgress()` always returned `0`** for `autoplay` stroke animations —
+  `currentAlpha` was only ever set on the clip-path branch.
+- **`replay()` reported the previous run's progress** until the next frame landed.
+- **`npx svg-scroll-draw init` generated invalid SVG for Vue and Svelte.** The
+  templates emitted JSX-style `strokeWidth` / `strokeLinecap`, which HTML-parsed
+  templates discard — the starter example rendered with a 1px butt-capped stroke
+  instead of the intended 2.5px round one.
+- **`init` prompted for a CSS selector it then ignored** for React, Vue, Svelte and
+  Solid. It now asks only for the vanilla target, the only one that uses it.
+- Importing the CLI module no longer seizes `stdin`; the readline interface is now
+  created inside `main()`.
+
+### Performance
+
+- **The JS engine no longer recomputes while the page is still.** The rAF loop ran
+  every frame for as long as the container was in view, whether or not the scroll
+  position had moved: 8 instances parked in a viewport cost 488 frames and 6.4 ms
+  of JavaScript per second in Chromium. `update()` now short-circuits when the
+  scroll position is unchanged and nothing has invalidated the frame. Measured
+  idle vs actively-scrolling afterwards — Chromium 2.8 ms vs 20 ms, Firefox 3.0 vs
+  51, WebKit 2.0 vs 83. This is the path Firefox and every pre-115 browser always
+  take.
+
+### Added
+
+- **Playwright test suite across Chromium, Firefox and WebKit** (`npm run test:e2e`),
+  run in CI. The 488 unit tests run in jsdom with `getTotalLength` stubbed and
+  `IntersectionObserver` faked, so they verify engine arithmetic and nothing about
+  browser behaviour. Now 118 browser tests per engine (354 runs) covering
+  native-vs-JS parity, idle cost, and `scrollReveal`, `scrollPin`, `scrollSnap`,
+  `scrollText`, `scrollCounter`, `scrollProgress`, `scrollParallax`, `scrollVideo`
+  and `scrollHorizontal`. Notable: reduced motion is exercised through Playwright's real
+  media emulation rather than a stubbed `matchMedia`; `scrollProgress` is checked
+  by driving real `calc()` widths off its custom properties, not by reading the
+  value back in JS; and `scrollVideo` verifies the *painted* frame against
+  `currentTime` via a canvas readback, so a scrub that sets the property without
+  repainting cannot pass.
+- **`refresh()` on `scrollDraw`, `scrollDrawTimeline` and the group APIs.**
+  Re-measures path lengths and the trigger window after a layout change that fires
+  no resize — a tab switching, a sibling collapsing, a font swapping inside a
+  fixed-height box. `scrollPin` and `scrollHorizontal` already had it. Implemented
+  on both engine paths: the JS path rewrites `stroke-dasharray`, the native path
+  also rewrites the `--ssd-len` custom property its keyframes interpolate from.
+- **`respectReducedMotion` on `scrollDrawTimeline`** (default `true`), covering
+  the time-driven `loop` only. The two halves of that API deserve different
+  answers: scroll scrubbing advances 1:1 with the user's own input and keeps
+  working, while `loop` replays the whole timeline off `performance.now()` with no
+  scroll input at all — autonomous motion by any definition, and it had no check
+  whatsoever. Tracked live, so toggling the OS setting takes effect without a
+  reload.
+- **A development CDN build — `dist/cdn/svg-scroll-draw.dev.global.js`.** `IS_DEV`
+  is derived from `process.env.NODE_ENV`, and `process` does not exist in a
+  browser without a bundler, so every warning this library has was unreachable for
+  exactly the users with the fewest other diagnostics — including the zero-length
+  trigger window that would have caught the `scrollHorizontal` defect. The
+  production CDN build now defines the same flag to `false`, so those warnings are
+  dropped at build time instead of shipped and skipped, and it has a size budget
+  for the first time.
+- **Browser coverage for all eight framework wrappers** — React, Vue, Solid,
+  Svelte, Angular, Astro, Nuxt and the web component — closing Phase 2 Priority 2.
+  Roughly a thousand lines that had been excluded from coverage because jsdom
+  cannot mount them. Every wrapper is mounted for real and held to one contract by
+  one parameterised spec: the engine runs, unmounting stops it (no leaked
+  observer, no leaked frame loop), mounting again works, and option changes reach
+  the engine only where the wrapper says they do. React, Vue, Solid and Nuxt are
+  bundled from `dist/` by `e2e/build-fixtures.mjs`; the other four need nothing,
+  because Svelte's wrappers are plain action functions, Angular's are
+  framework-agnostic classes, Astro's are DOM scanners and the web component is a
+  custom element.
+- **An SSR suite that runs with no DOM at all** (`src/__tests__/ssr.test.ts`),
+  covering every entry point: importing must not throw, and every public API must
+  return an inert instance whose methods are safe to call. It found the two SSR
+  defects above. Astro's auto-init helpers also defaulted their root to `document`
+  at call time, so calling one from component frontmatter — on the server, which
+  is Astro's default — threw rather than doing nothing; they now return `[]`.
+- **Browser coverage for the last untested modules**, closing Phase 2 Priority 1:
+  `animate-parity` (`scrollAnimate`'s own native fast path against the JS engine
+  across all four named easings, plus its eligibility gate: ten configurations CSS
+  cannot express, each required to decline, and a control required to accept),
+  `group` (`scrollDrawGroup`, `scrollDrawSequence`, `scrollAnimateGroup`,
+  `scrollAnimateSequence`, `scrollParallaxGroup`), `timeline` and `cinematic`. That
+  takes the browser suite from 76 to 118 tests per engine, 354 runs across the
+  three. `group` was the weakest module in the library at 50% lines, and the jsdom
+  half of that measured little: `scrollParallaxGroup`'s contract is travel =
+  speed × the element's own height, exercised there against a height of 0.
+  - Fan-out is the shared failure mode of every entry point in `group`, so
+    `seek()`, `destroy()` and the sequence gate are each asserted against every
+    member rather than against the group's own report of itself.
+  - Pinned as a real cross-browser difference rather than asserted away: past the
+    end of a `view()` range, Chromium and WebKit hold the animation's end state
+    while Firefox treats the inactive timeline as unresolved and holds the *start*
+    state. The test asserts the property that makes it harmless — the element is
+    off-screen wherever the engines differ, and recovers on re-entry — instead of
+    hard-coding a browser name.
+- **`scripts/mutation-check.mjs`** — patches one line of source per run, rebuilds,
+  and requires the single test named for that behaviour to fail. 41 mutations, all
+  caught. `CONTRIBUTING.md` requires new tests to be watched failing against a
+  broken build; this makes that a command instead of a claim that decays.
+- **`scripts/make-fixture-video.mjs`** — regenerates `e2e/fixtures/clip.webm`, the
+  4-second scrub target (one solid grey per frame, every frame a keyframe, so a
+  painted pixel identifies the decoded frame). Uses Playwright's own browser and
+  bundled ffmpeg, so it needs no system tooling.
+- `respectReducedMotion` option on `scrollSnap` (default `true`).
+- `respectReducedMotion` option on `scrollAnimate` (default `true`) and on
+  `scrollHorizontal` (default **`false`**). Horizontal scrubbing opts out
+  deliberately: the transform advances only as the user scrolls, 1:1 with their
+  input, so it is direct manipulation rather than autonomous motion — and applying
+  a final state instead leaves every panel but the last unreachable inside the
+  sticky `overflow: hidden` container, hiding the content from exactly the people
+  who asked for less motion.
+- `triggerElement` option on `scrollHorizontal` (and on `scrollAnimate`, for the
+  same purpose): measure the trigger window from an element other than the animated
+  one. Required whenever the animated element is sticky-pinned and therefore cannot
+  supply the scroll length itself. Setting it disables the native CSS fast path,
+  since `animation-timeline: view()` can only measure its own subject.
+- `SECURITY.md` with a stated threat model, `CONTRIBUTING.md`, issue and PR
+  templates, and Dependabot.
+- **Release workflow with npm provenance.** Publishing was manual from a laptop;
+  releases are now tagged, fully verified including browser tests, and
+  cryptographically attested to the commit that produced them
+  (`npm audit signatures`).
+
+### Changed
+
+- **Corrected every size and count claim in the README and the npm description.**
+  The package advertised `~4.4 KB gzipped` against a real 8.9 KB main entry, plus
+  `272 tests` (really 461) and `13 examples` (really 23). The size section is now a
+  measured 21-entry table showing that per-API entry points start at 0.2 KB.
+- Coverage thresholds now reflect measured reality (85/85/77/79 against 85.9% lines).
+  They previously demanded 90/90/85/80 against an actual 74%, so the required CI
+  coverage step failed on every push to `main`.
+- Coverage exclusions made consistent across all eight framework wrappers.
+- `sideEffects` and `engines` added to `package.json`.
+- **The e2e viewport is now genuinely fixed at 900x800.** It was set at the top
+  level of the Playwright config, where each project's `devices[...]` spread
+  overrode it — leaving Chromium and Firefox at 1280x720 and WebKit at 1280x700.
+  Any fixture doing arithmetic from the viewport height was therefore subtly wrong
+  in exactly one browser.
+- **The e2e static server honours HTTP Range requests.** Without `Accept-Ranges`
+  and 206 replies, Chromium reports media as non-seekable: `video.seekable` stays
+  empty and every assignment to `currentTime` is silently dropped. That made a
+  correct `scrollVideo` look completely broken — the exact class of false negative
+  this phase exists to remove.
+
+### Added
+
+- `scripts/size.mjs` — prints the per-entry gzip table and, with `--check`, fails the
+  build when an entry exceeds its budget.
+- `scripts/check-claims.mjs` — derives the real test and example counts from source
+  and fails when a doc disagrees. Wired into CI and `npm run verify`.
+- CI now typechecks the library. Previously only `apps/demo` was checked, which is how
+  a type error shipped in `core/engine.ts`.
+- 36 tests covering the CLI generators and the devtools overlay, both previously at 0%.
+- `prepare` script so a fresh clone builds the library on `npm install`.
+
+---
+
 ## [2.9.0] — 2026-06-06
 
 ### Added

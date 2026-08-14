@@ -92,8 +92,81 @@ describe('native fast path — activation', () => {
     expect(css).toContain('@keyframes');
     expect(css).toContain('stroke-dashoffset:var(--ssd-len)'); // from
     expect(css).toContain('stroke-dashoffset:0');               // to
-    expect(css).toContain('animation-timeline:view()');
     expect(css).toContain('animation-range:cover 0% cover 100%');
+  });
+
+  /**
+   * Regression: the timeline must be a NAMED view-timeline declared on the
+   * container, not `animation-timeline: view()` on the paths.
+   *
+   * `view()` makes each animated element its own timeline subject. A path's
+   * bounding box is almost never its container's box, so the native and JS
+   * engines silently disagreed — measured in real browsers at up to 0.076
+   * drawn-fraction apart in Chromium and 0.114 in WebKit — and every path in a
+   * multi-path SVG got its own separate range. See e2e/parity.spec.ts.
+   */
+  it('anchors the timeline to the container, not to each path', () => {
+    const path = makePath();
+    const container = makeContainer([path]);
+    createEngine(container);
+    const css = nativeStyle()!.textContent ?? '';
+
+    // No per-element timeline.
+    expect(css).not.toContain('animation-timeline:view()');
+
+    // A named timeline is declared on a container class...
+    const hostClass = Array.from(container.classList).find((c) =>
+      /^svg-scroll-draw-host-\d+$/.test(c),
+    );
+    expect(hostClass, 'container should receive a host class').toBeTruthy();
+    expect(css).toContain(`.${hostClass}{view-timeline-name:`);
+    expect(css).toContain('view-timeline-axis:block');
+
+    // ...and the path animation references that same name.
+    const nameMatch = css.match(/view-timeline-name:(--[\w-]+)/);
+    expect(nameMatch).not.toBeNull();
+    expect(css).toContain(`animation-timeline:${nameMatch![1]};`);
+  });
+
+  it('all paths in a multi-path SVG share one timeline', () => {
+    const a = makePath();
+    const b = makePath();
+    createEngine(makeContainer([a, b]));
+    const css = nativeStyle()!.textContent ?? '';
+
+    // One timeline declaration total — not one per path.
+    expect(css.match(/view-timeline-name:/g)).toHaveLength(1);
+    expect(nativeClass(a)).toBe(nativeClass(b));
+  });
+
+  it('destroy() removes the host class from the container', () => {
+    const container = makeContainer();
+    const inst = createEngine(container);
+    expect(
+      Array.from(container.classList).some((c) => /^svg-scroll-draw-host-\d+$/.test(c)),
+    ).toBe(true);
+
+    inst.destroy();
+    expect(
+      Array.from(container.classList).some((c) => /^svg-scroll-draw-host-\d+$/.test(c)),
+    ).toBe(false);
+  });
+
+  it('requires named-timeline support, not just view() support', () => {
+    // A browser that supports view() but not named view-timelines must fall back
+    // to the JS engine — otherwise the animation-timeline reference would never
+    // resolve and nothing would animate at all.
+    vi.stubGlobal('CSS', {
+      supports: vi.fn((q: string) => q.includes('animation-timeline')),
+    });
+
+    const path = makePath();
+    createEngine(makeContainer([path]));
+
+    expect(nativeStyle()).toBeNull();
+    expect(nativeClass(path)).toBeUndefined();
+    // Fell back to the JS engine, which does set up an IntersectionObserver.
+    expect(FakeIO.instances.length).toBe(1);
   });
 
   it('reverse direction flips the keyframe offsets', () => {
@@ -111,9 +184,35 @@ describe('native fast path — activation', () => {
     expect(css).toContain('opacity:1');
   });
 
-  it('maps named easings to a CSS timing-function', () => {
+  /**
+   * The CSS keyword of the same name is NOT this library's curve — the keywords
+   * are fixed cubic-béziers and these easings are quadratics, differing by up to
+   * 0.069. See core/css-easing; the emitted timing function is checked against
+   * the JS curve itself in css-easing.test.ts.
+   */
+  it('maps named easings to a timing function that matches the JS curve', () => {
+    createEngine(makeContainer(), { easing: 'ease-out' });
+    const css = nativeStyle()!.textContent ?? '';
+    expect(css).toContain('animation-timing-function:cubic-bezier(0.333333, 0.666667, 0.666667, 1)');
+    expect(css).not.toContain('animation-timing-function:ease-out;');
+  });
+
+  it('expresses ease-in-out — which no cubic-bézier can — as sampled linear()', () => {
     createEngine(makeContainer(), { easing: 'ease-in-out' });
-    expect(nativeStyle()!.textContent).toContain('animation-timing-function:ease-in-out');
+    const css = nativeStyle()!.textContent ?? '';
+    expect(css).toMatch(/animation-timing-function:linear\(0,/);
+    expect(css).not.toContain('animation-timing-function:ease-in-out');
+  });
+
+  it('stays on the JS engine when linear() is unavailable to express ease-in-out', () => {
+    // Everything supported except the one thing that curve needs.
+    vi.stubGlobal('CSS', {
+      supports: vi.fn((q: string) => !q.includes('linear(')),
+    });
+    createEngine(makeContainer(), { easing: 'ease-in-out' });
+
+    expect(nativeStyle()).toBeNull();
+    expect(FakeIO.instances.length).toBe(1);
   });
 });
 

@@ -57,6 +57,14 @@ const NAV_GROUPS = [
     items: [{ id: 'use-scroll-draw-progress', label: 'useScrollDrawProgress' }],
   },
   {
+    label: 'v2.10.0',
+    items: [
+      { id: 'instance-refresh',    label: 'refresh()' },
+      { id: 'timeline-reduced-motion', label: 'Timeline & reduced motion' },
+      { id: 'cdn-dev-build',       label: 'CDN dev build' },
+    ],
+  },
+  {
     label: 'v2.9.0',
     items: [
       { id: 'scroll-progress',    label: 'scrollProgress' },
@@ -247,7 +255,7 @@ export function DocsPage() {
           <Link href="/examples" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Examples</Link>
           <Link href="/blog" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Blog</Link>
           <Link href="/playground" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">⚡ Playground</Link>
-          <a href={NPM} target="_blank" rel="noopener noreferrer" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono whitespace-nowrap">v2.9.0</a>
+          <a href={NPM} target="_blank" rel="noopener noreferrer" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono whitespace-nowrap">v2.10.0</a>
           <a href={GH} target="_blank" rel="noopener noreferrer" className="text-sm px-4 py-1.5 rounded-full bg-pitch-black text-light-linen hover:bg-graphite-border transition-colors font-medium whitespace-nowrap">GitHub →</a>
         </div>
 
@@ -1154,8 +1162,19 @@ export function ParallaxSection() {
             </p>
             <Sub>Eligible for native CSS (compositor path)</Sub>
             <p className="text-sm text-graphite-border leading-relaxed mb-4">
-              Default trigger, a named easing, optional{' '}
-              <code className="font-mono text-pitch-black">fade</code>, forward or reverse direction.
+              Default trigger, optional{' '}
+              <code className="font-mono text-pitch-black">fade</code>, forward or reverse direction,
+              and one of four easings:{' '}
+              <code className="font-mono text-pitch-black">linear</code>,{' '}
+              <code className="font-mono text-pitch-black">ease-in</code>,{' '}
+              <code className="font-mono text-pitch-black">ease-out</code>,{' '}
+              <code className="font-mono text-pitch-black">ease-in-out</code>. Those four are emitted as
+              CSS timing functions that reproduce this library&apos;s own curves — <em>not</em> the CSS
+              keywords of the same name, which are different curves and differ by up to 0.069.
+              Any other easing (<code className="font-mono text-pitch-black">spring</code>,{' '}
+              <code className="font-mono text-pitch-black">bounce</code>,{' '}
+              <code className="font-mono text-pitch-black">elastic</code>, or a function) declines the
+              fast path and stays on the JS engine rather than being approximated.
             </p>
             <Sub>Falls back to JS engine automatically</Sub>
             <p className="text-sm text-graphite-border leading-relaxed mb-4">
@@ -1707,6 +1726,88 @@ function Hero() {
             <Note>The same <code className="font-mono text-[0.85em]">create*</code> pattern is available for all v2 hooks: <code className="font-mono text-[0.85em]">createScrollCounter</code>, <code className="font-mono text-[0.85em]">createScrollVideo</code>, <code className="font-mono text-[0.85em]">createScrollText</code>.</Note>
           </DocSection>
 
+          {/* ── v2.10.0 — refresh() ─────────────────────────── */}
+          <DocSection id="instance-refresh" tag="v2.10.0" heading="refresh()">
+            <p className="text-sm text-graphite-border leading-relaxed mb-2">
+              Re-measure after a layout change: path lengths, and the scroll trigger window.
+              The engine already re-measures on <code className="font-mono text-[0.85em]">resize</code>,
+              on <code className="font-mono text-[0.85em]">orientationchange</code>, and through a{' '}
+              <code className="font-mono text-[0.85em]">ResizeObserver</code> on the document element —
+              but none of those fire for a change that leaves the document height alone, such as a tab
+              switching, a sibling collapsing, or a font swapping inside a fixed-height box.
+            </p>
+            <CodeBlock file="refresh.js">
+{`const draw = scrollDraw('#diagram');
+
+// After swapping the SVG, or revealing a hidden tab panel:
+draw.refresh();
+
+// Available on the timeline and the group APIs too
+const group = scrollDrawGroup(['#a', '#b']);
+group.refresh();  // reaches every member`}
+            </CodeBlock>
+            <Note>
+              Available on <code className="font-mono">scrollDraw</code>,{' '}
+              <code className="font-mono">scrollDrawTimeline</code>, the group and sequence APIs,{' '}
+              <code className="font-mono">scrollPin</code> and{' '}
+              <code className="font-mono">scrollHorizontal</code>. It is optional on the shared
+              instance type, because a few instances are fan-outs or SSR stubs — use{' '}
+              <code className="font-mono">instance.refresh?.()</code> if you hold one of unknown origin.
+            </Note>
+          </DocSection>
+
+          {/* ── v2.10.0 — timeline reduced motion ────────────── */}
+          <DocSection id="timeline-reduced-motion" tag="v2.10.0" heading="Timeline & reduced motion">
+            <p className="text-sm text-graphite-border leading-relaxed mb-2">
+              <code className="font-mono text-[0.85em]">scrollDrawTimeline</code> now takes{' '}
+              <code className="font-mono text-[0.85em]">respectReducedMotion</code> (default{' '}
+              <code className="font-mono text-[0.85em]">true</code>), and it applies to the time-driven{' '}
+              <code className="font-mono text-[0.85em]">loop</code> only.
+            </p>
+            <p className="text-sm text-graphite-border leading-relaxed mb-2">
+              The two halves of the API deserve different answers. Scroll scrubbing advances 1:1 with the
+              user&apos;s own input — direct manipulation, not motion played at them — so it keeps working.
+              The loop replays the whole timeline off a timer with no scroll input at all, which is
+              autonomous motion, so with reduced motion requested it simply does not start. The preference
+              is tracked live, so toggling the OS setting takes effect without a reload.
+            </p>
+            <CodeBlock file="timeline.js">
+{`scrollDrawTimeline('#diagram', {
+  tracks: [{ selector: '.line', from: 0, to: 1 }],
+  loop: true,
+  loopDuration: 1500,
+
+  // Default. Set false to loop regardless of the preference.
+  respectReducedMotion: true,
+});`}
+            </CodeBlock>
+          </DocSection>
+
+          {/* ── v2.10.0 — CDN dev build ─────────────────────── */}
+          <DocSection id="cdn-dev-build" tag="v2.10.0" heading="CDN development build">
+            <p className="text-sm text-graphite-border leading-relaxed mb-2">
+              A second CDN bundle that reports mistakes. The production build&apos;s warnings are
+              compiled out, and before 2.10.0 there was no other build — the warnings were gated on{' '}
+              <code className="font-mono text-[0.85em]">process.env.NODE_ENV</code>, and{' '}
+              <code className="font-mono text-[0.85em]">process</code> does not exist in a browser
+              without a bundler, so a <code className="font-mono text-[0.85em]">&lt;script src&gt;</code>{' '}
+              user could never see one.
+            </p>
+            <CodeBlock file="index.html">
+{`<!-- While developing: unminified, and it tells you what is wrong -->
+<script src="https://unpkg.com/svg-scroll-draw/dist/cdn/svg-scroll-draw.dev.global.js"></script>
+
+<!-- In production: minified, silent -->
+<script src="https://unpkg.com/svg-scroll-draw/dist/cdn/svg-scroll-draw.global.js"></script>`}
+            </CodeBlock>
+            <Note>
+              What it reports: a path with no stroke, a selector that matches nothing, a fill that will
+              obscure the stroke, a <code className="font-mono">morphTo</code> whose commands do not
+              correspond — and a trigger window with zero length, which is an element that looks
+              configured and will never move.
+            </Note>
+          </DocSection>
+
           {/* ── v2.9.0 — scrollProgress ─────────────────────── */}
           <DocSection id="scroll-progress" tag="v2.9.0" heading="scrollProgress">
             <p className="text-sm text-graphite-border leading-relaxed mb-2">
@@ -1805,6 +1906,36 @@ useEffect(() => {
 inst.refresh();  // recalculate after layout change
 inst.destroy();  // cleanup`}
             </CodeBlock>
+            <div className="overflow-x-auto mt-4">
+              <table className="w-full text-[13px] border border-subtle-ash rounded-xl overflow-hidden">
+                <thead>
+                  <tr className="bg-pitch-black text-light-linen text-[11px] uppercase tracking-wide">
+                    <th className="text-left px-4 py-2 font-medium">Option</th>
+                    <th className="text-left px-4 py-2 font-medium">Type</th>
+                    <th className="text-left px-4 py-2 font-medium">Default</th>
+                    <th className="text-left px-4 py-2 font-medium">Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    ['distance',             'number',                    'scrollWidth − innerWidth', 'Total horizontal travel in px. Defaults to the full content width minus one viewport.'],
+                    ['trigger',              'TriggerConfig',             '{ start: "top top", end: "bottom bottom" }', 'Scroll window the travel is mapped across.'],
+                    ['easing',               'EasingName | fn',           '"linear"',      'Easing for the movement. Linear gives the scrub feel.'],
+                    ['triggerElement',       'string | Element',          'sticky parent', 'Element whose height defines the scroll window. Defaults to the container of the track’s nearest position:sticky ancestor — the element that actually holds the scroll room. A sticky-pinned track is only one viewport tall, so measuring against it would give a zero-length window and no movement.'],
+                    ['respectReducedMotion', 'boolean',                   'false',         'Unlike other APIs here, defaults to false. The transform is scroll-linked scrubbing — it advances only as the user scrolls — and holding a final state instead would leave every panel but one unreachable inside the sticky container. Set true if you have a non-transform fallback.'],
+                    ['scrollContainer',      'string | Element',          'window',        'Custom scroll container.'],
+                    ['onProgress',           '(p: number) => void',       '—',             'Fires every frame with 0–1 progress through the window.'],
+                  ].map(([opt, type, def, desc]) => (
+                    <tr key={opt} className="border-t border-subtle-ash">
+                      <td className="px-4 py-2 font-mono font-semibold text-[12px]">{opt}</td>
+                      <td className="px-4 py-2 font-mono text-graphite-border text-[11px]">{type}</td>
+                      <td className="px-4 py-2 font-mono text-graphite-border text-[11px]">{def}</td>
+                      <td className="px-4 py-2 text-graphite-border">{desc}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </DocSection>
 
           {/* ── v2.8.0 — scrollReveal ───────────────────────── */}
@@ -2018,7 +2149,8 @@ snap.destroy();`}
                     ['easing',          'EasingName | fn',           '"ease-in-out"', 'Easing for the snap scroll animation.'],
                     ['threshold',       'number',                    '0.3',           'Fraction of a section size the user must scroll past to snap forward (0–1).'],
                     ['scrollContainer', 'string | Element',          '—',             'Custom scroll container. Default: window.'],
-                    ['onSnap',          '(index: number) => void',   '—',             'Fires after each snap with the target section index.'],
+                    ['respectReducedMotion', 'boolean',              'true',          'Honour prefers-reduced-motion by jumping straight to the target section. Snapping still happens — only the animated scroll is dropped. Tracked live, so toggling the OS setting takes effect without a reload.'],
+                    ['onSnap',          '(index: number) => void',   '—',             'Fires after each snap with the target section index. Fires once per snap.'],
                   ].map(([opt, type, def, desc]) => (
                     <tr key={opt} className="border-t border-subtle-ash">
                       <td className="px-4 py-2 font-mono font-semibold text-[12px]">{opt}</td>
@@ -2170,6 +2302,8 @@ import { ScrollAnimate } from 'svg-scroll-draw/react';
                     ['once', 'boolean', 'false', 'Freeze at max progress — does not reverse on scroll back.'],
                     ['axis', '"x" | "y"', '"y"', 'Scroll axis.'],
                     ['native', 'boolean', 'true', 'Use CSS animation-timeline: view() fast path when eligible.'],
+                    ['respectReducedMotion', 'boolean', 'true', 'Honour prefers-reduced-motion by applying the final state instead of animating. Set false only for scroll-linked scrubbing, which advances 1:1 with the user’s own scrolling rather than playing on its own.'],
+                    ['triggerElement', 'Element', 'the animated element', 'Measure the trigger window from a different element. Needed when the animated element cannot supply the scroll length itself — a position:sticky element is only one viewport tall, so its window collapses to zero. Setting this disables the native CSS fast path, which can only measure its own subject.'],
                     ['onProgress',   '(n) => void', '—', 'Called every frame with alpha 0–1.'],
                     ['onComplete',   '() => void', '—', 'Fires when alpha reaches 1.'],
                     ['onEnter',      '() => void', '—', 'Fires when scroll enters the trigger zone (scrolling forward). Forces JS engine.'],

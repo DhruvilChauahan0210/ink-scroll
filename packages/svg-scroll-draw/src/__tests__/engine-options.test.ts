@@ -844,6 +844,61 @@ describe('createEngine — autoplay', () => {
     expect(() => instance.destroy()).not.toThrow();
   });
 
+  // Regression: leaving the viewport used to set `startTime = null`. `null`
+  // coerces to 0 in arithmetic, so a later pause() recorded
+  // `pausedElapsed = performance.now() - 0` — the whole timestamp since page
+  // load rather than an elapsed duration. resume() then started a run already
+  // "elapsed" far past its duration, so the animation completed instantly
+  // while still off-screen. The user scrolled down to a static, already-drawn
+  // SVG and never saw it animate.
+  it('does not restart a run when paused and resumed off-screen', () => {
+    const t = mockPerformanceNow();
+    const path = makePath();
+    const container = makeContainer([path]);
+    const instance = createEngine(container, { autoplay: true, duration: 1000 });
+
+    t.now = 0;
+    FakeIO.instances[0].trigger(true);   // enter → run starts
+    t.now = 200;
+    raf.tick();                          // 20% drawn
+    FakeIO.instances[0].trigger(false);  // leave viewport → run stops
+
+    const framesScheduled = raf.schedule.mock.calls.length;
+
+    // A long while later — the page has been open a few seconds.
+    t.now = 5000;
+    instance.pause();
+    t.now = 5100;
+    instance.resume();
+
+    // resume() must not kick off a frame loop for an element that is not
+    // running. Previously it did, with a startTime derived from a bogus
+    // `pausedElapsed`, so the draw completed instantly and invisibly.
+    expect(raf.schedule.mock.calls.length).toBe(framesScheduled);
+  });
+
+  // Re-entering the viewport must produce a fresh, finite run.
+  it('restarts cleanly after leaving and re-entering the viewport', () => {
+    const t = mockPerformanceNow();
+    const path = makePath();
+    const container = makeContainer([path]);
+    const instance = createEngine(container, { autoplay: true, duration: 1000 });
+
+    t.now = 0;
+    FakeIO.instances[0].trigger(true);
+    t.now = 400;
+    raf.tick();
+    FakeIO.instances[0].trigger(false);
+
+    t.now = 1000;
+    FakeIO.instances[0].trigger(true);   // re-enter → startAnimation() re-stamps
+    expect(instance.getProgress()).toBe(0);
+
+    t.now = 1500;
+    raf.tick();
+    expect(instance.getProgress()).toBeCloseTo(0.5, 1);
+  });
+
   it('uses clip-path in autoplay clip mode', () => {
     const t = mockPerformanceNow();
     const container = makeContainer();

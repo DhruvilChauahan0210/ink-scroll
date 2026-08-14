@@ -1,7 +1,7 @@
 {
   "name": "svg-scroll-draw",
-  "version": "2.9.0",
-  "description": "Scroll-driven SVG path drawing animation library — zero dependencies, ~4.4 KB gzipped, works with React, Vue, and vanilla JS",
+  "version": "2.10.0",
+  "description": "Scroll-driven animation for the web \u2014 draw SVG paths, reveal elements, pin sections, scrub video. Zero dependencies, native CSS fast path, works with React, Vue, Svelte, Solid, Angular, Astro and vanilla JS",
   "keywords": [
     "svg",
     "scroll",
@@ -176,13 +176,21 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "prepare": "npm run build",
+    "size": "node scripts/size.mjs",
+    "size:check": "node scripts/size.mjs --check",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "prepublishOnly": "npm run build && npm run test"
+    "prepublishOnly": "npm run typecheck && npm run build && npm run test && npm run size:check",
+    "test:e2e": "playwright test --config e2e/playwright.config.ts",
+    "test:e2e:ui": "playwright test --config e2e/playwright.config.ts --ui"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "@types/react": "^18.0.0",
+    "esbuild": "^0.27.7",
     "@vitest/coverage-v8": "^2.0.0",
     "jsdom": "^25.0.0",
     "solid-js": "^1.9.13",
@@ -191,10 +199,19 @@
     "vitest": "^2.0.0",
     "vue": "^3.5.34"
   },
+  "sideEffects": [
+    "./dist/web-component/*",
+    "./dist/cdn/*",
+    "./src/web-component/*",
+    "./src/cdn.ts"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
   "peerDependencies": {
     "react": ">=17",
-    "vue": ">=3",
-    "solid-js": ">=1"
+    "solid-js": ">=1",
+    "vue": ">=3"
   },
   "peerDependenciesMeta": {
     "react": {

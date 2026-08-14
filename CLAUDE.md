@@ -20,3 +20,24 @@ Whenever you add a feature, fix a bug, refactor, or bump a version, update **all
 - Demo app: `apps/demo` — Next.js 16 App Router
 - Tests: `packages/svg-scroll-draw/src/__tests__/` — run `npm test` from root
 - Build: `npm run build:lib` builds the library, `npm run dev` starts the demo
+
+## Numbers in docs are derived, never typed from memory
+
+`npm run check:claims` reads the real test and example counts out of the suites
+and fails when a doc disagrees; `npm run size` does the same for bundle figures.
+Run them instead of editing a number by hand — CI enforces both. The counts live
+in `README.md`, `STATUS.md`, the demo's opengraph image and its React landing page.
+
+## The browser suite tests the built output, not `src/`
+
+`packages/svg-scroll-draw/e2e` fixtures import `/dist/...` — the same files that
+ship — so after editing `src/` run `npm run build:lib` before `npm run test:e2e`,
+or the browser tests will check the previous build and pass.
+
+## Coverage has two halves, and jsdom is the weaker one
+
+The unit suite stubs `getTotalLength`, fakes `IntersectionObserver` and runs where
+every rect is zero. Anything about real layout, real scrolling, the native CSS
+path or a framework wrapper belongs in `e2e/`. `src/__tests__/ssr.test.ts` is the
+third environment: no DOM at all, which is the only place a server-side crash
+shows up.

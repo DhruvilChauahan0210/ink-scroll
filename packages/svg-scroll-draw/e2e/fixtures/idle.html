@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>idle cost — JS engine at rest</title>
+<style>
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+  .spacer { height: 900px; }
+  .row { display: flex; gap: 20px; }
+  .box { height: 300px; flex: 1; }
+  svg { width: 100%; height: 100%; display: block; overflow: visible; }
+  path { fill: none; stroke: #000; stroke-width: 3; }
+</style>
+</head>
+<body>
+
+<script>
+/**
+ * Instrument rAF BEFORE the library loads.
+ *
+ * Frame count and cumulative callback duration are measured, deliberately NOT
+ * style writes: `strokeDashoffset` has no own descriptor on
+ * CSSStyleDeclaration.prototype (it goes through a named-property interceptor),
+ * so patching the prototype setter silently counts nothing and looks like a pass.
+ */
+window.__frames = 0;
+window.__cbMs = 0;
+const _raf = window.requestAnimationFrame.bind(window);
+window.requestAnimationFrame = function (cb) {
+  window.__frames++;
+  return _raf(function (t) {
+    const t0 = performance.now();
+    cb(t);
+    window.__cbMs += performance.now() - t0;
+  });
+};
+</script>
+
+<div class="spacer"></div>
+<div class="row" id="row">
+  <div class="box" data-draw>
+    <svg viewBox="0 0 200 100" preserveAspectRatio="none">
+      <path d="M10 50 C 40 10, 80 10, 100 50 S 160 90, 190 50"></path>
+      <path d="M10 20 L 190 20"></path>
+      <path d="M10 80 L 190 80"></path>
+    </svg>
+  </div>
+</div>
+<div class="spacer"></div>
+
+<script type="module">
+import { scrollDraw } from '/dist/index.mjs';
+
+const instances = [];
+
+/** Clone the box `n-1` extra times so we can measure how idle cost scales. */
+function setup(n) {
+  const row = document.querySelector('#row');
+  const template = row.firstElementChild.cloneNode(true);
+  while (row.children.length < n) row.appendChild(template.cloneNode(true));
+  for (const el of row.querySelectorAll('[data-draw]')) {
+    instances.push(scrollDraw(el, { native: false }));
+  }
+}
+
+window.__probe = {
+  setup,
+  reset() { window.__frames = 0; window.__cbMs = 0; },
+  read() {
+    return {
+      frames: window.__frames,
+      cbMs: Math.round(window.__cbMs * 100) / 100,
+      instances: instances.length,
+    };
+  },
+};
+window.__ready = true;
+</script>
+</body>
+</html>

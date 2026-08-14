@@ -1,5 +1,6 @@
 import { clamp } from '../core/utils';
 import { _register, _unregister } from '../core/registry';
+import { warn } from '../core/env';
 
 export interface ScrollPinOptions {
   /** Extra pixels of scroll to stay pinned after the element hits its viewport position. Default: viewport height. */
@@ -41,9 +42,7 @@ export function scrollPin(
 
   const el = typeof target === 'string' ? document.querySelector(target) : target;
   if (!el) {
-    if (process.env.NODE_ENV !== 'production') {
-      console.warn('[svg-scroll-draw] scrollPin: element not found:', target);
-    }
+    warn('scrollPin: element not found:', target);
     return NOOP;
   }
 

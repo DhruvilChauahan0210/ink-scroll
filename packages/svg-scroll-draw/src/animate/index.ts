@@ -1,6 +1,10 @@
 import type { EasingName, ScrollDrawInstance, TriggerConfig } from '../core/types';
-import { EASINGS, parseTrigger, computeProgress, computeTriggers, lerpColor } from '../core/utils';
+import {
+  EASINGS, parseTrigger, computeProgress, computeTriggers, measureTriggerFrame, lerpColor,
+} from '../core/utils';
+import { cssTimingFor } from '../core/css-easing';
 import { _register, _unregister } from '../core/registry';
+import { warn } from '../core/env';
 
 // ── Public types ──────────────────────────────────────────────────────────────
 
@@ -19,6 +23,33 @@ export interface ScrollAnimateOptions {
    * Higher values = more dramatic speed-up. Default sensitivity: 1.
    */
   velocityScale?: boolean | number;
+  /**
+   * Honour `prefers-reduced-motion: reduce` by applying the final state and not
+   * animating. Default: `true`.
+   *
+   * Set to `false` only when the movement is *scroll-linked scrubbing* rather
+   * than autonomous motion — it advances solely as the user scrolls, 1:1 with
+   * their input, so it is direct manipulation rather than something that plays at
+   * them. `scrollHorizontal` sets this, because jumping to the final state there
+   * would leave every panel but the last unreachable inside the sticky
+   * `overflow: hidden` container.
+   */
+  respectReducedMotion?: boolean;
+  /**
+   * Element whose geometry defines the trigger window, when that is not the
+   * element being animated. Defaults to the animated element.
+   *
+   * Needed whenever the animated element cannot supply the scroll length itself —
+   * the case that matters is a `position: sticky` stage, where the pinned element
+   * is exactly one viewport tall and all of the scroll room belongs to its
+   * container. Resolving `top top` → `bottom bottom` against the pinned element
+   * there yields tStart === tEnd, a zero-length window, and no movement at all.
+   *
+   * Setting this disables the native CSS fast path: `animation-timeline: view()`
+   * always measures the element the animation is attached to, so it cannot express
+   * a separate subject.
+   */
+  triggerElement?: Element;
   onProgress?: (alpha: number) => void;
   onComplete?: () => void;
   /** Fires when scroll enters the trigger zone (scrolling forward). */
@@ -115,19 +146,15 @@ interface PropEntry {
 
 // ── Native CSS fast path ──────────────────────────────────────────────────────
 
-const CSS_ANIMATE_EASINGS: Record<string, string> = {
-  linear: 'linear',
-  'ease-in': 'ease-in',
-  'ease-out': 'ease-out',
-  'ease-in-out': 'ease-in-out',
-};
-
 const NATIVE_SAFE_PROPS = new Set([
   'opacity', 'transform', 'background-color', 'color',
   'filter', 'scale', 'translate', 'rotate',
 ]);
 
 let animateNativeUid = 0;
+
+/** Custom property the engine mirrors progress into, for CSS to read. */
+const PROGRESS_VAR = '--scroll-draw-progress';
 
 function supportsNativeTimeline(): boolean {
   return (
@@ -159,6 +186,8 @@ export function createAnimateEngine(
     scrollContainer,
     native   = true,
     velocityScale = false,
+    respectReducedMotion = true,
+    triggerElement,
     onProgress,
     onComplete,
     onEnter,
@@ -167,10 +196,14 @@ export function createAnimateEngine(
     onLeaveBack,
   } = options;
 
-  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const prefersReduced =
+    respectReducedMotion && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const easeFn         = typeof easing === 'function' ? easing : (EASINGS[easing] ?? EASINGS['ease-out']);
   const startConfig    = parseTrigger(trigger.start ?? 'top bottom');
   const endConfig      = parseTrigger(trigger.end   ?? 'bottom top');
+
+  /** Element the trigger window is measured from — the animated one unless overridden. */
+  const triggerEl: Element = triggerElement ?? el;
 
   const scrollEl: Element | null =
     typeof scrollContainer === 'string'
@@ -198,22 +231,57 @@ export function createAnimateEngine(
     }
   }
 
+  /**
+   * Inline styles as they were before this engine touched the element.
+   *
+   * Captured before the first write so `destroy()` can put them back. Without
+   * this the engine leaves whatever the last frame wrote: destroy an element
+   * mid-animation and it stays frozen at, say, opacity 0.34 and translateY(21px)
+   * for the rest of the page's life — permanently faded and offset, which is
+   * worse for the user than never having animated at all. `scrollPin` and
+   * `scrollText` both restore on destroy; this one silently did not, which also
+   * made `scrollReveal`'s documented "restore original styles" untrue.
+   */
+  const savedInline = new Map<string, string>();
+  for (const prop of [...entries.map((e) => e.prop), PROGRESS_VAR]) {
+    savedInline.set(prop, (el as HTMLElement).style.getPropertyValue(prop));
+  }
+
+  function restoreInline(): void {
+    for (const [prop, value] of savedInline) {
+      if (value) (el as HTMLElement).style.setProperty(prop, value);
+      else (el as HTMLElement).style.removeProperty(prop);
+    }
+  }
+
   if (prefersReduced) {
     applyFinal();
     onComplete?.();
-    return NOOP;
+    // Nothing to tear down, but destroy() must still undo the styles it wrote —
+    // otherwise the contract depends on the visitor's motion preference.
+    return { ...NOOP, destroy: restoreInline, getProgress: () => 1 };
   }
 
   resolveFromValues();
 
   // ── Native fast path ────────────────────────────────────────────────────────
 
+  /**
+   * The CSS timing function that reproduces this instance's easing, or null
+   * when there is none — see core/css-easing. Resolved once, because it is both
+   * the eligibility test and the value the stylesheet needs.
+   */
+  const cssTiming = typeof easing === 'string' ? cssTimingFor(easing) : null;
+
   function nativeEligible(): boolean {
     if (!native) return false;
     if (!supportsNativeTimeline()) return false;
-    if (typeof easing !== 'string' || !(easing in CSS_ANIMATE_EASINGS)) return false;
+    if (!cssTiming) return false;
     if (axis !== 'y') return false;
     if (scrollEl) return false;
+    // `animation-timeline: view()` always measures the element the animation is
+    // attached to, so a separate trigger subject cannot be expressed in CSS.
+    if (triggerEl !== el) return false;
     if (once) return false;
     if (speed !== 1) return false;
     if (onProgress || onComplete || onEnter || onLeave || onEnterBack || onLeaveBack) return false;
@@ -235,7 +303,7 @@ export function createAnimateEngine(
     style.textContent =
       `@keyframes ${cls}{from{${fromBody}}to{${toBody}}}` +
       `.${cls}{animation-name:${cls};animation-duration:auto;` +
-      `animation-timing-function:${CSS_ANIMATE_EASINGS[easing as string]};` +
+      `animation-timing-function:${cssTiming};` +
       `animation-fill-mode:both;animation-timeline:view();` +
       `animation-range:cover 0% cover 100%;}`;
     document.head.appendChild(style);
@@ -248,6 +316,10 @@ export function createAnimateEngine(
       destroy() {
         (el as HTMLElement).classList.remove(cls);
         style.remove();
+        // seek()/pause() on this path write inline styles too, so the same
+        // restore applies whether or not the animation was ever scrubbed.
+        (el as HTMLElement).style.animationPlayState = '';
+        restoreInline();
       },
       replay() {
         (el as HTMLElement).classList.remove(cls);
@@ -302,23 +374,14 @@ export function createAnimateEngine(
   };
 
   function cacheTriggers(): void {
-    const rect = el.getBoundingClientRect();
-    let pos: number, size: number;
-    if (scrollEl) {
-      const cr = scrollEl.getBoundingClientRect();
-      pos  = axis === 'x' ? rect.left - cr.left + scrollEl.scrollLeft : rect.top - cr.top + scrollEl.scrollTop;
-      size = axis === 'x' ? rect.width : rect.height;
-    } else {
-      pos  = axis === 'x' ? rect.left : rect.top;
-      size = axis === 'x' ? rect.width : rect.height;
-    }
-    const result = computeTriggers({ top: pos, height: size }, scrollPos(), vpSize(), startConfig, endConfig);
+    const frame  = measureTriggerFrame(triggerEl, scrollEl, axis);
+    const result = computeTriggers(frame, frame.scroll, vpSize(), startConfig, endConfig);
     tStart = result.tStart;
     tEnd   = result.tEnd;
   }
 
   function applyAlpha(alpha: number): void {
-    (el as HTMLElement).style.setProperty('--scroll-draw-progress', String(alpha));
+    (el as HTMLElement).style.setProperty(PROGRESS_VAR, String(alpha));
     for (const entry of entries) {
       (el as HTMLElement).style.setProperty(entry.prop, interpolateValue(entry.from, entry.to, alpha));
     }
@@ -369,6 +432,22 @@ export function createAnimateEngine(
 
   cacheTriggers();
 
+  // A zero-length trigger window can never produce progress above 0, so the
+  // element is silently inert — it looks configured, and nothing ever moves. This
+  // is how `scrollHorizontal` shipped broken: its default `top top` → `bottom
+  // bottom` window was measured against a sticky-pinned track exactly one
+  // viewport tall, which collapses both ends onto the same scroll position.
+  // Cheap to detect here, and it names the likely cause.
+  if (tEnd === tStart) {
+    warn(
+      'scrollAnimate: the trigger window has zero length (start and end resolve to the ' +
+        'same scroll position), so this element will never animate. If the target is ' +
+        'inside a position:sticky stage, measure the trigger from the container that ' +
+        'holds the scroll room via `triggerElement`.',
+      el,
+    );
+  }
+
   // Apply initial state immediately so elements never flash at their "to" value
   // before the IntersectionObserver fires for the first time.
   {
@@ -411,6 +490,7 @@ export function createAnimateEngine(
       window.removeEventListener('resize', onResize);
       window.removeEventListener('orientationchange', onResize);
       clearTimeout(resizeTimer);
+      restoreInline();
       _unregister(el);
     },
     replay() {
@@ -455,9 +535,7 @@ export function scrollAnimate(
   if (typeof window === 'undefined') return NOOP;
   const el = typeof target === 'string' ? document.querySelector(target) : target;
   if (!el) {
-    if (process.env.NODE_ENV !== 'production') {
-      console.warn('[svg-scroll-draw] scrollAnimate: element not found:', target);
-    }
+    warn('scrollAnimate: element not found:', target);
     return NOOP;
   }
   return createAnimateEngine(el, options);
@@ -470,9 +548,7 @@ export function scrollParallax(
   if (typeof window === 'undefined') return NOOP;
   const el = typeof target === 'string' ? document.querySelector(target) : target;
   if (!el) {
-    if (process.env.NODE_ENV !== 'production') {
-      console.warn('[svg-scroll-draw] scrollParallax: element not found:', target);
-    }
+    warn('scrollParallax: element not found:', target);
     return NOOP;
   }
 

@@ -3,6 +3,7 @@
 // Call devtools.enable() once to instrument all active instances on the page.
 
 import { _getRegistry } from '../core/registry';
+import { IS_DEV } from '../core/env';
 import type { InstanceType } from '../core/registry';
 
 const TYPE_COLOR: Record<InstanceType, string> = {
@@ -158,7 +159,7 @@ function renderLoop(): void {
 // ── Public API ────────────────────────────────────────────────────────────────
 
 function enable(): void {
-  if (process.env.NODE_ENV === 'production') return;
+  if (!IS_DEV) return;
   if (enabled) return;
   enabled = true;
 

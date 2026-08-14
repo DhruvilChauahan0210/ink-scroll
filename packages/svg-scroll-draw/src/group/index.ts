@@ -48,6 +48,7 @@ export function scrollDrawGroup(
     resume()             { instances.forEach((i) => i.resume()); },
     seek(p: number)      { instances.forEach((i) => i.seek(p)); },
     getProgress()        { return instances[0]?.getProgress() ?? 0; },
+    refresh()            { instances.forEach((i) => i.refresh?.()); },
   };
 }
 
@@ -89,8 +90,13 @@ export function scrollDrawSequence(
       once: true,
       onComplete() {
         options.onComplete?.();
-        activeIdx = idx + 1;
-        instances[activeIdx]?.resume();
+        // Clamped, because the cursor is what every instance method addresses.
+        // Letting the final step push it past the end left `getProgress()`
+        // returning 0 the instant the sequence finished — reporting "nothing has
+        // happened" at the one moment everything has — and made pause(), resume()
+        // and seek() silent no-ops for the rest of the page's life.
+        activeIdx = Math.min(idx + 1, containers.length - 1);
+        if (activeIdx > idx) instances[activeIdx]?.resume();
       },
     });
   }
@@ -119,6 +125,10 @@ export function scrollDrawSequence(
     resume()        { instances[activeIdx]?.resume(); },
     seek(p: number) { instances[activeIdx]?.seek(p); },
     getProgress()   { return instances[activeIdx]?.getProgress() ?? 0; },
+    // Every step, not just the active one: a step further down the chain has
+    // already measured its own trigger window and would otherwise keep a stale
+    // one until it happens to be resized.
+    refresh()       { instances.forEach((i) => i.refresh?.()); },
   };
 }
 
@@ -159,6 +169,7 @@ export function scrollAnimateGroup(
     resume()             { instances.forEach((i) => i.resume()); },
     seek(p: number)      { instances.forEach((i) => i.seek(p)); },
     getProgress()        { return instances[0]?.getProgress() ?? 0; },
+    refresh()            { instances.forEach((i) => i.refresh?.()); },
   };
 }
 
@@ -197,8 +208,11 @@ export function scrollAnimateSequence(
       once: true,
       onComplete() {
         options.onComplete?.();
-        activeIdx = idx + 1;
-        instances[activeIdx]?.resume();
+        // Clamped for the same reason as scrollDrawSequence above: the cursor is
+        // what getProgress(), pause(), resume() and seek() all address, so it
+        // must not walk off the end when the last step finishes.
+        activeIdx = Math.min(idx + 1, containers.length - 1);
+        if (activeIdx > idx) instances[activeIdx]?.resume();
       },
     });
   }
@@ -225,6 +239,10 @@ export function scrollAnimateSequence(
     resume()        { instances[activeIdx]?.resume(); },
     seek(p: number) { instances[activeIdx]?.seek(p); },
     getProgress()   { return instances[activeIdx]?.getProgress() ?? 0; },
+    // Every step, not just the active one: a step further down the chain has
+    // already measured its own trigger window and would otherwise keep a stale
+    // one until it happens to be resized.
+    refresh()       { instances.forEach((i) => i.refresh?.()); },
   };
 }
 
@@ -258,5 +276,6 @@ export function scrollParallaxGroup(
     resume()             { instances.forEach((i) => i.resume()); },
     seek(p: number)      { instances.forEach((i) => i.seek(p)); },
     getProgress()        { return instances[0]?.getProgress() ?? 0; },
+    refresh()            { instances.forEach((i) => i.refresh?.()); },
   };
 }

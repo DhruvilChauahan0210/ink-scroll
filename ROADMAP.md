@@ -1,6 +1,6 @@
 # svg-scroll-draw — Roadmap
 
-> Last updated: 2026-06-06 — v2.9.0
+> Last updated: 2026-08-14 — 2.10.0 prepared; Phase 2 (correctness) complete, unpublished
 >
 > Items marked ✓ are shipped. Remaining items are ordered by value/effort ratio.
 
@@ -84,7 +84,7 @@
 
 ### Demo Site
 - [x] Home page — hero, 15+ demos, API table, framework tabs, bundle comparison, live stats
-- [x] `/examples` — 13 examples with framework filter (All / React / Vue / Svelte / Solid / Vanilla / API)
+- [x] `/examples` — 23 examples with framework filter (All / React / Vue / Svelte / Solid / Vanilla / API)
 - [x] `/docs` — full API reference
 - [x] `/playground` — interactive SVG editor
 - [x] `/changelog` — version history
@@ -107,7 +107,7 @@
 `/blog/page.tsx` exists with post card listing. "Blog" added to all nav instances.
 
 #### ~~More demo examples~~ — ✓ shipped
-13 examples including logo reveal, line chart, signature, flowchart, map route, network diagram, group, sequence, timeline, Vue, Svelte, Solid.
+23 examples including logo reveal, line chart, signature, flowchart, map route, network diagram, group, sequence, timeline, Vue, Svelte, Solid.
 
 #### More blog posts — ongoing
 - [x] "Zero-JS SVG scroll animations with native CSS" — `/blog/native-css-svg-scroll-animations`
@@ -127,22 +127,44 @@
 
 ## Remaining
 
-### Library — next batch (v2.8.0+)
-- [ ] **`/vs-gsap` comparison page** — bundle size, FPS benchmark, license cost, API side-by-side
-- [ ] **GSAP migration guide** — `gsap.to()` → `scrollAnimate`, `ScrollTrigger` → `scrollPin`/callbacks
-- [ ] **Horizontal scroll sections** — `scrollPin` with horizontal axis
-- [ ] **Velocity / momentum detection** on `scrollAnimate`
-- [ ] **`scrollPin.refresh()`** auto-call on dynamic content changes (ResizeObserver)
+Removed from this section because they shipped: the `/vs-gsap` page (library and
+demo site), horizontal scroll sections (`scrollHorizontal`), velocity detection
+(`velocityScale`), `scrollPin` ResizeObserver auto-refresh, and the
+scrollPin/scrollSnap demos and blog post.
 
-### Demo Site
-- [ ] **`/vs-gsap` page** on demo site — side-by-side code + live demos
-- [ ] **scrollPin + scrollSnap demos** on home page and examples page
-- [ ] **Blog post** — "Pin sections on scroll without GSAP: scrollPin"
+Work is now ordered by `PHASE-2-PLAN.md`, whose premise is that correctness comes
+before reach: every bug found in Phase 1 was invisible to jsdom, and five came out
+of examining a single API in a real browser.
+
+### Correctness (Phase 2, Priorities 1–3)
+- [x] Browser coverage for `scrollReveal`, `scrollPin`, `scrollSnap`, `scrollText`, `scrollCounter`, `scrollProgress`, `scrollParallax`, `scrollVideo`
+- [x] Mutation harness proving each new test fails against a deliberately broken build (56 mutations)
+- [x] `scrollHorizontal` — reduced-motion decision (keeps scrubbing), the zero-length-trigger fix, and browser tests
+- [x] Browser tests for Group / Sequence / Timeline and `Cinematic` — found and fixed the sequence cursor walking off the end (a finished sequence reported 0%)
+- [x] Parity test for `scrollAnimate`'s own native CSS fast path — found and fixed both fast paths running the CSS *keyword* instead of this library's easing curve, up to 0.069 apart. Priority 1 is complete: 118 browser tests per engine
+- [x] **Framework wrapper e2e** — all 8 mounted for real and held to one contract (mount, unmount without leaks, re-mount, option reactivity), plus an SSR suite with no DOM at all. Found the web component crashing any server-side import, the CDN bundle tree-shaking that component away entirely, and Astro's auto-init throwing in frontmatter
+- [x] Expose `refresh()` on `scrollDraw` — and on `scrollDrawTimeline` and the group APIs, on both engine paths
+- [x] Ship a `*.dev.js` CDN build — and define the flag to `false` for the production one, so the warnings are dropped rather than shipped and skipped
+- [x] Ratchet coverage: `group` 50% → 96%, `snap` 81% → 95%, `text` 80% → 96%, `devtools` 47% → 95%; overall 85% → 91%. Writing the `text` tests found `split: 'lines'` deleting the spaces between words
+
+### Release (Phase 2, Priority 6)
+- [x] Push `phase0-production-ready`
+- [x] Cut 2.10.0 — user-visible fixes plus new behaviour, no breaking API change
+- [ ] Watch CI go green remotely — the e2e job has still never run outside this laptop
+- [ ] `npm publish` (needs `NPM_TOKEN` in repo secrets for the provenance-signed workflow)
+
+### Reach (Phase 2, Priorities 4–5 — deliberately after the above)
+- [ ] **Naming decision** — repo `ink-scroll`, package `svg-scroll-draw`, docs "a scroll animation platform". 21 entry points, most unrelated to SVG; nobody searching npm for "scroll reveal" finds `svg-scroll-draw`. Recommended: publish under a new name, keeping `svg-scroll-draw` as a deprecated alias that re-exports.
+- [ ] **Migration guides** from GSAP ScrollTrigger, AOS and ScrollReveal.js — the highest-intent traffic there is
+- [ ] **Real-world recipes** instead of option tables: animated logo, sticky feature section, horizontal case-study strip, animated stat row, scrubbed explainer video
+- [ ] Auto-generate the README size table from `npm run size` rather than pasting it
+- [ ] Document the known jump-scroll asymmetry in the docs, not only in a test comment
 
 ---
 
 ## Priority Order
 
-1. `/vs-gsap` page — single biggest SEO + conversion driver
-2. Demo page for scrollPin — most visually impressive new feature
-3. GSAP migration guide — captures "GSAP alternative" search intent
+1. ~~Finish Priority 1 browser coverage~~ — done: Group / Sequence / Timeline, Cinematic and `scrollAnimate` native parity all covered, two defects out of it
+2. ~~Framework wrapper e2e~~ — done: all eight, plus SSR. "Thin adapter" turned out to be hiding two crashes
+3. ~~Correctness debt~~ — done. Remaining: green CI, then publish 2.10.0
+4. Rename, then migration guides and recipes — highest-intent traffic, and now it would be built on verified code

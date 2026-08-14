@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>scrollVideo — currentTime scrubbing on a real video element</title>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+  .spacer { height: 1200px; }
+  .tail   { height: 2000px; }
+  /* 400px tall so the default `top top` → `bottom top` window is 400px of scroll. */
+  #clip { display: block; width: 320px; height: 400px; background: #000; }
+  #broken { display: block; width: 80px; height: 60px; }
+</style>
+</head>
+<body>
+
+<div class="spacer"></div>
+<video id="clip" src="./clip.webm" muted playsinline preload="auto"></video>
+<!-- A source that will never produce metadata, so the "before loadedmetadata"
+     path can be tested deterministically instead of racing a real load. -->
+<video id="broken" src="./does-not-exist.webm" muted playsinline></video>
+<div class="tail"></div>
+
+<script type="module">
+import { scrollVideo } from '/dist/video/index.mjs';
+import { docTop, publish } from './_probe.mjs';
+
+const clip   = document.querySelector('#clip');
+const broken = document.querySelector('#broken');
+
+let readyCalls = 0;
+let brokenReadyCalls = 0;
+const progressCalls = [];
+
+const clipInst = scrollVideo('#clip', {
+  onReady: () => { readyCalls++; },
+  onProgress: (a) => progressCalls.push(a),
+});
+
+const brokenInst = scrollVideo('#broken', {
+  onReady: () => { brokenReadyCalls++; },
+});
+
+// Reused for the painted-frame check. The fixture clip is a sequence of solid
+// greys, one per frame, so the pixel on screen identifies which frame the
+// browser actually decoded and painted — not merely which currentTime we asked
+// for. A scrub that sets the property without repainting passes the naive check
+// and fails this one.
+const canvas = document.createElement('canvas');
+canvas.width = 8;
+canvas.height = 8;
+const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+publish({
+  read: () => ({
+    scrollY: window.scrollY,
+    currentTime: clip.currentTime,
+    duration: Number.isFinite(clip.duration) ? clip.duration : null,
+    paused: clip.paused,
+    readyState: clip.readyState,
+    seeking: clip.seeking,
+    readyCalls,
+    progressCount: progressCalls.length,
+    brokenTime: broken.currentTime,
+    brokenReadyState: broken.readyState,
+    brokenReadyCalls,
+  }),
+
+  geometry: () => ({
+    clipTop: docTop(clip),
+    clipHeight: clip.offsetHeight,
+    viewport: window.innerHeight,
+  }),
+
+  /** Can this browser decode the fixture clip at all? */
+  canDecode: () => clip.canPlayType('video/webm; codecs="vp8"') !== '',
+
+  /** Average grey of the painted frame, plus the time it corresponds to. */
+  paint: () => {
+    ctx.drawImage(clip, 0, 0, canvas.width, canvas.height);
+    const { data } = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    let sum = 0;
+    for (let i = 0; i < data.length; i += 4) sum += data[i];
+    return {
+      grey: sum / (data.length / 4),
+      currentTime: clip.currentTime,
+      seeking: clip.seeking,
+    };
+  },
+
+  destroyClip: () => clipInst.destroy(),
+  destroyBroken: () => brokenInst.destroy(),
+});
+</script>
+</body>
+</html>

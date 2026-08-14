@@ -214,3 +214,77 @@ describe('scrollText', () => {
     expect(el.style.getPropertyValue('--scroll-draw-progress')).toBe('0.6');
   });
 });
+
+/*
+ * Re-splitting on resize.
+ *
+ * `split: 'lines'` is the only mode whose unit boundaries depend on layout, so
+ * it is the only one that has to re-split when the box changes width — and that
+ * handler was never entered by a test. It is also the riskiest path in the
+ * module: it rewrites innerHTML from the saved original, which is exactly how a
+ * split element loses its accessible name or its animation progress.
+ */
+describe('scrollText — resize handling', () => {
+  beforeEach(() => vi.useFakeTimers());
+  afterEach(() => vi.useRealTimers());
+
+  function resize(): void {
+    window.dispatchEvent(new Event('resize'));
+    vi.advanceTimersByTime(200); // past the 150ms debounce
+  }
+
+  it('re-splits lines without losing the accessible name or the markup', () => {
+    const el = makeParagraph('Hello world foo bar');
+    scrollText(el, { split: 'lines' });
+
+    const before = el.querySelectorAll('span').length;
+    expect(before, 'nothing was split to begin with').toBeGreaterThan(0);
+    // The gaps between words survive the split itself, not only the re-split.
+    expect(el.textContent, 'the split glued the words together').toBe('Hello world foo bar');
+
+    resize();
+
+    expect(el.querySelectorAll('span').length, 'the re-split lost the units').toBe(before);
+    expect(el.getAttribute('aria-label'), 'the accessible name was dropped').toBe(
+      'Hello world foo bar',
+    );
+    expect(el.textContent, 'the rendered text changed').toBe('Hello world foo bar');
+  });
+
+  it('keeps the current progress across a re-split', () => {
+    const el = makeParagraph('Hello world foo bar');
+    const instance = scrollText(el, { split: 'lines' });
+
+    instance.seek(1);
+    const opacityBefore = (el.querySelector('span') as HTMLElement).style.opacity;
+    expect(opacityBefore, 'the units were never animated').not.toBe('');
+
+    resize();
+
+    // A re-split that restarted from zero would flash the whole line back out.
+    expect(
+      (el.querySelector('span') as HTMLElement).style.opacity,
+      'the re-split reset the animation',
+    ).toBe(opacityBefore);
+  });
+
+  it('the other split modes do not re-split, and survive a resize', () => {
+    const el = makeParagraph('Hello world');
+    scrollText(el, { split: 'chars' });
+    const before = el.innerHTML;
+
+    resize();
+
+    expect(el.innerHTML, 'a non-line split was rewritten on resize').toBe(before);
+  });
+
+  it('destroy() stops the resize handler from touching the element', () => {
+    const el = makeParagraph('Hello world foo bar');
+    const instance = scrollText(el, { split: 'lines' });
+    instance.destroy();
+
+    const restored = el.innerHTML;
+    resize();
+    expect(el.innerHTML, 'a destroyed instance re-split on resize').toBe(restored);
+  });
+});

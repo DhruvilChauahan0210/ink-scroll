@@ -1,0 +1,93 @@
+name: Bug report
+description: Something behaves differently from what the docs say
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A reproduction is worth more than a description. A StackBlitz, CodeSandbox,
+        or a single HTML file using the CDN build is ideal.
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Output of `npm ls svg-scroll-draw`
+      placeholder: "2.9.0"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: api
+    attributes:
+      label: Which API?
+      multiple: true
+      options:
+        - scrollDraw
+        - scrollAnimate
+        - scrollReveal
+        - scrollCounter
+        - scrollText
+        - scrollVideo
+        - scrollParallax
+        - scrollPin
+        - scrollSnap
+        - scrollProgress
+        - scrollHorizontal
+        - Group / Sequence / Timeline
+        - Cinematic
+        - CLI (npx svg-scroll-draw init)
+        - devtools
+        - Not sure
+    validations:
+      required: true
+
+  - type: dropdown
+    id: setup
+    attributes:
+      label: How is it loaded?
+      description: The CDN and bundler paths differ meaningfully — dev warnings and NODE_ENV are only visible to a bundler.
+      options:
+        - Bundler (Vite, webpack, Next.js, Nuxt, Astro, …)
+        - CDN / <script src>
+        - "<script type=module> with a direct import"
+        - Not sure
+    validations:
+      required: true
+
+  - type: input
+    id: framework
+    attributes:
+      label: Framework and version
+      placeholder: "Next.js 16.2, React 19.2 — or 'vanilla'"
+
+  - type: input
+    id: browsers
+    attributes:
+      label: Browsers affected
+      description: Worth checking more than one. The native CSS fast path only runs on some engines, so a bug in one and not another is a useful clue.
+      placeholder: "Chrome 151 — fine in Firefox 153"
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction
+      description: A link, or the smallest code that shows it.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected, and what happened instead
+    validations:
+      required: true
+
+  - type: textarea
+    id: console
+    attributes:
+      label: Console output
+      description: Any errors or "[svg-scroll-draw]" warnings.
+      render: shell

@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>scrollAnimate — native CSS fast path vs JS engine</title>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+
+  /* The decline cases live in a fixed-height strip, so however many of them
+     there are the row arithmetic below never moves. */
+  #declines { height: 100px; display: flex; gap: 4px; padding: 4px; align-items: flex-start; }
+  #declines .probe { width: 10px; height: 10px; background: #333; }
+  #scroller { width: 40px; height: 40px; overflow: auto; }
+  #scroller .inner { height: 200px; }
+
+  .spacer { height: 1100px; }
+  .gap    { height: 400px; }
+
+  /* Both cells of a pair sit side by side — same document top, same height — so
+     at any scroll offset the correct value is identical for both, which is what
+     makes a value-for-value comparison meaningful. Same reasoning as parity.html
+     for scrollDraw. */
+  .row  { display: flex; gap: 40px; padding: 0 40px; height: 300px; }
+  .cell { flex: 1; height: 300px; background: #0a7; }
+  .swatch { background: #000; }
+  #tail { height: 1000px; }
+</style>
+</head>
+<body>
+
+<div id="declines">
+  <div class="probe" id="d-once"></div>
+  <div class="probe" id="d-speed"></div>
+  <div class="probe" id="d-spring"></div>
+  <div class="probe" id="d-width"></div>
+  <div class="probe" id="d-velocity"></div>
+  <div class="probe" id="d-callback"></div>
+  <div class="probe" id="d-trigger-el"></div>
+  <div class="probe" id="d-trigger-window"></div>
+  <div class="probe" id="d-axis"></div>
+  <div class="probe" id="d-eligible"></div>
+  <div id="scroller"><div class="inner"><div class="probe" id="d-container"></div></div></div>
+</div>
+
+<div class="spacer"></div>
+
+<div class="row" id="row-linear">
+  <div class="cell" id="nat-linear"></div>
+  <div class="cell" id="js-linear"></div>
+</div>
+<div class="gap"></div>
+
+<div class="row" id="row-ease-in">
+  <div class="cell" id="nat-ease-in"></div>
+  <div class="cell" id="js-ease-in"></div>
+</div>
+<div class="gap"></div>
+
+<div class="row" id="row-ease-out">
+  <div class="cell" id="nat-ease-out"></div>
+  <div class="cell" id="js-ease-out"></div>
+</div>
+<div class="gap"></div>
+
+<div class="row" id="row-ease-in-out">
+  <div class="cell" id="nat-ease-in-out"></div>
+  <div class="cell" id="js-ease-in-out"></div>
+</div>
+<div class="gap"></div>
+
+<div class="row" id="row-color">
+  <div class="cell swatch" id="nat-color"></div>
+  <div class="cell swatch" id="js-color"></div>
+</div>
+
+<div id="tail"></div>
+
+<script type="module">
+import { scrollAnimate } from '/dist/index.mjs';
+import { docTop, opacityOf, publish } from './_probe.mjs';
+
+/**
+ * Four easings, each animated twice: once with the native CSS fast path allowed
+ * and once with it forced off. `opacity: [0, 1]` is deliberate — the JS engine
+ * interpolates it linearly, so the computed opacity IS the eased alpha, and the
+ * comparison reads the easing curve directly rather than through a transform.
+ */
+const EASINGS = ['linear', 'ease-in', 'ease-out', 'ease-in-out'];
+
+const instances = {};
+
+for (const easing of EASINGS) {
+  instances[`nat-${easing}`] = scrollAnimate(`#nat-${easing}`, {
+    props: { opacity: [0, 1] },
+    easing,
+  });
+  instances[`js-${easing}`] = scrollAnimate(`#js-${easing}`, {
+    props: { opacity: [0, 1] },
+    easing,
+    native: false,
+  });
+}
+
+// A colour pair as well: opacity alone would not catch a difference between the
+// library's own sRGB lerp and the browser's interpolation.
+instances['nat-color'] = scrollAnimate('#nat-color', {
+  props: { backgroundColor: ['#000000', '#ffffff'] },
+  easing: 'linear',
+});
+instances['js-color'] = scrollAnimate('#js-color', {
+  props: { backgroundColor: ['#000000', '#ffffff'] },
+  easing: 'linear',
+  native: false,
+});
+
+const supportsNative =
+  typeof CSS !== 'undefined' &&
+  typeof CSS.supports === 'function' &&
+  CSS.supports('animation-timeline: view()');
+
+/** True when the engine attached its generated native class to the element. */
+const engaged = (sel) => /(^|\s)ssd-a-\d+(\s|$)/.test(document.querySelector(sel).className);
+
+/** Red channel as a 0–1 fraction: the pair runs #000000 → #ffffff. */
+function whiteness(el) {
+  const m = /rgba?\(\s*(\d+)/.exec(getComputedStyle(el).backgroundColor);
+  return m ? Number(m[1]) / 255 : NaN;
+}
+
+function valueOf(sel) {
+  const el = document.querySelector(sel);
+  return sel.endsWith('color') ? whiteness(el) : opacityOf(el);
+}
+
+/*
+ * Every configuration the fast path is documented to decline, built for real so
+ * the eligibility gate is tested against the browser rather than against the
+ * unit tests' idea of it. A config that wrongly takes the fast path is silent:
+ * the element still animates, just not the way it was configured to.
+ */
+const declines = [
+  ['once',            '#d-once',           { once: true }],
+  ['speed',           '#d-speed',          { speed: 2 }],
+  ['springEasing',    '#d-spring',         { easing: 'spring' }],
+  ['unsafeProp',      '#d-width',          { props: { width: ['10px', '20px'] } }],
+  ['velocityScale',   '#d-velocity',       { velocityScale: true }],
+  ['callback',        '#d-callback',       { onProgress: () => {} }],
+  ['triggerElement',  '#d-trigger-el',     { triggerElement: document.querySelector('#declines') }],
+  ['triggerWindow',   '#d-trigger-window', { trigger: { start: 'top 50%' } }],
+  ['axisX',           '#d-axis',           { axis: 'x' }],
+  ['scrollContainer', '#d-container',      { scrollContainer: '#scroller' }],
+  // The control: nothing here disqualifies the fast path, so this one MUST take
+  // it wherever the browser supports it. Without it, an eligibility gate that
+  // rejected everything would pass all of the above.
+  ['eligible',        '#d-eligible',       {}],
+];
+
+const declineResults = {};
+for (const [name, sel, opts] of declines) {
+  scrollAnimate(sel, { props: { opacity: [0, 1] }, ...opts });
+  declineResults[name] = engaged(sel);
+}
+
+publish({
+  read: () => ({
+    scrollY: window.scrollY,
+    pairs: [...EASINGS, 'color'].map((key) => ({
+      key,
+      native: valueOf(`#nat-${key}`),
+      js: valueOf(`#js-${key}`),
+    })),
+    // What the instance claims its progress is, on both paths. A fast path that
+    // renders one curve while reporting another is still wrong.
+    reported: [...EASINGS, 'color'].map((key) => ({
+      key,
+      native: instances[`nat-${key}`].getProgress(),
+      js: instances[`js-${key}`].getProgress(),
+    })),
+  }),
+
+  geometry: () => ({
+    viewportWidth: window.innerWidth,
+    viewportHeight: window.innerHeight,
+    rows: [...EASINGS, 'color'].map((key) => ({
+      key,
+      top: docTop(document.querySelector(`#row-${key}`)),
+      height: document.querySelector(`#row-${key}`).offsetHeight,
+      // The two cells of a pair must be at the same document top, or the
+      // comparison below is measuring geometry rather than easing.
+      sameTop:
+        docTop(document.querySelector(`#nat-${key}`)) ===
+        docTop(document.querySelector(`#js-${key}`)),
+    })),
+  }),
+
+  engagement: () => ({
+    supportsNative,
+    engaged: Object.fromEntries([...EASINGS, 'color'].map((k) => [k, engaged(`#nat-${k}`)])),
+    jsForced: Object.fromEntries([...EASINGS, 'color'].map((k) => [k, engaged(`#js-${k}`)])),
+    styleTags: document.querySelectorAll('style[data-ssd-animate]').length,
+  }),
+
+  eligibility: () => declineResults,
+
+  destroyPair: (key) => {
+    instances[`nat-${key}`].destroy();
+    instances[`js-${key}`].destroy();
+    const el = document.querySelector(`#nat-${key}`);
+    return {
+      inlineOpacity: el.style.getPropertyValue('opacity'),
+      classLeft: /(^|\s)ssd-a-\d+(\s|$)/.test(el.className),
+      styleTags: document.querySelectorAll('style[data-ssd-animate]').length,
+    };
+  },
+});
+</script>
+</body>
+</html>

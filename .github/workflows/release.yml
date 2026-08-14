@@ -1,0 +1,107 @@
+name: Release
+
+# Publishing was previously manual from a laptop, which meant no reproducible
+# build and no provenance attestation on npm. This runs the full verification
+# gauntlet first and then publishes with --provenance, so each released version is
+# cryptographically linked to the commit and workflow run that produced it.
+#
+# To cut a release:
+#   1. bump "version" in packages/svg-scroll-draw/package.json
+#   2. move the CHANGELOG [Unreleased] section under the new version
+#   3. commit, then: git tag v2.10.0 && git push origin v2.10.0
+#
+# Requires an npm automation token in the NPM_TOKEN repository secret.
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Run every check but do not publish'
+        type: boolean
+        default: true
+
+jobs:
+  release:
+    name: Verify & publish
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      # Required for npm provenance — mints the OIDC token npm uses to attest
+      # that this build came from this workflow.
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium firefox webkit
+        working-directory: packages/svg-scroll-draw
+
+      # Everything CI runs, plus the browser tests. A release should not be able
+      # to skip a gate that a pull request cannot.
+      - name: Verify
+        run: npm run verify
+
+      - name: Browser tests
+        run: npm run test:e2e
+        working-directory: packages/svg-scroll-draw
+
+      # A tag that disagrees with package.json produces a confusing release, so
+      # fail loudly rather than publishing the wrong number.
+      - name: Check tag matches package version
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          PKG=$(node -p "require('./packages/svg-scroll-draw/package.json').version")
+          if [ "$TAG" != "$PKG" ]; then
+            echo "::error::Tag v$TAG does not match package.json version $PKG"
+            exit 1
+          fi
+          echo "Releasing $PKG"
+
+      - name: Confirm this version is not already published
+        run: |
+          PKG=$(node -p "require('./packages/svg-scroll-draw/package.json').version")
+          if npm view "svg-scroll-draw@$PKG" version >/dev/null 2>&1; then
+            echo "::error::svg-scroll-draw@$PKG is already on npm"
+            exit 1
+          fi
+
+      - name: Publish to npm with provenance
+        if: startsWith(github.ref, 'refs/tags/v') && inputs.dry_run != true
+        run: npm publish --provenance --access public
+        working-directory: packages/svg-scroll-draw
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Dry run summary
+        if: inputs.dry_run == true
+        run: |
+          echo "### Dry run — nothing published" >> $GITHUB_STEP_SUMMARY
+          echo "All checks passed. Files that would ship:" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          npm pack --dry-run --workspace=packages/svg-scroll-draw 2>&1 | tail -40 >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Create GitHub release
+        if: startsWith(github.ref, 'refs/tags/v') && inputs.dry_run != true
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          body: |
+            Published to npm with [provenance](https://docs.npmjs.com/generating-provenance-statements).
+            Verify with `npm audit signatures`.
+
+            See [CHANGELOG.md](https://github.com/DhruvilChauahan0210/ink-scroll/blob/main/CHANGELOG.md) for details.

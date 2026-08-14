@@ -1,4 +1,5 @@
 import { EASINGS } from '../core/utils';
+import { warn } from '../core/env';
 import type { Story, StoryEasing, StoryAnimation } from './story';
 
 export type { Story } from './story';
@@ -63,9 +64,7 @@ export class Cinematic {
       typeof options.wrapper === 'string'
         ? document.querySelector<HTMLElement>(options.wrapper)
         : options.wrapper;
-    if (!this.mount && process.env.NODE_ENV !== 'production') {
-      console.warn('[svg-scroll-draw] Cinematic: wrapper not found:', options.wrapper);
-    }
+    if (!this.mount) warn('Cinematic: wrapper not found:', options.wrapper);
   }
 
   loadStory(story: Story): CinematicInstance {

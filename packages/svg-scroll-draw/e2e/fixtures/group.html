@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>scrollDrawGroup / scrollDrawSequence</title>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+
+  /* Group members sit side by side: identical document top and height, so at any
+     offset every member's correct value is the same and a member that lags is a
+     real difference rather than a geometric one. */
+  .row  { display: flex; gap: 40px; padding: 0 40px; height: 300px; }
+  .box  { flex: 1; height: 300px; }
+
+  /* Sequence steps are stacked, because a sequence only means anything when each
+     step has its own scroll window. Side by side they would all complete in the
+     same frame. */
+  .step { height: 300px; margin: 0 40px; }
+
+  svg  { width: 100%; height: 100%; display: block; overflow: visible; }
+  path { fill: none; stroke: #000; stroke-width: 3; }
+</style>
+</head>
+<body>
+
+<div style="height:1000px"></div>
+
+<div class="row">
+  <div class="box" id="g0"><svg viewBox="0 0 200 100" preserveAspectRatio="none"><path d="M10 50 C 40 10, 80 10, 100 50 S 160 90, 190 50"></path></svg></div>
+  <div class="box" id="g1"><svg viewBox="0 0 200 100" preserveAspectRatio="none"><path d="M10 50 C 40 10, 80 10, 100 50 S 160 90, 190 50"></path></svg></div>
+  <div class="box" id="g2"><svg viewBox="0 0 200 100" preserveAspectRatio="none"><path d="M10 50 C 40 10, 80 10, 100 50 S 160 90, 190 50"></path></svg></div>
+</div>
+
+<div style="height:900px"></div>
+
+<div class="step" id="s0"><svg viewBox="0 0 200 100" preserveAspectRatio="none"><path d="M10 50 C 40 10, 80 10, 100 50 S 160 90, 190 50"></path></svg></div>
+<div style="height:400px"></div>
+<div class="step" id="s1"><svg viewBox="0 0 200 100" preserveAspectRatio="none"><path d="M10 50 C 40 10, 80 10, 100 50 S 160 90, 190 50"></path></svg></div>
+<div style="height:400px"></div>
+<div class="step" id="s2"><svg viewBox="0 0 200 100" preserveAspectRatio="none"><path d="M10 50 C 40 10, 80 10, 100 50 S 160 90, 190 50"></path></svg></div>
+
+<!-- Last, so it cannot shift anything above it: a single draw with the fast path
+     forced off, so both refresh() implementations are covered. The native one
+     re-writes --ssd-len, the JS one re-writes stroke-dasharray, and they are
+     separate code. -->
+<div class="box" id="js0" style="height:300px;margin:0 40px"><svg viewBox="0 0 200 100" preserveAspectRatio="none"><path d="M10 50 C 40 10, 80 10, 100 50 S 160 90, 190 50"></path></svg></div>
+
+<div style="height:1000px"></div>
+
+<script type="module">
+import { scrollDrawGroup, scrollDrawSequence } from '/dist/group/index.mjs';
+import { scrollDraw } from '/dist/index.mjs';
+import { drawnFraction, docTop, publish } from './_probe.mjs';
+
+const groupSel = ['#g0', '#g1', '#g2'];
+const stepSel  = ['#s0', '#s1', '#s2'];
+const pathOf   = (sel) => document.querySelector(`${sel} path`);
+
+// Default options — whatever a real caller gets, native fast path included.
+const group = scrollDrawGroup(groupSel);
+
+// The same API with the fast path forced off, so the JS engine's own refresh()
+// is exercised too.
+const jsDraw = scrollDraw('#js0', { native: false });
+
+// Every step is internally forced to `once: true`, which disqualifies the native
+// path, so a sequence is always the JS engine.
+const completions = [];
+const sequence = scrollDrawSequence(stepSel, {
+  onComplete: () => completions.push(window.scrollY),
+});
+
+// Captured before anything has scrolled or transformed, so the spec's arithmetic
+// is checked against the layout it was written for.
+const geometry = {
+  viewportHeight: window.innerHeight,
+  group: groupSel.map((s) => ({ top: docTop(document.querySelector(s)), height: document.querySelector(s).offsetHeight })),
+  steps: stepSel.map((s) => ({ top: docTop(document.querySelector(s)), height: document.querySelector(s).offsetHeight })),
+  pathLength: pathOf('#g0').getTotalLength(),
+};
+
+publish({
+  read: () => ({
+    scrollY: window.scrollY,
+    group: groupSel.map((s) => drawnFraction(pathOf(s))),
+    steps: stepSel.map((s) => drawnFraction(pathOf(s))),
+    groupProgress: group.getProgress(),
+    sequenceProgress: sequence.getProgress(),
+    completions: completions.length,
+  }),
+
+  geometry: () => geometry,
+
+  /**
+   * Lengthen the first group member's path without changing the document height,
+   * so neither the resize listener nor the document ResizeObserver fires. Then
+   * refresh the group and report whether every member re-measured.
+   */
+  growThenRefreshGroup: () => {
+    const p = pathOf('#g0');
+    const before = p.getTotalLength();
+    p.setAttribute('d', 'M10 50 C 40 10, 80 10, 100 50 S 160 90, 190 50 L 190 90 L 10 90');
+    const grown = p.getTotalLength();
+    group.refresh();
+    return {
+      before,
+      grown,
+      dasharrays: groupSel.map((s) => parseFloat(pathOf(s).style.strokeDasharray) || 0),
+      // The native path keeps the length in a custom property instead.
+      lenVars: groupSel.map((s) => parseFloat(pathOf(s).style.getPropertyValue('--ssd-len')) || 0),
+    };
+  },
+
+  /** The JS-engine twin of the check above: dasharray, not --ssd-len. */
+  growThenRefreshSingle: () => {
+    const p = pathOf('#js0');
+    const before = p.getTotalLength();
+    p.setAttribute('d', 'M10 50 C 40 10, 80 10, 100 50 S 160 90, 190 50 L 190 90 L 10 90');
+    const grown = p.getTotalLength();
+    jsDraw.refresh();
+    return { before, grown, dasharray: parseFloat(p.style.strokeDasharray) || 0 };
+  },
+
+  destroyGroup: () => group.destroy(),
+  seekGroup: (p) => group.seek(p),
+  replayGroup: () => group.replay(),
+  pauseGroup: () => group.pause(),
+  resumeGroup: () => group.resume(),
+  destroySequence: () => sequence.destroy(),
+  replaySequence: () => sequence.replay(),
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>scrollCounter — formatting at real frame rates</title>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+  .spacer { height: 1200px; }
+  .tail   { height: 2000px; }
+  .row { display: flex; gap: 40px; padding: 0 40px; }
+  .stat { flex: 1; height: 60px; font-size: 32px; line-height: 60px; }
+</style>
+</head>
+<body>
+
+<div class="spacer"></div>
+<!-- All three share a document Y so one sweep covers every formatting mode at the
+     same progress, and any difference between them is the formatting, not the
+     scroll position. -->
+<div class="row" id="row">
+  <div class="stat" id="plain">–</div>
+  <div class="stat" id="decimals">–</div>
+  <div class="stat" id="formatted">–</div>
+</div>
+<div class="tail"></div>
+
+<script type="module">
+import { scrollCounter } from '/dist/index.mjs';
+import { docTop, publish } from './_probe.mjs';
+
+const plain     = document.querySelector('#plain');
+const decimals  = document.querySelector('#decimals');
+const formatted = document.querySelector('#formatted');
+
+// Text content BEFORE the library runs, so the "no flash of placeholder" check
+// compares against something real.
+const preInit = plain.textContent;
+
+const instances = [
+  scrollCounter('#plain',     { to: 1000 }),
+  scrollCounter('#decimals',  { to: 99.5, decimals: 1 }),
+  scrollCounter('#formatted', { from: 1000, to: 5000, format: (v) => `$${Math.round(v).toLocaleString('en-US')}` }),
+];
+
+publish({
+  read: () => ({
+    scrollY: window.scrollY,
+    plain: plain.textContent,
+    decimals: decimals.textContent,
+    formatted: formatted.textContent,
+  }),
+  preInit: () => preInit,
+  geometry: () => ({ rowTop: docTop(document.querySelector('#row')), viewport: window.innerHeight }),
+
+  /**
+   * Sample the rendered text every frame while the counter is live.
+   *
+   * A counter is one of the few things here whose bugs are *textual* — NaN,
+   * "1e+3", a stray "-0", a value that jitters backwards — and those only appear
+   * at real frame rates against real easing, never in a single jsdom assertion.
+   */
+  sampleFrames: async (frames) => {
+    const out = [];
+    for (let i = 0; i < frames; i++) {
+      await new Promise((r) => requestAnimationFrame(r));
+      out.push({ plain: plain.textContent, decimals: decimals.textContent, formatted: formatted.textContent });
+    }
+    return out;
+  },
+
+  destroyAll: () => instances.forEach((i) => i.destroy()),
+});
+</script>
+</body>
+</html>

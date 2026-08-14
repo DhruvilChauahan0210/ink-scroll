@@ -102,6 +102,7 @@ const FEATURES = [
   { f: 'scrollReveal (one-line preset)', us: true,  fm: false,  note: '' },
   { f: 'scrollProgress (CSS variable)',  us: true,  fm: false,  note: '' },
   { f: 'Horizontal scroll sections',     us: true,  fm: 'partial', note: '' },
+  { f: 'Honours prefers-reduced-motion by default', us: true, fm: 'partial', note: 'Framer Motion has useReducedMotion() and MotionConfig reducedMotion="user" — good tooling, but opt-in rather than the default' },
   { f: 'Native CSS fast path',           us: true,  fm: false,  note: 'svg-scroll-draw uses animation-timeline: view() when eligible' },
   { f: 'Works outside React',            us: true,  fm: false,  note: 'Framer Motion is React-only' },
   { f: 'Vue / Svelte / Solid wrappers',  us: true,  fm: false,  note: '' },

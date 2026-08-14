@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>scrollProgress — custom properties that dependent CSS can actually read</title>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+  .spacer { height: 1200px; }
+  .tail   { height: 2000px; }
+
+  #hero { height: 400px; background: #eef; position: relative; }
+
+  /* The whole point of writing a custom property instead of a style is that CSS
+     downstream can consume it. Driving a real width through calc() is the only
+     way to prove the value landed in a form the engine will actually resolve —
+     a var that reads back correctly from JS but is rejected by calc() (wrong
+     type, trailing junk, a unit where a number belongs) would look fine to a
+     naive assertion and be useless to a user. */
+  #bar {
+    position: absolute; bottom: 0; left: 0; height: 20px; background: #33f;
+    width: calc(var(--scroll-progress) * 800px);
+  }
+  #eased-bar {
+    position: absolute; top: 0; left: 0; height: 20px; background: #f33;
+    width: calc(var(--scroll-progress-eased) * 800px);
+  }
+
+  /* Second target, renamed variables, eased explicitly disabled. */
+  #named { height: 100px; background: #efe; }
+</style>
+</head>
+<body>
+
+<div class="spacer"></div>
+<div id="hero">
+  <div id="bar"></div>
+  <div id="eased-bar"></div>
+</div>
+<div id="named"></div>
+<div class="tail"></div>
+
+<script type="module">
+import { scrollProgress } from '/dist/progress/index.mjs';
+import { docTop, publish } from './_probe.mjs';
+
+const hero  = document.querySelector('#hero');
+const bar   = document.querySelector('#bar');
+const eased = document.querySelector('#eased-bar');
+const named = document.querySelector('#named');
+
+const reported = [];
+
+const heroInst = scrollProgress('#hero', {
+  easing: 'ease-in-out',
+  onProgress: (raw, easedValue) => reported.push([raw, easedValue]),
+});
+
+// Renamed variable, and `easedVariable: null` must skip the second write entirely.
+const namedInst = scrollProgress('#named', {
+  variable: '--my-progress',
+  easedVariable: null,
+});
+
+const varOf = (el, name) => {
+  const v = getComputedStyle(el).getPropertyValue(name).trim();
+  return v === '' ? null : v;
+};
+
+publish({
+  read: () => ({
+    scrollY: window.scrollY,
+    raw: varOf(hero, '--scroll-progress'),
+    eased: varOf(hero, '--scroll-progress-eased'),
+    // Resolved through calc() by the browser, in px.
+    barWidth: bar.getBoundingClientRect().width,
+    easedBarWidth: eased.getBoundingClientRect().width,
+    named: varOf(named, '--my-progress'),
+    namedEased: varOf(named, '--scroll-progress-eased'),
+    lastReported: reported.length ? reported[reported.length - 1] : null,
+    reportCount: reported.length,
+  }),
+  geometry: () => ({
+    heroTop: docTop(hero),
+    heroHeight: hero.offsetHeight,
+    viewport: window.innerHeight,
+  }),
+  destroyHero: () => heroInst.destroy(),
+  destroyNamed: () => namedInst.destroy(),
+});
+</script>
+</body>
+</html>

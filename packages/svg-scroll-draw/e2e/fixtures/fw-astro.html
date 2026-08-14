@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Astro wrapper — data-attribute auto-init</title>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+
+  /* Identical geometry in every framework fixture, so one spec can hold all
+     eight wrappers to the same numbers:
+       .fw-draw  top 1000, 300 tall → trigger window  200 → 1300
+       .fw-anim  top 1300, 200 tall → trigger window  500 → 1500 */
+  #lead { height: 1000px; }
+  .fw-draw { height: 300px; margin: 0 40px; }
+  .fw-anim { height: 200px; margin: 0 40px; background: #0a7; }
+  #tail { height: 2000px; }
+</style>
+</head>
+<body>
+
+<div id="lead"></div>
+<div id="root"></div>
+<div id="tail"></div>
+
+<script type="module">
+/*
+ * Astro ships no client runtime for this library beyond a scanner: mark elements
+ * with `data-scroll-draw` / `data-scroll-animate`, put the options in a JSON
+ * attribute, and call `initAll()` from an island script. So the interesting
+ * surface is the parsing — options that arrive as a string, from markup, with no
+ * type checking between here and the engine.
+ */
+import { initAll } from '/dist/astro/index.mjs';
+import { setupFramework, DRAW_SVG, DRAW_OPTIONS, ANIM_OPTIONS } from './_fw.mjs';
+
+const root = document.querySelector('#root');
+let instances = [];
+let speed = 1;
+
+setupFramework({
+  reactiveOptions: false,
+
+  mount() {
+    const drawEl = document.createElement('div');
+    drawEl.className = 'fw-draw';
+    drawEl.setAttribute('data-scroll-draw', '');
+    drawEl.setAttribute('data-scroll-draw-options', JSON.stringify({ ...DRAW_OPTIONS, speed }));
+    drawEl.innerHTML = DRAW_SVG;
+
+    const animEl = document.createElement('div');
+    animEl.className = 'fw-anim';
+    animEl.setAttribute('data-scroll-animate', '');
+    animEl.setAttribute('data-scroll-animate-options', JSON.stringify(ANIM_OPTIONS));
+
+    root.append(drawEl, animEl);
+
+    const all = initAll(root);
+    instances = Object.values(all).flat();
+  },
+
+  unmount() {
+    instances.forEach((i) => i.destroy());
+    instances = [];
+    root.replaceChildren();
+  },
+
+  setSpeed(v) { speed = v; },
+});
+</script>
+</body>
+</html>

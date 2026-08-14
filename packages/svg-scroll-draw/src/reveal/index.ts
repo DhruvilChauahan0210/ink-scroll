@@ -1,5 +1,6 @@
 import type { EasingName, TriggerConfig } from '../core/types';
 import { createAnimateEngine } from '../animate';
+import { warn } from '../core/env';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -145,9 +146,7 @@ export function scrollReveal(
 
   const els = resolveElements(target);
   if (!els.length) {
-    if (process.env.NODE_ENV !== 'production') {
-      console.warn('[svg-scroll-draw] scrollReveal: no elements found:', target);
-    }
+    warn('scrollReveal: no elements found:', target);
     return NOOP;
   }
 

@@ -1,6 +1,7 @@
 import type { EasingName, ScrollDrawInstance, TriggerConfig } from '../core/types';
 import { EASINGS, parseTrigger, computeProgress, computeTriggers } from '../core/utils';
 import { _register, _unregister } from '../core/registry';
+import { warn } from '../core/env';
 
 // ── Public types ──────────────────────────────────────────────────────────────
 
@@ -30,9 +31,7 @@ export function scrollCounter(
 
   const raw = (typeof target === 'string' ? document.querySelector(target) : target) as HTMLElement | null;
   if (!raw) {
-    if (process.env.NODE_ENV !== 'production') {
-      console.warn('[svg-scroll-draw] scrollCounter: element not found:', target);
-    }
+    warn('scrollCounter: element not found:', target);
     return NOOP;
   }
   const el = raw;
@@ -65,8 +64,11 @@ export function scrollCounter(
     return NOOP;
   }
 
-  // Init to starting value
-  el.textContent = fmt(from);
+  // The initial text is written further down, once the trigger window is known:
+  // `applyAlpha(initAlpha)` renders the value for the CURRENT scroll position,
+  // which for an element already scrolled past is its final value, not `from`. A
+  // `fmt(from)` write here was dead — always overwritten a few lines later in the
+  // same task, so no frame could ever show it.
 
   let tStart       = 0;
   let tEnd         = 0;

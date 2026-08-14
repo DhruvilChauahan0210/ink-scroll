@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Documentation
+    url: https://svg-scroll-draw.vercel.app/docs
+    about: Full API reference, options tables, and 23 live examples.
+  - name: Security vulnerability
+    url: https://github.com/DhruvilChauahan0210/ink-scroll/security/advisories/new
+    about: Please report privately, not as a public issue.

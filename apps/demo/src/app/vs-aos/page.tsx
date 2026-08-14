@@ -104,6 +104,7 @@ const FEATURES = [
   { f: 'scrollVideo (scrub)',                  us: true,   aos: false, sr: false },
   { f: 'scrollProgress (CSS variable)',        us: true,   aos: false, sr: false },
   { f: 'scrollHorizontal sections',            us: true,   aos: false, sr: false },
+  { f: 'Honours prefers-reduced-motion by default', us: true, aos: false, sr: false },
   { f: 'React / Vue / Svelte wrappers',        us: true,   aos: 'partial', sr: false },
   { f: 'Active maintenance (2025)',            us: true,   aos: true,  sr: false, note: 'ScrollReveal.js last release: 2021' },
   { f: 'MIT license',                          us: true,   aos: true,  sr: true  },
