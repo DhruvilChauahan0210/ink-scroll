@@ -16,26 +16,38 @@ export default defineConfig({
        * The rule going forward: this gate must always pass on main. Ratchet it
        * up as tests land; never set it above the measured value.
        *
+       * Ratcheted in 2.10.0, after the targets below were cleared: group 50→96%,
+       * snap 81→95%, text 80→96%, devtools 47→95%, overall 85→91%. The gate moves
+       * with reality or it stops being a gate — left at 85 against 91% real, six
+       * points of regression could land without failing anything.
+       *
+       * Real figures behind these: 91.3% lines and statements, 84.5% branches,
+       * 84.4% functions. The function number jumped when the SSR suite landed —
+       * it calls every public entry point, which is most of what was uncounted.
+       *
        * Next ratchet targets, in order of value:
-       *   - src/group      (50% — real orchestration logic, unit-testable today)
-       *   - src/snap       (77% — scroll-hijack paths need reduced-motion tests)
-       *   - src/text       (81% — split/restore edge cases)
-       *   - src/cli/init.ts and the framework wrappers below, once the Playwright
-       *     suite exists to exercise them in a real browser.
+       *   - src/animate    (83% — the velocity and callback branches)
+       *   - src/core/engine (88% — autoplay and the repeat/waypoint paths)
+       *   - src/pin, src/video, src/progress (89–93%, mostly teardown branches)
        */
-      thresholds: { lines: 85, statements: 85, functions: 77, branches: 79 },
+      thresholds: { lines: 90, statements: 90, functions: 82, branches: 82 },
 
       include: ['src/**'],
       exclude: [
         // Test files — excluded by default in most tools; explicit here to be safe
         'src/__tests__/**',
 
-        // Framework wrappers. These are thin adapters over already-tested core
-        // logic, and each needs its own framework renderer to execute — jsdom
-        // alone cannot mount them. Listed together so the exclusion is
-        // consistent: astro/solid/svelte/angular were previously measured while
+        // Framework wrappers. Each needs its own renderer to execute, and jsdom
+        // alone cannot mount them. Listed together so the exclusion is consistent:
+        // astro/solid/svelte/angular were previously measured while
         // react/vue/nuxt/web-component were not, which distorted the total.
-        // The Playwright suite (Phase 1) is what will actually cover these.
+        //
+        // Excluded here, not untested: as of 2.10.0 all eight are mounted for real
+        // in e2e/frameworks.spec.ts — engine runs, unmount leaks nothing, re-mount
+        // works, option reactivity is pinned — and covered again with no DOM at all
+        // in src/__tests__/ssr.test.ts. Two of the release's defects came out of
+        // exactly these files, so the exclusion is a statement about vitest's
+        // reach rather than about the code being safe.
         'src/react/**',
         'src/vue/**',
         'src/nuxt/**',

@@ -44,10 +44,10 @@ const SIZES = [
 const CLAIMS = [
   { claim: 'Bundle size (main entry)', before: '~4.4 KB', after: '9.0 KB', note: 'measured from dist/' },
   { claim: 'Raw ESM size', before: '11.9 KB', after: '27.1 KB', note: 'measured from dist/' },
-  { claim: 'Test count', before: '272', after: '478', note: 'read from vitest' },
+  { claim: 'Test count', before: '272', after: '531', note: 'read from vitest' },
   { claim: 'Example count', before: '13', after: '23', note: 'read from ExamplesPage' },
   { claim: 'Smaller than GSAP by', before: '8–10×', after: '~4×', note: 'main entry' },
-  { claim: 'Coverage gate', before: '90 / 90 / 85 / 80', after: '85 / 85 / 77 / 79', note: 'against 85.9% real' },
+  { claim: 'Coverage gate', before: '90 / 90 / 85 / 80', after: '90 / 90 / 82 / 82', note: 'against 91.3% real' },
 ];
 
 function Nav() {
@@ -366,7 +366,7 @@ export default function VerifyPage() {
       <PhaseBanner
         phase="Phase 1 · sections 06 – 09"
         title="What a real browser found."
-        blurb="Phase 0 could not prove the library worked, only that its paperwork was honest — all 478 unit tests run in jsdom with getTotalLength stubbed and IntersectionObserver faked. A Playwright suite across Chromium, Firefox and WebKit now runs in CI, and the first thing it did was disprove the library's headline claim."
+        blurb="Phase 0 could not prove the library worked, only that its paperwork was honest — every unit test, 478 of them at the time, ran in jsdom with getTotalLength stubbed and IntersectionObserver faked. A Playwright suite across Chromium, Firefox and WebKit now runs in CI, and the first thing it did was disprove the library's headline claim."
         bullets={[
           ['Browser tests', '30, across Chromium · Firefox · WebKit'],
           ['Bugs found', '5, none of them findable in jsdom'],
@@ -439,11 +439,11 @@ export default function VerifyPage() {
 
       <PhaseBanner
         phase="Phase 2 · sections 10 – 12"
-        title="The other nine APIs."
-        blurb="Phase 1 examined one API in a real browser and found five bugs. Nine were still unexamined, so this phase extended browser coverage across the surface — scrollReveal, scrollPin, scrollSnap, scrollText, scrollCounter, scrollProgress, scrollParallax, scrollVideo and scrollHorizontal. It also found the worst defect of the three phases: an API that did nothing at all in the arrangement its own documentation prescribed."
+        title="Everything else."
+        blurb="Phase 1 examined one API in a real browser and found five bugs. Everything else was unexamined, so this phase went through the rest of the surface: the other nine APIs, then Group / Sequence / Timeline / Cinematic, then scrollAnimate's own native fast path, then all eight framework wrappers and the CDN builds, and finally the same code again with no DOM at all. It found the worst defect of the three phases — an API that did nothing in the arrangement its own documentation prescribed — and ten more after that, including a server-side import that crashed the render and a CDN bundle shipping without the component it advertises. Sections 10–12 show three of them; the rest are in the changelog for 2.10.0."
         bullets={[
-          ['Browser tests', '30 → 76, on all three engines'],
-          ['Defects found', '4 in the library, 2 in the test harness'],
+          ['Browser tests', '30 → 175, on all three engines'],
+          ['Defects found', '14 in the library, 2 in the test harness'],
           ['Worst of them', 'scrollHorizontal never moved the track'],
           ['New guard', 'every test must fail against a broken build'],
         ]}
@@ -507,35 +507,35 @@ export default function VerifyPage() {
           {[
             [
               'CI going green',
-              'Only visible on GitHub Actions once the branch is pushed. Locally: npm run verify && npm run test:e2e.',
+              'The browser suite has only ever been proven on one laptop. Pushing the v2.10.0 tag triggered the first remote run; its result lives on GitHub Actions, not here. That run also fails deliberately at "is this version already published", because 2.10.0 went out by hand — see the next item.',
             ],
             [
-              'The README rewrite and the release workflow',
-              'Render on github.com and npmjs.com, not on this site. Provenance only becomes real on the first tagged release.',
+              '2.10.0 has no provenance attestation',
+              'The release workflow publishes with --provenance, which cryptographically ties a package to the commit and workflow run that built it. It needs an NPM_TOKEN repository secret, which was not set, so this version was published from a laptop instead. The workflow is wired and waiting; the claim is simply not yet true of anything on npm.',
             ],
             [
-              '478 unit tests are still jsdom',
-              'getTotalLength is stubbed to a constant and IntersectionObserver is faked. They verify engine arithmetic. The 76 Playwright tests are what cover browser behaviour.',
+              '531 unit tests are still jsdom',
+              'getTotalLength is stubbed to a constant and IntersectionObserver is faked. They verify engine arithmetic. The 175 Playwright tests per engine are what cover browser behaviour, and a separate suite with no DOM at all covers what happens on a server.',
             ],
             [
-              'Three APIs still have no browser coverage',
-              'Group / Sequence / Timeline and Cinematic are unit-tested only, and scrollAnimate has its own native CSS fast path that has never been checked for parity — the existing parity test covers scrollDraw’s. Every other entry point now has browser coverage.',
+              'The wrappers are tested through their contracts, not their build pipelines',
+              'All eight now mount for real and are held to the same contract — the engine runs, unmounting leaks no observer and no frame loop, re-mounting works. But Svelte is exercised through its action functions rather than a compiled component, and Angular through its ref classes rather than a running Angular app. That is the whole public surface in both cases, and it is still not the same as a real build.',
+            ],
+            [
+              'Changing an option after mount does nothing in most wrappers',
+              'Only the Svelte actions re-create the engine when their parameters change, because Svelte calls update() for you. React, Vue, Solid and Angular read their options once on mount, so a changed prop never reaches the running engine. Defensible — re-creating on every render would thrash — but undocumented and surprising. The tests pin it so it cannot change by accident while the decision is open.',
             ],
             [
               'This page found a bug the e2e suite missed',
               'Section 06 kept reporting a constant 0.0201 offset. Trigger points were cached at init and only recomputed on a window resize, so a 21px layout shift during hydration left the JS engine permanently offset while the native CSS path stayed correct. Now fixed with a ResizeObserver — but only a busy, real page surfaced it, which says something about how much the isolated fixtures can prove.',
             ],
             [
-              'Dev warnings are silent in CDN builds',
-              'Without a bundler there is no NODE_ENV to read, so IS_DEV is false and warnings are suppressed. Safe, but a separate dev CDN build would be better. This now matters more: a zero-length trigger window — the scrollHorizontal defect in section 10 — is reported as a dev warning, and a CDN user would never see it.',
+              'Dev warnings still need opting into',
+              'They were unreachable for CDN users entirely: IS_DEV is derived from process.env.NODE_ENV, and process does not exist in a browser without a bundler. 2.10.0 ships svg-scroll-draw.dev.global.js, which reports them — but you have to know to load it, and the production bundle has them removed at build time.',
             ],
             [
-              'The framework wrappers are still untested end to end',
-              'Around 1,000 lines across React, Vue, Svelte, Solid, Angular, Astro and Nuxt, excluded from coverage because jsdom cannot mount them. They are thin adapters, but "thin" is an assumption nobody has tested, and they are what most users actually touch.',
-            ],
-            [
-              'scrollHorizontal’s default distance ignores scrollContainer',
-              'It subtracts window.innerWidth even when a nested scroll container is passed, so those callers have to supply distance by hand — as section 10 does. Found while building that section; not yet fixed.',
+              'Three fixes from 2.10.0 are not demonstrated here',
+              'The native-vs-JS easing divergence (up to 0.069 apart, on the default easing), a finished sequence reporting 0%, and split: "lines" deleting the spaces between words. All three are covered by the browser suite and fixed; none has a section on this page yet, which is exactly the gap this page exists to close.',
             ],
           ].map(([t, d]) => (
             <li key={t} className="flex gap-3">
@@ -552,8 +552,9 @@ export default function VerifyPage() {
       <footer className="px-4 sm:px-6 md:px-12 py-12">
         <div className="max-w-4xl mx-auto">
           <p className="text-[12px] font-mono text-graphite-border">
-            Branch <code>phase0-production-ready</code> · 478 unit tests + 76 browser
-            tests per engine · 27 mutations, each caught by the one test named for it ·{' '}
+            v2.10.0, merged to <code>main</code> · 531 unit tests + 175 browser tests
+            per engine (525 runs across Chromium, Firefox and WebKit) · 56 mutations,
+            each caught by the one test named for it · 91% line coverage ·{' '}
             <code>npm run verify</code> and <code>npm run test:e2e</code> both exit 0
           </p>
         </div>

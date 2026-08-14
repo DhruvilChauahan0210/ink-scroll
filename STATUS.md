@@ -3,7 +3,7 @@
 > Current version: **2.10.0** — staged, not yet published (2.9.0 is the published one)
 > Tests: **531 unit** across 25 suites · **175 browser tests** per engine (525 runs
 > across Chromium/Firefox/WebKit) · **56 mutations**, each caught by the one test
-> named for it · **91% line coverage**
+> named for it · **91.3% line coverage** (gate 90/90/82/82)
 > Bundle: **9.0 KB gzipped** (main entry; per-API entries from 0.2 KB) · zero runtime dependencies
 > Last updated: 2026-08-14
 
