@@ -1,104 +1,110 @@
 # Next Session Plan — svg-scroll-draw
 
-> Updated: 2026-08-14
+> Updated: 2026-08-14 (third pass that day)
 
 ---
 
 ## Current state
 
-**Library: v2.9.0 published to npm. 478 unit tests + 76 browser tests per engine
-(228 runs across Chromium/Firefox/WebKit). Unreleased work sits on
-`phase0-production-ready`.**
+**2.10.0 is prepared and unpublished. Phase 2 is complete — every priority, not
+just the coverage ones.** The work sits on `phase0-production-ready`.
 
-Phases 0 (honesty & hygiene) and 1 (real browsers) are complete. **Phase 2
-Priority 1 — browser coverage for the untested APIs — is nearly complete**:
-`scrollReveal`, `scrollPin`, `scrollSnap`, `scrollText`, `scrollCounter`,
-`scrollProgress`, `scrollParallax`, `scrollVideo` and `scrollHorizontal` now have
-real-browser coverage, and `scripts/mutation-check.mjs` proves each new test fails against a
-deliberately broken build (27/27 mutations caught).
+Every entry point the package exports now has real-browser coverage in Chromium,
+Firefox and WebKit, plus an SSR suite that runs with no DOM at all. The mutation
+harness proves each new test fails against a deliberately broken build.
 
-Four defects and two harness faults came out of it — see CHANGELOG `[Unreleased]`.
-The worst: `scrollHorizontal` never moved the track at all in the CSS arrangement
-its own docs prescribe. The plan's estimate that examining an API in a real browser
-finds real bugs held.
+Ten defects came out of writing that coverage. The ones a user would have hit:
 
-The demo site is caught up too: every option this branch added is documented, and
-`/verify` proves all three phases live (sections 10–12 for this one). Verified in a
-real browser against a production build, not assumed.
+- **Both native fast paths ran the wrong easing curve** — the CSS keyword of the
+  same name, which is a different curve, up to **0.069** apart. On
+  `scrollAnimate`'s default easing, so Chrome and Safari rendered the same page
+  differently.
+- **The CDN bundle silently dropped `<scroll-draw>`** — `sideEffects` listed only
+  the built output, so the bundler tree-shook the custom element out of the exact
+  file the README tells CDN users to load.
+- **Importing the web component on a server crashed the render** —
+  `extends HTMLElement` at module scope, evaluated on import.
+- **Re-measuring while scrolled moved the trigger window** for every
+  `scrollContainer` caller: a `scrollHorizontal` strip scrubbed halfway snapped
+  back to its first panel on a resize. Three engines, three copies of the same
+  arithmetic.
+- **`split: 'lines'` deleted the spaces between words** — "Every word here"
+  rendered as "Everywordhere". Invisible in jsdom, where there is only ever one
+  line.
+- **A finished sequence reported 0% progress**, and its `pause`/`resume`/`seek`
+  became silent no-ops.
+- Plus: `scrollHorizontal`'s default distance ignoring `scrollContainer`,
+  `scrollDrawTimeline.destroy()` leaving paths frozen mid-draw, its time-driven
+  `loop` ignoring `prefers-reduced-motion`, and Astro's auto-init throwing in
+  server frontmatter.
+
+Unit coverage was ratcheted alongside: `group` 50→96%, `snap` 81→95%, `text`
+80→96%, `devtools` 47→95%, overall 85→91%.
 
 ---
 
 ## What is left
 
-### 0. Push the branch — blocks everything else reaching anyone
-The branch has **no upstream and has never been pushed**, so nothing above is live:
-not the fixes, not the docs, not even Phase 0/1's `/verify` page. CI has therefore
-never run the e2e job remotely. This is one command and it gates the rest.
+### 1. Publish 2.10.0
+Everything below is prepared — version strings, changelog entry and dates are all
+done, and `npm run verify` is green. Two things gate the actual publish:
 
-### 1. Finish Priority 1 — the last of the browser coverage
-- [ ] Group / Sequence / Timeline (`group` is at 50% lines, the weakest in the library)
-- [ ] `Cinematic` — story JSON → scene timing
-- [ ] `scrollAnimate`'s own native CSS fast path. It has one and it has never been
-      checked; the existing parity test covers `scrollDraw`'s only.
+- [ ] **Watch CI go green remotely.** The branch is pushed, but the e2e job has
+      still never run outside this laptop. The suite now builds framework fixture
+      bundles in `globalSetup`, which is new surface for CI to trip over — it
+      needs `dist/` to exist first, so the workflow must build the library before
+      running the browser tests.
+- [ ] **`NPM_TOKEN` in repo secrets**, for the provenance-signed release workflow.
+      Without it the release job cannot publish.
 
-### 2. Priority 2 — framework wrappers end to end
-~1,000 lines across React, Vue, Svelte, Solid, Angular, Astro, Nuxt and the web
-component, all excluded from coverage because jsdom cannot mount them. Mount,
-unmount cleanup (no leaked observers or rAF loops), prop reactivity, SSR safety.
-They are thin adapters, but "thin" is an assumption nobody has tested — and they
-are what most users actually touch.
+Then tag and let the workflow do it. Do not publish by hand from a laptop: the
+whole point of that workflow is that the artefact is attested to the commit.
 
-### 3. Priority 3 — correctness debt
-- [ ] **`scrollHorizontal`'s default `distance` ignores `scrollContainer`.** It
-      subtracts `window.innerWidth` regardless, so nested-container callers must
-      pass `distance` by hand. Found while building `/verify` section 10. Small fix,
-      real bug, already documented on the page.
-- [ ] Expose `refresh()` on `scrollDraw` — `scrollPin` and `scrollHorizontal` have it.
-- [ ] Ship a `*.dev.js` CDN build. This matters more now: a zero-length trigger
-      window is reported as a dev warning, and `IS_DEV` is false without a bundler,
-      so the one diagnostic that would have caught the `scrollHorizontal` defect is
-      invisible to exactly the users most likely to hit it.
-- [ ] Ratchet coverage: `group` 50%, `snap` 79%, `text` 80%, `devtools` 47%.
-- [x] Verify the `ResizeObserver` fix beyond Chromium — done, the `scrollPin` spec
-      exercises it in Firefox and WebKit.
+### 2. Site catch-up — `/verify` stops three fixes short
+`/verify` is the page that shows each claim being true in a real browser, and it
+still ends at the horizontal-scroll fix. Missing sections, in rough order of how
+convincing they are:
 
-### 4. Release 2.10.0 — the site is ready, so this is version-only
-Publish-day checklist, verified against the code:
+- [ ] Native-vs-JS easing parity — the same `ease-out` animation on both paths
+      side by side with the live delta. Before the fix that read ~0.069.
+- [ ] A finished `scrollDrawSequence` reporting 100%.
+- [ ] `split: 'lines'` keeping its spaces, since it is the one users can see
+      without instrumentation.
 
-| File | Line | What |
-|---|---|---|
-| `apps/demo/src/app/page.tsx` | 42 | JSON-LD `softwareVersion` |
-| `apps/demo/src/app/page.tsx` | 151 | hero npm badge |
-| `apps/demo/src/app/page.tsx` | 1142 | footer badge |
-| `apps/demo/src/app/changelog/page.tsx` | 400 | header badge |
-| `apps/demo/src/components/DocsPage.tsx` | 250 | header badge |
-| `apps/demo/src/components/MobileMenu.tsx` | 151 | `v2.9.0 · MIT · ~9 KB` |
+Docs-page additions worth making at the same time:
+- [ ] An easing with no CSS equivalent (`spring`, `bounce`, `elastic`, any
+      function) declines the fast path and stays on the JS engine. That is now
+      load-bearing behaviour rather than an implementation detail.
+- [ ] The `svg-scroll-draw.dev.global.js` CDN build (README has it; the docs page
+      does not).
+- [ ] `refresh()` on `scrollDraw` / `scrollDrawTimeline` / the group APIs, and
+      `respectReducedMotion` on `scrollDrawTimeline`.
 
-Plus: move `tag: 'Latest'` / `tagColor: 'bg-lime-glow'` onto the 2.10.0 changelog
-entry and set its real date; move `[Unreleased]` under 2.10.0 in `CHANGELOG.md`; bump
-`packages/svg-scroll-draw/package.json`; add `NPM_TOKEN` to repo secrets for the
-provenance-signed release workflow.
+### 3. Option reactivity across the wrappers — a decision, not a bug
+The framework spec pins today's behaviour: only the **Svelte** actions re-create
+the engine when their options change, because Svelte calls `update()` for you.
+React, Vue, Solid and Angular all read their options once on mount
+(`useEffect(…, [])`, `onMounted`, `onMount`, `init()`), so changing a prop
+afterwards does nothing at all.
 
-**Do NOT bump** `page.tsx:986,993` or `DocsPage.tsx:60,1711,1773` — those are
-"introduced in" markers. Changing them would falsely claim `scrollProgress` and
-`scrollHorizontal` are new in 2.10.0.
+That is defensible — re-creating on every render would thrash, since an inline
+options object is a new identity each time — but it is undocumented and
+surprising. Either document it per wrapper, or give the components a deliberate
+`key`-style opt-in. Worth deciding before the migration guides are written, since
+they will show prop-driven examples.
 
-### 5. Pre-existing doc debt — older than this branch
-- [ ] `autoplay` on `scrollDraw` is undocumented on the docs page.
-- [ ] `scrollVideo` has never had an option table; `preload` and `onReady` are
-      undocumented. (`node scripts/check-claims.mjs` reports the option gaps.)
-
-### 6. Priorities 4–5 — positioning and docs, deliberately last
-- [ ] **Rename decision.** Repo `ink-scroll`, package `svg-scroll-draw`, docs "a
-      scroll animation platform". 21 entry points, most unrelated to SVG; nobody
-      searching npm for "scroll reveal" finds it. Recommendation stands: publish
-      under a new name with `svg-scroll-draw` as a deprecated alias. Irreversible,
-      so it is your call.
-- [ ] Migration guides from GSAP ScrollTrigger, AOS and ScrollReveal.js — the
-      highest-intent traffic there is.
-- [ ] Real-world recipes rather than option tables.
-- [ ] Auto-generate the README size table from `npm run size --write`.
-- [ ] Document the jump-scroll asymmetry in the docs, not only in a test comment.
+### Known browser differences, pinned rather than fixed
+- Past the end of a `view()` range, Chromium and WebKit hold the animation's end
+  state while **Firefox** treats the now-inactive timeline as unresolved and holds
+  the *start* state instead — the same card reads 1 in Chrome and 0 in Firefox.
+  Not visible: the `cover` range spans exactly the offsets where any part of the
+  element is in the scrollport, so the engines only disagree while it is off-screen,
+  and it recovers on the frame it re-enters. `group.spec.ts` asserts that property
+  rather than a browser name, so a Firefox fix will not fail the suite.
+- The jump-scroll asymmetry from Phase 1 still stands (`parity.spec.ts`), and now
+  bites the tests too: the JS engine only writes while the element is intersecting,
+  so a spec that jumps *past* a target instead of scrolling through it sees an
+  undrawn element. Walk the offsets.
 
 ### Conventions worth keeping
 
@@ -106,7 +112,18 @@ provenance-signed release workflow.
   `e2e/fixtures/_probe.mjs` (parse in the page, assert on numbers in the spec).
 - Add a mutation to `scripts/mutation-check.mjs` for every new behaviour asserted.
   A `MISSED` result means either the test is weak or the mutated code is dead — the
-  counter's redundant initial write was found exactly that way.
+  counter's redundant initial write was found exactly that way. There is a third
+  case now: a difference too small for a browser test to resolve. Substituting the
+  CSS keyword for `ease-in-out` is wrong by 0.0119, inside the 0.02 the parity specs
+  must allow for sub-frame timing, so that curve is pinned in
+  `src/__tests__/css-easing.test.ts` (tolerance 1e-3) and the harness carries a
+  comment saying why it has no browser mutation. Prefer that to loosening a
+  tolerance or leaving a permanent MISSED.
+- Anything time-driven cannot be checked with a sweep — the replay can start and
+  finish between two `read()` calls. `timeline.html` instead has the page count the
+  movement itself, every frame, and only counts changes that happen while
+  `window.scrollY` did not move: that is the exact claim ("it animated without
+  scroll input"), and it cannot be raced.
 - Fixture arithmetic assumes the 900x800 viewport pinned per-project in
   `e2e/playwright.config.ts`. Assert the geometry in the first test of each spec so
   a layout drift fails loudly instead of silently sampling the wrong offsets.
@@ -178,10 +195,9 @@ provenance-signed release workflow.
 ## Remaining tasks
 
 ### What's left
-See "Immediate next steps" at the top of this file — the ordering now comes from
-`PHASE-2-PLAN.md`. The three items previously listed here (horizontal scroll
-sections, velocity detection, `scrollPin` ResizeObserver auto-refresh) have all
-shipped.
+See "What is left" at the top of this file. Phase 2 is closed; the queue after
+publishing is Priorities 4–5 in `ROADMAP.md` — the naming decision, then the
+migration guides and recipes.
 - More blog posts targeting "GSAP alternative" searches
 
 ### TASK 2 — Distribution & growth
@@ -192,7 +208,12 @@ shipped.
 ---
 
 ## Guardrails
-- **Don't publish without bumping version** — next publish = v2.10.0
+- **Don't publish without bumping version** — 2.10.0 is already staged in
+  `package.json`, the changelog and every site badge, so the next publish after it
+  is v2.11.0
+- **Publish through the release workflow, not from a laptop** — the provenance
+  attestation is the point of it
 - **Don't post to external platforms** — user posts manually
 - **Always update STATUS.md + ROADMAP.md + CHANGELOG.md + NEXT-SESSION-PLAN.md after any code change**
-- Accuracy: ~9 KB gzipped, 478 tests, zero dependencies, MIT, v2.9.0
+- Numbers are checked, not remembered: `node scripts/check-claims.mjs` reads the
+  suites and fails if any doc disagrees. Run it rather than editing counts by hand.

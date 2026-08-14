@@ -57,6 +57,14 @@ const NAV_GROUPS = [
     items: [{ id: 'use-scroll-draw-progress', label: 'useScrollDrawProgress' }],
   },
   {
+    label: 'v2.10.0',
+    items: [
+      { id: 'instance-refresh',    label: 'refresh()' },
+      { id: 'timeline-reduced-motion', label: 'Timeline & reduced motion' },
+      { id: 'cdn-dev-build',       label: 'CDN dev build' },
+    ],
+  },
+  {
     label: 'v2.9.0',
     items: [
       { id: 'scroll-progress',    label: 'scrollProgress' },
@@ -247,7 +255,7 @@ export function DocsPage() {
           <Link href="/examples" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Examples</Link>
           <Link href="/blog" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Blog</Link>
           <Link href="/playground" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">⚡ Playground</Link>
-          <a href={NPM} target="_blank" rel="noopener noreferrer" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono whitespace-nowrap">v2.9.0</a>
+          <a href={NPM} target="_blank" rel="noopener noreferrer" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono whitespace-nowrap">v2.10.0</a>
           <a href={GH} target="_blank" rel="noopener noreferrer" className="text-sm px-4 py-1.5 rounded-full bg-pitch-black text-light-linen hover:bg-graphite-border transition-colors font-medium whitespace-nowrap">GitHub →</a>
         </div>
 
@@ -1154,8 +1162,19 @@ export function ParallaxSection() {
             </p>
             <Sub>Eligible for native CSS (compositor path)</Sub>
             <p className="text-sm text-graphite-border leading-relaxed mb-4">
-              Default trigger, a named easing, optional{' '}
-              <code className="font-mono text-pitch-black">fade</code>, forward or reverse direction.
+              Default trigger, optional{' '}
+              <code className="font-mono text-pitch-black">fade</code>, forward or reverse direction,
+              and one of four easings:{' '}
+              <code className="font-mono text-pitch-black">linear</code>,{' '}
+              <code className="font-mono text-pitch-black">ease-in</code>,{' '}
+              <code className="font-mono text-pitch-black">ease-out</code>,{' '}
+              <code className="font-mono text-pitch-black">ease-in-out</code>. Those four are emitted as
+              CSS timing functions that reproduce this library&apos;s own curves — <em>not</em> the CSS
+              keywords of the same name, which are different curves and differ by up to 0.069.
+              Any other easing (<code className="font-mono text-pitch-black">spring</code>,{' '}
+              <code className="font-mono text-pitch-black">bounce</code>,{' '}
+              <code className="font-mono text-pitch-black">elastic</code>, or a function) declines the
+              fast path and stays on the JS engine rather than being approximated.
             </p>
             <Sub>Falls back to JS engine automatically</Sub>
             <p className="text-sm text-graphite-border leading-relaxed mb-4">
@@ -1705,6 +1724,88 @@ function Hero() {
             </CodeBlock>
 
             <Note>The same <code className="font-mono text-[0.85em]">create*</code> pattern is available for all v2 hooks: <code className="font-mono text-[0.85em]">createScrollCounter</code>, <code className="font-mono text-[0.85em]">createScrollVideo</code>, <code className="font-mono text-[0.85em]">createScrollText</code>.</Note>
+          </DocSection>
+
+          {/* ── v2.10.0 — refresh() ─────────────────────────── */}
+          <DocSection id="instance-refresh" tag="v2.10.0" heading="refresh()">
+            <p className="text-sm text-graphite-border leading-relaxed mb-2">
+              Re-measure after a layout change: path lengths, and the scroll trigger window.
+              The engine already re-measures on <code className="font-mono text-[0.85em]">resize</code>,
+              on <code className="font-mono text-[0.85em]">orientationchange</code>, and through a{' '}
+              <code className="font-mono text-[0.85em]">ResizeObserver</code> on the document element —
+              but none of those fire for a change that leaves the document height alone, such as a tab
+              switching, a sibling collapsing, or a font swapping inside a fixed-height box.
+            </p>
+            <CodeBlock file="refresh.js">
+{`const draw = scrollDraw('#diagram');
+
+// After swapping the SVG, or revealing a hidden tab panel:
+draw.refresh();
+
+// Available on the timeline and the group APIs too
+const group = scrollDrawGroup(['#a', '#b']);
+group.refresh();  // reaches every member`}
+            </CodeBlock>
+            <Note>
+              Available on <code className="font-mono">scrollDraw</code>,{' '}
+              <code className="font-mono">scrollDrawTimeline</code>, the group and sequence APIs,{' '}
+              <code className="font-mono">scrollPin</code> and{' '}
+              <code className="font-mono">scrollHorizontal</code>. It is optional on the shared
+              instance type, because a few instances are fan-outs or SSR stubs — use{' '}
+              <code className="font-mono">instance.refresh?.()</code> if you hold one of unknown origin.
+            </Note>
+          </DocSection>
+
+          {/* ── v2.10.0 — timeline reduced motion ────────────── */}
+          <DocSection id="timeline-reduced-motion" tag="v2.10.0" heading="Timeline & reduced motion">
+            <p className="text-sm text-graphite-border leading-relaxed mb-2">
+              <code className="font-mono text-[0.85em]">scrollDrawTimeline</code> now takes{' '}
+              <code className="font-mono text-[0.85em]">respectReducedMotion</code> (default{' '}
+              <code className="font-mono text-[0.85em]">true</code>), and it applies to the time-driven{' '}
+              <code className="font-mono text-[0.85em]">loop</code> only.
+            </p>
+            <p className="text-sm text-graphite-border leading-relaxed mb-2">
+              The two halves of the API deserve different answers. Scroll scrubbing advances 1:1 with the
+              user&apos;s own input — direct manipulation, not motion played at them — so it keeps working.
+              The loop replays the whole timeline off a timer with no scroll input at all, which is
+              autonomous motion, so with reduced motion requested it simply does not start. The preference
+              is tracked live, so toggling the OS setting takes effect without a reload.
+            </p>
+            <CodeBlock file="timeline.js">
+{`scrollDrawTimeline('#diagram', {
+  tracks: [{ selector: '.line', from: 0, to: 1 }],
+  loop: true,
+  loopDuration: 1500,
+
+  // Default. Set false to loop regardless of the preference.
+  respectReducedMotion: true,
+});`}
+            </CodeBlock>
+          </DocSection>
+
+          {/* ── v2.10.0 — CDN dev build ─────────────────────── */}
+          <DocSection id="cdn-dev-build" tag="v2.10.0" heading="CDN development build">
+            <p className="text-sm text-graphite-border leading-relaxed mb-2">
+              A second CDN bundle that reports mistakes. The production build&apos;s warnings are
+              compiled out, and before 2.10.0 there was no other build — the warnings were gated on{' '}
+              <code className="font-mono text-[0.85em]">process.env.NODE_ENV</code>, and{' '}
+              <code className="font-mono text-[0.85em]">process</code> does not exist in a browser
+              without a bundler, so a <code className="font-mono text-[0.85em]">&lt;script src&gt;</code>{' '}
+              user could never see one.
+            </p>
+            <CodeBlock file="index.html">
+{`<!-- While developing: unminified, and it tells you what is wrong -->
+<script src="https://unpkg.com/svg-scroll-draw/dist/cdn/svg-scroll-draw.dev.global.js"></script>
+
+<!-- In production: minified, silent -->
+<script src="https://unpkg.com/svg-scroll-draw/dist/cdn/svg-scroll-draw.global.js"></script>`}
+            </CodeBlock>
+            <Note>
+              What it reports: a path with no stroke, a selector that matches nothing, a fill that will
+              obscure the stroke, a <code className="font-mono">morphTo</code> whose commands do not
+              correspond — and a trigger window with zero length, which is an element that looks
+              configured and will never move.
+            </Note>
           </DocSection>
 
           {/* ── v2.9.0 — scrollProgress ─────────────────────── */}

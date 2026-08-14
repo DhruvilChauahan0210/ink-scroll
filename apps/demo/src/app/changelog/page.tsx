@@ -28,29 +28,40 @@ const NPM = 'https://www.npmjs.com/package/svg-scroll-draw';
 
 const RELEASES = [
   {
-    // Publish checklist: move `tag: 'Latest'` / `tagColor: 'bg-lime-glow'` down to
-    // this entry from 2.9.0, and set the real date. The item list is final.
     version: '2.10.0',
-    date: 'Unreleased',
-    tag: 'Next',
-    tagColor: 'bg-subtle-ash',
+    date: 'August 2026',
+    tag: 'Latest',
+    tagColor: 'bg-lime-glow',
     items: [
+      { type: 'fix', text: 'Both native CSS fast paths ran a different easing curve from the JS engine they replace. ease-in and ease-out here are quadratics; the CSS keywords of the same name are fixed cubic-beziers, and they differ by up to 0.069 — around 7 points of progress mid-scroll. The fast path only engages where the browser supports animation-timeline: view(), so the same page animated one way in Chrome and Firefox and a measurably different way in Safari, which always falls back to the JS engine. scrollAnimate defaults to ease-out, so this was the default configuration. Both engines now emit a timing function that reproduces the JS curve exactly.' },
+      { type: 'fix', text: 'The CDN bundle silently dropped the <scroll-draw> web component. The package marked only the built output as having side effects, so the bundler tree-shook the custom element out of the very file the README tells CDN users to load — the element simply never registered.' },
+      { type: 'fix', text: 'Importing svg-scroll-draw/web-component on a server threw ReferenceError: HTMLElement is not defined, taking the whole render down. The class is now defined inside the same guard as the registration, so it degrades to a no-op like every other entry point.' },
+      { type: 'fix', text: 'A finished scrollDrawSequence or scrollAnimateSequence reported 0% progress: the active-step cursor walked past the end of the array, so getProgress() returned 0 at the exact moment everything had completed, and pause(), resume() and seek() became silent no-ops.' },
+      { type: 'fix', text: 'Any re-measure while scrolled shifted the trigger window for custom scrollContainer callers. The element offset inside a scroll container already includes the scroll position, and it was being added a second time — so a resize mid-scroll moved the window by however far the user had scrolled. A scrollHorizontal strip scrubbed halfway snapped back to its first panel with no scrolling at all. Three engines had their own copy of the arithmetic, and all three of it.' },
+      { type: 'fix', text: 'scrollHorizontal’s default distance ignored scrollContainer, subtracting the window width regardless — so inside a container narrower than the viewport the strip overshot the last panel and parked on empty space, and every nested-container caller had to pass distance by hand.' },
+      { type: 'fix', text: 'split: \'lines\' in scrollText threw away the spaces between words. It groups word spans by offsetTop and moved only the words, leaving behind the whitespace spans the splitter creates to hold the gaps open, so "Every word here" rendered as "Everywordhere". Only visible with real layout, which is why jsdom never saw it.' },
+      { type: 'fix', text: 'scrollDrawTimeline.destroy() left every path frozen on its last frame, and with fade also half-transparent, for the rest of the page’s life. It now restores what it wrote, like every other module.' },
+      { type: 'new', text: 'refresh() on scrollDraw, scrollDrawTimeline and the group APIs — re-measure path lengths and the trigger window after a layout change that fires no resize, such as a tab switching or a font swapping inside a fixed-height box. scrollPin and scrollHorizontal already had it.' },
+      { type: 'new', text: 'respectReducedMotion on scrollDrawTimeline (default true), covering the time-driven loop only. Scroll scrubbing advances 1:1 with the user’s own input and keeps working; the loop replays off a timer with no scroll input at all, which is autonomous motion, and it had no check whatsoever.' },
+      { type: 'new', text: 'A development CDN build — svg-scroll-draw.dev.global.js. IS_DEV was derived from process.env.NODE_ENV, and process does not exist in a browser without a bundler, so every warning this library has was invisible to exactly the users with the fewest other diagnostics. The production CDN build now drops those warnings at build time instead of shipping and skipping them.' },
+      { type: 'new', text: 'Browser coverage for all eight framework wrappers — React, Vue, Solid, Svelte, Angular, Astro, Nuxt and the web component — mounted for real and held to one contract: the engine runs, unmounting stops it (no leaked observers, no leaked frame loop), re-mounting works, and option changes reach the engine only where the wrapper says they do. Roughly a thousand lines that had been excluded from coverage because jsdom cannot mount them.' },
+      { type: 'new', text: 'An SSR suite that runs with no DOM at all, covering every entry point: importing must not throw, and every public API must return an inert instance rather than reaching for document. Astro’s auto-init helpers defaulted their root to document at call time, so calling one from component frontmatter — on the server, which is Astro’s default — threw instead of doing nothing.' },
       { type: 'fix', text: 'scrollHorizontal never moved the track in its own documented setup. The default trigger window was measured against the track, and a position:sticky stage pins that track at exactly one stage tall — so both ends resolved to the same scroll position, clamping progress at 0 forever. It had 100% line coverage in jsdom the whole time it was broken: every rect there is 0, so the window is equally degenerate and looks identical to a working one. The trigger is now measured from the container that actually holds the scroll room.' },
       { type: 'new', text: 'triggerElement on scrollHorizontal and scrollAnimate — measure the trigger window from an element other than the animated one. Needed when the animated element is sticky-pinned and cannot supply the scroll length itself. Setting it disables the native CSS fast path, since animation-timeline: view() can only measure its own subject.' },
       { type: 'new', text: 'respectReducedMotion on scrollAnimate (default true) and scrollHorizontal (default false). Horizontal scrubbing opts out deliberately: the transform advances only as the user scrolls, 1:1 with their input, so it is direct manipulation rather than motion that plays at them — and holding a final state instead would leave every panel but one unreachable inside the sticky overflow:hidden container, hiding the content from exactly the people who asked for less motion.' },
       { type: 'fix', text: 'destroy() left the last animated frame’s inline styles on the element. Destroying anything mid-animation froze it there permanently — a card destroyed at 34% stayed at opacity 0.34 and offset by 21px for the rest of the page’s life, which is worse than never having animated it. Affects scrollReveal, scrollAnimate and scrollParallax, and it also made scrollReveal’s documented "restore original styles" untrue.' },
       { type: 'fix', text: 'scrollSnap fired onSnap twice for a single snap. The scroll event produced by its own animated scroll was treated as a fresh user gesture. Guaranteed under reduced motion and easing-dependent otherwise — a public callback that fires once or twice depending on the curve is worse than either.' },
       { type: 'new', text: 'A zero-length trigger window is now a development warning rather than a silently inert element. That is the defect class above: everything looks configured and nothing ever moves.' },
-      { type: 'new', text: '46 new browser tests — 30 to 76 per engine, on Chromium, Firefox and WebKit. scrollReveal, scrollPin, scrollSnap, scrollText, scrollCounter, scrollProgress, scrollParallax, scrollVideo and scrollHorizontal all gained real-browser coverage. scrollVideo verifies the painted frame against currentTime by canvas readback; scrollProgress drives real calc() widths off its custom properties instead of reading the values back in JS.' },
-      { type: 'new', text: 'Mutation harness (scripts/mutation-check.mjs) — patches one line of source, rebuilds, and requires the single test named for that behaviour to fail. 27 mutations, all caught, including a regression guard for every fix above.' },
+      { type: 'new', text: 'Real-browser coverage for every entry point — 30 to 175 tests per engine on Chromium, Firefox and WebKit. Every API and all eight framework wrappers are now exercised in a real browser rather than in jsdom, where getTotalLength() is stubbed and every rect is 0. scrollVideo verifies the painted frame against currentTime by canvas readback; scrollProgress drives real calc() widths off its custom properties instead of reading the values back in JS.' },
+      { type: 'new', text: 'Mutation harness (scripts/mutation-check.mjs) — patches one line of source, rebuilds, and requires the single test named for that behaviour to fail. 56 mutations, all caught, including a regression guard for every fix in this release.' },
       { type: 'fix', text: 'Two test-harness faults that were producing false results: the "fixed" e2e viewport was silently overridden per browser project, leaving WebKit 100px shorter than the others, and the fixture server refused HTTP Range requests — which makes Chromium report media as non-seekable, so a correct scrollVideo looked completely inert.' },
     ],
   },
   {
     version: '2.9.0',
     date: 'June 2026',
-    tag: 'Latest',
-    tagColor: 'bg-lime-glow',
+    tag: null,
+    tagColor: '',
     items: [
       { type: 'new', text: 'scrollProgress (svg-scroll-draw/progress) — expose scroll progress as CSS custom properties (--scroll-progress, --scroll-progress-eased) on any element. Drive CSS animations, calc() expressions, and gradients with zero per-frame JS beyond the variable write.' },
       { type: 'new', text: 'scrollHorizontal (svg-scroll-draw/horizontal) — drive translateX from vertical scroll. The Apple / Stripe horizontal scroll pattern. Supports distance, easing, trigger, onProgress, refresh().' },
@@ -416,7 +427,7 @@ export default function ChangelogPage() {
           <Link href="/examples" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Examples</Link>
           <Link href="/blog" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Blog</Link>
           <Link href="/playground" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">⚡ Playground</Link>
-          <a href={NPM} target="_blank" rel="noopener noreferrer" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono whitespace-nowrap">v2.9.0</a>
+          <a href={NPM} target="_blank" rel="noopener noreferrer" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono whitespace-nowrap">v2.10.0</a>
           <a href={GH} target="_blank" rel="noopener noreferrer" className="text-sm px-4 py-1.5 rounded-full bg-pitch-black text-light-linen hover:bg-graphite-border transition-colors font-medium whitespace-nowrap">GitHub →</a>
         </div>
 

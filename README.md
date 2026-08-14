@@ -27,8 +27,8 @@ Works in **React · Next.js · Vue 3 · Svelte · Solid · Angular · Nuxt · As
 - **30+ options** — easing, stagger, fade, stroke color/width lerp, fill opacity, clip reveal, morphTo, velocityScale, waypoints, callbacks, repeat, autoReverse, and more
 - **Group / Sequence / Timeline APIs** — animate multiple containers simultaneously, one-after-another, or on independent scroll windows with `loop` for auto-looping after scroll completion
 - **CSS custom property** — `--scroll-draw-progress` is set on every frame so you can drive any CSS animation without a callback
-- **478 tests across 23 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
-- **76 browser tests on top of those**, run against Chromium, Firefox and WebKit in CI. The unit suite runs in jsdom, where `getTotalLength` is stubbed and `IntersectionObserver` is faked — it can check the engine's arithmetic but nothing about real browser behaviour. Both counts are derived from the suites themselves and enforced in CI, so neither can quietly drift out of date
+- **531 tests across 25 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
+- **175 browser tests on top of those**, run against Chromium, Firefox and WebKit in CI. The unit suite runs in jsdom, where `getTotalLength` is stubbed and `IntersectionObserver` is faked — it can check the engine's arithmetic but nothing about real browser behaviour. Both counts are derived from the suites themselves and enforced in CI, so neither can quietly drift out of date
 
 ---
 
@@ -254,6 +254,19 @@ import { createScrollDrawPlugin } from 'svg-scroll-draw/nuxt';
   <svg>…</svg>
 </scroll-draw>
 ```
+
+While you are building, load the **development build** instead:
+
+```html
+<script src="https://unpkg.com/svg-scroll-draw/dist/cdn/svg-scroll-draw.dev.global.js"></script>
+```
+
+Same API, unminified, and it actually reports mistakes — a path with no stroke, a
+selector that matches nothing, a trigger window with zero length (an element that
+looks configured and will never move). The production build above has those
+warnings removed at build time, and until 2.10.0 there was no other build, so a
+`<script src>` user could not see them at all: the warnings were gated on
+`process.env.NODE_ENV`, and `process` does not exist in a browser.
 
 ---
 

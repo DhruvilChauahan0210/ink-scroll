@@ -21,8 +21,11 @@ packages/svg-scroll-draw/   the library — this is what ships to npm
   src/core/                 engine, triggers, easings, env, motion
   src/<api>/                one directory per public API (reveal, pin, snap, …)
   src/<framework>/          thin wrappers (react, vue, svelte, solid, …)
-  src/__tests__/            vitest, jsdom
+  src/__tests__/            vitest, jsdom (+ ssr.test.ts, which runs with no DOM)
   e2e/                      Playwright, real browsers
+    fixtures/               one page per behaviour, plus the shared probe helpers
+    frameworks/             entries for the wrappers that need a bundler
+    build-fixtures.mjs      esbuild step for those, run automatically
 apps/demo/                  Next.js docs + examples site
 ```
 
@@ -40,6 +43,14 @@ First e2e run needs the browsers:
 ```bash
 npx playwright install chromium firefox webkit --prefix packages/svg-scroll-draw
 ```
+
+The browser suite loads the **built** library — the fixtures import
+`/dist/index.mjs`, the same file that ships — so `dist/` has to exist. `npm ci`
+builds it through the package's `prepare` script; after editing `src/`, run
+`npm run build:lib` before the browser tests or you will be testing the previous
+build. The React / Vue / Solid / Nuxt fixtures are bundled from `dist/` by
+`e2e/build-fixtures.mjs`, which Playwright's `globalSetup` runs for you on every
+invocation.
 
 ## Things this repo is strict about
 
@@ -59,6 +70,19 @@ test you have actually watched fail against the old code. A regression test that
 passes on the broken version is worse than none, because it looks like coverage.
 This has already happened once here; see the `startTime = null` history in
 `CHANGELOG.md`.
+
+For anything covered by the browser suite, make that reproducible instead of
+remembered: add an entry to `packages/svg-scroll-draw/scripts/mutation-check.mjs`
+naming the one line to break and the one test that must fail, then run
+`node scripts/mutation-check.mjs <your-id>`. A `MISSED` result means the test is
+weak, the mutated code is dead, or the difference is too small for a browser to
+resolve — all three are worth knowing before the PR, and the third belongs in a
+unit test instead (see the `ease-in-out` note in that file).
+
+**A test that passes on the first run deserves a second look.** Several tests here
+have been written against an assertion that could not fail — a probe that counted
+nothing, a leak check with nothing running to leak. Where it is cheap, assert the
+positive control too: that the thing was moving *before* you tore it down.
 
 **jsdom cannot verify browser behaviour.** The unit tests stub `getTotalLength`,
 fake `IntersectionObserver`, and run where `getBoundingClientRect()` returns

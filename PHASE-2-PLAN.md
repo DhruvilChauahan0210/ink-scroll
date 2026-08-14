@@ -1,8 +1,22 @@
 # Phase 2 plan — make it useful
 
-> Status of the previous phases: **Phase 0 (honesty & hygiene) and Phase 1 (real
-> browsers) are complete** on branch `phase0-production-ready`, 13 commits,
-> unpushed. `npm run verify` and `npm run test:e2e` both exit 0.
+> **Closed on 2026-08-14.** Priorities 1, 2, 3 and 6 are done and staged as
+> 2.10.0; Priorities 4–5 (naming, migration guides, recipes) moved to `ROADMAP.md`
+> as the queue after publishing. Live numbers are in `STATUS.md` — the ones below
+> are left as written so the estimates can still be read against what they were
+> estimating.
+>
+> How the central bet held up: the plan assumed that examining an API in a real
+> browser finds real bugs. Applied to the remaining nine APIs, both native fast
+> paths, all eight framework wrappers and the SSR surface, it found ten more —
+> including one that crashed any server-side import and one where the CDN bundle
+> shipped without the component it advertises. There was no area it was applied to
+> where it found nothing.
+>
+> Status of the previous phases *when this was written*: **Phase 0 (honesty &
+> hygiene) and Phase 1 (real browsers) are complete** on branch
+> `phase0-production-ready`, 13 commits, unpushed. `npm run verify` and
+> `npm run test:e2e` both exit 0.
 >
 > 478 unit tests · 30 browser tests · 85.6% line coverage · 21 entry points
 > · main entry 9.0 KB gzipped

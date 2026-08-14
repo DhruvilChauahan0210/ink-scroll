@@ -4,10 +4,70 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ---
 
-## [Unreleased]
+## [2.10.0] — 2026-08-14
+
+The correctness release. Every entry point in the library, including all eight
+framework wrappers, now has real-browser coverage; almost everything below was
+found by writing that coverage rather than by a bug report.
 
 ### Fixed
 
+- **The CDN bundle silently dropped the `<scroll-draw>` web component.** The
+  `sideEffects` field listed only the built output (`./dist/web-component/*`),
+  but the bundle is built from `src/` — so the bare `import './web-component'`
+  in the CDN entry was tree-shaken away as side-effect-free. The custom element
+  never registered in the one file the README tells `<script src>` users to load.
+- **Importing `svg-scroll-draw/web-component` on a server threw.**
+  `class ScrollDrawElement extends HTMLElement` was evaluated at module scope, and
+  `HTMLElement` does not exist on a server, so an SSR render died with
+  `ReferenceError: HTMLElement is not defined` instead of degrading. The class now
+  lives inside the same guard as the registration.
+- **Any re-measure while scrolled shifted the trigger window for
+  `scrollContainer` callers.** The element's offset inside a scroll container
+  already includes the scroll position, and `computeTriggers` added it again — so
+  a resize, an orientation change or a `refresh()` mid-scroll moved the window by
+  however far the user had scrolled. Measured: a `scrollHorizontal` strip scrubbed
+  halfway snapped back to its first panel with no scrolling at all. Three engines
+  each had their own copy of the arithmetic and therefore three copies of the
+  defect; it now lives once, in `core/utils`.
+- **`scrollHorizontal`'s default `distance` ignored `scrollContainer`**,
+  subtracting `window.innerWidth` regardless. Inside a container narrower than the
+  viewport that overshoots — the strip runs past the last panel and parks on empty
+  space — and every nested-container caller had to pass `distance` by hand, which
+  is not what the option's documented default says.
+- **`split: 'lines'` threw away the spaces between words.** `scrollText` groups
+  word spans by `offsetTop` and moved only the words, leaving behind the
+  whitespace spans the splitter emits to hold the gaps open, then cleared the
+  element — so "Every word here" rendered as "Everywordhere". Invisible to the
+  unit suite: in jsdom every `offsetTop` is 0, so there is one line and no gaps to
+  lose.
+- **`scrollDrawTimeline.destroy()` left the paths frozen on their last frame** —
+  and, with `fade`, half-transparent — for the rest of the page's life. It was the
+  last module that did not restore what it wrote.
+- **Both native CSS fast paths ran a different easing curve from the JS engine
+  they replace.** `ease-in` and `ease-out` here are quadratics (`t²` and
+  `t(2-t)`); the engines handed CSS the *keyword* of the same name, which is a
+  fixed cubic-bézier — `ease-out` is `cubic-bezier(0, 0, 0.58, 1)`. The two differ
+  by up to **0.069**, close to 7 points of progress mid-scroll. Because the fast
+  path only engages where the browser supports `animation-timeline: view()`, the
+  same page animated one way in Chrome and Firefox and a measurably different way
+  in Safari, which always falls back to the JS engine. `scrollAnimate` defaults to
+  `ease-out`, so this was the default configuration rather than an exotic one.
+  The new `core/css-easing` module emits timing functions that reproduce the JS
+  curves: exact cubic-béziers for `ease-in` / `ease-out` (error 3e-7) and a sampled
+  `linear()` for `ease-in-out`, which no single cubic-bézier can express (error
+  5e-4). An easing with no CSS equivalent now declines the fast path rather than
+  substituting a curve the caller did not ask for. Affects `scrollDraw` and
+  `scrollAnimate`, and therefore `scrollReveal` and the group APIs built on them.
+  The existing parity suite could not have caught it — `scrollDraw` defaults to
+  `linear`, so every comparison it made was on the one curve where CSS and JS
+  agree. Both parity fixtures now carry a non-linear pair.
+- **A finished `scrollDrawSequence` / `scrollAnimateSequence` reported 0%
+  progress.** When the last step completed, the internal cursor advanced past the
+  end of the instance array — so `getProgress()` read from `undefined` and returned
+  0 at the exact moment everything had finished, and `pause()`, `resume()` and
+  `seek()` became silent no-ops for the rest of the page's life. The cursor is now
+  clamped to the last step.
 - **`scrollHorizontal` never moved the track, in its own documented setup.** The
   default trigger window (`top top` → `bottom bottom`) was measured against the
   track, and a `position: sticky` stage pins the track at exactly one viewport
@@ -120,9 +180,9 @@ All notable changes to `svg-scroll-draw` are documented here.
 ### Added
 
 - **Playwright test suite across Chromium, Firefox and WebKit** (`npm run test:e2e`),
-  run in CI. The 478 unit tests run in jsdom with `getTotalLength` stubbed and
+  run in CI. The 488 unit tests run in jsdom with `getTotalLength` stubbed and
   `IntersectionObserver` faked, so they verify engine arithmetic and nothing about
-  browser behaviour. Now 76 browser tests per engine (228 runs) covering
+  browser behaviour. Now 118 browser tests per engine (354 runs) covering
   native-vs-JS parity, idle cost, and `scrollReveal`, `scrollPin`, `scrollSnap`,
   `scrollText`, `scrollCounter`, `scrollProgress`, `scrollParallax`, `scrollVideo`
   and `scrollHorizontal`. Notable: reduced motion is exercised through Playwright's real
@@ -131,8 +191,65 @@ All notable changes to `svg-scroll-draw` are documented here.
   value back in JS; and `scrollVideo` verifies the *painted* frame against
   `currentTime` via a canvas readback, so a scrub that sets the property without
   repainting cannot pass.
+- **`refresh()` on `scrollDraw`, `scrollDrawTimeline` and the group APIs.**
+  Re-measures path lengths and the trigger window after a layout change that fires
+  no resize — a tab switching, a sibling collapsing, a font swapping inside a
+  fixed-height box. `scrollPin` and `scrollHorizontal` already had it. Implemented
+  on both engine paths: the JS path rewrites `stroke-dasharray`, the native path
+  also rewrites the `--ssd-len` custom property its keyframes interpolate from.
+- **`respectReducedMotion` on `scrollDrawTimeline`** (default `true`), covering
+  the time-driven `loop` only. The two halves of that API deserve different
+  answers: scroll scrubbing advances 1:1 with the user's own input and keeps
+  working, while `loop` replays the whole timeline off `performance.now()` with no
+  scroll input at all — autonomous motion by any definition, and it had no check
+  whatsoever. Tracked live, so toggling the OS setting takes effect without a
+  reload.
+- **A development CDN build — `dist/cdn/svg-scroll-draw.dev.global.js`.** `IS_DEV`
+  is derived from `process.env.NODE_ENV`, and `process` does not exist in a
+  browser without a bundler, so every warning this library has was unreachable for
+  exactly the users with the fewest other diagnostics — including the zero-length
+  trigger window that would have caught the `scrollHorizontal` defect. The
+  production CDN build now defines the same flag to `false`, so those warnings are
+  dropped at build time instead of shipped and skipped, and it has a size budget
+  for the first time.
+- **Browser coverage for all eight framework wrappers** — React, Vue, Solid,
+  Svelte, Angular, Astro, Nuxt and the web component — closing Phase 2 Priority 2.
+  Roughly a thousand lines that had been excluded from coverage because jsdom
+  cannot mount them. Every wrapper is mounted for real and held to one contract by
+  one parameterised spec: the engine runs, unmounting stops it (no leaked
+  observer, no leaked frame loop), mounting again works, and option changes reach
+  the engine only where the wrapper says they do. React, Vue, Solid and Nuxt are
+  bundled from `dist/` by `e2e/build-fixtures.mjs`; the other four need nothing,
+  because Svelte's wrappers are plain action functions, Angular's are
+  framework-agnostic classes, Astro's are DOM scanners and the web component is a
+  custom element.
+- **An SSR suite that runs with no DOM at all** (`src/__tests__/ssr.test.ts`),
+  covering every entry point: importing must not throw, and every public API must
+  return an inert instance whose methods are safe to call. It found the two SSR
+  defects above. Astro's auto-init helpers also defaulted their root to `document`
+  at call time, so calling one from component frontmatter — on the server, which
+  is Astro's default — threw rather than doing nothing; they now return `[]`.
+- **Browser coverage for the last untested modules**, closing Phase 2 Priority 1:
+  `animate-parity` (`scrollAnimate`'s own native fast path against the JS engine
+  across all four named easings, plus its eligibility gate: ten configurations CSS
+  cannot express, each required to decline, and a control required to accept),
+  `group` (`scrollDrawGroup`, `scrollDrawSequence`, `scrollAnimateGroup`,
+  `scrollAnimateSequence`, `scrollParallaxGroup`), `timeline` and `cinematic`. That
+  takes the browser suite from 76 to 118 tests per engine, 354 runs across the
+  three. `group` was the weakest module in the library at 50% lines, and the jsdom
+  half of that measured little: `scrollParallaxGroup`'s contract is travel =
+  speed × the element's own height, exercised there against a height of 0.
+  - Fan-out is the shared failure mode of every entry point in `group`, so
+    `seek()`, `destroy()` and the sequence gate are each asserted against every
+    member rather than against the group's own report of itself.
+  - Pinned as a real cross-browser difference rather than asserted away: past the
+    end of a `view()` range, Chromium and WebKit hold the animation's end state
+    while Firefox treats the inactive timeline as unresolved and holds the *start*
+    state. The test asserts the property that makes it harmless — the element is
+    off-screen wherever the engines differ, and recovers on re-entry — instead of
+    hard-coding a browser name.
 - **`scripts/mutation-check.mjs`** — patches one line of source per run, rebuilds,
-  and requires the single test named for that behaviour to fail. 27 mutations, all
+  and requires the single test named for that behaviour to fail. 41 mutations, all
   caught. `CONTRIBUTING.md` requires new tests to be watched failing against a
   broken build; this makes that a command instead of a claim that decays.
 - **`scripts/make-fixture-video.mjs`** — regenerates `e2e/fixtures/clip.webm`, the

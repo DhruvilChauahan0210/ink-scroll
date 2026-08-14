@@ -1,6 +1,6 @@
 # svg-scroll-draw — Roadmap
 
-> Last updated: 2026-08-13 — v2.9.0 published; Phase 2 correctness work unreleased
+> Last updated: 2026-08-14 — 2.10.0 prepared; Phase 2 (correctness) complete, unpublished
 >
 > Items marked ✓ are shipped. Remaining items are ordered by value/effort ratio.
 
@@ -138,18 +138,20 @@ of examining a single API in a real browser.
 
 ### Correctness (Phase 2, Priorities 1–3)
 - [x] Browser coverage for `scrollReveal`, `scrollPin`, `scrollSnap`, `scrollText`, `scrollCounter`, `scrollProgress`, `scrollParallax`, `scrollVideo`
-- [x] Mutation harness proving each new test fails against a deliberately broken build (27 mutations)
+- [x] Mutation harness proving each new test fails against a deliberately broken build (56 mutations)
 - [x] `scrollHorizontal` — reduced-motion decision (keeps scrubbing), the zero-length-trigger fix, and browser tests
-- [ ] Browser tests for Group / Sequence / Timeline and `Cinematic`
-- [ ] Parity test for `scrollAnimate`'s own native CSS fast path — it has one and it has never been checked
-- [ ] **Framework wrapper e2e** — ~1,000 lines across 8 wrappers, excluded from coverage because jsdom cannot mount them
-- [ ] Expose `refresh()` on `scrollDraw` (`scrollPin` and `scrollHorizontal` have it)
-- [ ] Ship a `*.dev.js` CDN build — without a bundler `IS_DEV` is false, so CDN users get no diagnostics at all
-- [ ] Ratchet coverage: `group` 50% lines, `snap` 79%, `text` 80%, `devtools` 47%
+- [x] Browser tests for Group / Sequence / Timeline and `Cinematic` — found and fixed the sequence cursor walking off the end (a finished sequence reported 0%)
+- [x] Parity test for `scrollAnimate`'s own native CSS fast path — found and fixed both fast paths running the CSS *keyword* instead of this library's easing curve, up to 0.069 apart. Priority 1 is complete: 118 browser tests per engine
+- [x] **Framework wrapper e2e** — all 8 mounted for real and held to one contract (mount, unmount without leaks, re-mount, option reactivity), plus an SSR suite with no DOM at all. Found the web component crashing any server-side import, the CDN bundle tree-shaking that component away entirely, and Astro's auto-init throwing in frontmatter
+- [x] Expose `refresh()` on `scrollDraw` — and on `scrollDrawTimeline` and the group APIs, on both engine paths
+- [x] Ship a `*.dev.js` CDN build — and define the flag to `false` for the production one, so the warnings are dropped rather than shipped and skipped
+- [x] Ratchet coverage: `group` 50% → 96%, `snap` 81% → 95%, `text` 80% → 96%, `devtools` 47% → 95%; overall 85% → 91%. Writing the `text` tests found `split: 'lines'` deleting the spaces between words
 
 ### Release (Phase 2, Priority 6)
-- [ ] Push `phase0-production-ready`, watch CI go green remotely for the first time
-- [ ] Cut 2.10.0 — user-visible fixes plus new behaviour, no breaking API change
+- [x] Push `phase0-production-ready`
+- [x] Cut 2.10.0 — user-visible fixes plus new behaviour, no breaking API change
+- [ ] Watch CI go green remotely — the e2e job has still never run outside this laptop
+- [ ] `npm publish` (needs `NPM_TOKEN` in repo secrets for the provenance-signed workflow)
 
 ### Reach (Phase 2, Priorities 4–5 — deliberately after the above)
 - [ ] **Naming decision** — repo `ink-scroll`, package `svg-scroll-draw`, docs "a scroll animation platform". 21 entry points, most unrelated to SVG; nobody searching npm for "scroll reveal" finds `svg-scroll-draw`. Recommended: publish under a new name, keeping `svg-scroll-draw` as a deprecated alias that re-exports.
@@ -162,7 +164,7 @@ of examining a single API in a real browser.
 
 ## Priority Order
 
-1. Finish Priority 1 browser coverage — Group / Sequence / Timeline, Cinematic, `scrollAnimate` native parity
-2. Framework wrapper e2e — thin adapters nobody has tested, and what most users actually touch
-3. Correctness debt, then push + green CI + release 2.10.0
-4. Rename, then migration guides and recipes — highest-intent traffic, but building it on unverified code is building on sand
+1. ~~Finish Priority 1 browser coverage~~ — done: Group / Sequence / Timeline, Cinematic and `scrollAnimate` native parity all covered, two defects out of it
+2. ~~Framework wrapper e2e~~ — done: all eight, plus SSR. "Thin adapter" turned out to be hiding two crashes
+3. ~~Correctness debt~~ — done. Remaining: green CI, then publish 2.10.0
+4. Rename, then migration guides and recipes — highest-intent traffic, and now it would be built on verified code
