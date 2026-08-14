@@ -1,13 +1,18 @@
 # Next Session Plan — svg-scroll-draw
 
-> Updated: 2026-08-14 (third pass that day)
+> Updated: 2026-08-14 — **2.10.0 is published to npm** and merged to `main`
 
 ---
 
 ## Current state
 
-**2.10.0 is prepared and unpublished. Phase 2 is complete — every priority, not
-just the coverage ones.** The work sits on `phase0-production-ready`.
+**2.10.0 is published (npm `latest`) and merged to `main`, tagged `v2.10.0`.
+Phase 2 is complete — every priority, not just the coverage ones.**
+
+Published by hand rather than through the release workflow, so this version has
+no provenance attestation. Verified after the fact by unpacking the tarball from
+the registry: both CDN builds present, `<scroll-draw>` registering in the
+production one, and the corrected easing curves in `dist/index.mjs`.
 
 Every entry point the package exports now has real-browser coverage in Chromium,
 Firefox and WebKit, plus an SSR suite that runs with no DOM at all. The mutation
@@ -45,20 +50,19 @@ Unit coverage was ratcheted alongside: `group` 50→96%, `snap` 81→95%, `text`
 
 ## What is left
 
-### 1. Publish 2.10.0
-Everything below is prepared — version strings, changelog entry and dates are all
-done, and `npm run verify` is green. Two things gate the actual publish:
-
-- [ ] **Watch CI go green remotely.** The branch is pushed, but the e2e job has
-      still never run outside this laptop. The suite now builds framework fixture
-      bundles in `globalSetup`, which is new surface for CI to trip over — it
-      needs `dist/` to exist first, so the workflow must build the library before
-      running the browser tests.
-- [ ] **`NPM_TOKEN` in repo secrets**, for the provenance-signed release workflow.
-      Without it the release job cannot publish.
-
-Then tag and let the workflow do it. Do not publish by hand from a laptop: the
-whole point of that workflow is that the artefact is attested to the commit.
+### 1. Release follow-ups
+- [x] Published 2.10.0 to npm, merged to `main`, tagged `v2.10.0`
+- [ ] **`NPM_TOKEN` in repo secrets.** Without it the release workflow cannot
+      publish, which is why this one went out by hand and unattested. Adding it
+      is what makes the *next* release a tag push rather than a manual step.
+- [ ] **Check the `v2.10.0` workflow run.** Pushing the tag triggered
+      `release.yml`, which fails at "Confirm this version is not already
+      published" when the version is already on npm — expected here, cosmetic.
+      What is worth reading in that run is everything *before* that step: it is
+      the first time CI has ever run the browser suite remotely, and the new
+      `globalSetup` bundling step is untested outside this laptop.
+- [ ] Confirm the Vercel deploy from `main` shows v2.10.0 and the new docs
+      sections render.
 
 ### 2. Site catch-up — `/verify` stops three fixes short
 `/verify` is the page that shows each claim being true in a real browser, and it
@@ -71,14 +75,11 @@ convincing they are:
 - [ ] `split: 'lines'` keeping its spaces, since it is the one users can see
       without instrumentation.
 
-Docs-page additions worth making at the same time:
-- [ ] An easing with no CSS equivalent (`spring`, `bounce`, `elastic`, any
-      function) declines the fast path and stays on the JS engine. That is now
-      load-bearing behaviour rather than an implementation detail.
-- [ ] The `svg-scroll-draw.dev.global.js` CDN build (README has it; the docs page
-      does not).
-- [ ] `refresh()` on `scrollDraw` / `scrollDrawTimeline` / the group APIs, and
-      `respectReducedMotion` on `scrollDrawTimeline`.
+The docs page itself is done — it shipped with the release: a v2.10.0 group for
+`refresh()`, the timeline's reduced-motion option and the dev CDN build, and the
+native-CSS section now names the four easings the fast path accepts and says they
+are emitted as this library's curves rather than the CSS keywords. What is
+missing is the *demonstration*, which is what `/verify` is for.
 
 ### 3. Option reactivity across the wrappers — a decision, not a bug
 The framework spec pins today's behaviour: only the **Svelte** actions re-create
