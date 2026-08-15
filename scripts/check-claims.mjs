@@ -35,6 +35,11 @@ const FILES_WITH_TEST_COUNTS = [
   'STATUS.md',
   'apps/demo/src/app/opengraph-image.tsx',
   'apps/demo/src/app/react-scroll-animation/page.tsx',
+  // The homepage was the one place quoting a test count that nothing checked:
+  // it sat at "423 tests" through five releases while the size claim beside it
+  // stayed current, because page.tsx was listed in SIZE_CLAIM_FILES below but
+  // not here. Same file, two claim types, one of them unguarded.
+  'apps/demo/src/app/page.tsx',
 ];
 
 /** Everywhere the main entry's size is advertised in round numbers. */

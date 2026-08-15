@@ -101,47 +101,143 @@ function Bubble({ text, isRight, isBottom }: { text: string; isRight: boolean; i
   );
 }
 
-/* ── Scrolly SVG ─────────────────────────────────────────── */
+/* ── Ink bottle SVG ───────────────────────────────────────
+   An ink bottle holding a quill. The drawing is the artwork supplied for the
+   project; what is added here is the rigging that lets it move:
+
+   · Gradient ids are namespaced (`mascot-glass`, `mascot-cork`). Bare ids like
+     `glass` are document-global once the SVG is inlined, so any other inline
+     SVG declaring the same id would silently repaint this one.
+   · The eyes sit in `.eye-blink-l` / `.eye-blink-r` so the existing blink
+     keyframe drives them, with each pupil and catchlight inside the group so
+     they shut together rather than sliding.
+   · The quill sits in `.mascot-quill`, rotating about the glove so it sways
+     while idle instead of being a static prop.
+
+   The source viewBox is 800×900, an aspect of 0.889 against the component's
+   88×100 frame at 0.88, so it drops in without letterboxing. */
 function ScrollySvg() {
+  /* Every ink-coloured outline in the artwork resolves through one token, so
+     the character re-inks itself for the dark theme instead of relying on a
+     glow to rescue a near-black bottle on a near-black page. */
+  const outline = 'var(--mascot-outline)';
+
   return (
-    <svg width={W} height={H} viewBox="0 0 112 114" fill="none">
-      <ellipse cx="56" cy="109" rx="30" ry="6" fill="#000" opacity="0.10" />
-      <ellipse cx="43" cy="97" rx="13" ry="8" fill="#ff90e8" stroke="#000" strokeWidth="2.5" />
-      <ellipse cx="69" cy="97" rx="13" ry="8" fill="#ff90e8" stroke="#000" strokeWidth="2.5" />
-      <line x1="38" y1="98" x2="38" y2="101" stroke="#000" strokeWidth="1.5" strokeLinecap="round" opacity="0.4" />
-      <line x1="43" y1="99" x2="43" y2="103" stroke="#000" strokeWidth="1.5" strokeLinecap="round" opacity="0.4" />
-      <line x1="48" y1="98" x2="48" y2="101" stroke="#000" strokeWidth="1.5" strokeLinecap="round" opacity="0.4" />
-      <circle cx="24" cy="24" r="12" fill="#ff90e8" stroke="#000" strokeWidth="2.5" />
-      <circle cx="88" cy="24" r="12" fill="#ff90e8" stroke="#000" strokeWidth="2.5" />
-      <circle cx="24" cy="24" r="6"  fill="#f050c4" opacity="0.55" />
-      <circle cx="88" cy="24" r="6"  fill="#f050c4" opacity="0.55" />
-      <circle cx="56" cy="58" r="42" fill="#ff90e8" stroke="#000" strokeWidth="3" />
-      <ellipse cx="42" cy="40" rx="14" ry="10" fill="white" opacity="0.28" transform="rotate(-25 42 40)" />
-      <ellipse cx="56" cy="64" rx="21" ry="16" fill="white" opacity="0.38" />
-      <path d="M 56 16 Q 66 6 71 14 Q 75 21 69 24" stroke="#000" strokeWidth="2.5" fill="none" strokeLinecap="round" />
-      <circle cx="69" cy="24" r="2" fill="#000" />
-      <g className="eye-blink-l">
-        <ellipse cx="38" cy="46" rx="12" ry="13" fill="white" stroke="#000" strokeWidth="2.5" />
-        <circle cx="40" cy="47" r="7" fill="#1a1a1a" />
-        <circle cx="43" cy="43" r="2.8" fill="white" />
-        <circle cx="37" cy="51" r="1.5" fill="#333" />
+    <svg width={W} height={H} viewBox="0 0 800 900" className="mascot-art">
+      <defs>
+        <linearGradient id="mascot-glass" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%"   stopColor="var(--mascot-glass-a)" />
+          <stop offset="55%"  stopColor="var(--mascot-glass-b)" />
+          <stop offset="100%" stopColor="var(--mascot-glass-c)" />
+        </linearGradient>
+        <linearGradient id="mascot-cork" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%"   stopColor="#ffc86f" />
+          <stop offset="100%" stopColor="#d96d35" />
+        </linearGradient>
+      </defs>
+
+      {/* Contact shadow. Kept separate from the body so the body can squash
+          against it without the shadow squashing too. */}
+      <ellipse className="mascot-shadow" cx="420" cy="842" rx="250" ry="28" fill="var(--mascot-shadow)" />
+
+      {/* Left arm assembly. Rotates about the SHOULDER at 300,480 — the
+          previous version pivoted about the glove, which swung the shoulder
+          off the bottle and detached the arm. */}
+      <g className="mascot-arm-l">
+        {/* The quill gets its own smaller counter-rotation about the grip, so
+            it lags the hand rather than moving rigidly with it. That drag is
+            what stops the swing reading as one flat rotating sticker. */}
+        <g className="mascot-quill">
+          <g stroke={outline} strokeWidth="10" strokeLinejoin="round" strokeLinecap="round">
+            <path d="M160 350 C95 260 120 120 275 55 C245 165 225 260 160 350 Z" fill="#8fb2ff" />
+            <path d="M160 350 C190 255 220 160 275 55" fill="none" />
+            <path d="M175 285 L120 245 M190 245 L140 205 M205 205 L160 165 M220 165 L190 125" fill="none" />
+            <path d="M165 350 L145 420" fill="none" />
+            <path d="M145 420 l-8 25 16 -7 12 13 5 -30 z" fill="#d9ecff" />
+          </g>
+        </g>
+
+        <path d="M300 480 C240 485 205 455 175 420" fill="none" stroke="var(--mascot-limb)" strokeWidth="34" strokeLinecap="round" />
+
+        <g stroke={outline} strokeWidth="8" strokeLinejoin="round">
+          <path
+            d="M164 390 C135 372 115 392 118 420 C95 423 94 457 117 466 C101 490 127 510 146 497 C157 519 188 510 190 485 C212 477 209 447 190 438 C202 412 186 390 164 390 Z"
+            fill="#ffe98f"
+          />
+          <path d="M132 430 C150 417 168 426 174 442 M122 458 C144 451 161 458 166 475" fill="none" />
+        </g>
       </g>
-      <g className="eye-blink-r">
-        <ellipse cx="74" cy="46" rx="12" ry="13" fill="white" stroke="#000" strokeWidth="2.5" />
-        <circle cx="76" cy="47" r="7" fill="#1a1a1a" />
-        <circle cx="79" cy="43" r="2.8" fill="white" />
-        <circle cx="73" cy="51" r="1.5" fill="#333" />
+
+      {/* bottle body */}
+      <g stroke={outline} strokeWidth="12" strokeLinejoin="round">
+        <path
+          d="M300 300 C330 282 338 252 338 220 L338 190 L585 190 L585 225 C585 260 598 286 625 306 C670 340 690 420 682 548 C676 654 621 704 515 710 L360 710 C260 705 215 650 220 548 C226 430 247 338 300 300 Z"
+          fill="url(#mascot-glass)"
+        />
+        <path d="M330 216 C390 232 535 232 595 216 L610 165 C540 142 380 142 315 165 Z" fill="#8de6ef" />
+        <path d="M340 188 C405 201 530 201 588 188" fill="none" stroke="#ffffff" strokeWidth="10" opacity=".85" />
+        <path
+          d="M320 270 C390 295 548 295 610 270 C624 264 632 281 621 295 C555 328 385 328 310 296 C298 283 305 267 320 270 Z"
+          fill="#f19a45"
+        />
       </g>
-      <ellipse cx="25" cy="62" rx="10" ry="7" fill="#d040a8" opacity="0.30" />
-      <ellipse cx="87" cy="62" rx="10" ry="7" fill="#d040a8" opacity="0.30" />
-      <ellipse cx="56" cy="60" rx="3.5" ry="2.5" fill="#d040a8" opacity="0.65" />
-      <path d="M 36 68 Q 56 84 76 68" stroke="#000" strokeWidth="3" fill="none" strokeLinecap="round" />
-      <ellipse cx="16" cy="68" rx="10" ry="7" fill="#ff90e8" stroke="#000" strokeWidth="2.5" transform="rotate(-35 16 68)" />
-      <ellipse cx="96" cy="68" rx="10" ry="7" fill="#ff90e8" stroke="#000" strokeWidth="2.5" transform="rotate(35 96 68)" />
-      <rect x="84" y="56" width="22" height="28" rx="3.5" fill="white" stroke="#000" strokeWidth="2" />
-      <rect x="84" y="56" width="22" height="7" rx="3.5" fill="#ff90e8" stroke="#000" strokeWidth="2" />
-      <path d="M 87 72 Q 90.5 67 94 72 Q 97.5 77 94 77" stroke="#000" strokeWidth="1.8" fill="none" strokeLinecap="round" />
-      <line x1="87" y1="81" x2="103" y2="81" stroke="#d1d5dc" strokeWidth="1.2" />
+
+      {/* cork */}
+      <g stroke={outline} strokeWidth="10" strokeLinejoin="round">
+        <path d="M370 80 L550 90 L570 180 L355 170 Z" fill="url(#mascot-cork)" />
+        <path d="M530 96 L610 125 L575 190 L540 180 Z" fill="#c95c3c" />
+        <g fill="#c95c3c">
+          <circle cx="395" cy="115" r="10" /><circle cx="455" cy="120" r="8" />
+          <circle cx="510" cy="145" r="7" /><circle cx="415" cy="150" r="6" />
+          <circle cx="560" cy="130" r="7" /><circle cx="585" cy="155" r="6" />
+        </g>
+      </g>
+
+      {/* glass highlights */}
+      <path d="M285 355 C260 440 262 580 292 628" fill="none" stroke="#b8fbff" strokeWidth="16" strokeLinecap="round" />
+      <path d="M615 340 C650 390 655 455 650 500" fill="none" stroke="#7ae6ef" strokeWidth="14" strokeLinecap="round" />
+
+      {/* face */}
+      <g stroke={outline} strokeWidth="9" strokeLinejoin="round">
+        <g className="eye-blink-l">
+          <ellipse cx="390" cy="455" rx="55" ry="88" fill="#fff" />
+          <ellipse cx="405" cy="480" rx="24" ry="50" fill="#121a31" />
+          <circle cx="397" cy="461" r="8" fill="#fff" stroke="none" />
+        </g>
+        <g className="eye-blink-r">
+          <ellipse cx="520" cy="455" rx="55" ry="88" fill="#fff" />
+          <ellipse cx="505" cy="480" rx="24" ry="50" fill="#121a31" />
+          <circle cx="497" cy="461" r="8" fill="#fff" stroke="none" />
+        </g>
+        <path d="M350 555 C385 610 515 610 550 550 C516 582 386 586 350 555 Z" fill="#0b1020" />
+        <path d="M415 579 C445 562 485 565 505 585 C478 606 440 608 415 579 Z" fill="#ef5c50" />
+      </g>
+
+      {/* Right arm assembly, pivoting about its own shoulder at 635,470 */}
+      <g className="mascot-arm-r">
+        <path d="M635 470 C710 490 728 548 744 610" fill="none" stroke="var(--mascot-limb)" strokeWidth="34" strokeLinecap="round" />
+        <g className="wave-arm" stroke={outline} strokeWidth="8" strokeLinejoin="round">
+          <path
+            d="M718 605 C738 585 766 593 773 618 C795 615 807 642 791 659 C806 677 790 704 767 698 C757 722 724 716 720 691 C697 688 691 659 708 646 C697 631 704 615 718 605 Z"
+            fill="#ffe98f"
+          />
+          <path d="M744 630 L747 668 M767 628 L770 663" fill="none" strokeLinecap="round" />
+        </g>
+      </g>
+
+      {/* legs */}
+      <g stroke="var(--mascot-limb)" strokeWidth="28" fill="none" strokeLinecap="round">
+        <path d="M390 708 C360 748 330 775 302 804" />
+        <path d="M525 710 C548 748 565 770 596 795" />
+      </g>
+
+      {/* shoes */}
+      <g stroke={outline} strokeWidth="10" strokeLinejoin="round">
+        <path d="M305 778 C278 765 245 781 228 806 C210 833 226 861 267 864 C309 867 338 844 335 813 C333 797 323 785 305 778 Z" fill="#1d2948" />
+        <path d="M592 778 C620 770 655 783 670 811 C686 841 664 866 621 866 C577 866 552 843 556 813 C558 796 570 784 592 778 Z" fill="#1d2948" />
+        <path d="M242 814 C275 822 306 836 326 851" fill="none" stroke="#3a4f7c" strokeWidth="7" />
+        <path d="M573 817 C603 810 636 812 661 827" fill="none" stroke="#3a4f7c" strokeWidth="7" />
+      </g>
     </svg>
   );
 }

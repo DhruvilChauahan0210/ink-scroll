@@ -101,6 +101,10 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      /* THEME_SCRIPT adds `.dark` here before React hydrates, so the server and
+         client class lists differ by design whenever the stored theme is dark.
+         Without this the dark theme logs a hydration mismatch on every load. */
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} ${syne.variable} h-full antialiased`}
     >
       <head>
