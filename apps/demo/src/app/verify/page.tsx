@@ -17,6 +17,10 @@ import {
   SnapCallbackProof,
   HorizontalTriggerProof,
 } from '@/components/VerifyPhase2';
+import {
+  SequenceCompletionProof,
+  SplitLinesSpacingProof,
+} from '@/components/VerifyPhase3';
 
 export const metadata: Metadata = {
   title: 'Verify — live proof of the Phase 0, 1 and 2 fixes',
@@ -500,6 +504,38 @@ export default function VerifyPage() {
 
       <Section
         num="13"
+        title="A finished sequence reported 0%."
+        lead={
+          <>
+            <code className="font-mono">scrollDrawSequence</code> delegates{' '}
+            <code className="font-mono">getProgress()</code> to whichever step is active.
+            When the last step completed, the active index advanced past the end of the
+            array, so the getter read from an undefined instance and fell back to zero —
+            a sequence that had visibly finished reported that nothing had happened.
+          </>
+        }
+      >
+        <SequenceCompletionProof />
+      </Section>
+
+      <Section
+        num="14"
+        title="split: 'lines' deleted the spaces between words."
+        lead={
+          <>
+            The only one of the three you can see without instrumentation.{' '}
+            <code className="font-mono">splitIntoLines</code> groups words by{' '}
+            <code className="font-mono">offsetTop</code>, and the whitespace nodes between
+            them were dropped rather than reinserted — so a split headline rendered as one
+            unbroken word. The sentence below is the test: read it.
+          </>
+        }
+      >
+        <SplitLinesSpacingProof />
+      </Section>
+
+      <Section
+        num="15"
         title="What still is not proven."
         lead="The limits, kept up to date rather than quietly dropped as they shrink."
       >
@@ -534,8 +570,12 @@ export default function VerifyPage() {
               'They were unreachable for CDN users entirely: IS_DEV is derived from process.env.NODE_ENV, and process does not exist in a browser without a bundler. 2.10.0 ships svg-scroll-draw.dev.global.js, which reports them — but you have to know to load it, and the production bundle has them removed at build time.',
             ],
             [
-              'Three fixes from 2.10.0 are not demonstrated here',
-              'The native-vs-JS easing divergence (up to 0.069 apart, on the default easing), a finished sequence reporting 0%, and split: "lines" deleting the spaces between words. All three are covered by the browser suite and fixed; none has a section on this page yet, which is exactly the gap this page exists to close.',
+              'Two of the three 2.10.0 fixes are now demonstrated — sections 13 and 14',
+              'A finished sequence reporting its real progress, and split: "lines" keeping its spaces, both now measure the current build live rather than replaying a recorded number.',
+            ],
+            [
+              'The named-easing parity demo is withheld, and that is a finding in itself',
+              'A harness written for it measured the native CSS path and the JS engine 0.83 apart with easing: "ease-out", against 0.00 for the same harness on the default curve — one variable changed. That is far larger than the 0.069 divergence 2.10.0 fixed, and too large to be an easing curve difference, which points at the animation range rather than the timing function. It is one new harness on one browser and it may well be measuring wrong, so it is not being published as a verdict about the library. It is written up in NEXT-SESSION-PLAN.md with the repro, and this page will carry the section once the number is understood.',
             ],
           ].map(([t, d]) => (
             <li key={t} className="flex gap-3">

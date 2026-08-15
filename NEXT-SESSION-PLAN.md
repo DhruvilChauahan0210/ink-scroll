@@ -85,11 +85,50 @@ actioned.
 still ends at the horizontal-scroll fix. Missing sections, in rough order of how
 convincing they are:
 
-- [ ] Native-vs-JS easing parity — the same `ease-out` animation on both paths
-      side by side with the live delta. Before the fix that read ~0.069.
-- [ ] A finished `scrollDrawSequence` reporting 100%.
-- [ ] `split: 'lines'` keeping its spaces, since it is the one users can see
-      without instrumentation.
+- [x] A finished `scrollDrawSequence` reporting 100%. **Done (2026-08-15)** —
+      section 13, `SequenceCompletionProof`. Measures 1.000 with `onComplete`
+      fired, live.
+- [x] `split: 'lines'` keeping its spaces. **Done (2026-08-15)** — section 14,
+      `SplitLinesSpacingProof`. Counts whitespace before and after the split;
+      currently 11 and 11.
+- [ ] Native-vs-JS easing parity — **built, withheld, and it turned up a number
+      that needs explaining before it ships.**
+
+      `EasingParityProof` in `apps/demo/src/components/VerifyPhase3.tsx` is
+      written and works; it is deliberately not wired into `/verify`.
+
+      What it measures, using the same deterministic sweep as
+      `LiveParityProof` (step to 10 fixed offsets, wait four frames, read
+      `strokeDashoffset` on both):
+
+      | config | worst Δ mid-draw |
+      |---|---|
+      | `{ native: true }` vs `{ native: false }` — section 06's control | **0.0000** |
+      | the same, plus `easing: 'ease-out'` on both | **0.8271** |
+
+      One variable changed. Reproduce by wiring the component into `/verify`
+      and pressing "Run the sweep" in a browser with
+      `animation-timeline: view()` support.
+
+      Why it is not published as a verdict:
+
+      - 0.83 is far too large to be a timing-function difference. Two easing
+        curves cannot be 0.83 apart at the same progress. That points at the
+        **animation range**, not the curve — the native side appears to finish
+        much earlier rather than follow a different shape.
+      - `nativeEligible()` allows a named easing through (`cssTiming` is the
+        only easing gate) and only the default trigger reaches `buildNative()`,
+        so both sides should be walking the same `cover` range.
+      - It is one new harness, on one browser, written in the same session. The
+        first version of it reported a false 0.86 from compositor commit lag
+        before the sweep was made deterministic, which is precisely the trap
+        `VerifyPhase1` documents. It may still be measuring wrong.
+
+      Next step is to settle it in the e2e suite rather than in the page:
+      extend `e2e/parity.spec.ts` with an `ease-out` case. If it reproduces
+      there, it is a real 2.10.x bug in `buildNative`'s range or keyframe
+      emission and the fix is a release. If it does not, the harness is wrong
+      and should be corrected before the section ships.
 
 The docs page itself is done — it shipped with the release: a v2.10.0 group for
 `refresh()`, the timeline's reduced-motion option and the dev CDN build, and the
