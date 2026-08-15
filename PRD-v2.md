@@ -303,7 +303,7 @@ import { ScrollCounter } from 'svg-scroll-draw/react';
 
 **Priority: P2 — Direct replacement for GSAP SplitText (paid plugin).**
 
-Splits a text element into characters, words, or lines and animates each piece on scroll. GSAP's SplitText plugin requires Club GreenSock ($150+/yr). This ships free.
+Splits a text element into characters, words, or lines and animates each piece on scroll. GSAP's SplitText does the same job and is free to use, but adds ~18 KB; this entry point is 2.5 KB.
 
 #### API
 

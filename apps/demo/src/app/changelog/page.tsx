@@ -165,7 +165,7 @@ const RELEASES = [
     tagColor: '',
     items: [
       { type: 'new', text: 'scrollVideo — tie <video>.currentTime to scroll position. Ships as svg-scroll-draw/video. The Apple / Stripe product-page scrub pattern. Supports from/to in seconds, preload strategy, onReady callback, and the full pause/resume/seek/replay/getProgress instance API.' },
-      { type: 'new', text: 'scrollText — split any element into chars, words, or lines and stagger-animate each unit on scroll. Ships as svg-scroll-draw/text. Free replacement for GSAP SplitText ($150+/yr). Accessibility: aria-label on container, aria-hidden on spans, destroy() restores original HTML.' },
+      { type: 'new', text: 'scrollText — split any element into chars, words, or lines and stagger-animate each unit on scroll. Ships as svg-scroll-draw/text, a 2.5 KB alternative to GSAP SplitText. Accessibility: aria-label on container, aria-hidden on spans, destroy() restores original HTML.' },
       { type: 'new', text: 'devtools overlay — ships as svg-scroll-draw/devtools. Fixed panel showing all active animation types (draw/animate/counter/video/text), progress bars, trigger-start/end lines on the page, color-coded by type. enable(), disable(), toggle(), highlight(el). Cmd/Ctrl+Shift+S keyboard shortcut. Zero production bytes (dev-only guard).' },
       { type: 'new', text: 'Global instance registry (src/core/registry.ts) — all engines (animate, counter, video, text) self-register on init and unregister on destroy. DevTools reads the registry.' },
       { type: 'new', text: 'ScrollVideo + ScrollText React components added to svg-scroll-draw/react.' },

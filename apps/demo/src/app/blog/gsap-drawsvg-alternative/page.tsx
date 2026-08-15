@@ -1,32 +1,33 @@
 import type { Metadata } from 'next';
+import { RelatedResources } from '@/components/RelatedResources';
 import Link from 'next/link';
 import { MobileMenu } from '@/components/MobileMenu';
 
 export const metadata: Metadata = {
-  title: 'svg-scroll-draw vs GSAP DrawSVG — Free Alternative',
+  title: 'GSAP DrawSVG Alternative — 10 KB vs 40 KB, Zero Deps',
   description:
-    'Detailed comparison of svg-scroll-draw and GSAP DrawSVG for scroll-driven SVG path animation. Bundle size, license costs, React/Vue/Svelte support, and a migration guide.',
+    'Detailed comparison of svg-scroll-draw and GSAP DrawSVG for scroll-driven SVG path animation. Bundle size, dependency count, native CSS fast path, React/Vue/Svelte support, and a migration guide.',
   keywords: [
     'gsap drawsvg alternative',
     'svg scroll animation without gsap',
-    'free gsap drawsvg alternative',
+    'lightweight gsap drawsvg alternative',
     'svg-scroll-draw vs gsap',
-    'gsap scrolltrigger alternative free',
+    'gsap scrolltrigger alternative',
     'svg path animation scroll react',
-    'drawsvg free',
+    'drawsvg bundle size',
     'scroll driven svg animation library',
     'gsap drawsvg react alternative',
   ],
   alternates: { canonical: '/blog/gsap-drawsvg-alternative' },
   openGraph: {
-    title: 'svg-scroll-draw vs GSAP DrawSVG — Free Alternative',
+    title: 'GSAP DrawSVG Alternative — 10 KB vs 40 KB, Zero Deps',
     description:
       '~10 KB, MIT, zero deps. A detailed comparison and drop-in alternative to GSAP DrawSVG + ScrollTrigger.',
     url: 'https://svg-scroll-draw.vercel.app/blog/gsap-drawsvg-alternative',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'svg-scroll-draw vs GSAP DrawSVG — Free Alternative',
+    title: 'GSAP DrawSVG Alternative — 10 KB vs 40 KB, Zero Deps',
     description: '~10 KB, MIT, zero deps. Drop-in alternative to GSAP DrawSVG + ScrollTrigger.',
   },
 };
@@ -86,7 +87,7 @@ const BUNDLE_BARS = [
 ];
 
 const FEATURES = [
-  { feature: 'License',               ours: 'MIT — free forever',              theirs: 'Club GreenSock (commercial use requires membership)',  ourWin: true },
+  { feature: 'License',               ours: 'MIT — fork and redistribute freely', theirs: 'Free to use; own terms restrict redistribution', ourWin: true },
   { feature: 'Bundle size (gzipped)', ours: '~10 KB',                           theirs: '~40 KB (gsap + ScrollTrigger + DrawSVG)',              ourWin: true },
   { feature: 'Dependencies',          ours: 'Zero',                              theirs: '3 packages to install and register',                   ourWin: true },
   { feature: 'Native CSS fast path',  ours: 'Yes — compositor-driven on Chrome/FF 115+', theirs: 'No — JS only',                                ourWin: true },
@@ -96,11 +97,11 @@ const FEATURES = [
   { feature: 'Solid.js',             ours: 'useScrollDraw + createScrollDraw',   theirs: 'Manual setup',                                        ourWin: true },
   { feature: 'Angular / Nuxt / Astro', ours: 'First-class wrappers',            theirs: 'Manual setup',                                        ourWin: true },
   { feature: 'stagger',               ours: 'Built-in option',                   theirs: 'gsap.utils.toArray() + per-element delay',             ourWin: true },
-  { feature: 'morphTo',               ours: 'Built-in option',                   theirs: 'MorphSVGPlugin — another paid Club plugin',            ourWin: true },
+  { feature: 'morphTo',               ours: 'Built-in option',                   theirs: 'MorphSVGPlugin — free, but another package',           ourWin: true },
   { feature: 'CSS custom property',   ours: '--scroll-draw-progress on every frame', theirs: 'Manual onUpdate callback',                       ourWin: true },
   { feature: 'Sequence API',          ours: 'scrollDrawSequence()',              theirs: 'Complex ScrollTrigger chaining',                       ourWin: true },
   { feature: 'Group API',             ours: 'scrollDrawGroup()',                  theirs: 'Manually share trigger across multiple tweens',         ourWin: true },
-  { feature: 'Physics easings',        ours: 'spring, bounce, elastic built-in + factory fns', theirs: 'Bounce, Elastic (CustomEase is a paid plugin)',  ourWin: true },
+  { feature: 'Physics easings',        ours: 'spring, bounce, elastic built-in + factory fns', theirs: 'Bounce, Elastic, CustomEase — all free, separate imports',  ourWin: true },
   { feature: 'Timeline API',          ours: 'scrollDrawTimeline() — independent track windows', theirs: 'Yes — GSAP timeline is its strength',    ourWin: false },
   { feature: 'Complex multi-element timelines', ours: 'Scroll-draw scope only', theirs: 'Yes — GSAP excels here',                              ourWin: false },
   { feature: 'Non-SVG animations',    ours: 'clip reveal only',                  theirs: 'Yes — text, DOM, anything',                            ourWin: false },
@@ -152,7 +153,8 @@ export default function Page() {
             </h1>
 
             <p className="text-base sm:text-lg text-graphite-border max-w-2xl leading-relaxed mb-8">
-              GSAP DrawSVG is powerful — but it requires a paid Club GreenSock membership for commercial projects, adds ~40 KB to your bundle, and demands boilerplate for every framework.
+              GSAP DrawSVG is powerful, and since 2025 it&apos;s free for everyone — so this isn&apos;t a price argument.
+              It does still cost you ~40 KB, three packages to register, and boilerplate in every framework.
               Here&apos;s a complete comparison, side-by-side code, and a migration guide.
             </p>
 
@@ -215,11 +217,10 @@ export default function Page() {
                 <ul className="space-y-2">
                   {[
                     { ok: false, text: '~40 KB (gsap + ScrollTrigger + DrawSVG)' },
-                    { ok: false, text: 'DrawSVG requires Club GreenSock — $150+/yr for commercial use' },
                     { ok: false, text: '3 packages, plugin registration boilerplate' },
                     { ok: false, text: 'JS only — no native CSS path' },
                     { ok: false, text: 'No framework wrappers — useEffect + useRef every time in React' },
-                    { ok: false, text: 'morphTo requires MorphSVGPlugin — another paid plugin' },
+                    { ok: false, text: 'Path morphing needs MorphSVGPlugin — free, but another import' },
                     { ok: true,  text: 'Unmatched for complex multi-element timelines (non-SVG)' },
                   ].map(item => (
                     <li key={item.text} className="flex items-start gap-2">
@@ -242,26 +243,30 @@ export default function Page() {
             </h2>
             <div className="prose-like max-w-2xl space-y-4 text-[15px] text-graphite-border leading-relaxed">
               <p>
-                GSAP&apos;s core library is free — but <strong className="text-pitch-black">DrawSVG is a Club GreenSock member plugin</strong>.
-                Commercial use requires an active membership (currently ~$150+/year per developer).
-                That applies to client work, SaaS products, and anything that generates revenue.
+                It is not money. <strong className="text-pitch-black">GSAP is free</strong> — Webflow acquired GreenSock
+                and released the whole toolset, DrawSVG and MorphSVG included, at no charge in 2025. If you have read an
+                older comparison that says otherwise, including an earlier version of this post, it is out of date.
               </p>
               <p>
-                This also means DrawSVG <strong className="text-pitch-black">can&apos;t be distributed as a dependency</strong> in an open-source npm package.
-                If you&apos;re building a component library or design system, you&apos;re blocked.
+                The cost is <strong className="text-pitch-black">bytes and setup</strong>. To draw one path on scroll you
+                install three packages, call <code className="font-mono text-[0.9em]">gsap.registerPlugin()</code>, and
+                ship ~40 KB gzipped — for an effect that is fundamentally one animated{' '}
+                <code className="font-mono text-[0.9em]">stroke-dashoffset</code>.
               </p>
               <p>
-                <strong className="text-pitch-black">svg-scroll-draw is MIT.</strong> Use it commercially, fork it, bundle it, redistribute it — no fees, no membership, no restrictions. Ever.
+                The one licence difference worth knowing is narrow: <strong className="text-pitch-black">svg-scroll-draw is MIT</strong>,
+                so you can fork it, bundle it and redistribute it inside your own library. GSAP&apos;s licence is free-of-charge
+                but has its own terms around redistribution in a competing product — read them yourself rather than take our word for it.
               </p>
             </div>
             <div className="mt-6 flex flex-wrap gap-3">
               <div className="bg-[#fff0fb] border border-[#ff90e8] rounded-xl px-4 py-3 text-sm">
                 <p className="font-semibold text-pitch-black mb-0.5">svg-scroll-draw</p>
-                <p className="font-mono text-xs text-graphite-border">MIT License · No restrictions</p>
+                <p className="font-mono text-xs text-graphite-border">MIT · ~10 KB · zero deps</p>
               </div>
-              <div className="bg-[#fff5f5] border border-[#fca5a5] rounded-xl px-4 py-3 text-sm">
+              <div className="bg-marketplace-gray/40 border border-subtle-ash rounded-xl px-4 py-3 text-sm">
                 <p className="font-semibold text-pitch-black mb-0.5">GSAP DrawSVG</p>
-                <p className="font-mono text-xs text-graphite-border">Club GreenSock · ~$150+/yr commercial</p>
+                <p className="font-mono text-xs text-graphite-border">Free · ~40 KB · 3 packages</p>
               </div>
             </div>
           </div>
@@ -622,6 +627,7 @@ scrollDraw('#hero', {
         </section>
 
         {/* Footer */}
+      <RelatedResources post="gsap-drawsvg-alternative" />
         <footer className="px-6 md:px-12 py-6 border-t border-subtle-ash text-center text-[11px] font-mono text-graphite-border">
           svg-scroll-draw · MIT · ~10 KB gzipped ·{' '}
           <a href="https://github.com/DhruvilChauahan0210/ink-scroll" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-pitch-black transition-colors">

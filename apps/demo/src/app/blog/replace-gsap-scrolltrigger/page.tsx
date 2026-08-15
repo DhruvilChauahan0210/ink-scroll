@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { RelatedResources } from '@/components/RelatedResources';
 import Link from 'next/link';
 import { MobileMenu } from '@/components/MobileMenu';
 import { CopyButton } from '@/components/CopyButton';
@@ -195,7 +196,7 @@ import { scrollCounter } from 'svg-scroll-draw';
 scrollCounter('#count', { to: 50000, easing: 'ease-out', once: true });`}</CodeBlock>
 
           <h3 className="font-semibold text-lg mb-2 mt-6">Text reveal (SplitText)</h3>
-          <CodeBlock file="text.js">{`// GSAP SplitText — requires Club GreenSock ($150+/yr)
+          <CodeBlock file="text.js">{`// GSAP SplitText — free, adds ~18 KB
 const split = new SplitText('#headline', { type: 'words' });
 gsap.from(split.words, { opacity: 0, y: 24, stagger: 0.05, ease: 'power2.out',
   scrollTrigger: { trigger: '#headline', start: 'top 85%', once: true } });
@@ -261,6 +262,7 @@ anim.destroy();         // remove all listeners`}</CodeBlock>
       </article>
 
       {/* Footer */}
+      <RelatedResources post="replace-gsap-scrolltrigger" />
       <footer className="px-6 md:px-12 py-6 border-t border-subtle-ash text-center text-[11px] font-mono text-graphite-border">
         svg-scroll-draw · MIT · ~10 KB gzipped ·{' '}
         <a href="https://github.com/DhruvilChauahan0210/ink-scroll" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-pitch-black transition-colors">

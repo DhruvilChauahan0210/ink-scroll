@@ -7,7 +7,7 @@
 [![license](https://img.shields.io/npm/l/svg-scroll-draw)](./LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/DhruvilChauahan0210/ink-scroll?style=flat)](https://github.com/DhruvilChauahan0210/ink-scroll/stargazers)
 
-> The scroll animation platform. Animate SVG paths, CSS properties, counters, video, and text — all scroll-driven, all MIT, all under 10 KB. GSAP is overkill.
+> Draw SVG paths on scroll — plus reveal, pin, snap, parallax, counters, video scrub and text splitting. **10.0 KB gzipped for every API, from 1.3 KB if you import one.** Zero dependencies, MIT, and a native CSS fast path that runs with no per-frame JavaScript. Works in React, Next.js, Vue, Svelte, Solid, Angular, Astro, Nuxt and vanilla JS.
 
 **[Live Demo](https://svg-scroll-draw.vercel.app)** · [npm](https://www.npmjs.com/package/svg-scroll-draw) · [Docs](https://svg-scroll-draw.vercel.app/docs) · [Examples](https://svg-scroll-draw.vercel.app/examples) · [Report a bug](https://github.com/DhruvilChauahan0210/ink-scroll/issues)
 
@@ -218,7 +218,7 @@ import { ScrollVideo } from 'svg-scroll-draw/react';
 
 ## scrollText — text reveal on scroll
 
-Free replacement for GSAP SplitText (which requires a $150+/yr Club GreenSock subscription).
+A 2.5 KB alternative to GSAP SplitText, which is free to use but adds ~18 KB.
 
 ```js
 import { scrollText } from 'svg-scroll-draw/text';

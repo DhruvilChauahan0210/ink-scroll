@@ -46,13 +46,13 @@ Three stacked cards, each with an ❌:
 
 ```
 ❌ GSAP DrawSVG
-   ~40 KB + a paid license for commercial use
+   47.5 KB measured — free, but heavy for one effect
 
 ❌ Framer Motion
    ~35 KB, and React-only
 
 ❌ scroll-svg
-   tiny, but abandoned & breaks in Next.js
+   1.7 KB and actively published — draws paths only
 ```
 
 **Footer:** `Every option had a catch.`

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { RelatedResources } from '@/components/RelatedResources';
 import Link from 'next/link';
 import { MobileMenu } from '@/components/MobileMenu';
 
@@ -19,13 +20,13 @@ export const metadata: Metadata = {
   alternates: { canonical: '/blog/scroll-path-morphing' },
   openGraph: {
     title: 'Scroll-Driven SVG Path Morphing with morphTo',
-    description: 'Interpolate SVG path shapes as you scroll — no GSAP MorphSVG, no paid plugins.',
+    description: 'Interpolate SVG path shapes as you scroll — built in, no GSAP MorphSVGPlugin, zero extra dependencies.',
     url: 'https://svg-scroll-draw.vercel.app/blog/scroll-path-morphing',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Scroll-Driven SVG Path Morphing with morphTo',
-    description: 'Interpolate SVG path shapes as you scroll — no GSAP MorphSVG, no paid plugins.',
+    description: 'Interpolate SVG path shapes as you scroll — built in, no GSAP MorphSVGPlugin, zero extra dependencies.',
   },
 };
 
@@ -121,13 +122,13 @@ export default function Page() {
               The <code className="font-mono text-sm bg-marketplace-gray border border-subtle-ash px-1.5 py-0.5 rounded-md text-pitch-black">morphTo</code> option
               lets you interpolate a SVG path&apos;s <code className="font-mono text-[13px] text-pitch-black">d</code> attribute
               from its original shape to a target shape — all driven by scroll position.
-              No GSAP MorphSVGPlugin. No paid add-ons. Zero extra dependencies.
+              No GSAP MorphSVGPlugin, no extra import, zero extra dependencies.
             </p>
 
             <div className="flex flex-wrap gap-3">
               {[
                 { label: 'Extra dependencies', value: '0',         color: '#22c55e' },
-                { label: 'vs GSAP MorphSVG',   value: 'free',      color: '#ff90e8' },
+                { label: 'vs GSAP MorphSVG',   value: 'built in',  color: '#ff90e8' },
                 { label: 'Works with',         value: '<path>',     color: '#5865F2' },
                 { label: 'Triggers on',        value: 'scroll',     color: '#888' },
               ].map((s) => (
@@ -457,6 +458,7 @@ function HeroShape() {
           </div>
         </section>
 
+      <RelatedResources post="scroll-path-morphing" />
         <footer className="border-t border-pitch-black px-4 sm:px-6 md:px-12 py-8">
           <div className="max-w-4xl mx-auto flex flex-wrap items-center justify-between gap-4">
             <span className="font-mono text-[11px] text-graphite-border">svg-scroll-draw · MIT · ~10 KB gzipped</span>

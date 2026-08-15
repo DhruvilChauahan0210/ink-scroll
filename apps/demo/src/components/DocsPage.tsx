@@ -1299,9 +1299,9 @@ scrollDraw('#svg', { easing: createElastic({ amplitude: 1.1, period: 0.6 }) });`
             </CodeBlock>
             <Note>
               Try both in the{' '}
-              <a href="/playground" className="underline underline-offset-2 hover:text-pitch-black transition-colors">
+              <Link href="/playground" className="underline underline-offset-2 hover:text-pitch-black transition-colors">
                 ⚡ Playground
-              </a>{' '}
+              </Link>{' '}
               — the easing dropdown includes <code className="font-mono">bounce</code> and{' '}
               <code className="font-mono">elastic</code> with live parameter sliders.
             </Note>
@@ -2399,7 +2399,7 @@ import { ScrollVideo } from 'svg-scroll-draw/react';
 
           <DocSection id="scroll-text" tag="v2.1.0" heading="scrollText">
             <p className="text-sm text-graphite-border leading-relaxed mb-2">
-              Split any text element into chars, words, or lines and animate each piece on scroll. Free replacement for GSAP SplitText (which requires a $150+/yr Club GreenSock subscription).
+              Split any text element into chars, words, or lines and animate each piece on scroll. A 2.5 KB alternative to GSAP SplitText, which is free to use but adds ~18 KB.
             </p>
             <CodeBlock file="index.js">
 {`import { scrollText } from 'svg-scroll-draw/text';

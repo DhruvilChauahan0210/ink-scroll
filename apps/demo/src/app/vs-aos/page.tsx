@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { MobileMenu } from '@/components/MobileMenu';
 import { CopyButton } from '@/components/CopyButton';
+import { COMPETITORS, SELF, SELF_ENTRIES, MEASURED_ON, provenance } from '@/data/competitors';
 
 export const metadata: Metadata = {
   title: 'svg-scroll-draw vs AOS vs ScrollReveal.js — Comparison',
@@ -18,6 +19,9 @@ export const metadata: Metadata = {
     'AOS replacement 2025',
     'ScrollReveal replacement',
     'data-aos alternative',
+    'scrollreveal license',
+    'is scrollreveal gpl',
+    'aos bundle size',
   ],
   alternates: { canonical: 'https://svg-scroll-draw.vercel.app/vs-aos' },
   openGraph: {
@@ -46,6 +50,22 @@ const pageJsonLd = {
       acceptedAnswer: {
         '@type': 'Answer',
         text: 'Unlike AOS and ScrollReveal.js which rely on HTML data attributes (data-aos="fade-up"), svg-scroll-draw uses a pure JavaScript API: scrollReveal(".card", { preset: "fadeUp" }). This gives you TypeScript types, tree-shaking, and no markup coupling.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What license is ScrollReveal.js, and can I use it in a commercial product?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: `ScrollReveal ${COMPETITORS.scrollreveal.version} is ${COMPETITORS.scrollreveal.license}, not MIT — verified from its published package.json. GPL-3.0 is copyleft, so it is worth reading carefully before shipping it inside a closed-source commercial product. AOS ${COMPETITORS.aos.version} is ${COMPETITORS.aos.license}, and svg-scroll-draw is ${SELF.license}.`,
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Is svg-scroll-draw smaller than AOS or ScrollReveal?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: `No, not for the main entry. Measured at gzip level 9 on ${MEASURED_ON}: scrollreveal ${COMPETITORS.scrollreveal.version} is ${COMPETITORS.scrollreveal.gzipKb} KB, aos ${COMPETITORS.aos.version} is ${COMPETITORS.aos.gzipKb} KB including its required stylesheet, and svg-scroll-draw ${SELF.version} exposing every API is ${SELF.gzipKb} KB. The like-for-like comparison is the svg-scroll-draw/reveal entry point at ${SELF_ENTRIES.reveal} KB, which is smaller than both — but if all you need is fade-on-scroll, AOS and ScrollReveal are good choices.`,
       },
     },
     {
@@ -93,9 +113,9 @@ const FEATURES = [
   { f: '3D flip (rotateX / rotateY)',          us: true,   aos: false, sr: true  },
   { f: 'Custom from state (x, y, scale…)',     us: true,   aos: false, sr: true  },
   { f: 'Stagger (cascade)',                    us: true,   aos: true,  sr: true  },
-  { f: 'Custom easing function',               us: true,   aos: false, sr: true  },
+  { f: 'Custom easing function',               us: true,   aos: 'partial', sr: 'partial', note: 'AOS ships 8 named CSS easings; ScrollReveal takes any CSS timing function. Only we take a JS easing function (createSpring/createBounce/createElastic).' },
   { f: 'CSS-only config (data attributes)',    us: false,  aos: true,  sr: false },
-  { f: 'TypeScript types',                     us: true,   aos: 'partial', sr: false },
+  { f: 'TypeScript types',                     us: true,   aos: 'partial', sr: 'partial', note: 'Neither ships its own .d.ts; both have community types on DefinitelyTyped (@types/aos, @types/scrollreveal).' },
   { f: 'Tree-shakeable sub-imports',           us: true,   aos: false, sr: false },
   { f: 'scrollAnimate (any CSS property)',     us: true,   aos: false, sr: false },
   { f: 'scrollPin / sticky sections',          us: true,   aos: false, sr: false },
@@ -104,11 +124,11 @@ const FEATURES = [
   { f: 'scrollVideo (scrub)',                  us: true,   aos: false, sr: false },
   { f: 'scrollProgress (CSS variable)',        us: true,   aos: false, sr: false },
   { f: 'scrollHorizontal sections',            us: true,   aos: false, sr: false },
-  { f: 'Honours prefers-reduced-motion by default', us: true, aos: false, sr: false },
+  { f: 'Honours prefers-reduced-motion by default', us: 'partial', aos: false, sr: false, note: 'True for scrollReveal. Not a blanket claim across every API here — scrollHorizontal opts out by design. Neither AOS nor ScrollReveal references prefers-reduced-motion in its published bundle.' },
   { f: 'React / Vue / Svelte wrappers',        us: true,   aos: 'partial', sr: false },
-  { f: 'Active maintenance (2025)',            us: true,   aos: true,  sr: false, note: 'ScrollReveal.js last release: 2021' },
-  { f: 'MIT license',                          us: true,   aos: true,  sr: true  },
-  { f: 'Bundle size (gzipped)',                us: '~9KB', aos: '~14KB', sr: '~9KB' },
+  { f: 'Last published',                       us: SELF.lastPublish!, aos: COMPETITORS.aos.lastPublish!, sr: COMPETITORS.scrollreveal.lastPublish!, note: `Dates from npm, read ${MEASURED_ON}. Both are stable, finished libraries rather than abandoned ones — weigh that how you like.` },
+  { f: 'License',                              us: SELF.license, aos: COMPETITORS.aos.license, sr: COMPETITORS.scrollreveal.license, note: 'ScrollReveal is GPL-3.0, which is a real consideration for a closed-source commercial product. AOS is MIT, same as us.' },
+  { f: 'Bundle size (gzipped)',                us: `${SELF.gzipKb} KB`, aos: `${COMPETITORS.aos.gzipKb} KB`, sr: `${COMPETITORS.scrollreveal.gzipKb} KB`, note: `Measured ${MEASURED_ON} at gzip level 9 against aos ${COMPETITORS.aos.version} and scrollreveal ${COMPETITORS.scrollreveal.version}. Both are smaller than us — see below.` },
 ];
 
 function Cell({ val }: { val: boolean | string | undefined }) {
@@ -134,6 +154,8 @@ export default function VsAosPage() {
           <p className="text-base sm:text-lg text-graphite-border leading-relaxed max-w-2xl mb-8">
             AOS and ScrollReveal.js put animation config in HTML data attributes.
             svg-scroll-draw puts it in JavaScript — typed, traceable, and part of a full scroll platform.
+            Both of them are smaller than us, and both do less; the numbers below are measured so you can
+            decide which trade you want.
           </p>
           <div className="flex flex-wrap gap-3">
             <Link href="/" className="px-5 py-2.5 rounded-full bg-pitch-black text-light-linen text-sm font-semibold hover:opacity-90 transition-opacity">Get started free →</Link>
@@ -146,12 +168,26 @@ export default function VsAosPage() {
       <section className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-14">
         <div className="max-w-4xl mx-auto">
           <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-2 font-mono font-medium">01</p>
-          <h2 className="font-display font-extrabold text-3xl sm:text-4xl tracking-[-0.03em] mb-8">Bundle size.</h2>
+          <h2 className="font-display font-extrabold text-3xl sm:text-4xl tracking-[-0.03em] mb-4">Bundle size.</h2>
+
+          <div className="rounded-xl border border-subtle-ash bg-marketplace-gray/40 p-5 mb-8">
+            <p className="text-[13px] text-graphite-border leading-relaxed">
+              <strong className="text-pitch-black">This one does not go our way, so here it is plainly:</strong>{' '}
+              AOS and ScrollReveal are both <em>smaller</em> than svg-scroll-draw&apos;s main entry. They also do
+              considerably less — neither draws SVG paths, pins, snaps, splits text or scrubs video. If all you need is
+              fade-up-on-scroll, they are a perfectly good choice and you should use them. Our{' '}
+              <code className="font-mono text-[0.9em] bg-white px-1.5 py-0.5 rounded border border-subtle-ash">svg-scroll-draw/reveal</code>{' '}
+              entry point is 3.9 KB if you want just that piece — that is the number worth comparing, not the 10.0 KB
+              figure for every API at once.
+            </p>
+          </div>
+
           <div className="space-y-4 mb-6">
             {[
-              { label: 'svg-scroll-draw', size: '~10 KB',  pct: 64, color: '#ff90e8', badge: 'yours' },
-              { label: 'ScrollReveal.js', size: '~10 KB',  pct: 64, color: '#e0e0e0', badge: null },
-              { label: 'AOS',             size: '~14 KB', pct: 100, color: '#c8c8c8', badge: null },
+              { label: `scrollreveal ${COMPETITORS.scrollreveal.version}`, size: `${COMPETITORS.scrollreveal.gzipKb} KB`, pct: Math.round((COMPETITORS.scrollreveal.gzipKb / SELF.gzipKb) * 100), color: '#e0e0e0', badge: 'smallest' },
+              { label: `aos ${COMPETITORS.aos.version} (js+css)`, size: `${COMPETITORS.aos.gzipKb} KB`, pct: Math.round((COMPETITORS.aos.gzipKb / SELF.gzipKb) * 100), color: '#c8c8c8', badge: null },
+              { label: 'svg-scroll-draw/reveal', size: `${SELF_ENTRIES.reveal} KB`, pct: Math.round((SELF_ENTRIES.reveal / SELF.gzipKb) * 100), color: '#ff90e8', badge: 'like-for-like' },
+              { label: 'svg-scroll-draw (all APIs)', size: `${SELF.gzipKb} KB`, pct: 100, color: '#ffc4f2', badge: 'yours' },
             ].map(({ label, size, pct, color, badge }) => (
               <div key={label} className="flex items-center gap-4">
                 <div className="w-40 shrink-0 text-right"><span className="text-[12px] font-mono text-graphite-border">{label}</span></div>
@@ -165,7 +201,8 @@ export default function VsAosPage() {
             ))}
           </div>
           <p className="text-[12px] text-graphite-border font-mono">
-            All sizes minified + gzipped. AOS includes CSS (~6KB). svg-scroll-draw includes all v2 APIs.
+            {provenance([`aos ${COMPETITORS.aos.version}`, `scrollreveal ${COMPETITORS.scrollreveal.version}`, `svg-scroll-draw ${SELF.version}`])}{' '}
+            AOS includes its stylesheet (2.1 KB), which you need.
           </p>
         </div>
       </section>
@@ -182,7 +219,7 @@ export default function VsAosPage() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 {[
                   { label: 'AOS', code: `<!-- HTML attribute on every element -->\n<div data-aos="fade-up"\n     data-aos-once="true">\n  Content\n</div>\n\n<!-- Init in JS -->\nAOS.init({ duration: 800 });` },
-                  { label: 'ScrollReveal.js', code: `// ScrollReveal.js — last updated 2021\nconst sr = ScrollReveal({\n  origin: 'bottom',\n  distance: '32px',\n  duration: 800,\n  once: true,\n});\n\nsr.reveal('.card');` },
+                  { label: 'ScrollReveal.js', code: `// ScrollReveal.js 4.0.9 (GPL-3.0)\nconst sr = ScrollReveal({\n  origin: 'bottom',\n  distance: '32px',\n  duration: 800,\n  once: true,\n});\n\nsr.reveal('.card');` },
                   { label: 'svg-scroll-draw', code: `import { scrollReveal }\n  from 'svg-scroll-draw/reveal';\n\n// One import. One call.\nscrollReveal('.card');\n\n// Custom config:\nscrollReveal('.card', {\n  from:    { opacity: 0, y: 32 },\n  stagger: 0.08,\n  once:    true,\n});` },
                 ].map(({ label, code }) => (
                   <div key={label}>

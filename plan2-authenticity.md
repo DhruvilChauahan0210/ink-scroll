@@ -1,5 +1,9 @@
 To understand the absolute authenticity of this project, we must look at the competitive market honestly.
-The baseline concept of animating an SVG line on scroll using stroke-dashoffset is not a secret; it is a standard industry trick. However, the existing libraries implementing it are massively flawed, bloated, or entirely abandoned.
+The baseline concept of animating an SVG line on scroll using stroke-dashoffset is not a secret; it is a standard industry trick. The existing libraries implementing it are all reasonable — they just make different trade-offs on weight, scope and framework coverage.
+
+> **Accuracy note (2026-08-15):** the table below was written before GSAP became
+> free in 2025 and before anything here was measured. Corrected figures live in
+> `CLAIMS-AUDIT.md`; treat that as the source of truth, not this file.
 Here is a deep-dive competitive matrix and market analysis proving why this project remains a highly authentic, viable, and unique product to build.
 ------------------------------
 ## 1. Competitive Landscape Analysis
@@ -7,7 +11,7 @@ When developers try to implement this effect today, they are forced to use tools
 
 | Competitor [1, 2, 3, 4] | Footprint / Size | Cost | The Major Developer Pain Points |
 |---|---|---|---|
-| GSAP DrawSVG[](https://gsap.com/community/forums/topic/20332-draw-svg-line-on-scroll-and-move-circle-along-the-line/) | ~40KB+ (requires Core + ScrollTrigger) | Paid (Requires a premium Club GreenSock membership for commercial use) | Overkill for simple projects. Locking a simple layout effect behind a steep yearly subscription frustrates indie hackers. |
+| GSAP DrawSVG | 47.5 KB measured (Core + ScrollTrigger + DrawSVG) | Free — Webflow released the whole toolset at no charge in 2025 | Broader and more mature than us. Heavy if all you need is one draw effect. |
 | Framer Motion[](https://www.youtube.com/watch?v=qNX1-T74kLI) | ~35KB+ | Free | Only works for React. It forces developers into an entirely separate ecosystem and adds heavy runtime overhead for a single vector animation. |
 | scroll-svg (Existing micro-library) | ~2KB | Free | Abandoned/Outdated. It forces developers to target exact, single path IDs manually. It has poor TypeScript types and lacks standard, native integration for framework wrappers like Next.js SSR. |
 

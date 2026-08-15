@@ -221,8 +221,8 @@ export function AnimatedPage({ children }: { children: React.ReactNode }) {
           <h2 className="font-display font-extrabold text-3xl sm:text-4xl tracking-[-0.03em] mb-10">vs common alternatives.</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
-              { name: 'GSAP + ScrollTrigger', size: '~50 KB', ssr: '✗ needs guards', typed: '~', note: 'Commercial license for SplitText' },
-              { name: 'Framer Motion', size: '~35 KB', ssr: '✓', typed: '✓', note: 'React-only. No SVG draw, no pin/snap.' },
+              { name: 'GSAP + ScrollTrigger', size: '~50 KB', ssr: '✗ needs guards', typed: '~', note: 'Free, mature, but 5× the bytes.' },
+              { name: 'Framer Motion', size: '34.3 KB', ssr: '✓', typed: '✓', note: 'React-only. Draws SVG via pathLength; no pin/snap.' },
               { name: 'svg-scroll-draw', size: '~10 KB', ssr: '✓', typed: '✓', note: 'MIT. Everything. Works everywhere.', highlight: true },
             ].map(({ name, size, ssr, typed, note, highlight }) => (
               <div key={name} className={`p-5 rounded-xl border ${highlight ? 'border-2 border-creator-pink bg-creator-pink/5' : 'border-subtle-ash bg-white'}`}>

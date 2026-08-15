@@ -83,7 +83,7 @@ export function ScrollTextDemo() {
             <code className="font-mono text-[0.88em] bg-marketplace-gray border border-subtle-ash px-1.5 py-0.5 rounded-md">lines</code> and animate each unit on scroll with stagger.
           </p>
           <p className="text-graphite-border leading-relaxed mb-6 text-[15px]">
-            GSAP SplitText requires a Club GreenSock subscription ($150+/yr). This ships free, MIT-licensed.
+            GSAP SplitText does the same job and is free to use — it adds ~18 KB. This entry point is 2.5 KB, MIT-licensed.
           </p>
 
           <div className="rounded-xl overflow-hidden border border-pitch-black mb-4">

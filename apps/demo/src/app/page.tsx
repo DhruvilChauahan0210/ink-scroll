@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
 import { BundleGraphLine, CtaBoldMark } from '@/components/BackgroundDecor';
 
 export const metadata: Metadata = {
@@ -143,11 +144,11 @@ export default function Home() {
         {/* Desktop nav */}
         <div className="hidden lg:flex items-center gap-2">
           <ThemeToggle />
-          <a href="/docs" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Docs</a>
-          <a href="/examples" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Examples</a>
-          <a href="/blog" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Blog</a>
-          <a href="/changelog" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Changelog</a>
-          <a href="/playground" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">⚡ Playground</a>
+          <Link href="/docs" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Docs</Link>
+          <Link href="/examples" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Examples</Link>
+          <Link href="/blog" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Blog</Link>
+          <Link href="/changelog" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Changelog</Link>
+          <Link href="/playground" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">⚡ Playground</Link>
           <a href={NPM} target="_blank" rel="noopener noreferrer" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono whitespace-nowrap">v2.10.0</a>
           <a href={GH} target="_blank" rel="noopener noreferrer" className="text-sm px-4 py-1.5 rounded-full bg-pitch-black text-light-linen hover:bg-graphite-border transition-colors font-medium whitespace-nowrap">GitHub →</a>
         </div>
@@ -255,24 +256,24 @@ export default function Home() {
             {[
               {
                 name: 'GSAP DrawSVG',
-                size: '40KB+',
+                size: '47.5 KB',
                 badge: 'bg-creator-pink',
-                flaw: 'Paid license',
-                problem: 'Overkill for a single effect — and requires a Club GreenSock subscription for commercial use.',
+                flaw: 'Heavy for one effect',
+                problem: 'Free since 2025, but you still ship core + ScrollTrigger + DrawSVG to draw a single line.',
               },
               {
                 name: 'Framer Motion',
-                size: '35KB+',
+                size: '34.3 KB',
                 badge: 'bg-sunshine-yellow',
                 flaw: 'React only',
-                problem: 'Locks you into one ecosystem and adds 35KB of runtime overhead just to draw a line.',
+                problem: 'React-only, and a lot of runtime for one scroll effect. Great at component animation — just not scroll-specific.',
               },
               {
                 name: 'scroll-svg',
-                size: '~2KB',
+                size: '1.7 KB',
                 badge: 'bg-lime-glow',
-                flaw: 'Abandoned',
-                problem: 'Requires manually targeting individual path IDs. Crashes in Next.js with window is not defined.',
+                flaw: 'Draw only',
+                problem: 'Smaller than us and good at the one thing it does — but it targets individual path IDs, and there is no reveal, pin, snap, text or video.',
               },
             ].map(({ name, size, badge, flaw, problem }) => (
               <div key={name} className="relative bg-light-linen border border-pitch-black rounded-2xl p-6 overflow-hidden">
@@ -305,9 +306,9 @@ export default function Home() {
 
           <div className="space-y-5">
             {[
-              { name: 'svg-scroll-draw', size: '~10 KB',  pct: 25,   color: 'bg-creator-pink',    badge: '✓ yours' },
-              { name: 'Framer Motion',   size: '~35 KB', pct: 87.5, color: 'bg-sunshine-yellow', badge: null },
-              { name: 'GSAP DrawSVG',    size: '~40 KB', pct: 100,  color: 'bg-[#e0e0e0] dark:bg-[#333]', badge: null },
+              { name: 'svg-scroll-draw', size: '10.0 KB', pct: 21,   color: 'bg-creator-pink',    badge: '✓ yours' },
+              { name: 'Framer Motion',   size: '34.3 KB', pct: 72,   color: 'bg-sunshine-yellow', badge: null },
+              { name: 'GSAP DrawSVG',    size: '47.5 KB', pct: 100,  color: 'bg-[#e0e0e0] dark:bg-[#333]', badge: null },
             ].map(({ name, size, pct, color, badge }) => (
               <div key={name}>
                 <div className="flex items-center justify-between mb-2">
@@ -330,10 +331,10 @@ export default function Home() {
           </div>
 
           <p className="mt-6 text-[13px] text-graphite-border">
-            Sizes are minified + gzipped. GSAP DrawSVG requires a paid Club GreenSock license for commercial use.{' '}
-            <a href="/vs-gsap" className="underline underline-offset-2 hover:text-pitch-black transition-colors whitespace-nowrap">
+            Sizes are minified + gzipped. GSAP is free to use, DrawSVG included — this is a size comparison, not a price one.{' '}
+            <Link href="/vs-gsap" className="underline underline-offset-2 hover:text-pitch-black transition-colors whitespace-nowrap">
               Full GSAP comparison →
-            </a>
+            </Link>
           </p>
         </div>
       </section>
@@ -912,9 +913,9 @@ const seq = scrollDrawSequence(
                 Beyond SVG.<br />Animate everything.
               </h2>
             </div>
-            <a href="/examples#scroll-animate" className="text-sm px-4 py-2 rounded-full border border-pitch-black hover:bg-pitch-black hover:text-light-linen transition-colors font-medium whitespace-nowrap self-start sm:self-auto">
+            <Link href="/examples#scroll-animate" className="text-sm px-4 py-2 rounded-full border border-pitch-black hover:bg-pitch-black hover:text-light-linen transition-colors font-medium whitespace-nowrap self-start sm:self-auto">
               See live examples →
-            </a>
+            </Link>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-pitch-black border border-pitch-black rounded-2xl overflow-hidden">
@@ -937,7 +938,7 @@ const seq = scrollDrawSequence(
                 version: 'v2.1.0',
                 name: 'scrollText',
                 sub: 'chars · words · lines',
-                desc: 'Split text and stagger-animate each piece on scroll. Free GSAP SplitText replacement — no Club GreenSock subscription.',
+                desc: 'Split text and stagger-animate each piece on scroll. A 2.5 KB alternative to GSAP SplitText.',
                 code: `scrollText('#headline', {\n  split:   'words',\n  stagger: 0.05,\n  from: {\n    opacity: 0,\n    y: 24,\n  },\n  once: true,\n});`,
               },
               {
@@ -1083,12 +1084,12 @@ const seq = scrollDrawSequence(
             <span className="opacity-50">$</span>
             <span>npm i svg-scroll-draw</span>
           </div>
-          <a
+          <Link
             href="/playground"
             className="px-5 py-3 rounded-full border-2 border-pitch-black bg-transparent text-pitch-black text-sm font-semibold hover:bg-pitch-black hover:text-sunshine-yellow transition-colors shadow-[3px_3px_0px_rgba(0,0,0,0.2)] w-full sm:w-auto text-center"
           >
             ⚡ Try the Playground →
-          </a>
+          </Link>
           <a
             href={GH}
             target="_blank" rel="noopener noreferrer"
@@ -1113,12 +1114,12 @@ const seq = scrollDrawSequence(
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3 flex-wrap justify-center">
-            <a
+            <Link
               href="/examples"
               className="text-[12px] font-medium px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors"
             >
               Examples
-            </a>
+            </Link>
             <a
               href={GH}
               target="_blank" rel="noopener noreferrer"

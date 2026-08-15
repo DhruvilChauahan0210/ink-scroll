@@ -18,7 +18,7 @@ So you reach for GSAP DrawSVG.
 
 Then you see the pricing page.
 
-**GSAP DrawSVG requires a Club GreenSock license for commercial use.** That's fine if you're at an agency billing $200/hr. It's annoying if you're shipping a SaaS or an open-source project. And either way, you just imported **~40 KB** of runtime for one visual effect.
+**GSAP DrawSVG is free** — Webflow released the entire GSAP toolset at no charge in 2025, DrawSVG and SplitText included. So this isn't a price argument. It's that you just imported **47.5 KB** of runtime, and registered three packages, for one visual effect.
 
 Framer Motion does scroll-triggered SVG animation too. It's **~35 KB**, React-only, and your Vue teammates will look at you funny.
 
@@ -229,7 +229,7 @@ instance.destroy(); // cleanup on unmount
 |---|---|---|---|
 | **svg-scroll-draw** | **~4.4 KB** | **MIT (free)** | **React, Vue, Svelte, Solid, Angular, Nuxt, Astro, Web Component, Vanilla** |
 | Framer Motion | ~35 KB | MIT | React only |
-| GSAP DrawSVG | ~40 KB | Commercial license required | Any (with adapter) |
+| GSAP DrawSVG | 47.5 KB | Free (GreenSock Standard) | Any (with adapter) |
 
 ---
 

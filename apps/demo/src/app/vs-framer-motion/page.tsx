@@ -2,11 +2,12 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { MobileMenu } from '@/components/MobileMenu';
 import { CopyButton } from '@/components/CopyButton';
+import { COMPETITORS, SELF, MEASURED_ON } from '@/data/competitors';
 
 export const metadata: Metadata = {
   title: 'svg-scroll-draw vs Framer Motion — Scroll Animation Comparison',
   description:
-    'svg-scroll-draw vs Framer Motion for scroll animations. 4× smaller bundle, works outside React, native CSS fast path, MIT license. Comparison table, bundle sizes, and side-by-side code.',
+    'svg-scroll-draw vs Framer Motion for scroll animations. ~3.4× smaller measured, works outside React, native CSS fast path, MIT license. Comparison table, measured bundle sizes, and side-by-side code.',
   keywords: [
     'framer motion alternative',
     'framer motion vs scroll animation',
@@ -21,10 +22,10 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://svg-scroll-draw.vercel.app/vs-framer-motion' },
   openGraph: {
     title: 'svg-scroll-draw vs Framer Motion',
-    description: '4× smaller. Framework-agnostic. Native CSS fast path.',
+    description: '~3.4× smaller, measured. Framework-agnostic. Native CSS fast path.',
     url: 'https://svg-scroll-draw.vercel.app/vs-framer-motion',
   },
-  twitter: { card: 'summary_large_image', title: 'svg-scroll-draw vs Framer Motion', description: '4× smaller. Works outside React. Native CSS fast path.' },
+  twitter: { card: 'summary_large_image', title: 'svg-scroll-draw vs Framer Motion', description: '~3.4× smaller, measured. Works outside React. Native CSS fast path.' },
 };
 
 const pageJsonLd = {
@@ -36,7 +37,7 @@ const pageJsonLd = {
       name: 'What is a good alternative to Framer Motion for scroll animations?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'svg-scroll-draw is a 4× smaller alternative to Framer Motion for scroll-driven animations. It is framework-agnostic (works in React, Vue, Svelte, vanilla JS), MIT licensed, and uses native CSS animation-timeline when possible for zero per-frame JavaScript.',
+        text: 'svg-scroll-draw is a roughly 3.4× smaller alternative to Framer Motion for scroll-driven animations. It is framework-agnostic (works in React, Vue, Svelte, vanilla JS), MIT licensed, and uses native CSS animation-timeline when possible for zero per-frame JavaScript.',
       },
     },
     {
@@ -52,7 +53,7 @@ const pageJsonLd = {
       name: 'How much smaller is svg-scroll-draw compared to Framer Motion?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'svg-scroll-draw is ~10 KB gzipped. Framer Motion is ~35 KB gzipped — approximately 4× larger. For projects that only need scroll-driven animations, svg-scroll-draw eliminates the bundle overhead entirely.',
+        text: 'svg-scroll-draw 2.10.0 is 10.0 KB gzipped. framer-motion 13.1.0 is 34.3 KB at its CJS entry and 61.6 KB as a single bundle, measured 2026-08-14 at gzip level 9 — so roughly 3.4x larger on the fairer of the two figures. A tree-shaken modern ESM import can be considerably less than that, because Framer Motion ships a re-export shell and real usage varies with how much of it you touch.',
       },
     },
   ],
@@ -93,7 +94,7 @@ function Partial() { return <span className="text-[#f59e0b] font-bold text-base"
 const FEATURES = [
   { f: 'Scroll-driven animations',       us: true,  fm: true,   note: '' },
   { f: 'Animate any CSS property',       us: true,  fm: true,   note: '' },
-  { f: 'SVG path draw animation',        us: true,  fm: false,  note: 'Framer Motion has no stroke-dashoffset animation' },
+  { f: 'SVG path draw animation',        us: true,  fm: true,   note: 'Framer Motion does do this — its pathLength / pathOffset / pathSpacing props map onto stroke-dasharray and stroke-dashoffset, normalised 0–1. Paired with useScroll it covers the basic draw. What it has no equivalent for is multi-path stagger orchestration and the native CSS fast path.' },
   { f: 'Pin / sticky sections',          us: true,  fm: false,  note: '' },
   { f: 'Section snapping',               us: true,  fm: false,  note: '' },
   { f: 'Text split + stagger',           us: true,  fm: false,  note: 'Framer Motion needs SplitText manually' },
@@ -102,14 +103,14 @@ const FEATURES = [
   { f: 'scrollReveal (one-line preset)', us: true,  fm: false,  note: '' },
   { f: 'scrollProgress (CSS variable)',  us: true,  fm: false,  note: '' },
   { f: 'Horizontal scroll sections',     us: true,  fm: 'partial', note: '' },
-  { f: 'Honours prefers-reduced-motion by default', us: true, fm: 'partial', note: 'Framer Motion has useReducedMotion() and MotionConfig reducedMotion="user" — good tooling, but opt-in rather than the default' },
+  { f: 'Honours prefers-reduced-motion by default', us: 'partial', fm: 'partial', note: 'Ours is default-on for scrollDraw, scrollAnimate, scrollReveal, scrollCounter, scrollText, scrollVideo, scrollSnap and Cinematic — but scrollHorizontal opts out by design, and scrollPin/scrollProgress have no reduced-motion path. Framer Motion has useReducedMotion() and MotionConfig reducedMotion="user" — good tooling, but opt-in rather than default.' },
   { f: 'Native CSS fast path',           us: true,  fm: false,  note: 'svg-scroll-draw uses animation-timeline: view() when eligible' },
   { f: 'Works outside React',            us: true,  fm: false,  note: 'Framer Motion is React-only' },
   { f: 'Vue / Svelte / Solid wrappers',  us: true,  fm: false,  note: '' },
   { f: 'Velocity-scaled animation',      us: true,  fm: false,  note: '' },
   { f: 'Lenis smooth scroll adapter',    us: true,  fm: 'partial', note: '' },
   { f: 'MIT license',                    us: true,  fm: true,   note: '' },
-  { f: 'Bundle size (gzipped)',          us: '~10 KB', fm: '~35 KB', note: '' },
+  { f: 'Bundle size (gzipped)',          us: `${SELF.gzipKb} KB`, fm: `${COMPETITORS.framerMotion.gzipKb} KB`, note: `framer-motion ${COMPETITORS.framerMotion.version} CJS entry, measured ${MEASURED_ON}. Its single bundle is 61.6 KB; a tree-shaken ESM import can be well under both — Framer Motion\u2019s real cost depends heavily on how much of it you use.` },
 ];
 
 export default function VsFramerMotionPage() {
@@ -127,7 +128,7 @@ export default function VsFramerMotionPage() {
           </h1>
           <p className="text-base sm:text-lg text-graphite-border leading-relaxed max-w-2xl mb-8">
             Framer Motion is excellent for React component animations. For scroll-driven effects specifically,
-            svg-scroll-draw does more — at 4× smaller — and works in any framework.
+            svg-scroll-draw does more — at roughly a third of the bytes — and works in any framework.
           </p>
           <div className="flex flex-wrap gap-3">
             <Link href="/" className="px-5 py-2.5 rounded-full bg-pitch-black text-light-linen text-sm font-semibold hover:opacity-90 transition-opacity">Get started free →</Link>
@@ -144,7 +145,7 @@ export default function VsFramerMotionPage() {
           <div className="space-y-4 mb-6">
             {[
               { label: 'svg-scroll-draw', size: '~10 KB', pct: 29, color: '#ff90e8', badge: 'yours' },
-              { label: 'Framer Motion',   size: '~35 KB', pct: 100, color: '#e0e0e0', badge: null },
+              { label: 'Framer Motion',   size: `${COMPETITORS.framerMotion.gzipKb} KB`, pct: 100, color: '#e0e0e0', badge: 'cjs entry' },
             ].map(({ label, size, pct, color, badge }) => (
               <div key={label} className="flex items-center gap-4">
                 <div className="w-40 shrink-0 text-right"><span className="text-[12px] font-mono text-graphite-border">{label}</span></div>

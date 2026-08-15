@@ -71,15 +71,22 @@ Asks for your framework (React/Vue/Svelte/Solid/Vanilla), preset, easing, and SV
 
 ## Why this exists
 
-The `stroke-dashoffset` trick for drawing SVG paths on scroll is well-known — but every existing solution is broken in a different way:
+The `stroke-dashoffset` trick for drawing SVG paths on scroll is well-known. The existing
+options are all decent — they just make different trade-offs:
 
-| Tool | Problem |
-|---|---|
-| **GSAP DrawSVG** | ~40 KB+, requires a paid Club GreenSock license for commercial use |
-| **Framer Motion** | ~35 KB+, React-only, heavy runtime for one animation effect |
-| **scroll-svg** | ~2 KB but abandoned — targets individual path IDs, crashes in Next.js |
+| Tool | Gzipped | Trade-off |
+|---|---|---|
+| **GSAP + ScrollTrigger + DrawSVG** | 47.5 KB | Free since 2025 and far broader than us, but three packages to register for one effect |
+| **Framer Motion** | 34.3 KB (cjs) | React-only; excellent for component animation, not scroll-specific |
+| **AOS** | 6.7 KB | Smaller than us. Reveal-on-scroll only, config lives in HTML attributes |
+| **ScrollReveal** | 5.6 KB | Smaller than us. Reveal only, and GPL-3.0 rather than MIT |
+| **scroll-svg** | 1.7 KB | Smaller than us. Draws paths well; no reveal, pin, snap, text or video |
 
-`svg-scroll-draw` fixes all three pain points: tiny, MIT-licensed, works everywhere.
+Sizes measured 2026-08-14 at gzip level 9 — see `CLAIMS-AUDIT.md` for the commands.
+
+`svg-scroll-draw` is 10.0 KB for every API at once, and each API is a separate entry point
+(`scrollReveal` alone is 3.9 KB). If you need one effect, the small libraries above are a
+fair choice. If you need several, one dependency beats four.
 
 ---
 
