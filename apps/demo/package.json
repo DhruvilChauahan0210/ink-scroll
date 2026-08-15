@@ -4,9 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "node scripts/check-competitors.mjs && node scripts/check-examples.mjs && next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "sitemap:dates": "node scripts/refresh-sitemap-dates.mjs",
+    "check:competitors": "node scripts/check-competitors.mjs",
+    "check:examples": "node scripts/check-examples.mjs"
   },
   "dependencies": {
     "next": "16.2.6",

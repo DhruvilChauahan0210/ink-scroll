@@ -103,6 +103,19 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${syne.variable} h-full antialiased`}
     >
+      <head>
+        {/*
+          Declared here, not via metadata.alternates: a page that sets its own
+          `alternates.canonical` replaces the layout's whole `alternates` object,
+          which silently dropped this tag from every page that has a canonical.
+        */}
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          title="svg-scroll-draw — blog"
+          href={`${SITE_URL}/blog/rss.xml`}
+        />
+      </head>
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
         {children}
