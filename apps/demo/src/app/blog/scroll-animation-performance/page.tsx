@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { RelatedResources } from '@/components/RelatedResources';
 import Link from 'next/link';
 import { MobileMenu } from '@/components/MobileMenu';
 import { CopyButton } from '@/components/CopyButton';
@@ -207,6 +208,7 @@ scrollAnimate('#card', {
         </div>
       </article>
 
+      <RelatedResources post="scroll-animation-performance" />
       <footer className="px-6 md:px-12 py-6 border-t border-subtle-ash text-center text-[11px] font-mono text-graphite-border">
         svg-scroll-draw · MIT · ~10 KB ·{' '}<a href="https://github.com/DhruvilChauahan0210/ink-scroll" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-pitch-black transition-colors">GitHub</a>
       </footer>

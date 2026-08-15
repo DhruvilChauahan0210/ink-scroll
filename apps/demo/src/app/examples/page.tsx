@@ -1,5 +1,9 @@
 import type { Metadata } from 'next';
 import { ExamplesPage } from '@/components/ExamplesPage';
+import { EXAMPLE_SEO, SEO_SLUGS } from '@/data/examples-seo';
+// EXAMPLE_COUNT, not EXAMPLES.length — ExamplesPage is a client module, so a
+// server import of EXAMPLES yields a proxy whose .length silently reads 0.
+import { EXAMPLE_COUNT } from '@/data/examples-index';
 
 export const metadata: Metadata = {
   title: 'SVG Scroll Animation Examples without GSAP',
@@ -40,7 +44,14 @@ const jsonLd = {
   description:
     'Real-world SVG scroll animation examples: logo reveals, line charts, signature animations, flowcharts, and more. Built with svg-scroll-draw — no GSAP, no dependencies.',
   url: 'https://svg-scroll-draw.vercel.app/examples',
-  numberOfItems: 13,
+  // Derived, so it cannot drift from the real count the way the hardcoded 13 did.
+  numberOfItems: EXAMPLE_COUNT,
+  itemListElement: SEO_SLUGS.map((slug, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: EXAMPLE_SEO[slug].heading,
+    url: `https://svg-scroll-draw.vercel.app/examples/${slug}`,
+  })),
 };
 
 export default function Page() {

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { RelatedResources } from '@/components/RelatedResources';
 import Link from 'next/link';
 import { MobileMenu } from '@/components/MobileMenu';
 import { CopyButton } from '@/components/CopyButton';
@@ -32,6 +33,20 @@ export const metadata: Metadata = {
   },
 };
 
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'TechArticle',
+  headline: 'Pin sections on scroll without GSAP — scrollPin',
+  description: 'How to pin any element at a viewport position while the page scrolls past it — without GSAP. scrollPin from svg-scroll-draw: wrapper-based, no layout shift, full lifecycle callbacks.',
+  url: 'https://svg-scroll-draw.vercel.app/blog/scroll-pin-without-gsap',
+  datePublished: '2026-06-06',
+  dateModified: '2026-06-06',
+  author: { '@type': 'Person', name: 'Dhruvil Chauhan', url: 'https://github.com/DhruvilChauahan0210' },
+  publisher: { '@type': 'Organization', name: 'svg-scroll-draw', url: 'https://svg-scroll-draw.vercel.app' },
+  image: 'https://svg-scroll-draw.vercel.app/opengraph-image',
+  mainEntityOfPage: { '@type': 'WebPage', '@id': 'https://svg-scroll-draw.vercel.app/blog/scroll-pin-without-gsap' },
+};
+
 function CodeBlock({ file, children }: { file: string; children: string }) {
   return (
     <div className="rounded-2xl overflow-hidden border border-pitch-black my-5">
@@ -61,6 +76,8 @@ function Callout({ children }: { children: React.ReactNode }) {
 
 export default function Page() {
   return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }} />
     <div className="bg-light-linen text-pitch-black min-h-screen">
 
       {/* Nav */}
@@ -362,6 +379,7 @@ window.addEventListener('beforeunload', () => pin.destroy());`}</CodeBlock>
         </div>
       </article>
 
+      <RelatedResources post="scroll-pin-without-gsap" />
       <footer className="px-6 md:px-12 py-6 border-t border-subtle-ash text-center text-[11px] font-mono text-graphite-border">
         svg-scroll-draw · MIT · ~10 KB gzipped ·{' '}
         <a href="https://github.com/DhruvilChauahan0210/ink-scroll" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-pitch-black transition-colors">
@@ -369,5 +387,6 @@ window.addEventListener('beforeunload', () => pin.destroy());`}</CodeBlock>
         </a>
       </footer>
     </div>
+    </>
   );
 }

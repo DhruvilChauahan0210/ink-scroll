@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { RelatedResources } from '@/components/RelatedResources';
 import Link from 'next/link';
 import { MobileMenu } from '@/components/MobileMenu';
 import { CopyButton } from '@/components/CopyButton';
@@ -35,6 +36,20 @@ export const metadata: Metadata = {
     title: 'scrollAnimate in Vue 3, Svelte, and Solid.js',
     description: 'The v2 framework guide — composables, actions, hooks. No GSAP needed.',
   },
+};
+
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'TechArticle',
+  headline: 'scrollAnimate in Vue 3, Svelte, and Solid.js — v2 framework guide',
+  description: 'Full guide to using svg-scroll-draw v2 APIs (scrollAnimate, scrollText, scrollCounter, scrollVideo) in Vue 3, Svelte, and Solid.js. Composables, actions, hooks, and component wrappers with code examples.',
+  url: 'https://svg-scroll-draw.vercel.app/blog/vue-svelte-solid-v2',
+  datePublished: '2026-06-06',
+  dateModified: '2026-06-06',
+  author: { '@type': 'Person', name: 'Dhruvil Chauhan', url: 'https://github.com/DhruvilChauahan0210' },
+  publisher: { '@type': 'Organization', name: 'svg-scroll-draw', url: 'https://svg-scroll-draw.vercel.app' },
+  image: 'https://svg-scroll-draw.vercel.app/opengraph-image',
+  mainEntityOfPage: { '@type': 'WebPage', '@id': 'https://svg-scroll-draw.vercel.app/blog/vue-svelte-solid-v2' },
 };
 
 const GH  = 'https://github.com/DhruvilChauahan0210/ink-scroll';
@@ -85,6 +100,8 @@ function H3({ children }: { children: React.ReactNode }) {
 
 export default function BlogVueSvelteSolidV2() {
   return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }} />
     <div className="bg-light-linen text-pitch-black min-h-screen">
 
       {/* Nav */}
@@ -546,6 +563,9 @@ export default defineNuxtPlugin((nuxtApp) => {
         </div>
 
       </article>
+      <RelatedResources post="vue-svelte-solid-v2" />
+
     </div>
+    </>
   );
 }

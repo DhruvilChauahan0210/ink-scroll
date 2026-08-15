@@ -1,5 +1,6 @@
 'use client';
 import { useState, useRef, useEffect, useCallback } from 'react';
+import Link from 'next/link';
 import { createBounce, createElastic } from 'svg-scroll-draw';
 import { MobileMenu } from './MobileMenu';
 import { CopyButton } from './CopyButton';
@@ -507,10 +508,10 @@ export function SvgPlayground() {
       {/* ── Nav ─────────────────────────────────────────────────────────── */}
       <nav className="shrink-0 border-b border-pitch-black flex items-center justify-between px-4 sm:px-6 h-12 bg-light-linen/95 backdrop-blur-sm z-40">
         <div className="flex items-center gap-3 min-w-0">
-          <a href="/" className="flex items-center gap-2 shrink-0 group">
+          <Link href="/" className="flex items-center gap-2 shrink-0 group">
             <span className="text-graphite-border group-hover:text-pitch-black transition-colors text-sm">←</span>
             <span className="font-display font-bold text-sm tracking-tight">svg-scroll-draw</span>
-          </a>
+          </Link>
           <span className="text-subtle-ash text-sm hidden sm:inline">/</span>
           <h1 className="text-sm hidden sm:inline text-graphite-border font-medium m-0 p-0">Playground</h1>
           {mode === 'v1' && activeFeatureTags.length > 0 && (

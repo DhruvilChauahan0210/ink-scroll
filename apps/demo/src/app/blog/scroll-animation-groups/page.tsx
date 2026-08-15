@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { RelatedResources } from '@/components/RelatedResources';
 import Link from 'next/link';
 import { MobileMenu } from '@/components/MobileMenu';
 import { CopyButton } from '@/components/CopyButton';
@@ -34,6 +35,20 @@ export const metadata: Metadata = {
     title: 'Animate multiple elements on scroll — Group APIs',
     description: 'Fan-out, cascade, or parallax — one call, any number of elements.',
   },
+};
+
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'TechArticle',
+  headline: 'Animate multiple elements on scroll — scrollAnimateGroup, scrollParallaxGroup',
+  description: 'How to animate multiple HTML elements simultaneously or in sequence on scroll using svg-scroll-draw group APIs. scrollAnimateGroup, scrollAnimateSequence, scrollParallaxGroup, scrollDrawGroup — with copy-paste examples.',
+  url: 'https://svg-scroll-draw.vercel.app/blog/scroll-animation-groups',
+  datePublished: '2026-06-06',
+  dateModified: '2026-06-06',
+  author: { '@type': 'Person', name: 'Dhruvil Chauhan', url: 'https://github.com/DhruvilChauahan0210' },
+  publisher: { '@type': 'Organization', name: 'svg-scroll-draw', url: 'https://svg-scroll-draw.vercel.app' },
+  image: 'https://svg-scroll-draw.vercel.app/opengraph-image',
+  mainEntityOfPage: { '@type': 'WebPage', '@id': 'https://svg-scroll-draw.vercel.app/blog/scroll-animation-groups' },
 };
 
 const GH  = 'https://github.com/DhruvilChauahan0210/ink-scroll';
@@ -84,6 +99,8 @@ function H3({ children }: { children: React.ReactNode }) {
 
 export default function BlogScrollAnimationGroups() {
   return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }} />
     <div className="bg-light-linen text-pitch-black min-h-screen">
 
       {/* Nav */}
@@ -419,6 +436,9 @@ scrollAnimateSequence(
         </div>
 
       </article>
+      <RelatedResources post="scroll-animation-groups" />
+
     </div>
+    </>
   );
 }

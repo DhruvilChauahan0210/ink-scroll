@@ -8,6 +8,7 @@ import { scrollDrawTimeline } from 'svg-scroll-draw/timeline';
 import Link from 'next/link';
 import { CopyButton } from './CopyButton';
 import { MobileMenu } from './MobileMenu';
+import { EXAMPLE_SEO } from '@/data/examples-seo';
 import { scrollAnimate, scrollCounter, scrollParallax } from 'svg-scroll-draw';
 import { ScrollAnimate } from 'svg-scroll-draw/react';
 import { scrollText } from 'svg-scroll-draw/text';
@@ -1665,7 +1666,7 @@ function HorizontalSnapCarousel() {
   );
 }
 
-const EXAMPLES = [
+export const EXAMPLES = [
   {
     id: 'logo-reveal',
     label: 'Logo Reveal',
@@ -2535,9 +2536,17 @@ export function ExamplesPage() {
                 <h2 className="font-display font-extrabold text-[clamp(22px,3vw,36px)] leading-[1] tracking-[-0.03em] mb-4 break-words">
                   {ex.label}
                 </h2>
-                <p className="text-graphite-border leading-relaxed mb-5 sm:mb-6 text-[14px] sm:text-[15px] break-words">
+                <p className="text-graphite-border leading-relaxed mb-4 text-[14px] sm:text-[15px] break-words">
                   {ex.description}
                 </p>
+                {EXAMPLE_SEO[ex.id] && (
+                  <Link
+                    href={`/examples/${ex.id}`}
+                    className="inline-block mb-5 sm:mb-6 text-[13px] font-semibold underline underline-offset-4 hover:opacity-70 transition-opacity"
+                  >
+                    Full guide: {EXAMPLE_SEO[ex.id].heading} →
+                  </Link>
+                )}
                 <div className="max-w-full overflow-hidden">
                   <CodeBlock filename="Hero.tsx">{ex.code}</CodeBlock>
                 </div>

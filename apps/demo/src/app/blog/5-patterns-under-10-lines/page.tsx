@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { RelatedResources } from '@/components/RelatedResources';
 import Link from 'next/link';
 import { MobileMenu } from '@/components/MobileMenu';
 
@@ -332,6 +333,7 @@ console.log(PRESETS.cinematic);
           </div>
         </section>
 
+      <RelatedResources post="5-patterns-under-10-lines" />
         <footer className="border-t border-pitch-black px-4 sm:px-6 md:px-12 py-8">
           <div className="max-w-4xl mx-auto flex flex-wrap items-center justify-between gap-4">
             <span className="font-mono text-[11px] text-graphite-border">svg-scroll-draw · MIT · ~10 KB gzipped</span>
