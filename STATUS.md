@@ -1,6 +1,6 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **2.10.2** — published on npm with provenance through `release.yml` (2026-10-30)
+> Current version: **2.11.0** — published on npm with provenance through `release.yml` (2026-10-30)
 > Tests: **575 unit** across 28 suites · **183 browser tests** per engine (549 runs
 > across Chromium/Firefox/WebKit) · **56 mutations**, each caught by the one test
 > named for it · **91.3% line coverage** (gate 90/90/82/82)
@@ -127,11 +127,11 @@ at all.
 
 ## Remaining / Next
 
-### Unreleased — AOS drop-in (branch `feat/aos-dropin`, 2026-10-30)
+### 2.11.0 — AOS drop-in (branch `feat/aos-dropin`, 2026-10-30)
 - [x] `svg-scroll-draw/aos` + `dist/cdn/aos.global.js` (3.0 / 3.1 KB gzip, budgets 3.2 / 3.4)
 - [x] Side-by-side e2e parity with AOS 2.3.4 in three engines; 25 unit tests; SSR import
 - [x] Docs: both READMEs, `/vs-aos` "switch in one line" section, llms.txt, agent skill
-- [ ] Release as 2.11.0 (new entry point)
+- [x] Released as 2.11.0
 
 ### 2.10.2 — reach pass (branch `feat/day2-reach`, 2026-10-30)
 - [x] `/blocks` + shadcn registry (5 blocks), agent skill in `skills/`

@@ -4,7 +4,7 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ---
 
-## [Unreleased]
+## [2.11.0] — 2026-10-30
 
 ### Added
 
@@ -19,6 +19,11 @@ All notable changes to `svg-scroll-draw` are documented here.
 - Deliberate differences: reduced motion shows the final state; `disable:
   'mobile'` etc. check viewport width; positions re-measure on `load`;
   `destroy()` for single-page apps.
+
+### Site
+
+- `/vs-aos` leads with "Switch from AOS in one line". Code cards there now fill
+  their height (shorter cards in a row showed a white strip).
 
 ### Tests
 

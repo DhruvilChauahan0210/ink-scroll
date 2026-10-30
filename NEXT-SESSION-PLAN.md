@@ -1,6 +1,6 @@
 # Next Session Plan — svg-scroll-draw
 
-> Updated: 2026-10-30 (evening) — **2.10.2 published** (day-2 work, `feat/day2-reach` merged).
+> Updated: 2026-10-30 (night) — **2.11.0 published** (AOS drop-in).
 
 ---
 
@@ -18,9 +18,9 @@ Numbers that set the priorities (Search Console and npm, 2026-10-30): 4,020
 lifetime downloads, ~170 a month; 5 GitHub stars; 147 Google clicks in five
 months, 81% to the homepage; `/vs-gsap` at position 11 with 425 impressions.
 
-### In flight
-- Branch `feat/aos-dropin`: `svg-scroll-draw/aos`, the AOS drop-in, with a
-  side-by-side parity suite against AOS 2.3.4. Ready to release as **2.11.0**.
+### Shipped since
+- **2.11.0** — `svg-scroll-draw/aos`, the AOS drop-in, with a side-by-side parity
+  suite against AOS 2.3.4. Watch npm weekly downloads for its effect.
 
 ### Next, in order
 1. Create the `v2.10.1` GitHub release page by hand (its job lacked
