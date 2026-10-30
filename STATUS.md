@@ -1,6 +1,6 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **2.10.1** — published on npm with provenance through `release.yml` (2026-10-30)
+> Current version: **2.10.2** — published on npm with provenance through `release.yml` (2026-10-30)
 > Tests: **550 unit** across 27 suites · **177 browser tests** per engine (531 runs
 > across Chromium/Firefox/WebKit) · **56 mutations**, each caught by the one test
 > named for it · **91.3% line coverage** (gate 90/90/82/82)
@@ -127,12 +127,12 @@ at all.
 
 ## Remaining / Next
 
-### Unreleased — reach pass (branch `feat/day2-reach`, 2026-10-30)
+### 2.10.2 — reach pass (branch `feat/day2-reach`, 2026-10-30)
 - [x] `/blocks` + shadcn registry (5 blocks), agent skill in `skills/`
 - [x] Titles ≤ 60 chars site-wide, `/vs-gsap` table up top, 2025 guide → 2026 with redirect
 - [x] Types fixed for ESM/node10 (`attw` clean); `scrollVideo` no longer re-seeks every frame; `<scroll-draw once>` works
 - [x] `firefox-native` e2e project; release job can create the GitHub release
-- [ ] Release it (next patch)
+- [x] Released as 2.10.2
 
 ### 2.10.1 — trust pass (branch `fix/day1-trust`, 2026-10-30)
 - [x] devtools registry shared across entries via `globalThis`; scrollDraw, scrollAnimate native, scrollSnap, timeline and Cinematic register

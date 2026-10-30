@@ -351,8 +351,8 @@ Classes with `init(element, options)` and `destroy()` (plus `replay`, `pause`,
 ### `svg-scroll-draw/web-component` and the CDN build
 
 `<scroll-draw>` reads only these attributes: `speed`, `easing`, `stagger`,
-`direction`, `selector`, `fade`, and `once` (`once` is read from the release
-after 2.10.1; 2.10.1 and earlier ignore it). Anything else is ignored; use
+`direction`, `selector`, `fade`, and `once` (`once` from 2.10.2; earlier
+versions ignore it). Anything else is ignored; use
 `SvgScrollDraw.scrollDraw()` for other options.
 
 CDN global `SvgScrollDraw` (from `dist/cdn/svg-scroll-draw.global.js`, or

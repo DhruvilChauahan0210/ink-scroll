@@ -1,6 +1,6 @@
 # Next Session Plan — svg-scroll-draw
 
-> Updated: 2026-10-30 (evening) — **2.10.1 published**; day-2 work on `feat/day2-reach`, unreleased.
+> Updated: 2026-10-30 (evening) — **2.10.2 published** (day-2 work, `feat/day2-reach` merged).
 
 ---
 
@@ -10,8 +10,7 @@
 the shared devtools registry and the claims pass. The GitHub release page for
 `v2.10.1` was not created (the job had `contents: read`, now `write`).
 
-Branch `feat/day2-reach` holds the unreleased work — see the `[Unreleased]`
-CHANGELOG entry: `/blocks` + shadcn registry, agent skill, site-wide title fixes,
+**2.10.2** shipped the day-2 work — see its CHANGELOG entry: `/blocks` + shadcn registry, agent skill, site-wide title fixes,
 the ESM types fix, the `scrollVideo` re-seek fix, `<scroll-draw once>`, and the
 `firefox-native` e2e project.
 
@@ -20,9 +19,8 @@ lifetime downloads, ~170 a month; 5 GitHub stars; 147 Google clicks in five
 months, 81% to the homepage; `/vs-gsap` at position 11 with 425 impressions.
 
 ### Next, in order
-1. Merge `feat/day2-reach`, release the next patch (tag push; the workflow
-   publishes and now creates the GitHub release). Create the `v2.10.1` release
-   page by hand.
+1. Create the `v2.10.1` GitHub release page by hand (its job lacked
+   `contents: write`). From 2.10.2 the workflow creates it.
 2. Re-check Search Console in ~2 weeks for the new titles (`/vs-gsap`, home,
    React, Next.js).
 3. More blocks; one shared nav component so every page links `/blocks`.

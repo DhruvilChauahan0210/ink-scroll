@@ -54,7 +54,7 @@ const pageJsonLd = {
       name: 'How much smaller is svg-scroll-draw compared to Framer Motion?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'svg-scroll-draw 2.10.1 is 10.2 KB gzipped. framer-motion 13.1.0 is 34.3 KB at its CJS entry and 61.6 KB as a single bundle, measured 2026-08-14 at gzip level 9 — so roughly 3.4x larger on the fairer of the two figures. A tree-shaken modern ESM import can be considerably less than that, because Framer Motion ships a re-export shell and real usage varies with how much of it you touch.',
+        text: 'svg-scroll-draw 2.10.2 is 10.2 KB gzipped. framer-motion 13.1.0 is 34.3 KB at its CJS entry and 61.6 KB as a single bundle, measured 2026-08-14 at gzip level 9 — so roughly 3.4x larger on the fairer of the two figures. A tree-shaken modern ESM import can be considerably less than that, because Framer Motion ships a re-export shell and real usage varies with how much of it you touch.',
       },
     },
   ],
