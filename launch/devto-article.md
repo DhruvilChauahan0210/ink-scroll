@@ -1,12 +1,12 @@
 ---
-title: I replaced GSAP DrawSVG with 4.4 KB (and it uses native CSS where it can)
+title: I replaced GSAP DrawSVG with 10 KB (and it uses native CSS where it can)
 published: false
 description: A tiny, MIT-licensed, zero-dependency library for drawing SVG paths on scroll — works in every framework and hands the animation to the compositor where the browser supports it.
 tags: javascript, webdev, react, css
 cover_image:
 ---
 
-> **Cover image suggestion:** your `demo.gif`, or the bundle bar chart from the demo site — GSAP DrawSVG (~40 KB) vs Framer Motion (~35 KB) vs svg-scroll-draw (~4.4 KB). Upload it in the dev.to editor and it'll populate `cover_image` above. A moving GIF as the cover will out-perform a static chart.
+> **Cover image suggestion:** your `demo.gif`, or the bundle bar chart from the demo site — GSAP + ScrollTrigger + DrawSVG (47.5 KB) vs Framer Motion (34.3 KB) vs svg-scroll-draw (~10 KB). Upload it in the dev.to editor and it'll populate `cover_image` above. A moving GIF as the cover will out-perform a static chart.
 
 ---
 
@@ -32,7 +32,7 @@ I got tired of the options, so I built the missing one.
 npm i svg-scroll-draw
 ```
 
-**~4.4 KB gzipped. Zero dependencies. MIT license.**
+**~10 KB gzipped. Zero dependencies. MIT license.**
 
 Works in React, Next.js, Vue 3, Svelte, Solid.js, Angular, Nuxt, Astro, Web Component, and vanilla JS — same library, nine thin adapters.
 
@@ -227,7 +227,7 @@ instance.destroy(); // cleanup on unmount
 
 | Library | Size | License | Frameworks |
 |---|---|---|---|
-| **svg-scroll-draw** | **~4.4 KB** | **MIT (free)** | **React, Vue, Svelte, Solid, Angular, Nuxt, Astro, Web Component, Vanilla** |
+| **svg-scroll-draw** | **~10 KB** | **MIT (free)** | **React, Vue, Svelte, Solid, Angular, Nuxt, Astro, Web Component, Vanilla** |
 | Framer Motion | ~35 KB | MIT | React only |
 | GSAP DrawSVG | 47.5 KB | Free (GreenSock Standard) | Any (with adapter) |
 

@@ -92,7 +92,7 @@ export const POSTS: BlogPost[] = [
     slug: 'replace-gsap-scrolltrigger',
     title: 'Replace GSAP ScrollTrigger with scrollAnimate',
     description:
-      'Full migration guide: scrollAnimate covers 95% of ScrollTrigger use cases at 9× smaller bundle size. Side-by-side code for fade/slide, parallax, counters, text reveals, and video scrubbing.',
+      'Full migration guide: scrollAnimate covers the common ScrollTrigger use cases at about 4.4× smaller bundle size. Side-by-side code for fade/slide, parallax, counters, text reveals, and video scrubbing.',
     tag: 'Migration',
     tagColor: '#ef4444',
     readTime: '8 min read',

@@ -217,7 +217,7 @@ export default function Page() {
             </h1>
 
             <p className="text-base sm:text-lg text-graphite-border max-w-2xl leading-relaxed mb-8">
-              The five scroll animation patterns that cover 95% of real-world SVG use cases —
+              The five scroll animation patterns behind most real-world SVG scroll effects —
               each in 3 lines using svg-scroll-draw presets.
               No config, no GSAP, no boilerplate.
             </p>

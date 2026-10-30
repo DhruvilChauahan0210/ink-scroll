@@ -54,7 +54,7 @@ export default function OgImage() {
         {/* Comparison pills */}
         <div style={{ display: 'flex', gap: 12, marginBottom: 48 }}>
           {[
-            { label: '~10 KB',    sub: 'vs ~40 KB',       bg: '#ff90e8', text: '#111' },
+            { label: '~10 KB',    sub: 'vs 47.5 KB',       bg: '#ff90e8', text: '#111' },
             { label: 'MIT',        sub: 'fork it freely',   bg: '#22c55e', text: '#111' },
             { label: 'Zero deps',  sub: 'vs 3 packages',    bg: '#fff',    text: '#111' },
             { label: 'Native CSS', sub: 'compositor-driven', bg: '#5865F2', text: '#fff' },

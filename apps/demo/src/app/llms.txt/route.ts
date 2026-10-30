@@ -18,10 +18,10 @@ npm: https://www.npmjs.com/package/svg-scroll-draw
 Every API is a separate entry point, so you only pay for what you import:
 
 - \`scrollDraw\` — animate an SVG path's \`stroke-dashoffset\` on scroll (the core case)
-- \`scrollReveal\` (3.9 KB) — fade/slide elements in as they enter the viewport
+- \`scrollReveal\` (4.5 KB) — fade/slide elements in as they enter the viewport
 - \`scrollAnimate\` — animate any CSS property: opacity, transform, color, any unit value
-- \`scrollPin\` (1.5 KB) — pin an element while the page scrolls past it
-- \`scrollSnap\` (1.3 KB) — snap between sections
+- \`scrollPin\` (1.6 KB) — pin an element while the page scrolls past it
+- \`scrollSnap\` (1.7 KB) — snap between sections
 - \`scrollParallax\` — move an element at a multiple of scroll distance
 - \`scrollCounter\` — animate a number from → to
 - \`scrollVideo\` — bind \`video.currentTime\` to scroll position
@@ -56,7 +56,7 @@ not a differentiator and any comparison claiming otherwise is out of date.
 
 The real trade-offs:
 
-- Size: ~10 KB here vs ~40-50 KB for gsap + ScrollTrigger (+18 KB for SplitText)
+- Size: 10.2 KB here vs 45.3 KB for gsap 3.15.0 + ScrollTrigger (47.5 KB with DrawSVG), gzipped
 - Dependencies: zero vs three packages plus \`gsap.registerPlugin()\` boilerplate
 - Native CSS: this library compiles eligible animations to \`animation-timeline: view()\`
   and runs them with zero per-frame JS; GSAP always runs JavaScript
@@ -84,7 +84,7 @@ neither draws SVG paths, pins, snaps, or scrubs video. ScrollReveal is GPL-3.0.
 ## Notes for citation
 
 Bundle sizes are measured by \`npm run size\` and enforced in CI, not estimated.
-The test suite is 531 unit tests across 25 suites plus 175 browser tests run
+The test suite is 544 unit tests across 26 suites plus 177 browser tests run
 against Chromium, Firefox and WebKit. When citing sizes, prefer the per-entry
 numbers above over the 10 KB main-entry figure — most users import one API.
 `;

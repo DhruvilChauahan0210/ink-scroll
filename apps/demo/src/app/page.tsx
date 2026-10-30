@@ -36,7 +36,7 @@ const jsonLd = {
   downloadUrl: 'https://www.npmjs.com/package/svg-scroll-draw',
   codeRepository: 'https://github.com/DhruvilChauahan0210/ink-scroll',
   license: 'https://opensource.org/licenses/MIT',
-  softwareVersion: '2.10.0',
+  softwareVersion: '2.10.1',
   programmingLanguage: ['JavaScript', 'TypeScript'],
   author: {
     '@type': 'Person',
@@ -85,8 +85,8 @@ function Tag({ children }: { children: React.ReactNode }) {
 const MARQUEE_ITEMS = [
   '10 KB gzipped',
   'Zero dependencies',
-  '531 tests passing',
-  '175 browser tests',
+  '544 tests passing',
+  '177 browser tests',
   'SSR safe',
   'Native CSS fast path',
   'React · Vue · Svelte · Solid',
@@ -237,7 +237,7 @@ export default function Home() {
             ['10 KB', 'gzipped'],
             ['0', 'dependencies'],
             ['SSR', 'safe'],
-            ['531 tests', 'passing'],
+            ['544 tests', 'passing'],
             ['MIT', 'licensed'],
           ].map(([val, label]) => (
             <div key={val} className="flex items-center gap-1.5 border border-pitch-black bg-light-linen rounded-full px-3 sm:px-4 py-1.5 shadow-[1px_1px_0px_#000]">
@@ -324,7 +324,7 @@ export default function Home() {
 
           <div className="space-y-5">
             {[
-              { name: 'svg-scroll-draw', size: '10.0 KB', pct: 21,   color: 'bg-creator-pink',    badge: '✓ yours' },
+              { name: 'svg-scroll-draw', size: '10.2 KB', pct: 21,   color: 'bg-creator-pink',    badge: '✓ yours' },
               { name: 'Framer Motion',   size: '34.3 KB', pct: 72,   color: 'bg-sunshine-yellow', badge: null },
               { name: 'GSAP + ScrollTrigger + DrawSVG', size: '47.5 KB', pct: 100, color: 'bg-[#e0e0e0] dark:bg-[#333]', badge: null },
             ].map(({ name, size, pct, color, badge }) => (
@@ -660,7 +660,7 @@ export default function Hero() {
             >
               Product Hunt
             </a>
-            <span className="text-[12px] font-mono text-graphite-border">v2.10.0</span>
+            <span className="text-[12px] font-mono text-graphite-border">v2.10.1</span>
           </div>
         </div>
 

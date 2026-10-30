@@ -186,7 +186,7 @@ export default async function Page({ params }: { params: Promise<{ framework: st
             <h2 className="font-display font-extrabold text-3xl sm:text-4xl tracking-[-0.03em] mb-6">Size.</h2>
             <p className="text-graphite-border leading-relaxed mb-6 max-w-2xl">
               {SELF.gzipKb} KB gzipped for every API at once, and each one is a separate entry point — so a page that
-              only reveals elements ships 3.9 KB, not the lot. The equivalent GSAP stack for the same work is{' '}
+              only reveals elements ships 4.5 KB, not the lot. The equivalent GSAP stack for the same work is{' '}
               {COMPETITORS.gsapStack.gzipKb} KB, which makes this {ratio}× smaller. GSAP is free and considerably
               broader; if you need timelines, Draggable or Flip, use GSAP.
             </p>

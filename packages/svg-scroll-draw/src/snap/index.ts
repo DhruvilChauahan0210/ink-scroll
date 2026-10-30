@@ -2,6 +2,7 @@ import type { EasingName } from '../core/types';
 import { EASINGS, clamp } from '../core/utils';
 import { warn } from '../core/env';
 import { prefersReducedMotion, watchReducedMotion } from '../core/motion';
+import { _register, _unregister } from '../core/registry';
 
 export interface ScrollSnapOptions {
   /** Scroll axis. Default: 'vertical'. */
@@ -214,12 +215,24 @@ export function scrollSnap(
   const scrollTarget = scrollEl ?? window;
   scrollTarget.addEventListener('scroll', onScroll, { passive: true });
 
+  // Keyed on the first section; progress is which section is current, and the
+  // trigger window spans the first section's offset to the last one's.
+  _register(els[0], {
+    type: 'snap',
+    getProgress: () => currentIndex / (els.length - 1 || 1),
+    getTrigger: () => {
+      const offsets = getSectionOffsets();
+      return { tStart: offsets[0], tEnd: offsets[offsets.length - 1] };
+    },
+  });
+
   return {
     destroy() {
       cancelAnimationFrame(animRafId);
       clearTimeout(debounceTimer);
       scrollTarget.removeEventListener('scroll', onScroll);
       unwatchMotion();
+      _unregister(els[0]);
     },
     snapTo,
     getCurrentIndex() { return currentIndex; },

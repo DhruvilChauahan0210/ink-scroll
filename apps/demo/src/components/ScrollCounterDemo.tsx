@@ -6,7 +6,7 @@ import { ScrollAnimate } from 'svg-scroll-draw/react';
 
 const STATS = [
   { id: 'stat-users',     from: 0,   to: 50000,  label: 'developers',    format: (n: number) => Math.round(n).toLocaleString() + '+' },
-  { id: 'stat-size',      from: 40,  to: 9,      label: 'KB gzipped',    format: (n: number) => '~' + Math.round(n) },
+  { id: 'stat-size',      from: 47,  to: 10,      label: 'KB gzipped',    format: (n: number) => '~' + Math.round(n) },
   { id: 'stat-tests',     from: 0,   to: 423,    label: 'tests passing', format: (n: number) => Math.round(n).toString() },
   { id: 'stat-deps',      from: 10,  to: 0,      label: 'dependencies',  format: (n: number) => Math.round(n).toString() },
 ];
@@ -114,7 +114,7 @@ import { ScrollCounter } from 'svg-scroll-draw/react';
               <p className="text-[11px] font-mono uppercase tracking-[0.15em] text-graphite-border mb-2">Counts down too</p>
               <p className="text-[15px] text-graphite-border leading-relaxed">
                 Set <code className="font-mono text-[0.88em]">from</code> higher than <code className="font-mono text-[0.88em]">to</code> to count down.
-                The "40 KB → 9 KB" stat card above uses <code className="font-mono text-[0.88em]">from: 40, to: 9</code>.
+                The "47 KB → 10 KB" stat card above uses <code className="font-mono text-[0.88em]">from: 47, to: 10</code>.
               </p>
             </div>
             <div className="rounded-2xl border border-pitch-black p-6 bg-marketplace-gray">

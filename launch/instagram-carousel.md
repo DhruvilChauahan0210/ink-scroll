@@ -24,14 +24,14 @@
 **Layout:** Huge centered text. Behind it, a faint half-drawn squiggle stroke (left half solid pink, right half dashed/ghosted) — literally showing a path mid-draw.
 
 ```
-I deleted 40 KB
+I deleted 47.5 KB
 of GSAP.
 
 Replaced it with
-4.4 KB.
+10 KB.
 ```
 
-- "40 KB" struck through or in muted gray. "4.4 KB" big, bold, in pink.
+- "47.5 KB" struck through or in muted gray. "10 KB" big, bold, in pink.
 - Bottom: small text → `swipe to see how →`
 
 **Why it works:** specific number + a loss/win contrast = pattern interrupt. No jargon on slide 1.
@@ -70,7 +70,7 @@ svg-scroll-draw
 Below it, three quick badges/pills:
 
 ```
-✅ ~4.4 KB gzipped
+✅ ~10 KB gzipped
 ✅ Zero dependencies
 ✅ MIT — free forever
 ```
@@ -177,7 +177,7 @@ Live playground · 10 demos · full docs
 ## 📝 CAPTION (paste into the post)
 
 ```
-I got tired of importing 40 KB of GSAP just to draw an SVG on scroll — so I built the 4.4 KB version. 🪶
+I got tired of importing 47.5 KB of GSAP just to draw an SVG on scroll — so I built the 10 KB version. 🪶
 
 svg-scroll-draw is a zero-dependency, MIT-licensed library that animates SVG paths as you scroll. It works in React, Next, Vue, Svelte, Solid, Angular, Nuxt, Astro and plain JS — same API everywhere.
 

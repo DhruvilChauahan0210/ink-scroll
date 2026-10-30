@@ -285,7 +285,7 @@ export const EXAMPLE_SEO: Record<string, ExampleSeo> = {
     slug: 'scroll-reveal',
     title: 'Scroll Reveal Without AOS — One Call, No Attributes',
     description:
-      'Fade and cascade elements into view with one scrollReveal call. A 3.9 KB, typed replacement for AOS and ScrollReveal.js — no data attributes.',
+      'Fade and cascade elements into view with one scrollReveal call. A 4.5 KB, typed replacement for AOS and ScrollReveal.js — no data attributes.',
     heading: 'Card cascade reveal on scroll',
     intro:
       'Reveal-on-scroll is the most common scroll effect on the web and usually arrives via data attributes sprinkled through the markup, which couples your animation config to your HTML and gives you nothing typed to refactor against. One scrollReveal call on a selector replaces the lot. Worth being straight: AOS (6.7 KB) and ScrollReveal (5.6 KB) are fine at this and are not much bigger than our 3.9 KB reveal entry — the case for switching is types, tree-shaking and not touching your markup.',
@@ -447,7 +447,7 @@ export const EXAMPLE_SEO: Record<string, ExampleSeo> = {
     slug: 'scroll-snap',
     title: 'Horizontal Snap Carousel on Scroll — scrollSnap',
     description:
-      'Drag or swipe between cards with threshold-based snapping and custom easing. onSnap keeps indicators in sync. 1.3 KB, no carousel library.',
+      'Drag or swipe between cards with threshold-based snapping and custom easing. onSnap keeps indicators in sync. 1.7 KB, no carousel library.',
     heading: 'Horizontal snap carousel',
     intro:
       'CSS scroll-snap is excellent until you need to know which slide you landed on, or want easing other than the browser default. scrollSnap keeps the drag feel but adds a threshold you control, custom easing, and an onSnap callback — which is what the dot indicators in this example are wired to, rather than polling scroll position.',

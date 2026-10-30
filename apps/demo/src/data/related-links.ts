@@ -64,7 +64,7 @@ export const RELATED_BY_POST: Record<string, RelatedLinks> = {
   'replace-gsap-scrolltrigger': {
     examples: ['scroll-animate', 'timeline-api', 'scroll-pin'],
     pages: [
-      { href: '/vs-gsap', label: 'The full GSAP comparison', blurb: '10.0 KB vs 47.5 KB measured — and GSAP has been free since 2025.' },
+      { href: '/vs-gsap', label: 'The full GSAP comparison', blurb: '10.2 KB vs 47.5 KB measured — and GSAP has been free since 2025.' },
     ],
   },
   '5-patterns-under-10-lines': {

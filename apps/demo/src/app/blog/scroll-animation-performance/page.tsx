@@ -103,7 +103,7 @@ export default function ScrollPerformancePage() {
             CSS Scroll-Driven Animations (<code className="font-mono text-sm bg-marketplace-gray px-1 rounded">animation-timeline: view()</code>) run entirely on the compositor thread. The browser handles the scroll → animation mapping with <strong>zero JavaScript involvement</strong>. No main thread. No GC pauses. Just the GPU.
           </p>
           <p className="text-graphite-border leading-relaxed mb-4">
-            Supported in Chrome 115+, Edge 115+, and Firefox 110+ (behind a flag). ~85% of browsers as of 2025.
+            Supported in Chrome and Edge 115+, Safari 26+, and Firefox 159+ (on by default since October 2026).
           </p>
           <CodeBlock file="native-css.css">{`/* What the browser generates under the hood */
 @keyframes fadeUp {

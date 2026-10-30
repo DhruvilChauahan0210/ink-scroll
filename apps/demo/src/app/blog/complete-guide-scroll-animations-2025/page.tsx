@@ -229,7 +229,7 @@ snap.destroy();`}</CodeBlock>
           <Section num="06" title="Text split + reveal">
             <p className="text-graphite-border leading-relaxed mb-4">
               Split text into chars, words, or lines and stagger-animate each piece.
-              A 2.5 KB alternative to GSAP SplitText, which is free to use but adds ~18 KB.
+              A 2.5 KB alternative to GSAP SplitText. SplitText is free and 3.6 KB, but it only splits — animating the pieces needs GSAP core (27.7 KB) too.
             </p>
             <CodeBlock file="app.js">{`import { scrollText } from 'svg-scroll-draw/text';
 

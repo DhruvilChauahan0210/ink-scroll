@@ -79,7 +79,7 @@ export default function ReactScrollAnimationPage() {
             <span className="text-[10px] font-mono text-graphite-border">Works with Next.js App Router, Remix, Vite</span>
           </div>
           <h1 className="font-display font-extrabold text-[clamp(32px,7vw,76px)] leading-[0.9] tracking-[-0.04em] mb-6">
-            React scroll animations.<br /><span className="text-graphite-border">9 KB. Zero deps.</span>
+            React scroll animations.<br /><span className="text-graphite-border">10 KB. Zero deps.</span>
           </h1>
           <p className="text-base sm:text-lg text-graphite-border leading-relaxed max-w-2xl mb-8">
             Typed React components and hooks for every scroll animation pattern — fade, slide, pin, snap, counter, text reveal, video scrub, horizontal sections.
@@ -288,7 +288,7 @@ export default function Page() {
           <h2 className="font-display font-extrabold text-[clamp(28px,6vw,56px)] leading-[0.92] tracking-[-0.04em] mb-4">
             Drop-in for React + Next.js.
           </h2>
-          <p className="text-graphite-border text-sm sm:text-base mb-8">MIT. Zero deps. TypeScript. 531 tests. Works everywhere React works.</p>
+          <p className="text-graphite-border text-sm sm:text-base mb-8">MIT. Zero deps. TypeScript. 544 tests. Works everywhere React works.</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <div className="flex items-center gap-2 bg-white/10 rounded-full px-5 py-3 text-sm font-mono"><span className="opacity-50">$</span><span>npm i svg-scroll-draw</span></div>
             <Link href="/docs" className="px-5 py-3 rounded-full border-2 border-white text-sm font-semibold hover:bg-white hover:text-pitch-black transition-colors text-center">Full API docs →</Link>

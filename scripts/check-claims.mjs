@@ -22,7 +22,7 @@
  * Historical CHANGELOG entries are intentionally exempt: they record what was
  * true at the time of a release and must not be rewritten.
  */
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 import { execFileSync } from 'node:child_process';
 import { join, dirname } from 'node:path';
@@ -50,6 +50,10 @@ const SIZE_CLAIM_FILES = [
   'apps/demo/src/app/page.tsx',
   'apps/demo/src/app/opengraph-image.tsx',
   'apps/demo/src/components/MobileMenu.tsx',
+  // The README npm renders is a different file from the root one, and it went a
+  // whole release advertising "~9 KB" because nothing here read it.
+  'packages/svg-scroll-draw/README.md',
+  'apps/demo/src/app/llms.txt/route.ts',
 ];
 
 const failures = [];
@@ -242,6 +246,103 @@ if (mainKb !== null) {
           );
         }
       }
+    }
+  }
+}
+
+/*
+ * Per-entry sizes ("scrollReveal is 3.9 KB", "`svg-scroll-draw/text` | 2.5 KB").
+ *
+ * The main-entry check above never looked at these, so after 2.10.0 the site
+ * advertised reveal at 3.9, pin at 1.5 and snap at 1.3 against 4.4 / 1.6 / 1.5
+ * in a dozen files. Each figure is compared to its built entry, to one decimal.
+ */
+const API_ENTRY = {
+  scrollReveal: 'reveal', scrollPin: 'pin', scrollSnap: 'snap', scrollText: 'text',
+  scrollVideo: 'video', scrollHorizontal: 'horizontal', scrollProgress: 'progress',
+};
+
+function entryKb(entry) {
+  const dist = join(ROOT, 'packages/svg-scroll-draw/dist', entry, 'index.mjs');
+  if (!existsSync(dist)) return null;
+  return Math.round((gzipSync(readFileSync(dist), { level: 9 }).length / 1024) * 10) / 10;
+}
+
+/** Every file a reader can see: both READMEs, the whole demo source, the launch drafts. */
+function publicFiles() {
+  const out = ['README.md', 'packages/svg-scroll-draw/README.md'];
+  const walk = (dir) => {
+    for (const name of readdirSync(join(ROOT, dir))) {
+      const rel = `${dir}/${name}`;
+      if (statSync(join(ROOT, rel)).isDirectory()) walk(rel);
+      else if (/\.(tsx?|md|mdx|txt)$/.test(name)) out.push(rel);
+    }
+  };
+  walk('apps/demo/src');
+  if (existsSync(join(ROOT, 'launch'))) walk('launch');
+  return out;
+}
+
+/*
+ * Pages whose job is to quote the old, wrong figures as history — the /verify
+ * before/after table and the changelog. Like CHANGELOG.md, they stay as written.
+ */
+const HISTORICAL = ['apps/demo/src/app/verify/page.tsx', 'apps/demo/src/app/changelog/page.tsx'];
+
+const PUBLIC = publicFiles().filter((rel) => !HISTORICAL.includes(rel));
+
+for (const rel of PUBLIC) {
+  const src = readFileSync(join(ROOT, rel), 'utf8');
+
+  for (const [api, entry] of Object.entries(API_ENTRY)) {
+    const real = entryKb(entry);
+    if (real === null) continue;
+    // `\\?` covers the escaped backticks inside template literals (llms.txt route).
+    const re = new RegExp(`${api}\\\\?\\\`?\\)?\\s*(?:alone\\s*)?(?:is\\s*|\\(\\s*)?(\\d+\\.\\d)\\s?KB`, 'g');
+    for (const [, n] of src.matchAll(re)) {
+      if (Number(n) !== real) failures.push(`${rel}: claims ${api} is ${n} KB but the built entry is ${real.toFixed(1)} KB`);
+    }
+    // A table row's last size is the gzipped one; the root README also has a raw column.
+    const row = new RegExp(`\\|\\s*\\\`svg-scroll-draw/${entry}\\\`[^\\n]*`, 'g');
+    for (const [line] of src.matchAll(row)) {
+      const sizes = [...line.matchAll(/(\d+\.\d)\s?KB/g)];
+      if (!sizes.length) continue;
+      const n = sizes[sizes.length - 1][1];
+      if (Number(n) !== real) failures.push(`${rel}: lists svg-scroll-draw/${entry} at ${n} KB but it is ${real.toFixed(1)} KB`);
+    }
+  }
+}
+
+const entries = readFileSync(join(ROOT, 'apps/demo/src/data/competitors.ts'), 'utf8')
+  .match(/SELF_ENTRIES[^{]*\{([^}]*)\}/);
+if (entries) {
+  for (const [, entry, n] of entries[1].matchAll(/(\w+):\s*(\d+\.\d)/g)) {
+    const real = entryKb(entry);
+    if (real !== null && Number(n) !== real) {
+      failures.push(`apps/demo/src/data/competitors.ts: SELF_ENTRIES.${entry} is ${n} but the built entry is ${real} KB`);
+    }
+  }
+}
+
+/*
+ * Claims that are wrong whatever the build says. Each one shipped: "9× smaller"
+ * (measured 4.5–4.75×), "covers 95% of use cases" (never measured), SplitText
+ * "+18 KB" (it is 3.6 KB in gsap 3.15.0), the paid-plugin claim (free since
+ * 2025), and Firefox 110 / Safari 18 for the native path (Firefox 159, Safari 26).
+ */
+const BANNED = [
+  [/\b9×\s*smaller/, '"9× smaller" — measured is about 4.5× (vs core + ScrollTrigger) to 4.75× (with DrawSVG)'],
+  [/\b95%\s+of\s+(?:ScrollTrigger|scroll|those|real-world|the)/i, '"95% of … use cases" — never measured'],
+  [/\+\s?18\s?KB|adds\s+~?18\s?KB/, 'SplitText "+18 KB" — gsap 3.15.0 SplitText is 3.6 KB gzipped'],
+  [/requires? (?:a )?(?:paid|\$150)|\$150\+?\/yr Club/i, 'GSAP plugins as paid — all free since 2025'],
+  [/Firefox 110\+/, 'Firefox 110+ for the native path — Firefox ships it from 159'],
+  [/Safari 18\+/, 'Safari 18+ for the native path — WebKit ships it from 26'],
+];
+for (const rel of PUBLIC) {
+  const lines = readFileSync(join(ROOT, rel), 'utf8').split('\n');
+  for (const [i, line] of lines.entries()) {
+    for (const [re, why] of BANNED) {
+      if (re.test(line)) failures.push(`${rel}:${i + 1}: ${why}`);
     }
   }
 }

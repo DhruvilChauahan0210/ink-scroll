@@ -32,7 +32,8 @@ const BUDGETS_KB = {
   angular:          11.0,
   astro:            10.5,
   group:             9.0,
-  'web-component':   6.5,
+  // 6.57 after the shared devtools registry (2.10.1) taught scrollDraw to register.
+  'web-component':   6.8,
   reveal:            4.6,
   // 4.30 after teaching the default `distance` about `scrollContainer`.
   horizontal:        4.5,
@@ -43,7 +44,8 @@ const BUDGETS_KB = {
   progress:          2.0,
   devtools:          1.9,
   pin:               1.8,
-  snap:              1.6,
+  // 1.68 once scrollSnap registered with devtools (2.10.1).
+  snap:              1.9,
   lenis:             0.5,
 };
 

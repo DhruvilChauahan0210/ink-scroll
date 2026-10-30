@@ -1,5 +1,6 @@
 import { EASINGS } from '../core/utils';
 import { warn } from '../core/env';
+import { _register, _unregister } from '../core/registry';
 import type { Story, StoryEasing, StoryAnimation } from './story';
 
 export type { Story } from './story';
@@ -209,10 +210,22 @@ export class Cinematic {
     progress = computeProgress();
     apply(progress);
 
+    // The scroll window is the mount's own scrollable span: progress runs 0 → 1
+    // from its top reaching the viewport top until its bottom reaches the bottom.
+    _register(mount, {
+      type: 'draw',
+      getProgress: () => progress,
+      getTrigger: () => {
+        const tStart = mount.getBoundingClientRect().top + window.scrollY;
+        return { tStart, tEnd: tStart + Math.max(0, mount.offsetHeight - window.innerHeight) };
+      },
+    });
+
     return {
       destroy() {
         stop();
         observer.disconnect();
+        _unregister(mount);
       },
       getProgress: () => progress,
     };

@@ -1,6 +1,7 @@
 import { EASINGS, parseTrigger, computeProgress, computeTriggers, getElementLength } from '../core/utils';
 import { prefersReducedMotion, watchReducedMotion } from '../core/motion';
 import { warn } from '../core/env';
+import { _register, _unregister } from '../core/registry';
 import type { ScrollDrawInstance, EasingName } from '../core/types';
 
 export interface TimelineTrack {
@@ -384,12 +385,20 @@ export function scrollDrawTimeline(
   window.addEventListener('resize', onResize);
   window.addEventListener('orientationchange', onResize);
 
+  // A timeline is a multi-track draw, so devtools lists it as one.
+  _register(container, {
+    type: 'draw',
+    getProgress: () => currentAlpha,
+    getTrigger: () => ({ tStart, tEnd }),
+  });
+
   return {
     destroy() {
       cancelAnimationFrame(rafId);
       clearTimeout(resizeTimer);
       clearTimeout(repeatTimer);
       observer.disconnect();
+      _unregister(container);
       window.removeEventListener('resize', onResize);
       window.removeEventListener('orientationchange', onResize);
       stopWatchingMotion();

@@ -7,9 +7,13 @@
 [![license](https://img.shields.io/npm/l/svg-scroll-draw)](./LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/DhruvilChauahan0210/ink-scroll?style=flat)](https://github.com/DhruvilChauahan0210/ink-scroll/stargazers)
 
-> Draw SVG paths on scroll — plus reveal, pin, snap, parallax, counters, video scrub and text splitting. **10.0 KB gzipped for every API, from 1.3 KB if you import one.** Zero dependencies, MIT, and a native CSS fast path that runs with no per-frame JavaScript. Works in React, Next.js, Vue, Svelte, Solid, Angular, Astro, Nuxt and vanilla JS.
+> Draw SVG paths on scroll — plus reveal, pin, snap, parallax, counters, video scrub and text splitting. **10.2 KB gzipped for every API, from 1.6 KB if you import one.** Zero dependencies, MIT, and a native CSS fast path that runs with no per-frame JavaScript. Works in React, Next.js, Vue, Svelte, Solid, Angular, Astro, Nuxt and vanilla JS.
 
 **[Live Demo](https://svg-scroll-draw.vercel.app)** · [npm](https://www.npmjs.com/package/svg-scroll-draw) · [Docs](https://svg-scroll-draw.vercel.app/docs) · [Examples](https://svg-scroll-draw.vercel.app/examples) · [Report a bug](https://github.com/DhruvilChauahan0210/ink-scroll/issues)
+
+**Try it in your browser, no install:** [Vanilla JS on StackBlitz](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/vanilla) · [React on StackBlitz](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/react)
+
+![svg-scroll-draw demo: SVG paths drawing as the page scrolls](https://raw.githubusercontent.com/DhruvilChauahan0210/ink-scroll/main/demo.gif)
 
 ---
 
@@ -22,7 +26,7 @@
 | `scrollParallax` | `svg-scroll-draw` | Move any element at a different rate than scroll. Speed multiplier, reverse direction. |
 | `scrollDraw` | `svg-scroll-draw` | The original — scroll-driven SVG path drawing via `stroke-dashoffset`. |
 | `scrollVideo` | `svg-scroll-draw/video` | Tie `<video>.currentTime` to scroll. The Apple/Stripe product-page pattern. |
-| `scrollText` | `svg-scroll-draw/text` | Split text into chars/words/lines and stagger-animate each on scroll. Free GSAP SplitText. |
+| `scrollText` | `svg-scroll-draw/text` | Split text into chars/words/lines and stagger-animate each on scroll. 2.5 KB, nothing else to load. |
 | `devtools` | `svg-scroll-draw/devtools` | Visual overlay showing every active animation's triggers and progress. Dev-only. |
 
 All APIs return the same instance object: `{ destroy, replay, pause, resume, seek, getProgress }`.
@@ -218,7 +222,7 @@ import { ScrollVideo } from 'svg-scroll-draw/react';
 
 ## scrollText — text reveal on scroll
 
-A 2.5 KB alternative to GSAP SplitText, which is free to use but adds ~18 KB.
+A 2.5 KB alternative to GSAP SplitText. SplitText is free and 3.6 KB, but it only splits — animating the pieces needs GSAP core (27.7 KB) on top.
 
 ```js
 import { scrollText } from 'svg-scroll-draw/text';
@@ -448,13 +452,16 @@ devtools.highlight('#my-element'); // outline for 2 seconds
 
 | Entry | Gzipped |
 |---|---|
-| `svg-scroll-draw` (main) | ~9 KB |
-| `svg-scroll-draw/react` | ~3 KB |
-| `svg-scroll-draw/video` | ~1.5 KB |
-| `svg-scroll-draw/text` | ~2 KB |
-| `svg-scroll-draw/devtools` | ~4 KB (dev only) |
+| `svg-scroll-draw` (main, every core API) | 10.2 KB |
+| `svg-scroll-draw/react` (includes the engine) | 11.2 KB |
+| `svg-scroll-draw/reveal` | 4.5 KB |
+| `svg-scroll-draw/text` | 2.5 KB |
+| `svg-scroll-draw/video` | 2.0 KB |
+| `svg-scroll-draw/snap` | 1.7 KB |
+| `svg-scroll-draw/devtools` | 1.7 KB (dev only) |
+| `svg-scroll-draw/pin` | 1.6 KB |
 
-GSAP core + ScrollTrigger = ~40 KB gzipped. **svg-scroll-draw v2 covers 95% of those use cases at ~9 KB.**
+Measured with `npm run size` (minified, gzip level 9). For comparison, GSAP 3.15.0 core + ScrollTrigger is 45.3 KB gzipped, and 47.5 KB with DrawSVG. GSAP does far more than scroll animation; for the scroll effects this library covers, that is the size difference.
 
 ---
 
@@ -491,7 +498,7 @@ Scaffolds a ready-to-use starter file for React, Vue, Svelte, Solid, or Vanilla 
 
 Chrome 80+, Safari 14+, Firefox 75+, Edge 80+
 
-Native CSS `animation-timeline: view()` fast path: Chrome 115+, Safari 18+, Firefox 110+. Automatically falls back to the JS engine on older browsers.
+Native CSS `animation-timeline: view()` fast path: Chrome and Edge 115+, Safari 26+, Firefox 159+ (on by default since October 2026). Older browsers fall back to the JS engine automatically.
 
 ---
 

@@ -151,13 +151,18 @@ of examining a single API in a real browser.
 - [x] Push `phase0-production-ready`
 - [x] Cut 2.10.0 — user-visible fixes plus new behaviour, no breaking API change
 - [ ] Watch CI go green remotely — the e2e job has still never run outside this laptop
-- [ ] `npm publish` (needs `NPM_TOKEN` in repo secrets for the provenance-signed workflow)
+- [ ] `npm publish` (needs `NPM_TOKEN` or npm trusted publishing for the provenance-signed workflow)
+- [x] 2.10.1 staged: devtools registry fix, npm README and site claims corrected, `check-claims` widened to every public file
 
 ### Reach (Phase 2, Priorities 4–5 — deliberately after the above)
 - [ ] **Naming decision** — repo `ink-scroll`, package `svg-scroll-draw`, docs "a scroll animation platform". 21 entry points, most unrelated to SVG; nobody searching npm for "scroll reveal" finds `svg-scroll-draw`. Recommended: publish under a new name, keeping `svg-scroll-draw` as a deprecated alias that re-exports.
 - [ ] **Migration guides** from GSAP ScrollTrigger, AOS and ScrollReveal.js — the highest-intent traffic there is
 - [ ] **Real-world recipes** instead of option tables: animated logo, sticky feature section, horizontal case-study strip, animated stat row, scrubbed explainer video
-- [ ] Auto-generate the README size table from `npm run size` rather than pasting it
+- [ ] Auto-generate the README size table from `npm run size` rather than pasting it (per-entry sizes are now *checked* by `check-claims`, just not written)
+- [x] StackBlitz starters (`examples/vanilla`, `examples/react`) linked from both READMEs
+- [ ] Upgrade Playwright so CI's Firefox is 159+ and the native path is measured there, not taken from release notes
+- [ ] `/vs-gsap` title under 60 chars (position 11, 425 impressions, 1 click)
+- [ ] Copy-paste component registry and an agent-skill repo — the two growth patterns with evidence (react-bits, gsap-skills)
 - [ ] Document the known jump-scroll asymmetry in the docs, not only in a test comment
 
 ---

@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>devtools — sees instances created through other bundles</title>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+  .spacer { height: 1000px; }
+  .tail   { height: 2000px; }
+  .box    { height: 200px; margin: 40px; }
+  svg     { display: block; width: 400px; height: 120px; }
+</style>
+<!--
+  devtools.enable() is a no-op outside a dev build, and the npm bundles decide
+  that from `process.env.NODE_ENV` — which a bundler-less browser does not have.
+  This is the same switch the dev CDN build bakes in. Classic script, so it runs
+  before the module graph below is evaluated.
+-->
+<script>window.__SVG_SCROLL_DRAW_DEV__ = true;</script>
+</head>
+<body>
+
+<div class="spacer"></div>
+<div class="box" id="draw">
+  <svg viewBox="0 0 400 120"><path d="M10 60 C 110 0, 290 120, 390 60" stroke="black" stroke-width="4" fill="none"/></svg>
+</div>
+<div class="box" id="fade">fade</div>
+<div class="box" id="count">0</div>
+<div class="box" id="g1">
+  <svg viewBox="0 0 400 120"><path d="M10 10 L390 110" stroke="black" stroke-width="4" fill="none"/></svg>
+</div>
+<div class="box" id="g2">
+  <svg viewBox="0 0 400 120"><path d="M10 110 L390 10" stroke="black" stroke-width="4" fill="none"/></svg>
+</div>
+<div class="tail"></div>
+
+<script type="module">
+/*
+ * Three separately built entry points, loaded as three separate modules — the
+ * way a real app pulls in `svg-scroll-draw`, `svg-scroll-draw/group` and
+ * `svg-scroll-draw/devtools`. Each one inlines its own copy of the registry
+ * module; before the registry moved onto globalThis, devtools read a copy
+ * nobody else wrote to and showed "No active instances." for all of these.
+ */
+import { scrollDraw, scrollAnimate, scrollCounter } from '/dist/index.mjs';
+import { scrollDrawGroup } from '/dist/group/index.mjs';
+import { devtools } from '/dist/devtools/index.mjs';
+import { publish } from './_probe.mjs';
+
+const instances = [
+  scrollDraw('#draw'),
+  scrollAnimate('#fade', { props: { opacity: [0, 1] } }),
+  scrollCounter('#count', { to: 100 }),
+  scrollDrawGroup(['#g1', '#g2']),
+];
+
+const panel = () => document.querySelector('[data-ssd-devtools-panel]');
+const frames = (n) => new Promise((r) => {
+  const step = () => (n-- <= 0 ? r() : requestAnimationFrame(step));
+  step();
+});
+
+publish({
+  /** What devtools' panel is showing right now, one label per row. */
+  read: () => {
+    const p = panel();
+    if (!p) return { mounted: false, rows: [], text: '' };
+    // Row labels are the first child of each row; the title is child 0.
+    const rows = Array.from(p.children).slice(1)
+      .map((row) => row.firstElementChild?.textContent ?? row.textContent);
+    return { mounted: true, rows, text: p.textContent };
+  },
+  enable: async () => { devtools.enable(); await frames(2); },
+  /** The shared Map itself, as every bundle sees it. */
+  shared: () => {
+    const map = globalThis[Symbol.for('svg-scroll-draw.registry')];
+    return map ? Array.from(map, ([el, e]) => `${e.type} #${el.id}`) : null;
+  },
+  destroyAll: async () => { instances.forEach((i) => i.destroy()); await frames(2); },
+});
+</script>
+</body>
+</html>

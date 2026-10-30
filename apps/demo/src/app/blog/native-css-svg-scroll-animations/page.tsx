@@ -308,7 +308,7 @@ path {
               {[
                 {
                   condition: 'Browser supports animation-timeline: view()',
-                  detail: 'Chrome 115+, Edge 115+, Firefox 110+. Safari falls back automatically.',
+                  detail: 'Chrome and Edge 115+, Safari 26+, Firefox 159+. Older browsers fall back automatically.',
                   native: true,
                 },
                 {
@@ -571,9 +571,9 @@ instance.getProgress();        // → 0–1`}</Code>
             </h2>
             <ul className="space-y-3 max-w-2xl">
               {[
-                'svg-scroll-draw automatically uses the native CSS compositor path on Chrome 115+ and Firefox 110+.',
+                'svg-scroll-draw automatically uses the native CSS compositor path on Chrome and Edge 115+, Safari 26+ and Firefox 159+.',
                 'The native path runs zero JavaScript per frame — no scroll listeners, no rAF.',
-                'The JS fallback activates automatically on Safari and older browsers — same visual result.',
+                'The JS fallback activates automatically on older browsers — same visual result.',
                 'Any config that needs JS (callbacks, stagger, spring easing, repeat, velocityScale) stays on the JS engine.',
                 'The vast majority of real-world logo reveals and path animations hit the native path.',
                 'You don\'t write different code. The engine decides.',

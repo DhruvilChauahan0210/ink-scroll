@@ -45,21 +45,21 @@ export const MEASURED_ON = '2026-08-14';
 export const SELF: Competitor = {
   name: 'svg-scroll-draw',
   label: 'svg-scroll-draw (all APIs)',
-  version: '2.10.0',
+  version: '2.10.1',
   license: 'MIT',
-  gzipKb: 10.0,
+  gzipKb: 10.2,
   lastPublish: '2026-08-14',
   command: 'npm run size',
   measured: true,
   caveat:
-    'Main entry, every API at once. Each API is a separate entry point — scrollReveal alone is 3.9 KB, scrollPin 1.5 KB, scrollSnap 1.3 KB.',
+    'Main entry, every API at once. Each API is a separate entry point — scrollReveal alone is 4.5 KB, scrollPin 1.6 KB, scrollSnap 1.7 KB.',
 };
 
 /** Per-entry-point sizes, for like-for-like comparisons against single-purpose libraries. */
 export const SELF_ENTRIES: Record<string, number> = {
-  reveal: 3.9,
-  pin: 1.5,
-  snap: 1.3,
+  reveal: 4.5,
+  pin: 1.6,
+  snap: 1.7,
   text: 2.5,
 };
 
@@ -86,6 +86,27 @@ export const COMPETITORS: Record<string, Competitor> = {
     lastPublish: null,
     command: 'npm pack gsap@3.15.0 && gzip -9 package/dist/gsap.min.js',
     measured: true,
+  },
+  gsapScroll: {
+    name: 'gsap + ScrollTrigger',
+    label: 'GSAP core + ScrollTrigger',
+    version: '3.15.0',
+    license: 'GreenSock Standard (free of charge)',
+    gzipKb: 45.3,
+    lastPublish: null,
+    command: 'npm pack gsap@3.15.0 && gzip -9 each of gsap.min.js (27.7) + ScrollTrigger.min.js (17.6)',
+    measured: true,
+  },
+  gsapSplitText: {
+    name: 'gsap/SplitText',
+    label: 'GSAP SplitText',
+    version: '3.15.0',
+    license: 'GreenSock Standard (free of charge)',
+    gzipKb: 3.6,
+    lastPublish: null,
+    command: 'npm pack gsap@3.15.0 && gzip -9 package/dist/SplitText.min.js',
+    measured: true,
+    caveat: 'SplitText only splits. Animating the pieces needs GSAP core (27.7 KB) as well.',
   },
   framerMotion: {
     name: 'framer-motion',
@@ -187,7 +208,7 @@ export const COMPETITORS: Record<string, Competitor> = {
   },
 };
 
-/** "10.0 KB vs 47.5 KB" → 4.75. Rounded to 2dp so pages cannot drift from the source. */
+/** "10.2 KB vs 47.5 KB" → 4.66. Rounded to 2dp so pages cannot drift from the source. */
 export function ratioVsSelf(key: keyof typeof COMPETITORS): number {
   return Math.round((COMPETITORS[key].gzipKb / SELF.gzipKb) * 100) / 100;
 }

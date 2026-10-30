@@ -311,8 +311,21 @@ export function createAnimateEngine(
 
     const scrollPos = (): number => (axis === 'x' ? window.scrollX : window.scrollY);
     const vpSize    = (): number => (axis === 'x' ? window.innerWidth : window.innerHeight);
+    const liveTriggers = () => {
+      const rect = el.getBoundingClientRect();
+      return computeTriggers({ top: rect.top, height: rect.height }, scrollPos(), vpSize(), startConfig, endConfig);
+    };
 
-    return {
+    // The JS path below registers too. This one used to skip it, so a plain
+    // scrollAnimate() — which takes this path in every browser with scroll
+    // timelines — never showed up in devtools.
+    _register(el, {
+      type: 'animate',
+      getProgress: () => instance.getProgress(),
+      getTrigger: liveTriggers,
+    });
+
+    const instance: ScrollDrawInstance = {
       destroy() {
         (el as HTMLElement).classList.remove(cls);
         style.remove();
@@ -320,6 +333,7 @@ export function createAnimateEngine(
         // restore applies whether or not the animation was ever scrubbed.
         (el as HTMLElement).style.animationPlayState = '';
         restoreInline();
+        _unregister(el);
       },
       replay() {
         (el as HTMLElement).classList.remove(cls);
@@ -336,15 +350,11 @@ export function createAnimateEngine(
         }
       },
       getProgress() {
-        const rect    = el.getBoundingClientRect();
-        const scroll  = scrollPos();
-        const vp      = vpSize();
-        const { tStart, tEnd } = computeTriggers(
-          { top: rect.top, height: rect.height }, scroll, vp, startConfig, endConfig,
-        );
-        return easeFn(computeProgress(scroll, tStart, tEnd, speed));
+        const { tStart, tEnd } = liveTriggers();
+        return easeFn(computeProgress(scrollPos(), tStart, tEnd, speed));
       },
     };
+    return instance;
   }
 
   if (nativeEligible()) return buildNative();

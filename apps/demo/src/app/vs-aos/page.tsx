@@ -177,7 +177,7 @@ export default function VsAosPage() {
               considerably less — neither draws SVG paths, pins, snaps, splits text or scrubs video. If all you need is
               fade-up-on-scroll, they are a perfectly good choice and you should use them. Our{' '}
               <code className="font-mono text-[0.9em] bg-white px-1.5 py-0.5 rounded border border-subtle-ash">svg-scroll-draw/reveal</code>{' '}
-              entry point is 3.9 KB if you want just that piece — that is the number worth comparing, not the 10.0 KB
+              entry point is 4.5 KB if you want just that piece — that is the number worth comparing, not the 10.2 KB
               figure for every API at once.
             </p>
           </div>

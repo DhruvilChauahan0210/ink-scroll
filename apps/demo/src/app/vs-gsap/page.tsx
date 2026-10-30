@@ -7,7 +7,7 @@ import { COMPETITORS, SELF, MEASURED_ON, provenance, ratioVsSelf } from '@/data/
 export const metadata: Metadata = {
   title: 'GSAP ScrollTrigger Alternative — 10 KB, Zero Deps, Native CSS',
   description:
-    'svg-scroll-draw vs GSAP + ScrollTrigger: 4.75× smaller (10.0 KB vs 47.5 KB measured), zero dependencies, and a native CSS fast path GSAP has no equivalent for. Feature matrix, side-by-side code, migration guide.',
+    'svg-scroll-draw vs GSAP + ScrollTrigger: 4.7× smaller (10.2 KB vs 47.5 KB measured), zero dependencies, and a native CSS fast path GSAP has no equivalent for. Feature matrix, side-by-side code, migration guide.',
   keywords: [
     'gsap alternative',
     'gsap scrolltrigger alternative',
@@ -23,13 +23,13 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://svg-scroll-draw.vercel.app/vs-gsap' },
   openGraph: {
     title: 'GSAP ScrollTrigger Alternative — 10 KB, Zero Deps',
-    description: '4.75× smaller, measured. Zero dependencies. Native CSS fast path.',
+    description: '4.7× smaller, measured. Zero dependencies. Native CSS fast path.',
     url: 'https://svg-scroll-draw.vercel.app/vs-gsap',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'GSAP ScrollTrigger Alternative — 10 KB, Zero Deps',
-    description: '4.75× smaller bundle, measured. Native CSS fast path.',
+    description: '4.7× smaller bundle, measured. Native CSS fast path.',
   },
 };
 
@@ -42,7 +42,7 @@ const pageJsonLd = {
       name: 'Is svg-scroll-draw free to use commercially?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Yes. svg-scroll-draw is MIT licensed — free for commercial use with no attribution required, and free to fork, modify or redistribute. GSAP is also free to use, including all former Club GreenSock plugins, since Webflow made the full toolset no-charge in 2025; its standard license does still restrict redistributing GSAP inside a competing product or SDK, which MIT does not.',
+        text: 'Yes. svg-scroll-draw is MIT licensed — free for commercial use, and free to fork, modify or redistribute; the only condition is keeping the license notice in copies. GSAP is also free to use, including all former Club GreenSock plugins, since Webflow made the full toolset no-charge in 2025; its Standard "No Charge" license is not open source, and it bars use in no-code visual animation tools that compete with Webflow. MIT has no such limit.',
       },
     },
     {
@@ -66,7 +66,7 @@ const pageJsonLd = {
       name: 'Can svg-scroll-draw replace GSAP ScrollTrigger?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'svg-scroll-draw covers 95% of ScrollTrigger use cases including scroll-driven animations, parallax, pin/sticky sections, text splits, and video scrubbing — with a simpler API and zero dependencies.',
+        text: 'For the common scroll cases, yes: scroll-driven property animation, SVG path drawing, parallax, pin/sticky sections, snapping, horizontal scroll, text splits and video scrubbing — with zero dependencies. GSAP still does more: nested timelines you can edit while they play, MorphSVG, Flip, inertia and a much larger ecosystem.',
       },
     },
     {
@@ -135,7 +135,7 @@ const FEATURES = [
   { feature: 'Animate any CSS property on scroll',  us: true,  gsap: true,  note: '' },
   { feature: 'SVG path draw (stroke-dashoffset)',    us: true,  gsap: true,  note: '' },
   { feature: 'Animated number counters',             us: true,  gsap: true,  note: '' },
-  { feature: 'Text split + stagger',                 us: true,  gsap: true, note: 'GSAP SplitText — free since 2025, but +18 KB on top of core + ScrollTrigger' },
+  { feature: 'Text split + stagger',                 us: true,  gsap: true, note: 'GSAP SplitText — free since 2025, 3.6 KB, and needs GSAP core to animate' },
   { feature: 'Video scrub on scroll',                us: true,  gsap: true,  note: '' },
   { feature: 'Pin / sticky sections',                us: true,  gsap: true,  note: '' },
   { feature: 'Section snapping',                     us: true,  gsap: true,  note: '' },
@@ -488,10 +488,10 @@ scrollSnap('.section', {
 
             {/* Text split */}
             <div>
-              <h3 className="font-display font-extrabold text-xl tracking-[-0.02em] mb-5">Text split + stagger <span className="text-[13px] font-normal font-mono text-graphite-border ml-2 border border-subtle-ash px-2 py-0.5 rounded-full">GSAP = +18 KB</span></h3>
+              <h3 className="font-display font-extrabold text-xl tracking-[-0.02em] mb-5">Text split + stagger <span className="text-[13px] font-normal font-mono text-graphite-border ml-2 border border-subtle-ash px-2 py-0.5 rounded-full">GSAP = +3.6 KB, needs core</span></h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <p className="text-[11px] font-mono text-graphite-border mb-2 uppercase tracking-[0.1em]">GSAP SplitText (free, +18 KB)</p>
+                  <p className="text-[11px] font-mono text-graphite-border mb-2 uppercase tracking-[0.1em]">GSAP SplitText (free, 3.6 KB + core)</p>
                   <CodeBlock file="gsap.js">{`// core + ScrollTrigger + SplitText
 const split = new SplitText('#h1',
   { type: 'words' });

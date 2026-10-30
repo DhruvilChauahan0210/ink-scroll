@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { MobileMenu } from '@/components/MobileMenu';
 
 export const metadata: Metadata = {
-  title: 'GSAP DrawSVG Alternative — 10 KB vs 40 KB, Zero Deps',
+  title: 'GSAP DrawSVG Alternative — 10 KB vs 47.5 KB, Zero Deps',
   description:
     'Detailed comparison of svg-scroll-draw and GSAP DrawSVG for scroll-driven SVG path animation. Bundle size, dependency count, native CSS fast path, React/Vue/Svelte support, and a migration guide.',
   keywords: [
@@ -20,14 +20,14 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: '/blog/gsap-drawsvg-alternative' },
   openGraph: {
-    title: 'GSAP DrawSVG Alternative — 10 KB vs 40 KB, Zero Deps',
+    title: 'GSAP DrawSVG Alternative — 10 KB vs 47.5 KB, Zero Deps',
     description:
       '~10 KB, MIT, zero deps. A detailed comparison and drop-in alternative to GSAP DrawSVG + ScrollTrigger.',
     url: 'https://svg-scroll-draw.vercel.app/blog/gsap-drawsvg-alternative',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'GSAP DrawSVG Alternative — 10 KB vs 40 KB, Zero Deps',
+    title: 'GSAP DrawSVG Alternative — 10 KB vs 47.5 KB, Zero Deps',
     description: '~10 KB, MIT, zero deps. Drop-in alternative to GSAP DrawSVG + ScrollTrigger.',
   },
 };
@@ -81,14 +81,14 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 }
 
 const BUNDLE_BARS = [
-  { label: 'svg-scroll-draw', size: '~10 KB', pct: 22,  color: '#ff90e8' },
-  { label: 'GSAP + ScrollTrigger + DrawSVG', size: '~40 KB', pct: 100, color: '#ef4444' },
-  { label: 'Framer Motion', size: '~35 KB', pct: 87,  color: '#f59e0b' },
+  { label: 'svg-scroll-draw', size: '10.2 KB', pct: 21,  color: '#ff90e8' },
+  { label: 'GSAP + ScrollTrigger + DrawSVG', size: '47.5 KB', pct: 100, color: '#ef4444' },
+  { label: 'Framer Motion', size: '34.3 KB', pct: 72,  color: '#f59e0b' },
 ];
 
 const FEATURES = [
   { feature: 'License',               ours: 'MIT — fork and redistribute freely', theirs: 'Free to use; own terms restrict redistribution', ourWin: true },
-  { feature: 'Bundle size (gzipped)', ours: '~10 KB',                           theirs: '~40 KB (gsap + ScrollTrigger + DrawSVG)',              ourWin: true },
+  { feature: 'Bundle size (gzipped)', ours: '~10 KB',                           theirs: '47.5 KB (gsap + ScrollTrigger + DrawSVG)',              ourWin: true },
   { feature: 'Dependencies',          ours: 'Zero',                              theirs: '3 packages to install and register',                   ourWin: true },
   { feature: 'Native CSS fast path',  ours: 'Yes — compositor-driven on Chrome/FF 115+', theirs: 'No — JS only',                                ourWin: true },
   { feature: 'React component',       ours: '<ScrollDraw> + useScrollDraw hook', theirs: 'useEffect/useRef boilerplate every time',              ourWin: true },
@@ -154,7 +154,7 @@ export default function Page() {
 
             <p className="text-base sm:text-lg text-graphite-border max-w-2xl leading-relaxed mb-8">
               GSAP DrawSVG is powerful, and since 2025 it&apos;s free for everyone — so this isn&apos;t a price argument.
-              It does still cost you ~40 KB, three packages to register, and boilerplate in every framework.
+              It does still cost you 47.5 KB, three packages to register, and boilerplate in every framework.
               Here&apos;s a complete comparison, side-by-side code, and a migration guide.
             </p>
 
@@ -162,7 +162,7 @@ export default function Page() {
             <div className="flex flex-wrap gap-3">
               {[
                 { label: 'svg-scroll-draw', value: '~10 KB', sub: 'gzipped', color: '#ff90e8' },
-                { label: 'GSAP stack',       value: '~40 KB',  sub: 'gzipped', color: '#ef4444' },
+                { label: 'GSAP stack',       value: '47.5 KB',  sub: 'gzipped', color: '#ef4444' },
                 { label: 'svg-scroll-draw', value: 'MIT',     sub: 'license',  color: '#22c55e' },
                 { label: 'GSAP DrawSVG',    value: 'Paid',    sub: 'commercial', color: '#f59e0b' },
               ].map((s, i) => (
@@ -192,7 +192,7 @@ export default function Page() {
                 </div>
                 <ul className="space-y-2 text-sm">
                   {[
-                    '~10 KB gzipped — 4× smaller than GSAP',
+                    '~10 KB gzipped — 4.7× smaller than GSAP',
                     'MIT — free for commercial use, forever',
                     'Zero dependencies',
                     'Native CSS fast path (Chrome/FF 115+)',
@@ -216,7 +216,7 @@ export default function Page() {
                 </div>
                 <ul className="space-y-2">
                   {[
-                    { ok: false, text: '~40 KB (gsap + ScrollTrigger + DrawSVG)' },
+                    { ok: false, text: '47.5 KB (gsap + ScrollTrigger + DrawSVG)' },
                     { ok: false, text: '3 packages, plugin registration boilerplate' },
                     { ok: false, text: 'JS only — no native CSS path' },
                     { ok: false, text: 'No framework wrappers — useEffect + useRef every time in React' },
@@ -250,7 +250,7 @@ export default function Page() {
               <p>
                 The cost is <strong className="text-pitch-black">bytes and setup</strong>. To draw one path on scroll you
                 install three packages, call <code className="font-mono text-[0.9em]">gsap.registerPlugin()</code>, and
-                ship ~40 KB gzipped — for an effect that is fundamentally one animated{' '}
+                ship 47.5 KB gzipped — for an effect that is fundamentally one animated{' '}
                 <code className="font-mono text-[0.9em]">stroke-dashoffset</code>.
               </p>
               <p>
@@ -266,7 +266,7 @@ export default function Page() {
               </div>
               <div className="bg-marketplace-gray/40 border border-subtle-ash rounded-xl px-4 py-3 text-sm">
                 <p className="font-semibold text-pitch-black mb-0.5">GSAP DrawSVG</p>
-                <p className="font-mono text-xs text-graphite-border">Free · ~40 KB · 3 packages</p>
+                <p className="font-mono text-xs text-graphite-border">Free · 47.5 KB · 3 packages</p>
               </div>
             </div>
           </div>
@@ -277,7 +277,7 @@ export default function Page() {
           <div className="max-w-4xl mx-auto">
             <SectionLabel>Bundle size</SectionLabel>
             <h2 className="font-display font-extrabold text-[clamp(22px,4vw,42px)] leading-[1] tracking-[-0.03em] mb-8">
-              4× smaller than GSAP
+              4.7× smaller than GSAP
             </h2>
             <div className="space-y-4">
               {BUNDLE_BARS.map(b => (

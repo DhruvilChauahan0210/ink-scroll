@@ -1,11 +1,11 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **2.10.0** — published on npm (verified 2026-08-15 via `npm view svg-scroll-draw version`)
-> Tests: **531 unit** across 25 suites · **175 browser tests** per engine (525 runs
+> Current version: **2.10.1** staged on `fix/day1-trust`, not yet published · npm `latest` is **2.10.0**
+> Tests: **544 unit** across 26 suites · **177 browser tests** per engine (531 runs
 > across Chromium/Firefox/WebKit) · **56 mutations**, each caught by the one test
 > named for it · **91.3% line coverage** (gate 90/90/82/82)
-> Bundle: **10.0 KB gzipped** (main entry; per-API entries from 0.2 KB) · zero runtime dependencies
-> Last updated: 2026-08-15
+> Bundle: **10.2 KB gzipped** (main entry; per-API entries from 0.2 KB) · zero runtime dependencies
+> Last updated: 2026-10-30
 
 ---
 
@@ -49,11 +49,11 @@
 - [x] `scrollAnimateGroup` + `scrollAnimateSequence` + `scrollParallaxGroup` in `svg-scroll-draw/group`
 
 ### Testing
-- [x] 531 tests across 25 suites — `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollText` (23)
+- [x] 544 tests across 26 suites — `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollText` (23)
 - [x] Initial state fix — `createAnimateEngine` and `scrollCounter` now apply correct alpha immediately on init (no flash before IO fires)
 
 ### Browser tests (Phase 2, `packages/svg-scroll-draw/e2e`)
-175 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
+177 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
 `helpers.ts` (deterministic sweep — scroll to a fixed offset, wait two frames,
 read) and `fixtures/_probe.mjs` (parsing stays in the page, so specs assert on
 numbers).
@@ -126,6 +126,16 @@ at all.
 - [x] MobileMenu version badge updated to v2.7.0
 
 ## Remaining / Next
+
+### 2.10.1 — trust pass (branch `fix/day1-trust`, 2026-10-30)
+- [x] devtools registry shared across entries via `globalThis`; scrollDraw, scrollAnimate native, scrollSnap, timeline and Cinematic register
+- [x] npm README and site claims corrected (SplitText, 9×, 95%, per-entry sizes, Firefox 159 / Safari 26)
+- [x] `check-claims` scans the npm README, all demo source, llms.txt and launch drafts; per-entry sizes and banned claims
+- [x] StackBlitz starters in `examples/`, GIF + keywords on the npm README
+- [x] GitHub topics set
+- [ ] GitHub repo homepage (still the dead `demo-nu-ashen-84` URL) and description — set by hand
+- [ ] npm publishing credentials (token or trusted publishing), then tag `v2.10.1`
+- [ ] Playwright Firefox is 153; native path in Firefox 159 is not measured yet
 
 - [x] **Published v2.7.0 to npm**
 

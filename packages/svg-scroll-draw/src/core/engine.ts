@@ -6,6 +6,7 @@ import {
 import { PRESETS } from './presets';
 import { IS_DEV, warn as warnDev } from './env';
 import { cssTimingFor } from './css-easing';
+import { _register, _unregister } from './registry';
 
 // ── Native CSS scroll-driven animation (animation-timeline: view()) ───────────
 // Which easings the fast path can express, and as what, lives in core/css-easing.
@@ -263,15 +264,35 @@ export function createEngine(
     return axis === 'x' ? window.innerWidth : window.innerHeight;
   }
 
+  /** The trigger window as the layout stands right now. */
+  function measureTriggers(): { tStart: number; tEnd: number } {
+    const frame = measureTriggerFrame(container, scrollEl, axis);
+    return computeTriggers(frame, frame.scroll, vpSize(), startConfig, endConfig);
+  }
+
   function cacheTriggers(): void {
-    const frame  = measureTriggerFrame(container, scrollEl, axis);
-    const result = computeTriggers(frame, frame.scroll, vpSize(), startConfig, endConfig);
-    tStart = result.tStart;
-    tEnd   = result.tEnd;
+    ({ tStart, tEnd } = measureTriggers());
     if (debug && IS_DEV) {
       destroyDebugOverlay();
       debugOverlay = createDebugOverlay(tStart, tEnd, axis);
     }
+  }
+
+  /**
+   * List the instance in the shared registry so devtools can see it, and take it
+   * out again on destroy(). Every live path (native, autoplay, JS) returns
+   * through here; the inert ones (no window, reduced motion) do not register,
+   * matching the other engines. The default trigger is measured live, because
+   * only the JS path keeps a cached window.
+   */
+  function tracked(inst: ScrollDrawInstance, getTrigger = measureTriggers): ScrollDrawInstance {
+    _register(container, { type: 'draw', getProgress: () => inst.getProgress(), getTrigger });
+    const destroy = inst.destroy;
+    inst.destroy = () => {
+      destroy.call(inst);
+      _unregister(container);
+    };
+    return inst;
   }
 
   // ── Apply alpha to all paths ──────────────────────────────────────────────
@@ -534,7 +555,7 @@ export function createEngine(
     };
   }
 
-  if (nativeEligible()) return buildNative();
+  if (nativeEligible()) return tracked(buildNative());
 
   // ── Autoplay / viewport-enter animation ──────────────────────────────────
 
@@ -734,7 +755,7 @@ export function createEngine(
     };
   }
 
-  if (autoplay) return buildAutoplay();
+  if (autoplay) return tracked(buildAutoplay());
 
   cacheTriggers();
 
@@ -1001,7 +1022,7 @@ export function createEngine(
 
   // ── Instance ──────────────────────────────────────────────────────────────
 
-  return {
+  return tracked({
     destroy() {
       cancelAnimationFrame(rafId);
       clearTimeout(repeatTimer);
@@ -1070,5 +1091,5 @@ export function createEngine(
       remeasure();
       if (isVisible && !paused) startLoop();
     },
-  };
+  }, () => ({ tStart, tEnd }));
 }

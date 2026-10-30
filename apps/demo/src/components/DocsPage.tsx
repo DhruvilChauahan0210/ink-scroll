@@ -57,7 +57,7 @@ const NAV_GROUPS = [
     items: [{ id: 'use-scroll-draw-progress', label: 'useScrollDrawProgress' }],
   },
   {
-    label: 'v2.10.0',
+    label: 'v2.10.1',
     items: [
       { id: 'instance-refresh',    label: 'refresh()' },
       { id: 'timeline-reduced-motion', label: 'Timeline & reduced motion' },
@@ -2399,7 +2399,7 @@ import { ScrollVideo } from 'svg-scroll-draw/react';
 
           <DocSection id="scroll-text" tag="v2.1.0" heading="scrollText">
             <p className="text-sm text-graphite-border leading-relaxed mb-2">
-              Split any text element into chars, words, or lines and animate each piece on scroll. A 2.5 KB alternative to GSAP SplitText, which is free to use but adds ~18 KB.
+              Split any text element into chars, words, or lines and animate each piece on scroll. A 2.5 KB alternative to GSAP SplitText. SplitText is free and 3.6 KB, but it only splits — animating the pieces needs GSAP core (27.7 KB) too.
             </p>
             <CodeBlock file="index.js">
 {`import { scrollText } from 'svg-scroll-draw/text';

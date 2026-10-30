@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Pin sections on scroll without GSAP — scrollPin',
-    description: 'Sticky scroll sections without GSAP. Full lifecycle callbacks. 9 KB total.',
+    description: 'Sticky scroll sections without GSAP. Full lifecycle callbacks. 1.6 KB for scrollPin alone.',
   },
 };
 

@@ -1080,7 +1080,7 @@ function HeadlineReveal() {
         margin: 0,
         lineHeight: 1.6,
       }}>
-        Zero deps · MIT · 9 KB · works with React, Vue, Svelte
+        Zero deps · MIT · 10 KB · works with React, Vue, Svelte
       </p>
     </div>
   );

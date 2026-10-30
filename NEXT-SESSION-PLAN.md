@@ -1,10 +1,35 @@
 # Next Session Plan — svg-scroll-draw
 
-> Updated: 2026-08-14 — **2.10.0 is published to npm** and merged to `main`
+> Updated: 2026-10-30 — **2.10.1 staged on `fix/day1-trust`**, not published. npm `latest` is 2.10.0.
 
 ---
 
-## Current state
+## Current state (2026-10-30)
+
+Branch `fix/day1-trust` holds the 2.10.1 trust pass, uncommitted at the time of
+writing: the devtools registry fix, corrected claims on the npm README and site,
+a wider `check-claims`, StackBlitz starters and npm keywords. See the 2.10.1
+CHANGELOG entry.
+
+Numbers that set the priorities (Search Console and npm, 2026-10-30):
+4,020 lifetime downloads, 80% of them in the May–June launch spike, about 170 a
+month now; 5 GitHub stars; 147 Google clicks in five months, 81% to the homepage.
+`/vs-gsap` sits at position 11 with 425 impressions and 1 click.
+
+Firefox 159 turned on scroll-driven animations on 27 Oct 2026, so the native
+fast path now has all three engines. CI's Playwright Firefox is still 153.
+
+### Next, in order
+1. Publishing credentials: `NPM_TOKEN` secret, or npm trusted publishing (then
+   drop the token from `release.yml`). Merge the branch, tag `v2.10.1`.
+2. Set the GitHub repo homepage (the current one 404s) and description by hand.
+3. Day 2 of the plan: `/vs-gsap` title, duplicated "— svg-scroll-draw" titles,
+   the 2025 guide renamed to 2026, launch posts (Show HN, Reddit, dev.to) on the
+   Firefox news, awesome-list submissions, first copy-paste blocks.
+
+---
+
+## State at 2.10.0 (2026-08-14)
 
 **2.10.0 is published (npm `latest`) and merged to `main`, tagged `v2.10.0`.
 Phase 2 is complete — every priority, not just the coverage ones.**
@@ -52,7 +77,7 @@ Unit coverage was ratcheted alongside: `group` 50→96%, `snap` 81→95%, `text`
 
 ### 1. Release follow-ups
 - [x] Published 2.10.0 to npm, merged to `main`, tagged `v2.10.0`
-- [ ] **`NPM_TOKEN` in repo secrets.** Without it the release workflow cannot
+- [ ] **`NPM_TOKEN` in repo secrets** (or npm trusted publishing — no token at all). Without it the release workflow cannot
       publish, which is why this one went out by hand and unattested. Adding it
       is what makes the *next* release a tag push rather than a manual step.
 - [ ] **Check the `v2.10.0` workflow run.** Pushing the tag triggered

@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>svg-scroll-draw · vanilla starter</title>
+    <style>
+      body { margin: 0; font-family: system-ui, sans-serif; background: #fafaf7; color: #17181c; }
+      section { min-height: 100vh; display: grid; place-items: center; padding: 0 16px; }
+      h1 { font-size: clamp(32px, 6vw, 64px); max-width: 16ch; text-align: center; }
+      svg { width: min(520px, 90vw); height: auto; }
+      .card { opacity: 0; padding: 24px; border: 2px solid #17181c; border-radius: 12px; max-width: 420px; }
+    </style>
+  </head>
+  <body>
+    <section><p>Scroll down ↓</p></section>
+    <section>
+      <svg id="draw" viewBox="0 0 500 200" fill="none" stroke="#2d55d8" stroke-width="6" stroke-linecap="round">
+        <path d="M20 150 C 120 20, 200 20, 250 100 S 380 180, 480 50" />
+      </svg>
+    </section>
+    <section><h1 id="headline">Every word here arrives on scroll</h1></section>
+    <section><div class="card" id="card">Fades and slides in with scrollAnimate.</div></section>
+    <section><p>The end.</p></section>
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>

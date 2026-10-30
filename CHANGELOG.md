@@ -4,6 +4,51 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ---
 
+## [2.10.1] — Unreleased
+
+The trust release. No API changes. It fixes a devtools bug that hid every
+instance, and the numbers the npm page and the site had wrong.
+
+### Fixed
+
+- **`devtools` showed "No active instances" for code imported from another
+  entry.** Each built entry carried its own copy of the instance registry, so
+  `scrollAnimate` from the main entry and `devtools` from `svg-scroll-draw/devtools`
+  never saw each other. The registry now lives on `globalThis` under
+  `Symbol.for('svg-scroll-draw.registry')`, created on first use (nothing runs on
+  import, so SSR is unaffected).
+- **`scrollDraw` never registered with devtools at all**, on any of its three
+  paths (native CSS, autoplay, JS). Neither did `scrollAnimate`'s native path,
+  `scrollSnap`, `scrollDrawTimeline` or `Cinematic`. All do now, and unregister
+  on `destroy()`.
+
+### Docs and claims
+
+- The npm README said GSAP SplitText needs a paid subscription, that SplitText
+  adds ~18 KB (gsap 3.15.0 SplitText is 3.6 KB), that we cover "95% of
+  ScrollTrigger use cases" (never measured), and listed the native fast path as
+  Safari 18+ / Firefox 110+. All corrected: Safari 26+, and Firefox 159+, which
+  turned scroll-driven animations on by default on 27 Oct 2026.
+- "9× smaller than GSAP" removed everywhere. Measured: 4.4× against core +
+  ScrollTrigger (45.3 KB), 4.7× against core + ScrollTrigger + DrawSVG (47.5 KB).
+- Per-entry sizes on the site and READMEs updated to the built output.
+- `check-claims` now reads the npm README, the whole demo source, `llms.txt` and
+  the launch drafts; checks every per-API size against its built entry; and fails
+  on the specific false claims above if they come back.
+- npm README: demo GIF, StackBlitz links, and 17 more search keywords.
+
+### Added
+
+- `examples/vanilla` and `examples/react`: two starters that open on StackBlitz
+  with no install and use the published package.
+
+### Size
+
+The registry cost is 0.05–0.16 KB per entry: main 10.0 → 10.2 KB. Budgets for
+`web-component` (6.5 → 6.8) and `snap` (1.6 → 1.9) were raised to fit it.
+
+---
+
 ## [2.10.0] — 2026-08-14
 
 The correctness release. Every entry point in the library, including all eight

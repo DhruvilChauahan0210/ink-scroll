@@ -7,7 +7,7 @@ import { CopyButton } from '@/components/CopyButton';
 export const metadata: Metadata = {
   title: 'Replace GSAP ScrollTrigger with scrollAnimate — svg-scroll-draw v2',
   description:
-    'scrollAnimate replaces gsap.to() + ScrollTrigger for 95% of scroll animation use cases. Zero GSAP dependency, 9× smaller, same one-call API. Full migration guide with side-by-side code.',
+    'scrollAnimate replaces gsap.to() + ScrollTrigger for the common scroll animation use cases. Zero GSAP dependency, about 4.4× smaller, same one-call API. Full migration guide with side-by-side code.',
   keywords: [
     'replace gsap scrolltrigger',
     'gsap alternative',
@@ -23,13 +23,13 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://svg-scroll-draw.vercel.app/blog/replace-gsap-scrolltrigger' },
   openGraph: {
     title: 'Replace GSAP ScrollTrigger with scrollAnimate',
-    description: 'scrollAnimate covers 95% of ScrollTrigger use cases. 9× smaller. Zero deps. One function call.',
+    description: 'scrollAnimate covers the common ScrollTrigger use cases. About 4.4× smaller. Zero deps. One function call.',
     url: 'https://svg-scroll-draw.vercel.app/blog/replace-gsap-scrolltrigger',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Replace GSAP ScrollTrigger with scrollAnimate',
-    description: '9× smaller than GSAP. Zero deps. Same expressive API. Full migration guide.',
+    description: 'About 4.4× smaller than GSAP + ScrollTrigger. Zero deps. Same expressive API. Full migration guide.',
   },
 };
 
@@ -37,7 +37,7 @@ const articleJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'TechArticle',
   headline: 'Replace GSAP ScrollTrigger with scrollAnimate — svg-scroll-draw v2',
-  description: 'scrollAnimate replaces gsap.to() + ScrollTrigger for 95% of scroll animation use cases. Zero GSAP dependency, 9× smaller, same one-call API. Full migration guide with side-by-side code.',
+  description: 'scrollAnimate replaces gsap.to() + ScrollTrigger for the common scroll animation use cases. Zero GSAP dependency, about 4.4× smaller, same one-call API. Full migration guide with side-by-side code.',
   url: 'https://svg-scroll-draw.vercel.app/blog/replace-gsap-scrolltrigger',
   datePublished: '2026-06-06',
   dateModified: '2026-06-06',
@@ -115,8 +115,8 @@ export default function Page() {
           </h1>
           <p className="text-base sm:text-lg text-graphite-border leading-relaxed max-w-2xl">
             svg-scroll-draw v2 ships <code className="font-mono text-[0.9em] bg-marketplace-gray px-1.5 py-0.5 rounded">scrollAnimate</code> —
-            a drop-in replacement for the 95% of scroll animation use cases that today require GSAP + ScrollTrigger.
-            9× smaller. Zero dependencies. One function call.
+            a replacement for the common scroll animation use cases that today reach for GSAP + ScrollTrigger.
+            About 4.4× smaller. Zero dependencies. One function call.
           </p>
         </div>
       </header>
@@ -169,7 +169,7 @@ scrollAnimate('#hero-text', {
 });`}</CodeBlock>
 
           <Callout>
-            <strong>Bundle impact:</strong> GSAP core + ScrollTrigger = ~40 KB gzipped. svg-scroll-draw v2 full bundle = ~10 KB gzipped. For scroll animations only, that is a <strong>4–5× size reduction</strong> in real-world projects.
+            <strong>Bundle impact:</strong> GSAP 3.15.0 core + ScrollTrigger = 45.3 KB gzipped. svg-scroll-draw's full main entry = 10.2 KB gzipped. For scroll animations, that is about a <strong>4.4× size reduction</strong>.
           </Callout>
 
           <h2 className="font-display font-extrabold text-2xl sm:text-3xl tracking-[-0.02em] mb-4 mt-10">Common patterns, migrated</h2>
@@ -196,7 +196,7 @@ import { scrollCounter } from 'svg-scroll-draw';
 scrollCounter('#count', { to: 50000, easing: 'ease-out', once: true });`}</CodeBlock>
 
           <h3 className="font-semibold text-lg mb-2 mt-6">Text reveal (SplitText)</h3>
-          <CodeBlock file="text.js">{`// GSAP SplitText — free, adds ~18 KB
+          <CodeBlock file="text.js">{`// GSAP SplitText — free, 3.6 KB (+ GSAP core to animate)
 const split = new SplitText('#headline', { type: 'words' });
 gsap.from(split.words, { opacity: 0, y: 24, stagger: 0.05, ease: 'power2.out',
   scrollTrigger: { trigger: '#headline', start: 'top 85%', once: true } });
@@ -231,7 +231,7 @@ anim.destroy();         // remove all listeners`}</CodeBlock>
 
           <h2 className="font-display font-extrabold text-2xl sm:text-3xl tracking-[-0.02em] mb-4 mt-10">When to still use GSAP</h2>
           <p className="text-graphite-border leading-relaxed mb-4">
-            svg-scroll-draw covers the 95% case. There are scenarios where GSAP is still the right tool:
+            svg-scroll-draw covers the common cases. There are scenarios where GSAP is still the right tool:
           </p>
           <ul className="list-disc pl-6 space-y-2 text-graphite-border mb-4">
             <li>Complex multi-element non-scroll timelines (absolute time, tweening unrelated to scroll)</li>
