@@ -56,7 +56,10 @@
     "animation-timeline",
     "view-timeline",
     "scroll-timeline",
-    "typescript"
+    "typescript",
+    "aos",
+    "animate-on-scroll",
+    "data-aos"
   ],
   "homepage": "https://svg-scroll-draw.vercel.app",
   "repository": {
@@ -139,6 +142,9 @@
       ],
       "horizontal": [
         "./dist/horizontal/index.d.ts"
+      ],
+      "aos": [
+        "./dist/aos/index.d.ts"
       ]
     }
   },
@@ -356,6 +362,16 @@
       "require": {
         "types": "./dist/horizontal/index.d.ts",
         "default": "./dist/horizontal/index.cjs"
+      }
+    },
+    "./aos": {
+      "import": {
+        "types": "./dist/aos/index.d.mts",
+        "default": "./dist/aos/index.mjs"
+      },
+      "require": {
+        "types": "./dist/aos/index.d.ts",
+        "default": "./dist/aos/index.cjs"
       }
     },
     "./package.json": "./package.json"

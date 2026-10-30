@@ -152,6 +152,11 @@ export default function VsAosPage() {
           <h1 className="font-display font-extrabold text-[clamp(32px,7vw,76px)] leading-[0.9] tracking-[-0.04em] mb-6">
             svg-scroll-draw<br /><span className="text-graphite-border">vs AOS vs ScrollReveal.</span>
           </h1>
+          <p className="text-base sm:text-lg text-pitch-black leading-relaxed max-w-2xl mb-4 font-medium">
+            Already on AOS? Change one import. <code className="font-mono text-[0.9em] bg-white px-1.5 py-0.5 rounded border border-subtle-ash">svg-scroll-draw/aos</code>{' '}
+            reads your existing <code className="font-mono text-[0.9em]">data-aos</code> markup, triggers at the same scroll
+            positions as AOS 2.3.4, and needs no <code className="font-mono text-[0.9em]">aos.css</code>.
+          </p>
           <p className="text-base sm:text-lg text-graphite-border leading-relaxed max-w-2xl mb-8">
             AOS and ScrollReveal.js put animation config in HTML data attributes.
             svg-scroll-draw puts it in JavaScript — typed, traceable, and part of a full scroll platform.
@@ -165,6 +170,40 @@ export default function VsAosPage() {
         </div>
       </header>
 
+      {/* Drop-in */}
+      <section id="drop-in" className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-14">
+        <div className="max-w-4xl mx-auto">
+          <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-2 font-mono font-medium">00</p>
+          <h2 className="font-display font-extrabold text-3xl sm:text-4xl tracking-[-0.03em] mb-4">Switch from AOS in one line.</h2>
+          <p className="text-[15px] text-graphite-border leading-relaxed mb-6 max-w-2xl">
+            Keep every <code className="font-mono text-[0.9em]">data-aos</code>, <code className="font-mono text-[0.9em]">data-aos-offset</code>,{' '}
+            <code className="font-mono text-[0.9em]">data-aos-anchor-placement</code> and custom animation you wrote. Delete{' '}
+            <code className="font-mono text-[0.9em]">aos.css</code>: the styles ship inside the module. The browser suite runs AOS 2.3.4
+            and the drop-in side by side on the same page in Chromium, Firefox and WebKit, and checks that the same
+            elements animate at the same scroll positions with the same computed styles.
+          </p>
+          <div className="grid md:grid-cols-2 gap-4 mb-6">
+            <CodeBlock file="npm">{`- import AOS from 'aos';
+- import 'aos/dist/aos.css';
++ import AOS from 'svg-scroll-draw/aos';
+
+AOS.init({ once: true });`}</CodeBlock>
+            <CodeBlock file="index.html">{`<!-- was: unpkg.com/aos@2.3.4/dist/aos.js + aos.css -->
+<script src="https://unpkg.com/svg-scroll-draw/dist/cdn/aos.global.js"></script>
+<script>AOS.init();</script>`}</CodeBlock>
+          </div>
+          <p className="text-[13px] text-graphite-border leading-relaxed max-w-2xl">
+            Differences, on purpose: <code className="font-mono text-[0.9em]">prefers-reduced-motion</code> shows every element in its
+            final state; <code className="font-mono text-[0.9em]">disable: &apos;mobile&apos;</code> checks viewport width rather than the
+            user agent; positions are re-measured on <code className="font-mono text-[0.9em]">load</code> so late images do not shift
+            triggers; and there is a <code className="font-mono text-[0.9em]">destroy()</code> for single-page apps. AOS 3&apos;s{' '}
+            <code className="font-mono text-[0.9em]">mirror</code>, <code className="font-mono text-[0.9em]">anchorPlacement</code>,{' '}
+            <code className="font-mono text-[0.9em]">aos:in</code> / <code className="font-mono text-[0.9em]">aos:out</code> events and class
+            name options work too.
+          </p>
+        </div>
+      </section>
+
       {/* Bundle size */}
       <section className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-14">
         <div className="max-w-4xl mx-auto">
@@ -173,8 +212,9 @@ export default function VsAosPage() {
 
           <div className="rounded-xl border border-subtle-ash bg-marketplace-gray/40 p-5 mb-8">
             <p className="text-[13px] text-graphite-border leading-relaxed">
-              <strong className="text-pitch-black">This one does not go our way, so here it is plainly:</strong>{' '}
-              AOS and ScrollReveal are both <em>smaller</em> than svg-scroll-draw&apos;s main entry. They also do
+              <strong className="text-pitch-black">Read the right row.</strong>{' '}
+              The AOS drop-in is {SELF_ENTRIES.aos} KB with its styles, against AOS&apos;s {COMPETITORS.aos.gzipKb} KB. But AOS and
+              ScrollReveal are both <em>smaller</em> than svg-scroll-draw&apos;s main entry. They also do
               considerably less — neither draws SVG paths, pins, snaps, splits text or scrubs video. If all you need is
               fade-up-on-scroll, they are a perfectly good choice and you should use them. Our{' '}
               <code className="font-mono text-[0.9em] bg-white px-1.5 py-0.5 rounded border border-subtle-ash">svg-scroll-draw/reveal</code>{' '}
@@ -187,6 +227,7 @@ export default function VsAosPage() {
             {[
               { label: `scrollreveal ${COMPETITORS.scrollreveal.version}`, size: `${COMPETITORS.scrollreveal.gzipKb} KB`, pct: Math.round((COMPETITORS.scrollreveal.gzipKb / SELF.gzipKb) * 100), color: '#e0e0e0', badge: 'smallest' },
               { label: `aos ${COMPETITORS.aos.version} (js+css)`, size: `${COMPETITORS.aos.gzipKb} KB`, pct: Math.round((COMPETITORS.aos.gzipKb / SELF.gzipKb) * 100), color: '#c8c8c8', badge: null },
+              { label: 'svg-scroll-draw/aos (drop-in, css incl.)', size: `${SELF_ENTRIES.aos} KB`, pct: Math.round((SELF_ENTRIES.aos / SELF.gzipKb) * 100), color: '#ff90e8', badge: 'drop-in' },
               { label: 'svg-scroll-draw/reveal', size: `${SELF_ENTRIES.reveal} KB`, pct: Math.round((SELF_ENTRIES.reveal / SELF.gzipKb) * 100), color: '#ff90e8', badge: 'like-for-like' },
               { label: 'svg-scroll-draw (all APIs)', size: `${SELF.gzipKb} KB`, pct: 100, color: '#ffc4f2', badge: 'yours' },
             ].map(({ label, size, pct, color, badge }) => (

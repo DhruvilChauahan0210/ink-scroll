@@ -4,6 +4,34 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ---
 
+## [Unreleased]
+
+### Added
+
+- **`svg-scroll-draw/aos` — a drop-in replacement for AOS.** `import AOS from
+  'svg-scroll-draw/aos'` (or `dist/cdn/aos.global.js`, which defines `window.AOS`)
+  runs existing `data-aos` markup with no `aos.css`: `init`, `refresh`,
+  `refreshHard`, every `data-aos-*` attribute, the `aos-init` / `aos-animate`
+  classes and the stylesheet's transforms and end states, matched rule for rule
+  against AOS 2.3.4. AOS 3's `mirror`, `anchorPlacement`, class-name options and
+  `aos:in` / `aos:out` events are supported as well. 3.0 KB gzipped with its
+  styles (AOS 2.3.4 is 6.7 KB with its stylesheet).
+- Deliberate differences: reduced motion shows the final state; `disable:
+  'mobile'` etc. check viewport width; positions re-measure on `load`;
+  `destroy()` for single-page apps.
+
+### Tests
+
+- `e2e/aos.spec.ts` runs AOS 2.3.4 (vendored in `e2e/fixtures/vendor`, MIT) and
+  the drop-in side by side on the same markup, in Chromium, Firefox and WebKit:
+  the animated set must match at every scroll stop down and back up, across three
+  `init()` configurations, and settled opacity / transform / visibility must
+  match. Breaking AOS's anchor-placement offset rule fails it at the exact
+  elements and offsets affected. 25 unit tests cover options, events, lifecycle
+  and SSR.
+
+---
+
 ## [2.10.2] — 2026-10-30
 
 ### Added

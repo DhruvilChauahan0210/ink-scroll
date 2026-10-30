@@ -25,14 +25,15 @@ Works in **React · Next.js · Vue 3 · Svelte · Solid · Angular · Nuxt · As
 - **10.2 KB gzipped** for the whole main entry — and you rarely need all of it. Every API is a separate entry point: `scrollReveal` is 4.5 KB, `scrollPin` 1.6 KB, `scrollSnap` 1.7 KB. [Full size table below](#bundle-sizes), measured by `npm run size` and enforced in CI.
 - **Native CSS fast path** — where the browser supports scroll-driven animations the draw runs on a CSS `view-timeline` with zero per-frame JavaScript, and falls back to the JS engine automatically everywhere else. Both engines are [verified to produce the same output](#native-css-rendering) by a cross-browser test suite rather than assumed to.
 - **Zero dependencies** — no GSAP, no ScrollTrigger, no heavyweight runtime
+- **AOS drop-in** — `import AOS from 'svg-scroll-draw/aos'` runs your existing `data-aos` markup with no `aos.css`; tested side by side against AOS 2.3.4. [Details](#aos-drop-in--switch-from-aos-in-one-line)
 - **Full playback API** — `pause`, `resume`, `seek`, `replay`, `getProgress`, `destroy`
 - **Presets** — `{ preset: 'reveal' }` for instant one-liner setup; five named presets: `sketch`, `reveal`, `typewriter`, `cinematic`, `spring`
 - **CLI scaffolder** — `npx svg-scroll-draw init` generates a ready-to-use starter file for your framework
 - **30+ options** — easing, stagger, fade, stroke color/width lerp, fill opacity, clip reveal, morphTo, velocityScale, waypoints, callbacks, repeat, autoReverse, and more
 - **Group / Sequence / Timeline APIs** — animate multiple containers simultaneously, one-after-another, or on independent scroll windows with `loop` for auto-looping after scroll completion
 - **CSS custom property** — `--scroll-draw-progress` is set on every frame so you can drive any CSS animation without a callback
-- **550 tests across 27 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
-- **177 browser tests on top of those**, run against Chromium, Firefox and WebKit in CI. The unit suite runs in jsdom, where `getTotalLength` is stubbed and `IntersectionObserver` is faked — it can check the engine's arithmetic but nothing about real browser behaviour. Both counts are derived from the suites themselves and enforced in CI, so neither can quietly drift out of date
+- **575 tests across 28 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
+- **183 browser tests on top of those**, run against Chromium, Firefox and WebKit in CI. The unit suite runs in jsdom, where `getTotalLength` is stubbed and `IntersectionObserver` is faked — it can check the engine's arithmetic but nothing about real browser behaviour. Both counts are derived from the suites themselves and enforced in CI, so neither can quietly drift out of date
 
 ---
 
@@ -593,6 +594,45 @@ function Section() {
 
 ---
 
+## AOS drop-in — switch from AOS in one line
+
+Already using [AOS](https://github.com/michalsnik/aos)? `svg-scroll-draw/aos` speaks its API and
+reads its markup, so the move is an import change. Keep every `data-aos`, `data-aos-offset`,
+`data-aos-delay`, `data-aos-anchor-placement` and custom animation; delete `aos.css` — the styles ship
+inside the module. 3.0 KB gzipped with the styles, against 6.7 KB for AOS 2.3.4 with its stylesheet.
+
+```diff
+- import AOS from 'aos';
+- import 'aos/dist/aos.css';
++ import AOS from 'svg-scroll-draw/aos';
+
+  AOS.init({ once: true });
+```
+
+No bundler? Swap the script tag, and drop the stylesheet link:
+
+```html
+<script src="https://unpkg.com/svg-scroll-draw/dist/cdn/aos.global.js"></script>
+<script>AOS.init();</script>
+```
+
+`init`, `refresh` and `refreshHard` behave as in AOS 2.3.4: the same trigger positions (anchor
+placements, `data-aos-anchor`, offsets — including AOS's rule that an inline anchor placement without an
+inline offset uses 0), the same `aos-init` / `aos-animate` classes, the same transforms and end states.
+The browser suite runs AOS 2.3.4 and the drop-in side by side on one page in Chromium, Firefox and
+WebKit and fails if any element differs at any scroll stop. AOS 3's `mirror`, `anchorPlacement`,
+`initClassName`, `animatedClassName`, `useClassNames` and the `aos:in` / `aos:out` events work too.
+
+Differences, on purpose:
+
+- `prefers-reduced-motion: reduce` shows every element in its final state, with no transition.
+- `disable: 'phone' | 'tablet' | 'mobile'` checks the viewport width, not the user agent.
+- Trigger positions are re-measured on `load`, so images that finish late do not shift them.
+- `AOS.destroy()` stops everything, for single-page apps that unmount the page.
+- `throttleDelay` / `debounceDelay` are accepted and ignored: scroll work is batched per frame.
+
+---
+
 ## Bundle sizes
 
 Every API is its own entry point, so you only ship what you import. Figures below are
@@ -601,13 +641,13 @@ fails the build if any entry outgrows its budget.
 
 | Entry point                     | Raw | Gzipped |
 |---------------------------------|----:|--------:|
-| `svg-scroll-draw/nuxt`          | 35.5 KB | **11.3 KB** |
+| `svg-scroll-draw/nuxt`          | 35.5 KB | **11.4 KB** |
 | `svg-scroll-draw/vue`           | 35.3 KB | **11.3 KB** |
-| `svg-scroll-draw/react`         | 34.6 KB | **11.2 KB** |
-| `svg-scroll-draw/solid`         | 33.3 KB | **10.7 KB** |
-| `svg-scroll-draw/svelte`        | 33.2 KB | **10.7 KB** |
-| `svg-scroll-draw/angular`       | 33.9 KB | **10.7 KB** |
-| `svg-scroll-draw/cdn`           | 30.5 KB | **10.5 KB** |
+| `svg-scroll-draw/react`         | 34.7 KB | **11.2 KB** |
+| `svg-scroll-draw/svelte`        | 33.2 KB | **10.8 KB** |
+| `svg-scroll-draw/solid`         | 33.3 KB | **10.8 KB** |
+| `svg-scroll-draw/angular`       | 34.0 KB | **10.7 KB** |
+| `svg-scroll-draw/cdn`           | 30.6 KB | **10.5 KB** |
 | `svg-scroll-draw/astro`         | 31.0 KB | **10.2 KB** |
 | `svg-scroll-draw`               | 30.0 KB | **10.2 KB** |
 | `svg-scroll-draw/group`         | 26.8 KB | **8.8 KB** |
@@ -615,13 +655,15 @@ fails the build if any entry outgrows its budget.
 | `svg-scroll-draw/reveal`        | 10.7 KB | **4.5 KB** |
 | `svg-scroll-draw/horizontal`    | 10.6 KB | **4.4 KB** |
 | `svg-scroll-draw/timeline`      | 8.3 KB | **3.5 KB** |
+| `svg-scroll-draw/cdn-aos`       | 8.3 KB | **3.1 KB** |
+| `svg-scroll-draw/aos`           | 8.1 KB | **3.0 KB** |
 | `svg-scroll-draw/text`          | 5.8 KB | **2.5 KB** |
-| `svg-scroll-draw/cinematic`     | 4.2 KB | **2.0 KB** |
 | `svg-scroll-draw/video`         | 4.1 KB | **2.0 KB** |
+| `svg-scroll-draw/cinematic`     | 4.2 KB | **2.0 KB** |
 | `svg-scroll-draw/progress`      | 4.1 KB | **1.8 KB** |
 | `svg-scroll-draw/devtools`      | 3.7 KB | **1.7 KB** |
 | `svg-scroll-draw/snap`          | 3.5 KB | **1.7 KB** |
-| `svg-scroll-draw/pin`           | 3.5 KB | **1.6 KB** |
+| `svg-scroll-draw/pin`           | 3.6 KB | **1.6 KB** |
 | `svg-scroll-draw/lenis`         | 0.4 KB | **0.2 KB** |
 
 The framework entries are larger because each re-exports the full API surface for that

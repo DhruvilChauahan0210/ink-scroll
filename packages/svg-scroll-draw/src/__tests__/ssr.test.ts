@@ -76,6 +76,7 @@ describe('SSR — no window, no document', () => {
       '../reveal',
       '../lenis',
       '../devtools',
+      '../aos',
     ];
 
     for (const entry of entries) {
@@ -117,6 +118,12 @@ describe('SSR — no window, no document', () => {
     ]);
     // scrollReveal is a fan-out with a deliberately minimal surface.
     expectInertInstance(scrollReveal('.card'), 'scrollReveal', ['destroy']);
+  });
+
+  it('the AOS drop-in is a no-op on the server', async () => {
+    const AOS = (await import('../aos')).default;
+    expect(AOS.init({ once: true })).toEqual([]);
+    expect(() => { AOS.refresh(); AOS.refreshHard(); AOS.destroy(); }).not.toThrow();
   });
 
   it('the group, timeline and cinematic APIs are inert too', async () => {

@@ -18,6 +18,10 @@ Numbers that set the priorities (Search Console and npm, 2026-10-30): 4,020
 lifetime downloads, ~170 a month; 5 GitHub stars; 147 Google clicks in five
 months, 81% to the homepage; `/vs-gsap` at position 11 with 425 impressions.
 
+### In flight
+- Branch `feat/aos-dropin`: `svg-scroll-draw/aos`, the AOS drop-in, with a
+  side-by-side parity suite against AOS 2.3.4. Ready to release as **2.11.0**.
+
 ### Next, in order
 1. Create the `v2.10.1` GitHub release page by hand (its job lacked
    `contents: write`). From 2.10.2 the workflow creates it.

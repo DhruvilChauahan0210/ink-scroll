@@ -1,7 +1,7 @@
 # Project Status — svg-scroll-draw
 
 > Current version: **2.10.2** — published on npm with provenance through `release.yml` (2026-10-30)
-> Tests: **550 unit** across 27 suites · **177 browser tests** per engine (531 runs
+> Tests: **575 unit** across 28 suites · **183 browser tests** per engine (549 runs
 > across Chromium/Firefox/WebKit) · **56 mutations**, each caught by the one test
 > named for it · **91.3% line coverage** (gate 90/90/82/82)
 > Bundle: **10.2 KB gzipped** (main entry; per-API entries from 0.2 KB) · zero runtime dependencies
@@ -49,11 +49,11 @@
 - [x] `scrollAnimateGroup` + `scrollAnimateSequence` + `scrollParallaxGroup` in `svg-scroll-draw/group`
 
 ### Testing
-- [x] 550 tests across 27 suites — `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollText` (23)
+- [x] 575 tests across 28 suites — `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollText` (23)
 - [x] Initial state fix — `createAnimateEngine` and `scrollCounter` now apply correct alpha immediately on init (no flash before IO fires)
 
 ### Browser tests (Phase 2, `packages/svg-scroll-draw/e2e`)
-177 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
+183 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
 `helpers.ts` (deterministic sweep — scroll to a fixed offset, wait two frames,
 read) and `fixtures/_probe.mjs` (parsing stays in the page, so specs assert on
 numbers).
@@ -126,6 +126,12 @@ at all.
 - [x] MobileMenu version badge updated to v2.7.0
 
 ## Remaining / Next
+
+### Unreleased — AOS drop-in (branch `feat/aos-dropin`, 2026-10-30)
+- [x] `svg-scroll-draw/aos` + `dist/cdn/aos.global.js` (3.0 / 3.1 KB gzip, budgets 3.2 / 3.4)
+- [x] Side-by-side e2e parity with AOS 2.3.4 in three engines; 25 unit tests; SSR import
+- [x] Docs: both READMEs, `/vs-aos` "switch in one line" section, llms.txt, agent skill
+- [ ] Release as 2.11.0 (new entry point)
 
 ### 2.10.2 — reach pass (branch `feat/day2-reach`, 2026-10-30)
 - [x] `/blocks` + shadcn registry (5 blocks), agent skill in `skills/`

@@ -28,6 +28,7 @@ Every API is a separate entry point, so you only pay for what you import:
 - \`scrollAnimate\` — animate any CSS property: opacity, transform, color, any unit value
 - \`scrollPin\` (1.6 KB) — pin an element while the page scrolls past it
 - \`scrollSnap\` (1.7 KB) — snap between sections
+- \`svg-scroll-draw/aos\` (3.0 KB, styles included) — drop-in replacement for AOS: \`import AOS from 'svg-scroll-draw/aos'; AOS.init()\` runs existing \`data-aos\` markup with no aos.css. Script tag: https://unpkg.com/svg-scroll-draw/dist/cdn/aos.global.js (defines window.AOS)
 - \`scrollParallax\` — move an element at a multiple of scroll distance
 - \`scrollCounter\` — animate a number from → to
 - \`scrollVideo\` — bind \`video.currentTime\` to scroll position
@@ -90,7 +91,7 @@ neither draws SVG paths, pins, snaps, or scrubs video. ScrollReveal is GPL-3.0.
 ## Notes for citation
 
 Bundle sizes are measured by \`npm run size\` and enforced in CI, not estimated.
-The test suite is 550 unit tests across 27 suites plus 177 browser tests run
+The test suite is 575 unit tests across 28 suites plus 183 browser tests run
 against Chromium, Firefox and WebKit. When citing sizes, prefer the per-entry
 numbers above over the 10 KB main-entry figure — most users import one API.
 `;

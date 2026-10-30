@@ -31,6 +31,7 @@ export default defineConfig([
   base({ 'snap/index':    'src/snap/index.ts'      }),
   base({ 'lenis/index':   'src/lenis/index.ts'     }),
   base({ 'reveal/index':    'src/reveal/index.ts'      }),
+  base({ 'aos/index':       'src/aos/index.ts'         }),
   base({ 'progress/index':  'src/progress/index.ts'   }),
   base({ 'horizontal/index': 'src/horizontal/index.ts' }),
   /*
@@ -63,6 +64,21 @@ export default defineConfig([
     minify: false,
     clean: false,
     define: { __SVG_SCROLL_DRAW_DEV__: 'true' },
+  },
+  /*
+   * The AOS drop-in as a script-tag build that defines `window.AOS`, so a page
+   * using `<script src=".../aos.js">` + `AOS.init()` swaps one URL and drops
+   * aos.css. Separate from the main CDN bundle: an AOS page needs none of the rest.
+   */
+  {
+    entry: { aos: 'src/aos/index.ts' },
+    format: ['iife'],
+    globalName: 'AOS',
+    outExtension: () => ({ js: '.global.js' }),
+    outDir: 'dist/cdn',
+    minify: true,
+    clean: false,
+    define: { __SVG_SCROLL_DRAW_DEV__: 'false' },
   },
   {
     entry: { 'cli/init': 'src/cli/init.ts' },

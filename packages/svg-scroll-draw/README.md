@@ -30,6 +30,7 @@
 | `scrollVideo` | `svg-scroll-draw/video` | Tie `<video>.currentTime` to scroll. The Apple/Stripe product-page pattern. |
 | `scrollText` | `svg-scroll-draw/text` | Split text into chars/words/lines and stagger-animate each on scroll. 2.5 KB, nothing else to load. |
 | `devtools` | `svg-scroll-draw/devtools` | Visual overlay showing every active animation's triggers and progress. Dev-only. |
+| `AOS` | `svg-scroll-draw/aos` | Drop-in replacement for AOS: same `AOS.init()`, same `data-aos` markup, no `aos.css`. |
 
 All APIs return the same instance object: `{ destroy, replay, pause, resume, seek, getProgress }`.
 
@@ -357,6 +358,45 @@ import { ScrollDraw } from 'svg-scroll-draw/vue';
 
 ---
 
+## AOS drop-in — switch from AOS in one line
+
+Already using [AOS](https://github.com/michalsnik/aos)? `svg-scroll-draw/aos` speaks its API and
+reads its markup, so the move is an import change. Keep every `data-aos`, `data-aos-offset`,
+`data-aos-delay`, `data-aos-anchor-placement` and custom animation; delete `aos.css` — the styles ship
+inside the module. 3.0 KB gzipped with the styles, against 6.7 KB for AOS 2.3.4 with its stylesheet.
+
+```diff
+- import AOS from 'aos';
+- import 'aos/dist/aos.css';
++ import AOS from 'svg-scroll-draw/aos';
+
+  AOS.init({ once: true });
+```
+
+No bundler? Swap the script tag, and drop the stylesheet link:
+
+```html
+<script src="https://unpkg.com/svg-scroll-draw/dist/cdn/aos.global.js"></script>
+<script>AOS.init();</script>
+```
+
+`init`, `refresh` and `refreshHard` behave as in AOS 2.3.4: the same trigger positions (anchor
+placements, `data-aos-anchor`, offsets — including AOS's rule that an inline anchor placement without an
+inline offset uses 0), the same `aos-init` / `aos-animate` classes, the same transforms and end states.
+The browser suite runs AOS 2.3.4 and the drop-in side by side on one page in Chromium, Firefox and
+WebKit and fails if any element differs at any scroll stop. AOS 3's `mirror`, `anchorPlacement`,
+`initClassName`, `animatedClassName`, `useClassNames` and the `aos:in` / `aos:out` events work too.
+
+Differences, on purpose:
+
+- `prefers-reduced-motion: reduce` shows every element in its final state, with no transition.
+- `disable: 'phone' | 'tablet' | 'mobile'` checks the viewport width, not the user agent.
+- Trigger positions are re-measured on `load`, so images that finish late do not shift them.
+- `AOS.destroy()` stops everything, for single-page apps that unmount the page.
+- `throttleDelay` / `debounceDelay` are accepted and ignored: scroll work is batched per frame.
+
+---
+
 ## Instance API
 
 Every function returns the same instance object:
@@ -447,6 +487,7 @@ devtools.highlight('#my-element'); // outline for 2 seconds
 | `svg-scroll-draw/timeline` | `scrollDrawTimeline` |
 | `svg-scroll-draw/cinematic` | `Cinematic` |
 | `svg-scroll-draw/devtools` | `devtools` (dev-only) |
+| `svg-scroll-draw/aos` | `AOS` (default), `init`, `refresh`, `refreshHard`, `destroy` |
 
 ---
 
@@ -459,6 +500,7 @@ devtools.highlight('#my-element'); // outline for 2 seconds
 | `svg-scroll-draw/reveal` | 4.5 KB |
 | `svg-scroll-draw/text` | 2.5 KB |
 | `svg-scroll-draw/video` | 2.0 KB |
+| `svg-scroll-draw/aos` (styles included) | 3.0 KB |
 | `svg-scroll-draw/snap` | 1.7 KB |
 | `svg-scroll-draw/devtools` | 1.7 KB (dev only) |
 | `svg-scroll-draw/pin` | 1.6 KB |

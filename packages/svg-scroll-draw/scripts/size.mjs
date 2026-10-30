@@ -35,6 +35,9 @@ const BUDGETS_KB = {
   // 6.57 after the shared devtools registry (2.10.1) taught scrollDraw to register.
   'web-component':   6.8,
   reveal:            4.6,
+  // The AOS drop-in, stylesheet included (AOS itself is 6.7 KB with aos.css).
+  aos:               3.2,
+  'cdn-aos':         3.4,
   // 4.30 after teaching the default `distance` about `scrollContainer`.
   horizontal:        4.5,
   timeline:          3.5,
@@ -76,6 +79,8 @@ function findEntries() {
    */
   const cdn = join(DIST, 'cdn', 'svg-scroll-draw.global.js');
   if (existsSync(cdn)) entries.set('cdn', cdn);
+  const cdnAos = join(DIST, 'cdn', 'aos.global.js');
+  if (existsSync(cdnAos)) entries.set('cdn-aos', cdnAos);
 
   return entries;
 }

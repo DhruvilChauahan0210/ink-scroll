@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>svg-scroll-draw/aos — the drop-in, from the script-tag build</title>
+<meta charset="utf-8">
+<style>
+  html { scroll-behavior: auto; }
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+  .box { height: 200px; margin: 0 40px 260px; background: #eee; }
+  [data-aos="my-custom"] { filter: blur(4px); }
+  [data-aos="my-custom"].aos-animate { filter: none; }
+</style>
+<script src="/dist/cdn/aos.global.js"></script>
+</head>
+<body>
+<script src="aos-markup.js"></script>
+<script>AOS.init(window.__aosOptions); window.__ready = true;</script>
+</body>
+</html>
