@@ -97,13 +97,15 @@ function Nav() {
 
 function CodeBlock({ file, children }: { file: string; children: string }) {
   return (
-    <div className="rounded-2xl overflow-hidden border border-pitch-black">
+    <div className="rounded-2xl overflow-hidden border border-pitch-black flex flex-col min-w-0">
       <div className="bg-[#111] flex items-center justify-between px-4 py-2.5">
         <div className="flex gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[#444]"/><span className="w-2.5 h-2.5 rounded-full bg-[#444]"/><span className="w-2.5 h-2.5 rounded-full bg-[#444]"/></div>
         <span className="text-[11px] text-[#888] font-mono">{file}</span>
         <CopyButton text={children} />
       </div>
-      <pre className="bg-[#1c1c1c] text-[#e8e8e3] px-4 sm:px-6 py-4 text-[11px] sm:text-[13px] font-mono leading-[1.75] overflow-x-auto">{children}</pre>
+      {/* flex-1: in a grid row the card stretches to its taller neighbour, and the
+          code area has to stretch with it or the card shows a white strip below. */}
+      <pre className="flex-1 bg-[#1c1c1c] text-[#e8e8e3] px-4 sm:px-6 py-4 text-[11px] sm:text-[13px] font-mono leading-[1.75] overflow-x-auto">{children}</pre>
     </div>
   );
 }
@@ -182,13 +184,13 @@ export default function VsAosPage() {
             and the drop-in side by side on the same page in Chromium, Firefox and WebKit, and checks that the same
             elements animate at the same scroll positions with the same computed styles.
           </p>
-          <div className="grid md:grid-cols-2 gap-4 mb-6">
+          <div className="grid gap-4 mb-6">
             <CodeBlock file="npm">{`- import AOS from 'aos';
 - import 'aos/dist/aos.css';
 + import AOS from 'svg-scroll-draw/aos';
 
 AOS.init({ once: true });`}</CodeBlock>
-            <CodeBlock file="index.html">{`<!-- was: unpkg.com/aos@2.3.4/dist/aos.js + aos.css -->
+            <CodeBlock file="index.html">{`<!-- remove the aos.js script and the aos.css link, then: -->
 <script src="https://unpkg.com/svg-scroll-draw/dist/cdn/aos.global.js"></script>
 <script>AOS.init();</script>`}</CodeBlock>
           </div>
