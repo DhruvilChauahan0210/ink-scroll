@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
-import { collectErrors, openFixture, call, table } from './helpers';
+import { collectErrors, openFixture, call, converge, table } from './helpers';
 
 /**
  * svg-scroll-draw/aos against AOS 2.3.4 itself.
@@ -52,7 +52,7 @@ for (const opts of [{}, { offset: 50, once: true }, { offset: 200, duration: 800
     const mismatches: Record<string, unknown>[] = [];
     for (const y of route(max)) {
       await scrollBoth(real, ours, y);
-      const [r, o] = await Promise.all([call<Flags>(real, 'read'), call<Flags>(ours, 'read')]);
+      const [r, o] = await converge<Flags>(real, ours, 'read');
       for (const id of Object.keys(r)) {
         if (r[id] !== o[id]) mismatches.push({ y, id, aos: r[id], ours: o[id] });
       }
@@ -74,7 +74,7 @@ test('settled styles match AOS 2.3.4 — opacity, transform, visibility', async 
   for (const y of [0, Math.round(max / 3), Math.round((2 * max) / 3), max]) {
     // Past the throttle and the default 400 ms transition.
     await scrollBoth(real, ours, y, 900);
-    const [r, o] = await Promise.all([call<Styles>(real, 'styles'), call<Styles>(ours, 'styles')]);
+    const [r, o] = await converge<Styles>(real, ours, 'styles');
     expect(o, `computed styles differ from AOS at y=${y}`).toEqual(r);
   }
   await ctx.close();
@@ -97,7 +97,8 @@ test('the script-tag build defines window.AOS and behaves like the module', asyn
   const max = await call<number>(ours, 'max');
   for (const y of [0, Math.round(max / 2), max]) {
     await scrollBoth(cdn, ours, y);
-    expect(await call<Flags>(cdn, 'read')).toEqual(await call<Flags>(ours, 'read'));
+    const [c, o] = await converge<Flags>(cdn, ours, 'read');
+    expect(c).toEqual(o);
   }
   expect(errors).toEqual([]);
   await ctx.close();

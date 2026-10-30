@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
-import { collectErrors, openFixture, call, table } from './helpers';
+import { collectErrors, openFixture, call, converge, table } from './helpers';
 
 /**
  * svg-scroll-draw/scrollreveal against ScrollReveal 4.0.9 itself.
@@ -57,7 +57,7 @@ test('writes exactly what ScrollReveal 4.0.9 writes, at every scroll stop', asyn
   const mismatches: Record<string, unknown>[] = [];
   for (const y of route(max)) {
     await scrollBoth(real, ours, y);
-    const [r, o] = await Promise.all([call<Row>(real, 'read'), call<Row>(ours, 'read')]);
+    const [r, o] = await converge<Row>(real, ours, 'read');
     for (const id of Object.keys(r)) {
       if (r[id].style !== o[id].style || r[id].srId !== o[id].srId) {
         mismatches.push({ y, id, scrollreveal: r[id].style, ours: o[id].style, ids: `${r[id].srId}/${o[id].srId}` });
@@ -77,7 +77,8 @@ test('the script-tag build defines window.ScrollReveal as the function', async (
   const max = await call<number>(cdn, 'max');
   for (const y of [0, Math.round(max / 2), max]) {
     await scrollBoth(real, cdn, y);
-    expect(await call<Row>(cdn, 'read')).toEqual(await call<Row>(real, 'read'));
+    const [r, c] = await converge<Row>(real, cdn, 'read');
+    expect(c).toEqual(r);
   }
   expect(errors).toEqual([]);
   await ctx.close();

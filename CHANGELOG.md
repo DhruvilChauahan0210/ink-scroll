@@ -4,6 +4,22 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ---
 
+## [Unreleased]
+
+### Tests
+
+- The AOS and ScrollReveal parity specs wait for the reference library and the
+  drop-in to agree at each scroll stop (up to 2 s, via `converge()` in
+  `e2e/helpers.ts`) instead of reading both after one fixed wait. AOS updates
+  on a setTimeout throttle and the drop-in on requestAnimationFrame, so on a
+  slow runner one could still be a frame behind: CI's WebKit run on the 2.13.0
+  commit failed twice at different elements and offsets, while the release run
+  on the same commit passed. A real difference never converges — breaking the
+  AOS anchor-placement offset rule still fails at the exact element and offset —
+  and 45 WebKit repeats pass under CPU load.
+
+---
+
 ## [2.13.0] — 2026-10-31
 
 ### Added

@@ -68,6 +68,25 @@ export function call<T = void>(page: Page, method: string, ...args: unknown[]): 
   ) as Promise<T>;
 }
 
+/**
+ * Read the same probe on two pages until they agree, or until `timeout` ms
+ * pass, and return the last pair.
+ *
+ * For the drop-in parity specs, which run a reference library beside ours. The
+ * two update on different clocks — AOS throttles on setTimeout, ours on
+ * requestAnimationFrame — so on a slow CI runner one can still be a frame behind
+ * at a fixed wait (WebKit, 2.13.0's CI run). A real behavioural difference never
+ * converges and still fails with both values; settling a few ms later does not.
+ */
+export async function converge<T>(a: Page, b: Page, method: string, timeout = 2000): Promise<[T, T]> {
+  const deadline = Date.now() + timeout;
+  for (;;) {
+    const [ra, rb] = await Promise.all([call<T>(a, method), call<T>(b, method)]);
+    if (JSON.stringify(ra) === JSON.stringify(rb) || Date.now() > deadline) return [ra, rb];
+    await a.waitForTimeout(50);
+  }
+}
+
 /** Scroll to each offset in turn and read a row at each. The core sweep. */
 export async function sweep<T>(page: Page, offsets: number[]): Promise<T[]> {
   const rows: T[] = [];
