@@ -33,6 +33,15 @@ All notable changes to `svg-scroll-draw` are documented here.
   delay over drawn paths only fails it on `delayUnit`. 13 unit tests and the
   SSR import cover the rest.
 
+### CI
+
+- `npm run verify` (which the release workflow runs) and `ci.yml` now build
+  the library before typechecking the demo. The demo resolves svg-scroll-draw
+  through `dist/`, so it was being checked against whatever an earlier build
+  left there; the first 2.13.0 release run failed its demo typecheck that way,
+  on a commit that passed CI, a fresh-clone typecheck and the local production
+  build, and nothing was published.
+
 ---
 
 ## [2.12.0] — 2026-10-31

@@ -33,6 +33,13 @@ jobs:
         run: npm run typecheck
         working-directory: packages/svg-scroll-draw
 
+      # Build before the demo typecheck: the demo resolves svg-scroll-draw through
+      # dist/, so checking it first meant checking against whatever `npm ci`'s
+      # hidden `prepare` build left there. The 2.13.0 release run failed that way
+      # (scrollHorizontal untyped in one run) on a commit that passed everywhere else.
+      - name: Build library
+        run: npm run build:lib
+
       - name: Type check demo
         run: npx tsc --noEmit
         working-directory: apps/demo
@@ -43,9 +50,6 @@ jobs:
       - name: Check coverage thresholds
         run: npm run test:coverage
         working-directory: packages/svg-scroll-draw
-
-      - name: Build library
-        run: npm run build:lib
 
       # Fails if any entry point outgrows its budget, so the size figures
       # quoted in README.md cannot silently go stale again.
