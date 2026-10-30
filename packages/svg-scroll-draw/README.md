@@ -31,6 +31,7 @@
 | `scrollText` | `svg-scroll-draw/text` | Split text into chars/words/lines and stagger-animate each on scroll. 2.5 KB, nothing else to load. |
 | `devtools` | `svg-scroll-draw/devtools` | Visual overlay showing every active animation's triggers and progress. Dev-only. |
 | `AOS` | `svg-scroll-draw/aos` | Drop-in replacement for AOS: same `AOS.init()`, same `data-aos` markup, no `aos.css`. |
+| `ScrollReveal` | `svg-scroll-draw/scrollreveal` | Drop-in replacement for ScrollReveal.js 4, MIT instead of GPL-3.0. |
 
 All APIs return the same instance object: `{ destroy, replay, pause, resume, seek, getProgress }`.
 
@@ -397,6 +398,38 @@ Differences, on purpose:
 
 ---
 
+## ScrollReveal drop-in — MIT instead of GPL
+
+On [ScrollReveal](https://scrollrevealjs.org)? It is GPL-3.0 (with a paid licence for commercial work)
+and has not shipped since 4.0.9. `svg-scroll-draw/scrollreveal` is an independent, MIT-licensed
+implementation of the same API, so the move is an import change. 4.5 KB gzipped, against 5.6 KB.
+
+```diff
+- import ScrollReveal from 'scrollreveal';
++ import ScrollReveal from 'svg-scroll-draw/scrollreveal';
+
+  ScrollReveal({ distance: '40px', duration: 800 }).reveal('.card', { interval: 80 });
+```
+
+No bundler? `<script src="https://unpkg.com/svg-scroll-draw/dist/cdn/scrollreveal.global.js"></script>`
+defines `window.ScrollReveal` as the function, like ScrollReveal's own file. With CommonJS,
+`require('svg-scroll-draw/scrollreveal').default` is the function.
+
+Every option behaves as in 4.0.9 — `distance` / `origin`, `opacity`, `scale`, `rotate`, `duration`,
+`delay`, `easing`, `interval` sequences, `reset`, `useDelay`, `viewFactor`, `viewOffset`,
+`container`, `mobile` / `desktop`, `cleanup` and the four callbacks — as do `reveal`, `clean`, `sync`,
+`destroy`, `data-sr-id` and the `sr` class on `<html>` for FOUC-hiding CSS. The browser suite runs
+ScrollReveal 4.0.9 beside it in Chromium, Firefox and WebKit and fails if any element's inline `style`
+differs by a character at any scroll stop, or if any callback fires differently.
+
+Differences, on purpose:
+
+- Nothing happens on import. ScrollReveal adds the `sr` class and `body { height: 100% }` as soon as its
+  script loads; this does both on the first `ScrollReveal()` call, keeping the import SSR-safe.
+- `prefers-reduced-motion: reduce` shows every element in its final state, with no transition.
+
+---
+
 ## Instance API
 
 Every function returns the same instance object:
@@ -488,6 +521,7 @@ devtools.highlight('#my-element'); // outline for 2 seconds
 | `svg-scroll-draw/cinematic` | `Cinematic` |
 | `svg-scroll-draw/devtools` | `devtools` (dev-only) |
 | `svg-scroll-draw/aos` | `AOS` (default), `init`, `refresh`, `refreshHard`, `destroy` |
+| `svg-scroll-draw/scrollreveal` | `ScrollReveal` (default and named) |
 
 ---
 
@@ -500,6 +534,7 @@ devtools.highlight('#my-element'); // outline for 2 seconds
 | `svg-scroll-draw/reveal` | 4.5 KB |
 | `svg-scroll-draw/text` | 2.5 KB |
 | `svg-scroll-draw/video` | 2.0 KB |
+| `svg-scroll-draw/scrollreveal` | 4.5 KB |
 | `svg-scroll-draw/aos` (styles included) | 3.0 KB |
 | `svg-scroll-draw/snap` | 1.7 KB |
 | `svg-scroll-draw/devtools` | 1.7 KB (dev only) |

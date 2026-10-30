@@ -62,6 +62,8 @@ export const SELF_ENTRIES: Record<string, number> = {
   snap: 1.7,
   // The AOS drop-in, its stylesheet included (`svg-scroll-draw/aos`).
   aos: 3.0,
+  // The ScrollReveal drop-in (`svg-scroll-draw/scrollreveal`).
+  scrollreveal: 4.5,
   text: 2.5,
 };
 

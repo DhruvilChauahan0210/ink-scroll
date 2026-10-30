@@ -32,6 +32,7 @@ export default defineConfig([
   base({ 'lenis/index':   'src/lenis/index.ts'     }),
   base({ 'reveal/index':    'src/reveal/index.ts'      }),
   base({ 'aos/index':       'src/aos/index.ts'         }),
+  base({ 'scrollreveal/index': 'src/scrollreveal/index.ts' }),
   base({ 'progress/index':  'src/progress/index.ts'   }),
   base({ 'horizontal/index': 'src/horizontal/index.ts' }),
   /*
@@ -74,6 +75,16 @@ export default defineConfig([
     entry: { aos: 'src/aos/index.ts' },
     format: ['iife'],
     globalName: 'AOS',
+    outExtension: () => ({ js: '.global.js' }),
+    outDir: 'dist/cdn',
+    minify: true,
+    clean: false,
+    define: { __SVG_SCROLL_DRAW_DEV__: 'false' },
+  },
+  /* The ScrollReveal drop-in as a script-tag build: `window.ScrollReveal` is the function. */
+  {
+    entry: { scrollreveal: 'src/scrollreveal/cdn.ts' },
+    format: ['iife'],
     outExtension: () => ({ js: '.global.js' }),
     outDir: 'dist/cdn',
     minify: true,

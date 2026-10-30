@@ -18,7 +18,8 @@
  * artefact of a build artefact.
  */
 import { build } from 'esbuild';
-import { existsSync, mkdirSync } from 'node:fs';
+import { existsSync, mkdirSync, copyFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -65,5 +66,13 @@ await Promise.all(
     }),
   ),
 );
+
+/*
+ * ScrollReveal 4.0.9 itself, as the reference for the drop-in's parity spec.
+ * Copied from node_modules (a devDependency) into this gitignored folder rather
+ * than vendored: it is GPL-3.0, and this MIT repository does not commit it.
+ */
+const require = createRequire(import.meta.url);
+copyFileSync(require.resolve('scrollreveal/dist/scrollreveal.js'), join(OUT, 'scrollreveal-4.0.9.js'));
 
 console.log(`✓ Bundled ${ENTRIES.length} framework fixtures → e2e/fixtures/build/`);

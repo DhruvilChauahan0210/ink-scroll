@@ -6,6 +6,24 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ## [Unreleased]
 
+### Added
+
+- **`svg-scroll-draw/scrollreveal` — a drop-in replacement for ScrollReveal.js 4,
+  under MIT.** ScrollReveal is GPL-3.0 (paid licence for commercial use) and has
+  not shipped since 4.0.9. This is an independent implementation of its API —
+  `ScrollReveal(options)` (with or without `new`, a singleton that merges later
+  options), `reveal` / `clean` / `sync` / `destroy`, every option including
+  `interval` sequences, `reset`, `useDelay`, `viewFactor` / `viewOffset`, custom
+  containers, `mobile` / `desktop`, `cleanup` and the four callbacks — writing
+  the same inline styles (`visibility`, `opacity`, `matrix3d()`, `transition`),
+  `data-sr-id` and `sr` class. ScrollReveal's quirks are kept where output
+  depends on them, e.g. a distance is read to one decimal place (`12.25px` →
+  12.2). `dist/cdn/scrollreveal.global.js` defines `window.ScrollReveal` as the
+  function. 4.5 KB gzipped (ScrollReveal 4.0.9: 5.6 KB).
+- Deliberate differences: nothing runs on import (ScrollReveal mounts when its
+  script loads; this mounts on the first call); reduced motion shows the final
+  state with no transition.
+
 ### Tests
 
 - **The idle-cost browser test counts work instead of timing it.** It asserted
@@ -18,6 +36,13 @@ All notable changes to `svg-scroll-draw` are documented here.
   runs against a limit of 8 in all three engines (the old timing assertion
   caught that in Chromium by 0.1 ms). The retries are gone; 10 repeats per
   engine pass with none while the full suite runs alongside.
+- `e2e/scrollreveal.spec.ts` runs ScrollReveal 4.0.9 beside the drop-in on one
+  page in Chromium, Firefox and WebKit, down the page and back, and requires
+  every element's `style` attribute, `data-sr-id` and callback history to match
+  exactly. ScrollReveal is GPL-3.0, so it is a devDependency copied into the
+  gitignored `e2e/fixtures/build/` at test time, never committed. Breaking the
+  one-decimal distance parse fails it at the exact element and value. 17 unit
+  tests cover the API around it; the SSR suite imports it with no DOM.
 
 ---
 

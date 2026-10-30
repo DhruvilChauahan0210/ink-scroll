@@ -38,6 +38,9 @@ const BUDGETS_KB = {
   // The AOS drop-in, stylesheet included (AOS itself is 6.7 KB with aos.css).
   aos:               3.2,
   'cdn-aos':         3.4,
+  // The ScrollReveal drop-in (ScrollReveal 4.0.9 itself is 5.6 KB).
+  scrollreveal:      4.9,
+  'cdn-scrollreveal': 4.9,
   // 4.30 after teaching the default `distance` about `scrollContainer`.
   horizontal:        4.5,
   timeline:          3.5,
@@ -81,6 +84,8 @@ function findEntries() {
   if (existsSync(cdn)) entries.set('cdn', cdn);
   const cdnAos = join(DIST, 'cdn', 'aos.global.js');
   if (existsSync(cdnAos)) entries.set('cdn-aos', cdnAos);
+  const cdnSr = join(DIST, 'cdn', 'scrollreveal.global.js');
+  if (existsSync(cdnSr)) entries.set('cdn-scrollreveal', cdnSr);
 
   return entries;
 }

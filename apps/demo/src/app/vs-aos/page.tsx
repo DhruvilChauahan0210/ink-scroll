@@ -155,9 +155,12 @@ export default function VsAosPage() {
             svg-scroll-draw<br /><span className="text-graphite-border">vs AOS vs ScrollReveal.</span>
           </h1>
           <p className="text-base sm:text-lg text-pitch-black leading-relaxed max-w-2xl mb-4 font-medium">
-            Already on AOS? Change one import. <code className="font-mono text-[0.9em] bg-white px-1.5 py-0.5 rounded border border-subtle-ash">svg-scroll-draw/aos</code>{' '}
-            reads your existing <code className="font-mono text-[0.9em]">data-aos</code> markup, triggers at the same scroll
-            positions as AOS 2.3.4, and needs no <code className="font-mono text-[0.9em]">aos.css</code>.
+            Already on AOS or ScrollReveal? Change one import.{' '}
+            <code className="font-mono text-[0.9em] bg-white px-1.5 py-0.5 rounded border border-subtle-ash">svg-scroll-draw/aos</code>{' '}
+            reads your existing <code className="font-mono text-[0.9em]">data-aos</code> markup with no{' '}
+            <code className="font-mono text-[0.9em]">aos.css</code>;{' '}
+            <code className="font-mono text-[0.9em] bg-white px-1.5 py-0.5 rounded border border-subtle-ash">svg-scroll-draw/scrollreveal</code>{' '}
+            runs your <code className="font-mono text-[0.9em]">ScrollReveal().reveal()</code> calls under MIT instead of GPL-3.0.
           </p>
           <p className="text-base sm:text-lg text-graphite-border leading-relaxed max-w-2xl mb-8">
             AOS and ScrollReveal.js put animation config in HTML data attributes.
@@ -206,6 +209,30 @@ AOS.init({ once: true });`}</CodeBlock>
         </div>
       </section>
 
+      {/* ScrollReveal drop-in */}
+      <section id="scrollreveal-drop-in" className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-14">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="font-display font-extrabold text-3xl sm:text-4xl tracking-[-0.03em] mb-4">Switch from ScrollReveal, keep your code.</h2>
+          <p className="text-[15px] text-graphite-border leading-relaxed mb-6 max-w-2xl">
+            ScrollReveal is GPL-3.0, with a paid licence for commercial work, and has not shipped since 4.0.9. The drop-in is
+            an independent MIT implementation of the same API: every option, sequences, <code className="font-mono text-[0.9em]">reset</code>,{' '}
+            <code className="font-mono text-[0.9em]">viewFactor</code>, callbacks, <code className="font-mono text-[0.9em]">clean</code> /{' '}
+            <code className="font-mono text-[0.9em]">sync</code> / <code className="font-mono text-[0.9em]">destroy</code>. The browser suite
+            runs ScrollReveal 4.0.9 beside it in Chromium, Firefox and WebKit and checks that every element&apos;s inline styles
+            match byte for byte at every scroll stop. {SELF_ENTRIES.scrollreveal} KB, against {COMPETITORS.scrollreveal.gzipKb} KB.
+          </p>
+          <div className="grid gap-4">
+            <CodeBlock file="npm">{`- import ScrollReveal from 'scrollreveal';
++ import ScrollReveal from 'svg-scroll-draw/scrollreveal';
+
+ScrollReveal({ distance: '40px' }).reveal('.card', { interval: 80 });`}</CodeBlock>
+            <CodeBlock file="index.html">{`<!-- replace the scrollreveal script with: -->
+<script src="https://unpkg.com/svg-scroll-draw/dist/cdn/scrollreveal.global.js"></script>
+<script>ScrollReveal().reveal('.card');</script>`}</CodeBlock>
+          </div>
+        </div>
+      </section>
+
       {/* Bundle size */}
       <section className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-14">
         <div className="max-w-4xl mx-auto">
@@ -229,6 +256,7 @@ AOS.init({ once: true });`}</CodeBlock>
             {[
               { label: `scrollreveal ${COMPETITORS.scrollreveal.version}`, size: `${COMPETITORS.scrollreveal.gzipKb} KB`, pct: Math.round((COMPETITORS.scrollreveal.gzipKb / SELF.gzipKb) * 100), color: '#e0e0e0', badge: 'smallest' },
               { label: `aos ${COMPETITORS.aos.version} (js+css)`, size: `${COMPETITORS.aos.gzipKb} KB`, pct: Math.round((COMPETITORS.aos.gzipKb / SELF.gzipKb) * 100), color: '#c8c8c8', badge: null },
+              { label: 'svg-scroll-draw/scrollreveal (drop-in)', size: `${SELF_ENTRIES.scrollreveal} KB`, pct: Math.round((SELF_ENTRIES.scrollreveal / SELF.gzipKb) * 100), color: '#ff90e8', badge: 'drop-in' },
               { label: 'svg-scroll-draw/aos (drop-in, css incl.)', size: `${SELF_ENTRIES.aos} KB`, pct: Math.round((SELF_ENTRIES.aos / SELF.gzipKb) * 100), color: '#ff90e8', badge: 'drop-in' },
               { label: 'svg-scroll-draw/reveal', size: `${SELF_ENTRIES.reveal} KB`, pct: Math.round((SELF_ENTRIES.reveal / SELF.gzipKb) * 100), color: '#ff90e8', badge: 'like-for-like' },
               { label: 'svg-scroll-draw (all APIs)', size: `${SELF.gzipKb} KB`, pct: 100, color: '#ffc4f2', badge: 'yours' },

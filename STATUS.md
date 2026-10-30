@@ -1,7 +1,7 @@
 # Project Status — svg-scroll-draw
 
 > Current version: **2.11.0** — published on npm with provenance through `release.yml` (2026-10-30)
-> Tests: **575 unit** across 28 suites · **183 browser tests** per engine (549 runs
+> Tests: **593 unit** across 29 suites · **186 browser tests** per engine (558 runs
 > across Chromium/Firefox/WebKit) · **56 mutations**, each caught by the one test
 > named for it · **91.3% line coverage** (gate 90/90/82/82)
 > Bundle: **10.2 KB gzipped** (main entry; per-API entries from 0.2 KB) · zero runtime dependencies
@@ -49,11 +49,11 @@
 - [x] `scrollAnimateGroup` + `scrollAnimateSequence` + `scrollParallaxGroup` in `svg-scroll-draw/group`
 
 ### Testing
-- [x] 575 tests across 28 suites — `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollText` (23)
+- [x] 593 tests across 29 suites — `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollText` (23)
 - [x] Initial state fix — `createAnimateEngine` and `scrollCounter` now apply correct alpha immediately on init (no flash before IO fires)
 
 ### Browser tests (Phase 2, `packages/svg-scroll-draw/e2e`)
-183 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
+186 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
 `helpers.ts` (deterministic sweep — scroll to a fixed offset, wait two frames,
 read) and `fixtures/_probe.mjs` (parsing stays in the page, so specs assert on
 numbers).
@@ -126,6 +126,12 @@ at all.
 - [x] MobileMenu version badge updated to v2.7.0
 
 ## Remaining / Next
+
+### Unreleased — ScrollReveal drop-in (branch `feat/scrollreveal-dropin`, 2026-10-30)
+- [x] `svg-scroll-draw/scrollreveal` + `dist/cdn/scrollreveal.global.js` (4.5 KB gzip, budgets 4.9)
+- [x] Byte-for-byte inline-style parity with ScrollReveal 4.0.9 in three engines; 17 unit tests; SSR import
+- [x] Docs: both READMEs, `/vs-aos` ScrollReveal section, llms.txt, agent skill
+- [ ] Release as 2.12.0 (new entry point)
 
 ### 2.11.0 — AOS drop-in (branch `feat/aos-dropin`, 2026-10-30)
 - [x] `svg-scroll-draw/aos` + `dist/cdn/aos.global.js` (3.0 / 3.1 KB gzip, budgets 3.2 / 3.4)

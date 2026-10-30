@@ -59,7 +59,10 @@
     "typescript",
     "aos",
     "animate-on-scroll",
-    "data-aos"
+    "data-aos",
+    "scrollreveal",
+    "scrollreveal-alternative",
+    "scroll-reveal-mit"
   ],
   "homepage": "https://svg-scroll-draw.vercel.app",
   "repository": {
@@ -145,6 +148,9 @@
       ],
       "aos": [
         "./dist/aos/index.d.ts"
+      ],
+      "scrollreveal": [
+        "./dist/scrollreveal/index.d.ts"
       ]
     }
   },
@@ -374,6 +380,16 @@
         "default": "./dist/aos/index.cjs"
       }
     },
+    "./scrollreveal": {
+      "import": {
+        "types": "./dist/scrollreveal/index.d.mts",
+        "default": "./dist/scrollreveal/index.mjs"
+      },
+      "require": {
+        "types": "./dist/scrollreveal/index.d.ts",
+        "default": "./dist/scrollreveal/index.cjs"
+      }
+    },
     "./package.json": "./package.json"
   },
   "scripts": {
@@ -393,9 +409,10 @@
   "devDependencies": {
     "@playwright/test": "^1.62.1",
     "@types/react": "^18.0.0",
-    "esbuild": "^0.27.7",
     "@vitest/coverage-v8": "^2.0.0",
+    "esbuild": "^0.27.7",
     "jsdom": "^25.0.0",
+    "scrollreveal": "^4.0.9",
     "solid-js": "^1.9.13",
     "tsup": "^8.0.0",
     "typescript": "^5.0.0",
@@ -406,7 +423,8 @@
     "./dist/web-component/*",
     "./dist/cdn/*",
     "./src/web-component/*",
-    "./src/cdn.ts"
+    "./src/cdn.ts",
+    "./src/scrollreveal/cdn.ts"
   ],
   "engines": {
     "node": ">=18"
