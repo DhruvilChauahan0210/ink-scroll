@@ -149,7 +149,7 @@ export function MobileMenu() {
             fontSize: 11, color: 'var(--color-graphite-border, #888)',
             letterSpacing: '0.05em',
           }}>
-            v2.12.0 · MIT · ~10 KB
+            v2.13.0 · MIT · ~10 KB
           </span>
         </div>
       </div>

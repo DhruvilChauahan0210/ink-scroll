@@ -1,6 +1,6 @@
 # Next Session Plan — svg-scroll-draw
 
-> Updated: 2026-10-31 — **2.12.0 published** (ScrollReveal drop-in).
+> Updated: 2026-10-31 — **2.13.0 published** (vivus drop-in).
 
 ---
 
@@ -18,11 +18,9 @@ Numbers that set the priorities (Search Console and npm, 2026-10-30): 4,020
 lifetime downloads, ~170 a month; 5 GitHub stars; 147 Google clicks in five
 months, 81% to the homepage; `/vs-gsap` at position 11 with 425 impressions.
 
-### In flight
-- Branch `feat/vivus-dropin`: `svg-scroll-draw/vivus`, parity-tested against
-  vivus 0.4.6, plus the `/vs-vivus` page. Ready to release as **2.13.0**.
-
 ### Shipped since
+- **2.13.0** — `svg-scroll-draw/vivus`, the vivus drop-in, with an exact
+  SVG-markup parity suite against vivus 0.4.6, and the `/vs-vivus` page.
 - **2.12.0** — `svg-scroll-draw/scrollreveal`, the MIT ScrollReveal drop-in, with a
   byte-for-byte inline-style parity suite against ScrollReveal 4.0.9.
 - **2.11.0** — `svg-scroll-draw/aos`, the AOS drop-in, with a side-by-side parity

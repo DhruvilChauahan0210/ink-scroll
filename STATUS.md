@@ -1,6 +1,6 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **2.12.0** — published on npm with provenance through `release.yml` (2026-10-31)
+> Current version: **2.13.0** — published on npm with provenance through `release.yml` (2026-10-31)
 > Tests: **606 unit** across 30 suites · **192 browser tests** per engine (576 runs
 > across Chromium/Firefox/WebKit) · **56 mutations**, each caught by the one test
 > named for it · **91.3% line coverage** (gate 90/90/82/82)
@@ -127,11 +127,11 @@ at all.
 
 ## Remaining / Next
 
-### Unreleased — vivus drop-in (branch `feat/vivus-dropin`, 2026-10-31)
+### 2.13.0 — vivus drop-in (branch `feat/vivus-dropin`, 2026-10-31)
 - [x] `svg-scroll-draw/vivus` + `dist/cdn/vivus.global.js` (3.9 KB gzip, budgets 4.2)
 - [x] Exact SVG-markup parity with vivus 0.4.6 in three engines; 13 unit tests; SSR import
 - [x] Docs: both READMEs, new `/vs-vivus` page, llms.txt, agent skill
-- [ ] Release as 2.13.0 (new entry point)
+- [x] Released as 2.13.0
 
 ### 2.12.0 — ScrollReveal drop-in (branch `feat/scrollreveal-dropin`, 2026-10-31)
 - [x] `svg-scroll-draw/scrollreveal` + `dist/cdn/scrollreveal.global.js` (4.5 KB gzip, budgets 4.9)
