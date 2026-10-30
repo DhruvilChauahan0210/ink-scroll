@@ -1,13 +1,14 @@
 import type { Metadata } from 'next';
+import { seoTitle } from '../../_lib/seo';
 import { RelatedResources } from '@/components/RelatedResources';
 import Link from 'next/link';
 import { MobileMenu } from '@/components/MobileMenu';
 import { CopyButton } from '@/components/CopyButton';
 
 export const metadata: Metadata = {
-  title: 'Horizontal scroll sections without GSAP — scrollHorizontal',
+  title: seoTitle('Horizontal Scroll Sections Without GSAP — scrollHorizontal'),
   description:
-    'Build the Apple / Stripe "scroll sideways" pattern without GSAP. scrollHorizontal drives translateX from vertical scroll — one call, sticky CSS, zero dependencies. React and vanilla examples.',
+    'Build the Apple / Stripe scroll-sideways section without GSAP: scrollHorizontal drives translateX from vertical scroll. One call, sticky CSS, React code.',
   keywords: [
     'horizontal scroll sections javascript',
     'scroll to move horizontally',

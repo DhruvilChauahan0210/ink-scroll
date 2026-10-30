@@ -1,31 +1,34 @@
 # Next Session Plan — svg-scroll-draw
 
-> Updated: 2026-10-30 — **2.10.1 staged on `fix/day1-trust`**, not published. npm `latest` is 2.10.0.
+> Updated: 2026-10-30 (evening) — **2.10.1 published**; day-2 work on `feat/day2-reach`, unreleased.
 
 ---
 
 ## Current state (2026-10-30)
 
-Branch `fix/day1-trust` holds the 2.10.1 trust pass, uncommitted at the time of
-writing: the devtools registry fix, corrected claims on the npm README and site,
-a wider `check-claims`, StackBlitz starters and npm keywords. See the 2.10.1
-CHANGELOG entry.
+**2.10.1 is on npm** (`latest`, signed provenance via `release.yml`). It shipped
+the shared devtools registry and the claims pass. The GitHub release page for
+`v2.10.1` was not created (the job had `contents: read`, now `write`).
 
-Numbers that set the priorities (Search Console and npm, 2026-10-30):
-4,020 lifetime downloads, 80% of them in the May–June launch spike, about 170 a
-month now; 5 GitHub stars; 147 Google clicks in five months, 81% to the homepage.
-`/vs-gsap` sits at position 11 with 425 impressions and 1 click.
+Branch `feat/day2-reach` holds the unreleased work — see the `[Unreleased]`
+CHANGELOG entry: `/blocks` + shadcn registry, agent skill, site-wide title fixes,
+the ESM types fix, the `scrollVideo` re-seek fix, `<scroll-draw once>`, and the
+`firefox-native` e2e project.
 
-Firefox 159 turned on scroll-driven animations on 27 Oct 2026, so the native
-fast path now has all three engines. CI's Playwright Firefox is still 153.
+Numbers that set the priorities (Search Console and npm, 2026-10-30): 4,020
+lifetime downloads, ~170 a month; 5 GitHub stars; 147 Google clicks in five
+months, 81% to the homepage; `/vs-gsap` at position 11 with 425 impressions.
 
 ### Next, in order
-1. Publishing credentials: `NPM_TOKEN` secret, or npm trusted publishing (then
-   drop the token from `release.yml`). Merge the branch, tag `v2.10.1`.
-2. Set the GitHub repo homepage (the current one 404s) and description by hand.
-3. Day 2 of the plan: `/vs-gsap` title, duplicated "— svg-scroll-draw" titles,
-   the 2025 guide renamed to 2026, launch posts (Show HN, Reddit, dev.to) on the
-   Firefox news, awesome-list submissions, first copy-paste blocks.
+1. Merge `feat/day2-reach`, release the next patch (tag push; the workflow
+   publishes and now creates the GitHub release). Create the `v2.10.1` release
+   page by hand.
+2. Re-check Search Console in ~2 weeks for the new titles (`/vs-gsap`, home,
+   React, Next.js).
+3. More blocks; one shared nav component so every page links `/blocks`.
+4. Shared ESM chunks between entries (see ROADMAP) — 8.6 KB vs 6.4 KB when an app
+   imports main + `/react`.
+5. Fold `firefox-native` into `firefox` once Playwright bundles Firefox 159+.
 
 ---
 

@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
+import { seoTitle } from '../_lib/seo';
 import Link from 'next/link';
 import { MobileMenu } from '@/components/MobileMenu';
 import { POSTS } from '@/data/blog-posts';
 
 export const metadata: Metadata = {
-  title: 'Blog — svg-scroll-draw',
+  title: seoTitle('Scroll Animation Guides & Comparisons'),
   description:
     'Guides, comparisons, and deep-dives on scroll-driven SVG animation — svg-scroll-draw vs GSAP, migration guides, and more.',
   alternates: { canonical: '/blog' },

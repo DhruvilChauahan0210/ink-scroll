@@ -1,12 +1,13 @@
 import type { Metadata } from 'next';
+import { seoTitle } from '../../_lib/seo';
 import { RelatedResources } from '@/components/RelatedResources';
 import Link from 'next/link';
 import { MobileMenu } from '@/components/MobileMenu';
 
 export const metadata: Metadata = {
-  title: '5 SVG Scroll Animation Patterns in Under 10 Lines',
+  title: seoTitle('5 SVG Scroll Animation Patterns in Under 10 Lines'),
   description:
-    'Five production-ready SVG scroll animation patterns — logo reveal, sketch diagram, typewriter, cinematic hero, and spring icon — each in 3 lines using svg-scroll-draw presets.',
+    'Five SVG scroll animation patterns — logo reveal, sketch diagram, typewriter, cinematic hero, spring icon — each in 3 lines with svg-scroll-draw presets.',
   keywords: [
     'svg scroll animation examples',
     'svg scroll animation react',

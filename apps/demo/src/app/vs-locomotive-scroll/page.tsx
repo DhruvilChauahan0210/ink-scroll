@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { seoTitle } from '../_lib/seo';
 import { VersusPage } from '@/components/VersusPage';
 import { VERSUS } from '@/data/versus';
 
@@ -6,7 +7,7 @@ const v = VERSUS.find((x) => x.slug === 'vs-locomotive-scroll')!;
 const url = `https://svg-scroll-draw.vercel.app/vs-locomotive-scroll`;
 
 export const metadata: Metadata = {
-  title: v.title,
+  title: seoTitle(v.title),
   description: v.description,
   keywords: v.keywords,
   alternates: { canonical: '/vs-locomotive-scroll' },

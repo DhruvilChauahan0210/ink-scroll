@@ -12,7 +12,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // ── Core pages ─────────────────────────────────────────────────────────
     {
       url: SITE_URL,
-      lastModified: new Date("2026-06-06"),
+      lastModified: new Date("2026-10-30"),
       changeFrequency: "weekly",
       priority: 1,
     },
@@ -25,6 +25,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     {
       url: `${SITE_URL}/examples`,
       lastModified: new Date("2026-08-14"),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${SITE_URL}/blocks`,
+      lastModified: new Date("2026-10-30"),
       changeFrequency: "monthly",
       priority: 0.8,
     },
@@ -44,13 +50,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // ── Framework landing pages ─────────────────────────────────────────────
     {
       url: `${SITE_URL}/react-scroll-animation`,
-      lastModified: new Date("2026-08-14"),
+      lastModified: new Date("2026-10-30"),
       changeFrequency: "monthly",
       priority: 0.9,
     },
     {
       url: `${SITE_URL}/nextjs-scroll-animation`,
-      lastModified: new Date("2026-08-14"),
+      lastModified: new Date("2026-10-30"),
       changeFrequency: "monthly",
       priority: 0.9,
     },
@@ -66,7 +72,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // ── Comparison pages ────────────────────────────────────────────────────
     {
       url: `${SITE_URL}/vs-gsap`,
-      lastModified: new Date("2026-08-14"),
+      lastModified: new Date("2026-10-30"),
       changeFrequency: "monthly",
       priority: 0.9,
     },
@@ -109,7 +115,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // ── Blog index ──────────────────────────────────────────────────────────
     {
       url: `${SITE_URL}/blog`,
-      lastModified: new Date("2026-08-14"),
+      lastModified: new Date("2026-10-30"),
       changeFrequency: "weekly",
       priority: 0.7,
     },
@@ -134,8 +140,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
-      url: `${SITE_URL}/blog/complete-guide-scroll-animations-2025`,
-      lastModified: new Date("2026-08-14"),
+      url: `${SITE_URL}/blog/complete-guide-scroll-animations-2026`,
+      lastModified: new Date("2026-10-30"),
       changeFrequency: "monthly",
       priority: 0.8,
     },

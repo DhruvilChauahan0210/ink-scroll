@@ -1,0 +1,22 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "signature-draw",
+  "type": "registry:block",
+  "title": "Signature Draw",
+  "description": "A handwritten SVG signature that inks itself in on scroll, followed by an underline flourish.",
+  "dependencies": [
+    "svg-scroll-draw"
+  ],
+  "files": [
+    {
+      "path": "registry/blocks/signature-draw.tsx",
+      "content": "'use client';\n\n/**\n * signature-draw — a handwritten signature that inks itself in as it scrolls\n * into view, then an underline flourish follows it.\n *\n * Built on svg-scroll-draw (MIT): https://svg-scroll-draw.vercel.app/blocks\n * Needs: react, svg-scroll-draw. Styling: Tailwind CSS.\n *\n * Swap SIGNATURE_PATH for your own: draw it in Figma/Illustrator with a single\n * pen stroke, export as SVG and paste the `d` attribute. One continuous path\n * draws best. Reduced motion is handled by the library: the signature is shown\n * fully drawn, with no animation.\n */\n\nimport { ScrollDraw } from 'svg-scroll-draw/react';\n\nexport interface SignatureDrawProps {\n  /** Small label above the signature. */\n  label?: string;\n  /** Printed name under the line. Also used for the SVG's accessible name. */\n  name?: string;\n  /** Right-aligned note under the line, such as a date or a role. */\n  note?: string;\n  /** Colour of the underline flourish. Any CSS colour. */\n  accent?: string;\n  className?: string;\n}\n\n/** A capital loop, a cursive body and a trailing tail, in a 300 × 130 box. */\nconst SIGNATURE_PATH =\n  'M 18 90 C 14 62 20 34 34 28 C 48 22 62 36 58 56 C 55 70 47 80 54 88 C 60 95 70 91 76 83 ' +\n  'C 84 72 86 80 84 90 C 83 97 91 94 103 84 C 114 73 117 81 115 91 C 114 98 123 94 135 84 ' +\n  'C 148 72 162 68 175 80 C 185 90 183 102 196 92 C 210 81 220 66 236 74 C 248 80 252 90 265 82 L 275 75';\n\nconst UNDERLINE_PATH = 'M 12 112 C 90 122 210 120 282 112';\n\nexport function SignatureDraw({\n  label = 'Signed',\n  name = 'Your Name, Founder',\n  note = 'Est. 2026',\n  accent = '#ff90e8',\n  className = '',\n}: SignatureDrawProps) {\n  return (\n    <figure\n      className={`mx-auto w-full max-w-xl rounded-2xl border border-neutral-200 bg-white p-6 sm:p-8 dark:border-neutral-800 dark:bg-neutral-950 ${className}`}\n    >\n      <p className=\"font-mono text-[11px] uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400\">\n        {label}\n      </p>\n\n      {/* `once` keeps the ink on the page after it has drawn. `stagger` starts the\n          underline a beat after the signature, so the two read as one gesture. */}\n      <ScrollDraw\n        easing=\"ease-out\"\n        speed={0.6}\n        stagger={0.35}\n        once\n        trigger={{ start: 'top 85%', end: 'top 30%' }}\n        className=\"mt-2 text-neutral-900 dark:text-neutral-100\"\n      >\n        <svg\n          viewBox=\"0 0 300 130\"\n          fill=\"none\"\n          role=\"img\"\n          aria-label={`Signature: ${name}`}\n          className=\"block h-auto w-full\"\n        >\n          <path\n            d={SIGNATURE_PATH}\n            stroke=\"currentColor\"\n            strokeWidth={2.2}\n            strokeLinecap=\"round\"\n            strokeLinejoin=\"round\"\n          />\n          <path d={UNDERLINE_PATH} stroke={accent} strokeWidth={1.8} strokeLinecap=\"round\" />\n        </svg>\n      </ScrollDraw>\n\n      <figcaption className=\"mt-2 flex items-baseline justify-between gap-4 font-mono text-xs text-neutral-500 dark:text-neutral-400\">\n        <span>{name}</span>\n        <span>{note}</span>\n      </figcaption>\n    </figure>\n  );\n}\n\nexport default SignatureDraw;\n",
+      "type": "registry:component",
+      "target": "components/scroll/signature-draw.tsx"
+    }
+  ],
+  "categories": [
+    "scroll",
+    "svg"
+  ]
+}

@@ -20,7 +20,7 @@ export type RelatedLinks = {
 };
 
 export const RELATED_BY_POST: Record<string, RelatedLinks> = {
-  'complete-guide-scroll-animations-2025': {
+  'complete-guide-scroll-animations-2026': {
     examples: ['scroll-reveal', 'scroll-pin', 'scroll-snap', 'scroll-text', 'scroll-video'],
   },
   'scroll-animation-performance': {

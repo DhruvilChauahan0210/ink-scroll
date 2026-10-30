@@ -1,13 +1,14 @@
 import type { Metadata } from 'next';
+import { seoTitle } from '../_lib/seo';
 import Link from 'next/link';
 import { MobileMenu } from '@/components/MobileMenu';
 import { CopyButton } from '@/components/CopyButton';
 import { COMPETITORS, SELF, SELF_ENTRIES, MEASURED_ON, provenance } from '@/data/competitors';
 
 export const metadata: Metadata = {
-  title: 'svg-scroll-draw vs AOS vs ScrollReveal.js — Comparison',
+  title: seoTitle('AOS Alternative: svg-scroll-draw vs AOS vs ScrollReveal'),
   description:
-    'Direct comparison: svg-scroll-draw vs AOS (Animate On Scroll) vs ScrollReveal.js. Bundle size, feature matrix, API side-by-side. scrollReveal replaces both with one typed JS call — no data attributes.',
+    'svg-scroll-draw vs AOS vs ScrollReveal.js: measured bundle sizes, feature matrix and side-by-side code. scrollReveal is one typed call, no data attributes.',
   keywords: [
     'AOS alternative',
     'ScrollReveal.js alternative',

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { seoTitle } from '../_lib/seo';
 import Link from 'next/link';
 import { MobileMenu } from '@/components/MobileMenu';
 import { CopyButton } from '@/components/CopyButton';
@@ -9,7 +10,7 @@ const SITE_URL = 'https://svg-scroll-draw.vercel.app';
 const lenis = COMPETITORS.lenis;
 
 export const metadata: Metadata = {
-  title: 'Lenis + Scroll Animation — Smooth Scroll and Draw Together',
+  title: seoTitle('Lenis + Scroll Animation — Smooth Scroll and Draw Together'),
   description:
     'Use Lenis smooth scrolling with scroll-driven SVG animation. Lenis v2 needs no adapter; v1 has one at svg-scroll-draw/lenis. Working setup for both.',
   keywords: [

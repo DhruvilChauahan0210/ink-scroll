@@ -88,10 +88,23 @@ export function scrollVideo(
     tEnd   = result.tEnd;
   }
 
+  /** The time last written, so an unchanged frame does not start a new seek. */
+  let lastTime = NaN;
+
   function applyAlpha(alpha: number): void {
     if (!ready) return;
     const effectiveTo = to ?? video.duration ?? 0;
-    video.currentTime = from + (effectiveTo - from) * alpha;
+    const time = from + (effectiveTo - from) * alpha;
+    /*
+     * Every write to `currentTime` starts a seek — even to the value it already
+     * has. `update()` runs every frame while the video is visible, so a page at
+     * rest kept the decoder seeking 60 times a second, and in Firefox `seeking`
+     * never settled (the CI paint test caught it). Write only on change.
+     */
+    if (time !== lastTime) {
+      lastTime = time;
+      video.currentTime = time;
+    }
     video.style.setProperty('--scroll-draw-progress', String(alpha));
     onProgress?.(alpha);
   }
@@ -176,6 +189,7 @@ export function scrollVideo(
       completed    = false;
       currentAlpha = 0;
       paused       = false;
+      lastTime     = NaN;   // an explicit replay always seeks
       applyAlpha(0);
     },
     pause() {
@@ -193,6 +207,7 @@ export function scrollVideo(
       frozenAlpha   = clamped;
       paused        = true;
       cancelAnimationFrame(rafId);
+      lastTime      = NaN;  // an explicit seek always seeks
       applyAlpha(clamped);
     },
     getProgress() { return currentAlpha; },

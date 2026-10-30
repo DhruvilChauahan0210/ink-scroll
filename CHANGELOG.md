@@ -4,7 +4,66 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ---
 
-## [2.10.1] — Unreleased
+## [Unreleased]
+
+### Added
+
+- **Copy-paste blocks** at `/blocks`: signature draw, reveal cards, stat counter
+  row, sticky feature, headline text reveal. Each is one React + Tailwind file and
+  installs with `npx shadcn@latest add https://svg-scroll-draw.vercel.app/r/<name>.json`.
+  `apps/demo/scripts/build-registry.mjs` writes the registry; the demo build fails
+  if it is stale.
+- **Agent skill** in `skills/svg-scroll-draw/` (SKILL.md plus API, recipes and
+  GSAP-migration references), linked from both READMEs and `llms.txt`.
+  `check-claims` scans it.
+
+### Site
+
+- Every page title is 60 characters or fewer and names the brand once. The
+  homepage targets "SVG scroll animation"; `/vs-gsap` leads with a comparison table
+  read from `competitors.ts`; `/react-scroll-animation` and
+  `/nextjs-scroll-animation` get a copy-paste snippet in the hero.
+- `/react-scroll-animation` listed a `useScrollDraw` React hook that does not
+  exist; `/nextjs-scroll-animation` said GSAP was "~50 KB, 5×" (45.3 KB, 4.4×).
+- The 2025 scroll-animation guide moved to `…-2026`, with a 308 redirect.
+
+### Fixed
+
+- **TypeScript resolved the wrong types for ESM users.** Every export pointed
+  `types` at the CommonJS `.d.ts`, so under `moduleResolution: node16`/`nodenext`
+  an `import` was typed as CommonJS ("masquerading as CJS" in
+  `@arethetypeswrong/cli`), and under `node10` no subpath (`/react`, `/vue`, …)
+  resolved types at all. Each export now has `import` → `.d.mts` and `require` →
+  `.d.ts`, `typesVersions` covers `node10`, and `./package.json` is exported.
+  `attw` reports no problems.
+- **`scrollVideo` re-seeked the video on every frame while it was visible.**
+  Each write to `currentTime` starts a seek, even to the value it already has, and
+  the update loop wrote it every animation frame — so a page at rest kept the
+  decoder seeking about 60 times a second. In Firefox `seeking` never settled,
+  which is what failed the CI paint test. It now seeks only when the target time
+  changes; `onProgress` and `--scroll-draw-progress` still update every frame, and
+  `seek()` / `replay()` always seek.
+- **`<scroll-draw once>` was ignored.** The README's CDN example used it, but the
+  element never read the attribute. It now does, and `once="false"` reads as off.
+- The root README showed `useScrollDraw` imported from `svg-scroll-draw/react`,
+  which does not exist there; it now points to `useScrollDrawProgress`.
+- The `bin` path no longer needs npm's auto-correction on publish.
+
+### Tests
+
+- New `firefox-native` e2e project: Playwright still bundles Firefox 153, so it
+  enables Gecko's `layout.css.scroll-driven-animations.enabled` pref and runs both
+  native-vs-JS parity suites. It fails if the fast path does not engage, so it
+  cannot pass by comparing the JS engine with itself.
+
+### CI
+
+- `release.yml` can create the GitHub release (`contents: write`). 2.10.1
+  published to npm and then stopped with a 403 at that step.
+
+---
+
+## [2.10.1] — 2026-10-30
 
 The trust release. No API changes. It fixes a devtools bug that hid every
 instance, and the numbers the npm page and the site had wrong.

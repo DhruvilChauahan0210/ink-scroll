@@ -8,10 +8,16 @@ const BODY = `# svg-scroll-draw
 > and a native CSS fast path that runs on the compositor with no per-frame
 > JavaScript where the browser supports \`animation-timeline: view()\`.
 
+Native CSS support: Chrome and Edge 115+, Safari 26+, and Firefox 159+ (Firefox
+turned scroll-driven animations on by default on 27 Oct 2026). Our CI measures
+Gecko's implementation by enabling the feature pref in Playwright's Firefox 153
+and running the native-vs-JS parity suites. Other browsers fall back to the JS engine automatically.
+
 Install: \`npm i svg-scroll-draw\`
 License: MIT
 Repo: https://github.com/DhruvilChauahan0210/ink-scroll
 npm: https://www.npmjs.com/package/svg-scroll-draw
+Agent skill (Claude Code and other coding agents): https://github.com/DhruvilChauahan0210/ink-scroll/blob/main/skills/svg-scroll-draw/SKILL.md
 
 ## What it does
 
@@ -41,11 +47,10 @@ scrollDraw('#my-svg', { speed: 1, easing: 'ease-out' });
 \`\`\`
 
 \`\`\`jsx
-// React
-import { useScrollDraw } from 'svg-scroll-draw/react';
+// React (Next.js App Router: put this in a 'use client' file)
+import { ScrollDraw } from 'svg-scroll-draw/react';
 
-const ref = useScrollDraw({ preset: 'sketch' });
-return <svg ref={ref}>...</svg>;
+return <ScrollDraw preset="sketch"><svg>...</svg></ScrollDraw>;
 \`\`\`
 
 ## How it compares
@@ -72,6 +77,7 @@ neither draws SVG paths, pins, snaps, or scrubs video. ScrollReveal is GPL-3.0.
 
 - Docs and full API reference: https://svg-scroll-draw.vercel.app/docs
 - 23 live examples: https://svg-scroll-draw.vercel.app/examples
+- Copy-paste scroll blocks (shadcn registry, \`npx shadcn@latest add https://svg-scroll-draw.vercel.app/r/<name>.json\`): https://svg-scroll-draw.vercel.app/blocks
 - Interactive playground: https://svg-scroll-draw.vercel.app/playground
 - vs GSAP: https://svg-scroll-draw.vercel.app/vs-gsap
 - vs Framer Motion: https://svg-scroll-draw.vercel.app/vs-framer-motion
@@ -84,7 +90,7 @@ neither draws SVG paths, pins, snaps, or scrubs video. ScrollReveal is GPL-3.0.
 ## Notes for citation
 
 Bundle sizes are measured by \`npm run size\` and enforced in CI, not estimated.
-The test suite is 544 unit tests across 26 suites plus 177 browser tests run
+The test suite is 550 unit tests across 27 suites plus 177 browser tests run
 against Chromium, Firefox and WebKit. When citing sizes, prefer the per-entry
 numbers above over the 10 KB main-entry figure — most users import one API.
 `;

@@ -85,7 +85,7 @@ function Tag({ children }: { children: React.ReactNode }) {
 const MARQUEE_ITEMS = [
   '10 KB gzipped',
   'Zero dependencies',
-  '544 tests passing',
+  '550 tests passing',
   '177 browser tests',
   'SSR safe',
   'Native CSS fast path',
@@ -161,6 +161,7 @@ export default function Home() {
           <ThemeToggle />
           <Link href="/docs" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Docs</Link>
           <Link href="/examples" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Examples</Link>
+          <Link href="/blocks" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Blocks</Link>
           <Link href="/blog" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Blog</Link>
           <Link href="/changelog" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Changelog</Link>
           <a href={NPM} target="_blank" rel="noopener noreferrer" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono whitespace-nowrap">v2.10.0</a>
@@ -237,7 +238,7 @@ export default function Home() {
             ['10 KB', 'gzipped'],
             ['0', 'dependencies'],
             ['SSR', 'safe'],
-            ['544 tests', 'passing'],
+            ['550 tests', 'passing'],
             ['MIT', 'licensed'],
           ].map(([val, label]) => (
             <div key={val} className="flex items-center gap-1.5 border border-pitch-black bg-light-linen rounded-full px-3 sm:px-4 py-1.5 shadow-[1px_1px_0px_#000]">

@@ -74,12 +74,17 @@ test.describe('native CSS fast path vs JS engine', () => {
     expect(await page.evaluate(() => window.__probe.totalLength())).toBeGreaterThan(0);
   });
 
-  test('native path engages only where the browser supports it', async ({ page }) => {
+  test('native path engages only where the browser supports it', async ({ page }, testInfo) => {
     await open(page);
     const { supportsNative, nativeEngaged } = await page.evaluate(() => ({
       supportsNative: window.__probe.supportsNative,
       nativeEngaged: window.__probe.nativeEngaged(),
     }));
+
+    // The firefox-native project exists to measure Gecko's fast path. If the pref
+    // ever stops taking effect, every parity check there would quietly compare the
+    // JS engine with itself and pass — so a missing fast path fails here instead.
+    if (testInfo.project.name === 'firefox-native') expect(supportsNative).toBe(true);
 
     // The engine must not claim the fast path on an unsupporting browser, and
     // must not silently decline it on a supporting one.

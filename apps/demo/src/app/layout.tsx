@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Syne } from "next/font/google";
 import "./globals.css";
 import { Mascot } from "@/components/Mascot";
+import { TITLE_TEMPLATE } from "./_lib/seo";
 
 const THEME_SCRIPT = `(function(){
   var s = localStorage.getItem('theme');
@@ -27,15 +28,25 @@ const syne = Syne({
 
 const SITE_URL = "https://svg-scroll-draw.vercel.app";
 
+const HOME_TITLE = "SVG Scroll Animation Library — 10 KB, MIT, No GSAP";
+const HOME_DESCRIPTION =
+  "Draw SVG paths, reveal content, split text and scrub video on scroll. 10.2 KB gzipped, zero dependencies, MIT. React, Next.js, Vue, Svelte or vanilla JS.";
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
+  // The homepage has no title of its own, so `default` IS the homepage title.
+  // It leads with the queries that already bring clicks ("svg scroll
+  // animation", "svg scroll", "scroll animation library"); the brand is in the
+  // URL and the og:site_name, so it does not need the title's 60 characters.
   title: {
-    default: "svg-scroll-draw — SVG Scroll Draw Animation Library",
-    template: "%s | svg-scroll-draw",
+    default: HOME_TITLE,
+    template: TITLE_TEMPLATE,
   },
-  description:
-    "The scroll animation platform. Animate SVG paths, CSS properties, counters, video, and text — all scroll-driven. ~10 KB. Zero dependencies. Works with React, Next.js, Vue 3, and vanilla JS.",
+  description: HOME_DESCRIPTION,
   keywords: [
+    "svg scroll animation",
+    "svg scroll",
+    "scroll animation library",
     "scroll draw",
     "svg scroll draw",
     "scroll draw animation",
@@ -59,9 +70,8 @@ export const metadata: Metadata = {
     type: "website",
     url: SITE_URL,
     siteName: "svg-scroll-draw",
-    title: "svg-scroll-draw — SVG Scroll Draw Animation Library",
-    description:
-      "The scroll animation platform. Animate SVG paths, CSS properties, counters, video, and text — all scroll-driven. ~10 KB. Zero dependencies. Works with React, Next.js, Vue 3, and vanilla JS.",
+    title: HOME_TITLE,
+    description: HOME_DESCRIPTION,
     images: [
       {
         url: `${SITE_URL}/opengraph-image`,
@@ -73,9 +83,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "svg-scroll-draw — SVG Scroll Draw Animation Library",
-    description:
-      "The scroll animation platform. Animate SVG paths, CSS properties, counters, video, and text — all scroll-driven. ~10 KB. Zero dependencies.",
+    title: HOME_TITLE,
+    description: HOME_DESCRIPTION,
     images: [`${SITE_URL}/opengraph-image`],
   },
   verification: {

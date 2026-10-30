@@ -2,11 +2,15 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { MobileMenu } from '@/components/MobileMenu';
 import { CopyButton } from '@/components/CopyButton';
+import { seoTitle } from '../_lib/seo';
+
+const TITLE = 'React Scroll Animation: Components & Hooks, 10 KB';
+const DESCRIPTION =
+  'Scroll animations in React with typed components and hooks: fade, pin, snap, text split, SVG draw. 10.2 KB gzip, MIT, works in the Next.js App Router.';
 
 export const metadata: Metadata = {
-  title: 'React Scroll Animation Library — svg-scroll-draw',
-  description:
-    'The best scroll animation library for React. ScrollAnimate, ScrollText, ScrollCounter, ScrollPin components + hooks. Typed, tree-shakeable, ~10 KB. Works with Next.js App Router.',
+  title: seoTitle(TITLE),
+  description: DESCRIPTION,
   keywords: [
     'react scroll animation',
     'react scroll animation library',
@@ -21,11 +25,27 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: '/react-scroll-animation' },
   openGraph: {
-    title: 'React Scroll Animation Library — svg-scroll-draw',
-    description: 'Typed components + hooks for every scroll animation pattern. ~10 KB. Works with Next.js.',
+    title: TITLE,
+    description: DESCRIPTION,
     url: 'https://svg-scroll-draw.vercel.app/react-scroll-animation',
   },
+  twitter: { card: 'summary_large_image', title: TITLE, description: DESCRIPTION },
 };
+
+/** Shown in the hero so the copy-paste answer is above the fold. */
+const HERO_SNIPPET = `'use client';
+import { ScrollAnimate } from 'svg-scroll-draw/react';
+
+export function FadeUp({ children }: { children: React.ReactNode }) {
+  return (
+    <ScrollAnimate
+      props={{ opacity: [0, 1], transform: ['translateY(40px)', 'translateY(0)'] }}
+      once
+    >
+      {children}
+    </ScrollAnimate>
+  );
+}`;
 
 function Nav() {
   return (
@@ -58,7 +78,8 @@ function CodeBlock({ file, children }: { file: string; children: string }) {
 const APIS = [
   { name: 'scrollReveal', sub: 'svg-scroll-draw/reveal', desc: 'Reveal elements on scroll. 7 presets, stagger, custom from state. Replaces AOS.', hook: false },
   { name: 'ScrollAnimate', sub: 'svg-scroll-draw/react', desc: 'Animate any CSS property driven by scroll. Component wrapper around scrollAnimate.', hook: false },
-  { name: 'useScrollDraw', sub: 'svg-scroll-draw/react', desc: 'Hook to attach scroll-driven SVG path animation to a ref.', hook: true },
+  { name: 'ScrollDraw', sub: 'svg-scroll-draw/react', desc: 'Wrap any inline SVG and its paths draw as you scroll. Presets, stagger, easing.', hook: false },
+  { name: 'useScrollDrawProgress', sub: 'svg-scroll-draw/react', desc: 'Hook that returns live 0–1 scroll progress for a ref, for driving your own UI.', hook: true },
   { name: 'ScrollText', sub: 'svg-scroll-draw/react', desc: 'Split text + stagger reveal. words, chars, or lines. Replaces GSAP SplitText.', hook: false },
   { name: 'ScrollCounter', sub: 'svg-scroll-draw/react', desc: 'Animated number counter driven by scroll. Format function, decimals, easing.', hook: false },
   { name: 'scrollPin', sub: 'svg-scroll-draw/pin', desc: 'Pin an element at a viewport position while content scrolls past it. Full lifecycle callbacks.', hook: false },
@@ -72,7 +93,7 @@ export default function ReactScrollAnimationPage() {
     <div className="bg-light-linen text-pitch-black min-h-screen">
       <Nav />
 
-      <header className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-14 sm:py-20">
+      <header className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-10 sm:py-14">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center gap-3 mb-5">
             <span className="text-[10px] font-mono font-semibold px-2.5 py-1 rounded-full bg-[#61dafb]/20 border border-[#61dafb]/40 text-pitch-black">React</span>
@@ -91,6 +112,9 @@ export default function ReactScrollAnimationPage() {
             </div>
             <Link href="/docs" className="px-5 py-2.5 rounded-full border border-pitch-black text-sm font-medium hover:bg-pitch-black hover:text-light-linen transition-colors">API Reference →</Link>
             <Link href="/vs-gsap" className="px-5 py-2.5 rounded-full border border-subtle-ash text-sm font-medium hover:border-pitch-black transition-colors text-graphite-border">vs GSAP →</Link>
+          </div>
+          <div className="max-w-2xl mt-6">
+            <CodeBlock file="FadeUp.tsx">{HERO_SNIPPET}</CodeBlock>
           </div>
         </div>
       </header>
@@ -288,7 +312,7 @@ export default function Page() {
           <h2 className="font-display font-extrabold text-[clamp(28px,6vw,56px)] leading-[0.92] tracking-[-0.04em] mb-4">
             Drop-in for React + Next.js.
           </h2>
-          <p className="text-graphite-border text-sm sm:text-base mb-8">MIT. Zero deps. TypeScript. 544 tests. Works everywhere React works.</p>
+          <p className="text-graphite-border text-sm sm:text-base mb-8">MIT. Zero deps. TypeScript. 550 tests. Works everywhere React works.</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <div className="flex items-center gap-2 bg-white/10 rounded-full px-5 py-3 text-sm font-mono"><span className="opacity-50">$</span><span>npm i svg-scroll-draw</span></div>
             <Link href="/docs" className="px-5 py-3 rounded-full border-2 border-white text-sm font-semibold hover:bg-white hover:text-pitch-black transition-colors text-center">Full API docs →</Link>

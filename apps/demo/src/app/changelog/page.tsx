@@ -7,7 +7,7 @@ import { MobileMenu } from '@/components/MobileMenu';
 export const metadata: Metadata = {
   title: 'Changelog — Release History',
   description:
-    'Complete release history for svg-scroll-draw, the scroll-driven SVG path animation library. Track what shipped in each version, including native CSS scroll animation support.',
+    'Release history for svg-scroll-draw, the scroll-driven SVG animation library: what shipped in each version, from native CSS scroll timelines to new APIs.',
   alternates: { canonical: '/changelog' },
   openGraph: {
     title: 'Changelog — svg-scroll-draw',

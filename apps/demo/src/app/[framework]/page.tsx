@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { seoTitle } from '../_lib/seo';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { MobileMenu } from '@/components/MobileMenu';
@@ -29,7 +30,7 @@ export async function generateMetadata({
   if (!f) return {};
   const url = `${SITE_URL}/${f.slug}`;
   return {
-    title: f.title,
+    title: seoTitle(f.title),
     description: f.description,
     keywords: f.keywords,
     alternates: { canonical: `/${f.slug}` },

@@ -8,11 +8,13 @@
 
 > Scroll-driven animation for the web. Draw SVG paths, reveal elements, pin sections, scrub video. Zero dependencies. Native CSS fast path on modern browsers.
 
-**[Live Demo](https://svg-scroll-draw.vercel.app)** · **[23 Examples](https://svg-scroll-draw.vercel.app/examples)** · **[Docs](https://svg-scroll-draw.vercel.app/docs)** · **[⚡ Playground](https://svg-scroll-draw.vercel.app/playground)** · [npm](https://www.npmjs.com/package/svg-scroll-draw)
+**[Live Demo](https://svg-scroll-draw.vercel.app)** · **[23 Examples](https://svg-scroll-draw.vercel.app/examples)** · **[Blocks](https://svg-scroll-draw.vercel.app/blocks)** · **[Docs](https://svg-scroll-draw.vercel.app/docs)** · **[⚡ Playground](https://svg-scroll-draw.vercel.app/playground)** · [npm](https://www.npmjs.com/package/svg-scroll-draw)
 
 ![svg-scroll-draw demo](https://raw.githubusercontent.com/DhruvilChauahan0210/ink-scroll/main/demo.gif)
 
 **Try it in your browser, no install:** [Vanilla JS on StackBlitz](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/vanilla) · [React on StackBlitz](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/react)
+
+**Using an AI coding agent?** Give it the [svg-scroll-draw skill](skills/svg-scroll-draw/SKILL.md) or point it at [llms.txt](https://svg-scroll-draw.vercel.app/llms.txt).
 
 Works in **React · Next.js · Vue 3 · Svelte · Solid · Angular · Nuxt · Astro · CDN / vanilla JS** — a single tiny package with first-class wrappers for every major framework.
 
@@ -29,7 +31,7 @@ Works in **React · Next.js · Vue 3 · Svelte · Solid · Angular · Nuxt · As
 - **30+ options** — easing, stagger, fade, stroke color/width lerp, fill opacity, clip reveal, morphTo, velocityScale, waypoints, callbacks, repeat, autoReverse, and more
 - **Group / Sequence / Timeline APIs** — animate multiple containers simultaneously, one-after-another, or on independent scroll windows with `loop` for auto-looping after scroll completion
 - **CSS custom property** — `--scroll-draw-progress` is set on every frame so you can drive any CSS animation without a callback
-- **544 tests across 26 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
+- **550 tests across 27 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
 - **177 browser tests on top of those**, run against Chromium, Firefox and WebKit in CI. The unit suite runs in jsdom, where `getTotalLength` is stubbed and `IntersectionObserver` is faked — it can check the engine's arithmetic but nothing about real browser behaviour. Both counts are derived from the suites themselves and enforced in CI, so neither can quietly drift out of date
 
 ---
@@ -130,16 +132,9 @@ export default function Hero() {
 }
 ```
 
-Or use the hook directly for ref control:
-
-```tsx
-import { useScrollDraw } from 'svg-scroll-draw/react';
-
-function Hero() {
-  const ref = useScrollDraw({ easing: 'ease-out', once: true });
-  return <div ref={ref}><svg>…</svg></div>;
-}
-```
+Need the progress value itself (to drive a label, a counter, your own styles)? Use
+[`useScrollDrawProgress`](#usescrolldrawprogress-react) — the React entry has no
+`useScrollDraw` hook; that name exists in the Vue and Solid entries.
 
 ### Vue 3
 
@@ -292,7 +287,7 @@ directly rather than relying on a version table:
 |---|---|
 | Chromium / Chrome / Edge 115+ | ✅ |
 | Safari / WebKit 26+ | ✅ |
-| Firefox 159+ | ✅ per Mozilla (on by default since 27 Oct 2026) — not yet measured here: the e2e suite's Playwright Firefox is 153, which runs the JS engine |
+| Firefox 159+ | ✅ on by default since 27 Oct 2026. Measured on Gecko: Playwright still bundles Firefox 153, so the `firefox-native` e2e project turns on `layout.css.scroll-driven-animations.enabled` and runs both parity suites against it |
 
 The timeline is a **named `view-timeline` declared on the container**, which the
 path animations then reference. That detail matters: putting
@@ -646,8 +641,8 @@ Chrome 80+, Safari 14+, Firefox 75+, Edge 80+.
 
 The native CSS fast path needs scroll-driven animation support (`view-timeline-name`
 plus `animation-timeline`). Chromium 115+, WebKit/Safari 26+ and Firefox 159+
-have it (Firefox turned it on by default on 27 Oct 2026; the e2e suite still runs
-Firefox 153, so that one is from Mozilla's release notes, not our measurement). Everything else falls back to the JS engine
+have it (Firefox turned it on by default on 27 Oct 2026; the e2e suite measures
+Gecko's implementation in Playwright's Firefox 153 with the feature pref enabled). Everything else falls back to the JS engine
 automatically, and the two are tested for equivalence — see
 [Native CSS rendering](#native-css-rendering).
 

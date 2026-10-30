@@ -35,6 +35,9 @@ if (
       if (direction) opts.direction = direction as ScrollDrawOptions['direction'];
       if (selector)  opts.selector  = selector;
       if (this.hasAttribute('fade')) opts.fade = this.getAttribute('fade') !== 'false';
+      // `once` was documented in the README's CDN example but never read here, so
+      // `<scroll-draw once>` reversed on scroll-back like any other.
+      if (this.hasAttribute('once')) opts.once = this.getAttribute('once') !== 'false';
 
       this.instance = createEngine(this, opts);
     }

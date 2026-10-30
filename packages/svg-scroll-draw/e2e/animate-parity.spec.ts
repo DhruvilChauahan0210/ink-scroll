@@ -103,7 +103,7 @@ test.describe('scrollAnimate native CSS fast path', () => {
     }
   });
 
-  test('the fast path engages exactly where the browser supports it', async ({ page }) => {
+  test('the fast path engages exactly where the browser supports it', async ({ page }, testInfo) => {
     await openFixture(page, 'animate-parity.html');
     const e = await call<{
       supportsNative: boolean;
@@ -111,6 +111,9 @@ test.describe('scrollAnimate native CSS fast path', () => {
       jsForced: Record<string, boolean>;
       styleTags: number;
     }>(page, 'engagement');
+
+    // See parity.spec.ts: the firefox-native project is worthless without the fast path.
+    if (testInfo.project.name === 'firefox-native') expect(e.supportsNative).toBe(true);
 
     for (const [key, on] of Object.entries(e.engaged)) {
       expect(on, `${key}: fast path did not match browser support`).toBe(e.supportsNative);

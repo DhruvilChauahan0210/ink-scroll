@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
+import { seoTitle } from '../../_lib/seo';
 import { RelatedResources } from '@/components/RelatedResources';
 import Link from 'next/link';
 import { MobileMenu } from '@/components/MobileMenu';
 
 export const metadata: Metadata = {
-  title: 'Scroll-Driven SVG Path Morphing with morphTo',
+  title: seoTitle('Scroll-Driven SVG Path Morphing with morphTo'),
   description:
     'How to use the morphTo option in svg-scroll-draw to interpolate SVG path shapes as you scroll. Path compatibility, use cases, and live code examples.',
   keywords: [

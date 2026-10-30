@@ -1,12 +1,13 @@
 import type { Metadata } from 'next';
+import { seoTitle } from '../../_lib/seo';
 import { RelatedResources } from '@/components/RelatedResources';
 import Link from 'next/link';
 import { MobileMenu } from '@/components/MobileMenu';
 
 export const metadata: Metadata = {
-  title: 'GSAP DrawSVG Alternative — 10 KB vs 47.5 KB, Zero Deps',
+  title: seoTitle('GSAP DrawSVG Alternative — 10 KB vs 47.5 KB, Zero Deps'),
   description:
-    'Detailed comparison of svg-scroll-draw and GSAP DrawSVG for scroll-driven SVG path animation. Bundle size, dependency count, native CSS fast path, React/Vue/Svelte support, and a migration guide.',
+    'svg-scroll-draw vs GSAP DrawSVG for scroll-driven SVG path drawing: measured bundle size, native CSS fast path, framework support and a migration guide.',
   keywords: [
     'gsap drawsvg alternative',
     'svg scroll animation without gsap',

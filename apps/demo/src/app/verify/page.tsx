@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { seoTitle } from '../_lib/seo';
 import Link from 'next/link';
 import { MobileMenu } from '@/components/MobileMenu';
 import {
@@ -23,7 +24,7 @@ import {
 } from '@/components/VerifyPhase3';
 
 export const metadata: Metadata = {
-  title: 'Verify — live proof of the Phase 0, 1 and 2 fixes',
+  title: seoTitle('Verify — live proof of the Phase 0, 1 and 2 fixes'),
   description:
     'Internal verification page. Renders each correctness fix live in the browser so it can be checked by eye rather than taken on trust.',
   // Internal engineering page — must not compete with the real docs in search.

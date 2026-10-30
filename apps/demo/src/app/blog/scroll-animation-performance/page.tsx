@@ -1,13 +1,14 @@
 import type { Metadata } from 'next';
+import { seoTitle } from '../../_lib/seo';
 import { RelatedResources } from '@/components/RelatedResources';
 import Link from 'next/link';
 import { MobileMenu } from '@/components/MobileMenu';
 import { CopyButton } from '@/components/CopyButton';
 
 export const metadata: Metadata = {
-  title: 'Scroll Animation Performance — Native CSS vs JavaScript',
+  title: seoTitle('Scroll Animation Performance — Native CSS vs JavaScript'),
   description:
-    'How svg-scroll-draw uses animation-timeline: view() for zero-JS scroll animations on the compositor. When native CSS wins, when JS wins, and how to get 60fps scroll animations every time.',
+    'Native CSS animation-timeline: view() vs JavaScript scroll animation: when the compositor path wins, when JS wins, and how to keep scrolling smooth.',
   keywords: [
     'scroll animation performance',
     'animation-timeline view()',

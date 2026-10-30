@@ -19,8 +19,8 @@ export type BlogPost = {
 
 export const POSTS: BlogPost[] = [
   {
-    slug: 'complete-guide-scroll-animations-2025',
-    title: 'The complete guide to scroll animations in 2025',
+    slug: 'complete-guide-scroll-animations-2026',
+    title: 'The complete guide to scroll animations in 2026',
     description:
       'Every scroll animation pattern — fade reveal, parallax, sticky pin, section snap, text split, video scrub, horizontal sections, CSS variables — with copy-paste code. 12 patterns, one library.',
     tag: 'Guide',

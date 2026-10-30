@@ -1,0 +1,82 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "svg-scroll-draw",
+  "homepage": "https://svg-scroll-draw.vercel.app/blocks",
+  "items": [
+    {
+      "name": "signature-draw",
+      "type": "registry:block",
+      "title": "Signature Draw",
+      "description": "A handwritten SVG signature that inks itself in on scroll, followed by an underline flourish.",
+      "dependencies": ["svg-scroll-draw"],
+      "files": [
+        {
+          "path": "registry/blocks/signature-draw.tsx",
+          "type": "registry:component",
+          "target": "components/scroll/signature-draw.tsx"
+        }
+      ],
+      "categories": ["scroll", "svg"]
+    },
+    {
+      "name": "reveal-cards",
+      "type": "registry:block",
+      "title": "Reveal Cards",
+      "description": "A grid of feature cards that fade up one after another as the grid scrolls into view.",
+      "dependencies": ["svg-scroll-draw"],
+      "files": [
+        {
+          "path": "registry/blocks/reveal-cards.tsx",
+          "type": "registry:component",
+          "target": "components/scroll/reveal-cards.tsx"
+        }
+      ],
+      "categories": ["scroll", "features"]
+    },
+    {
+      "name": "stat-counter-row",
+      "type": "registry:block",
+      "title": "Stat Counter Row",
+      "description": "A row of three or four stats that count up from zero as the row scrolls into view.",
+      "dependencies": ["svg-scroll-draw"],
+      "files": [
+        {
+          "path": "registry/blocks/stat-counter-row.tsx",
+          "type": "registry:component",
+          "target": "components/scroll/stat-counter-row.tsx"
+        }
+      ],
+      "categories": ["scroll", "stats"]
+    },
+    {
+      "name": "sticky-feature",
+      "type": "registry:block",
+      "title": "Sticky Feature",
+      "description": "A pinned left panel with a progress rail while numbered steps scroll past on the right.",
+      "dependencies": ["svg-scroll-draw"],
+      "files": [
+        {
+          "path": "registry/blocks/sticky-feature.tsx",
+          "type": "registry:component",
+          "target": "components/scroll/sticky-feature.tsx"
+        }
+      ],
+      "categories": ["scroll", "features"]
+    },
+    {
+      "name": "headline-text-reveal",
+      "type": "registry:block",
+      "title": "Headline Text Reveal",
+      "description": "A hero headline whose words rise into place one after another on scroll.",
+      "dependencies": ["svg-scroll-draw"],
+      "files": [
+        {
+          "path": "registry/blocks/headline-text-reveal.tsx",
+          "type": "registry:component",
+          "target": "components/scroll/headline-text-reveal.tsx"
+        }
+      ],
+      "categories": ["scroll", "hero", "text"]
+    }
+  ]
+}

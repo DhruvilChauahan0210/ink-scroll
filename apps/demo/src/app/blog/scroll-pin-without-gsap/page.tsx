@@ -1,13 +1,14 @@
 import type { Metadata } from 'next';
+import { seoTitle } from '../../_lib/seo';
 import { RelatedResources } from '@/components/RelatedResources';
 import Link from 'next/link';
 import { MobileMenu } from '@/components/MobileMenu';
 import { CopyButton } from '@/components/CopyButton';
 
 export const metadata: Metadata = {
-  title: 'Pin sections on scroll without GSAP — scrollPin',
+  title: seoTitle('Pin Sections on Scroll Without GSAP — scrollPin'),
   description:
-    'How to pin any element at a viewport position while the page scrolls past it — without GSAP. scrollPin from svg-scroll-draw: wrapper-based, no layout shift, full lifecycle callbacks, 9 KB total.',
+    'Pin any element while the page scrolls past it, without GSAP. scrollPin: wrapper-based, no layout shift, full lifecycle callbacks, a 1.6 KB entry point.',
   keywords: [
     'scroll pin without gsap',
     'gsap pin alternative',

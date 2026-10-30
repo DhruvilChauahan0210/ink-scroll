@@ -1,13 +1,14 @@
 import type { Metadata } from 'next';
+import { seoTitle } from '../_lib/seo';
 import Link from 'next/link';
 import { MobileMenu } from '@/components/MobileMenu';
 import { CopyButton } from '@/components/CopyButton';
 import { COMPETITORS, SELF, MEASURED_ON } from '@/data/competitors';
 
 export const metadata: Metadata = {
-  title: 'svg-scroll-draw vs Framer Motion — Scroll Animation Comparison',
+  title: seoTitle('Framer Motion Alternative for Scroll Animations'),
   description:
-    'svg-scroll-draw vs Framer Motion for scroll animations. ~3.4× smaller measured, works outside React, native CSS fast path, MIT license. Comparison table, measured bundle sizes, and side-by-side code.',
+    'svg-scroll-draw vs Framer Motion for scroll animation: ~3.4× smaller measured, works outside React, native CSS fast path, MIT. Table and side-by-side code.',
   keywords: [
     'framer motion alternative',
     'framer motion vs scroll animation',

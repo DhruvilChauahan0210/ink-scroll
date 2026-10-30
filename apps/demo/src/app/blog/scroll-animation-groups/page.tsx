@@ -1,13 +1,14 @@
 import type { Metadata } from 'next';
+import { seoTitle } from '../../_lib/seo';
 import { RelatedResources } from '@/components/RelatedResources';
 import Link from 'next/link';
 import { MobileMenu } from '@/components/MobileMenu';
 import { CopyButton } from '@/components/CopyButton';
 
 export const metadata: Metadata = {
-  title: 'Animate multiple elements on scroll — scrollAnimateGroup, scrollParallaxGroup',
+  title: seoTitle('Animate Multiple Elements on Scroll — Group APIs'),
   description:
-    'How to animate multiple HTML elements simultaneously or in sequence on scroll using svg-scroll-draw group APIs. scrollAnimateGroup, scrollAnimateSequence, scrollParallaxGroup, scrollDrawGroup — with copy-paste examples.',
+    'Animate many elements on scroll, together or in sequence: scrollAnimateGroup, scrollAnimateSequence, scrollParallaxGroup and scrollDrawGroup, with code.',
   keywords: [
     'animate multiple elements on scroll',
     'scroll animation group javascript',

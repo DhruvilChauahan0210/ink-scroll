@@ -1,7 +1,7 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **2.10.1** staged on `fix/day1-trust`, not yet published · npm `latest` is **2.10.0**
-> Tests: **544 unit** across 26 suites · **177 browser tests** per engine (531 runs
+> Current version: **2.10.1** — published on npm with provenance through `release.yml` (2026-10-30)
+> Tests: **550 unit** across 27 suites · **177 browser tests** per engine (531 runs
 > across Chromium/Firefox/WebKit) · **56 mutations**, each caught by the one test
 > named for it · **91.3% line coverage** (gate 90/90/82/82)
 > Bundle: **10.2 KB gzipped** (main entry; per-API entries from 0.2 KB) · zero runtime dependencies
@@ -49,7 +49,7 @@
 - [x] `scrollAnimateGroup` + `scrollAnimateSequence` + `scrollParallaxGroup` in `svg-scroll-draw/group`
 
 ### Testing
-- [x] 544 tests across 26 suites — `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollText` (23)
+- [x] 550 tests across 27 suites — `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollText` (23)
 - [x] Initial state fix — `createAnimateEngine` and `scrollCounter` now apply correct alpha immediately on init (no flash before IO fires)
 
 ### Browser tests (Phase 2, `packages/svg-scroll-draw/e2e`)
@@ -127,15 +127,23 @@ at all.
 
 ## Remaining / Next
 
+### Unreleased — reach pass (branch `feat/day2-reach`, 2026-10-30)
+- [x] `/blocks` + shadcn registry (5 blocks), agent skill in `skills/`
+- [x] Titles ≤ 60 chars site-wide, `/vs-gsap` table up top, 2025 guide → 2026 with redirect
+- [x] Types fixed for ESM/node10 (`attw` clean); `scrollVideo` no longer re-seeks every frame; `<scroll-draw once>` works
+- [x] `firefox-native` e2e project; release job can create the GitHub release
+- [ ] Release it (next patch)
+
 ### 2.10.1 — trust pass (branch `fix/day1-trust`, 2026-10-30)
 - [x] devtools registry shared across entries via `globalThis`; scrollDraw, scrollAnimate native, scrollSnap, timeline and Cinematic register
 - [x] npm README and site claims corrected (SplitText, 9×, 95%, per-entry sizes, Firefox 159 / Safari 26)
 - [x] `check-claims` scans the npm README, all demo source, llms.txt and launch drafts; per-entry sizes and banned claims
 - [x] StackBlitz starters in `examples/`, GIF + keywords on the npm README
 - [x] GitHub topics set
-- [ ] GitHub repo homepage (still the dead `demo-nu-ashen-84` URL) and description — set by hand
-- [ ] npm publishing credentials (token or trusted publishing), then tag `v2.10.1`
-- [ ] Playwright Firefox is 153; native path in Firefox 159 is not measured yet
+- [x] GitHub repo homepage and description set
+- [x] `NPM_TOKEN` added; `v2.10.1` published by the workflow with a signed provenance statement
+- [ ] GitHub release for `v2.10.1` — the job had `contents: read` and got a 403 after publishing; fixed for the next tag, create this one by hand
+- [x] Native path measured on Gecko via the `firefox-native` e2e project (pref on, Playwright Firefox 153)
 
 - [x] **Published v2.7.0 to npm**
 

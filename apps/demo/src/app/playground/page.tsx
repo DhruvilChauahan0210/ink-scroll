@@ -1,8 +1,9 @@
 import type { Metadata } from 'next';
+import { seoTitle } from '../_lib/seo';
 import { SvgPlayground } from '@/components/SvgPlayground';
 
 export const metadata: Metadata = {
-  title: 'SVG Scroll Animation Playground — Try It Live',
+  title: seoTitle('SVG Scroll Animation Playground — Try It Live'),
   description:
     'Paste any SVG and watch it animate on scroll. Tweak easing, speed, stagger, fade, stroke color, morphTo, and clip mode. Share your result with a URL.',
   alternates: { canonical: '/playground' },

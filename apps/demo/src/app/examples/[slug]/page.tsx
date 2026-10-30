@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { seoTitle } from '../../_lib/seo';
 import { notFound } from 'next/navigation';
 import { ExampleDetail } from '@/components/ExampleDetail';
 import { EXAMPLE_SEO, SEO_SLUGS } from '@/data/examples-seo';
@@ -27,7 +28,7 @@ export async function generateMetadata({
 
   const url = `${SITE_URL}/examples/${slug}`;
   return {
-    title: seo.title,
+    title: seoTitle(seo.title),
     description: seo.description,
     keywords: seo.keywords,
     alternates: { canonical: `/examples/${slug}` },

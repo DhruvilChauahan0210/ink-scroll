@@ -280,6 +280,8 @@ function publicFiles() {
   };
   walk('apps/demo/src');
   if (existsSync(join(ROOT, 'launch'))) walk('launch');
+  // The agent skill is read by coding tools and copied into other projects.
+  if (existsSync(join(ROOT, 'skills'))) walk('skills');
   return out;
 }
 

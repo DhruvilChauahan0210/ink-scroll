@@ -4,7 +4,7 @@ import { DocsPage } from '@/components/DocsPage';
 export const metadata: Metadata = {
   title: 'SVG Scroll Draw — API Docs & Reference',
   description:
-    'Full API reference for the SVG scroll draw library. Animate paths on scroll with React, Vue, Svelte, Nuxt, and Astro. stroke-dashoffset, Group API, TypeScript types.',
+    'API reference for the SVG scroll draw library: animate paths on scroll in React, Vue, Svelte, Nuxt and Astro. Options, Group API, TypeScript types.',
   keywords: [
     'scroll draw',
     'svg scroll draw',

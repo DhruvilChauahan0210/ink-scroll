@@ -1,0 +1,22 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "reveal-cards",
+  "type": "registry:block",
+  "title": "Reveal Cards",
+  "description": "A grid of feature cards that fade up one after another as the grid scrolls into view.",
+  "dependencies": [
+    "svg-scroll-draw"
+  ],
+  "files": [
+    {
+      "path": "registry/blocks/reveal-cards.tsx",
+      "content": "'use client';\n\n/**\n * reveal-cards — a grid of feature cards that fade up one after another as the\n * grid scrolls into view.\n *\n * Built on svg-scroll-draw (MIT): https://svg-scroll-draw.vercel.app/blocks\n * Needs: react, svg-scroll-draw. Styling: Tailwind CSS.\n *\n * Each card reveals once and stays revealed. Reduced motion is handled by the\n * library: every card is shown in its final state, with no animation.\n */\n\nimport { useEffect, useRef } from 'react';\nimport { scrollReveal } from 'svg-scroll-draw/reveal';\n\nexport interface RevealCard {\n  title: string;\n  body: string;\n}\n\nexport interface RevealCardsProps {\n  eyebrow?: string;\n  heading?: string;\n  cards?: RevealCard[];\n  className?: string;\n}\n\nconst DEFAULT_CARDS: RevealCard[] = [\n  { title: 'Draw on scroll', body: 'SVG paths ink themselves in as the reader scrolls, tied to their position.' },\n  { title: 'Reveal anything', body: 'Fade, slide or scale any element into place. One call for a whole grid.' },\n  { title: 'Count up', body: 'Numbers climb from zero to their value as the section comes into view.' },\n  { title: 'Split text', body: 'Headlines arrive word by word or letter by letter, still one string in the DOM.' },\n  { title: 'Pin and scrub', body: 'Hold a panel in place while the story scrolls past it.' },\n  { title: 'Motion-aware', body: 'Visitors who ask for reduced motion get the finished page, not the animation.' },\n];\n\nexport function RevealCards({\n  eyebrow = 'Features',\n  heading = 'Everything moves when it should.',\n  cards = DEFAULT_CARDS,\n  className = '',\n}: RevealCardsProps) {\n  const gridRef = useRef<HTMLUListElement>(null);\n\n  useEffect(() => {\n    const grid = gridRef.current;\n    if (!grid) return;\n\n    const items = Array.from(grid.querySelectorAll<HTMLElement>('[data-reveal-card]'));\n    // `stagger` offsets each card's trigger a little further down the viewport,\n    // so cards in the same row still arrive in reading order.\n    const reveal = scrollReveal(items, {\n      from: { opacity: 0, y: 40, scale: 0.97 },\n      stagger: 0.75,\n      once: true,\n    });\n\n    // StrictMode mounts effects twice in development: destroy() restores the\n    // original inline styles, so the second run starts clean.\n    return () => reveal.destroy();\n    // Re-run only when the number of cards changes, not on every new array.\n  }, [cards.length]);\n\n  return (\n    <section className={`mx-auto w-full max-w-5xl ${className}`}>\n      <p className=\"font-mono text-[11px] uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400\">\n        {eyebrow}\n      </p>\n      <h2 className=\"mt-3 text-3xl font-bold tracking-tight text-neutral-950 sm:text-4xl dark:text-neutral-50\">\n        {heading}\n      </h2>\n\n      <ul ref={gridRef} className=\"mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3\">\n        {cards.map((card, i) => (\n          <li\n            key={card.title}\n            data-reveal-card=\"\"\n            className=\"rounded-2xl border border-neutral-200 bg-white p-6 dark:border-neutral-800 dark:bg-neutral-950\"\n          >\n            <span className=\"inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#ff90e8] font-mono text-xs font-bold text-neutral-950\">\n              {String(i + 1).padStart(2, '0')}\n            </span>\n            <h3 className=\"mt-4 text-lg font-semibold text-neutral-950 dark:text-neutral-50\">{card.title}</h3>\n            <p className=\"mt-2 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400\">{card.body}</p>\n          </li>\n        ))}\n      </ul>\n    </section>\n  );\n}\n\nexport default RevealCards;\n",
+      "type": "registry:component",
+      "target": "components/scroll/reveal-cards.tsx"
+    }
+  ],
+  "categories": [
+    "scroll",
+    "features"
+  ]
+}

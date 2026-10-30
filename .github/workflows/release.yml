@@ -28,7 +28,9 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: read
+      # write: the last step creates the GitHub release. With `read`, 2.10.1
+      # published to npm and then failed here with a 403.
+      contents: write
       # Required for npm provenance — mints the OIDC token npm uses to attest
       # that this build came from this workflow.
       id-token: write

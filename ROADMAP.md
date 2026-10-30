@@ -151,7 +151,7 @@ of examining a single API in a real browser.
 - [x] Push `phase0-production-ready`
 - [x] Cut 2.10.0 — user-visible fixes plus new behaviour, no breaking API change
 - [ ] Watch CI go green remotely — the e2e job has still never run outside this laptop
-- [ ] `npm publish` (needs `NPM_TOKEN` or npm trusted publishing for the provenance-signed workflow)
+- [x] `npm publish` through the provenance-signed workflow — 2.10.1, 2026-10-30
 - [x] 2.10.1 staged: devtools registry fix, npm README and site claims corrected, `check-claims` widened to every public file
 
 ### Reach (Phase 2, Priorities 4–5 — deliberately after the above)
@@ -160,9 +160,13 @@ of examining a single API in a real browser.
 - [ ] **Real-world recipes** instead of option tables: animated logo, sticky feature section, horizontal case-study strip, animated stat row, scrubbed explainer video
 - [ ] Auto-generate the README size table from `npm run size` rather than pasting it (per-entry sizes are now *checked* by `check-claims`, just not written)
 - [x] StackBlitz starters (`examples/vanilla`, `examples/react`) linked from both READMEs
-- [ ] Upgrade Playwright so CI's Firefox is 159+ and the native path is measured there, not taken from release notes
-- [ ] `/vs-gsap` title under 60 chars (position 11, 425 impressions, 1 click)
-- [ ] Copy-paste component registry and an agent-skill repo — the two growth patterns with evidence (react-bits, gsap-skills)
+- [x] Firefox native path measured: `firefox-native` e2e project enables the Gecko pref on Playwright's Firefox 153 and runs both parity suites (15 tests). Fold it back into `firefox` once Playwright bundles Firefox 159+ (1.64.1 ships 157)
+- [x] Types fixed for node16/nodenext ESM (`.d.mts` under `import`) and node10 (`typesVersions`); `attw` reports no problems
+- [ ] Shared ESM chunks between entries. Each framework entry re-bundles the engine: an app importing `svg-scroll-draw` + `/react` ships 8.6 KB gzip vs 6.4 KB for `/react` alone (esbuild, tree-shaken). Needs one tsup config with `splitting`, and `size.mjs` counting imported chunks
+- [x] `/vs-gsap` title under 60 chars, comparison table above the fold; every page title ≤ 60 chars, brand once
+- [x] Copy-paste blocks (`/blocks`, shadcn registry, 5 blocks) and an agent skill (`skills/svg-scroll-draw`)
+- [ ] More blocks (the registry pattern grows by count), and a Vue/Svelte flavour of each
+- [ ] Desktop nav links are hand-typed per page — only the homepage and mobile menu link `/blocks`; move the nav into one component
 - [ ] Document the known jump-scroll asymmetry in the docs, not only in a test comment
 
 ---

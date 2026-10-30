@@ -139,7 +139,7 @@ export const EXAMPLE_SEO: Record<string, ExampleSeo> = {
     slug: 'network',
     title: 'Animated Architecture Diagram — Draw Connections on Scroll',
     description:
-      'Draw the wires between services as the reader scrolls an architecture diagram. Boxes stay readable throughout; only the connections animate. Copy-paste code.',
+      'Draw the wires between services as the reader scrolls an architecture diagram. Boxes stay readable; only the connections animate. Copy-paste code.',
     heading: 'Architecture diagram connections',
     intro:
       'Technical architecture diagrams are the hardest thing to read on a landing page — everything arrives at once and the eye has nowhere to start. Animating only the connections fixes that: the service boxes are visible from the outset, and the wires draw in request order, so the reader traces the path a request actually takes rather than decoding a static graph.',

@@ -1,12 +1,13 @@
 import type { Metadata } from 'next';
+import { seoTitle } from '../../_lib/seo';
 import { RelatedResources } from '@/components/RelatedResources';
 import Link from 'next/link';
 import { MobileMenu } from '@/components/MobileMenu';
 
 export const metadata: Metadata = {
-  title: 'Zero-JS SVG Scroll Animations with Native CSS',
+  title: seoTitle('Zero-JS SVG Scroll Animations with Native CSS'),
   description:
-    'How svg-scroll-draw uses animation-timeline: view() to run SVG path animations entirely on the browser compositor — zero per-frame JavaScript, no scroll listeners, 60fps guaranteed.',
+    'How animation-timeline: view() runs SVG path animations on the compositor with no per-frame JavaScript. Chrome/Edge 115+, Safari 26+, Firefox 159+.',
   keywords: [
     'css animation-timeline view',
     'scroll driven animations css',

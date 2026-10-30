@@ -1,13 +1,14 @@
 import type { Metadata } from 'next';
+import { seoTitle } from '../../_lib/seo';
 import { RelatedResources } from '@/components/RelatedResources';
 import Link from 'next/link';
 import { MobileMenu } from '@/components/MobileMenu';
 import { CopyButton } from '@/components/CopyButton';
 
 export const metadata: Metadata = {
-  title: 'Replace AOS / ScrollReveal.js — svg-scroll-draw scrollReveal',
+  title: seoTitle('Replace AOS and ScrollReveal.js with One Call'),
   description:
-    'Drop-in replacement for AOS and ScrollReveal.js. One function call, 7 named presets, stagger, custom easing — no data attributes, no config files. Part of svg-scroll-draw, ~10 KB total.',
+    'Replace AOS and ScrollReveal.js with one scrollReveal call: 7 presets, stagger, custom easing, no data attributes, no config files. Typed, MIT.',
   keywords: [
     'AOS alternative',
     'ScrollReveal.js alternative',

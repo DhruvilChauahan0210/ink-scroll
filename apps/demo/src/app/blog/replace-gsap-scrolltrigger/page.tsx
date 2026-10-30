@@ -1,13 +1,14 @@
 import type { Metadata } from 'next';
+import { seoTitle } from '../../_lib/seo';
 import { RelatedResources } from '@/components/RelatedResources';
 import Link from 'next/link';
 import { MobileMenu } from '@/components/MobileMenu';
 import { CopyButton } from '@/components/CopyButton';
 
 export const metadata: Metadata = {
-  title: 'Replace GSAP ScrollTrigger with scrollAnimate — svg-scroll-draw v2',
+  title: seoTitle('Replace GSAP ScrollTrigger with scrollAnimate'),
   description:
-    'scrollAnimate replaces gsap.to() + ScrollTrigger for the common scroll animation use cases. Zero GSAP dependency, about 4.4× smaller, same one-call API. Full migration guide with side-by-side code.',
+    'Migrate gsap.to() + ScrollTrigger to scrollAnimate for common scroll animations: about 4.4× smaller, one call, no GSAP. Side-by-side code for each case.',
   keywords: [
     'replace gsap scrolltrigger',
     'gsap alternative',

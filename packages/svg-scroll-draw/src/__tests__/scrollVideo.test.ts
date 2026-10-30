@@ -123,6 +123,52 @@ describe('scrollVideo', () => {
     expect(onProgress).toHaveBeenCalled();
   });
 
+  it('does not re-seek on frames where the scroll position has not moved', () => {
+    // Every currentTime write starts a seek, even to the same value. Writing it on
+    // every frame kept Firefox's decoder seeking on a page at rest.
+    const video = makeVideo();
+    let t = 0;
+    let writes = 0;
+    Object.defineProperty(video, 'currentTime', {
+      get: () => t,
+      set: (v: number) => { t = v; writes++; },
+      configurable: true,
+    });
+    vi.stubGlobal('scrollY', 100);
+    const onProgress = vi.fn();
+    scrollVideo(video, { from: 0, to: 5, onProgress });
+    FakeIO.instances[0].trigger(true);
+    raf.tick();
+    raf.tick();
+    raf.tick();
+    raf.tick();
+    expect(writes).toBe(1);
+    // Progress still reports every frame — only the seek is skipped.
+    expect(onProgress.mock.calls.length).toBeGreaterThanOrEqual(4);
+
+    vi.stubGlobal('scrollY', 400);
+    raf.tick();
+    expect(writes).toBe(2);
+  });
+
+  it('replay() and seek() always write currentTime, even to the current value', () => {
+    const video = makeVideo();
+    let writes = 0;
+    let t = 0;
+    Object.defineProperty(video, 'currentTime', {
+      get: () => t,
+      set: (v: number) => { t = v; writes++; },
+      configurable: true,
+    });
+    const inst = scrollVideo(video, { from: 0, to: 5 });
+    inst.seek(0.5);
+    inst.seek(0.5);
+    expect(writes).toBe(2);
+    inst.replay();
+    inst.replay();
+    expect(writes).toBe(4);
+  });
+
   it('calls onReady when metadata loads', () => {
     const onReady = vi.fn();
     const video = makeVideo();

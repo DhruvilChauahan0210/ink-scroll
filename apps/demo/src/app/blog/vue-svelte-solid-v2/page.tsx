@@ -1,13 +1,14 @@
 import type { Metadata } from 'next';
+import { seoTitle } from '../../_lib/seo';
 import { RelatedResources } from '@/components/RelatedResources';
 import Link from 'next/link';
 import { MobileMenu } from '@/components/MobileMenu';
 import { CopyButton } from '@/components/CopyButton';
 
 export const metadata: Metadata = {
-  title: 'scrollAnimate in Vue 3, Svelte, and Solid.js — v2 framework guide',
+  title: seoTitle('Scroll Animation in Vue 3, Svelte and Solid.js'),
   description:
-    'Full guide to using svg-scroll-draw v2 APIs (scrollAnimate, scrollText, scrollCounter, scrollVideo) in Vue 3, Svelte, and Solid.js. Composables, actions, hooks, and component wrappers with code examples.',
+    'Use scrollAnimate, scrollText, scrollCounter and scrollVideo in Vue 3, Svelte and Solid.js: composables, actions, hooks and component wrappers, with code.',
   keywords: [
     'vue scroll animation',
     'vue 3 scroll animate',

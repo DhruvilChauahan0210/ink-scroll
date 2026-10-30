@@ -2,11 +2,35 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { MobileMenu } from '@/components/MobileMenu';
 import { CopyButton } from '@/components/CopyButton';
+import { COMPETITORS, SELF, ratioVsSelf } from '@/data/competitors';
+import { seoTitle } from '../_lib/seo';
+
+const TITLE = 'Next.js Scroll Animation for the App Router, SSR-Safe';
+const DESCRIPTION =
+  "Scroll animations for Next.js: one 'use client' component, SSR-safe, no hydration errors. Reveal, pin, text split, SVG draw. 10.2 KB gzip, MIT, TypeScript.";
+
+/** Shown in the hero so the copy-paste answer is above the fold. */
+const HERO_SNIPPET = `// components/FadeUp.tsx
+'use client';
+import { ScrollAnimate } from 'svg-scroll-draw/react';
+
+export function FadeUp({ children }: { children: React.ReactNode }) {
+  return (
+    <ScrollAnimate
+      props={{ opacity: [0, 1], transform: ['translateY(32px)', 'translateY(0)'] }}
+      once
+    >
+      {children}
+    </ScrollAnimate>
+  );
+}
+
+// app/page.tsx stays a Server Component
+<FadeUp><h2>Fades up on scroll</h2></FadeUp>`;
 
 export const metadata: Metadata = {
-  title: 'Next.js Scroll Animations — svg-scroll-draw',
-  description:
-    'Scroll animations for Next.js App Router. SSR-safe, TypeScript, use client pattern, dynamic imports, ~10 KB. Replaces GSAP + Framer Motion for scroll-driven effects.',
+  title: seoTitle(TITLE),
+  description: DESCRIPTION,
   keywords: [
     'next.js scroll animation',
     'nextjs scroll animation library',
@@ -21,10 +45,11 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: '/nextjs-scroll-animation' },
   openGraph: {
-    title: 'Next.js Scroll Animations — svg-scroll-draw',
-    description: 'SSR-safe, App Router ready, ~10 KB. The scroll animation library built for Next.js.',
+    title: TITLE,
+    description: DESCRIPTION,
     url: 'https://svg-scroll-draw.vercel.app/nextjs-scroll-animation',
   },
+  twitter: { card: 'summary_large_image', title: TITLE, description: DESCRIPTION },
 };
 
 function Nav() {
@@ -69,7 +94,7 @@ export default function NextjsScrollAnimationPage() {
     <div className="bg-light-linen text-pitch-black min-h-screen">
       <Nav />
 
-      <header className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-14 sm:py-20">
+      <header className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-10 sm:py-14">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center gap-3 mb-5">
             <span className="text-[10px] font-mono font-semibold px-2.5 py-1 rounded-full bg-pitch-black text-light-linen">Next.js</span>
@@ -89,6 +114,9 @@ export default function NextjsScrollAnimationPage() {
               <span className="opacity-50">$</span><span>npm i svg-scroll-draw</span>
             </div>
             <Link href="/react-scroll-animation" className="px-5 py-2.5 rounded-full border border-pitch-black text-sm font-medium hover:bg-pitch-black hover:text-light-linen transition-colors">React guide →</Link>
+          </div>
+          <div className="max-w-2xl mt-6">
+            <CodeBlock file="components/FadeUp.tsx">{HERO_SNIPPET}</CodeBlock>
           </div>
         </div>
       </header>
@@ -221,9 +249,9 @@ export function AnimatedPage({ children }: { children: React.ReactNode }) {
           <h2 className="font-display font-extrabold text-3xl sm:text-4xl tracking-[-0.03em] mb-10">vs common alternatives.</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
-              { name: 'GSAP + ScrollTrigger', size: '~50 KB', ssr: '✗ needs guards', typed: '~', note: 'Free, mature, but 5× the bytes.' },
-              { name: 'Framer Motion', size: '34.3 KB', ssr: '✓', typed: '✓', note: 'React-only. Draws SVG via pathLength; no pin/snap.' },
-              { name: 'svg-scroll-draw', size: '~10 KB', ssr: '✓', typed: '✓', note: 'MIT. Everything. Works everywhere.', highlight: true },
+              { name: 'GSAP + ScrollTrigger', size: `${COMPETITORS.gsapScroll.gzipKb} KB`, ssr: '✓ client-side setup', typed: '✓', note: `Free since 2025, mature, and does far more — at ${ratioVsSelf('gsapScroll')}× the bytes.` },
+              { name: 'Framer Motion', size: `${COMPETITORS.framerMotion.gzipKb} KB`, ssr: '✓', typed: '✓', note: 'React-only. Draws SVG via pathLength; no pin/snap.' },
+              { name: 'svg-scroll-draw', size: `${SELF.gzipKb} KB`, ssr: '✓', typed: '✓', note: 'MIT. Works in React, Vue, Svelte and vanilla JS.', highlight: true },
             ].map(({ name, size, ssr, typed, note, highlight }) => (
               <div key={name} className={`p-5 rounded-xl border ${highlight ? 'border-2 border-creator-pink bg-creator-pink/5' : 'border-subtle-ash bg-white'}`}>
                 <p className="font-display font-extrabold text-base mb-3">{name}</p>

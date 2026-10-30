@@ -11,9 +11,10 @@ const NAV_LINKS = [
   { num: '01', href: '/',           label: 'Home' },
   { num: '02', href: '/docs',       label: 'Docs' },
   { num: '03', href: '/examples',   label: 'Examples' },
-  { num: '04', href: '/blog',       label: 'Blog' },
-  { num: '05', href: '/playground', label: 'Playground' },
-  { num: '06', href: '/changelog',  label: 'Changelog' },
+  { num: '04', href: '/blocks',     label: 'Blocks' },
+  { num: '05', href: '/blog',       label: 'Blog' },
+  { num: '06', href: '/playground', label: 'Playground' },
+  { num: '07', href: '/changelog',  label: 'Changelog' },
 ];
 
 export function MobileMenu() {

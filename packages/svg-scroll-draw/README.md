@@ -13,6 +13,8 @@
 
 **Try it in your browser, no install:** [Vanilla JS on StackBlitz](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/vanilla) · [React on StackBlitz](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/react)
 
+**Using an AI coding agent?** Give it the [svg-scroll-draw skill](https://github.com/DhruvilChauahan0210/ink-scroll/blob/main/skills/svg-scroll-draw/SKILL.md) or point it at [llms.txt](https://svg-scroll-draw.vercel.app/llms.txt).
+
 ![svg-scroll-draw demo: SVG paths drawing as the page scrolls](https://raw.githubusercontent.com/DhruvilChauahan0210/ink-scroll/main/demo.gif)
 
 ---

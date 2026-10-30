@@ -5,12 +5,12 @@ import { MobileMenu } from '@/components/MobileMenu';
 import { CopyButton } from '@/components/CopyButton';
 
 export const metadata: Metadata = {
-  title: 'The Complete Guide to Scroll Animations in 2025 — svg-scroll-draw',
+  title: 'Scroll Animations: The Complete 2026 Guide',
   description:
-    'Every scroll animation pattern explained: fade reveal, parallax, pin/sticky, section snap, text split, video scrub, horizontal scroll, CSS variables. With code examples and library recommendations.',
+    'Every scroll animation pattern with copy-paste code: fade reveal, parallax, pin, snap, text split, video scrub, horizontal scroll and native CSS timelines.',
   keywords: [
     'scroll animation guide',
-    'scroll animation javascript 2025',
+    'scroll animation javascript 2026',
     'web scroll animation tutorial',
     'scroll driven animation',
     'intersection observer animation',
@@ -20,26 +20,26 @@ export const metadata: Metadata = {
     'sticky scroll section',
     'scroll animation react',
   ],
-  alternates: { canonical: 'https://svg-scroll-draw.vercel.app/blog/complete-guide-scroll-animations-2025' },
+  alternates: { canonical: 'https://svg-scroll-draw.vercel.app/blog/complete-guide-scroll-animations-2026' },
   openGraph: {
-    title: 'The Complete Guide to Scroll Animations in 2025',
+    title: 'The Complete Guide to Scroll Animations in 2026',
     description: 'Every pattern, every technique, with code. Fade, parallax, pin, snap, text, video, horizontal — all in one place.',
-    url: 'https://svg-scroll-draw.vercel.app/blog/complete-guide-scroll-animations-2025',
+    url: 'https://svg-scroll-draw.vercel.app/blog/complete-guide-scroll-animations-2026',
   },
 };
 
 const articleJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'TechArticle',
-  headline: 'The Complete Guide to Scroll Animations in 2025',
+  headline: 'The Complete Guide to Scroll Animations in 2026',
   description: 'Every scroll animation pattern explained: fade reveal, parallax, pin/sticky, section snap, text split, video scrub, horizontal scroll, CSS variables.',
-  url: 'https://svg-scroll-draw.vercel.app/blog/complete-guide-scroll-animations-2025',
+  url: 'https://svg-scroll-draw.vercel.app/blog/complete-guide-scroll-animations-2026',
   datePublished: '2026-06-06',
-  dateModified: '2026-06-06',
+  dateModified: '2026-10-30',
   author: { '@type': 'Person', name: 'Dhruvil Chauhan', url: 'https://github.com/DhruvilChauahan0210' },
   publisher: { '@type': 'Organization', name: 'svg-scroll-draw', url: 'https://svg-scroll-draw.vercel.app' },
   image: 'https://svg-scroll-draw.vercel.app/opengraph-image',
-  mainEntityOfPage: { '@type': 'WebPage', '@id': 'https://svg-scroll-draw.vercel.app/blog/complete-guide-scroll-animations-2025' },
+  mainEntityOfPage: { '@type': 'WebPage', '@id': 'https://svg-scroll-draw.vercel.app/blog/complete-guide-scroll-animations-2026' },
 };
 
 function CodeBlock({ file, children }: { file: string; children: string }) {
@@ -86,10 +86,10 @@ export default function CompletGuidePage() {
         <div className="max-w-3xl mx-auto">
           <div className="flex items-center gap-3 mb-5">
             <span className="inline-block text-[10px] font-mono font-semibold px-2.5 py-1 rounded-full bg-pitch-black text-light-linen">Guide</span>
-            <span className="text-[11px] font-mono text-graphite-border">June 2026 · 15 min read · Cornerstone</span>
+            <span className="text-[11px] font-mono text-graphite-border">Updated October 2026 · 15 min read · Cornerstone</span>
           </div>
           <h1 className="font-display font-extrabold text-[clamp(28px,6vw,60px)] leading-[0.92] tracking-[-0.04em] mb-5">
-            The complete guide to scroll animations in 2025.
+            The complete guide to scroll animations in 2026.
           </h1>
           <p className="text-base sm:text-lg text-graphite-border leading-relaxed max-w-2xl">
             Every scroll animation pattern — fade reveal, parallax, sticky pin, section snap, text split,
@@ -261,7 +261,7 @@ scrollText('#subtitle', {
 scrollCounter('#users',      { to: 50000, format: n => Math.round(n).toLocaleString() + '+' });
 scrollCounter('#revenue',    { to: 1250000, format: n => '$' + Math.round(n).toLocaleString() });
 scrollCounter('#nps',        { to: 94.7, decimals: 1, format: n => n.toFixed(1) + '%' });
-scrollCounter('#bundle',     { to: 9, format: n => '~' + Math.round(n) + ' KB' });`}</CodeBlock>
+scrollCounter('#bundle',     { to: 10, format: n => '~' + Math.round(n) + ' KB' });`}</CodeBlock>
           </Section>
 
           <Section num="08" title="Video scrubbing">
@@ -328,7 +328,7 @@ scrollAnimate('#section', {
 
           <Section num="12" title="Native CSS scroll-driven animations">
             <p className="text-graphite-border leading-relaxed mb-4">
-              When <code className="font-mono text-sm bg-marketplace-gray px-1 rounded">animation-timeline: view()</code> is supported (Chrome 115+, Edge 115+), svg-scroll-draw automatically uses it — zero JS scroll listeners, zero rAF, pure compositor animation. Falls back silently in older browsers.
+              When <code className="font-mono text-sm bg-marketplace-gray px-1 rounded">animation-timeline: view()</code> is supported (Chrome and Edge 115+, Safari 26+, Firefox 159+), svg-scroll-draw automatically uses it — zero JS scroll listeners, zero rAF, pure compositor animation. Falls back silently in older browsers.
             </p>
             <CodeBlock file="app.js">{`import { scrollAnimate } from 'svg-scroll-draw';
 
@@ -362,7 +362,7 @@ scrollAnimate('#section', {
         </div>
       </article>
 
-      <RelatedResources post="complete-guide-scroll-animations-2025" />
+      <RelatedResources post="complete-guide-scroll-animations-2026" />
       <footer className="px-6 md:px-12 py-6 border-t border-subtle-ash text-center text-[11px] font-mono text-graphite-border">
         svg-scroll-draw · MIT · ~10 KB ·{' '}<a href="https://github.com/DhruvilChauahan0210/ink-scroll" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-pitch-black transition-colors">GitHub</a>
       </footer>

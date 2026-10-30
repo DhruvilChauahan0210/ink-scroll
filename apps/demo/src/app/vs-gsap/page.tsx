@@ -3,11 +3,19 @@ import Link from 'next/link';
 import { MobileMenu } from '@/components/MobileMenu';
 import { CopyButton } from '@/components/CopyButton';
 import { COMPETITORS, SELF, MEASURED_ON, provenance, ratioVsSelf } from '@/data/competitors';
+import { seoTitle } from '../_lib/seo';
+
+/** "4.66" → "4.7": one decimal is all the precision a headline ratio deserves. */
+const RATIO_STACK = (Math.round(ratioVsSelf('gsapStack') * 10) / 10).toFixed(1);
+const RATIO_SCROLL = (Math.round(ratioVsSelf('gsapScroll') * 10) / 10).toFixed(1);
+const GSAP_FULL_SUITE_KB = (COMPETITORS.gsapStack.gzipKb + COMPETITORS.gsapSplitText.gzipKb).toFixed(1);
+
+const TITLE = `GSAP ScrollTrigger Alternative: ${Math.round(SELF.gzipKb)} KB, MIT, Native CSS`;
+const DESCRIPTION = `Measured: ${SELF.gzipKb} KB vs ${COMPETITORS.gsapStack.gzipKb} KB for GSAP + ScrollTrigger + DrawSVG. MIT, native CSS fast path. GSAP is free and does more — when to pick each.`;
 
 export const metadata: Metadata = {
-  title: 'GSAP ScrollTrigger Alternative — 10 KB, Zero Deps, Native CSS',
-  description:
-    'svg-scroll-draw vs GSAP + ScrollTrigger: 4.7× smaller (10.2 KB vs 47.5 KB measured), zero dependencies, and a native CSS fast path GSAP has no equivalent for. Feature matrix, side-by-side code, migration guide.',
+  title: seoTitle(TITLE),
+  description: DESCRIPTION,
   keywords: [
     'gsap alternative',
     'gsap scrolltrigger alternative',
@@ -22,16 +30,49 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: 'https://svg-scroll-draw.vercel.app/vs-gsap' },
   openGraph: {
-    title: 'GSAP ScrollTrigger Alternative — 10 KB, Zero Deps',
-    description: '4.7× smaller, measured. Zero dependencies. Native CSS fast path.',
+    title: TITLE,
+    description: DESCRIPTION,
     url: 'https://svg-scroll-draw.vercel.app/vs-gsap',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'GSAP ScrollTrigger Alternative — 10 KB, Zero Deps',
-    description: '4.7× smaller bundle, measured. Native CSS fast path.',
+    title: TITLE,
+    description: DESCRIPTION,
   },
 };
+
+/**
+ * The at-a-glance table that sits in the hero, above the fold. Every size and
+ * license string comes from competitors.ts; the rows a reader would weigh
+ * against us (GSAP's extra features) are in it on purpose.
+ */
+const AT_A_GLANCE: { label: string; us: string; gsap: string; usWins?: boolean; gsapWins?: boolean }[] = [
+  {
+    label: 'Size, min + gzip',
+    us: `${SELF.gzipKb} KB, every API`,
+    gsap: `${COMPETITORS.gsapStack.gzipKb} KB with DrawSVG · ${COMPETITORS.gsapScroll.gzipKb} KB core + ScrollTrigger`,
+    usWins: true,
+  },
+  { label: 'License', us: SELF.license, gsap: COMPETITORS.gsapStack.license },
+  {
+    label: 'Native CSS scroll-timeline',
+    us: 'Yes, when eligible — Chrome/Edge 115+, Safari 26+, Firefox 159+',
+    gsap: 'No — runs in JavaScript',
+    usWins: true,
+  },
+  { label: 'Runtime dependencies', us: '0', gsap: '0' },
+  {
+    label: 'SSR (Next.js, Nuxt)',
+    us: 'Safe to import; no-op on the server',
+    gsap: 'Safe to import; create triggers client-side',
+  },
+  {
+    label: 'Timelines, MorphSVG, Flip',
+    us: 'No',
+    gsap: 'Yes — all free since 2025',
+    gsapWins: true,
+  },
+];
 
 const pageJsonLd = {
   '@context': 'https://schema.org',
@@ -162,25 +203,46 @@ export default function VsGsapPage() {
     <div className="bg-light-linen text-pitch-black min-h-screen">
       <Nav />
 
-      {/* ── Hero ─────────────────────────────────────────────────────────── */}
-      <header className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-14 sm:py-20">
+      {/* ── Hero + at-a-glance table (above the fold) ────────────────────── */}
+      <header className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-10 sm:py-14">
         <div className="max-w-4xl mx-auto">
-          <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-4 font-mono font-medium">
-            Comparison
+          <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-3 font-mono font-medium">
+            Comparison · svg-scroll-draw vs GSAP
           </p>
-          <h1 className="font-display font-extrabold text-[clamp(36px,7vw,80px)] leading-[0.9] tracking-[-0.04em] mb-6">
-            svg-scroll-draw<br />
-            <span className="text-graphite-border">vs GSAP.</span>
+          <h1 className="font-display font-extrabold text-[clamp(30px,5.5vw,56px)] leading-[0.92] tracking-[-0.04em] mb-4">
+            GSAP ScrollTrigger alternative.{' '}
+            <span className="text-graphite-border">{RATIO_STACK}× smaller, MIT.</span>
           </h1>
-          <p className="text-base sm:text-lg text-graphite-border leading-relaxed max-w-2xl mb-8">
-            GSAP is great, and since 2025 it&#39;s free — every plugin, no subscription. So this page isn&#39;t about
-            price. It&#39;s that for scroll work you ship 47.5 KB and an API surface you&#39;ll use 20% of.
-            svg-scroll-draw does the same job at{' '}
-            <strong className="text-pitch-black">{ratioVsSelf('gsapStack')}× smaller</strong>, with{' '}
-            <strong className="text-pitch-black">zero dependencies</strong> and a{' '}
-            <strong className="text-pitch-black">native CSS fast path</strong> that runs your draw on the
-            compositor with no per-frame JavaScript at all.
+          <p className="text-base sm:text-lg text-graphite-border leading-relaxed max-w-2xl mb-6">
+            GSAP is free since 2025 — every plugin — and it does more than we do. This page isn&#39;t about price.
+            It&#39;s that for scroll work alone you ship {COMPETITORS.gsapStack.gzipKb} KB and an API surface you&#39;ll
+            use a fraction of.
           </p>
+
+          <div className="rounded-2xl border border-pitch-black overflow-hidden bg-white mb-3">
+            <table className="w-full text-left text-[12px] sm:text-[13px]">
+              <thead className="bg-[#111] text-light-linen">
+                <tr>
+                  <th scope="col" className="px-3 sm:px-4 py-2.5 font-mono font-semibold text-[10px] sm:text-[11px] uppercase tracking-[0.1em]"><span className="sr-only">Measure</span></th>
+                  <th scope="col" className="px-3 sm:px-4 py-2.5 font-mono font-semibold text-[10px] sm:text-[11px] uppercase tracking-[0.1em]">svg-scroll-draw {SELF.version}</th>
+                  <th scope="col" className="px-3 sm:px-4 py-2.5 font-mono font-semibold text-[10px] sm:text-[11px] uppercase tracking-[0.1em]">GSAP {COMPETITORS.gsapStack.version}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {AT_A_GLANCE.map(({ label, us, gsap, usWins, gsapWins }) => (
+                  <tr key={label} className="border-t border-subtle-ash align-top">
+                    <th scope="row" className="px-3 sm:px-4 py-2 font-medium text-graphite-border w-[28%]">{label}</th>
+                    <td className={`px-3 sm:px-4 py-2 font-mono ${usWins ? 'font-bold text-pitch-black' : ''}`}>{us}</td>
+                    <td className={`px-3 sm:px-4 py-2 font-mono ${gsapWins ? 'font-bold text-pitch-black' : ''}`}>{gsap}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="text-[11px] text-graphite-border font-mono mb-6">
+            Sizes measured {MEASURED_ON}, gzip -9. {RATIO_STACK}× vs GSAP + ScrollTrigger + DrawSVG; {RATIO_SCROLL}× vs core + ScrollTrigger alone.
+          </p>
+
           <div className="flex flex-wrap gap-3">
             <Link href="/" className="px-5 py-2.5 rounded-full bg-pitch-black text-light-linen text-sm font-semibold hover:opacity-90 transition-opacity">
               Get started free →
@@ -188,6 +250,9 @@ export default function VsGsapPage() {
             <Link href="/blog/replace-gsap-scrolltrigger" className="px-5 py-2.5 rounded-full border border-pitch-black text-sm font-medium hover:bg-pitch-black hover:text-light-linen transition-colors">
               Migration guide →
             </Link>
+            <a href="#when-gsap" className="px-5 py-2.5 rounded-full border border-subtle-ash text-sm font-medium hover:border-pitch-black transition-colors text-graphite-border">
+              When GSAP is the better call ↓
+            </a>
           </div>
         </div>
       </header>
@@ -202,9 +267,9 @@ export default function VsGsapPage() {
             {[
               { label: 'svg-scroll-draw', size: `${SELF.gzipKb} KB`, pct: 20, color: '#ff90e8', badge: 'yours' },
               { label: 'GSAP core',       size: `${COMPETITORS.gsapCore.gzipKb} KB`, pct: 54, color: '#e0e0e0', badge: null },
-              { label: 'GSAP + ScrollTrigger', size: '45.3 KB', pct: 89, color: '#d0d0d0', badge: 'common setup' },
+              { label: 'GSAP + ScrollTrigger', size: `${COMPETITORS.gsapScroll.gzipKb} KB`, pct: 89, color: '#d0d0d0', badge: 'common setup' },
               { label: '+ DrawSVGPlugin', size: `${COMPETITORS.gsapStack.gzipKb} KB`, pct: 93, color: '#c4c4c4', badge: 'same job as us' },
-              { label: '+ SplitText',     size: '51.1 KB', pct: 100, color: '#bbb', badge: 'full suite' },
+              { label: '+ SplitText',     size: `${GSAP_FULL_SUITE_KB} KB`, pct: 100, color: '#bbb', badge: 'full suite' },
             ].map(({ label, size, pct, color, badge }) => (
               <div key={label} className="flex items-center gap-4">
                 <div className="w-52 shrink-0 text-right">
@@ -523,7 +588,7 @@ scrollText('#h1', {
       </section>
 
       {/* ── Why GSAP wins (honest) ────────────────────────────────────────── */}
-      <section className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-14 sm:py-16">
+      <section id="when-gsap" className="scroll-mt-16 border-b border-pitch-black px-4 sm:px-6 md:px-12 py-14 sm:py-16">
         <div className="max-w-4xl mx-auto">
           <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-2 font-mono font-medium">05</p>
           <h2 className="font-display font-extrabold text-3xl sm:text-4xl tracking-[-0.03em] mb-6">When GSAP is still the right call.</h2>

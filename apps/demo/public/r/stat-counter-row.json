@@ -1,0 +1,22 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "stat-counter-row",
+  "type": "registry:block",
+  "title": "Stat Counter Row",
+  "description": "A row of three or four stats that count up from zero as the row scrolls into view.",
+  "dependencies": [
+    "svg-scroll-draw"
+  ],
+  "files": [
+    {
+      "path": "registry/blocks/stat-counter-row.tsx",
+      "content": "'use client';\n\n/**\n * stat-counter-row — a row of numbers that count up from zero as the row\n * scrolls into view.\n *\n * Built on svg-scroll-draw (MIT): https://svg-scroll-draw.vercel.app/blocks\n * Needs: react, svg-scroll-draw. Styling: Tailwind CSS.\n *\n * The default stats are placeholders: replace them with your own. Screen\n * readers get the final value once, not every intermediate number, and the\n * final value reserves its width so the layout does not jump while counting.\n * Reduced motion is handled by the library: the final value is shown at once.\n */\n\nimport { ScrollCounter } from 'svg-scroll-draw/react';\n\nexport interface Stat {\n  value: number;\n  label: string;\n  prefix?: string;\n  suffix?: string;\n  /** Digits after the decimal point. Default 0. */\n  decimals?: number;\n}\n\nexport interface StatCounterRowProps {\n  eyebrow?: string;\n  stats?: Stat[];\n  className?: string;\n}\n\nconst DEFAULT_STATS: Stat[] = [\n  { value: 12480, label: 'Orders shipped', suffix: '+' },\n  { value: 38, label: 'Cities served' },\n  { value: 99.2, label: 'On-time rate', suffix: '%', decimals: 1 },\n  { value: 4.8, label: 'Average review', suffix: '/5', decimals: 1 },\n];\n\nfunction formatNumber(n: number, decimals: number): string {\n  return n.toLocaleString('en-US', {\n    minimumFractionDigits: decimals,\n    maximumFractionDigits: decimals,\n  });\n}\n\nexport function StatCounterRow({\n  eyebrow = 'Sample numbers. Swap in your own.',\n  stats = DEFAULT_STATS,\n  className = '',\n}: StatCounterRowProps) {\n  return (\n    <section className={`mx-auto w-full max-w-5xl ${className}`}>\n      <p className=\"font-mono text-[11px] uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400\">\n        {eyebrow}\n      </p>\n\n      <dl className=\"mt-6 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-200 lg:grid-cols-4 dark:border-neutral-800 dark:bg-neutral-800\">\n        {stats.map((stat) => {\n          const decimals = stat.decimals ?? 0;\n          const final = `${stat.prefix ?? ''}${formatNumber(stat.value, decimals)}${stat.suffix ?? ''}`;\n\n          return (\n            <div key={stat.label} className=\"flex flex-col-reverse gap-2 bg-white p-6 sm:p-8 dark:bg-neutral-950\">\n              <dt className=\"text-sm text-neutral-600 dark:text-neutral-400\">{stat.label}</dt>\n              <dd className=\"text-4xl font-bold tracking-tight text-neutral-950 tabular-nums sm:text-5xl dark:text-neutral-50\">\n                <span className=\"sr-only\">{final}</span>\n                <span aria-hidden=\"true\" className=\"inline-flex items-baseline\">\n                  {stat.prefix}\n                  {/* Both cells share one grid area: the invisible final value\n                      holds the width, the counter paints over it. */}\n                  <span className=\"inline-grid\">\n                    <span className=\"invisible col-start-1 row-start-1\">{formatNumber(stat.value, decimals)}</span>\n                    <ScrollCounter\n                      from={0}\n                      to={stat.value}\n                      format={(n) => formatNumber(n, decimals)}\n                      easing=\"ease-out\"\n                      once\n                      trigger={{ start: 'top 90%', end: 'top 45%' }}\n                      className=\"col-start-1 row-start-1 text-left\"\n                    />\n                  </span>\n                  {stat.suffix && <span className=\"ml-0.5 text-[0.6em] text-neutral-500 dark:text-neutral-400\">{stat.suffix}</span>}\n                </span>\n              </dd>\n            </div>\n          );\n        })}\n      </dl>\n    </section>\n  );\n}\n\nexport default StatCounterRow;\n",
+      "type": "registry:component",
+      "target": "components/scroll/stat-counter-row.tsx"
+    }
+  ],
+  "categories": [
+    "scroll",
+    "stats"
+  ]
+}
