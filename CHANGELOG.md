@@ -4,7 +4,7 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ---
 
-## [Unreleased]
+## [2.12.0] — 2026-10-31
 
 ### Added
 

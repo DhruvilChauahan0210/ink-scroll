@@ -1,6 +1,6 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **2.11.0** — published on npm with provenance through `release.yml` (2026-10-30)
+> Current version: **2.12.0** — published on npm with provenance through `release.yml` (2026-10-31)
 > Tests: **593 unit** across 29 suites · **186 browser tests** per engine (558 runs
 > across Chromium/Firefox/WebKit) · **56 mutations**, each caught by the one test
 > named for it · **91.3% line coverage** (gate 90/90/82/82)
@@ -127,11 +127,11 @@ at all.
 
 ## Remaining / Next
 
-### Unreleased — ScrollReveal drop-in (branch `feat/scrollreveal-dropin`, 2026-10-30)
+### 2.12.0 — ScrollReveal drop-in (branch `feat/scrollreveal-dropin`, 2026-10-31)
 - [x] `svg-scroll-draw/scrollreveal` + `dist/cdn/scrollreveal.global.js` (4.5 KB gzip, budgets 4.9)
 - [x] Byte-for-byte inline-style parity with ScrollReveal 4.0.9 in three engines; 17 unit tests; SSR import
 - [x] Docs: both READMEs, `/vs-aos` ScrollReveal section, llms.txt, agent skill
-- [ ] Release as 2.12.0 (new entry point)
+- [x] Released as 2.12.0
 
 ### 2.11.0 — AOS drop-in (branch `feat/aos-dropin`, 2026-10-30)
 - [x] `svg-scroll-draw/aos` + `dist/cdn/aos.global.js` (3.0 / 3.1 KB gzip, budgets 3.2 / 3.4)

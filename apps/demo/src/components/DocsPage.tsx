@@ -57,7 +57,7 @@ const NAV_GROUPS = [
     items: [{ id: 'use-scroll-draw-progress', label: 'useScrollDrawProgress' }],
   },
   {
-    label: 'v2.11.0',
+    label: 'v2.12.0',
     items: [
       { id: 'instance-refresh',    label: 'refresh()' },
       { id: 'timeline-reduced-motion', label: 'Timeline & reduced motion' },
