@@ -43,6 +43,12 @@ All notable changes to `svg-scroll-draw` are documented here.
   which is what failed the CI paint test. It now seeks only when the target time
   changes; `onProgress` and `--scroll-draw-progress` still update every frame, and
   `seek()` / `replay()` always seek.
+- **`scrollPin` missed the pinned element growing.** Its ResizeObserver watched
+  the wrapper and the document, but `measure()` fixes the wrapper's height, so a
+  taller element changed neither and the pin zone kept its old height. The
+  element itself is now observed. The e2e test only passed because an observer
+  always fires once after `observe()`; it now waits that out, and fails against
+  the old build in all three engines.
 - **`<scroll-draw once>` was ignored.** The README's CDN example used it, but the
   element never read the attribute. It now does, and `once="false"` reads as off.
 - The root README showed `useScrollDraw` imported from `svg-scroll-draw/react`,

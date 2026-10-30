@@ -176,6 +176,15 @@ export function scrollPin(
     });
     ro.observe(wrapper);
     ro.observe(document.documentElement);
+    /*
+     * The pinned element itself. `measure()` gives the wrapper an explicit height,
+     * so when the element grows inside it neither the wrapper nor the document
+     * changes size and the two observers above stay silent. The e2e test only
+     * passed because every observer fires once after observe(): a growth that
+     * landed before that first callback got measured by it, one that landed
+     * after (WebKit on a slow CI runner) never did.
+     */
+    ro.observe(htmlEl);
   }
 
   measure();

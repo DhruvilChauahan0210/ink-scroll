@@ -144,6 +144,10 @@ test.describe('scrollPin', () => {
     // Phase 1 added this observer and verified it only in Chromium, and only for
     // a document-level growth. Firefox and WebKit run it here too.
     await openFixture(page, 'pin.html');
+    // Let every observer's initial callback (and its 100 ms debounce) run first.
+    // Growing before then let that initial callback do the measuring, which hid
+    // that the pinned element itself was never observed.
+    await page.waitForTimeout(400);
 
     const immediate = await call<number>(page, 'growOnly', 700);
     expect(immediate, 'observer cannot have fired synchronously').toBe(1200);
