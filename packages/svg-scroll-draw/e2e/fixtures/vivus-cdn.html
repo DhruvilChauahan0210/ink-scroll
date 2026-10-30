@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>svg-scroll-draw/vivus — the drop-in, from the script-tag build</title>
+<meta charset="utf-8">
+<style>
+  html { scroll-behavior: auto; }
+  body { margin: 0; }
+  svg { display: inline-block; vertical-align: top; }
+</style>
+<script src="/dist/cdn/vivus.global.js"></script>
+</head>
+<body>
+<script src="vivus-markup.js"></script>
+<script>window.__plan(Vivus, new URLSearchParams(location.search).get('start') || 'manual'); window.__ready = true;</script>
+</body>
+</html>

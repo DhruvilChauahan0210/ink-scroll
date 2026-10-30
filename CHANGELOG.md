@@ -4,6 +4,37 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ---
 
+## [Unreleased]
+
+### Added
+
+- **`svg-scroll-draw/vivus` — a drop-in replacement for vivus 0.4.** vivus has
+  not shipped since 0.4.6 (April 2021). `new Vivus(element, options, callback)`
+  and every method, option, animation type (delayed, sync, async, nsync,
+  oneByOne, scenario, scenario-sync), start mode, `file` / `<object>` loading,
+  scenario `data-*` attribute and timing function behave as in 0.4.6. Shapes
+  become `<path>`s with the same `d` strings and dashes get the same values,
+  including vivus's quirks (`delayUnit` spreads over every `<path>`, ignored
+  ones too). `dist/cdn/vivus.global.js` defines `window.Vivus`. 3.9 KB gzipped
+  (vivus 0.4.6: 4.1 KB). Under reduced motion `play()` jumps to the exact end
+  frame and still fires its callbacks. Its two console warnings are development-only,
+  through the same `warn()` as the rest of the library.
+- `/vs-vivus` comparison page. Competitor entries can now carry their own
+  `measuredOn` date, so a figure measured later than the shared date says so.
+
+### Tests
+
+- `e2e/vivus.spec.ts` runs vivus 0.4.6 beside the drop-in in Chromium, Firefox
+  and WebKit across nine configurations and requires the SVG markup — every
+  generated path and dash value — to match exactly at eleven points of the
+  animation, plus vivus's frame maths, `play()` both ways with the same
+  callbacks, `inViewport` starts, `destroy()` and the script-tag build. vivus
+  is a devDependency copied into the gitignored fixtures/build. Spreading the
+  delay over drawn paths only fails it on `delayUnit`. 13 unit tests and the
+  SSR import cover the rest.
+
+---
+
 ## [2.12.0] — 2026-10-31
 
 ### Added

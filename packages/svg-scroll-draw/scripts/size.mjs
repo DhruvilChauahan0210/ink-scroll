@@ -41,6 +41,9 @@ const BUDGETS_KB = {
   // The ScrollReveal drop-in (ScrollReveal 4.0.9 itself is 5.6 KB).
   scrollreveal:      4.9,
   'cdn-scrollreveal': 4.9,
+  // The vivus drop-in (vivus 0.4.6 itself is 4.1 KB).
+  vivus:             4.2,
+  'cdn-vivus':       4.2,
   // 4.30 after teaching the default `distance` about `scrollContainer`.
   horizontal:        4.5,
   timeline:          3.5,
@@ -86,6 +89,8 @@ function findEntries() {
   if (existsSync(cdnAos)) entries.set('cdn-aos', cdnAos);
   const cdnSr = join(DIST, 'cdn', 'scrollreveal.global.js');
   if (existsSync(cdnSr)) entries.set('cdn-scrollreveal', cdnSr);
+  const cdnVivus = join(DIST, 'cdn', 'vivus.global.js');
+  if (existsSync(cdnVivus)) entries.set('cdn-vivus', cdnVivus);
 
   return entries;
 }

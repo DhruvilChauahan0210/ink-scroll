@@ -85,8 +85,8 @@ function Tag({ children }: { children: React.ReactNode }) {
 const MARQUEE_ITEMS = [
   '10 KB gzipped',
   'Zero dependencies',
-  '593 tests passing',
-  '186 browser tests',
+  '606 tests passing',
+  '192 browser tests',
   'SSR safe',
   'Native CSS fast path',
   'React · Vue · Svelte · Solid',
@@ -238,7 +238,7 @@ export default function Home() {
             ['10 KB', 'gzipped'],
             ['0', 'dependencies'],
             ['SSR', 'safe'],
-            ['593 tests', 'passing'],
+            ['606 tests', 'passing'],
             ['MIT', 'licensed'],
           ].map(([val, label]) => (
             <div key={val} className="flex items-center gap-1.5 border border-pitch-black bg-light-linen rounded-full px-3 sm:px-4 py-1.5 shadow-[1px_1px_0px_#000]">

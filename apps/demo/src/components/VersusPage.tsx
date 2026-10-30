@@ -119,7 +119,7 @@ export function VersusPage({ slug }: { slug: string }) {
                 })}
             </div>
             <p className="text-[12px] text-graphite-border font-mono">
-              Minified + gzipped at level 9, measured {MEASURED_ON} against {them.name} {them.version} and svg-scroll-draw{' '}
+              Minified + gzipped at level 9, measured {them.measuredOn ?? MEASURED_ON} against {them.name} {them.version} and svg-scroll-draw{' '}
               {SELF.version}. {them.name} is {them.license}.
             </p>
           </div>

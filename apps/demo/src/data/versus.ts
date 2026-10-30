@@ -12,7 +12,7 @@
  * for it — framing it as a competitor would be dishonest. It gets an
  * integration page instead.
  */
-import { COMPETITORS, SELF } from './competitors';
+import { COMPETITORS, SELF, SELF_ENTRIES } from './competitors';
 
 export type VersusRow = {
   feature: string;
@@ -43,6 +43,59 @@ export type Versus = {
 const us = SELF.gzipKb;
 
 export const VERSUS: Versus[] = [
+  {
+    slug: 'vs-vivus',
+    competitorKey: 'vivus',
+    title: 'vivus Alternative: Drop-in Replacement, Same API',
+    description:
+      'Switch from vivus in one import: svg-scroll-draw/vivus runs your new Vivus() code unchanged, matched against vivus 0.4.6, plus scroll-driven drawing.',
+    keywords: [
+      'vivus alternative',
+      'vivus js',
+      'vivus replacement',
+      'vivus.js svg animation',
+      'svg line drawing animation',
+      'animate svg stroke',
+      'svg-scroll-draw vs vivus',
+      'vivus react',
+    ],
+    headline: 'Keep your vivus code.',
+    intro: `vivus draws SVG strokes over time, and does it well — but it has not shipped since 0.4.6 in April 2021. svg-scroll-draw/vivus is a drop-in: import Vivus from 'svg-scroll-draw/vivus' instead of 'vivus', and every new Vivus(…) call, option, animation type, scenario attribute and timing function keeps working. The browser suite runs vivus 0.4.6 beside it and requires the SVG markup — every generated path and dash value — to match exactly at every point of the animation. It is ${SELF_ENTRIES.vivus} KB against ${COMPETITORS.vivus.gzipKb} KB. When you want the stroke tied to scroll position instead of a clock, scrollDraw is in the same package.`,
+    verdict:
+      'Keep vivus if it works and you never touch it. Use the drop-in to consolidate onto one maintained, typed package — and reach for scrollDraw when the draw should follow the scroll.',
+    rows: [
+      { feature: 'new Vivus(el, options, callback)', us: true, them: true, note: 'Same constructor, same validation errors' },
+      { feature: 'Animation types (delayed, sync, oneByOne, scenario, scenario-sync)', us: true, them: true },
+      { feature: 'Shapes converted to paths (rect, circle, line, polyline…)', us: true, them: true, note: 'Same d strings, byte for byte' },
+      { feature: 'play / stop / reset / finish / setFrameProgress', us: true, them: true },
+      { feature: 'Draw tied to scroll position', us: true, them: false, note: 'vivus only starts on viewport entry; scrollDraw scrubs with the scroll' },
+      { feature: 'Native CSS fast path', us: true, them: false, note: 'For scrollDraw' },
+      { feature: 'Respects prefers-reduced-motion', us: true, them: false, note: 'The drop-in jumps to the end and still fires callbacks' },
+      { feature: 'TypeScript types shipped', us: true, them: false },
+      { feature: 'ES module + script-tag build', us: true, them: true },
+      { feature: 'Bundle size (gzipped)', us: `${SELF_ENTRIES.vivus} KB`, them: `${COMPETITORS.vivus.gzipKb} KB`, note: 'The vivus entry point on its own' },
+    ],
+    theirWins: [
+      { title: 'It already works', desc: 'vivus is MIT and stable. If your animation is done and you never revisit it, there is no urgent reason to change.' },
+      { title: 'Its demo site and docs', desc: 'vivus has a well-known demo page and years of tutorials and answers written against it — all of which apply to the drop-in too.' },
+    ],
+    faq: [
+      {
+        q: 'Do I need to change my vivus code?',
+        a: "No. Change the import (or the script tag to dist/cdn/vivus.global.js, which defines window.Vivus) and keep the rest. Options, types, start modes, data-start / data-duration / data-delay / data-async / data-ignore attributes and Vivus.EASE and friends are all supported.",
+      },
+      {
+        q: 'Is vivus still maintained?',
+        a: `Its last release was ${COMPETITORS.vivus.version}, published ${COMPETITORS.vivus.lastPublish}. It is MIT-licensed and still works.`,
+      },
+      {
+        q: 'Can the line draw as you scroll instead of on a timer?',
+        a: 'Yes — that is what scrollDraw does, in the same package: the stroke follows the scroll position, reverses when you scroll back, and runs on a native CSS scroll timeline where the browser supports it.',
+      },
+    ],
+    sizeNote:
+      'Measured from vivus 0.4.6 dist/vivus.min.js and the built svg-scroll-draw/vivus entry, gzip level 9.',
+  },
   {
     slug: 'vs-scrollmagic',
     competitorKey: 'scrollmagic',

@@ -27,6 +27,7 @@ Docs: https://svg-scroll-draw.vercel.app/docs · LLM summary: https://svg-scroll
 | Parallax | `svg-scroll-draw` | `scrollParallax(el, { speed })` |
 | Count a number up | `svg-scroll-draw` | `scrollCounter(el, { to })` |
 | Fade/slide elements in (AOS-style) | `svg-scroll-draw/reveal` | `scrollReveal('.card', { preset })` |
+| Project already uses vivus (`new Vivus(...)`) | `svg-scroll-draw/vivus` (2.13.0+) | `import Vivus from 'svg-scroll-draw/vivus'` — same API and output; for a draw that follows scroll use `scrollDraw` |
 | Project already uses ScrollReveal | `svg-scroll-draw/scrollreveal` (2.12.0+) | `import ScrollReveal from 'svg-scroll-draw/scrollreveal'` — same API, MIT; remove the `scrollreveal` package |
 | Project already uses AOS (`data-aos` markup) | `svg-scroll-draw/aos` (2.11.0+) | `import AOS from 'svg-scroll-draw/aos'; AOS.init()` — keep the markup, remove `aos.css` and the `aos` package |
 | Pin while scrolling past | `svg-scroll-draw/pin` | `scrollPin(el, { pinDistance })` |

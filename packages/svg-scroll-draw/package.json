@@ -62,7 +62,11 @@
     "data-aos",
     "scrollreveal",
     "scrollreveal-alternative",
-    "scroll-reveal-mit"
+    "scroll-reveal-mit",
+    "vivus",
+    "vivus-alternative",
+    "svg-line-drawing",
+    "line-drawing"
   ],
   "homepage": "https://svg-scroll-draw.vercel.app",
   "repository": {
@@ -151,6 +155,9 @@
       ],
       "scrollreveal": [
         "./dist/scrollreveal/index.d.ts"
+      ],
+      "vivus": [
+        "./dist/vivus/index.d.ts"
       ]
     }
   },
@@ -390,6 +397,16 @@
         "default": "./dist/scrollreveal/index.cjs"
       }
     },
+    "./vivus": {
+      "import": {
+        "types": "./dist/vivus/index.d.mts",
+        "default": "./dist/vivus/index.mjs"
+      },
+      "require": {
+        "types": "./dist/vivus/index.d.ts",
+        "default": "./dist/vivus/index.cjs"
+      }
+    },
     "./package.json": "./package.json"
   },
   "scripts": {
@@ -417,6 +434,7 @@
     "tsup": "^8.0.0",
     "typescript": "^5.0.0",
     "vitest": "^2.0.0",
+    "vivus": "^0.4.6",
     "vue": "^3.5.34"
   },
   "sideEffects": [
@@ -424,7 +442,8 @@
     "./dist/cdn/*",
     "./src/web-component/*",
     "./src/cdn.ts",
-    "./src/scrollreveal/cdn.ts"
+    "./src/scrollreveal/cdn.ts",
+    "./src/vivus/cdn.ts"
   ],
   "engines": {
     "node": ">=18"

@@ -35,6 +35,8 @@ export type Competitor = {
   /** The command that produced gzipKb — quoted on the page footnotes. */
   command: string;
   measured: boolean;
+  /** When this entry was measured, if not on the shared MEASURED_ON date. */
+  measuredOn?: string;
   /** Anything a reader needs to weigh the number fairly. */
   caveat?: string;
 };
@@ -64,6 +66,8 @@ export const SELF_ENTRIES: Record<string, number> = {
   aos: 3.0,
   // The ScrollReveal drop-in (`svg-scroll-draw/scrollreveal`).
   scrollreveal: 4.5,
+  // The vivus drop-in (`svg-scroll-draw/vivus`).
+  vivus: 3.9,
   text: 2.5,
 };
 
@@ -149,6 +153,19 @@ export const COMPETITORS: Record<string, Competitor> = {
     measured: true,
     caveat:
       'Smaller than us, and GPL-3.0 rather than MIT — worth reading before shipping it inside a closed-source commercial product.',
+  },
+  vivus: {
+    name: 'vivus',
+    label: 'vivus',
+    version: '0.4.6',
+    license: 'MIT',
+    gzipKb: 4.1,
+    lastPublish: '2021-04-17',
+    command: 'npm pack vivus@0.4.6 && gzip -9 package/dist/vivus.min.js',
+    measured: true,
+    measuredOn: '2026-10-31',
+    caveat:
+      'Draws SVG strokes over time (frame-based), started on page load, on viewport entry or by hand — not scrubbed by scroll position.',
   },
   scrollmagic: {
     name: 'scrollmagic',

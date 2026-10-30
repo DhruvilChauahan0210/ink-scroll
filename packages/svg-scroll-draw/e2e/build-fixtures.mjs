@@ -74,5 +74,7 @@ await Promise.all(
  */
 const require = createRequire(import.meta.url);
 copyFileSync(require.resolve('scrollreveal/dist/scrollreveal.js'), join(OUT, 'scrollreveal-4.0.9.js'));
+// vivus 0.4.6 itself (MIT), the reference for the vivus drop-in's parity spec.
+copyFileSync(require.resolve('vivus/dist/vivus.js'), join(OUT, 'vivus-0.4.6.js'));
 
 console.log(`✓ Bundled ${ENTRIES.length} framework fixtures → e2e/fixtures/build/`);

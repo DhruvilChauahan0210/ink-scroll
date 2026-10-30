@@ -25,6 +25,7 @@ Works in **React · Next.js · Vue 3 · Svelte · Solid · Angular · Nuxt · As
 - **10.2 KB gzipped** for the whole main entry — and you rarely need all of it. Every API is a separate entry point: `scrollReveal` is 4.5 KB, `scrollPin` 1.6 KB, `scrollSnap` 1.7 KB. [Full size table below](#bundle-sizes), measured by `npm run size` and enforced in CI.
 - **Native CSS fast path** — where the browser supports scroll-driven animations the draw runs on a CSS `view-timeline` with zero per-frame JavaScript, and falls back to the JS engine automatically everywhere else. Both engines are [verified to produce the same output](#native-css-rendering) by a cross-browser test suite rather than assumed to.
 - **Zero dependencies** — no GSAP, no ScrollTrigger, no heavyweight runtime
+- **vivus drop-in** — `import Vivus from 'svg-scroll-draw/vivus'` keeps your `new Vivus()` code; SVG output matched exactly against vivus 0.4.6. [Details](#vivus-drop-in--keep-your-new-vivus-code)
 - **ScrollReveal drop-in** — `import ScrollReveal from 'svg-scroll-draw/scrollreveal'`: the same API under MIT instead of GPL-3.0, inline styles matched byte for byte against ScrollReveal 4.0.9. [Details](#scrollreveal-drop-in--mit-instead-of-gpl)
 - **AOS drop-in** — `import AOS from 'svg-scroll-draw/aos'` runs your existing `data-aos` markup with no `aos.css`; tested side by side against AOS 2.3.4. [Details](#aos-drop-in--switch-from-aos-in-one-line)
 - **Full playback API** — `pause`, `resume`, `seek`, `replay`, `getProgress`, `destroy`
@@ -33,8 +34,8 @@ Works in **React · Next.js · Vue 3 · Svelte · Solid · Angular · Nuxt · As
 - **30+ options** — easing, stagger, fade, stroke color/width lerp, fill opacity, clip reveal, morphTo, velocityScale, waypoints, callbacks, repeat, autoReverse, and more
 - **Group / Sequence / Timeline APIs** — animate multiple containers simultaneously, one-after-another, or on independent scroll windows with `loop` for auto-looping after scroll completion
 - **CSS custom property** — `--scroll-draw-progress` is set on every frame so you can drive any CSS animation without a callback
-- **593 tests across 29 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
-- **186 browser tests on top of those**, run against Chromium, Firefox and WebKit in CI. The unit suite runs in jsdom, where `getTotalLength` is stubbed and `IntersectionObserver` is faked — it can check the engine's arithmetic but nothing about real browser behaviour. Both counts are derived from the suites themselves and enforced in CI, so neither can quietly drift out of date
+- **606 tests across 30 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
+- **192 browser tests on top of those**, run against Chromium, Firefox and WebKit in CI. The unit suite runs in jsdom, where `getTotalLength` is stubbed and `IntersectionObserver` is faked — it can check the engine's arithmetic but nothing about real browser behaviour. Both counts are derived from the suites themselves and enforced in CI, so neither can quietly drift out of date
 
 ---
 
@@ -666,6 +667,36 @@ Differences, on purpose:
 
 ---
 
+## vivus drop-in — keep your `new Vivus()` code
+
+On [vivus](https://github.com/maxwellito/vivus)? It has not shipped since 0.4.6 (April 2021).
+`svg-scroll-draw/vivus` runs the same API, so the move is an import change. 3.9 KB gzipped, against
+4.1 KB.
+
+```diff
+- import Vivus from 'vivus';
++ import Vivus from 'svg-scroll-draw/vivus';
+
+  new Vivus('my-svg', { type: 'oneByOne', duration: 200 }, () => console.log('drawn'));
+```
+
+No bundler? `<script src="https://unpkg.com/svg-scroll-draw/dist/cdn/vivus.global.js"></script>`
+defines `window.Vivus`. With CommonJS, `require('svg-scroll-draw/vivus').default` is the class.
+
+Every option, every animation type (`delayed`, `sync`, `async`, `nsync`, `oneByOne`, `scenario`,
+`scenario-sync`), the `start` modes, `file` and `<object>` loading, the `data-start` / `data-duration` /
+`data-delay` / `data-async` / `data-ignore` attributes, `Vivus.EASE` and the other timing functions, and
+`play` / `stop` / `reset` / `finish` / `setFrameProgress` / `getStatus` / `destroy` / `recalc` behave as
+in 0.4.6. Shapes become `<path>`s with the same `d` strings, and dashes get the same values: the browser
+suite runs vivus 0.4.6 beside it across nine configurations and requires the SVG markup to match exactly
+at every point of the animation. Like vivus, the clock is the animation frame.
+
+One difference, on purpose: under `prefers-reduced-motion: reduce`, `play()` jumps to the end and still
+fires its callbacks. When you want the stroke to follow the scroll instead of a clock, use
+[`scrollDraw`](#quick-start) from the same package.
+
+---
+
 ## Bundle sizes
 
 Every API is its own entry point, so you only ship what you import. Figures below are
@@ -689,6 +720,8 @@ fails the build if any entry outgrows its budget.
 | `svg-scroll-draw/scrollreveal`     | 11.3 KB | **4.5 KB** |
 | `svg-scroll-draw/cdn-scrollreveal` | 11.1 KB | **4.5 KB** |
 | `svg-scroll-draw/horizontal`       | 10.6 KB | **4.4 KB** |
+| `svg-scroll-draw/vivus`            | 10.9 KB | **3.9 KB** |
+| `svg-scroll-draw/cdn-vivus`        | 10.8 KB | **3.9 KB** |
 | `svg-scroll-draw/timeline`         | 8.3 KB | **3.5 KB** |
 | `svg-scroll-draw/cdn-aos`          | 8.3 KB | **3.1 KB** |
 | `svg-scroll-draw/aos`              | 8.1 KB | **3.0 KB** |

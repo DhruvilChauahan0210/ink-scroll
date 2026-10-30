@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>svg-scroll-draw/vivus — the drop-in, from the npm entry</title>
+<meta charset="utf-8">
+<style>
+  html { scroll-behavior: auto; }
+  body { margin: 0; }
+  svg { display: inline-block; vertical-align: top; }
+</style>
+</head>
+<body>
+<script src="vivus-markup.js"></script>
+<script type="module">
+  import Vivus from '/dist/vivus/index.mjs';
+  window.__plan(Vivus, new URLSearchParams(location.search).get('start') || 'manual');
+  window.__ready = true;
+</script>
+</body>
+</html>

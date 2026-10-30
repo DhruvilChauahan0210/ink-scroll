@@ -32,6 +32,7 @@
 | `devtools` | `svg-scroll-draw/devtools` | Visual overlay showing every active animation's triggers and progress. Dev-only. |
 | `AOS` | `svg-scroll-draw/aos` | Drop-in replacement for AOS: same `AOS.init()`, same `data-aos` markup, no `aos.css`. |
 | `ScrollReveal` | `svg-scroll-draw/scrollreveal` | Drop-in replacement for ScrollReveal.js 4, MIT instead of GPL-3.0. |
+| `Vivus` | `svg-scroll-draw/vivus` | Drop-in replacement for vivus 0.4: same `new Vivus()` API and output. |
 
 All APIs return the same instance object: `{ destroy, replay, pause, resume, seek, getProgress }`.
 
@@ -430,6 +431,36 @@ Differences, on purpose:
 
 ---
 
+## vivus drop-in — keep your `new Vivus()` code
+
+On [vivus](https://github.com/maxwellito/vivus)? It has not shipped since 0.4.6 (April 2021).
+`svg-scroll-draw/vivus` runs the same API, so the move is an import change. 3.9 KB gzipped, against
+4.1 KB.
+
+```diff
+- import Vivus from 'vivus';
++ import Vivus from 'svg-scroll-draw/vivus';
+
+  new Vivus('my-svg', { type: 'oneByOne', duration: 200 }, () => console.log('drawn'));
+```
+
+No bundler? `<script src="https://unpkg.com/svg-scroll-draw/dist/cdn/vivus.global.js"></script>`
+defines `window.Vivus`. With CommonJS, `require('svg-scroll-draw/vivus').default` is the class.
+
+Every option, every animation type (`delayed`, `sync`, `async`, `nsync`, `oneByOne`, `scenario`,
+`scenario-sync`), the `start` modes, `file` and `<object>` loading, the `data-start` / `data-duration` /
+`data-delay` / `data-async` / `data-ignore` attributes, `Vivus.EASE` and the other timing functions, and
+`play` / `stop` / `reset` / `finish` / `setFrameProgress` / `getStatus` / `destroy` / `recalc` behave as
+in 0.4.6. Shapes become `<path>`s with the same `d` strings, and dashes get the same values: the browser
+suite runs vivus 0.4.6 beside it across nine configurations and requires the SVG markup to match exactly
+at every point of the animation. Like vivus, the clock is the animation frame.
+
+One difference, on purpose: under `prefers-reduced-motion: reduce`, `play()` jumps to the end and still
+fires its callbacks. When you want the stroke to follow the scroll instead of a clock, use
+[`scrollDraw`](#scrolldraw--svg-path-drawing-v1-api-unchanged) from the same package.
+
+---
+
 ## Instance API
 
 Every function returns the same instance object:
@@ -522,6 +553,7 @@ devtools.highlight('#my-element'); // outline for 2 seconds
 | `svg-scroll-draw/devtools` | `devtools` (dev-only) |
 | `svg-scroll-draw/aos` | `AOS` (default), `init`, `refresh`, `refreshHard`, `destroy` |
 | `svg-scroll-draw/scrollreveal` | `ScrollReveal` (default and named) |
+| `svg-scroll-draw/vivus` | `Vivus` (default and named) |
 
 ---
 
@@ -535,6 +567,7 @@ devtools.highlight('#my-element'); // outline for 2 seconds
 | `svg-scroll-draw/text` | 2.5 KB |
 | `svg-scroll-draw/video` | 2.0 KB |
 | `svg-scroll-draw/scrollreveal` | 4.5 KB |
+| `svg-scroll-draw/vivus` | 3.9 KB |
 | `svg-scroll-draw/aos` (styles included) | 3.0 KB |
 | `svg-scroll-draw/snap` | 1.7 KB |
 | `svg-scroll-draw/devtools` | 1.7 KB (dev only) |
