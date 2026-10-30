@@ -4,6 +4,23 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ---
 
+## [Unreleased]
+
+### Tests
+
+- **The idle-cost browser test counts work instead of timing it.** It asserted
+  cumulative callback milliseconds against a 6 ms ceiling, sampled while other
+  browsers ran the rest of the suite, and flaked in Firefox under load (6–8 ms,
+  locally and once in the 2.11.0 release run) with nothing regressed — it needed
+  two retries to stay green. The fixture now counts update-body runs through
+  `onProgress`: parked for a second, at most one per instance; scrolling, at
+  least half the frames. With the idle short-circuit removed it reads 480 body
+  runs against a limit of 8 in all three engines (the old timing assertion
+  caught that in Chromium by 0.1 ms). The retries are gone; 10 repeats per
+  engine pass with none while the full suite runs alongside.
+
+---
+
 ## [2.11.0] — 2026-10-30
 
 ### Added

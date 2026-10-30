@@ -11,16 +11,23 @@ import { test, expect } from '@playwright/test';
  * This is the path Firefox and every pre-115 browser always take, so it is not a
  * niche concern.
  *
- * Note on measurement: this counts frames and cumulative callback duration, not
- * style writes. `strokeDashoffset` has no own descriptor on
- * CSSStyleDeclaration.prototype, so patching the prototype setter silently
+ * Note on measurement: the assertions count work, not time. `bodyRuns` is how
+ * many times the update body actually ran (the fixture counts `onProgress`,
+ * which fires once per body run and never on a short-circuited frame). This
+ * suite used to assert on cumulative callback milliseconds against a 6 ms
+ * ceiling; that is wall-clock time sampled while other browsers run the rest of
+ * the suite, and it flaked in Firefox under load (6–8 ms, locally and in the
+ * 2.11.0 release run) with nothing regressed. A count does not move with load.
+ *
+ * Style writes are not counted either: `strokeDashoffset` has no own descriptor
+ * on CSSStyleDeclaration.prototype, so patching the prototype setter silently
  * counts zero and reads as a pass — a trap worth recording.
  */
 
 type IdleProbe = {
   setup: (n: number) => void;
   reset: () => void;
-  read: () => { frames: number; cbMs: number; instances: number };
+  read: () => { frames: number; cbMs: number; bodyRuns: number; instances: number };
 };
 
 declare global {
@@ -32,23 +39,8 @@ declare global {
 
 const INSTANCES = 8;
 
-/**
- * Absolute ceiling, deliberately loose. Per-frame rAF overhead differs a lot
- * between engines — measured idle figures after the fix were ~2.8 ms (Chromium),
- * ~3.0 ms (Firefox), ~2.0 ms (WebKit) — so a tight absolute number would just be
- * a Chromium number that fails elsewhere.
- */
-const IDLE_MS_CEILING = 6;
-
-/**
- * The load-bearing assertion: idle cost relative to actively-scrolling cost.
- * This is engine-independent. Measured after the fix:
- *   Chromium  2.8 idle vs  20 active  (7x)
- *   Firefox   3.0 idle vs  51 active  (17x)
- *   WebKit    2.0 idle vs  83 active  (41x)
- * Before the fix idle and active did the same work, so this ratio was ~1.
- */
-const MAX_IDLE_SHARE_OF_ACTIVE = 0.25;
+/** Frames the active phase nudges the scroll on (alternating 600 / 601). */
+const NUDGES = 60;
 
 async function open(page: import('@playwright/test').Page, n: number) {
   await page.goto('/e2e/fixtures/idle.html');
@@ -57,21 +49,6 @@ async function open(page: import('@playwright/test').Page, n: number) {
 }
 
 test.describe('idle cost of the JS engine', () => {
-  /*
-   * The only timing measurement in this suite, and the only place retries are
-   * justified. `cbMs` is wall-clock JavaScript time, sampled while up to five
-   * other browsers run the rest of the suite on the same machine — so one
-   * contended sample can exceed the absolute ceiling below without anything
-   * having regressed. That started happening once the framework fixtures roughly
-   * doubled the size of the suite.
-   *
-   * Retrying is the honest fix rather than raising the ceiling: the thresholds
-   * still mean exactly what they say, and three contended samples in a row would
-   * be real evidence. The relative assertion is load-independent and is not the
-   * reason this is here.
-   */
-  test.describe.configure({ retries: 2 });
-
   test('costs far less while parked than while scrolling', async ({ page }) => {
     await open(page, INSTANCES);
 
@@ -85,17 +62,18 @@ test.describe('idle cost of the JS engine', () => {
     // Same instance count, same duration, but nudge the scroll every frame.
     await page.evaluate(() => window.__probe.reset());
     await page.evaluate(
-      () =>
+      (nudges) =>
         new Promise<void>((resolve) => {
           let n = 0;
           const step = () => {
             window.scrollTo(0, 600 + (n % 2 ? 1 : 0));
             n++;
-            if (n < 60) requestAnimationFrame(step);
+            if (n < nudges) requestAnimationFrame(step);
             else resolve();
           };
           requestAnimationFrame(step);
         }),
+      NUDGES,
     );
     const active = await page.evaluate(() => window.__probe.read());
 
@@ -105,12 +83,19 @@ test.describe('idle cost of the JS engine', () => {
     expect(idle.frames).toBeGreaterThan(0);
 
     const detail =
-      `idle=${idle.cbMs}ms/${idle.frames}f  active=${active.cbMs}ms/${active.frames}f. ` +
+      `idle: ${idle.bodyRuns} body runs in ${idle.frames} frames (${idle.cbMs} ms)  ` +
+      `active: ${active.bodyRuns} body runs in ${active.frames} frames (${active.cbMs} ms). ` +
       `The idle short-circuit in update() should skip the body when the scroll ` +
       `position has not moved since the last rendered frame.`;
 
-    expect(idle.cbMs, detail).toBeLessThan(IDLE_MS_CEILING);
-    expect(idle.cbMs, detail).toBeLessThan(active.cbMs * MAX_IDLE_SHARE_OF_ACTIVE);
+    // Parked: at most one recompute per instance (a frame already in flight when
+    // the counter was reset), then nothing. Without the short-circuit this is
+    // every frame — hundreds.
+    expect(idle.bodyRuns, detail).toBeLessThanOrEqual(INSTANCES);
+    // Scrolling: the scroll changes every frame, so every instance works on most
+    // of them. Half is the floor so a dropped frame under load cannot fail it,
+    // and it proves the short-circuit is not also skipping real work.
+    expect(active.bodyRuns, detail).toBeGreaterThanOrEqual(INSTANCES * (NUDGES / 2));
   });
 
   test('stops entirely when scrolled out of view', async ({ page }) => {

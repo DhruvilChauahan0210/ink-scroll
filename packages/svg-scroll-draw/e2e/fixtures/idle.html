@@ -53,23 +53,33 @@ import { scrollDraw } from '/dist/index.mjs';
 
 const instances = [];
 
+/*
+ * Frames on which the engine did real work. `onProgress` fires once per run of
+ * the update body (for the first path) and never on a short-circuited frame, so
+ * this counts work done, independent of how fast or busy the machine is — unlike
+ * __cbMs, which is wall-clock time and moves with machine load.
+ */
+window.__bodyRuns = 0;
+const countRun = () => { window.__bodyRuns++; };
+
 /** Clone the box `n-1` extra times so we can measure how idle cost scales. */
 function setup(n) {
   const row = document.querySelector('#row');
   const template = row.firstElementChild.cloneNode(true);
   while (row.children.length < n) row.appendChild(template.cloneNode(true));
   for (const el of row.querySelectorAll('[data-draw]')) {
-    instances.push(scrollDraw(el, { native: false }));
+    instances.push(scrollDraw(el, { native: false, onProgress: countRun }));
   }
 }
 
 window.__probe = {
   setup,
-  reset() { window.__frames = 0; window.__cbMs = 0; },
+  reset() { window.__frames = 0; window.__cbMs = 0; window.__bodyRuns = 0; },
   read() {
     return {
       frames: window.__frames,
       cbMs: Math.round(window.__cbMs * 100) / 100,
+      bodyRuns: window.__bodyRuns,
       instances: instances.length,
     };
   },

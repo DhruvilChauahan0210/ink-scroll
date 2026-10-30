@@ -166,6 +166,7 @@ of examining a single API in a real browser.
 - [x] `/vs-gsap` title under 60 chars, comparison table above the fold; every page title ≤ 60 chars, brand once
 - [x] Copy-paste blocks (`/blocks`, shadcn registry, 5 blocks) and an agent skill (`skills/svg-scroll-draw`)
 - [x] AOS drop-in (`svg-scroll-draw/aos`), parity-tested against AOS 2.3.4 — AOS has 383k weekly downloads and no release since 2.3.4
+- [x] Idle-cost e2e test counts update-body runs instead of milliseconds — no more Firefox flake, no retries
 - [ ] vivus drop-in (15k weekly, last release 2022) — same playbook: same API, parity test against the real library
 - [ ] More blocks (the registry pattern grows by count), and a Vue/Svelte flavour of each
 - [ ] Desktop nav links are hand-typed per page — only the homepage and mobile menu link `/blocks`; move the nav into one component
