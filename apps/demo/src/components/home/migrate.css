@@ -120,6 +120,10 @@
 .home .mg-ndot { fill: var(--fg); }
 
 /* Notes are set in type, not drawn: each fades in once its moment arrives. */
+/* Leaders and their notes only where the type can be read (≥ 8px). Butt
+   caps: an undrawn leader keeps a zero-length dash a round cap would show. */
+.home .mg-lead { stroke-linecap: butt; }
+.home .mg-lead,
 .home .mg-notes { visibility: hidden; }
 .home .mg-note { opacity: clamp(0, calc((var(--mg-p) - var(--mg-at, 1)) * 25), 1); }
 .home .mg-label, .home .mg-label-t { font-family: var(--mono); }
@@ -143,6 +147,7 @@
 }
 /* Wide enough for the notes to be read at ≥ 8px. */
 @media (min-width: 1180px) {
+  .home .mg-lead,
   .home .mg-notes { visibility: visible; }
 }
 

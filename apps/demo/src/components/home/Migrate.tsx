@@ -39,7 +39,7 @@ const knurl = (cx: number, cy: number, r1: number, r2: number, n: number) =>
     return `M${f(cx + Math.cos(a) * r1)} ${f(cy + Math.sin(a) * r1)} L${f(cx + Math.cos(a) * r2)} ${f(cy + Math.sin(a) * r2)}`;
   }).join(' ');
 
-type S = { d: string; w: 'p' | 's' | 'h'; t: 'ink' | 'mute' };
+type S = { d: string; w: 'p' | 's' | 'h'; t: 'ink' | 'mute'; lead?: boolean };
 
 const BODY: S[] = [
   { d: rr(170, 150, 660, 150, 56), w: 'p', t: 'ink' },
@@ -131,7 +131,7 @@ function build(lib: Lib) {
   // Fixed draw order: body, mount, the old lens and the arrow taking it off,
   // the new lens (which then slides home), and the leaders last.
   const fixed: S[] = [...BODY, ...MOUNT, ...old, remove];
-  const leaders: S[] = notes.map((n) => ({ d: n.path, w: 'h', t: 'mute' }));
+  const leaders: S[] = notes.map((n) => ({ d: n.path, w: 'h', t: 'mute', lead: true }));
   return { oldKb, newKb, fixed, fresh, leaders, notes, total: fixed.length + fresh.length + leaders.length };
 }
 
@@ -151,7 +151,7 @@ function Strokes({ list, pencil }: { list: S[]; pencil?: boolean }) {
   return (
     <>
       {list.map((s, i) => (
-        <path key={i} d={s.d} className={pencil ? 'mg-pencil' : `mg-ink mg-w-${s.w} mg-t-${s.t}`} stroke="currentColor" />
+        <path key={i} d={s.d} className={pencil ? 'mg-pencil' : `mg-ink mg-w-${s.w} mg-t-${s.t}${s.lead ? ' mg-lead' : ''}`} stroke="currentColor" />
       ))}
     </>
   );
