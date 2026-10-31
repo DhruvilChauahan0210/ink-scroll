@@ -800,7 +800,7 @@ export function SignOff({ version, gzipKb, unitTests, browserTests }: Props) {
 
         <div className="so-head">
           <p className="so-kicker">
-            <span>09 / your turn</span>
+            <span>10 / your turn</span>
             <span className="so-count" aria-hidden="true">
               <span ref={countRef}>{pad(0)}</span> / {TOTAL} strokes
             </span>

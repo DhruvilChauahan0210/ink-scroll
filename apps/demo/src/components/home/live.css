@@ -1,0 +1,133 @@
+/* Chapter 09 — live project stats. Scoped `.home .lv-…`; type values match
+   the chapters around it (caliber.css). */
+
+.home .lv-stage {
+  position: relative;
+  padding: clamp(96px, 12vw, 180px) max(var(--gutter), calc((100% - 1560px) / 2));
+}
+
+.home .lv-head { display: grid; gap: 18px; align-items: end; margin-bottom: clamp(32px, 4.5vw, 56px); }
+@media (min-width: 900px) { .home .lv-head { grid-template-columns: minmax(0, 1fr) auto; } }
+.home .lv-kicker { margin: 0 0 12px; font-family: var(--mono); font-size: 12px; letter-spacing: 0.02em; color: var(--fg-3); }
+.home .lv-title {
+  margin: 0;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: clamp(26px, 3.2vw, 52px);
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+  color: var(--fg);
+  text-wrap: balance;
+}
+.home .lv-live {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+.home .lv-live i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 0 var(--accent-2);
+  animation: lv-pulse 2.2s var(--ease) infinite;
+}
+@keyframes lv-pulse {
+  0% { box-shadow: 0 0 0 0 var(--accent-2); }
+  70% { box-shadow: 0 0 0 9px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+/* ── The six numbers ──────────────────────────────────────────────────── */
+
+.home .lv-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-top: 1px solid var(--line-2);
+  border-left: 1px solid var(--line);
+}
+@media (min-width: 720px) { .home .lv-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 1200px) { .home .lv-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+.home .lv-cell {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  padding: clamp(18px, 2vw, 26px) clamp(16px, 1.6vw, 24px) clamp(20px, 2.2vw, 28px);
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  transition: background-color 0.3s var(--ease);
+}
+.home .lv-cell::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; top: -1px;
+  height: 1px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.6s var(--ease);
+}
+.home .lv-cell:hover::before { transform: scaleX(1); }
+.home .lv-cell:hover { background: color-mix(in srgb, var(--bg-2) 60%, transparent); }
+.home .lv-icon { width: 22px; height: 22px; color: var(--fg-2); overflow: visible; }
+.home .lv-ink { fill: none; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+.home .lv-cell:first-child .lv-icon { color: var(--accent); }
+.home .lv-value {
+  margin-top: 6px;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: clamp(30px, 3vw, 50px);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+  color: var(--fg);
+}
+.home .lv-label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-2); }
+.home .lv-src { font-family: var(--mono); font-size: 10px; letter-spacing: 0.04em; color: var(--fg-3); }
+
+/* ── The 30-day line ──────────────────────────────────────────────────── */
+
+.home .lv-chart { margin: clamp(28px, 3.6vw, 44px) 0 0; }
+.home .lv-chart-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+.home .lv-chart-head b { font-weight: 500; color: var(--fg); }
+.home .lv-plot { position: relative; margin-top: 14px; }
+.home .lv-plot svg { display: block; width: 100%; height: auto; overflow: visible; }
+.home .lv-grid-line { fill: none; stroke: var(--line); stroke-width: 1; }
+.home .lv-base { fill: none; stroke: var(--line-2); stroke-width: 1; }
+.home .lv-axis { font-family: var(--mono); font-size: 13px; fill: var(--fg-3); }
+.home .lv-line { fill: none; color: var(--accent); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+/* --lv-p is the line's draw progress (set from onProgress). The fill rises
+   over the last stretch of the draw; the dots and the label land at the end. */
+.home .lv-chart { --lv-p: 0; }
+.home .lv-area { fill: var(--accent-2); stroke: none; opacity: calc((var(--lv-p) - 0.55) * 2.2); }
+.home .lv-dot { fill: var(--accent); }
+.home .lv-dot-last { fill: var(--fg); }
+.home .lv-peak { font-family: var(--mono); font-size: 14px; fill: var(--fg-2); }
+.home .lv-note { opacity: calc((var(--lv-p) - 0.9) * 10); transition: opacity 0.2s linear; }
+
+.home .lv-cta { margin-top: clamp(28px, 3.6vw, 44px); display: flex; flex-wrap: wrap; gap: 10px; }
+.home .lv-cta svg { margin-right: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .home .lv-live i { animation: none; }
+  .home .lv-chart { --lv-p: 1 !important; }
+}

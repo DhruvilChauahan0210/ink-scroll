@@ -12,6 +12,7 @@ import { Toolkit } from '@/components/home/Toolkit';
 import { Gauges } from '@/components/home/Gauges';
 import { Stack } from '@/components/home/Stack';
 import { Migrate } from '@/components/home/Migrate';
+import { LiveStats } from '@/components/home/LiveStats';
 import { SignOff } from '@/components/home/SignOff';
 import { SELF } from '@/data/competitors';
 
@@ -106,6 +107,11 @@ export default function HomePage() {
         {/* ── 08 Switching: the same plug, smaller insides ─────────────── */}
         <section className="sec-cal" aria-labelledby="mg-title">
           <Migrate />
+        </section>
+
+        {/* ── 09 In the open: live GitHub + npm numbers ────────────────── */}
+        <section className="sec-cal" aria-labelledby="lv-title">
+          <LiveStats />
         </section>
 
         {/* ── Sign-off: the page ends on a signed drawing sheet ────────── */}

@@ -18,6 +18,14 @@ Numbers that set the priorities (Search Console and npm, 2026-10-30): 4,020
 lifetime downloads, ~170 a month; 5 GitHub stars; 147 Google clicks in five
 months, 81% to the homepage; `/vs-gsap` at position 11 with 425 impressions.
 
+### Gotcha on this laptop
+- The network intercepts TLS, and Node rejects api.github.com's certificate, so a
+  plain `npm run dev` keeps serving a stale cached GitHub response. Run the dev server
+  (and any local `vercel-build`) with `NODE_OPTIONS=--use-system-ca` (Node ≥ 22.15).
+  Don't put that flag in package.json: CI runs Node 20, which rejects it.
+- Optional: a `GITHUB_TOKEN` env var on Vercel lifts GitHub's anonymous rate limit
+  for the live stats chapter; it works without one.
+
 ### In flight
 - Nothing site-side. Next: carry the homepage's look (tokens, nav, chapter type) to
   /docs, /examples, /blocks and /guides, which still use the old styling.
@@ -28,8 +36,9 @@ months, 81% to the homepage; `/vs-gsap` at position 11 with 425 impressions.
   exploded fountain-pen hero that assembles on scroll, the use-case gallery, the
   watch-movement chapter, a red-pen proof sheet, GSAP weighed on a balance, API
   blueprint plates, test gauges, a framework circuit board, before/after windows for
-  the drop-ins and an engineering-sheet footer; a glass nav that never moves; dark by
-  default. Rejected along the way (don't revisit): SaaS cards, giant editorial type,
+  the drop-ins, the project counted live (GitHub + npm, a 30-day download line, a
+  "checked" timestamp) and an engineering-sheet footer; a glass nav that never moves;
+  dark by default. Rejected along the way (don't revisit): SaaS cards, giant editorial type,
   generative ink, a torus knot, topo rings, railway/plug/camera metaphors for chapter 08.
 - `/guides` — five migration guides, live from `main` (site-only).
 

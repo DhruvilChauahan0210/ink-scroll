@@ -8,6 +8,13 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### Site
 
+- **The live project stats can't go quietly stale.** A failed hourly refresh
+  keeps serving the last good response, which is how the GitHub numbers sat
+  at an August copy (5 stars, "2mo ago") on a network that intercepts TLS.
+  The chapter now prints when its numbers were fetched (the oldest `Date`
+  header among the four responses), and `GITHUB_TOKEN`, when set, lifts
+  GitHub's 60-an-hour anonymous limit that shared build and function IPs
+  can hit.
 - **Vercel builds no longer run out of memory.** `tsup` builds all ~33
   configs at once, each with its own TypeScript program for `dts`; that
   peaks around 4 GB in one process and the Vercel build container killed it
@@ -43,6 +50,10 @@ All notable changes to `svg-scroll-draw` are documented here.
   by side whose only difference is the import line — the same page, the same
   markup (`data-aos="fade-up"`), the same entrance playing in both — with
   each file's weight underneath; tabs for AOS, ScrollReveal and vivus;
+  09 the project counted live — GitHub stars, forks, open issues and last
+  commit, npm downloads a week and a month, and the last 30 days of npm
+  downloads as a line the library inks as you scroll, with its peak marked —
+  refreshed hourly and stamped with when the numbers were fetched;
   and a sign-off that is an engineering drawing
   sheet: zone borders, the hand-lettered *draw* again, and a title block
   carrying the version, weight, tests and links. Every figure comes from
