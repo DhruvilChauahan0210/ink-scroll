@@ -36,7 +36,7 @@ const jsonLd = {
   downloadUrl: 'https://www.npmjs.com/package/svg-scroll-draw',
   codeRepository: 'https://github.com/DhruvilChauahan0210/ink-scroll',
   license: 'https://opensource.org/licenses/MIT',
-  softwareVersion: '2.14.0',
+  softwareVersion: '2.15.0',
   programmingLanguage: ['JavaScript', 'TypeScript'],
   author: {
     '@type': 'Person',
@@ -661,7 +661,7 @@ export default function Hero() {
             >
               Product Hunt
             </a>
-            <span className="text-[12px] font-mono text-graphite-border">v2.14.0</span>
+            <span className="text-[12px] font-mono text-graphite-border">v2.15.0</span>
           </div>
         </div>
 

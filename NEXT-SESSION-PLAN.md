@@ -1,6 +1,6 @@
 # Next Session Plan — svg-scroll-draw
 
-> Updated: 2026-10-31 — **2.14.0 published** (migrate CLI).
+> Updated: 2026-10-31 — **2.15.0 published** (React hooks for the drop-ins).
 
 ---
 
@@ -18,11 +18,10 @@ Numbers that set the priorities (Search Console and npm, 2026-10-30): 4,020
 lifetime downloads, ~170 a month; 5 GitHub stars; 147 Google clicks in five
 months, 81% to the homepage; `/vs-gsap` at position 11 with 425 impressions.
 
-### In flight
-- Branch `feat/drop-in-react-hooks`: React / Next.js hooks for the three drop-ins.
-  Ready to release as **2.15.0** (also carries the StackBlitz starters' docs).
-
 ### Shipped since
+- **2.15.0** — React / Next.js hooks for the drop-ins: `useAOS` + `<AOSInit />`,
+  `useScrollReveal`, `useVivus` (all `"use client"`). StackBlitz starters for each
+  drop-in are live from `main`.
 - **2.14.0** — `npx svg-scroll-draw migrate`: one command to switch from AOS,
   ScrollReveal or vivus.
 - **2.13.0** — `svg-scroll-draw/vivus`, the vivus drop-in, with an exact

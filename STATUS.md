@@ -1,6 +1,6 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **2.14.0** — published on npm with provenance through `release.yml` (2026-10-31)
+> Current version: **2.15.0** — published on npm with provenance through `release.yml` (2026-10-31)
 > Tests: **623 unit** across 31 suites · **195 browser tests** per engine (585 runs
 > across Chromium/Firefox/WebKit) · **56 mutations**, each caught by the one test
 > named for it · **91.3% line coverage** (gate 90/90/82/82)
@@ -127,12 +127,12 @@ at all.
 
 ## Remaining / Next
 
-### Unreleased — React hooks for the drop-ins (branch `feat/drop-in-react-hooks`, 2026-10-31)
+### 2.15.0 — React hooks for the drop-ins (branch `feat/drop-in-react-hooks`, 2026-10-31)
 - [x] `svg-scroll-draw/aos/react` (`useAOS`, `AOSInit`), `/scrollreveal/react` (`useScrollReveal`), `/vivus/react` (`useVivus`), all `"use client"`
 - [x] StrictMode + route-change e2e in three engines; real Next.js 16 App Router build and run
-- [ ] Release as 2.15.0
+- [x] Released as 2.15.0
 
-### Unreleased — drop-in starters (branch `feat/drop-in-starters`, 2026-10-31)
+### Drop-in starters (branch `feat/drop-in-starters`, 2026-10-31; site-only, live on main)
 - [x] `examples/aos`, `examples/scrollreveal`, `examples/vivus` (StackBlitz), linked from the comparison pages and READMEs
 - [x] Each installed from npm (2.14.0), built and checked in Chromium with no errors
 
