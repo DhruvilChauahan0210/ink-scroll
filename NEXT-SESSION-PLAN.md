@@ -1,6 +1,6 @@
 # Next Session Plan — svg-scroll-draw
 
-> Updated: 2026-10-31 — **2.15.0 published** (React hooks for the drop-ins).
+> Updated: 2026-10-31 — **2.15.1 published** (the "no stroke" dev warning reads CSS).
 
 ---
 
@@ -42,6 +42,8 @@ months, 81% to the homepage; `/vs-gsap` at position 11 with 425 impressions.
   generative ink, a torus knot, topo rings, railway/plug/camera metaphors for chapter 08.
 - `/guides` — five migration guides, live from `main` (site-only).
 
+- **2.15.1** — the "Element has no stroke" dev warning reads the computed stroke, so
+  paths stroked from CSS (the whole homepage) stop flooding the console.
 - **2.15.0** — React / Next.js hooks for the drop-ins: `useAOS` + `<AOSInit />`,
   `useScrollReveal`, `useVivus` (all `"use client"`). StackBlitz starters for each
   drop-in are live from `main`.
