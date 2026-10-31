@@ -37,8 +37,13 @@ All notable changes to `svg-scroll-draw` are documented here.
   carrying the version, weight, tests and links. Every figure comes from
   `data/competitors.ts` or the page's claim-checked constants. Geist
   throughout, ink on near-black or ink on paper, one accent (editor's red).
-  Lenis smooth scroll (demo-only dependency), re-measured whenever the page
-  grows so it always reaches the end. Styles scoped under `.home`; each
+  The nav is transparent over the hero; once the page moves, a frosted
+  glass bar fades in behind it — same size and positions, nothing moves —
+  with the mark drawn by the library on load, a version tag, an icon theme
+  toggle, and below 1024px a full-screen menu in the page's own type that
+  holds the page still while open. Lenis smooth scroll (demo-only
+  dependency), re-measured whenever the page grows so it always reaches
+  the end. Styles scoped under `.home`; each
   chapter carries its own scoped CSS and deterministic geometry. The mascot
   stays off `/`. The examples count reads `EXAMPLE_COUNT`.
 - **Dark is the site default.** With no stored preference the no-flash

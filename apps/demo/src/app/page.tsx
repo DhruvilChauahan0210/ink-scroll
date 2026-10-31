@@ -1,10 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import './home.css';
-import { MobileMenu } from '@/components/MobileMenu';
 import { SmoothScroll } from '@/components/home/SmoothScroll';
-import { HomeThemeToggle } from '@/components/home/HomeThemeToggle';
-import { Progress } from '@/components/home/Progress';
+import { HomeNav } from '@/components/home/HomeNav';
 import { Magnetic } from '@/components/home/Magnetic';
 import { ScrollFx } from '@/components/home/ScrollFx';
 import { HeroScript } from '@/components/home/HeroScript';
@@ -55,14 +53,6 @@ const BROWSER_TESTS = 195;
 /* The main entry's CI budget (packages/svg-scroll-draw/scripts/size.mjs, '.'). */
 const BUDGET_KB = 10.5;
 
-function Mark() {
-  return (
-    <svg className="nav-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M3 17 C 6 6, 10 6, 12 12 S 18 18, 21 7" />
-    </svg>
-  );
-}
-
 export default function HomePage() {
   return (
     <div className="home">
@@ -71,26 +61,7 @@ export default function HomePage() {
       <Magnetic />
 
       {/* ── Nav ──────────────────────────────────────────────────────── */}
-      <header className="nav">
-        <Progress />
-        <Link href="/" className="nav-brand" aria-label="svg-scroll-draw home">
-          <Mark />
-          svg-scroll-draw
-        </Link>
-        <nav className="nav-links" aria-label="Primary">
-          <Link href="/docs">Docs</Link>
-          <Link href="/examples">Examples</Link>
-          <Link href="/guides">Guides</Link>
-          <Link href="/blocks">Blocks</Link>
-          <Link href="/blog">Blog</Link>
-        </nav>
-        <div className="nav-right">
-          <a href={GH} className="nav-gh" target="_blank" rel="noopener noreferrer">GitHub</a>
-          <HomeThemeToggle />
-          <Link href="/docs" className="btn btn-sm nav-cta">Get started</Link>
-          <div className="nav-menu"><MobileMenu /></div>
-        </div>
-      </header>
+      <HomeNav version={SELF.version} />
 
       <main>
         {/* ── Hero: the library writes its own name for what it does ───── */}

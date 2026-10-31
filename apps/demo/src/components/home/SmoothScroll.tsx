@@ -21,7 +21,15 @@ export function SmoothScroll() {
     // the first measurement and the page stops short of the end.
     const ro = new ResizeObserver(() => lenis.resize());
     ro.observe(document.body);
-    return () => { ro.disconnect(); cancelAnimationFrame(raf); lenis.destroy(); };
+    // The nav's full-screen menu asks for the page to hold still behind it.
+    const onHold = (e: Event) => ((e as CustomEvent<boolean>).detail ? lenis.stop() : lenis.start());
+    window.addEventListener('home:hold-scroll', onHold);
+    return () => {
+      window.removeEventListener('home:hold-scroll', onHold);
+      ro.disconnect();
+      cancelAnimationFrame(raf);
+      lenis.destroy();
+    };
   }, []);
   return null;
 }
