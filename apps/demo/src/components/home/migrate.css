@@ -1,14 +1,16 @@
-/* Chapter 08 — switching, as three plug drawings. Scoped `.home .mg-…`;
-   type values match chapter 02 (caliber.css) so the chapters read as one. */
+/* Chapter 08 — switching, as a lens change. Scoped `.home .mg-…`; type
+   values match chapter 02 (caliber.css) so the chapters read as one. */
 
 .home .mg-stage {
   position: relative;
+  display: grid;
+  gap: clamp(28px, 4vw, 48px);
   padding: clamp(96px, 12vw, 180px) max(var(--gutter), calc((100% - 1560px) / 2));
 }
 
 /* ── Copy ─────────────────────────────────────────────────────────────── */
 
-.home .mg-head { max-width: 640px; margin-bottom: clamp(36px, 5vw, 72px); }
+.home .mg-copy { max-width: 560px; }
 .home .mg-kicker {
   display: flex;
   justify-content: space-between;
@@ -19,7 +21,6 @@
   letter-spacing: 0.02em;
   color: var(--fg-3);
 }
-.home .mg-count { font-variant-numeric: tabular-nums; white-space: nowrap; }
 .home .mg-title {
   margin: 0;
   font-family: var(--sans);
@@ -30,86 +31,44 @@
   color: var(--fg);
   text-wrap: balance;
 }
-.home .mg-body {
-  margin: 18px 0 0;
-  max-width: 52ch;
-  font-size: 15px;
-  line-height: 1.6;
-  color: var(--fg-2);
-}
+.home .mg-body { margin: 18px 0 0; max-width: 46ch; font-size: 15px; line-height: 1.6; color: var(--fg-2); }
 
-/* ── Cards ────────────────────────────────────────────────────────────── */
-
-.home .mg-grid { display: grid; gap: clamp(36px, 4vw, 56px) clamp(20px, 2.4vw, 40px); }
-@media (min-width: 1024px) { .home .mg-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-
-.home .mg-card { display: grid; gap: 18px; align-content: start; }
-
-.home .mg-art { position: relative; aspect-ratio: 400 / 260; }
-.home .mg-art::before {
-  content: '';
-  position: absolute;
-  inset: -8%;
-  background: radial-gradient(closest-side, var(--bg-2), transparent);
-  pointer-events: none;
-}
-.home .mg-n {
-  position: absolute;
-  left: 0;
-  top: -4px;
-  z-index: 1;
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.04em;
+.home .mg-rows { list-style: none; margin: clamp(18px, 3svh, 36px) 0 0; padding: 0; }
+.home .mg-row {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 34px 1fr auto;
+  grid-template-areas: 'n name kb' '. code code';
+  gap: 6px 10px;
+  align-items: baseline;
+  padding: 14px 0;
+  border: 0;
+  border-top: 1px solid var(--line);
+  background: none;
   color: var(--fg-3);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  transition: color 0.4s var(--ease);
 }
-.home .mg-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-.home .mg-svg-pencil { opacity: 0.16; }
-.home .mg-pencil { fill: none; stroke: var(--fg); stroke-width: 0.8; stroke-linecap: round; stroke-linejoin: round; }
+.home li:last-child .mg-row { border-bottom: 1px solid var(--line); }
+.home .mg-row:hover { color: var(--fg-2); }
+.home .mg-row.is-on { color: var(--fg); }
+.home .mg-row-n { grid-area: n; font-family: var(--mono); font-size: 11px; letter-spacing: 0.04em; color: var(--fg-3); }
+.home .mg-row.is-on .mg-row-n { color: var(--accent); }
+.home .mg-row-name { grid-area: name; font-family: var(--sans); font-size: 16px; letter-spacing: -0.01em; }
+.home .mg-row-name small { font-family: var(--mono); font-size: 11px; color: var(--fg-3); margin-left: 6px; }
+.home .mg-row-kb { grid-area: kb; font-family: var(--mono); font-size: 11.5px; font-variant-numeric: tabular-nums; color: var(--fg-3); }
+.home .mg-row.is-on .mg-row-kb { color: var(--fg-2); }
+.home .mg-row-code { grid-area: code; font-family: var(--mono); font-size: 11.5px; line-height: 1.6; color: var(--fg-3); }
+.home .mg-row.is-on .mg-row-code { color: var(--fg-2); }
+.home .mg-k { opacity: 0.75; }
+.home .mg-row-code s { white-space: nowrap; text-decoration-color: var(--accent); text-decoration-thickness: 1.5px; }
+.home .mg-row-code b { white-space: nowrap; font-weight: 400; }
+.home .mg-row.is-on .mg-row-code b { color: var(--fg); }
 
-.home .mg-ink { fill: none; stroke-linecap: round; stroke-linejoin: round; }
-.home .mg-lead { stroke-linecap: butt; }
-/* Phone first, a step heavier; 1.8 / 1.1 / 0.6 once the card is ~400px. */
-.home .mg-w-p { stroke-width: 2.2; }
-.home .mg-w-s { stroke-width: 1.4; }
-.home .mg-w-h { stroke-width: 0.9; }
-.home .mg-t-ink { stroke: var(--fg); }
-.home .mg-t-mute { stroke: var(--fg-3); }
-.home .mg-t-accent { stroke: var(--accent); }
-.home .mg-ghost { fill: var(--accent-2); stroke: var(--line-2); stroke-width: 0.8; opacity: 0.55; }
-
-.home .mg-tx { font-family: var(--mono); font-size: 11px; letter-spacing: 0.02em; fill: var(--fg); }
-.home .mg-tx-mute { fill: var(--fg-3); }
-.home .mg-tx-save { fill: var(--accent); }
-
-/* ── Meta under each drawing ──────────────────────────────────────────── */
-
-.home .mg-meta { display: grid; gap: 10px; padding-top: 16px; border-top: 1px solid var(--line); }
-.home .mg-name {
-  margin: 0;
-  font-family: var(--sans);
-  font-weight: 500;
-  font-size: 22px;
-  letter-spacing: -0.02em;
-  color: var(--fg);
-}
-.home .mg-name span { font-family: var(--mono); font-size: 11px; letter-spacing: 0.04em; color: var(--fg-3); margin-left: 6px; }
-.home .mg-code {
-  font-family: var(--mono);
-  font-size: 12px;
-  line-height: 1.6;
-  color: var(--fg-2);
-}
-/* Package names wrap as whole tokens, never mid-name. */
-.home .mg-code s,
-.home .mg-code b { white-space: nowrap; }
-.home .mg-k { color: var(--fg-3); }
-.home .mg-code s { color: var(--fg-3); text-decoration-color: var(--accent); text-decoration-thickness: 1.5px; }
-.home .mg-code b { font-weight: 400; color: var(--fg); }
-.home .mg-methods { margin: 0; font-family: var(--mono); font-size: 11.5px; color: var(--fg-2); }
-.home .mg-methods span { color: var(--fg-3); }
+.home .mg-foot { margin-top: clamp(18px, 3svh, 32px); display: flex; flex-wrap: wrap; align-items: center; gap: 14px 22px; }
 .home .mg-link {
-  justify-self: start;
   font-family: var(--mono);
   font-size: 11px;
   letter-spacing: 0.1em;
@@ -123,11 +82,70 @@
 .home .mg-link span { display: inline-block; transition: transform 0.35s var(--ease); }
 .home .mg-link:hover span { transform: translateX(4px); }
 
-.home .mg-cmd { margin-top: clamp(40px, 5vw, 64px); display: flex; flex-wrap: wrap; align-items: center; gap: 14px 24px; }
-.home .mg-cmd-note { font-family: var(--mono); font-size: 11px; letter-spacing: 0.04em; color: var(--fg-3); }
+/* ── Drawing ──────────────────────────────────────────────────────────── */
 
-@media (min-width: 1024px) {
+.home .mg-art-wrap { position: relative; order: -1; }
+.home .mg-strokes {
+  margin: 0 0 6px;
+  text-align: right;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: var(--fg-3);
+}
+.home .mg-strokes span { color: var(--fg); }
+.home .mg-art { --mg-p: 0; position: relative; aspect-ratio: 888 / 580; }
+.home .mg-art::before {
+  content: '';
+  position: absolute;
+  inset: -6%;
+  background: radial-gradient(closest-side, var(--bg-2), transparent);
+  pointer-events: none;
+}
+.home .mg-ink-layer { position: absolute; inset: 0; }
+.home .mg-svg { position: absolute; inset: 0; display: block; width: 100%; height: 100%; overflow: visible; }
+.home .mg-svg-pencil { opacity: 0.16; }
+.home .mg-pencil { fill: none; color: var(--fg); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round; }
+
+.home .mg-ink { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+/* Phone first, a step heavier; 1.8 / 1.1 / 0.6 at desktop size. */
+.home .mg-w-p { stroke-width: 3; }
+.home .mg-w-s { stroke-width: 1.8; }
+.home .mg-w-h { stroke-width: 1.1; }
+.home .mg-t-ink { color: var(--fg); }
+.home .mg-t-mute { color: var(--fg-3); }
+
+.home .mg-dot { fill: var(--accent); transition: filter 0.4s var(--ease); }
+.home .mg-art[data-locked] .mg-dot { filter: drop-shadow(0 0 6px var(--accent)); }
+.home .mg-ndot { fill: var(--fg); }
+
+/* Notes are set in type, not drawn: each fades in once its moment arrives. */
+.home .mg-notes { visibility: hidden; }
+.home .mg-note { opacity: clamp(0, calc((var(--mg-p) - var(--mg-at, 1)) * 25), 1); }
+.home .mg-label, .home .mg-label-t { font-family: var(--mono); }
+.home .mg-label { font-size: 18px; fill: var(--fg-2); }
+.home .mg-label-accent { fill: var(--accent); }
+.home .mg-label-t { font-size: 13px; letter-spacing: 0.16em; fill: var(--fg-3); }
+
+/* ── Desktop: copy left, drawing right ────────────────────────────────── */
+
+@media (min-width: 1000px) {
+  .home .mg-stage {
+    grid-template-columns: minmax(300px, 0.78fr) minmax(0, 1.22fr);
+    align-items: center;
+    column-gap: clamp(32px, 4vw, 88px);
+  }
+  .home .mg-art-wrap { order: 0; }
   .home .mg-w-p { stroke-width: 1.8; }
   .home .mg-w-s { stroke-width: 1.1; }
   .home .mg-w-h { stroke-width: 0.6; }
+  .home .mg-pencil { stroke-width: 0.8; }
+}
+/* Wide enough for the notes to be read at ≥ 8px. */
+@media (min-width: 1180px) {
+  .home .mg-notes { visibility: visible; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home .mg-row, .home .mg-dot { transition: none; }
 }
