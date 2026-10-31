@@ -1,138 +1,124 @@
 'use client';
 
 import './docs.css';
-import { useState, useEffect, useRef } from 'react';
+import { Children, useState, useEffect, useRef } from 'react';
+import { ScrollDraw } from 'svg-scroll-draw/react';
 import Link from 'next/link';
 import { CopyButton } from './CopyButton';
 import { CopyCommand } from './home/CopyCommand';
 import { DocsAnatomy } from './DocsAnatomy';
+import { CodeBox } from './site/CodeBox';
 import { SELF } from '@/data/competitors';
 import { UNIT_TESTS, BROWSER_TESTS } from '@/data/facts';
 
 
+// The sidebar follows the page: groups and items in the order the sections
+// appear, so reading down moves the highlight one entry at a time. Each
+// section's title strip still says which version added it.
 const NAV_GROUPS = [
   {
     label: 'Getting Started',
     items: [
-      { id: 'installation', label: 'Installation' },
-      { id: 'quick-start',  label: 'Quick Start' },
+      { id: 'installation',             label: 'Installation' },
+      { id: 'quick-start',              label: 'Quick Start' },
     ],
   },
   {
     label: 'Options',
     items: [
-      { id: 'core-options', label: 'Core' },
-      { id: 'trigger',      label: 'Trigger' },
-      { id: 'visual',       label: 'Visual' },
-      { id: 'callbacks',    label: 'Callbacks' },
-      { id: 'advanced',     label: 'Advanced' },
+      { id: 'core-options',             label: 'Core' },
+      { id: 'trigger',                  label: 'Trigger' },
+      { id: 'visual',                   label: 'Visual' },
+      { id: 'callbacks',                label: 'Callbacks' },
+      { id: 'advanced',                 label: 'Advanced' },
     ],
   },
   {
     label: 'Instance',
-    items: [{ id: 'instance-methods', label: 'Methods' }],
+    items: [
+      { id: 'instance-methods',         label: 'Methods' },
+    ],
   },
   {
     label: 'Frameworks',
     items: [
-      { id: 'react',         label: 'React' },
-      { id: 'vue',           label: 'Vue 3' },
-      { id: 'svelte',        label: 'Svelte' },
-      { id: 'solid',         label: 'Solid.js' },
-      { id: 'angular',       label: 'Angular' },
-      { id: 'nuxt',          label: 'Nuxt' },
-      { id: 'astro',         label: 'Astro' },
-      { id: 'web-component', label: 'Web Component' },
-      { id: 'vanilla',       label: 'Vanilla JS' },
+      { id: 'react',                    label: 'React' },
+      { id: 'vue',                      label: 'Vue 3' },
+      { id: 'svelte',                   label: 'Svelte' },
+      { id: 'solid',                    label: 'Solid.js' },
+      { id: 'angular',                  label: 'Angular' },
+      { id: 'nuxt',                     label: 'Nuxt' },
+      { id: 'astro',                    label: 'Astro' },
+      { id: 'web-component',            label: 'Web Component' },
+      { id: 'vanilla',                  label: 'Vanilla JS' },
     ],
   },
   {
     label: 'Multi-element',
     items: [
-      { id: 'group-api',    label: 'Group API' },
-      { id: 'sequence-api', label: 'Sequence API' },
+      { id: 'group-api',                label: 'Group API' },
+      { id: 'sequence-api',             label: 'Sequence API' },
     ],
   },
   {
     label: 'Hooks',
-    items: [{ id: 'use-scroll-draw-progress', label: 'useScrollDrawProgress' }],
-  },
-  {
-    label: 'v2.15.1',
     items: [
-      { id: 'instance-refresh',    label: 'refresh()' },
-      { id: 'timeline-reduced-motion', label: 'Timeline & reduced motion' },
-      { id: 'cdn-dev-build',       label: 'CDN dev build' },
+      { id: 'use-scroll-draw-progress', label: 'useScrollDrawProgress' },
     ],
   },
   {
-    label: 'v2.9.0',
+    label: 'Engine',
     items: [
-      { id: 'scroll-progress',    label: 'scrollProgress' },
-      { id: 'scroll-horizontal',  label: 'scrollHorizontal' },
+      { id: 'native-css',               label: 'Native CSS' },
+      { id: 'create-spring',            label: 'createSpring' },
+      { id: 'create-bounce',            label: 'createBounce' },
+      { id: 'create-elastic',           label: 'createElastic' },
+      { id: 'timeline',                 label: 'scrollDrawTimeline' },
+      { id: 'presets',                  label: 'Presets' },
+      { id: 'cli-init',                 label: 'CLI init' },
+      { id: 'css-custom-property',      label: 'CSS Custom Prop' },
     ],
   },
   {
-    label: 'v2.8.0',
+    label: 'Frameworks v2',
     items: [
-      { id: 'scroll-reveal',   label: 'scrollReveal' },
-      { id: 'velocity-scale',  label: 'velocityScale' },
+      { id: 'v2-vue',                   label: 'Vue 3 v2' },
+      { id: 'v2-svelte',                label: 'Svelte v2' },
+      { id: 'v2-solid',                 label: 'Solid v2' },
     ],
   },
   {
-    label: 'v2.7.0',
+    label: 'Reliability',
     items: [
-      { id: 'scroll-pin',       label: 'scrollPin' },
-      { id: 'scroll-snap',      label: 'scrollSnap' },
-      { id: 'scroll-callbacks', label: 'Scroll Callbacks' },
-      { id: 'lenis-adapter',    label: 'Lenis Adapter' },
+      { id: 'instance-refresh',         label: 'refresh()' },
+      { id: 'timeline-reduced-motion',  label: 'Timeline & reduced motion' },
+      { id: 'cdn-dev-build',            label: 'CDN dev build' },
     ],
   },
   {
-    label: 'v2.6.0',
+    label: 'Scroll APIs',
     items: [
-      { id: 'v2-vue',    label: 'Vue 3 v2' },
-      { id: 'v2-svelte', label: 'Svelte v2' },
-      { id: 'v2-solid',  label: 'Solid v2' },
+      { id: 'scroll-progress',          label: 'scrollProgress' },
+      { id: 'scroll-horizontal',        label: 'scrollHorizontal' },
+      { id: 'scroll-reveal',            label: 'scrollReveal' },
+      { id: 'velocity-scale',           label: 'velocityScale' },
+      { id: 'scroll-pin',               label: 'scrollPin' },
+      { id: 'scroll-snap',              label: 'scrollSnap' },
+      { id: 'scroll-callbacks',         label: 'Scroll Callbacks' },
+      { id: 'lenis-adapter',            label: 'Lenis Adapter' },
+      { id: 'scroll-animate',           label: 'scrollAnimate' },
+      { id: 'scroll-counter',           label: 'scrollCounter' },
+      { id: 'scroll-parallax',          label: 'scrollParallax' },
+      { id: 'scroll-video',             label: 'scrollVideo' },
+      { id: 'scroll-text',              label: 'scrollText' },
     ],
   },
   {
-    label: 'v2.0–2.2',
+    label: 'Tooling',
     items: [
-      { id: 'scroll-animate',   label: 'scrollAnimate' },
-      { id: 'scroll-counter',   label: 'scrollCounter' },
-      { id: 'scroll-parallax',  label: 'scrollParallax' },
-      { id: 'scroll-video',     label: 'scrollVideo' },
-      { id: 'scroll-text',      label: 'scrollText' },
-      { id: 'devtools',         label: 'DevTools' },
+      { id: 'devtools',                 label: 'DevTools' },
+      { id: 'typescript',               label: 'Types' },
     ],
-  },
-  {
-    label: 'v1.6.0',
-    items: [
-      { id: 'presets',  label: 'Presets' },
-      { id: 'cli-init', label: 'CLI init' },
-    ],
-  },
-  {
-    label: 'v1.1.0',
-    items: [
-      { id: 'native-css', label: 'Native CSS' },
-    ],
-  },
-  {
-    label: 'v1.0.0',
-    items: [
-      { id: 'create-spring',      label: 'createSpring' },
-      { id: 'create-bounce',      label: 'createBounce' },
-      { id: 'create-elastic',     label: 'createElastic' },
-      { id: 'timeline',           label: 'scrollDrawTimeline' },
-      { id: 'css-custom-property', label: 'CSS Custom Prop' },
-    ],
-  },
-  {
-    label: 'TypeScript',
-    items: [{ id: 'typescript', label: 'Types' }],
   },
 ];
 
@@ -141,20 +127,22 @@ const GROUP_OF: Record<string, string> = Object.fromEntries(
   NAV_GROUPS.flatMap((g) => g.items.map((i) => [i.id, g.label])),
 );
 
+/**
+ * Zone references, as on the drawing sheet that closes every page: a letter
+ * per sidebar group, a number per section in it — A1 Installation, B2 Trigger.
+ */
+// Drawing sheets skip I and O so a zone never reads as a one or a zero.
+const ZONE_LETTERS = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+const zoneLetter = (gi: number) => ZONE_LETTERS[gi] ?? `Z${gi}`;
+const ZONE: Record<string, string> = Object.fromEntries(
+  NAV_GROUPS.flatMap((g, gi) => g.items.map((it, ii) => [it.id, `${zoneLetter(gi)}${ii + 1}`])),
+);
+const isVersion = (t: string) => /^v\d/.test(t);
+
 // ── Primitives ────────────────────────────────────────────────────────────────
 
 function CodeBlock({ file, children }: { file: string; children: string }) {
-  return (
-    <div className="dc-code">
-      <div className="dc-code-head">
-        <span className="dc-code-file">{file}</span>
-        <CopyButton text={children} />
-      </div>
-      <pre className="dc-code-body">
-        <code>{children}</code>
-      </pre>
-    </div>
-  );
+  return <CodeBox file={file}>{children}</CodeBox>;
 }
 
 function Opt({
@@ -163,21 +151,17 @@ function Opt({
   name: string; type: string; defaultVal?: string; children: React.ReactNode;
 }) {
   return (
-    <div className="py-5 border-b border-subtle-ash last:border-0">
-      <div className="flex flex-wrap items-center gap-2 mb-2">
-        <code className="dc-opt-name">
-          {name}
-        </code>
-        <span className="dc-opt-type">
-          {type}
-        </span>
+    <div className="dc-opt">
+      <div className="dc-opt-l">
+        <code className="dc-opt-name">{name}</code>
+        <span className="dc-opt-type">{type}</span>
         {defaultVal && (
           <span className="dc-opt-default">
-            default: <strong className="text-pitch-black font-mono">{defaultVal}</strong>
+            default <strong>{defaultVal}</strong>
           </span>
         )}
       </div>
-      <p className="text-sm text-graphite-border leading-relaxed">{children}</p>
+      <p className="dc-opt-d">{children}</p>
     </div>
   );
 }
@@ -189,10 +173,14 @@ function DocSection({
 }) {
   return (
     <section id={id} className="dc-sec">
-      <p className="dc-kicker">
-        <span>{(GROUP_OF[id] ?? 'Docs').toLowerCase()}</span>
-        {tag !== GROUP_OF[id] && <span className="dc-tag">{tag}</span>}
-      </p>
+      <div className="dc-tb">
+        <span className="dc-tb-zone">{ZONE[id]}</span>
+        <span className="dc-tb-cell">{(GROUP_OF[id] ?? 'Docs').toLowerCase()}</span>
+        {tag !== GROUP_OF[id] && (
+          <span className="dc-tb-cell">{isVersion(tag) ? `since ${tag}` : tag.toLowerCase()}</span>
+        )}
+        <a href={`#${id}`} className="dc-tb-cell dc-tb-link" aria-label={`Link to ${heading}`}>#</a>
+      </div>
       <h2 className="dc-h2">{heading}</h2>
       {children}
     </section>
@@ -210,7 +198,7 @@ function Sub({ children }: { children: React.ReactNode }) {
 function Note({ children }: { children: React.ReactNode }) {
   return (
     <div className="dc-note">
-      <span className="font-semibold text-pitch-black">Note: </span>
+      <span className="dc-note-k">Note</span>
       {children}
     </div>
   );
@@ -219,7 +207,17 @@ function Note({ children }: { children: React.ReactNode }) {
 function OptGroup({ children }: { children: React.ReactNode }) {
   return (
     <div className="dc-opts">
-      <div className="px-4 sm:px-6 py-1">{children}</div>
+      {/* A dimension line over the sheet, inked as it scrolls in, carrying the real count. */}
+      <ScrollDraw className="dc-dim" selector=".dc-dim-ink" trigger={{ start: 'top 94%', end: 'top 64%' }} stagger={0.12} easing="ease-out" once>
+        <svg aria-hidden="true">
+          <line x1="0.5" y1="5" x2="0.5" y2="19" className="dc-dim-ink" stroke="currentColor" />
+          <line x1="0" y1="12" x2="100%" y2="12" className="dc-dim-ink" stroke="currentColor" />
+          <line x1="100%" y1="5" x2="100%" y2="19" className="dc-dim-ink" stroke="currentColor" />
+        </svg>
+        <span className="dc-dim-label">{Children.count(children)} {Children.count(children) === 1 ? 'option' : 'options'}</span>
+      </ScrollDraw>
+      <div className="dc-opts-h" aria-hidden="true"><span>option · type · default</span><span>what it does</span></div>
+      {children}
     </div>
   );
 }
@@ -228,17 +226,138 @@ function OptGroup({ children }: { children: React.ReactNode }) {
 
 export function DocsPage() {
   const [activeId, setActiveId] = useState('installation');
+  const sideRef = useRef<HTMLElement>(null);
+  const stripRef = useRef<HTMLDivElement>(null);
 
+  // Keep the active entry in view by moving the lists only as far as it takes:
+  // reading down, each new entry arrives at the bottom edge one row at a time
+  // (with two rows of what comes next showing); reading up, the same at the
+  // top. Only the lists move, never the page.
   useEffect(() => {
-    const sections = document.querySelectorAll('section[id]');
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => { if (e.isIntersecting) setActiveId(e.target.id); });
-      },
-      { rootMargin: '-15% 0% -75% 0%', threshold: 0 },
-    );
-    sections.forEach((s) => observer.observe(s));
-    return () => observer.disconnect();
+    const side = sideRef.current;
+    const link = side?.querySelector<HTMLElement>('[aria-current]');
+    if (side && link && side.offsetParent !== null) {
+      const top = link.getBoundingClientRect().top - side.getBoundingClientRect().top + side.scrollTop;
+      const bottom = top + link.offsetHeight;
+      const ahead = link.offsetHeight * 2;
+      if (bottom + ahead > side.scrollTop + side.clientHeight) {
+        side.scrollTo({ top: bottom + ahead - side.clientHeight, behavior: 'smooth' });
+      } else if (top - ahead < side.scrollTop) {
+        side.scrollTo({ top: Math.max(0, top - ahead), behavior: 'smooth' });
+      }
+    }
+    const strip = stripRef.current;
+    const pill = strip?.querySelector<HTMLElement>('[aria-current]');
+    if (strip && pill && strip.offsetParent !== null) {
+      const left = pill.getBoundingClientRect().left - strip.getBoundingClientRect().left + strip.scrollLeft;
+      const right = left + pill.offsetWidth;
+      const pad = 24;
+      if (right + pad > strip.scrollLeft + strip.clientWidth) {
+        strip.scrollTo({ left: right + pad - strip.clientWidth, behavior: 'smooth' });
+      } else if (left - pad < strip.scrollLeft) {
+        strip.scrollTo({ left: Math.max(0, left - pad), behavior: 'smooth' });
+      }
+    }
+  }, [activeId]);
+
+  // The active section is the last one whose top has passed a line a third of
+  // the way down the screen. Reading positions each frame (rather than waiting
+  // for intersection events) stays right however fast the page is scrolled.
+  //
+  // In-page links glide instead of jumping. While a glide runs, the highlight
+  // stays on the entry that was clicked rather than flickering through every
+  // section on the way; it is released when the scroll ends.
+  const lockRef = useRef<string | null>(null);
+  useEffect(() => {
+    const sections = Array.from(document.querySelectorAll<HTMLElement>('.dc-main section[id]'));
+    const root = document.querySelector<HTMLElement>('.docs');
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let raf = 0;
+    let timer = 0;
+
+    const read = () => {
+      raf = 0;
+      if (lockRef.current) return;
+      const line = window.innerHeight * 0.33;
+      const atBottom = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 4;
+      let current = sections[0]?.id;
+      for (const sec of sections) {
+        if (sec.getBoundingClientRect().top <= line) current = sec.id;
+        else break;
+      }
+      // The last sections can never reach the line; at the very bottom, the last one wins.
+      if (atBottom && sections.length) {
+        const last = sections[sections.length - 1];
+        if (last.getBoundingClientRect().top < window.innerHeight) current = last.id;
+      }
+      if (current) setActiveId(current);
+    };
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(read); };
+
+    // The hold ends when the page has reached the target — not on the first
+    // scrollend from anywhere — or as soon as the reader takes over.
+    let target: HTMLElement | null = null;
+    let started = 0;
+    const arrived = () => {
+      if (!target) return true;
+      const margin = parseFloat(getComputedStyle(target).scrollMarginTop) || 0;
+      const atBottom = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 4;
+      return Math.abs(target.getBoundingClientRect().top - margin) < 6 || atBottom;
+    };
+    const unlock = () => {
+      lockRef.current = null;
+      target = null;
+      window.clearTimeout(timer);
+      onScroll();
+    };
+    const release = () => { if (lockRef.current && arrived()) unlock(); };
+    const watch = () => {
+      timer = window.setTimeout(() => {
+        if (!lockRef.current) return;
+        if (arrived() || Date.now() - started > 6000) unlock();
+        else watch();
+      }, 160);
+    };
+    const takeOver = () => { if (lockRef.current) unlock(); };
+    const onClick = (e: MouseEvent) => {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      const a = (e.target as Element | null)?.closest?.('a[href^="#"]');
+      if (!a || !root?.contains(a)) return;
+      const id = decodeURIComponent((a.getAttribute('href') ?? '').slice(1));
+      const el = id ? document.getElementById(id) : null;
+      if (!el) return;
+      e.preventDefault();
+      window.clearTimeout(timer);
+      if (sections.some((sec) => sec.id === id)) {
+        lockRef.current = id;
+        target = el;
+        started = Date.now();
+        setActiveId(id);
+        watch();
+      }
+      el.scrollIntoView({ behavior: reduce.matches ? 'auto' : 'smooth', block: 'start' });
+      history.pushState(null, '', `#${id}`);
+    };
+
+    raf = requestAnimationFrame(read);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    window.addEventListener('scrollend', release);
+    window.addEventListener('wheel', takeOver, { passive: true });
+    window.addEventListener('touchstart', takeOver, { passive: true });
+    window.addEventListener('keydown', takeOver);
+    root?.addEventListener('click', onClick);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.clearTimeout(timer);
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      window.removeEventListener('scrollend', release);
+      window.removeEventListener('wheel', takeOver);
+      window.removeEventListener('touchstart', takeOver);
+      window.removeEventListener('keydown', takeOver);
+      root?.removeEventListener('click', onClick);
+    };
   }, []);
 
   return (
@@ -270,14 +389,14 @@ export function DocsPage() {
       </header>
 
       {/* Mobile section nav — scrollable pill strip */}
-      <div className="dc-strip md:hidden scrollbar-hide">
+      <div className="dc-strip md:hidden scrollbar-hide" ref={stripRef}>
         {NAV_GROUPS.flatMap((g) => g.items).map((item) => (
           <a
             key={item.id}
             href={`#${item.id}`}
             aria-current={activeId === item.id ? 'location' : undefined}
           >
-            {item.label}
+            <span className="dc-strip-ref">{ZONE[item.id]}</span> {item.label}
           </a>
         ))}
       </div>
@@ -285,10 +404,11 @@ export function DocsPage() {
       <div className="dc-cols">
 
         {/* Sidebar — desktop only */}
-        <aside className="dc-side hidden md:block" aria-label="Sections">
+        <aside className="dc-side hidden md:block" aria-label="Sections" ref={sideRef}>
           {NAV_GROUPS.map((group) => (
             <div key={group.label} className="mb-5">
               <p className="dc-side-group">
+                <span className="dc-side-zone">{zoneLetter(NAV_GROUPS.indexOf(group))}</span>
                 {group.label}
               </p>
               <ul>
@@ -299,6 +419,7 @@ export function DocsPage() {
                       className="dc-side-link"
                       aria-current={activeId === item.id ? 'location' : undefined}
                     >
+                      <span className="dc-side-ref">{ZONE[item.id]}</span>
                       {item.label}
                     </a>
                   </li>
@@ -320,22 +441,18 @@ export function DocsPage() {
                 See the migration guide →
               </Link>
             </p>
-            <div className="grid sm:grid-cols-2 gap-3">
+            <div className="dc-pm" role="list" aria-label="Install commands">
               {[
                 { pm: 'npm',  cmd: 'npm i svg-scroll-draw' },
                 { pm: 'pnpm', cmd: 'pnpm add svg-scroll-draw' },
                 { pm: 'yarn', cmd: 'yarn add svg-scroll-draw' },
                 { pm: 'bun',  cmd: 'bun add svg-scroll-draw' },
-              ].map(({ pm, cmd }) => (
-                <div
-                  key={pm}
-                  className="flex items-center justify-between gap-2 px-3 sm:px-4 py-3 rounded-xl border border-pitch-black bg-marketplace-gray font-mono text-[12px] sm:text-sm min-w-0"
-                >
-                  <span className="truncate">
-                    <span className="text-graphite-border select-none">$ </span>
-                    {cmd}
-                  </span>
-                  <CopyButton text={cmd} />
+              ].map(({ pm, cmd }, i) => (
+                <div key={pm} className="dc-pm-row" role="listitem">
+                  <span className="dc-pm-n">{String(i + 1).padStart(2, '0')}</span>
+                  <span className="dc-pm-k">{pm}</span>
+                  <code className="dc-pm-cmd"><span aria-hidden="true">$ </span>{cmd}</code>
+                  <span className="dc-pm-copy"><CopyButton text={cmd} /></span>
                 </div>
               ))}
             </div>

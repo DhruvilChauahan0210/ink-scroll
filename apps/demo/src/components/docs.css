@@ -29,144 +29,183 @@
 }
 @media (min-width: 768px) { .site .dc-cols { padding-left: 0; } }
 
-/* ── Sidebar ──────────────────────────────────────────────────────────── */
+/* ── Sidebar: a parts list with zone references ───────────────────────── */
 
 .site .dc-side {
   position: sticky;
   top: calc(var(--nav-h) + 20px);
   align-self: flex-start;
-  width: 236px;
+  width: 252px;
   flex: none;
   max-height: calc(100svh - var(--nav-h) - 20px);
   overflow-y: auto;
-  padding: 36px 20px 48px var(--gutter);
+  padding: 32px 18px 48px var(--gutter);
   border-right: 1px solid var(--line);
   scrollbar-width: thin;
 }
-.site .dc-side > div { margin-bottom: 22px; }
+.site .dc-side > div { margin-bottom: 20px; }
 .site .dc-side-group {
-  margin: 0 0 8px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 0 8px;
+  border-bottom: 1px solid var(--line-2);
   font: 500 10px/1.4 var(--mono);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--fg-3);
 }
+.site .dc-side-zone {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--line-2);
+  border-radius: 50%;
+  font-size: 9.5px;
+  letter-spacing: 0;
+  color: var(--fg-2);
+}
 .site .dc-side-link {
-  display: block;
-  padding: 5px 0 5px 12px;
-  margin-left: -1px;
-  border-left: 1px solid var(--line);
+  position: relative;
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  align-items: baseline;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--line);
   font-size: 13.5px;
   line-height: 1.35;
   color: var(--fg-2);
-  transition: color 0.2s, border-color 0.2s;
+  transition: color 0.2s;
 }
-.site .dc-side-link:hover { color: var(--fg); border-left-color: var(--fg-3); }
-.site .dc-side-link[aria-current] { color: var(--fg); border-left-color: var(--accent); font-weight: 500; }
+.site .dc-side-ref { font: 500 10.5px/1 var(--mono); letter-spacing: 0.04em; color: var(--fg-3); transition: color 0.2s; }
+.site .dc-side-link::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: -1px;
+  height: 1px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.45s var(--ease);
+}
+.site .dc-side-link:hover { color: var(--fg); }
+.site .dc-side-link[aria-current] { color: var(--fg); font-weight: 500; }
+.site .dc-side-link[aria-current] .dc-side-ref { color: var(--accent); }
+.site .dc-side-link[aria-current]::after { transform: scaleX(1); }
+.site .dc-strip-ref { color: var(--fg-3); }
+.site .dc-strip a[aria-current] .dc-strip-ref { color: inherit; opacity: 0.6; }
 
 .site .dc-main { flex: 1; min-width: 0; }
 @media (min-width: 768px) { .site .dc-main { padding: 0 clamp(28px, 4vw, 72px); } }
 
-/* ── Sections ─────────────────────────────────────────────────────────── */
+/* ── Sections: a title-block strip, then the heading ───────────────────── */
 
 .site .dc-sec {
   scroll-margin-top: calc(var(--nav-h) + 28px);
-  padding: clamp(44px, 5vw, 72px) 0;
+  padding: clamp(48px, 5.5vw, 80px) 0;
   border-bottom: 1px solid var(--line);
-  max-width: 900px;
+  max-width: 920px;
 }
 .site .dc-sec:last-child { border-bottom: 0; }
-.site .dc-kicker {
-  margin: 0 0 12px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font: 500 12px/1.4 var(--mono);
-  letter-spacing: 0.02em;
+.site .dc-tb {
+  display: inline-flex;
+  max-width: 100%;
+  margin-bottom: 20px;
+  border: 1px solid var(--line-2);
+  font: 500 10.5px/1 var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   color: var(--fg-3);
 }
-.site .dc-tag {
-  padding: 2px 8px;
-  border: 1px solid var(--line-2);
-  border-radius: 999px;
-  font-size: 10.5px;
-  letter-spacing: 0.06em;
-  color: var(--fg-2);
-}
+.site .dc-tb > * { display: flex; align-items: center; padding: 8px 12px; white-space: nowrap; }
+.site .dc-tb > * + * { border-left: 1px solid var(--line-2); }
+.site .dc-tb-zone { min-width: 46px; justify-content: center; color: var(--accent); letter-spacing: 0.04em; }
+.site .dc-tb-link { color: var(--fg-3); transition: color 0.2s, background-color 0.2s; }
+.site .dc-tb-link:hover { color: var(--fg); background: var(--bg-2); }
 .site .dc-h2 {
-  margin: 0 0 24px;
+  margin: 0 0 22px;
   font-family: var(--sans);
   font-weight: 500;
-  font-size: clamp(28px, 3vw, 46px);
-  line-height: 1.04;
-  letter-spacing: -0.035em;
+  font-size: clamp(30px, 3.3vw, 52px);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
   color: var(--fg);
   text-wrap: balance;
 }
 .site .dc-sub {
-  margin: 34px 0 10px;
+  margin: 36px 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
   font: 500 11px/1.4 var(--mono);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--fg-3);
 }
+.site .dc-sub::before { content: ''; width: 22px; height: 1px; background: var(--accent); }
 .site .dc-note {
   margin: 18px 0;
-  padding: 12px 16px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid var(--line-2);
   border-left: 2px solid var(--accent);
-  background: var(--accent-2);
   font-size: 14px;
   line-height: 1.6;
   color: var(--fg-2);
 }
+.site .dc-note-k { font: 500 10px/2.2 var(--mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); }
 
-/* ── Options ──────────────────────────────────────────────────────────── */
+/* ── Install: a parts list ────────────────────────────────────────────── */
 
-.site .dc-opts { border: 1px solid var(--line-2); border-top-color: var(--fg-3); }
-.site .dc-opt-name {
-  padding: 2px 8px;
-  border: 1px solid var(--line);
-  background: var(--bg-2);
-  font: 600 13px/1.5 var(--mono);
-  color: var(--fg);
+.site .dc-pm { border-top: 1px solid var(--fg-3); }
+.site .dc-pm-row {
+  display: grid;
+  grid-template-columns: 40px 56px minmax(0, 1fr) auto;
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+  transition: background-color 0.2s;
 }
-.site .dc-opt-type {
-  padding: 2px 9px;
-  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
-  border-radius: 999px;
-  font: 500 11px/1.5 var(--mono);
-  color: var(--accent);
-}
-.site .dc-opt-default {
-  padding: 2px 9px;
-  border: 1px solid var(--line-2);
-  border-radius: 999px;
-  font: 500 11px/1.5 var(--mono);
+.site .dc-pm-row:hover { background: var(--bg-2); }
+.site .dc-pm-row > * { padding: 12px 10px; min-width: 0; }
+.site .dc-pm-n { font: 500 10.5px/1 var(--mono); color: var(--fg-3); }
+.site .dc-pm-k { font: 500 10.5px/1 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-2); }
+.site .dc-pm-cmd { font: 400 14px/1.4 var(--mono); color: var(--fg); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.site .dc-pm-cmd span { color: var(--accent); }
+
+/* ── Options: a spec sheet ────────────────────────────────────────────── */
+
+.site .dc-opts { border-top: 1px solid var(--fg-3); }
+.site .dc-opts-h {
+  display: none;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line-2);
+  font: 500 10px/1.4 var(--mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   color: var(--fg-3);
 }
-.site .dc-opt-default strong { color: var(--fg); font-weight: 500; }
-
-/* ── Code ─────────────────────────────────────────────────────────────── */
-
-.site .dc-code { margin: 16px 0; border: 1px solid var(--line-2); background: var(--panel); }
-.site .dc-code-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 8px 8px 8px 16px;
-  border-bottom: 1px solid var(--line);
-  background: var(--bg-2);
+.site .dc-opt { display: grid; gap: 10px; padding: 18px 0; border-bottom: 1px solid var(--line); }
+@media (min-width: 900px) {
+  .site .dc-opts-h, .site .dc-opt { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 28px; }
 }
-.site .dc-code-file { font: 500 11px/1.4 var(--mono); letter-spacing: 0.04em; color: var(--fg-3); }
-.site .dc-code-body {
-  margin: 0;
-  padding: 16px 20px;
-  overflow-x: auto;
-  font: 400 12.5px/1.75 var(--mono);
-  color: var(--fg);
-  tab-size: 2;
-}
+.site .dc-opt-l { display: flex; flex-direction: column; align-items: flex-start; gap: 7px; min-width: 0; }
+.site .dc-opt-name { font: 600 14px/1.3 var(--mono); color: var(--fg); }
+.site .dc-opt-type { max-width: 100%; font: 500 11px/1.45 var(--mono); color: var(--accent); overflow-wrap: anywhere; }
+.site .dc-opt-default { font: 500 11px/1.45 var(--mono); color: var(--fg-3); }
+.site .dc-opt-default strong { color: var(--fg-2); font-weight: 500; }
+.site .dc-opt-d { margin: 0; font-size: 14.5px; line-height: 1.65; color: var(--fg-2); }
+
+/* ── Tables ───────────────────────────────────────────────────────────── */
+
+.site .docs table { border: 0; border-collapse: collapse; border-top: 1px solid var(--fg-3); }
+.site .docs thead tr { background: transparent; color: var(--fg-3); }
+.site .docs th { font: 500 10px/1.4 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; border-bottom: 1px solid var(--line-2); }
+.site .docs td { border-bottom: 1px solid var(--line); vertical-align: top; color: var(--fg-2); }
+.site .docs td:first-child { font-family: var(--mono); color: var(--fg); }
 
 /* ── The opening: copy beside the anatomy of a call ──────────────────── */
 
@@ -200,3 +239,24 @@
 @media (prefers-reduced-motion: reduce) {
   .site .an-dot, .site .an-k, .site .an-v, .site .an-code { animation: none; opacity: 1; }
 }
+
+/* The dimension line over each option sheet. */
+.site .dc-dim { position: relative; height: 24px; margin-bottom: 10px; color: var(--accent); }
+.site .dc-dim svg { position: absolute; inset: 0; width: 100%; height: 24px; overflow: visible; }
+.site .dc-dim-ink { stroke-width: 1; fill: none; }
+.site .dc-dim-label {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  padding: 0 12px;
+  background: var(--bg);
+  font: 500 10.5px/1 var(--mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-2);
+  white-space: nowrap;
+}
+.site .dc-opts { border-top: 0; }
+.site .dc-opts-h { border-top: 1px solid var(--fg-3); }
+@media (max-width: 899px) { .site .dc-opts > .dc-opt:first-of-type { border-top: 1px solid var(--fg-3); } }

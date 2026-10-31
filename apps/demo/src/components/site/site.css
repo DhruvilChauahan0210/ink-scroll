@@ -91,3 +91,51 @@
   font-variant-numeric: tabular-nums;
   color: var(--fg);
 }
+
+/* ── Shared pieces: code listings, tags, pills ───────────────────────── */
+
+.site .code-box { margin: 16px 0; border: 1px solid var(--line-2); background: var(--panel); min-width: 0; }
+.site .code-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-2);
+}
+.site .code-head > span { display: flex; align-items: center; padding: 7px 14px; min-width: 0; }
+.site .code-file { font: 500 11px/1.4 var(--mono); letter-spacing: 0.04em; color: var(--fg-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.site .code-meta, .site .code-copy { border-left: 1px solid var(--line); }
+.site .code-meta { font: 500 10px/1.4 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-3); }
+.site .code-copy { padding: 4px 8px !important; }
+.site .code-body {
+  margin: 0;
+  padding: 14px 20px 16px;
+  overflow-x: auto;
+  font: 400 12.5px/1.8 var(--mono);
+  color: var(--fg);
+  tab-size: 2;
+  counter-reset: ln;
+}
+.site .is-numbered .code-body { padding-left: 0; }
+.site .is-numbered .code-ln::before {
+  counter-increment: ln;
+  content: counter(ln);
+  display: inline-block;
+  width: 3em;
+  height: 1.8em;
+  margin-right: 1.2em;
+  padding-right: 0.9em;
+  vertical-align: top;
+  text-align: right;
+  border-right: 1px solid var(--line);
+  color: var(--fg-3);
+  user-select: none;
+}
+
+.site .tag {
+  padding: 2px 8px;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  font: 500 10.5px/1.4 var(--mono);
+  letter-spacing: 0.06em;
+  color: var(--fg-2);
+}

@@ -89,7 +89,7 @@ at all.
 
 ### Pages
 - [x] `/` — redesigned (branch `feat/homepage-redesign`): every drawing a real use case, inked by scroll over a pencil underdrawing — an exploded fountain-pen hero that assembles on scroll, use-case gallery, watch-movement blueprint, red-pen proof sheet, GSAP weighed on a balance, eight API blueprint plates on a sideways rail, browser-test gauges + size-budget meter, framework circuit board, before / after browser windows for the drop-ins, live GitHub + npm numbers with a 30-day download line, engineering-sheet footer; dark default, ink-on-paper light
-- [x] `/docs` — in the homepage's design via `SiteShell`: glass nav with the section marked, an opening with the version / weight / test cells beside fig. 1 (a real `scrollDraw()` call with a leader from each part to its section), new section heads, sidebar, option chips and code blocks, the sign-off sheet as footer
+- [x] `/docs` — in the homepage's design via `SiteShell`: glass nav with the section marked, an opening with the version / weight / test cells beside fig. 1 (a real `scrollDraw()` call with a leader from each part to its section), zone references and title-block strips per section, a parts-list sidebar in page order that follows the reader one row at a time, gliding in-page links, a parts-list install table, spec-sheet options under inked dimension lines, numbered code listings, the sign-off sheet as footer
 - [x] `/examples` — 23 examples with framework filter
 - [x] `/docs` — full API reference including v2.0–2.2 nav group with all 6 new APIs documented
 - [x] `/playground` — interactive SVG editor

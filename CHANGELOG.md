@@ -18,9 +18,17 @@ All notable changes to `svg-scroll-draw` are documented here.
   rewriting every utility. `/docs` gets an opening in the homepage's type (with
   the version, weight and test counts as hairline cells) beside fig. 1, one
   real `scrollDraw()` call set in type with a leader from each part to the
-  section that documents it, inked by the library on load; section kickers,
-  headings, the sidebar, option chips and code blocks all follow the new type.
-  The old nav, which still said v2.10.0, is gone. The homepage's test counts
+  section that documents it, inked by the library on load. The body reads as
+  a drawing sheet: every section has a zone reference (A1 Installation, B2
+  Trigger — letters skip I and O, as on drawings) in a title-block strip with
+  the version that added it; the sidebar is a parts list in the page's own
+  order (it was grouped by version, so the highlight leapt around while
+  reading); install commands are a parts-list table; options are a spec sheet
+  under a dimension line the library inks as it scrolls in, carrying the real
+  count; code is a numbered listing. The sidebar keeps the current entry in
+  view by moving one row at a time, and in-page links glide to their section
+  with the highlight held on the clicked entry until it arrives. The old nav,
+  which still said v2.10.0, is gone. The homepage's test counts
   moved to `data/facts.ts` so every page's sign-off can quote them; check:claims
   reads it.
 
