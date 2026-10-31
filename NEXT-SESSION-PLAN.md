@@ -18,6 +18,10 @@ Numbers that set the priorities (Search Console and npm, 2026-10-30): 4,020
 lifetime downloads, ~170 a month; 5 GitHub stars; 147 Google clicks in five
 months, 81% to the homepage; `/vs-gsap` at position 11 with 425 impressions.
 
+### In flight
+- Branch `feat/drop-in-starters`: StackBlitz starters for each drop-in, linked from the
+  comparison pages. Site and docs only — no npm release needed.
+
 ### Shipped since
 - **2.14.0** — `npx svg-scroll-draw migrate`: one command to switch from AOS,
   ScrollReveal or vivus.

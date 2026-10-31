@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ScrollReveal → svg-scroll-draw/scrollreveal</title>
+    <style>
+      :root { color-scheme: light; --ink: #17181c; --muted: #5d6068; --line: #e3e2dc; --accent: #2d55d8; }
+      * { box-sizing: border-box; }
+      body { margin: 0; font: 16px/1.55 system-ui, sans-serif; color: var(--ink); background: #fafaf7; }
+      header, section { max-width: 760px; margin: 0 auto; padding: 0 16px; }
+      header { min-height: 92vh; display: grid; align-content: center; gap: 12px; }
+      h1 { font-size: clamp(32px, 6vw, 56px); line-height: 1.05; margin: 0; }
+      code { background: #eeede7; padding: 2px 6px; border-radius: 4px; font-size: 0.9em; }
+      .note { color: var(--muted); max-width: 56ch; margin: 0; }
+      .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; padding-block: 40vh; }
+      .card { border: 2px solid var(--ink); border-radius: 12px; padding: 20px; background: #fff; }
+      footer { text-align: center; color: var(--muted); padding: 40vh 16px 80px; }
+    </style>
+    <style>
+      /* The usual ScrollReveal anti-flash rule: hide until the library has started. */
+      html.sr .card { visibility: hidden; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1 class="headline">This page was built with ScrollReveal.</h1>
+      <p class="note">Every <code>ScrollReveal().reveal()</code> call in <code>main.js</code> is untouched. The only change is the
+        import — and the licence, from GPL-3.0 to MIT. Scroll down.</p>
+    </header>
+    <section class="grid">
+      <div class="card">interval sequence · 1</div>
+      <div class="card">interval sequence · 2</div>
+      <div class="card">interval sequence · 3</div>
+      <div class="card">interval sequence · 4</div>
+      <div class="card photo">scale + reset (scroll back up)</div>
+      <div class="card photo">scale + reset (scroll back up)</div>
+    </section>
+    <footer>That is all of it. <code>npx svg-scroll-draw migrate</code> makes the same change in your project.</footer>
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>

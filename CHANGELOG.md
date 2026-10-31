@@ -4,6 +4,20 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ---
 
+## [Unreleased]
+
+### Site and examples
+
+- `examples/aos`, `examples/scrollreveal` and `examples/vivus`: pages written
+  for the original library with only the import changed, opening on StackBlitz
+  with no install. Linked from `/vs-aos` (both drop-in sections), `/vs-vivus`
+  (a new optional `tryUrl` on comparison pages), each README drop-in section and
+  `examples/README.md`. Each was installed from npm, built and scrolled in
+  Chromium: every AOS element animated, every ScrollReveal element revealed,
+  every vivus path drawn, no errors.
+
+---
+
 ## [2.14.0] — 2026-10-31
 
 ### Added

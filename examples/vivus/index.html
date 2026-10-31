@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>vivus → svg-scroll-draw/vivus</title>
+    <style>
+      :root { color-scheme: light; --ink: #17181c; --muted: #5d6068; --line: #e3e2dc; --accent: #2d55d8; }
+      * { box-sizing: border-box; }
+      body { margin: 0; font: 16px/1.55 system-ui, sans-serif; color: var(--ink); background: #fafaf7; }
+      header, section { max-width: 760px; margin: 0 auto; padding: 0 16px; }
+      header { min-height: 92vh; display: grid; align-content: center; gap: 12px; }
+      h1 { font-size: clamp(32px, 6vw, 56px); line-height: 1.05; margin: 0; }
+      code { background: #eeede7; padding: 2px 6px; border-radius: 4px; font-size: 0.9em; }
+      .note { color: var(--muted); max-width: 56ch; margin: 0; }
+      .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; padding-block: 40vh; }
+      .card { border: 2px solid var(--ink); border-radius: 12px; padding: 20px; background: #fff; }
+      footer { text-align: center; color: var(--muted); padding: 40vh 16px 80px; }
+    </style>
+    <style>
+      svg { width: min(520px, 100%); height: auto; display: block; margin: 0 auto; }
+      button { font: inherit; padding: 8px 16px; border: 2px solid var(--ink); border-radius: 999px; background: #fff; cursor: pointer; }
+      .stage { display: grid; gap: 16px; justify-items: center; padding-block: 30vh; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>This page was built with vivus.</h1>
+      <p class="note">Both <code>new Vivus()</code> calls in <code>main.js</code> are untouched. The only change is the import.</p>
+      <svg id="logo" viewBox="0 0 300 120" fill="none" stroke="#17181c" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 90 C 40 20, 80 20, 100 90" />
+        <circle cx="150" cy="60" r="30" />
+        <rect x="200" y="30" width="70" height="60" rx="10" />
+      </svg>
+      <p><button id="replay" type="button">Play again</button></p>
+    </header>
+    <section class="stage">
+      <p class="note">This one starts when it is fully in view (<code>start: 'inViewport'</code>, vivus's default).</p>
+      <svg id="chart" viewBox="0 0 300 160" fill="none" stroke="#2d55d8" stroke-width="3">
+        <line x1="20" y1="140" x2="280" y2="140" stroke="#17181c" />
+        <polyline points="20,130 70,90 120,110 170,50 220,70 270,20" />
+        <polygon points="150,150 160,130 170,150" stroke="#17181c" />
+      </svg>
+    </section>
+    <footer>That is all of it. <code>npx svg-scroll-draw migrate</code> makes the same change in your project.</footer>
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>

@@ -209,6 +209,9 @@ npx svg-scroll-draw migrate`}</CodeBlock>
             <code className="font-mono text-[0.9em]">aos:in</code> / <code className="font-mono text-[0.9em]">aos:out</code> events and class
             name options work too.
           </p>
+          <a href="https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/aos" target="_blank" rel="noopener noreferrer" className="inline-block mt-6 px-5 py-2.5 rounded-full bg-creator-pink border border-pitch-black text-sm font-semibold hover:opacity-90 transition-opacity">
+            Try the AOS drop-in on StackBlitz →
+          </a>
         </div>
       </section>
 
@@ -233,6 +236,9 @@ ScrollReveal({ distance: '40px' }).reveal('.card', { interval: 80 });`}</CodeBlo
 <script src="https://unpkg.com/svg-scroll-draw/dist/cdn/scrollreveal.global.js"></script>
 <script>ScrollReveal().reveal('.card');</script>`}</CodeBlock>
           </div>
+          <a href="https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/scrollreveal" target="_blank" rel="noopener noreferrer" className="inline-block mt-6 px-5 py-2.5 rounded-full bg-creator-pink border border-pitch-black text-sm font-semibold hover:opacity-90 transition-opacity">
+            Try the ScrollReveal drop-in on StackBlitz →
+          </a>
         </div>
       </section>
 

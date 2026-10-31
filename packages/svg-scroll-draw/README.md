@@ -375,6 +375,8 @@ inside the module. 3.0 KB gzipped with the styles, against 6.7 KB for AOS 2.3.4 
   AOS.init({ once: true });
 ```
 
+[Try it on StackBlitz](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/aos) — a page written for the original library, with only the import changed.
+
 No bundler? Swap the script tag, and drop the stylesheet link:
 
 ```html
@@ -413,6 +415,8 @@ implementation of the same API, so the move is an import change — or one comma
   ScrollReveal({ distance: '40px', duration: 800 }).reveal('.card', { interval: 80 });
 ```
 
+[Try it on StackBlitz](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/scrollreveal) — a page written for the original library, with only the import changed.
+
 No bundler? `<script src="https://unpkg.com/svg-scroll-draw/dist/cdn/scrollreveal.global.js"></script>`
 defines `window.ScrollReveal` as the function, like ScrollReveal's own file. With CommonJS,
 `require('svg-scroll-draw/scrollreveal').default` is the function.
@@ -444,6 +448,8 @@ On [vivus](https://github.com/maxwellito/vivus)? It has not shipped since 0.4.6 
 
   new Vivus('my-svg', { type: 'oneByOne', duration: 200 }, () => console.log('drawn'));
 ```
+
+[Try it on StackBlitz](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/vivus) — a page written for the original library, with only the import changed.
 
 No bundler? `<script src="https://unpkg.com/svg-scroll-draw/dist/cdn/vivus.global.js"></script>`
 defines `window.Vivus`. With CommonJS, `require('svg-scroll-draw/vivus').default` is the class.

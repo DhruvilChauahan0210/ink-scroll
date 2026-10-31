@@ -38,6 +38,8 @@ export type Versus = {
   theirWins: { title: string; desc: string }[];
   faq: { q: string; a: string }[];
   sizeNote: string;
+  /** A runnable starter for the drop-in, when there is one. */
+  tryUrl?: { href: string; label: string };
 };
 
 const us = SELF.gzipKb;
@@ -95,6 +97,7 @@ export const VERSUS: Versus[] = [
     ],
     sizeNote:
       'Measured from vivus 0.4.6 dist/vivus.min.js and the built svg-scroll-draw/vivus entry, gzip level 9.',
+    tryUrl: { href: 'https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/vivus', label: 'Try the vivus drop-in on StackBlitz →' },
   },
   {
     slug: 'vs-scrollmagic',

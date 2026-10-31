@@ -127,6 +127,10 @@ at all.
 
 ## Remaining / Next
 
+### Unreleased — drop-in starters (branch `feat/drop-in-starters`, 2026-10-31)
+- [x] `examples/aos`, `examples/scrollreveal`, `examples/vivus` (StackBlitz), linked from the comparison pages and READMEs
+- [x] Each installed from npm (2.14.0), built and checked in Chromium with no errors
+
 ### 2.14.0 — migrate CLI (branch `feat/migrate-cli`, 2026-10-31)
 - [x] `npx svg-scroll-draw migrate` (imports, CDN tags, aos.css, package.json; `--dry-run`, git-dirty guard)
 - [x] 17 unit tests; real Vite apps migrated, installed and built; CDN page loads with no errors

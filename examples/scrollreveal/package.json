@@ -1,0 +1,15 @@
+{
+  "name": "svg-scroll-draw-scrollreveal-drop-in",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "svg-scroll-draw": "^2.13.0"
+  },
+  "devDependencies": {
+    "vite": "^6.3.5"
+  }
+}

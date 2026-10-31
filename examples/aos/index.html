@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AOS → svg-scroll-draw/aos</title>
+    <style>
+      :root { color-scheme: light; --ink: #17181c; --muted: #5d6068; --line: #e3e2dc; --accent: #2d55d8; }
+      * { box-sizing: border-box; }
+      body { margin: 0; font: 16px/1.55 system-ui, sans-serif; color: var(--ink); background: #fafaf7; }
+      header, section { max-width: 760px; margin: 0 auto; padding: 0 16px; }
+      header { min-height: 92vh; display: grid; align-content: center; gap: 12px; }
+      h1 { font-size: clamp(32px, 6vw, 56px); line-height: 1.05; margin: 0; }
+      code { background: #eeede7; padding: 2px 6px; border-radius: 4px; font-size: 0.9em; }
+      .note { color: var(--muted); max-width: 56ch; margin: 0; }
+      .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; padding-block: 40vh; }
+      .card { border: 2px solid var(--ink); border-radius: 12px; padding: 20px; background: #fff; }
+      footer { text-align: center; color: var(--muted); padding: 40vh 16px 80px; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>This page was built with AOS.</h1>
+      <p class="note">Every <code>data-aos</code> attribute below is untouched AOS markup. The only change is one import in
+        <code>main.js</code> — and <code>aos.css</code> is gone, because the drop-in ships its styles. Scroll down.</p>
+    </header>
+    <section class="grid">
+      <div class="card" data-aos="fade-up">fade-up</div>
+      <div class="card" data-aos="fade-up" data-aos-delay="150">fade-up, delay 150</div>
+      <div class="card" data-aos="zoom-in">zoom-in</div>
+      <div class="card" data-aos="flip-left" data-aos-duration="900">flip-left, 900 ms</div>
+      <div class="card" data-aos="fade-right" data-aos-easing="ease-out-back">fade-right, ease-out-back</div>
+      <div class="card" data-aos="slide-up" data-aos-anchor-placement="center-bottom">slide-up, center-bottom</div>
+    </section>
+    <footer>That is all of it. <code>npx svg-scroll-draw migrate</code> makes the same change in your project.</footer>
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>

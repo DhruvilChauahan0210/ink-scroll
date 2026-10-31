@@ -78,6 +78,11 @@ export function VersusPage({ slug }: { slug: string }) {
                 <span className="opacity-50">$</span>
                 <span>npm i svg-scroll-draw</span>
               </div>
+              {v.tryUrl && (
+                <a href={v.tryUrl.href} target="_blank" rel="noopener noreferrer" className="px-5 py-2.5 rounded-full bg-creator-pink text-pitch-black border border-pitch-black text-sm font-semibold hover:opacity-90 transition-opacity">
+                  {v.tryUrl.label}
+                </a>
+              )}
               <Link href="/examples" className="px-5 py-2.5 rounded-full border border-pitch-black text-sm font-medium hover:bg-pitch-black hover:text-light-linen transition-colors">
                 23 live examples →
               </Link>
