@@ -23,4 +23,12 @@ export const SHOWCASE: Record<string, Showcase> = {
     width: 1920,
     height: 1200,
   },
+  'line-chart': {
+    slug: 'ledgerline',
+    brand: 'Ledgerline',
+    what: 'Revenue analytics for subscription businesses',
+    image: '/showcase/ledgerline.webp',
+    width: 1920,
+    height: 1200,
+  },
 };

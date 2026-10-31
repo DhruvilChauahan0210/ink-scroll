@@ -21,8 +21,10 @@ months, 81% to the homepage; `/vs-gsap` at position 11 with 425 impressions.
 ### Showcase sites (one per example, in progress)
 - Each example gets a complete demo site for a fictional company, linked from its card
   and its page. The owner wants real products, not this site's ink style. Done: Ferrow
-  (`/showcase/ferrow` → logo-reveal). Next: Ledgerline (line-chart; its in-card scene is
-  `components/examples/scenes/ChartScene.tsx`), then the rest one by one.
+  (`/showcase/ferrow` → logo-reveal), Ledgerline (`/showcase/ledgerline` → line-chart).
+  Next: signature, flowchart (checkout), map-route, network, then the rest one by one.
+  Capture the image where the example's effect is drawn (capture.mjs scrolls to a
+  selector), not always the hero.
 - To add one: build it in `src/showcase/<slug>/` with its own CSS and the `BuiltWith`
   tab; add `app/showcase/<slug>/page.tsx` (robots noindex); capture its first screen
   (Playwright at 1440×900, demo tab hidden) to `public/showcase/<slug>.webp`; add it to

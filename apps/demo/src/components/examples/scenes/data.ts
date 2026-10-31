@@ -31,25 +31,27 @@ export const SCENES: Record<string, SceneData> = {
    .is-sealed .fill { opacity: 1 } */`,
   },
   'line-chart': {
-    label: 'Revenue chart in a dashboard',
+    label: 'Ledgerline',
     tag: 'selector · stagger · onProgress',
     description:
-      "A billing dashboard's MRR card: last year's line and this year's draw in a stagger as the card scrolls in, then the area fill and the December tooltip follow the draw's progress.",
+      "A full marketing site for a fictional subscription-analytics product. The dashboard's MRR lines plot themselves as it scrolls in, with the fill and the December tooltip following the draw; cohort curves fan out, a forecast draws past today with its confidence band widening, and three sparklines draw together.",
     code: `const card = useRef<HTMLDivElement>(null);
 
 <ScrollDraw
   selector=".line" stagger={0.18} easing="ease-out" once
+  trigger={{ start: 'top 90%', end: 'top 30%' }}
   onProgress={(p) => card.current?.style.setProperty('--p', String(p))}
 >
-  <svg viewBox="0 0 520 200" className="mrr">
-    <path className="grid" d="M8 157 H512 M8 100 H512 M8 43 H512" />
-    <path className="area" d={smooth(thisYear) + ' L512 186 L8 186 Z'} />
+  <svg viewBox="0 0 760 240" preserveAspectRatio="none" className="mrr">
+    <path className="grid" d="M6 155 H754 M6 120 H754 M6 85 H754" />
+    <path className="area" d={smooth(thisYear) + ' L754 226 L6 226 Z'} />
     <path className="line prev" d={smooth(lastYear)} />
     <path className="line now"  d={smooth(thisYear)} />
   </svg>
 </ScrollDraw>
 
 /* .area    { opacity: calc((var(--p) - .6) * 2.5) }
-   .tooltip { opacity: calc((var(--p) - .92) * 12.5) } */`,
+   .tooltip { opacity: calc((var(--p) - .93) * 14) } */`,
   },
+
 };

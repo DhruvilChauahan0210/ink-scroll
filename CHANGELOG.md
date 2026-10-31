@@ -41,7 +41,11 @@ All notable changes to `svg-scroll-draw` are documented here.
   logo-reveal example) — the emblem draws on load and `onComplete` floods it
   with the brand colours; origin drawings, farm-to-roastery routes, a roast
   profile whose milestones follow `onProgress`, and the head roaster's
-  signature draw as you scroll. Showcase sites carry a "demo site" tab that
+  signature draw as you scroll. Second: **Ledgerline** (`/showcase/ledgerline`,
+  the revenue-chart example), a subscription-analytics product — the
+  dashboard's MRR lines plot on scroll with the fill and tooltip following
+  `onProgress`, cohort curves fan out, a forecast draws past today with a
+  widening confidence band, and three sparklines draw together. Showcase sites carry a "demo site" tab that
   links back to the example, and are kept out of search results.
 - **`/examples` rebuilt as a catalogue of drawings.** The 23 previews were
   the old site — Discord blurple, pink and yellow, emoji, the Syne display
