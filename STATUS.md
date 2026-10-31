@@ -88,7 +88,7 @@ at all.
 ## Demo App (`apps/demo`)
 
 ### Pages
-- [x] `/` — redesigned (branch `feat/homepage-redesign`): paper/ink/vermilion, Big Shoulders display type, Lenis smooth scroll, ink preloader; a pinned `scrollDraw` contour chapter, `scrollText` manifesto, eight-API editorial list, `scrollCounter` numbers, drawn weight bars, inverted finale with cropped wordmark; both themes scoped under `.home`
+- [x] `/` — redesigned (branch `feat/homepage-redesign`): paper/ink/vermilion, Instrument Serif headlines, Lenis, ink preloader; a generative ink-field hero with pointer parallax and a brush-trail cursor, a pinned `scrollDraw` contour chapter, `scrollText` manifesto, the eight APIs on a pinned horizontal rail, `scrollCounter` numbers, drawn weight bars, a sticky reveal finale; both themes scoped under `.home`
 - [x] `/examples` — 23 examples with framework filter
 - [x] `/docs` — full API reference including v2.0–2.2 nav group with all 6 new APIs documented
 - [x] `/playground` — interactive SVG editor

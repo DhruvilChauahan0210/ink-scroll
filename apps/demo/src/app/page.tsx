@@ -10,7 +10,12 @@ import { ContourDraw } from '@/components/home/ContourDraw';
 import { Manifesto } from '@/components/home/Manifesto';
 import { Counters } from '@/components/home/Counters';
 import { VersusBars } from '@/components/home/VersusBars';
-import { Reveal } from '@/components/home/Reveal';
+import { InkField } from '@/components/home/InkField';
+import { InkTrail } from '@/components/home/InkTrail';
+import { Cursor } from '@/components/home/Cursor';
+import { Progress } from '@/components/home/Progress';
+import { ApiRail } from '@/components/home/ApiRail';
+import { ScrollFx } from '@/components/home/ScrollFx';
 import { CodeTabs } from '@/components/home/CodeTabs';
 import { CopyCommand } from '@/components/home/CopyCommand';
 import { COMPETITORS, SELF, MEASURED_ON } from '@/data/competitors';
@@ -31,7 +36,7 @@ const display = Big_Shoulders({
 const serif = Instrument_Serif({
   subsets: ['latin'],
   weight: '400',
-  style: ['italic'],
+  style: ['normal', 'italic'],
   variable: '--font-ink-serif',
   display: 'swap',
 });
@@ -99,9 +104,11 @@ export default function HomePage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <SmoothScroll />
       <Preloader />
+      <Cursor />
 
       {/* ── Nav ──────────────────────────────────────────────────────── */}
       <header className="nav">
+        <Progress />
         <Link href="/" className="nav-brand" aria-label="svg-scroll-draw home">
           <Mark />
           svg-scroll-draw
@@ -122,32 +129,42 @@ export default function HomePage() {
 
       <main>
         {/* ── Hero ─────────────────────────────────────────────────── */}
-        <section className="hero" aria-label="Introduction">
-          <h1 className="hero-words">
-            <span className="mask" style={{ '--i': 0 } as React.CSSProperties}><span>The page</span></span>
-            <span className="mask is-serif" style={{ '--i': 1 } as React.CSSProperties}><span>draws</span></span>
-            <span className="mask is-offset" style={{ '--i': 2 } as React.CSSProperties}><span>itself.</span></span>
-          </h1>
-          <div className="hero-foot">
-            <div>
-              <p className="hero-lede">
-                <b>svg-scroll-draw</b> is an SVG and scroll animation library. It draws paths, reveals
-                content, pins sections, splits text and scrubs video from scroll — on the browser’s own
-                scroll timeline wherever it can.
-              </p>
-              <div className="hero-meta label">
-                <span><b>{SELF.gzipKb} KB</b> gzipped</span>
-                <span><b>0</b> dependencies</span>
-                <span><b>623</b> tests</span>
-                <span><b>MIT</b></span>
+        <section className="hero" aria-label="Introduction" data-cursor="draw">
+          <InkField />
+          <InkTrail />
+          <ScrollFx
+            className="hero-inner"
+            props={{ opacity: [1, 0], transform: ['translateY(0px)', 'translateY(-90px)'] }}
+            trigger={{ start: 'top top', end: 'bottom top' }}
+            triggerSelector=".hero"
+            easing="ease-in"
+          >
+            <h1 className="hero-words">
+              <span className="mask" style={{ '--i': 0 } as React.CSSProperties}><span>The page</span></span>
+              <span className="mask is-italic" style={{ '--i': 1 } as React.CSSProperties}><span>draws</span></span>
+              <span className="mask is-offset" style={{ '--i': 2 } as React.CSSProperties}><span>itself.</span></span>
+            </h1>
+            <div className="hero-foot">
+              <div>
+                <p className="hero-lede">
+                  <b>svg-scroll-draw</b> is an SVG and scroll animation library. It draws paths, reveals
+                  content, pins sections, splits text and scrubs video from scroll — on the browser’s own
+                  scroll timeline wherever it can.
+                </p>
+                <div className="hero-meta label">
+                  <span><b>{SELF.gzipKb} KB</b> gzipped</span>
+                  <span><b>0</b> dependencies</span>
+                  <span><b>623</b> tests</span>
+                  <span><b>MIT</b></span>
+                </div>
+              </div>
+              <div className="hero-cta">
+                <CopyCommand />
+                <Link href="/docs" className="btn btn-solid" data-magnetic data-cursor="">Read the docs</Link>
+                <span className="scroll-cue label"><i /> scroll</span>
               </div>
             </div>
-            <div className="hero-cta">
-              <CopyCommand />
-              <Link href="/docs" className="btn btn-solid">Read the docs</Link>
-              <span className="scroll-cue label"><i /> scroll</span>
-            </div>
-          </div>
+          </ScrollFx>
         </section>
 
         {/* ── 01 Draw ──────────────────────────────────────────────── */}
@@ -164,30 +181,20 @@ export default function HomePage() {
           <Manifesto />
         </section>
 
-        {/* ── 03 Instruments ───────────────────────────────────────── */}
-        <section className="chapter" aria-labelledby="inst-title">
+        {/* ── 03 Instruments (horizontal rail) ─────────────────────── */}
+        <section className="chapter chapter-rail" aria-labelledby="inst-title">
           <div className="chapter-head">
             <span className="label"><b>03</b> / the toolkit</span>
             <div>
               <h2 id="inst-title" className="h2">Eight <em>instruments,</em> one hand.</h2>
               <p className="body">
                 Every API is its own entry point with the same instance shape — destroy, replay,
-                pause, resume, seek, getProgress — so learning one teaches you the rest.
+                pause, resume, seek, getProgress — so learning one teaches you the rest. Keep scrolling;
+                the rail moves sideways.
               </p>
             </div>
           </div>
-          <div className="rows">
-            {INSTRUMENTS.map((it, i) => (
-              <Reveal key={it.name} y={24}>
-                <Link href={it.href} className="row">
-                  <span className="row-n">{String(i + 1).padStart(2, '0')}</span>
-                  <span className="row-name">{it.name}</span>
-                  <span className="row-desc">{it.desc}</span>
-                  <span className="row-entry">{it.entry}</span>
-                </Link>
-              </Reveal>
-            ))}
-          </div>
+          <ApiRail items={INSTRUMENTS} />
         </section>
 
         {/* ── 04 Numbers ───────────────────────────────────────────── */}
@@ -234,8 +241,8 @@ export default function HomePage() {
                 for plain HTML. SSR-safe: importing on a server never touches the DOM.
               </p>
               <div className="code-links">
-                <Link href="/examples" className="btn">{EXAMPLE_COUNT} live examples</Link>
-                <Link href="/blocks" className="btn">Copy-paste blocks</Link>
+                <Link href="/examples" className="btn" data-magnetic>{EXAMPLE_COUNT} live examples</Link>
+                <Link href="/blocks" className="btn" data-magnetic>Copy-paste blocks</Link>
               </div>
             </div>
             <CodeTabs />
@@ -256,7 +263,7 @@ export default function HomePage() {
           </div>
           <div className="switch">
             {SWITCH.map((s) => (
-              <Link href={s.guide} className="switch-row" key={s.from}>
+              <Link href={s.guide} className="switch-row" key={s.from} data-cursor="guide">
                 <span className="switch-from"><small>from</small>{s.from}</span>
                 <span className="switch-entry">{s.entry}</span>
                 <span className="switch-arrow" aria-hidden="true">→</span>
@@ -276,8 +283,8 @@ export default function HomePage() {
           </h2>
           <div className="final-cta">
             <CopyCommand />
-            <Link href="/docs" className="btn">Read the docs</Link>
-            <a href={GH} target="_blank" rel="noopener noreferrer" className="btn">Star on GitHub</a>
+            <Link href="/docs" className="btn" data-magnetic>Read the docs</Link>
+            <a href={GH} target="_blank" rel="noopener noreferrer" className="btn" data-magnetic>Star on GitHub</a>
           </div>
 
           <footer className="foot">
