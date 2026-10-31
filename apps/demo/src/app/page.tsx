@@ -1,11 +1,9 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import './home.css';
 import { SmoothScroll } from '@/components/home/SmoothScroll';
 import { HomeNav } from '@/components/home/HomeNav';
 import { Magnetic } from '@/components/home/Magnetic';
-import { ScrollFx } from '@/components/home/ScrollFx';
-import { HeroScript } from '@/components/home/HeroScript';
+import { Hero } from '@/components/home/Hero';
 import { UseCases } from '@/components/home/UseCases';
 import { Caliber } from '@/components/home/Caliber';
 import { Annotate } from '@/components/home/Annotate';
@@ -15,8 +13,6 @@ import { Gauges } from '@/components/home/Gauges';
 import { Stack } from '@/components/home/Stack';
 import { Migrate } from '@/components/home/Migrate';
 import { SignOff } from '@/components/home/SignOff';
-import { SCRIPT_DRAW as SCRIPT } from '@/components/home/art/script';
-import { CopyCommand } from '@/components/home/CopyCommand';
 import { SELF } from '@/data/competitors';
 
 export const metadata: Metadata = {
@@ -64,31 +60,8 @@ export default function HomePage() {
       <HomeNav version={SELF.version} />
 
       <main>
-        {/* ── Hero: the library writes its own name for what it does ───── */}
-        <section className="hero" aria-label="Introduction">
-          <ScrollFx
-            className="hero-main"
-            props={{ opacity: [1, 0], transform: ['translateY(0px)', 'translateY(-80px)'] }}
-            trigger={{ start: 'top top', end: 'bottom top' }}
-            triggerSelector=".hero"
-            easing="ease-in"
-          >
-            <Link href="/guides" className="hero-eyebrow"><i />v{SELF.version} · React hooks for the AOS, ScrollReveal &amp; vivus drop-ins</Link>
-            <HeroScript className="hero-script" d={SCRIPT.d} viewBox={SCRIPT.viewBox} strokeWidth={SCRIPT.strokeWidth} />
-            <h1>The scroll animation library that draws.</h1>
-            <p className="hero-sub">
-              Paths, text, pins and video — inked by scroll on the browser’s own timeline.
-              {' '}{SELF.gzipKb} KB, zero dependencies, MIT.
-            </p>
-            <div className="hero-cta">
-              <CopyCommand />
-              <Link href="/docs" className="btn btn-solid" data-magnetic>Get started</Link>
-            </div>
-          </ScrollFx>
-          <div className="hero-foot" aria-label="Works with">
-            <span>React</span><span>Vue</span><span>Svelte</span><span>Solid</span><span>Angular</span><span>Astro</span><span>Web Components</span>
-          </div>
-        </section>
+        {/* ── 00 Hero: the lettering sheet ────────────────────────────── */}
+        <Hero version={SELF.version} gzipKb={SELF.gzipKb} unitTests={UNIT_TESTS} browserTests={BROWSER_TESTS} />
 
         {/* ── 01 Use cases ─────────────────────────────────────────────── */}
         <section className="sec" aria-labelledby="uc-title">

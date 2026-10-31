@@ -173,7 +173,7 @@ of examining a single API in a real browser.
 - [x] React / Next.js hooks for the drop-ins (`useAOS` + `<AOSInit />`, `useScrollReveal`, `useVivus`)
 - [x] On-site migration guides (`/guides`): AOS in Next.js / React, ScrollReveal in React, vivus in React
 - [ ] Check Search Console in ~2 weeks for /guides/* and /vs-* impressions and clicks
-- [x] Homepage redesign — every chapter a blueprint-grade drawing of a real use case (lettered hero, gallery, watch, proof sheet, balance, API plates, gauges, circuit board, before/after windows, drawing-sheet footer), scoped under `.home`
+- [x] Homepage redesign — every chapter a blueprint-grade drawing of a real use case (fountain-pen hero, gallery, watch, proof sheet, balance, API plates, gauges, circuit board, before/after windows, drawing-sheet footer), scoped under `.home`
 - [ ] Carry the homepage's look (tokens, nav, footer) to /docs, /examples, /blocks and /guides
 - [x] StackBlitz "already migrated" starters for each drop-in, linked from the comparison pages and READMEs
 - [ ] More blocks (the registry pattern grows by count), and a Vue/Svelte flavour of each

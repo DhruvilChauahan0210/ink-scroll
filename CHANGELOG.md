@@ -11,9 +11,12 @@ All notable changes to `svg-scroll-draw` are documented here.
 - **Homepage redesign — every line is a real use case.** A new `/` where
   nothing is decoration: each drawing is something people build with the
   library, inked by the library over a faint pencil underdrawing, annotated
-  like a blueprint with real values. The hero writes the word *draw* in one
-  continuous hand-lettered stroke with a glowing nib riding the pen (the nib
-  follows the engine's own `onProgress` via `getPointAtLength`). Then:
+  like a blueprint with real values. The hero is chapter 00: an exploded technical
+  drawing of a fountain pen — nib, feed, section, converter, barrel, cap —
+  inked by the library on load with labels that map each part to the
+  library (the nib is `scrollDraw()`, the converter holds 10.2 KB of ink),
+  then, pinned, the parts slide home along their assembly guides into one
+  pen as you scroll. Then:
   01 a gallery that draws a signature, a route map, a chart, a product
   sketch, a logo and a system diagram as each tile arrives; 02 a pinned
   watchmaker's drawing of a mechanical movement inked stroke by stroke;
