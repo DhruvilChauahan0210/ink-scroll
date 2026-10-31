@@ -19,14 +19,18 @@ lifetime downloads, ~170 a month; 5 GitHub stars; 147 Google clicks in five
 months, 81% to the homepage; `/vs-gsap` at position 11 with 425 impressions.
 
 ### In flight
-- Branch `feat/homepage-redesign`: the new homepage (`app/page.tsx`, `app/home.css`,
-  `components/home/*` with per-chapter CSS and `components/home/art/*` geometry; Lenis in the
-  demo, re-measured on body resize; the site defaults to dark in `layout.tsx`). The rule that
-  finally landed: every drawing is a real use case, drawn like chapter 02's watch movement
-  (pencil underdrawing, ink by scroll, blueprint labels with real values). Site-only — deploys
-  from `main`, no npm release. Waiting for review before it is pushed.
+- Nothing site-side. Next: carry the homepage's look (tokens, nav, chapter type) to
+  /docs, /examples, /blocks and /guides, which still use the old styling.
 
 ### Shipped since
+- **Homepage redesign** (site-only, live from `main` at 760bfb6, 2026-10-31): every
+  drawing a real use case, inked by the library over a pencil underdrawing — an
+  exploded fountain-pen hero that assembles on scroll, the use-case gallery, the
+  watch-movement chapter, a red-pen proof sheet, GSAP weighed on a balance, API
+  blueprint plates, test gauges, a framework circuit board, before/after windows for
+  the drop-ins and an engineering-sheet footer; a glass nav that never moves; dark by
+  default. Rejected along the way (don't revisit): SaaS cards, giant editorial type,
+  generative ink, a torus knot, topo rings, railway/plug/camera metaphors for chapter 08.
 - `/guides` — five migration guides, live from `main` (site-only).
 
 - **2.15.0** — React / Next.js hooks for the drop-ins: `useAOS` + `<AOSInit />`,

@@ -8,6 +8,14 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### Site
 
+- **Vercel builds no longer run out of memory.** `tsup` builds all ~33
+  configs at once, each with its own TypeScript program for `dts`; that
+  peaks around 4 GB in one process and the Vercel build container killed it
+  (exit 137, OOM) on the homepage deploy. `vercel-build` now builds the
+  library with `scripts/build-lowmem.mjs` — the same `tsup.config.ts`, four
+  configs at a time — which peaks around 1.2 GB and produces byte-for-byte
+  identical `dist/` (114 files, checked by hash). Releases still use plain
+  `tsup`.
 - **Homepage redesign — every line is a real use case.** A new `/` where
   nothing is decoration: each drawing is something people build with the
   library, inked by the library over a faint pencil underdrawing, annotated

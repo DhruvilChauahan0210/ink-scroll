@@ -455,6 +455,7 @@
   },
   "scripts": {
     "build": "tsup",
+    "build:lowmem": "node scripts/build-lowmem.mjs",
     "dev": "tsup --watch",
     "typecheck": "tsc --noEmit",
     "prepare": "npm run build",
