@@ -74,4 +74,31 @@ export const SCENES: Record<string, SceneData> = {
   </ScrollDraw>
 </div>`,
   },
+  flowchart: {
+    label: 'Hearth & Field',
+    tag: 'selector · stagger · autoplay',
+    description:
+      "A homeware shop's checkout. The progress stepper inks its icons and connectors in, step by step, up to the step the customer is on, and each product in the order summary is a line drawing that inks in after the one before it.",
+    code: `<ScrollDraw
+  selector=".ink" stagger={0.35}
+  autoplay duration={600} delay={200}
+  easing="ease-out" once
+>
+  <ol className="steps">
+    {steps.map((s) => (
+      <li key={s.k} className={s.done ? 'is-done' : ''}>
+        <svg viewBox="0 0 32 32">
+          {s.icon.map((d) => (
+            <path className={s.done || s.now ? 'ink' : 'idle'} d={d} />
+          ))}
+        </svg>
+        {s.k}
+        <svg className="connector" viewBox="0 0 100 2">
+          <path className={s.done ? 'ink' : 'idle'} d="M0 1 H100" />
+        </svg>
+      </li>
+    ))}
+  </ol>
+</ScrollDraw>`,
+  },
 };

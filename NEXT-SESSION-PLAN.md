@@ -22,7 +22,8 @@ months, 81% to the homepage; `/vs-gsap` at position 11 with 425 impressions.
 - Each example gets a complete demo site for a fictional company, linked from its card
   and its page. The owner wants real products, not this site's ink style. Done: Ferrow
   (`/showcase/ferrow` → logo-reveal), Ledgerline (`/showcase/ledgerline` → line-chart), Quillmark (`/showcase/quillmark` →
-  signature). Next: flowchart (checkout), map-route, network, then the rest one by one.
+  signature), Hearth & Field (`/showcase/hearth` → flowchart). Next: map-route, network,
+  then the rest one by one.
   Capture the image where the example's effect is drawn (capture.mjs scrolls to a
   selector), not always the hero.
 - To add one: build it in `src/showcase/<slug>/` with its own CSS and the `BuiltWith`

@@ -50,7 +50,10 @@ All notable changes to `svg-scroll-draw` are documented here.
   e-signature product — the client's signature writes itself on a lease in
   one stroke as the contract comes into view and `onComplete` stamps it
   signed; the steps draw in turn and the audit trail's rail draws down the
-  page. Showcase sites carry a "demo site" tab that
+  page. Fourth: **Hearth & Field** (`/showcase/hearth`, the checkout-flow
+  example), a homeware shop's checkout — the progress stepper inks in up to
+  the current step and each product in the order summary is a line drawing
+  that inks in after the last. Showcase sites carry a "demo site" tab that
   links back to the example, and are kept out of search results.
 - **`/examples` rebuilt as a catalogue of drawings.** The 23 previews were
   the old site — Discord blurple, pink and yellow, emoji, the Syne display
