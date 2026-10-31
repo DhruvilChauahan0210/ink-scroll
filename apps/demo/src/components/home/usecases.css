@@ -1,0 +1,145 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   Use-case gallery: six line drawings, each a real thing built with the library.
+   Tokens come from .home. Everything is scoped .home .uc-…
+   ──────────────────────────────────────────────────────────────────────────── */
+
+.home .uc-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 44px 20px;
+}
+@media (min-width: 640px) {
+  .home .uc-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 52px 20px; }
+}
+@media (min-width: 1024px) {
+  .home .uc-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 64px 24px; }
+}
+
+.home .uc-tile { min-width: 0; }
+
+.home .uc-panel {
+  position: relative;
+  container-type: inline-size;
+  aspect-ratio: 4 / 3;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: border-color 0.5s var(--ease);
+}
+.home .uc-tile:hover .uc-panel { border-color: var(--line-2); }
+
+.home .uc-index {
+  position: absolute;
+  top: 14px;
+  left: 16px;
+  font: 500 10px/1 var(--mono);
+  letter-spacing: 0.12em;
+  color: var(--fg-3);
+  pointer-events: none;
+}
+
+.home .uc-art {
+  position: absolute;
+  inset: 7% 6%;
+  display: grid;
+  place-items: center;
+  transition: transform 0.9s var(--ease);
+}
+.home .uc-tile:hover .uc-art { transform: scale(1.02); }
+
+.home .uc-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* ── Strokes ──────────────────────────────────────────────────────────── */
+
+.home .uc-svg path {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.home .uc-svg .uc-p   { stroke: var(--fg);   stroke-width: 1.5; }
+.home .uc-svg .uc-s   { stroke: var(--fg-2); stroke-width: 1.05; }
+.home .uc-svg .uc-h   { stroke: var(--fg-3); stroke-width: 0.6; }
+.home .uc-svg .uc-h2  { opacity: 0.55; }
+.home .uc-svg .uc-a   { stroke: var(--accent); stroke-width: 1.7; }
+.home .uc-svg .uc-ink { stroke: var(--fg);   stroke-width: 1.9; }
+
+/* Dots are tiny circles with a fat stroke, so they ink in with the rest. */
+.home .uc-svg .uc-dot   { stroke: var(--fg); stroke-width: 3.2; }
+.home .uc-svg .uc-dot-s { stroke: var(--fg-2); }
+.home .uc-svg .uc-dot-a { stroke: var(--accent); }
+
+/* Static fills that hide what sits behind a part. Same colour as the panel. */
+.home .uc-svg .uc-occ { fill: var(--panel); stroke: none; }
+
+.home .uc-svg .uc-route { stroke-width: 2; }
+.home .uc-svg .uc-pin   { stroke-width: 1.5; }
+.home .uc-svg .uc-flow  { stroke-width: 1.35; }
+.home .uc-svg .uc-word  { stroke-width: 1.6; }
+.home .uc-svg .uc-logo-s { stroke-width: 1.5; }
+.home .uc-svg .uc-key   { stroke-width: 1.6; }
+.home .uc-svg .uc-box-dim { stroke: var(--fg-3); stroke-width: 0.8; }
+
+/* Labels: not drawn, they fade up as the tile's first stroke inks in. */
+.home .uc-svg .uc-t {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  fill: var(--fg-3);
+  opacity: calc(var(--scroll-draw-progress, 1) * 1.6 - 0.3);
+}
+.home .uc-svg .uc-t-a { fill: var(--accent); }
+/* End markers wait for the line that runs into them: they start at 90 % of the
+   tile's first stroke, when the (later-staggered) series is ~80 % drawn. */
+.home .uc-svg .uc-late { opacity: calc((var(--scroll-draw-progress, 1) - 0.9) * 10); }
+.home .uc-svg .uc-t-b { font-size: 10px; font-weight: 500; letter-spacing: 0.06em; }
+.home .uc-svg .uc-t-box { font-size: 11px; letter-spacing: 0.02em; fill: var(--fg-2); }
+.home .uc-svg .uc-t-dim { fill: var(--fg-3); }
+
+/* ── Copy ─────────────────────────────────────────────────────────────── */
+
+.home .uc-title {
+  margin: 20px 0 0;
+  font: 500 18px/1.3 var(--sans);
+  letter-spacing: -0.012em;
+  color: var(--fg);
+}
+.home .uc-desc {
+  margin: 6px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--fg-2);
+}
+.home .uc-code {
+  display: block;
+  margin-top: 12px;
+  font: 400 11px/1.5 var(--mono);
+  color: var(--fg-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.home .uc-code .uc-fn { color: var(--fg-2); }
+
+/* The labels are SVG text, so they shrink with the drawing. Size them by the
+   panel's real width (it is the query container), not the viewport: a 3-up
+   tile at 1024px is narrower than a phone tile. Every bucket lands at ~8–10px
+   on screen. Narrow panels also give the hairlines a little more weight. */
+@container (max-width: 439px) {
+  .home .uc-svg .uc-t { font-size: 10.5px; letter-spacing: 0.07em; }
+  .home .uc-svg .uc-t-b { font-size: 11px; }
+  .home .uc-svg .uc-t-box { font-size: 12px; }
+}
+@container (max-width: 359px) {
+  .home .uc-svg .uc-h { stroke-width: 0.75; }
+  .home .uc-svg .uc-p { stroke-width: 1.7; }
+  .home .uc-svg .uc-ink { stroke-width: 2.2; }
+  .home .uc-svg .uc-t { font-size: 12.5px; letter-spacing: 0.06em; }
+  .home .uc-svg .uc-t-b { font-size: 13px; }
+  .home .uc-svg .uc-t-box { font-size: 13.5px; }
+}

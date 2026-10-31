@@ -1,0 +1,84 @@
+/* 04 — Annotations: a paragraph marked up in editor's red pen. Prefix an-. */
+
+.home .an {
+  position: relative;
+  padding: clamp(96px, 16vh, 184px) var(--gutter) clamp(112px, 18vh, 208px);
+}
+
+.home .an-label {
+  margin: 0 0 clamp(28px, 4vw, 52px);
+  font: 500 11px/1.4 var(--mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+.home .an-label b { color: var(--accent); font-weight: 500; }
+
+.home .an-block {
+  position: relative;
+  font-size: clamp(26px, 3vw, 46px);
+  max-width: 22em;
+}
+
+.home .an-p {
+  margin: 0;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: 1em;
+  line-height: 1.28;
+  letter-spacing: -0.02em;
+  color: var(--fg-2);
+  text-wrap: pretty;
+}
+
+/* A marked phrase never breaks across lines: its mark is one shape. */
+.home .an-mk { white-space: nowrap; color: var(--fg); }
+.home .an-mk--mit { padding-right: 0.13em; }
+
+/* Zero-size inline-block: its top edge sits exactly on the baseline. */
+.home .an-bl {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  vertical-align: baseline;
+}
+
+.home .an-ink {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.home .an-svg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  overflow: visible;
+  fill: none;
+  stroke: var(--accent);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Hidden until the engine takes the dashes over (it overrides these inline). */
+.home .an-svg path {
+  stroke-dasharray: 100000;
+  stroke-dashoffset: 100000;
+}
+.home .an-svg .an-rest { visibility: hidden; }
+
+.home .an-note {
+  position: absolute;
+  margin: 0;
+  white-space: nowrap;
+  font: 400 clamp(11.5px, 0.9vw, 13px)/1.5 var(--mono);
+  letter-spacing: 0.01em;
+  color: var(--accent);
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+.home .an-note.is-narrow { text-align: right; }
+
+@media (prefers-reduced-motion: reduce) {
+  .home .an-note { transform: none !important; }
+}

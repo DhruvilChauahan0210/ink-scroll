@@ -88,7 +88,7 @@ at all.
 ## Demo App (`apps/demo`)
 
 ### Pages
-- [x] `/` — redesigned (branch `feat/homepage-redesign`): black by default, a wireframe torus knot drawn in by `scrollDraw` then turning with the pointer, Geist, one gold accent, Lenis; a pinned `scrollDraw` contour panel, `scrollText` manifesto, the eight APIs on a pinned horizontal rail, `scrollCounter` numbers, drawn weight bars, glowing finale; both themes scoped under `.home`; the site now defaults to dark
+- [x] `/` — redesigned (branch `feat/homepage-redesign`): every drawing a real use case — hand-lettered *draw* hero with a nib that rides the stroke, a six-tile use-case gallery (signature, route map, chart, product sketch, logo, diagram), a pinned watch-movement blueprint inked by scroll, an editor's-red-pen annotated paragraph, GSAP-vs-us code + weights, toolkit rail, numbers, framework tabs, drop-ins, a sign-off that writes *draw* again; dark default, ink-on-paper light
 - [x] `/examples` — 23 examples with framework filter
 - [x] `/docs` — full API reference including v2.0–2.2 nav group with all 6 new APIs documented
 - [x] `/playground` — interactive SVG editor

@@ -20,11 +20,11 @@ months, 81% to the homepage; `/vs-gsap` at position 11 with 425 impressions.
 
 ### In flight
 - Branch `feat/homepage-redesign`: the new homepage (`app/page.tsx`, `app/home.css`,
-  `components/home/*`; Lenis added to the demo; the site now defaults to dark in
-  `layout.tsx`). Built to the motion.dev / animejs.com grammar after three rejected
-  directions (SaaS cards, giant editorial type, generative ink): black, one glowing
-  wireframe knot, quiet type. Every motion is a library API. Site-only — deploys
-  from `main`, no npm release. Waiting for review before it is pushed.
+  `components/home/*` with per-component CSS and `components/home/art/*` geometry; Lenis
+  added to the demo; the site defaults to dark in `layout.tsx`). After four rejected
+  directions (SaaS cards, giant editorial type, generative ink, a torus knot) the rule is:
+  every drawing must be a real use case of the library. Site-only — deploys from `main`, no
+  npm release. Waiting for review before it is pushed.
 
 ### Shipped since
 - `/guides` — five migration guides, live from `main` (site-only).

@@ -5,14 +5,16 @@ import { MobileMenu } from '@/components/MobileMenu';
 import { SmoothScroll } from '@/components/home/SmoothScroll';
 import { HomeThemeToggle } from '@/components/home/HomeThemeToggle';
 import { Progress } from '@/components/home/Progress';
-import { Knot } from '@/components/home/Knot';
-import { ScrollFx } from '@/components/home/ScrollFx';
 import { Magnetic } from '@/components/home/Magnetic';
-import { ContourDraw } from '@/components/home/ContourDraw';
-import { Manifesto } from '@/components/home/Manifesto';
+import { ScrollFx } from '@/components/home/ScrollFx';
+import { HeroScript } from '@/components/home/HeroScript';
+import { Versus } from '@/components/home/Versus';
+import { UseCases } from '@/components/home/UseCases';
+import { Caliber } from '@/components/home/Caliber';
+import { Annotate } from '@/components/home/Annotate';
+import { SCRIPT_DRAW as SCRIPT } from '@/components/home/art/script';
 import { ApiRail } from '@/components/home/ApiRail';
 import { Counters } from '@/components/home/Counters';
-import { VersusBars } from '@/components/home/VersusBars';
 import { CodeTabs } from '@/components/home/CodeTabs';
 import { CopyCommand } from '@/components/home/CopyCommand';
 import { COMPETITORS, SELF, MEASURED_ON } from '@/data/competitors';
@@ -109,106 +111,89 @@ export default function HomePage() {
       </header>
 
       <main>
-        {/* ── Hero ─────────────────────────────────────────────────── */}
+        {/* ── Hero: the library writes its own name for what it does ───── */}
         <section className="hero" aria-label="Introduction">
           <ScrollFx
-            className="hero-stage"
-            props={{ opacity: [1, 0.15], transform: ['translateY(0px) scale(1)', 'translateY(-60px) scale(0.92)'] }}
+            className="hero-main"
+            props={{ opacity: [1, 0], transform: ['translateY(0px)', 'translateY(-80px)'] }}
             trigger={{ start: 'top top', end: 'bottom top' }}
             triggerSelector=".hero"
             easing="ease-in"
           >
-            <Knot />
+            <Link href="/guides" className="hero-eyebrow"><i />v{SELF.version} · React hooks for the AOS, ScrollReveal &amp; vivus drop-ins</Link>
+            <HeroScript className="hero-script" d={SCRIPT.d} viewBox={SCRIPT.viewBox} strokeWidth={SCRIPT.strokeWidth} />
+            <h1>The scroll animation library that draws.</h1>
+            <p className="hero-sub">
+              Paths, text, pins and video — inked by scroll on the browser’s own timeline.
+              {' '}{SELF.gzipKb} KB, zero dependencies, MIT.
+            </p>
+            <div className="hero-cta">
+              <CopyCommand />
+              <Link href="/docs" className="btn btn-solid" data-magnetic>Get started</Link>
+            </div>
           </ScrollFx>
-          <div className="hero-foot">
-            <div>
-              <h1 className="h1">
-                The scroll animation library <span className="dim">that draws.</span>
-              </h1>
-              <p className="hero-sub">
-                Draw SVG paths, reveal content, pin sections and scrub video from scroll —
-                on the browser’s own scroll timeline where it has one. {SELF.gzipKb} KB, zero dependencies.
-              </p>
-            </div>
-            <div>
-              <div className="hero-cta">
-                <CopyCommand />
-                <Link href="/docs" className="btn btn-solid" data-magnetic>Get started</Link>
-              </div>
-              <p className="hero-note" style={{ marginTop: 14, textAlign: 'right' }}>Free and open source · MIT</p>
-            </div>
+          <div className="hero-foot" aria-label="Works with">
+            <span>React</span><span>Vue</span><span>Svelte</span><span>Solid</span><span>Angular</span><span>Astro</span><span>Web Components</span>
           </div>
         </section>
 
-        <div className="strip" aria-label="At a glance">
-          <span><b>{SELF.gzipKb} KB</b> gzipped</span>
-          <span><b>0</b> dependencies</span>
-          <span><b>623</b> tests</span>
-          <span><b>195</b> browser tests × 3 engines</span>
-          <span><b>8</b> framework wrappers</span>
-          <span><b>MIT</b></span>
-        </div>
-
-        {/* ── 01 Draw ──────────────────────────────────────────────── */}
-        <section className="draw" aria-labelledby="draw-title">
-          <ContourDraw />
-        </section>
-
-        {/* ── 02 Manifesto ─────────────────────────────────────────── */}
-        <section className="chapter" aria-label="Why">
-          <div className="chapter-head">
-            <span className="label"><b>02</b> / scrollText</span>
-            <div />
-          </div>
-          <Manifesto />
-        </section>
-
-        {/* ── 03 Instruments (horizontal rail) ─────────────────────── */}
-        <section className="chapter chapter-rail" aria-labelledby="inst-title">
-          <div className="chapter-head">
-            <span className="label"><b>03</b> / the toolkit</span>
+        {/* ── 01 Use cases ─────────────────────────────────────────────── */}
+        <section className="sec" aria-labelledby="uc-title">
+          <div className="sec-head">
+            <span className="label"><b>01</b> / what people draw</span>
             <div>
-              <h2 id="inst-title" className="h2">Eight small APIs. <span className="dim">One hand.</span></h2>
-              <p className="body">
-                Every API is its own entry point with the same instance shape — destroy, replay,
-                pause, resume, seek, getProgress — so learning one teaches you the rest. Keep scrolling;
-                the rail moves sideways.
-              </p>
+              <h2 id="uc-title" className="h2">If it’s a line, it can follow the scroll.</h2>
+              <p className="body">Signatures, maps, charts, product sketches, logos, diagrams — each one below is drawn by the library as you reach it.</p>
+            </div>
+          </div>
+          <UseCases />
+        </section>
+
+        {/* ── 02 Caliber (pinned) ──────────────────────────────────────── */}
+        <section className="sec-cal" aria-label="A watch movement, drawn by scroll">
+          <Caliber />
+        </section>
+
+        {/* ── 03 Annotations ───────────────────────────────────────────── */}
+        <section className="sec" aria-label="Annotations">
+          <Annotate />
+        </section>
+
+        {/* ── 04 Versus GSAP ───────────────────────────────────────────── */}
+        <section className="sec" aria-labelledby="vs-title">
+          <div className="sec-head">
+            <span className="label"><b>04</b> / against the incumbent</span>
+            <div>
+              <h2 id="vs-title" className="h2">The same drawing. <span className="dim">A fifth of the bytes.</span></h2>
+              <p className="body">The effect most people reach for GSAP to build, written both ways — then what each costs your users to download.</p>
+            </div>
+          </div>
+          <Versus rows={WEIGHTS} measuredOn={MEASURED_ON} />
+        </section>
+
+        {/* ── 05 Toolkit rail ──────────────────────────────────────────── */}
+        <section className="sec sec-rail" aria-labelledby="inst-title">
+          <div className="sec-head">
+            <span className="label"><b>05</b> / the toolkit</span>
+            <div>
+              <h2 id="inst-title" className="h2">Eight small APIs. <span className="dim">One instance shape.</span></h2>
+              <p className="body">destroy, replay, pause, resume, seek, getProgress — learn one, know them all. Keep scrolling; the rail moves sideways.</p>
             </div>
           </div>
           <ApiRail items={INSTRUMENTS} />
         </section>
 
-        {/* ── 04 Numbers ───────────────────────────────────────────── */}
-        <section className="chapter" aria-labelledby="num-title">
-          <div className="chapter-head">
-            <span className="label"><b>04</b> / scrollCounter</span>
+        {/* ── 06 Numbers ───────────────────────────────────────────────── */}
+        <section className="sec" aria-labelledby="num-title">
+          <div className="sec-head">
+            <span className="label"><b>06</b> / proof</span>
             <h2 id="num-title" className="h2">Tested in real browsers, <span className="dim">not just in theory.</span></h2>
           </div>
           <Counters />
         </section>
 
-        {/* ── 05 Weight ────────────────────────────────────────────── */}
-        <section className="chapter" aria-labelledby="w-title">
-          <div className="chapter-head">
-            <span className="label"><b>05</b> / weight</span>
-            <div>
-              <h2 id="w-title" className="h2">A fifth of the bytes <span className="dim">for the effects you ship.</span></h2>
-              <p className="body">
-                Drawing, reveals, pins, counters — in one import. Most pages add a single entry
-                point and stop there.
-              </p>
-            </div>
-          </div>
-          <VersusBars rows={WEIGHTS} />
-          <p className="versus-note">
-            Minified and gzipped at level 9, measured {MEASURED_ON}. GSAP has been free since 2025 and
-            does far more than scroll; for the scroll effects here, this is the difference you ship.
-          </p>
-        </section>
-
-        {/* ── 06 Code ──────────────────────────────────────────────── */}
-        <section className="chapter" aria-labelledby="code-title">
+        {/* ── 07 Code ──────────────────────────────────────────────────── */}
+        <section className="sec" aria-labelledby="code-title">
           <div className="marquee" aria-hidden="true">
             <div className="marquee-track">
               {marquee.map((f, i) => <span key={i}>{f}</span>)}
@@ -216,11 +201,11 @@ export default function HomePage() {
           </div>
           <div className="code-grid">
             <div>
-              <span className="label"><b>06</b> / your stack</span>
-              <h2 id="code-title" className="h2" style={{ marginTop: 16 }}>Written the way <span className="dim">your framework writes.</span></h2>
-              <p className="body" style={{ marginTop: 20 }}>
-                A component in React and Vue, an action in Svelte, a hook in Solid, a custom element
-                for plain HTML. SSR-safe: importing on a server never touches the DOM.
+              <span className="label"><b>07</b> / your stack</span>
+              <h2 id="code-title" className="h2" style={{ marginTop: 18 }}>Written the way <span className="dim">your framework writes.</span></h2>
+              <p className="body" style={{ marginTop: 22 }}>
+                A component in React and Vue, an action in Svelte, a hook in Solid, a custom element for plain
+                HTML. SSR-safe: importing on a server never touches the DOM.
               </p>
               <div className="code-links">
                 <Link href="/examples" className="btn" data-magnetic>{EXAMPLE_COUNT} live examples</Link>
@@ -231,16 +216,13 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* ── 07 Switch ────────────────────────────────────────────── */}
-        <section className="chapter" aria-labelledby="sw-title">
-          <div className="chapter-head">
-            <span className="label"><b>07</b> / switching</span>
+        {/* ── 08 Switching ─────────────────────────────────────────────── */}
+        <section className="sec" aria-labelledby="sw-title">
+          <div className="sec-head">
+            <span className="label"><b>08</b> / switching</span>
             <div>
               <h2 id="sw-title" className="h2">Already on AOS? <span className="dim">Change one import.</span></h2>
-              <p className="body">
-                Each has a drop-in that keeps its API and your markup, tested side by side against
-                the real library in three browsers — and a React hook that cleans up after itself.
-              </p>
+              <p className="body">Each has a drop-in that keeps its API and your markup, tested side by side against the real library in three browsers — and a React hook that cleans up after itself.</p>
             </div>
           </div>
           <div className="switch">
@@ -258,10 +240,11 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* ── Final ────────────────────────────────────────────────── */}
+        {/* ── Sign-off ─────────────────────────────────────────────────── */}
         <section className="final" aria-labelledby="final-title">
-          <h2 id="final-title" className="final-words">Start <em>drawing</em> today.</h2>
-          <p className="final-sub">One install, one call, and the page follows the scroll.</p>
+          <span className="label">your turn</span>
+          <HeroScript className="final-script" d={SCRIPT.d} viewBox={SCRIPT.viewBox} strokeWidth={SCRIPT.strokeWidth} mode="scroll" />
+          <h2 id="final-title">One install. One call. The page follows the scroll.</h2>
           <div className="final-cta">
             <CopyCommand />
             <Link href="/docs" className="btn btn-solid" data-magnetic>Read the docs</Link>

@@ -47,7 +47,7 @@ export function ApiRail({ items }: { items: RailItem[] }) {
         <div ref={track} className="rail-track">
           {items.map((it, i) => (
             <Link href={it.href} className="rail-card" key={it.name} data-cursor="open">
-              <span className="rail-n">{String(i + 1).padStart(2, '0')}</span>
+              <span className="rail-n">{String(i + 1).padStart(2, '0')} / 08</span>
               <span className="rail-name">{it.name}</span>
               <span className="rail-desc">{it.desc}</span>
               <span className="rail-entry">{it.entry}</span>

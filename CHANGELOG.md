@@ -8,24 +8,23 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### Site
 
-- **Homepage redesign.** A new `/` built on the grammar the premium
-  animation-library sites share (motion.dev, animejs.com, lenis.dev): black
-  by default, one glowing rendered object, quiet type, hairlines and room.
-  The object is ours — a torus knot as a wireframe of 60 SVG strokes,
-  projected with perspective and shaded by depth, computed on the server so
-  it is there at first paint, drawn in by `scrollDraw` on load, then turning
-  slowly and leaning toward the pointer. Geist throughout (no extra font
-  fetch), one warm-gold accent, a dark/light pair where light is the same
-  page as a pen drawing on off-white. Every scroll motion is the library's
-  own API: a 300vh pinned panel where fourteen contour rings ink in under
-  `scrollDraw`, a `scrollText` manifesto, the eight APIs on a pinned
-  horizontal rail scrubbed by `scrollAnimate`, `scrollCounter` numbers,
-  weight bars drawn to length, the hero's exit and the nav's hairline
-  progress through `scrollAnimate`. Lenis smooth scroll (demo-only
-  dependency), magnetic buttons, a glowing finale. Styles scoped under
-  `.home`; the mascot stays off `/`. The examples count reads
-  `EXAMPLE_COUNT`. The old homepage demo components are no longer imported
-  but stay in the repo.
+- **Homepage redesign — every line is a real use case.** A new `/` where
+  nothing is decoration: each drawing is something people build with the
+  library, inked by the library. The hero writes the word *draw* in one
+  continuous hand-lettered stroke with a glowing nib riding the pen (the
+  nib follows the engine's own `onProgress` via `getPointAtLength`); a
+  gallery draws a signature, a route map, a chart, a product sketch, a logo
+  and a system diagram as each tile arrives; a pinned chapter inks a
+  watchmaker's drawing of a mechanical movement — case, bridges, gear train,
+  escapement, hairspring — stroke by stroke under your scroll; a paragraph
+  gets marked up in editor's red pen as you read it; and the GSAP comparison
+  shows the same effect written both ways (17 lines vs 7) before drawing the
+  download weights to length. The toolkit rail, numbers, framework tabs and
+  drop-in rows stay, restyled; the page signs off by writing *draw* again as
+  you reach the end. Geist throughout, ink on near-black or ink on paper,
+  one accent (editor's red). Lenis smooth scroll (demo-only dependency).
+  Styles scoped under `.home`; each art component carries its own scoped
+  CSS. The mascot stays off `/`. The examples count reads `EXAMPLE_COUNT`.
 - **Dark is the site default.** With no stored preference the no-flash
   script now adds `.dark`; a stored `light` is the only thing that keeps it
   off. Every page already had the dark theme — this only changes the first

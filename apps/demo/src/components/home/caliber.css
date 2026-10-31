@@ -1,0 +1,277 @@
+/* Chapter 02 — the calibre drawing. Every selector is scoped `.home .cal-…`;
+   colours come only from the tokens the lead defines on `.home`. */
+
+.home .cal-stage {
+  --cal-p: 0;
+  position: relative;
+  height: 320vh;
+}
+
+.home .cal-pin {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(8px, 2svh, 20px);
+  padding: 0 var(--gutter) clamp(20px, 4svh, 40px);
+  box-sizing: border-box;
+}
+
+/* ── The drawing ─────────────────────────────────────────────────────────── */
+
+.home .cal-art {
+  order: -1;
+  position: relative;
+  flex: none;
+  width: min(100%, 54svh);
+  aspect-ratio: 1;
+  margin-inline: auto;
+}
+
+.home .cal-art::before {
+  content: '';
+  position: absolute;
+  inset: -6%;
+  background: radial-gradient(closest-side, var(--bg-2), transparent);
+  pointer-events: none;
+}
+
+.home .cal-svg {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  /* On a phone the corner notes cannot be read, so they are hidden and the
+     movement is shown larger instead. */
+  transform: scale(1.22);
+}
+
+.home .cal-ink,
+.home .cal-pencil {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* The pencil underdrawing the ink traces over: one even hairline in one
+   translucent layer, so crossing lines never darken and the ink, always at
+   least as wide, covers it exactly. */
+.home .cal-svg-pencil {
+  position: absolute;
+  inset: 0;
+  opacity: 0.16;
+}
+.home .cal-svg-pencil .cal-pencil { stroke: var(--fg); stroke-width: 1; }
+/* Phone first: the drawing renders at ~0.4 px per unit there, so the
+   hierarchy is set a step heavier and restored to 1.8 / 1.1 / 0.6 at desktop
+   size. Width never touches the dash maths, which runs on length. */
+.home .cal-w-p { stroke-width: 2.4; }
+.home .cal-w-s { stroke-width: 1.5; }
+.home .cal-w-h { stroke-width: 0.9; }
+.home .cal-t-ink { stroke: var(--fg); }
+.home .cal-t-mute { stroke: var(--fg-2); }
+.home .cal-t-faint { stroke: var(--line-2); }
+.home .cal-t-accent { stroke: var(--accent); }
+/* The hairspring's eleven coils sit ~4 units apart: on a phone they need the
+   finest line there is, or they close up into a red disc. */
+.home .cal-t-accent.cal-w-h { stroke-width: 0.6; }
+
+.home .cal-lead,
+.home .cal-notes { visibility: hidden; }
+/* Butt caps: an undrawn leader keeps a zero-length dash at its far end, which
+   a round cap would show as a stray dot. */
+.home .cal-lead { stroke-linecap: butt; }
+
+/* Notes are set in type, not drawn: each fades in once its leader is inked. */
+.home .cal-note {
+  opacity: clamp(0, calc((var(--cal-p) - var(--cal-at, 1)) * 25), 1);
+}
+.home .cal-dot { fill: var(--fg); }
+.home .cal-dot-accent { fill: var(--accent); }
+.home .cal-label,
+.home .cal-dim {
+  font-family: var(--mono);
+  font-size: 18px;
+  fill: var(--fg-2);
+}
+.home .cal-label-t {
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  fill: var(--fg-3);
+}
+.home .cal-dim { font-size: 17px; }
+
+/* ── The copy ────────────────────────────────────────────────────────────── */
+
+.home .cal-copy {
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+  margin-inline: auto;
+}
+
+.home .cal-kicker {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0 0 12px;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: var(--fg-3);
+}
+
+.home .cal-count {
+  font-variant-numeric: tabular-nums;
+  color: var(--fg-3);
+  white-space: nowrap;
+}
+.home .cal-count > span { color: var(--fg); }
+
+.home .cal-title {
+  margin: 0;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: clamp(26px, 3.2vw, 52px);
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+  color: var(--fg);
+  text-wrap: balance;
+}
+
+.home .cal-steps {
+  position: relative;
+  list-style: none;
+  margin: clamp(14px, 2.4svh, 36px) 0 0;
+  padding: 0;
+}
+
+.home .cal-step {
+  display: none;
+  grid-template-columns: 34px 1fr;
+  align-items: baseline;
+  padding: 10px 0;
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  color: var(--fg-3);
+  transition: color 0.5s var(--ease);
+}
+/* On a phone only the current step shows, like a ticker. */
+.home .cal-step.is-on { display: grid; color: var(--fg); }
+
+.home .cal-step-n {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--fg-3);
+  transition: color 0.5s var(--ease);
+}
+.home .cal-step.is-on .cal-step-n { color: var(--accent); }
+
+.home .cal-code {
+  display: block;
+  margin-top: clamp(10px, 2svh, 32px);
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  line-height: 1.7;
+  color: var(--fg-3);
+  white-space: nowrap;
+}
+.home .cal-c-l,
+.home .cal-c-o { display: block; }
+.home .cal-c-in { padding-left: 2ch; }
+.home .cal-c-fn { color: var(--fg); }
+.home .cal-c-str { color: var(--fg-2); }
+.home .cal-c-num { color: var(--fg); }
+
+/* ── Desktop: copy left, drawing right ───────────────────────────────────── */
+
+@media (min-width: 900px) {
+  .home .cal-pin {
+    display: grid;
+    grid-template-columns: minmax(280px, 0.78fr) minmax(0, 1.22fr);
+    align-items: center;
+    column-gap: clamp(32px, 4vw, 88px);
+    /* Content caps at 1560px, so a wide screen does not open a hole between
+       the copy and the drawing. */
+    padding: 0 max(var(--gutter), calc((100% - 1560px) / 2));
+  }
+
+  .home .cal-art {
+    order: 0;
+    width: min(100%, calc(100svh - 64px));
+    margin-inline: auto 0;
+  }
+
+  .home .cal-svg { transform: none; }
+
+  .home .cal-w-p { stroke-width: 1.8; }
+  .home .cal-w-s { stroke-width: 1.1; }
+  .home .cal-w-h { stroke-width: 0.6; }
+  .home .cal-svg-pencil .cal-pencil { stroke-width: 0.8; }
+
+  .home .cal-copy {
+    max-width: 440px;
+    margin-inline: 0;
+  }
+
+  .home .cal-step {
+    display: grid;
+    padding: 13px 0;
+    font-size: 16px;
+    border-top: 1px solid var(--line);
+  }
+  .home .cal-step:last-child { border-bottom: 1px solid var(--line); }
+  .home .cal-step.is-done { color: var(--fg-2); }
+
+  /* A hairline rail that fills with the stage's progress. */
+  .home .cal-steps::before {
+    content: '';
+    position: absolute;
+    left: -18px;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--line);
+  }
+  .home .cal-steps::after {
+    content: '';
+    position: absolute;
+    left: -18px;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--fg);
+    transform-origin: 50% 0;
+    transform: scaleY(var(--cal-p));
+  }
+
+  .home .cal-code { font-size: 12px; }
+}
+
+/* Wide enough for the three options to share a line, and for the drawing's
+   notes to be read: below this the drawing renders under ~0.6 px per unit
+   and the type would fall under 8px, so it goes without them. */
+@media (min-width: 1180px) {
+  .home .cal-c-o { display: inline; }
+  .home .cal-lead,
+  .home .cal-notes { visibility: visible; }
+}
+
+@media (min-width: 900px) and (max-height: 640px) {
+  .home .cal-step { padding: 8px 0; font-size: 14px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home .cal-step,
+  .home .cal-step-n { transition: none; }
+}
