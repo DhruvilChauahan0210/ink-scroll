@@ -31,6 +31,35 @@ All notable changes to `svg-scroll-draw` are documented here.
   which still said v2.10.0, is gone. The homepage's test counts
   moved to `data/facts.ts` so every page's sign-off can quote them; check:claims
   reads it.
+- **Examples link to real sites built with the library.** Each example is
+  becoming a complete demo site for a fictional company under
+  `/showcase/<name>`, so the examples show how the library is used in a real
+  product rather than in this site's own style. The example's card and its
+  own page show the site's first screen and link to the live site, with the
+  code beside it. First: **Ferrow Coffee Roasters** (`/showcase/ferrow`, the
+  logo-reveal example) — the emblem draws on load and `onComplete` floods it
+  with the brand colours; origin drawings, farm-to-roastery routes, a roast
+  profile whose milestones follow `onProgress`, and the head roaster's
+  signature draw as you scroll. Showcase sites carry a "demo site" tab that
+  links back to the example, and are kept out of search results.
+- **`/examples` rebuilt as a catalogue of drawings.** The 23 previews were
+  the old site — Discord blurple, pink and yellow, emoji, the Syne display
+  face, and figures that had gone stale ("9 KB", "423 tests"). Every one is
+  redrawn in the homepage's ink: precise strokes over a pencil underdrawing,
+  one accent, mono labels with real values — a nib mark whose fill floods in
+  on `onComplete`; the homepage's chart, signature, route and system diagram;
+  a checkout flow; an Astro attribute diagram; the timeline's bars beside a
+  ruler of each track's scroll window with a live playhead; group, sequence
+  and preset plates (each preset's settings read from `PRESETS`); Vue, Svelte
+  and Solid as their own component, store and signal graphs; and the
+  interface demos (pricing card, counters with the real test counts and
+  weight, headline, lists, cards, pinned panel, snap carousel, video scrub)
+  rebuilt in hairline cells and Geist. The page is a hairline grid of plates
+  — figure number, APIs, frameworks and a guide link in a caption strip, the
+  drawing, then the title and a "code" drawer — instead of 23 identical
+  rows. Snippets and descriptions changed with their drawings; 785 lines of
+  old demo code are gone. Two stale lines in the detail copy were corrected
+  (a colour shift the chart never did; the reveal entry is 4.5 KB, not 3.9).
 - **`/examples` and each example's page follow.** The opening splits the
   title from the controls (framework filters as pills with their counts, and
   hairline cells for patterns, frameworks, weight and dependencies). Each of

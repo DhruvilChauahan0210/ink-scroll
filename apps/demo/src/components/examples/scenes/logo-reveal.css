@@ -1,0 +1,50 @@
+/* Ferrow — warm cream, espresso, terracotta. */
+.fw {
+  --fw-paper: #f4ede3;
+  --fw-ink: #2a1b12;
+  --fw-soft: #7a6355;
+  --fw-terra: #c4572b;
+  container-type: inline-size;
+  background: var(--fw-paper);
+  color: var(--fw-ink);
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+.fw-nav { display: flex; align-items: center; gap: 18px; padding: 14px 20px; border-bottom: 1px solid rgba(42, 27, 18, 0.1); }
+.fw-word { font: 700 17px/1 ui-serif, Georgia, 'Times New Roman', serif; letter-spacing: -0.01em; }
+.fw-links { display: flex; gap: 16px; margin-left: auto; font-size: 11.5px; color: var(--fw-soft); }
+.fw-bag { position: relative; display: inline-flex; color: var(--fw-ink); }
+.fw-bag b { position: absolute; top: -5px; right: -7px; display: grid; place-items: center; width: 14px; height: 14px; border-radius: 50%; background: var(--fw-terra); color: #fff; font-size: 8.5px; font-weight: 700; }
+
+.fw-hero { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); align-items: center; gap: 18px; padding: 26px 20px 22px; }
+.fw-kick { margin: 0 0 10px; font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fw-terra); }
+.fw-h { margin: 0; font: 600 clamp(19px, 5.2cqi, 27px)/1.08 ui-serif, Georgia, 'Times New Roman', serif; letter-spacing: -0.02em; text-wrap: balance; }
+.fw-sub { margin: 10px 0 0; font-size: 12px; line-height: 1.55; color: var(--fw-soft); }
+.fw-ctas { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 16px; }
+.fw-cta { padding: 8px 14px; border-radius: 999px; background: var(--fw-ink); color: var(--fw-paper); font-size: 11.5px; font-weight: 600; }
+.fw-more { font-size: 11.5px; font-weight: 600; color: var(--fw-ink); border-bottom: 1px solid rgba(42, 27, 18, 0.3); }
+
+.fw-mark { width: 100%; max-width: 210px; justify-self: center; }
+.fw-mark svg { display: block; width: 100%; height: auto; overflow: visible; }
+.fw-ink { fill: none; stroke: var(--fw-ink); stroke-linecap: round; stroke-linejoin: round; transition: stroke 0.5s ease; }
+.fw-outer { stroke-width: 2.4; }
+.fw-inner { stroke-width: 1; }
+.fw-bean { stroke-width: 2.4; }
+.fw-crease { stroke-width: 2.4; }
+.fw-fill { stroke: none; opacity: 0; transition: opacity 0.7s ease; }
+.fw-disc { fill: var(--fw-ink); }
+.fw-beanfill { fill: var(--fw-terra); transition-delay: 0.15s; }
+.fw-ringtext { font: 600 8.6px/1 system-ui, sans-serif; letter-spacing: 0.1em; fill: var(--fw-ink); opacity: 0; transition: opacity 0.6s ease 0.35s; }
+.is-done .fw-fill, .is-done .fw-ringtext { opacity: 1; }
+.is-done .fw-inner { stroke: var(--fw-paper); }
+.is-done .fw-crease { stroke: var(--fw-paper); }
+.is-done .fw-bean { stroke: var(--fw-terra); }
+
+.fw-facts { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 0; padding: 12px 20px; list-style: none; border-top: 1px solid rgba(42, 27, 18, 0.1); font-size: 10.5px; color: var(--fw-soft); }
+.fw-facts li::before { content: ''; display: inline-block; width: 5px; height: 5px; margin: 0 7px 1px 0; border-radius: 50%; background: var(--fw-terra); }
+
+@container (max-width: 430px) {
+  .fw-links { display: none; }
+  .fw-bag { margin-left: auto; }
+  .fw-hero { grid-template-columns: minmax(0, 1fr); }
+  .fw-mark { grid-row: 1; max-width: 150px; }
+}

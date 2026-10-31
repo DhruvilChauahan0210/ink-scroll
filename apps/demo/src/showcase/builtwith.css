@@ -1,0 +1,26 @@
+.bw {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  z-index: 50;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: calc(100vw - 24px);
+  padding: 7px 7px 7px 10px;
+  border-radius: 999px;
+  background: rgba(14, 14, 16, 0.92);
+  color: #ece8e0;
+  font: 500 12px/1.2 var(--font-geist-sans), system-ui, sans-serif;
+  box-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.08) inset;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.bw-mark { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: #ff5a36; color: #fff; flex: none; }
+.bw-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bw-text b { font-weight: 600; }
+.bw-text i { font-style: normal; color: #a19d95; }
+.bw .bw-link { flex: none; padding: 6px 11px; border-radius: 999px; background: #ece8e0; color: #121110; font-weight: 600; text-decoration: none; }
+.bw .bw-link:hover { background: #fff; }
+@media (max-width: 560px) { .bw-text i { display: none; } }

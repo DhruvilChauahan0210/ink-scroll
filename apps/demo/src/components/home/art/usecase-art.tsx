@@ -193,7 +193,7 @@ function cubicHead(p0: P, c1: P, c2: P, p3: P, t: number): Seg {
  * first word, climbs the stem, rounds the bowl back to the stem, retraces the
  * lower stem exactly (invisible) and leaves from the foot into "ark".
  */
-const SIGNATURE = (() => {
+export const SIGNATURE = (() => {
   const segs: Seg[] = [];
   const chain = (pts: P[]) => segs.push(...crCubics(pts));
   const start: P = [24, 202];

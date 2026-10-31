@@ -18,6 +18,18 @@ Numbers that set the priorities (Search Console and npm, 2026-10-30): 4,020
 lifetime downloads, ~170 a month; 5 GitHub stars; 147 Google clicks in five
 months, 81% to the homepage; `/vs-gsap` at position 11 with 425 impressions.
 
+### Showcase sites (one per example, in progress)
+- Each example gets a complete demo site for a fictional company, linked from its card
+  and its page. The owner wants real products, not this site's ink style. Done: Ferrow
+  (`/showcase/ferrow` → logo-reveal). Next: Ledgerline (line-chart; its in-card scene is
+  `components/examples/scenes/ChartScene.tsx`), then the rest one by one.
+- To add one: build it in `src/showcase/<slug>/` with its own CSS and the `BuiltWith`
+  tab; add `app/showcase/<slug>/page.tsx` (robots noindex); capture its first screen
+  (Playwright at 1440×900, demo tab hidden) to `public/showcase/<slug>.webp`; add it to
+  `SHOWCASE` in `src/showcase/index.ts`; update the card's label, tag, description and
+  code in `components/examples/scenes/data.ts`.
+- Fictional brands only, no real logos; realistic copy; check desktop and 390px.
+
 ### Gotcha: intermittent Vercel production failures
 - Twice on 2026-10-31 a production build failed (~3 min in) while the preview build of
   the same commit passed and local `vercel-build` passed; an identical re-run succeeded

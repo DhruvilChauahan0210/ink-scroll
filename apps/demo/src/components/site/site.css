@@ -159,13 +159,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 260px;
-  padding: clamp(16px, 2.4vw, 32px);
+  min-height: 300px;
+  padding: clamp(18px, 2.6vw, 36px);
   overflow: hidden;
-  background: #f8f6f1;
-  color: #121110;
+  background: var(--panel);
+  color: var(--fg);
 }
-.site .plate-body.is-dark { padding: 0; background: #1e1f22; color: #ece8e0; }
 
 /* A title-block strip: zone or figure number, then labelled cells. */
 .site .tb {

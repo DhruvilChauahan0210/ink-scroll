@@ -7,6 +7,8 @@ import { CodeBox } from './site/CodeBox';
 import { Plate } from './site/Plate';
 import { CopyCommand } from './home/CopyCommand';
 import { EXAMPLE_SEO } from '@/data/examples-seo';
+import { SHOWCASE } from '@/showcase';
+import { ShowcaseShot } from '@/showcase/ShowcaseShot';
 
 export function ExampleDetail({ slug }: { slug: string }) {
   const example = EXAMPLES.find((e) => e.id === slug);
@@ -18,6 +20,7 @@ export function ExampleDetail({ slug }: { slug: string }) {
     .filter((r) => r.seo && r.example);
 
   const isDark = 'darkPreview' in example && !!example.darkPreview;
+  const site = SHOWCASE[slug];
   const n = EXAMPLES.indexOf(example) + 1;
   const pad = (x: number) => String(x).padStart(2, '0');
 
@@ -35,6 +38,9 @@ export function ExampleDetail({ slug }: { slug: string }) {
         <h1 className="pg-title">{seo.heading}</h1>
         <p className="pg-lede">{seo.intro}</p>
         <div className="pg-actions">
+          {site && (
+            <Link href={`/showcase/${site.slug}`} className="btn btn-solid" data-magnetic>Open the live site ↗</Link>
+          )}
           <CopyCommand />
           <Link href={`/examples#${slug}`} className="btn" data-magnetic>See it beside the others</Link>
         </div>
@@ -52,7 +58,7 @@ export function ExampleDetail({ slug }: { slug: string }) {
             <CodeBox file="Hero.tsx">{example.code}</CodeBox>
           </div>
           <div className="ex-plate">
-            <Plate n={n} dark={isDark}>{example.preview}</Plate>
+            {site ? <ShowcaseShot site={site} priority /> : <Plate n={n} dark={isDark}>{example.preview}</Plate>}
           </div>
         </section>
       </div>

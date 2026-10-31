@@ -57,10 +57,10 @@ export const EXAMPLE_SEO: Record<string, ExampleSeo> = {
     slug: 'line-chart',
     title: 'SVG Line Chart Animation on Scroll (No Library)',
     description:
-      'Animate a line chart as it scrolls into view — axes first, then the data line tracing in with a colour shift. Copy-paste code, zero chart dependencies.',
+      'Animate a line chart as it scrolls into view — the grid and axes first, then two years of data tracing in, this year\'s in the accent. Copy-paste code, zero chart dependencies.',
     heading: 'Line chart that draws on scroll',
     intro:
-      'Animated charts usually mean pulling in a charting library, or hand-rolling a requestAnimationFrame loop that fights the scroll position. Neither is necessary when the chart is already an SVG path. This example sequences two draws — the axes settle first, then the revenue line traces across them and shifts from grey to brand pink as it goes, using strokeColor interpolation rather than a CSS transition.',
+      'Animated charts usually mean pulling in a charting library, or hand-rolling a requestAnimationFrame loop that fights the scroll position. Neither is necessary when the chart is already an SVG path. This example sequences two draws — the axes settle first, then two years of revenue trace across them, last year\'s in grey and this year\'s in the accent, staggered so the eye reads them in order.',
     keywords: [
       'svg line chart animation',
       'animate chart on scroll',
@@ -288,7 +288,7 @@ export const EXAMPLE_SEO: Record<string, ExampleSeo> = {
       'Fade and cascade elements into view with one scrollReveal call. A 4.5 KB, typed replacement for AOS and ScrollReveal.js — no data attributes.',
     heading: 'Card cascade reveal on scroll',
     intro:
-      'Reveal-on-scroll is the most common scroll effect on the web and usually arrives via data attributes sprinkled through the markup, which couples your animation config to your HTML and gives you nothing typed to refactor against. One scrollReveal call on a selector replaces the lot. Worth being straight: AOS (6.7 KB) and ScrollReveal (5.6 KB) are fine at this and are not much bigger than our 3.9 KB reveal entry — the case for switching is types, tree-shaking and not touching your markup.',
+      'Reveal-on-scroll is the most common scroll effect on the web and usually arrives via data attributes sprinkled through the markup, which couples your animation config to your HTML and gives you nothing typed to refactor against. One scrollReveal call on a selector replaces the lot. Worth being straight: AOS (6.7 KB) and ScrollReveal (5.6 KB) are fine at this and are not much bigger than our 4.5 KB reveal entry — the case for switching is types, tree-shaking and not touching your markup.',
     keywords: [
       'scroll reveal javascript',
       'aos alternative',
