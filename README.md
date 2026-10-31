@@ -30,11 +30,11 @@ Works in **React · Next.js · Vue 3 · Svelte · Solid · Angular · Nuxt · As
 - **AOS drop-in** — `import AOS from 'svg-scroll-draw/aos'` runs your existing `data-aos` markup with no `aos.css`; tested side by side against AOS 2.3.4. [Details](#aos-drop-in--switch-from-aos-in-one-line)
 - **Full playback API** — `pause`, `resume`, `seek`, `replay`, `getProgress`, `destroy`
 - **Presets** — `{ preset: 'reveal' }` for instant one-liner setup; five named presets: `sketch`, `reveal`, `typewriter`, `cinematic`, `spring`
-- **CLI scaffolder** — `npx svg-scroll-draw init` generates a ready-to-use starter file for your framework
+- **CLI** — `npx svg-scroll-draw init` generates a starter file for your framework; `npx svg-scroll-draw migrate` switches a project from AOS, ScrollReveal or vivus to the drop-ins in one command
 - **30+ options** — easing, stagger, fade, stroke color/width lerp, fill opacity, clip reveal, morphTo, velocityScale, waypoints, callbacks, repeat, autoReverse, and more
 - **Group / Sequence / Timeline APIs** — animate multiple containers simultaneously, one-after-another, or on independent scroll windows with `loop` for auto-looping after scroll completion
 - **CSS custom property** — `--scroll-draw-progress` is set on every frame so you can drive any CSS animation without a callback
-- **606 tests across 30 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
+- **623 tests across 31 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
 - **192 browser tests on top of those**, run against Chromium, Firefox and WebKit in CI. The unit suite runs in jsdom, where `getTotalLength` is stubbed and `IntersectionObserver` is faked — it can check the engine's arithmetic but nothing about real browser behaviour. Both counts are derived from the suites themselves and enforced in CI, so neither can quietly drift out of date
 
 ---
@@ -73,6 +73,13 @@ npx svg-scroll-draw init
 ```
 
 Asks for your framework (React/Vue/Svelte/Solid/Vanilla), preset, easing, and SVG selector — writes a ready-to-use component file.
+
+Moving from AOS, ScrollReveal or vivus? One command switches imports, script tags and `package.json`
+to the [drop-ins](#aos-drop-in--switch-from-aos-in-one-line):
+
+```bash
+npx svg-scroll-draw migrate --dry-run   # preview, then run without --dry-run
+```
 
 ---
 
@@ -599,7 +606,7 @@ function Section() {
 ## AOS drop-in — switch from AOS in one line
 
 Already using [AOS](https://github.com/michalsnik/aos)? `svg-scroll-draw/aos` speaks its API and
-reads its markup, so the move is an import change. Keep every `data-aos`, `data-aos-offset`,
+reads its markup, so the move is an import change — or one command: `npx svg-scroll-draw migrate`. Keep every `data-aos`, `data-aos-offset`,
 `data-aos-delay`, `data-aos-anchor-placement` and custom animation; delete `aos.css` — the styles ship
 inside the module. 3.0 KB gzipped with the styles, against 6.7 KB for AOS 2.3.4 with its stylesheet.
 
@@ -639,7 +646,8 @@ Differences, on purpose:
 
 On [ScrollReveal](https://scrollrevealjs.org)? It is GPL-3.0 (with a paid licence for commercial work)
 and has not shipped since 4.0.9. `svg-scroll-draw/scrollreveal` is an independent, MIT-licensed
-implementation of the same API, so the move is an import change. 4.5 KB gzipped, against 5.6 KB.
+implementation of the same API, so the move is an import change — or one command: `npx svg-scroll-draw migrate`.
+4.5 KB gzipped, against 5.6 KB.
 
 ```diff
 - import ScrollReveal from 'scrollreveal';
@@ -670,8 +678,8 @@ Differences, on purpose:
 ## vivus drop-in — keep your `new Vivus()` code
 
 On [vivus](https://github.com/maxwellito/vivus)? It has not shipped since 0.4.6 (April 2021).
-`svg-scroll-draw/vivus` runs the same API, so the move is an import change. 3.9 KB gzipped, against
-4.1 KB.
+`svg-scroll-draw/vivus` runs the same API, so the move is an import change — or one command:
+`npx svg-scroll-draw migrate`. 3.9 KB gzipped, against 4.1 KB.
 
 ```diff
 - import Vivus from 'vivus';

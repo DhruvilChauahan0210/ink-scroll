@@ -363,7 +363,7 @@ import { ScrollDraw } from 'svg-scroll-draw/vue';
 ## AOS drop-in — switch from AOS in one line
 
 Already using [AOS](https://github.com/michalsnik/aos)? `svg-scroll-draw/aos` speaks its API and
-reads its markup, so the move is an import change. Keep every `data-aos`, `data-aos-offset`,
+reads its markup, so the move is an import change — or one command: `npx svg-scroll-draw migrate`. Keep every `data-aos`, `data-aos-offset`,
 `data-aos-delay`, `data-aos-anchor-placement` and custom animation; delete `aos.css` — the styles ship
 inside the module. 3.0 KB gzipped with the styles, against 6.7 KB for AOS 2.3.4 with its stylesheet.
 
@@ -403,7 +403,8 @@ Differences, on purpose:
 
 On [ScrollReveal](https://scrollrevealjs.org)? It is GPL-3.0 (with a paid licence for commercial work)
 and has not shipped since 4.0.9. `svg-scroll-draw/scrollreveal` is an independent, MIT-licensed
-implementation of the same API, so the move is an import change. 4.5 KB gzipped, against 5.6 KB.
+implementation of the same API, so the move is an import change — or one command: `npx svg-scroll-draw migrate`.
+4.5 KB gzipped, against 5.6 KB.
 
 ```diff
 - import ScrollReveal from 'scrollreveal';
@@ -434,8 +435,8 @@ Differences, on purpose:
 ## vivus drop-in — keep your `new Vivus()` code
 
 On [vivus](https://github.com/maxwellito/vivus)? It has not shipped since 0.4.6 (April 2021).
-`svg-scroll-draw/vivus` runs the same API, so the move is an import change. 3.9 KB gzipped, against
-4.1 KB.
+`svg-scroll-draw/vivus` runs the same API, so the move is an import change — or one command:
+`npx svg-scroll-draw migrate`. 3.9 KB gzipped, against 4.1 KB.
 
 ```diff
 - import Vivus from 'vivus';
@@ -603,6 +604,19 @@ npx svg-scroll-draw init
 ```
 
 Scaffolds a ready-to-use starter file for React, Vue, Svelte, Solid, or Vanilla JS.
+
+### Switching from AOS, ScrollReveal or vivus
+
+```bash
+npx svg-scroll-draw migrate --dry-run   # see what would change
+npx svg-scroll-draw migrate             # apply it
+```
+
+Points every `import` / `require` of `aos`, `scrollreveal` and `vivus` at the matching drop-in, swaps CDN
+`<script>` tags for the script-tag builds (dropping any stale `integrity` hash), removes AOS's `aos.css`
+imports, `<link>`s and `@import`s, and swaps the dependency in `package.json`. It rewrites module names,
+URLs and dependency entries only — never the code that uses them — skips `node_modules` and build output,
+and will not write over uncommitted git changes unless you pass `--force`.
 
 ---
 

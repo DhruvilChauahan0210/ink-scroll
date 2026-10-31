@@ -193,6 +193,9 @@ export default function VsAosPage() {
 + import AOS from 'svg-scroll-draw/aos';
 
 AOS.init({ once: true });`}</CodeBlock>
+            <CodeBlock file="terminal">{`# or let it do the edits: imports, script tags, aos.css, package.json
+npx svg-scroll-draw migrate --dry-run
+npx svg-scroll-draw migrate`}</CodeBlock>
             <CodeBlock file="index.html">{`<!-- remove the aos.js script and the aos.css link, then: -->
 <script src="https://unpkg.com/svg-scroll-draw/dist/cdn/aos.global.js"></script>
 <script>AOS.init();</script>`}</CodeBlock>

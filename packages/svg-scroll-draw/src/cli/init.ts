@@ -9,6 +9,7 @@ import {
   EASINGS,
   needsSelector,
 } from './generators';
+import { runMigrate } from './migrate';
 
 const RESET = '\x1b[0m';
 const BOLD  = '\x1b[1m';
@@ -91,4 +92,27 @@ async function main() {
   }
 }
 
-main().catch((e) => { console.error(e); process.exit(1); });
+/** The installed svg-scroll-draw version: dist/cli/init.js → ../../package.json. */
+function ownVersion(): string {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'package.json'), 'utf8')).version;
+  } catch {
+    return 'latest';
+  }
+}
+
+const USAGE =
+  `\n  npx svg-scroll-draw init       scaffold a starter file\n` +
+  `  npx svg-scroll-draw migrate    switch a project from AOS, ScrollReveal or vivus (--dry-run to preview)\n`;
+
+const [command, ...rest] = process.argv.slice(2);
+if (command === 'help' || command === '--help' || command === '-h') {
+  console.log(USAGE);
+} else if (command === 'migrate') {
+  process.exitCode = runMigrate(rest, ownVersion());
+} else if (command === undefined || command === 'init') {
+  main().catch((e) => { console.error(e); process.exit(1); });
+} else {
+  console.error(`\n  Unknown command "${command}".\n${USAGE}`);
+  process.exitCode = 1;
+}

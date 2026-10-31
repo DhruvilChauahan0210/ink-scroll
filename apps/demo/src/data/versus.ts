@@ -82,7 +82,7 @@ export const VERSUS: Versus[] = [
     faq: [
       {
         q: 'Do I need to change my vivus code?',
-        a: "No. Change the import (or the script tag to dist/cdn/vivus.global.js, which defines window.Vivus) and keep the rest. Options, types, start modes, data-start / data-duration / data-delay / data-async / data-ignore attributes and Vivus.EASE and friends are all supported.",
+        a: "No. Change the import (or the script tag to dist/cdn/vivus.global.js, which defines window.Vivus) and keep the rest — or run npx svg-scroll-draw migrate, which makes those edits and swaps the dependency. Options, types, start modes, data-start / data-duration / data-delay / data-async / data-ignore attributes and Vivus.EASE and friends are all supported.",
       },
       {
         q: 'Is vivus still maintained?',

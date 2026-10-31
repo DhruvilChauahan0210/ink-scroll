@@ -6,6 +6,23 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ## [Unreleased]
 
+### Added
+
+- **`npx svg-scroll-draw migrate`** switches a project from AOS, ScrollReveal or
+  vivus to the drop-ins in one command: `import` / `require` / dynamic
+  `import()` of `aos`, `scrollreveal` and `vivus` point at the matching entry
+  (with `.default` on CommonJS requires of the latter two), CDN `<script>` tags
+  from unpkg, jsDelivr, cdnjs or node_modules point at the script-tag builds
+  (a stale `integrity` hash is removed), AOS's `aos.css` imports, `<link>`s and
+  `@import`s are removed, and `package.json` swaps the dependencies (keeping its
+  indentation). It touches module names, URLs and dependency entries only,
+  skips `node_modules` and build output, previews with `--dry-run`, and will not
+  write over uncommitted git changes without `--force`. Checked end to end: a
+  Vite app on `aos` and one on `scrollreveal` + `vivus` install and build after
+  migrating, and a CDN page loads all three drop-ins with no errors.
+- `npx svg-scroll-draw help`; an unknown command now says so instead of
+  starting `init`.
+
 ### Tests
 
 - The AOS and ScrollReveal parity specs wait for the reference library and the

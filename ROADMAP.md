@@ -169,6 +169,8 @@ of examining a single API in a real browser.
 - [x] Idle-cost e2e test counts update-body runs instead of milliseconds — no more Firefox flake, no retries
 - [x] ScrollReveal drop-in (`svg-scroll-draw/scrollreveal`), MIT, inline styles matched byte for byte against 4.0.9
 - [x] vivus drop-in (`svg-scroll-draw/vivus`), SVG markup matched exactly against vivus 0.4.6 (last release April 2021); `/vs-vivus` page
+- [x] `npx svg-scroll-draw migrate` — one-command switch from AOS / ScrollReveal / vivus
+- [ ] StackBlitz "already migrated" starters for each drop-in, linked from the comparison pages
 - [ ] More blocks (the registry pattern grows by count), and a Vue/Svelte flavour of each
 - [ ] Desktop nav links are hand-typed per page — only the homepage and mobile menu link `/blocks`; move the nav into one component
 - [ ] Document the known jump-scroll asymmetry in the docs, not only in a test comment
