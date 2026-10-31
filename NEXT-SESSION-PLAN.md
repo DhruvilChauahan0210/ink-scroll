@@ -18,6 +18,12 @@ Numbers that set the priorities (Search Console and npm, 2026-10-30): 4,020
 lifetime downloads, ~170 a month; 5 GitHub stars; 147 Google clicks in five
 months, 81% to the homepage; `/vs-gsap` at position 11 with 425 impressions.
 
+### Gotcha: intermittent Vercel production failures
+- Twice on 2026-10-31 a production build failed (~3 min in) while the preview build of
+  the same commit passed and local `vercel-build` passed; an identical re-run succeeded
+  the first time. The logs need a Vercel login (the CLI isn't installed here). If it
+  keeps happening, read the log in the dashboard before changing anything.
+
 ### Gotcha on this laptop
 - The network intercepts TLS, and Node rejects api.github.com's certificate, so a
   plain `npm run dev` keeps serving a stale cached GitHub response. Run the dev server
@@ -30,8 +36,9 @@ months, 81% to the homepage; `/vs-gsap` at position 11 with 425 impressions.
 - **Every page into the homepage's design, one page at a time, each pushed live.**
   Wrap the route in `components/site/SiteShell` (nav, tokens, sign-off footer), add
   the route to `components/site/routes.ts` (keeps the mascot off it), give the page
-  a `pg-head` opening and restyle its own pieces. Done: `/docs`. Next, in order:
-  `/examples` (+ detail), `/guides` (+ detail), `/blocks`, `/blog` (+ posts), the
+  a `pg-head` opening and restyle its own pieces (shared: `CodeBox` listings,
+  `Plate` previews, `tb` title strips, `pill`s). Done: `/docs`, `/examples` (+ detail).
+  Next, in order: `/guides` (+ detail), `/blocks`, `/blog` (+ posts), the
   `vs-*` pages (one `VersusPage` template), `/changelog`, `/playground`, the
   framework landing pages, `/verify`.
 

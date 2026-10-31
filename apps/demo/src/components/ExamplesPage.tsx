@@ -6,34 +6,18 @@ import { scrollDraw } from 'svg-scroll-draw';
 import { scrollDrawGroup, scrollDrawSequence } from 'svg-scroll-draw/group';
 import { scrollDrawTimeline } from 'svg-scroll-draw/timeline';
 import Link from 'next/link';
-import { CopyButton } from './CopyButton';
-import { MobileMenu } from './MobileMenu';
+import { CodeBox } from './site/CodeBox';
+import { Plate } from './site/Plate';
+import { SELF } from '@/data/competitors';
+import './examples.css';
 import { EXAMPLE_SEO } from '@/data/examples-seo';
-import { scrollAnimate, scrollCounter, scrollParallax } from 'svg-scroll-draw';
-import { ScrollAnimate } from 'svg-scroll-draw/react';
+import { scrollAnimate, scrollCounter } from 'svg-scroll-draw';
 import { scrollText } from 'svg-scroll-draw/text';
 import { scrollAnimateGroup } from 'svg-scroll-draw/group';
-import { scrollPin } from 'svg-scroll-draw/pin';
-import { scrollSnap } from 'svg-scroll-draw/snap';
 import { scrollReveal } from 'svg-scroll-draw/reveal';
 
 function CodeBlock({ filename, children }: { filename: string; children: string }) {
-  return (
-    <div className="rounded-xl overflow-hidden border border-pitch-black text-sm">
-      <div className="bg-[#111] flex items-center justify-between px-4 py-2">
-        <div className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-[#444]" />
-          <span className="w-2 h-2 rounded-full bg-[#444]" />
-          <span className="w-2 h-2 rounded-full bg-[#444]" />
-        </div>
-        <span className="text-[11px] text-[#888] font-mono">{filename}</span>
-        <CopyButton text={children} />
-      </div>
-      <pre className="bg-[#242423] text-[#e8e8e3] px-3 sm:px-5 py-4 text-[10px] sm:text-[12px] font-mono leading-[1.75] overflow-x-auto">
-        {children}
-      </pre>
-    </div>
-  );
+  return <CodeBox file={filename}>{children}</CodeBox>;
 }
 
 /* ── Individual examples ──────────────────────────────────── */
@@ -2450,150 +2434,80 @@ export function ExamplesPage() {
     ? EXAMPLES
     : EXAMPLES.filter(ex => (EXAMPLE_FRAMEWORKS[ex.id] ?? []).includes(activeFilter));
 
+  const frameworks = FILTERS.length - 1;
+
   return (
-    <div className="bg-light-linen text-pitch-black min-h-screen">
+    <div className="examples">
 
-      {/* Nav */}
-      <nav className="sticky top-0 z-50 bg-light-linen/95 backdrop-blur-sm border-b border-pitch-black flex items-center justify-between px-4 md:px-12 h-14">
-        <Link href="/" className="font-display font-bold text-sm tracking-tight hover:opacity-70 transition-opacity shrink-0">svg-scroll-draw</Link>
-
-        {/* Desktop */}
-        <div className="hidden lg:flex items-center gap-2">
-          <Link href="/" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Home</Link>
-          <Link href="/docs" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Docs</Link>
-          <Link href="/blog" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Blog</Link>
-          <Link href="/changelog" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Changelog</Link>
-          <Link href="/playground" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">⚡ Playground</Link>
-        </div>
-
-        {/* Mobile / tablet */}
-        <div className="flex lg:hidden">
-          <MobileMenu />
-        </div>
-      </nav>
-
-      {/* Header */}
-      <section className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-12 sm:py-16 md:py-20 overflow-hidden">
-        <div className="max-w-4xl mx-auto min-w-0">
-          <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-4 font-medium">
-            Real-world examples
-          </p>
-          <h1 className="font-display font-extrabold text-[clamp(30px,6vw,72px)] leading-[0.92] tracking-[-0.04em] mb-6">
-            SVG scroll animations<br />
-            <span className="relative inline-block">
-              <span className="relative z-10 px-2 sm:px-3">without GSAP.</span>
-              <span className="absolute inset-0 bg-creator-pink rounded-xl -rotate-[0.8deg]" />
-            </span>
+      {/* ── Opening ──────────────────────────────────────── */}
+      <header className="pg-head ex-head">
+        <div>
+          <p className="pg-kicker"><span>examples / {EXAMPLES.length} patterns</span><span>live on this page</span></p>
+          <h1 className="pg-title">
+            SVG scroll animations <span className="ex-dim">without GSAP.</span>
           </h1>
-          <p className="text-sm sm:text-base md:text-lg text-graphite-border max-w-2xl leading-relaxed break-words">
-            Seventeen production-ready patterns — logo reveals, charts, signatures, video scrub, scrollAnimateGroup, feature reveals, Vue 3, Svelte, Solid.js, Timeline API, Group API, Sequence API, and more.
-            Each one is powered by <code className="inline font-mono text-pitch-black text-[0.9em] bg-marketplace-gray border border-subtle-ash px-1.5 py-0.5 rounded-md break-all">svg-scroll-draw</code> and
-            works in React, Vue 3, Svelte, Solid, and vanilla JS.
-            Scroll down to see them draw live.
+        </div>
+        <div className="ex-head-r">
+          <p className="pg-lede">
+            {EXAMPLES.length} production-ready patterns — logo reveals, charts, signatures, video scrub,
+            pinned panels, snapping carousels, and the Timeline, Group and Sequence APIs — each with the
+            code to paste, in React, Vue 3, Svelte, Solid or vanilla JS. Scroll and they draw.
           </p>
-
-          {/* Framework filter pills */}
-          <div className="flex flex-wrap gap-2 mt-8">
-            {FILTERS.map(f => (
+          <div className="ex-filters" role="group" aria-label="Filter by framework">
+            {FILTERS.map((f) => (
               <button
                 key={f.key}
+                type="button"
+                className="pill"
+                aria-pressed={activeFilter === f.key}
                 onClick={() => setActiveFilter(f.key)}
-                className={`text-xs px-3.5 py-1.5 rounded-full border font-medium transition-colors whitespace-nowrap ${
-                  activeFilter === f.key
-                    ? 'bg-pitch-black text-light-linen border-pitch-black'
-                    : 'border-subtle-ash text-graphite-border hover:border-pitch-black hover:text-pitch-black'
-                }`}
               >
                 {f.label}
-                {f.key !== 'all' && (
-                  <span className={`ml-1.5 text-[10px] ${activeFilter === f.key ? 'opacity-60' : 'opacity-40'}`}>
-                    {EXAMPLES.filter(ex => (EXAMPLE_FRAMEWORKS[ex.id] ?? []).includes(f.key)).length}
-                  </span>
-                )}
+                <span className="pill-n">
+                  {f.key === 'all' ? EXAMPLES.length : EXAMPLES.filter((ex) => (EXAMPLE_FRAMEWORKS[ex.id] ?? []).includes(f.key)).length}
+                </span>
               </button>
             ))}
           </div>
+          <dl className="pg-facts">
+            <div><dt>Patterns</dt><dd>{EXAMPLES.length}</dd></div>
+            <div><dt>Frameworks</dt><dd>{frameworks}</dd></div>
+            <div><dt>Gzipped</dt><dd>{SELF.gzipKb} KB</dd></div>
+            <div><dt>Dependencies</dt><dd>0</dd></div>
+          </dl>
         </div>
-      </section>
+      </header>
 
-      {/* Examples grid */}
-      <div className="divide-y divide-pitch-black">
-        {filtered.map((ex, i) => (
-          <section key={ex.id} id={ex.id} className={`px-4 sm:px-6 md:px-12 py-12 sm:py-14 md:py-16 overflow-hidden ${i % 2 === 1 ? 'bg-marketplace-gray' : ''}`}>
-            <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-8 md:gap-12 items-start">
-
-              {/* Text + code — min-w-0 stops grid cell from overflowing */}
-              <div className={`min-w-0 ${i % 2 === 1 ? 'order-1 md:order-2' : ''}`}>
-                <div className="flex flex-wrap items-center gap-2 mb-3">
-                  <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border font-medium shrink-0">
-                    {String(i + 1).padStart(2, '0')}
-                  </p>
-                  <span className="text-subtle-ash shrink-0">·</span>
-                  <code className="text-[10px] sm:text-[11px] font-mono bg-sunshine-yellow/30 text-pitch-black px-2 py-0.5 rounded-full border border-sunshine-yellow/50 break-all min-w-0">
-                    {ex.tag}
-                  </code>
+      {/* ── The examples ─────────────────────────────────── */}
+      <div className="ex-list">
+        {filtered.map((ex, i) => {
+          const n = EXAMPLES.indexOf(ex) + 1;
+          const fws = EXAMPLE_FRAMEWORKS[ex.id] ?? [];
+          return (
+            <section key={ex.id} id={ex.id} className={`ex-row${i % 2 === 1 ? ' is-flip' : ''}`}>
+              <div className="ex-copy">
+                <div className="tb">
+                  <span className="tb-n">{String(n).padStart(2, '0')}</span>
+                  <span className="tb-wrap">{ex.tag}</span>
+                  {fws.length > 0 && <span className="tb-fw">{fws.map((k) => FILTERS.find((f) => f.key === k)?.label ?? k).join(' · ')}</span>}
+                  <a href={`#${ex.id}`} className="tb-link" aria-label={`Link to ${ex.label}`}>#</a>
                 </div>
-                <h2 className="font-display font-extrabold text-[clamp(22px,3vw,36px)] leading-[1] tracking-[-0.03em] mb-4 break-words">
-                  {ex.label}
-                </h2>
-                <p className="text-graphite-border leading-relaxed mb-4 text-[14px] sm:text-[15px] break-words">
-                  {ex.description}
-                </p>
+                <h2 className="ex-h2">{ex.label}</h2>
+                <p className="ex-desc">{ex.description}</p>
                 {EXAMPLE_SEO[ex.id] && (
-                  <Link
-                    href={`/examples/${ex.id}`}
-                    className="inline-block mb-5 sm:mb-6 text-[13px] font-semibold underline underline-offset-4 hover:opacity-70 transition-opacity"
-                  >
-                    Full guide: {EXAMPLE_SEO[ex.id].heading} →
+                  <Link href={`/examples/${ex.id}`} className="ex-guide">
+                    Full guide: {EXAMPLE_SEO[ex.id].heading} <span aria-hidden="true">→</span>
                   </Link>
                 )}
-                <div className="max-w-full overflow-hidden">
-                  <CodeBlock filename="Hero.tsx">{ex.code}</CodeBlock>
-                </div>
+                <CodeBlock filename="Hero.tsx">{ex.code}</CodeBlock>
               </div>
-
-              {/* Live preview */}
-              <div className={`min-w-0 flex items-center justify-center rounded-2xl border border-pitch-black shadow-[4px_4px_0px_#000] min-h-[200px] sm:min-h-[240px] overflow-hidden ${'darkPreview' in ex && ex.darkPreview ? 'bg-[#1e1f22] p-0' : 'bg-[#ffffff] p-4 sm:p-8'} ${i % 2 === 1 ? 'order-2 md:order-1' : ''}`}>
-                {ex.preview}
+              <div className="ex-plate">
+                <Plate n={n} dark={'darkPreview' in ex && !!ex.darkPreview}>{ex.preview}</Plate>
               </div>
-
-            </div>
-          </section>
-        ))}
+            </section>
+          );
+        })}
       </div>
-
-      {/* CTA */}
-      <section className="border-t border-pitch-black bg-creator-pink px-4 sm:px-6 md:px-12 py-12 sm:py-16 text-center">
-        <h2 className="font-display font-extrabold text-[clamp(24px,5vw,52px)] leading-[0.95] tracking-[-0.03em] mb-6 text-pitch-black">
-          Ready to add this<br />to your project?
-        </h2>
-        <div className="flex flex-col items-center justify-center gap-3 w-full max-w-xs mx-auto sm:max-w-none sm:flex-row sm:flex-wrap">
-          <div className="flex items-center gap-2 bg-pitch-black text-light-linen rounded-full px-5 sm:px-6 py-3 text-sm font-mono shadow-[3px_3px_0px_rgba(0,0,0,0.3)] w-full sm:w-auto justify-center">
-            <span className="opacity-50">$</span>
-            <span>npm i svg-scroll-draw</span>
-          </div>
-          <Link
-            href="/playground"
-            className="px-5 sm:px-6 py-3 rounded-full border-2 border-pitch-black bg-transparent text-pitch-black text-sm font-semibold hover:bg-pitch-black hover:text-creator-pink transition-colors shadow-[3px_3px_0px_rgba(0,0,0,0.2)] w-full sm:w-auto text-center"
-          >
-            ⚡ Try the Playground →
-          </Link>
-          <Link
-            href="/docs"
-            className="px-5 sm:px-6 py-3 rounded-full border-2 border-pitch-black bg-transparent text-pitch-black text-sm font-semibold hover:bg-pitch-black hover:text-creator-pink transition-colors shadow-[3px_3px_0px_rgba(0,0,0,0.2)] w-full sm:w-auto text-center"
-          >
-            Read the Docs →
-          </Link>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="px-6 md:px-12 py-6 border-t border-subtle-ash text-center text-[11px] font-mono text-graphite-border">
-        svg-scroll-draw · MIT · ~10 KB gzipped ·{' '}
-        <a href="https://github.com/DhruvilChauahan0210/ink-scroll" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-pitch-black transition-colors">
-          GitHub
-        </a>
-      </footer>
     </div>
   );
 }

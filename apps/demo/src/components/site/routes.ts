@@ -3,7 +3,7 @@
  * ink-bottle mascot) stays off them. Add a route here when its page moves into
  * <SiteShell>.
  */
-const REDESIGNED = ['/', '/docs'];
+const REDESIGNED = ['/', '/docs', '/examples'];
 
 export function isRedesigned(pathname: string | null): boolean {
   if (!pathname) return false;

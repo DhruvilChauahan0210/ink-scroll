@@ -31,6 +31,16 @@ All notable changes to `svg-scroll-draw` are documented here.
   which still said v2.10.0, is gone. The homepage's test counts
   moved to `data/facts.ts` so every page's sign-off can quote them; check:claims
   reads it.
+- **`/examples` and each example's page follow.** The opening splits the
+  title from the controls (framework filters as pills with their counts, and
+  hairline cells for patterns, frameworks, weight and dependencies). Each of
+  the 23 examples opens with a title-block strip — its number, the APIs it
+  uses, its frameworks — over a numbered code listing, beside its live
+  preview mounted as a captioned plate that stays pinned while you read the
+  code. Previews keep their own colours on a paper or slate ground. An
+  example's own page gets a breadcrumb kicker, the install command, the same
+  code-and-plate row and its related examples as a parts list. The old pink
+  call-to-action band and footer give way to the sign-off sheet.
 
 ---
 

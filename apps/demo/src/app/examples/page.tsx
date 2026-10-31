@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { ExamplesPage } from '@/components/ExamplesPage';
+import { SiteShell } from '@/components/site/SiteShell';
 import { EXAMPLE_SEO, SEO_SLUGS } from '@/data/examples-seo';
 // EXAMPLE_COUNT, not EXAMPLES.length — ExamplesPage is a client module, so a
 // server import of EXAMPLES yields a proxy whose .length silently reads 0.
@@ -58,7 +59,9 @@ export default function Page() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <ExamplesPage />
+      <SiteShell active="/examples" kicker="examples / your turn">
+        <ExamplesPage />
+      </SiteShell>
     </>
   );
 }

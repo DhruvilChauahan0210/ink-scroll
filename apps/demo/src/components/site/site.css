@@ -139,3 +139,67 @@
   letter-spacing: 0.06em;
   color: var(--fg-2);
 }
+
+/* A live preview, mounted. */
+.site .plate { margin: 0; border: 1px solid var(--line-2); min-width: 0; }
+.site .plate-cap {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--line-2);
+  background: var(--bg-2);
+  font: 500 10.5px/1.4 var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+.site .plate-n { color: var(--accent); letter-spacing: 0.06em; }
+.site .plate-body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 260px;
+  padding: clamp(16px, 2.4vw, 32px);
+  overflow: hidden;
+  background: #f8f6f1;
+  color: #121110;
+}
+.site .plate-body.is-dark { padding: 0; background: #1e1f22; color: #ece8e0; }
+
+/* A title-block strip: zone or figure number, then labelled cells. */
+.site .tb {
+  display: inline-flex;
+  flex-wrap: wrap;
+  max-width: 100%;
+  border: 1px solid var(--line-2);
+  font: 500 10.5px/1 var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+.site .tb > * { display: flex; align-items: center; padding: 8px 12px; white-space: nowrap; }
+.site .tb > * + * { border-left: 1px solid var(--line-2); }
+.site .tb-n { min-width: 46px; justify-content: center; color: var(--accent); letter-spacing: 0.04em; }
+.site .tb-wrap { white-space: normal !important; text-transform: none; letter-spacing: 0.02em; line-height: 1.35; }
+.site a.tb-link { color: var(--fg-3); transition: color 0.2s, background-color 0.2s; }
+.site a.tb-link:hover { color: var(--fg); background: var(--bg-2); }
+
+/* Filter or section pills. */
+.site .pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 13px;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  background: transparent;
+  font: 500 11px/1.3 var(--mono);
+  letter-spacing: 0.06em;
+  color: var(--fg-2);
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s, background-color 0.2s;
+}
+.site .pill:hover { color: var(--fg); border-color: var(--fg-3); }
+.site .pill[aria-pressed='true'] { background: var(--fg); border-color: var(--fg); color: var(--bg); }
+.site .pill-n { opacity: 0.55; }
