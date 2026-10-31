@@ -1,11 +1,16 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Instrument_Serif } from 'next/font/google';
+import { Big_Shoulders, Instrument_Serif } from 'next/font/google';
 import './home.css';
-import { ThemeToggle } from '@/components/ThemeToggle';
 import { MobileMenu } from '@/components/MobileMenu';
-import { HeroInk } from '@/components/home/HeroInk';
-import { InkTimeline } from '@/components/home/InkTimeline';
+import { SmoothScroll } from '@/components/home/SmoothScroll';
+import { Preloader } from '@/components/home/Preloader';
+import { HomeThemeToggle } from '@/components/home/HomeThemeToggle';
+import { ContourDraw } from '@/components/home/ContourDraw';
+import { Manifesto } from '@/components/home/Manifesto';
+import { Counters } from '@/components/home/Counters';
+import { VersusBars } from '@/components/home/VersusBars';
+import { Reveal } from '@/components/home/Reveal';
 import { CodeTabs } from '@/components/home/CodeTabs';
 import { CopyCommand } from '@/components/home/CopyCommand';
 import { COMPETITORS, SELF, MEASURED_ON } from '@/data/competitors';
@@ -15,12 +20,19 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://svg-scroll-draw.vercel.app' },
 };
 
-/* The accent face: a few italic words per heading, never body text. */
+/* The two voices of the page: a condensed display for the big words, an
+   italic serif for the one soft word in each line. */
+const display = Big_Shoulders({
+  subsets: ['latin'],
+  weight: ['800', '900'],
+  variable: '--font-ink-display',
+  display: 'swap',
+});
 const serif = Instrument_Serif({
   subsets: ['latin'],
   weight: '400',
   style: ['italic'],
-  variable: '--font-instrument-serif',
+  variable: '--font-ink-serif',
   display: 'swap',
 });
 
@@ -36,10 +48,10 @@ const jsonLd = {
   applicationCategory: 'DeveloperApplication',
   operatingSystem: 'Web',
   url: 'https://svg-scroll-draw.vercel.app',
-  downloadUrl: 'https://www.npmjs.com/package/svg-scroll-draw',
-  codeRepository: 'https://github.com/DhruvilChauahan0210/ink-scroll',
+  downloadUrl: NPM,
+  codeRepository: GH,
   license: 'https://opensource.org/licenses/MIT',
-  softwareVersion: '2.15.0',
+  softwareVersion: SELF.version,
   programmingLanguage: ['JavaScript', 'TypeScript'],
   author: { '@type': 'Person', name: 'Dhruvil Chauhan' },
   keywords:
@@ -47,454 +59,258 @@ const jsonLd = {
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
 };
 
-const FRAMEWORKS = ['React', 'Next.js', 'Vue', 'Nuxt', 'Svelte', 'Solid', 'Angular', 'Astro', 'Web Component', 'Vanilla'];
+const FRAMEWORKS = ['React', 'Next.js', 'Vue', 'Nuxt', 'Svelte', 'Solid', 'Angular', 'Astro', 'Web Component', 'Vanilla JS'];
 
-/* One line each; the art is a sketch of what the API does, in the page's ink. */
-const CAPABILITIES: { name: string; desc: string; imp: string; art: React.ReactNode }[] = [
-  {
-    name: 'scrollDraw',
-    desc: 'Draw any SVG path as it scrolls through the viewport. The original, still the best at it.',
-    imp: "svg-scroll-draw",
-    art: (
-      <svg viewBox="0 0 160 90" strokeLinecap="round"><path className="i" strokeWidth="2" strokeDasharray="4 6" d="M8 70 C 40 10, 70 10, 90 50 S 140 80, 152 20" /><path className="a" strokeWidth="3.5" d="M8 70 C 40 10, 70 10, 90 50" /></svg>
-    ),
-  },
-  {
-    name: 'scrollAnimate',
-    desc: 'Animate any CSS property on any element from scroll — opacity, transforms, colours, units.',
-    imp: 'svg-scroll-draw',
-    art: (
-      <svg viewBox="0 0 160 90"><rect className="i" x="10" y="44" width="34" height="34" rx="8" strokeWidth="1.5" opacity="0.5" /><rect className="i" x="58" y="30" width="34" height="34" rx="8" strokeWidth="1.5" opacity="0.75" /><rect className="f" x="106" y="14" width="34" height="34" rx="8" strokeWidth="1.5" /></svg>
-    ),
-  },
-  {
-    name: 'scrollText',
-    desc: 'Split headlines into words, characters or lines and stagger them in. Accessible by default.',
-    imp: 'svg-scroll-draw/text',
-    art: (
-      <svg viewBox="0 0 160 90"><rect className="g" x="8" y="22" width="40" height="12" rx="3" /><rect className="g" x="54" y="22" width="56" height="12" rx="3" opacity="0.7" /><rect className="f" x="116" y="22" width="36" height="12" rx="3" /><rect className="g" x="8" y="48" width="64" height="12" rx="3" opacity="0.45" /><rect className="g" x="78" y="48" width="30" height="12" rx="3" opacity="0.25" /></svg>
-    ),
-  },
-  {
-    name: 'scrollPin',
-    desc: 'Hold an element in place while the page scrolls past, with enter and leave callbacks.',
-    imp: 'svg-scroll-draw/pin',
-    art: (
-      <svg viewBox="0 0 160 90"><rect className="i" x="10" y="8" width="140" height="74" rx="10" strokeWidth="1.5" /><rect className="f" x="22" y="20" width="52" height="50" rx="7" strokeWidth="1.5" /><path className="i" strokeWidth="1.5" d="M92 26 H136 M92 40 H128 M92 54 H136" /></svg>
-    ),
-  },
-  {
-    name: 'scrollParallax',
-    desc: 'Move layers at a fraction of the scroll speed — or against it — in one call.',
-    imp: 'svg-scroll-draw',
-    art: (
-      <svg viewBox="0 0 160 90" strokeLinecap="round"><path className="i" strokeWidth="1.5" d="M8 72 L 50 40 L 80 60 L 120 24 L 152 52" opacity="0.5" /><path className="a" strokeWidth="2.5" d="M8 82 L 46 58 L 84 74 L 126 46 L 152 64" /><circle className="f" cx="122" cy="18" r="8" strokeWidth="1.5" /></svg>
-    ),
-  },
-  {
-    name: 'scrollVideo',
-    desc: 'Tie a video’s current time to scroll — the product-page scrub, without a framework.',
-    imp: 'svg-scroll-draw/video',
-    art: (
-      <svg viewBox="0 0 160 90"><rect className="i" x="8" y="10" width="144" height="56" rx="8" strokeWidth="1.5" /><path className="f" d="M70 26 L 92 38 L 70 50 Z" strokeWidth="1.5" /><rect className="g" x="8" y="76" width="144" height="4" rx="2" /><rect className="f" x="8" y="76" width="88" height="4" rx="2" strokeWidth="0" /></svg>
-    ),
-  },
-  {
-    name: 'scrollCounter',
-    desc: 'Count a number up as it enters view, with your own formatting and easing.',
-    imp: 'svg-scroll-draw',
-    art: (
-      <svg viewBox="0 0 160 90"><text x="8" y="62" fontFamily="var(--mono)" fontSize="44" fontWeight="600" fill="var(--accent)">2,4</text><text x="94" y="62" fontFamily="var(--mono)" fontSize="44" fontWeight="600" fill="var(--line-2)">80</text></svg>
-    ),
-  },
-  {
-    name: 'scrollSnap',
-    desc: 'Snap between sections with thresholds, easing and callbacks — no carousel library.',
-    imp: 'svg-scroll-draw/snap',
-    art: (
-      <svg viewBox="0 0 160 90"><rect className="i" x="8" y="14" width="40" height="62" rx="7" strokeWidth="1.5" opacity="0.5" /><rect className="f" x="60" y="14" width="40" height="62" rx="7" strokeWidth="1.5" /><rect className="i" x="112" y="14" width="40" height="62" rx="7" strokeWidth="1.5" opacity="0.5" /></svg>
-    ),
-  },
+const INSTRUMENTS = [
+  { name: 'scrollDraw',     desc: 'Draw any SVG path from scroll. The original, and still the best at it.', entry: 'svg-scroll-draw',       href: '/docs#scrolldraw' },
+  { name: 'scrollAnimate',  desc: 'Any CSS property, scrubbed by position: opacity, transforms, colours, units.', entry: 'svg-scroll-draw',       href: '/docs#scrollanimate' },
+  { name: 'scrollText',     desc: 'Split a headline into words, characters or lines and stagger them in.',  entry: 'svg-scroll-draw/text',  href: '/docs#scrolltext' },
+  { name: 'scrollPin',      desc: 'Hold a section in place while the page keeps moving.',                 entry: 'svg-scroll-draw/pin',   href: '/docs#scrollpin' },
+  { name: 'scrollParallax', desc: 'Layers that move at their own fraction of the scroll speed.',          entry: 'svg-scroll-draw',       href: '/docs#scrollparallax' },
+  { name: 'scrollVideo',    desc: 'Tie a video’s current time to scroll. No framework needed.',           entry: 'svg-scroll-draw/video', href: '/docs#scrollvideo' },
+  { name: 'scrollCounter',  desc: 'Numbers that count up as they enter, with your own formatting.',       entry: 'svg-scroll-draw',       href: '/docs#scrollcounter' },
+  { name: 'scrollSnap',     desc: 'Snap between sections with thresholds, easing and callbacks.',         entry: 'svg-scroll-draw/snap',  href: '/docs#scrollsnap' },
 ];
 
-const STEPS = [
-  {
-    title: 'Install it',
-    body: 'One package, no dependencies. Every API is its own entry point, so you ship only what you import — scrollReveal alone is a few kilobytes.',
-    code: 'npm i svg-scroll-draw',
-  },
-  {
-    title: 'Point it at an element',
-    body: 'Pass a selector or an element and the options you need. Trigger windows, easing, stagger and once are all optional; the defaults draw across the viewport.',
-    code: "scrollDraw('#logo', { stagger: 0.1 })",
-  },
-  {
-    title: 'Scroll',
-    body: 'Where the browser supports scroll-driven animations, the draw runs on a CSS view-timeline with no JavaScript per frame. Everywhere else the JS engine takes over — and the two are tested to render the same.',
-    code: 'animation-timeline: view()',
-  },
+const SWITCH = [
+  { from: 'AOS',          entry: 'svg-scroll-draw/aos',          guide: '/guides/aos-nextjs' },
+  { from: 'ScrollReveal', entry: 'svg-scroll-draw/scrollreveal', guide: '/guides/scrollreveal-react' },
+  { from: 'vivus',        entry: 'svg-scroll-draw/vivus',        guide: '/guides/vivus-react' },
 ];
 
-const DROP_INS = [
-  { from: 'AOS', title: 'Keep your data-aos markup', code: "import AOS from 'svg-scroll-draw/aos'", href: '/guides/aos-nextjs', go: 'AOS in Next.js →' },
-  { from: 'ScrollReveal', title: 'Same API, MIT not GPL', code: "import ScrollReveal from 'svg-scroll-draw/scrollreveal'", href: '/guides/scrollreveal-react', go: 'ScrollReveal in React →' },
-  { from: 'vivus', title: 'Same new Vivus() calls', code: "import Vivus from 'svg-scroll-draw/vivus'", href: '/guides/vivus-react', go: 'vivus in React →' },
+const WEIGHTS = [
+  { name: 'svg-scroll-draw', detail: 'every API, one import', kb: SELF.gzipKb, ours: true },
+  { name: 'Framer Motion',   detail: 'CJS entry',             kb: COMPETITORS.framerMotion.gzipKb },
+  { name: 'GSAP + ScrollTrigger + DrawSVG', detail: COMPETITORS.gsapStack.version, kb: COMPETITORS.gsapStack.gzipKb },
 ];
 
-function BrandMark() {
+function Mark() {
   return (
-    <span className="brand-mark" aria-hidden="true">
-      <svg viewBox="0 0 16 16" fill="none" stroke="var(--paper)" strokeWidth="2" strokeLinecap="round">
-        <path d="M2.5 11.5 C 4.5 4, 7 4, 8 8 S 11.5 12, 13.5 4.5" />
-      </svg>
-    </span>
+    <svg className="nav-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M3 17 C 6 6, 10 6, 12 12 S 18 18, 21 7" />
+    </svg>
   );
 }
 
-export default function Home() {
-  const sizes = [
-    { name: 'svg-scroll-draw', note: 'every API', kb: SELF.gzipKb, ours: true },
-    { name: COMPETITORS.framerMotion.label, note: 'CJS entry', kb: COMPETITORS.framerMotion.gzipKb, ours: false },
-    { name: COMPETITORS.gsapStack.label, note: COMPETITORS.gsapStack.version, kb: COMPETITORS.gsapStack.gzipKb, ours: false },
-  ];
-  const max = Math.max(...sizes.map((s) => s.kb));
-
+export default function HomePage() {
+  const marquee = [...FRAMEWORKS, ...FRAMEWORKS];
   return (
-    <div className={`home ${serif.variable}`}>
+    <div className={`home ${display.variable} ${serif.variable}`}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <SmoothScroll />
+      <Preloader />
 
-      {/* ── Nav ─────────────────────────────────────────────────────── */}
+      {/* ── Nav ──────────────────────────────────────────────────────── */}
       <header className="nav">
-        <div className="wrap nav-inner">
-          <Link href="/" className="brand" aria-label="svg-scroll-draw home">
-            <BrandMark />
-            svg-scroll-draw
-          </Link>
-          <nav className="nav-links" aria-label="Main">
-            {[
-              ['Docs', '/docs'],
-              ['Examples', '/examples'],
-              ['Blocks', '/blocks'],
-              ['Guides', '/guides'],
-              ['Blog', '/blog'],
-              ['Changelog', '/changelog'],
-            ].map(([label, href]) => (
-              <Link key={href} href={href} className="nav-link">{label}</Link>
-            ))}
-            <a href={GH} target="_blank" rel="noopener noreferrer" className="nav-link">GitHub</a>
+        <Link href="/" className="nav-brand" aria-label="svg-scroll-draw home">
+          <Mark />
+          svg-scroll-draw
+        </Link>
+        <div className="nav-center">v{SELF.version} — {SELF.gzipKb} KB — MIT</div>
+        <div className="nav-right">
+          <nav className="nav-links" aria-label="Primary">
+            <Link href="/docs">Docs</Link>
+            <Link href="/examples">Examples</Link>
+            <Link href="/guides">Guides</Link>
+            <Link href="/blocks">Blocks</Link>
+            <a href={GH} target="_blank" rel="noopener noreferrer">GitHub</a>
           </nav>
-          <div className="nav-right">
-            <ThemeToggle />
-            <Link href="/docs" className="btn btn-primary btn-sm nav-cta">
-              Get started
-            </Link>
-            <div className="lg:hidden"><MobileMenu /></div>
-          </div>
+          <HomeThemeToggle />
+          <div className="nav-menu"><MobileMenu /></div>
         </div>
       </header>
 
       <main>
-        {/* ── Hero ──────────────────────────────────────────────────── */}
-        <section className="hero" data-mascot-reset>
-          <div className="wrap hero-grid">
+        {/* ── Hero ─────────────────────────────────────────────────── */}
+        <section className="hero" aria-label="Introduction">
+          <h1 className="hero-words">
+            <span className="mask" style={{ '--i': 0 } as React.CSSProperties}><span>The page</span></span>
+            <span className="mask is-serif" style={{ '--i': 1 } as React.CSSProperties}><span>draws</span></span>
+            <span className="mask is-offset" style={{ '--i': 2 } as React.CSSProperties}><span>itself.</span></span>
+          </h1>
+          <div className="hero-foot">
             <div>
-              <Link href="/guides" className="badge">
-                <span className="pill">2.15</span>
-                <span className="badge-text">React hooks for AOS, ScrollReveal &amp; vivus drop-ins</span>
-                <span aria-hidden="true">→</span>
-              </Link>
-              <h1 className="display">
-                The page draws <em>itself</em> as you scroll.
-              </h1>
-              <p className="lede">
-                svg-scroll-draw draws SVG paths, reveals content, pins sections, splits text and scrubs video from
-                scroll — in 10 KB, with zero dependencies, on the browser’s own scroll timeline wherever it can.
+              <p className="hero-lede">
+                <b>svg-scroll-draw</b> is an SVG and scroll animation library. It draws paths, reveals
+                content, pins sections, splits text and scrubs video from scroll — on the browser’s own
+                scroll timeline wherever it can.
               </p>
-              <div className="cta-row">
-                <CopyCommand />
-                <Link href="/docs" className="btn btn-primary">
-                  Read the docs <span aria-hidden="true">→</span>
+              <div className="hero-meta label">
+                <span><b>{SELF.gzipKb} KB</b> gzipped</span>
+                <span><b>0</b> dependencies</span>
+                <span><b>623</b> tests</span>
+                <span><b>MIT</b></span>
+              </div>
+            </div>
+            <div className="hero-cta">
+              <CopyCommand />
+              <Link href="/docs" className="btn btn-solid">Read the docs</Link>
+              <span className="scroll-cue label"><i /> scroll</span>
+            </div>
+          </div>
+        </section>
+
+        {/* ── 01 Draw ──────────────────────────────────────────────── */}
+        <section className="draw" aria-labelledby="draw-title">
+          <ContourDraw />
+        </section>
+
+        {/* ── 02 Manifesto ─────────────────────────────────────────── */}
+        <section className="chapter" aria-label="Why">
+          <div className="chapter-head">
+            <span className="label"><b>02</b> / scrollText</span>
+            <div />
+          </div>
+          <Manifesto />
+        </section>
+
+        {/* ── 03 Instruments ───────────────────────────────────────── */}
+        <section className="chapter" aria-labelledby="inst-title">
+          <div className="chapter-head">
+            <span className="label"><b>03</b> / the toolkit</span>
+            <div>
+              <h2 id="inst-title" className="h2">Eight <em>instruments,</em> one hand.</h2>
+              <p className="body">
+                Every API is its own entry point with the same instance shape — destroy, replay,
+                pause, resume, seek, getProgress — so learning one teaches you the rest.
+              </p>
+            </div>
+          </div>
+          <div className="rows">
+            {INSTRUMENTS.map((it, i) => (
+              <Reveal key={it.name} y={24}>
+                <Link href={it.href} className="row">
+                  <span className="row-n">{String(i + 1).padStart(2, '0')}</span>
+                  <span className="row-name">{it.name}</span>
+                  <span className="row-desc">{it.desc}</span>
+                  <span className="row-entry">{it.entry}</span>
                 </Link>
-              </div>
-              <div className="proof num">
-                <div><b>10 KB</b><span>gzipped, every API</span></div>
-                <div><b>0</b><span>dependencies</span></div>
-                <div><b>623 tests</b><span>unit, plus real browsers</span></div>
-                <div><b>MIT</b><span>no licence fee, ever</span></div>
-              </div>
-            </div>
-            <HeroInk />
+              </Reveal>
+            ))}
           </div>
         </section>
 
-        {/* ── Frameworks ─────────────────────────────────────────────── */}
-        <div className="strip">
-          <div className="wrap strip-inner">
-            <span className="label">First-class wrappers for</span>
-            {FRAMEWORKS.map((f) => <span key={f}>{f}</span>)}
+        {/* ── 04 Numbers ───────────────────────────────────────────── */}
+        <section className="chapter" aria-labelledby="num-title">
+          <div className="chapter-head">
+            <span className="label"><b>04</b> / scrollCounter</span>
+            <h2 id="num-title" className="h2">Tested in <em>real</em> browsers.</h2>
           </div>
-        </div>
-
-        {/* ── Capabilities ───────────────────────────────────────────── */}
-        <section className="section">
-          <div className="wrap">
-            <div className="section-head">
-              <span className="eyebrow">One package</span>
-              <h2 className="h2">Everything scroll can drive, <em>in one toolkit.</em></h2>
-              <p className="lede">
-                Each API is a separate entry point with the same instance shape — destroy, replay, pause, resume, seek,
-                getProgress — so learning one teaches you the rest.
-              </p>
-            </div>
-            <div className="bento">
-              {CAPABILITIES.map((c) => (
-                <article key={c.name} className="cell">
-                  <div className="cell-art" aria-hidden="true">{c.art}</div>
-                  <h3>{c.name}</h3>
-                  <p>{c.desc}</p>
-                  <span className="imp">{c.imp}</span>
-                </article>
-              ))}
-            </div>
-          </div>
+          <Counters />
         </section>
 
-        {/* ── How it works: a line that draws as you read ─────────────── */}
-        <section className="section" data-mascot="draw">
-          <div className="wrap">
-            <div className="section-head">
-              <span className="eyebrow">How it works</span>
-              <h2 className="h2">Three steps. <em>Watch the line.</em></h2>
-              <p className="lede">The ink on the left is scrollDraw, scrubbed by your scroll position. Scroll back up and it rewinds.</p>
-            </div>
-            <div className="timeline">
-              <InkTimeline />
-              {STEPS.map((s, i) => (
-                <div key={s.title} className="step">
-                  <div>
-                    <span className="step-num">0{i + 1}</span>
-                    <h3>{s.title}</h3>
-                    <p>{s.body}</p>
-                  </div>
-                  <div className="code">
-                    <pre>{s.code}</pre>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ── Code ───────────────────────────────────────────────────── */}
-        <section className="section">
-          <div className="wrap split">
+        {/* ── 05 Weight ────────────────────────────────────────────── */}
+        <section className="chapter" aria-labelledby="w-title">
+          <div className="chapter-head">
+            <span className="label"><b>05</b> / weight</span>
             <div>
-              <span className="eyebrow">Your stack</span>
-              <h2 className="h2" style={{ margin: '18px 0' }}>Write it the way <em>your framework</em> writes things.</h2>
-              <p className="lede">
-                A component in React and Vue, an action in Svelte, a hook in Solid, a ref in Angular, a custom element
-                for plain HTML. All SSR-safe: importing on a server never touches the DOM.
+              <h2 id="w-title" className="h2">A fifth of the <em>bytes.</em></h2>
+              <p className="body">
+                The scroll effects you actually ship — drawing, reveals, pins, counters — in one
+                import. Most pages add a single entry point and stop there.
               </p>
-              <div className="cta-row">
-                <Link href="/examples" className="btn btn-ghost">{EXAMPLE_COUNT} live examples</Link>
-                <Link href="/blocks" className="btn btn-ghost">Copy-paste blocks</Link>
+            </div>
+          </div>
+          <VersusBars rows={WEIGHTS} />
+          <p className="versus-note">
+            Minified and gzipped at level 9, measured {MEASURED_ON}. GSAP has been free since 2025 and
+            does far more than scroll; for the scroll effects here, this is the difference you ship.
+          </p>
+        </section>
+
+        {/* ── 06 Code ──────────────────────────────────────────────── */}
+        <section className="chapter" aria-labelledby="code-title">
+          <div className="marquee" aria-hidden="true">
+            <div className="marquee-track">
+              {marquee.map((f, i) => <span key={i}>{f}</span>)}
+            </div>
+          </div>
+          <div className="code-grid">
+            <div>
+              <span className="label"><b>06</b> / your stack</span>
+              <h2 id="code-title" className="h2" style={{ marginTop: 18 }}>Write it the way <em>your</em> framework writes.</h2>
+              <p className="body" style={{ marginTop: 24 }}>
+                A component in React and Vue, an action in Svelte, a hook in Solid, a custom element
+                for plain HTML. SSR-safe: importing on a server never touches the DOM.
+              </p>
+              <div className="code-links">
+                <Link href="/examples" className="btn">{EXAMPLE_COUNT} live examples</Link>
+                <Link href="/blocks" className="btn">Copy-paste blocks</Link>
               </div>
             </div>
             <CodeTabs />
           </div>
         </section>
 
-        {/* ── Native performance ─────────────────────────────────────── */}
-        <section className="section">
-          <div className="wrap split">
+        {/* ── 07 Switch ────────────────────────────────────────────── */}
+        <section className="chapter" aria-labelledby="sw-title">
+          <div className="chapter-head">
+            <span className="label"><b>07</b> / switching</span>
             <div>
-              <span className="eyebrow">Performance</span>
-              <h2 className="h2" style={{ margin: '18px 0' }}>Off the main thread, <em>where the browser allows.</em></h2>
-              <p className="lede">
-                Simple draws compile to a CSS scroll timeline the browser runs itself, so a busy main thread cannot make
-                them stutter. Everything else uses an IntersectionObserver-gated loop that skips frames where nothing
-                moved.
-              </p>
-              <div className="browsers">
-                <span><b>Chrome</b> 115+</span>
-                <span><b>Edge</b> 115+</span>
-                <span><b>Safari</b> 26+</span>
-                <span><b>Firefox</b> 159+</span>
-              </div>
-            </div>
-            <div className="lanes">
-              <div className="lane">
-                <div className="lane-head"><b>Native fast path</b><span>no JS per frame</span></div>
-                <div className="flow">
-                  <span className="node hot">scroll</span><span className="arrow">→</span>
-                  <span className="node hot">view-timeline</span><span className="arrow">→</span>
-                  <span className="node hot">compositor</span>
-                </div>
-              </div>
-              <div className="lane">
-                <div className="lane-head"><b>JavaScript engine</b><span>older browsers</span></div>
-                <div className="flow">
-                  <span className="node">scroll</span><span className="arrow">→</span>
-                  <span className="node">requestAnimationFrame</span><span className="arrow">→</span>
-                  <span className="node">style write</span>
-                </div>
-              </div>
-              <p className="bar-note">
-                Both engines run side by side in the browser suite in Chromium, Firefox and WebKit, and must render the
-                same stroke at every offset.
+              <h2 id="sw-title" className="h2">Already on AOS? <em>Change one import.</em></h2>
+              <p className="body">
+                Each has a drop-in that keeps its API and your markup, tested side by side against
+                the real library in three browsers — and a React hook that cleans up after itself.
               </p>
             </div>
+          </div>
+          <div className="switch">
+            {SWITCH.map((s) => (
+              <Link href={s.guide} className="switch-row" key={s.from}>
+                <span className="switch-from"><small>from</small>{s.from}</span>
+                <span className="switch-entry">{s.entry}</span>
+                <span className="switch-arrow" aria-hidden="true">→</span>
+              </Link>
+            ))}
+          </div>
+          <div className="switch-cmd">
+            <CopyCommand command="npx svg-scroll-draw migrate" />
+            <span className="label">rewrites the imports for you</span>
           </div>
         </section>
 
-        {/* ── Size ───────────────────────────────────────────────────── */}
-        <section className="section">
-          <div className="wrap split">
-            <div>
-              <span className="eyebrow">Bundle size</span>
-              <h2 className="h2" style={{ margin: '18px 0' }}>
-                The whole toolkit is <em>smaller</em> than the alternatives’ core.
-              </h2>
-              <p className="lede">
-                {SELF.gzipKb} KB gzipped for every API at once, and most pages import one or two entry points. Measured,
-                not estimated — and checked in CI so the number cannot drift.
-              </p>
-              <div className="cta-row">
-                <Link href="/vs-gsap" className="btn btn-ghost">Compared with GSAP</Link>
-                <Link href="/vs-framer-motion" className="btn btn-ghost">With Framer Motion</Link>
-              </div>
-            </div>
-            <div>
-              <div className="bars num">
-                {sizes.map((s) => (
-                  <div key={s.name} className="bar-row">
-                    <div className="bar-label">
-                      <span>{s.name} <span className="muted">· {s.note}</span></span>
-                      <span>{s.kb} KB</span>
-                    </div>
-                    <div className="bar-track">
-                      <div className={`bar-fill${s.ours ? ' ours' : ''}`} style={{ width: `${(s.kb / max) * 100}%` }} />
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <p className="bar-note">
-                Minified and gzipped at level 9, measured {MEASURED_ON}. GSAP has been free since 2025 and does more than
-                scroll; for the scroll effects here, this is the difference you ship.
+        {/* ── Final ────────────────────────────────────────────────── */}
+        <section className="final" aria-labelledby="final-title">
+          <h2 id="final-title" className="final-words">
+            Start<em>drawing.</em>
+          </h2>
+          <div className="final-cta">
+            <CopyCommand />
+            <Link href="/docs" className="btn">Read the docs</Link>
+            <a href={GH} target="_blank" rel="noopener noreferrer" className="btn">Star on GitHub</a>
+          </div>
+
+          <footer className="foot">
+            <div className="foot-col">
+              <p className="foot-meta">
+                svg-scroll-draw v{SELF.version} · {SELF.gzipKb} KB gzipped · 623 tests · 195 browser tests × 3 engines · MIT
               </p>
             </div>
-          </div>
-        </section>
-
-        {/* ── Drop-ins ───────────────────────────────────────────────── */}
-        <section className="section">
-          <div className="wrap">
-            <div className="band">
-              <span className="eyebrow">Switching</span>
-              <h2 className="h2" style={{ margin: '18px 0', maxWidth: 760 }}>
-                Already on AOS, ScrollReveal or vivus? <em>Change one import.</em>
-              </h2>
-              <p className="lede">
-                Each has a drop-in that keeps its API and your markup, tested side by side against the real library in
-                three browsers — and a React hook that cleans up after itself.
-              </p>
-              <div className="band-grid">
-                {DROP_INS.map((d) => (
-                  <Link key={d.from} href={d.href} className="dropin">
-                    <span className="from">from {d.from}</span>
-                    <b>{d.title}</b>
-                    <code>{d.code}</code>
-                    <span className="go">{d.go}</span>
-                  </Link>
-                ))}
-              </div>
-              <div className="migrate"><span aria-hidden="true">$</span> npx svg-scroll-draw migrate</div>
+            <div className="foot-col">
+              <h4>Learn</h4>
+              <Link href="/docs">Docs</Link>
+              <Link href="/examples">Examples</Link>
+              <Link href="/blocks">Blocks</Link>
+              <Link href="/playground">Playground</Link>
             </div>
-          </div>
-        </section>
-
-        {/* ── Quality ────────────────────────────────────────────────── */}
-        <section className="section">
-          <div className="wrap">
-            <div className="section-head">
-              <span className="eyebrow">Proof, not adjectives</span>
-              <h2 className="h2">Tested in <em>real browsers,</em> not just in theory.</h2>
+            <div className="foot-col">
+              <h4>Switch</h4>
+              <Link href="/guides">Migration guides</Link>
+              <Link href="/vs-gsap">vs GSAP</Link>
+              <Link href="/vs-aos">vs AOS</Link>
+              <Link href="/vs-vivus">vs vivus</Link>
             </div>
-            <div className="stats num">
-              <div className="stat"><b>623</b><span>unit tests, including a suite with no DOM at all for server rendering.</span></div>
-              {/* check:claims guards this figure: 195 browser tests per engine */}
-              <div className="stat"><b>195</b><span>browser tests, run in each of Chromium, Firefox and WebKit on every push.</span></div>
-              <div className="stat"><b>{SELF.gzipKb} KB</b><span>main entry, held to a size budget in CI with every other entry point.</span></div>
-              <div className="stat"><b>8</b><span>framework wrappers, each mounted for real in the browser suite.</span></div>
-              <div className="stat"><b>0</b><span>runtime dependencies. Nothing to audit but this package.</span></div>
-              <div className="stat"><b>a11y</b><span>prefers-reduced-motion respected; split text keeps its accessible label.</span></div>
+            <div className="foot-col">
+              <h4>Project</h4>
+              <a href={GH} target="_blank" rel="noopener noreferrer">GitHub</a>
+              <a href={NPM} target="_blank" rel="noopener noreferrer">npm</a>
+              <Link href="/changelog">Changelog</Link>
+              <Link href="/blog">Blog</Link>
             </div>
-          </div>
-        </section>
-
-        {/* ── Final CTA ──────────────────────────────────────────────── */}
-        <section className="final">
-          <div className="final-ink" aria-hidden="true">
-            <svg viewBox="0 0 1200 400" preserveAspectRatio="none" fill="none">
-              <path d="M-20 300 C 200 120, 380 360, 600 220 S 1000 60, 1220 180" strokeWidth="1.5" />
-            </svg>
-          </div>
-          <div className="wrap" style={{ position: 'relative' }}>
-            <span className="eyebrow">Get started</span>
-            <h2 className="display" style={{ margin: '22px 0 18px' }}>
-              Start <em>drawing.</em>
-            </h2>
-            <p className="lede" style={{ margin: '0 auto' }}>Free, MIT, and one install away.</p>
-            <div className="cta-row">
-              <CopyCommand />
-              <Link href="/docs" className="btn btn-primary">Read the docs <span aria-hidden="true">→</span></Link>
-              <a href={GH} target="_blank" rel="noopener noreferrer" className="btn btn-ghost">Star on GitHub</a>
-            </div>
-          </div>
+          </footer>
+          <div className="wordmark" aria-hidden="true"><span>svg-scroll-draw</span></div>
         </section>
       </main>
-
-      {/* ── Footer ─────────────────────────────────────────────────── */}
-      <footer className="foot">
-        <div className="wrap">
-          <div className="foot-grid">
-            <div>
-              <Link href="/" className="brand"><BrandMark />svg-scroll-draw</Link>
-              <p className="muted" style={{ fontSize: 14, lineHeight: 1.6, marginTop: 14, maxWidth: 320 }}>
-                Scroll-driven animation for the web. {SELF.gzipKb} KB, zero dependencies, MIT.
-              </p>
-            </div>
-            <div>
-              <h4>Learn</h4>
-              <ul>
-                <li><Link href="/docs">Docs</Link></li>
-                <li><Link href="/examples">Examples</Link></li>
-                <li><Link href="/blocks">Blocks</Link></li>
-                <li><Link href="/playground">Playground</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4>Switch</h4>
-              <ul>
-                <li><Link href="/guides">Migration guides</Link></li>
-                <li><Link href="/vs-gsap">vs GSAP</Link></li>
-                <li><Link href="/vs-aos">vs AOS</Link></li>
-                <li><Link href="/vs-vivus">vs vivus</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4>Project</h4>
-              <ul>
-                <li><a href={GH} target="_blank" rel="noopener noreferrer">GitHub</a></li>
-                <li><a href={NPM} target="_blank" rel="noopener noreferrer">npm</a></li>
-                <li><Link href="/changelog">Changelog</Link></li>
-                <li><Link href="/blog">Blog</Link></li>
-              </ul>
-            </div>
-          </div>
-          <small>svg-scroll-draw v{SELF.version} · MIT licensed · made for the scroll</small>
-        </div>
-      </footer>
     </div>
   );
 }

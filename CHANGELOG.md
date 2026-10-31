@@ -8,16 +8,21 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### Site
 
-- **Homepage redesign.** A new `/` in both themes: an ink-on-paper light theme
-  and a deep-navy dark theme with a soft glow, Instrument Serif italic accents,
-  a hero sheet that draws itself with `<ScrollDraw autoplay>`, an eight-API
-  bento with drawn art per card, a "how it works" timeline whose line is
-  scrubbed by `scrollDraw`, framework code tabs, native-vs-JS engine lanes,
-  measured size bars read from `data/competitors.ts`, a drop-ins band and a
-  quality-numbers grid. Styles are scoped under `.home` in `app/home.css`, so
-  no other page changes. The examples count reads `EXAMPLE_COUNT` instead of
-  a typed number. The old homepage demo components are no longer imported
-  but stay in the repo.
+- **Homepage redesign — "the page is the pen".** A new `/` built the way the
+  sites that win design awards are built: two colours and one accent (paper,
+  ink, vermilion; flipped in dark mode), one condensed display face used huge
+  (Big Shoulders) with an italic serif for a single soft word per line, almost
+  no boxes, and one story told by scroll. Every motion is the library's own
+  API, so the page is the proof: a 320vh pinned chapter where fourteen contour
+  rings ink in under `scrollDraw`, a manifesto whose words arrive through
+  `scrollText`, eight APIs as an editorial list revealed by `scrollAnimate`,
+  numbers that count with `scrollCounter`, weight bars drawn to length with
+  `scrollDraw`, then an inverted finale with a cropped wordmark. Lenis smooth
+  scroll (a demo-only dependency), a one-second ink preloader that runs once
+  per tab, a paper grain, a difference-blended nav. Styles are scoped under
+  `.home` in `app/home.css`; the mascot stays off `/`. The examples count
+  reads `EXAMPLE_COUNT`. The old homepage demo components are no longer
+  imported but stay in the repo.
 - **Migration guides** at `/guides`: AOS in Next.js, AOS in React, ScrollReveal
   in React and Next.js, vivus in React — the searches those libraries' users
   make. Each leads with `npx svg-scroll-draw migrate`, the hook, the StackBlitz

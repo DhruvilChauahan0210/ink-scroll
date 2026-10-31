@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { usePathname } from 'next/navigation';
 
 /* ── Constants ───────────────────────────────────────────── */
 const W = 88;   // mascot display width
@@ -244,6 +245,9 @@ function ScrollySvg() {
 
 /* ── Main component ──────────────────────────────────────── */
 export function Mascot() {
+  // The homepage is a single ink story; the mascot stays off it.
+  const pathname = usePathname();
+  const onHome = pathname === '/';
   const [pos,       setPos]       = useState<{ x: number; y: number } | null>(null);
   const [winSize,   setWinSize]   = useState({ w: 0, h: 0 });
   const [quip,      setQuip]      = useState<string | null>(null);
@@ -369,7 +373,7 @@ export function Mascot() {
     setTimeout(() => setAnim('idle'), 680);
   }, [setAnim]);
 
-  if (!pos) return null;
+  if (onHome || !pos) return null;
 
   /* ── Bubble placement: which quadrant is the mascot in? ── */
   const isRight  = pos.x + W / 2 > winSize.w / 2;

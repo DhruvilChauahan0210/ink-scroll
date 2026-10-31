@@ -20,8 +20,9 @@ months, 81% to the homepage; `/vs-gsap` at position 11 with 425 impressions.
 
 ### In flight
 - Branch `feat/homepage-redesign`: the new homepage, light and dark (`app/page.tsx`,
-  `app/home.css`, `components/home/*`). Site-only — deploys from `main`, no npm release.
-  Waiting for review before it is pushed.
+  `app/home.css`, `components/home/*`; Lenis added to the demo). Every motion on it
+  is a library API. Site-only — deploys from `main`, no npm release. Waiting for
+  review before it is pushed.
 
 ### Shipped since
 - `/guides` — five migration guides, live from `main` (site-only).

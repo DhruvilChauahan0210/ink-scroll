@@ -88,7 +88,7 @@ at all.
 ## Demo App (`apps/demo`)
 
 ### Pages
-- [x] `/` — redesigned (branch `feat/homepage-redesign`): self-drawing hero sheet, eight-API bento, scrubbed how-it-works line, framework code tabs, engine lanes, measured size bars, drop-ins band, quality numbers, CTA; light and dark themes scoped under `.home`
+- [x] `/` — redesigned (branch `feat/homepage-redesign`): paper/ink/vermilion, Big Shoulders display type, Lenis smooth scroll, ink preloader; a pinned `scrollDraw` contour chapter, `scrollText` manifesto, eight-API editorial list, `scrollCounter` numbers, drawn weight bars, inverted finale with cropped wordmark; both themes scoped under `.home`
 - [x] `/examples` — 23 examples with framework filter
 - [x] `/docs` — full API reference including v2.0–2.2 nav group with all 6 new APIs documented
 - [x] `/playground` — interactive SVG editor
