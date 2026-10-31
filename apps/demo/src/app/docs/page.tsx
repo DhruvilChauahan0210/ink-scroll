@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { DocsPage } from '@/components/DocsPage';
+import { SiteShell } from '@/components/site/SiteShell';
 
 export const metadata: Metadata = {
   title: 'SVG Scroll Draw — API Docs & Reference',
@@ -55,7 +56,9 @@ export default function Page() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <DocsPage />
+      <SiteShell active="/docs" kicker="docs / your turn" cta={{ href: '/examples', label: 'See the examples' }}>
+        <DocsPage />
+      </SiteShell>
     </>
   );
 }

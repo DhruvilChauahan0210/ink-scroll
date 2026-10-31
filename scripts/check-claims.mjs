@@ -40,6 +40,8 @@ const FILES_WITH_TEST_COUNTS = [
   // stayed current, because page.tsx was listed in SIZE_CLAIM_FILES below but
   // not here. Same file, two claim types, one of them unguarded.
   'apps/demo/src/app/page.tsx',
+  // The homepage's figures moved here so every page's sign-off can quote them.
+  'apps/demo/src/data/facts.ts',
 ];
 
 /** Everywhere the main entry's size is advertised in round numbers. */

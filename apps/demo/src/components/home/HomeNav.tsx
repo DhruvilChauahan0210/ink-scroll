@@ -27,8 +27,11 @@ const holdScroll = (hold: boolean) => window.dispatchEvent(new CustomEvent('home
  * through and nothing in it moves. The
  * mark is drawn by the library on load. Below 1024px the links move into a
  * full-screen menu that matches the page.
+ *
+ * Inner pages pass `solid` (no hero to sit over, so the glass is always on)
+ * and `active`, the section the page belongs to.
  */
-export function HomeNav({ version }: { version: string }) {
+export function HomeNav({ version, active, solid = false }: { version: string; active?: string; solid?: boolean }) {
   const nav = useRef<HTMLElement>(null);
   const [open, setOpen] = useState(false);
 
@@ -37,12 +40,12 @@ export function HomeNav({ version }: { version: string }) {
     const el = nav.current;
     if (!el) return;
     let raf = 0;
-    const read = () => { raf = 0; el.toggleAttribute('data-scrolled', window.scrollY > 24); };
+    const read = () => { raf = 0; el.toggleAttribute('data-scrolled', solid || window.scrollY > 24); };
     const onScroll = () => { if (!raf) raf = requestAnimationFrame(read); };
     read();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => { window.removeEventListener('scroll', onScroll); cancelAnimationFrame(raf); };
-  }, []);
+  }, [solid]);
 
   useEffect(() => {
     if (!open) return;
@@ -54,7 +57,7 @@ export function HomeNav({ version }: { version: string }) {
 
   return (
     <>
-      <header ref={nav} className={`nav${open ? ' is-open' : ''}`}>
+      <header ref={nav} className={`nav${open ? ' is-open' : ''}`} data-scrolled={solid ? '' : undefined}>
         <Progress />
         <div className="nav-in">
           <Link href="/" className="nav-brand" aria-label="svg-scroll-draw home" onClick={() => setOpen(false)}>
@@ -68,7 +71,9 @@ export function HomeNav({ version }: { version: string }) {
           </Link>
 
           <nav className="nav-links" aria-label="Primary">
-            {LINKS.map((l) => <Link key={l.href} href={l.href}>{l.label}</Link>)}
+            {LINKS.map((l) => (
+              <Link key={l.href} href={l.href} aria-current={active === l.href ? 'page' : undefined}>{l.label}</Link>
+            ))}
           </nav>
 
           <div className="nav-right">
@@ -92,7 +97,7 @@ export function HomeNav({ version }: { version: string }) {
       <div id="home-menu" className={`menu${open ? ' is-open' : ''}`} role="dialog" aria-modal="true" aria-label="Menu" hidden={!open}>
         <nav className="menu-links" aria-label="Menu">
           {MENU.map((l, i) => (
-            <Link key={l.href} href={l.href} onClick={() => setOpen(false)} style={{ '--i': i } as React.CSSProperties}>
+            <Link key={l.href} href={l.href} onClick={() => setOpen(false)} aria-current={active === l.href ? 'page' : undefined} style={{ '--i': i } as React.CSSProperties}>
               <span className="menu-n">{String(i + 1).padStart(2, '0')}</span>
               {l.label}
             </Link>

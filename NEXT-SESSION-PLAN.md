@@ -27,8 +27,13 @@ months, 81% to the homepage; `/vs-gsap` at position 11 with 425 impressions.
   for the live stats chapter; it works without one.
 
 ### In flight
-- Nothing site-side. Next: carry the homepage's look (tokens, nav, chapter type) to
-  /docs, /examples, /blocks and /guides, which still use the old styling.
+- **Every page into the homepage's design, one page at a time, each pushed live.**
+  Wrap the route in `components/site/SiteShell` (nav, tokens, sign-off footer), add
+  the route to `components/site/routes.ts` (keeps the mascot off it), give the page
+  a `pg-head` opening and restyle its own pieces. Done: `/docs`. Next, in order:
+  `/examples` (+ detail), `/guides` (+ detail), `/blocks`, `/blog` (+ posts), the
+  `vs-*` pages (one `VersusPage` template), `/changelog`, `/playground`, the
+  framework landing pages, `/verify`.
 
 ### Shipped since
 - **Homepage redesign** (site-only, live from `main` at 760bfb6, 2026-10-31): every

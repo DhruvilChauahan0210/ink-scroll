@@ -15,6 +15,7 @@ import { Migrate } from '@/components/home/Migrate';
 import { LiveStats } from '@/components/home/LiveStats';
 import { SignOff } from '@/components/home/SignOff';
 import { SELF } from '@/data/competitors';
+import { UNIT_TESTS, BROWSER_TESTS, BUDGET_KB } from '@/data/facts';
 
 export const metadata: Metadata = {
   alternates: { canonical: 'https://svg-scroll-draw.vercel.app' },
@@ -43,12 +44,6 @@ const jsonLd = {
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
 };
 
-/* Figures shown in chapter 06 and on the sign-off sheet. check:claims reads this
-   comment, so it fails the build if they drift: 626 tests, 196 browser tests per engine. */
-const UNIT_TESTS = 626;
-const BROWSER_TESTS = 196;
-/* The main entry's CI budget (packages/svg-scroll-draw/scripts/size.mjs, '.'). */
-const BUDGET_KB = 10.5;
 
 export default function HomePage() {
   return (

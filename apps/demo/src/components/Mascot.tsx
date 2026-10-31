@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { usePathname } from 'next/navigation';
+import { isRedesigned } from './site/routes';
 
 /* ── Constants ───────────────────────────────────────────── */
 const W = 88;   // mascot display width
@@ -247,7 +248,7 @@ function ScrollySvg() {
 export function Mascot() {
   // The homepage is a single ink story; the mascot stays off it.
   const pathname = usePathname();
-  const onHome = pathname === '/';
+  const onHome = isRedesigned(pathname);
   const [pos,       setPos]       = useState<{ x: number; y: number } | null>(null);
   const [winSize,   setWinSize]   = useState({ w: 0, h: 0 });
   const [quip,      setQuip]      = useState<string | null>(null);

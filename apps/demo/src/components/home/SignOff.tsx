@@ -713,9 +713,18 @@ const getReducedOnServer = (): boolean => false;
 
 /* ── The sheet ────────────────────────────────────────────────────────────── */
 
-type Props = { version: string; gzipKb: number; unitTests: number; browserTests: number };
+type Props = {
+  version: string;
+  gzipKb: number;
+  unitTests: number;
+  browserTests: number;
+  /** The sheet's kicker; the homepage numbers it as its last chapter. */
+  kicker?: string;
+  /** The first button. Pages that are the docs point it somewhere else. */
+  cta?: { href: string; label: string };
+};
 
-export function SignOff({ version, gzipKb, unitTests, browserTests }: Props) {
+export function SignOff({ version, gzipKb, unitTests, browserTests, kicker = '10 / your turn', cta = { href: '/docs', label: 'Read the docs' } }: Props) {
   const stageRef = useRef<HTMLElement>(null);
   const countRef = useRef<HTMLSpanElement>(null);
   /** Strokes inked by each instance, and the last count written to the page. */
@@ -800,7 +809,7 @@ export function SignOff({ version, gzipKb, unitTests, browserTests }: Props) {
 
         <div className="so-head">
           <p className="so-kicker">
-            <span>10 / your turn</span>
+            <span>{kicker}</span>
             <span className="so-count" aria-hidden="true">
               <span ref={countRef}>{pad(0)}</span> / {TOTAL} strokes
             </span>
@@ -813,8 +822,8 @@ export function SignOff({ version, gzipKb, unitTests, browserTests }: Props) {
           </h2>
           <div className="so-cta">
             <CopyCommand />
-            <Link href="/docs" className="btn btn-solid" data-magnetic>
-              Read the docs
+            <Link href={cta.href} className="btn btn-solid" data-magnetic>
+              {cta.label}
             </Link>
             <a href={GH} target="_blank" rel="noopener noreferrer" className="btn" data-magnetic>
               Star on GitHub

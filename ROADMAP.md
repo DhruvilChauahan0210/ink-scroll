@@ -175,7 +175,7 @@ of examining a single API in a real browser.
 - [x] On-site migration guides (`/guides`): AOS in Next.js / React, ScrollReveal in React, vivus in React
 - [ ] Check Search Console in ~2 weeks for /guides/* and /vs-* impressions and clicks
 - [x] Homepage redesign — every chapter a blueprint-grade drawing of a real use case (fountain-pen hero, gallery, watch, proof sheet, balance, API plates, gauges, circuit board, before/after windows, live GitHub + npm stats, drawing-sheet footer), scoped under `.home`
-- [ ] Carry the homepage's look (tokens, nav, footer) to /docs, /examples, /blocks and /guides
+- [ ] Carry the homepage's look to every page through `SiteShell` — done: /docs; next: /examples, /guides, /blocks, /blog, the vs-* pages, /changelog, /playground
 - [x] StackBlitz "already migrated" starters for each drop-in, linked from the comparison pages and READMEs
 - [ ] More blocks (the registry pattern grows by count), and a Vue/Svelte flavour of each
 - [ ] Desktop nav links are hand-typed per page — only the homepage and mobile menu link `/blocks`; move the nav into one component

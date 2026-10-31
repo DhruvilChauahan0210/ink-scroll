@@ -166,6 +166,9 @@ html.dark .home .nav.is-open .nav-in { box-shadow: 0 16px 40px -20px rgba(0, 0, 
 .home .nav-links a:hover, .home .nav-gh:hover { color: var(--fg); }
 .home .nav-links a:hover::after, .home .nav-gh:hover::after { transform: scaleX(1); transform-origin: left; }
 .home .nav-gh span { color: var(--fg-3); }
+.home .nav-links a[aria-current='page'] { color: var(--fg); }
+.home .nav-links a[aria-current='page']::after { transform: scaleX(1); background: var(--accent); }
+.home .menu-links a[aria-current='page'] .menu-n { color: var(--accent); }
 
 .home .nav-right { display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
 .home .nav-gh { display: none; margin-right: 6px; }

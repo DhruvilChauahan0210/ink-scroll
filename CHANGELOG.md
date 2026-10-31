@@ -6,6 +6,24 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ## [Unreleased]
 
+### Site
+
+- **Every page moves to the homepage's design, one page at a time, starting
+  with `/docs`.** A shared `SiteShell` gives inner pages the homepage's frame:
+  its tokens, the glass nav (solid from the start, with the current section
+  underlined in red) and the same signed drawing sheet as the footer, whose
+  parts list carries the site's links. Pages built on the old Tailwind palette
+  re-ink through it — the old colour variables point at the new tokens, and
+  the solid ink outlines become hairlines — so a page moves over without
+  rewriting every utility. `/docs` gets an opening in the homepage's type (with
+  the version, weight and test counts as hairline cells) beside fig. 1, one
+  real `scrollDraw()` call set in type with a leader from each part to the
+  section that documents it, inked by the library on load; section kickers,
+  headings, the sidebar, option chips and code blocks all follow the new type.
+  The old nav, which still said v2.10.0, is gone. The homepage's test counts
+  moved to `data/facts.ts` so every page's sign-off can quote them; check:claims
+  reads it.
+
 ---
 
 ## [2.15.1] — 2026-10-31

@@ -1,0 +1,93 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   Inner pages in the homepage's design. `.site` sits on the same element as
+   `.home` (home.css holds the tokens, nav, buttons and type); this file maps the
+   old Tailwind palette onto those tokens so a page re-inks without rewriting
+   every utility, then adds the pieces inner pages share.
+   ──────────────────────────────────────────────────────────────────────────── */
+
+.site {
+  /* The old palette, pointed at the new tokens. text-pitch-black,
+     bg-marketplace-gray and friends resolve through these. */
+  --color-light-linen: var(--bg);
+  --color-pitch-black: var(--fg);
+  --color-marketplace-gray: var(--bg-2);
+  --color-graphite-border: var(--fg-2);
+  --color-subtle-ash: var(--line-2);
+  /* Pink, yellow, lime and orange collapse into the one accent. */
+  --color-creator-pink: var(--accent);
+  --color-sunshine-yellow: var(--accent);
+  --color-lime-glow: var(--accent);
+  --color-firecracker-orange: var(--accent);
+  --font-display: var(--sans);
+  min-height: 100svh;
+}
+
+/* The old frame outlined every box in solid ink; the homepage draws hairlines. */
+.site .border-pitch-black { border-color: var(--line-2); }
+/* home.css strips underlines from its own links; keep the ones a page asks for. */
+.site a.underline { text-decoration-line: underline; text-decoration-color: var(--line-2); }
+.site a.underline:hover { text-decoration-color: currentColor; }
+
+.site-body { padding-top: calc(var(--nav-h) + 28px); }
+
+/* ── A page's opening: kicker, title, lede ────────────────────────────── */
+
+.site .pg-head {
+  padding: clamp(40px, 6vw, 88px) max(var(--gutter), calc((100% - 1560px) / 2)) clamp(28px, 4vw, 52px);
+  border-bottom: 1px solid var(--line);
+}
+.site .pg-kicker {
+  margin: 0 0 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  font: 500 12px/1.4 var(--mono);
+  letter-spacing: 0.02em;
+  color: var(--fg-3);
+}
+.site .pg-kicker b { font-weight: 500; color: var(--accent); }
+.site .pg-title {
+  margin: 0;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: clamp(40px, 6.4vw, 104px);
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+  color: var(--fg);
+  text-wrap: balance;
+  max-width: 14ch;
+}
+.site .pg-lede {
+  margin: clamp(18px, 2vw, 26px) 0 0;
+  max-width: 54ch;
+  font-size: clamp(15px, 1.2vw, 18px);
+  line-height: 1.6;
+  color: var(--fg-2);
+}
+.site .pg-actions { margin-top: clamp(22px, 2.6vw, 32px); display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+
+/* A row of real figures under a page title, in hairline cells. */
+.site .pg-facts {
+  margin: clamp(28px, 3.4vw, 44px) 0 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-top: 1px solid var(--line-2);
+  border-left: 1px solid var(--line);
+  max-width: 980px;
+}
+@media (min-width: 760px) { .site .pg-facts { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.site .pg-facts > div {
+  padding: 14px 16px 16px;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.site .pg-facts dt { font: 500 10px/1.4 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-3); }
+.site .pg-facts dd {
+  margin: 8px 0 0;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: clamp(20px, 1.8vw, 26px);
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  color: var(--fg);
+}

@@ -1,13 +1,14 @@
 'use client';
 
+import './docs.css';
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { CopyButton } from './CopyButton';
-import { ThemeToggle } from './ThemeToggle';
-import { MobileMenu } from './MobileMenu';
+import { CopyCommand } from './home/CopyCommand';
+import { DocsAnatomy } from './DocsAnatomy';
+import { SELF } from '@/data/competitors';
+import { UNIT_TESTS, BROWSER_TESTS } from '@/data/facts';
 
-const GH  = 'https://github.com/DhruvilChauahan0210/ink-scroll';
-const NPM = 'https://www.npmjs.com/package/svg-scroll-draw';
 
 const NAV_GROUPS = [
   {
@@ -135,21 +136,21 @@ const NAV_GROUPS = [
   },
 ];
 
+/** Each section's sidebar group, for its kicker ("options / trigger"). */
+const GROUP_OF: Record<string, string> = Object.fromEntries(
+  NAV_GROUPS.flatMap((g) => g.items.map((i) => [i.id, g.label])),
+);
+
 // ── Primitives ────────────────────────────────────────────────────────────────
 
 function CodeBlock({ file, children }: { file: string; children: string }) {
   return (
-    <div className="rounded-xl border border-pitch-black overflow-hidden my-4">
-      <div className="flex items-center justify-between bg-[#111] px-4 py-2">
-        <div className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-[#444]" />
-          <span className="w-2 h-2 rounded-full bg-[#444]" />
-          <span className="w-2 h-2 rounded-full bg-[#444]" />
-        </div>
-        <span className="text-[11px] text-[#888] font-mono">{file}</span>
+    <div className="dc-code">
+      <div className="dc-code-head">
+        <span className="dc-code-file">{file}</span>
         <CopyButton text={children} />
       </div>
-      <pre className="bg-[#0d0d0d] text-[#e5e5e5] px-5 py-4 text-[12.5px] font-mono leading-[1.75] overflow-x-auto">
+      <pre className="dc-code-body">
         <code>{children}</code>
       </pre>
     </div>
@@ -164,14 +165,14 @@ function Opt({
   return (
     <div className="py-5 border-b border-subtle-ash last:border-0">
       <div className="flex flex-wrap items-center gap-2 mb-2">
-        <code className="font-mono text-[13px] font-semibold bg-subtle-ash/30 px-2 py-0.5 rounded-md">
+        <code className="dc-opt-name">
           {name}
         </code>
-        <span className="font-mono text-[11px] px-2 py-0.5 rounded-full bg-creator-pink/10 text-pitch-black border border-creator-pink/30">
+        <span className="dc-opt-type">
           {type}
         </span>
         {defaultVal && (
-          <span className="font-mono text-[11px] px-2 py-0.5 rounded-full bg-marketplace-gray border border-subtle-ash text-graphite-border">
+          <span className="dc-opt-default">
             default: <strong className="text-pitch-black font-mono">{defaultVal}</strong>
           </span>
         )}
@@ -187,13 +188,12 @@ function DocSection({
   id: string; tag: string; heading: string; children: React.ReactNode;
 }) {
   return (
-    <section id={id} className="scroll-mt-20 py-14 border-b border-pitch-black last:border-0">
-      <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-2 font-medium">
-        {tag}
+    <section id={id} className="dc-sec">
+      <p className="dc-kicker">
+        <span>{(GROUP_OF[id] ?? 'Docs').toLowerCase()}</span>
+        {tag !== GROUP_OF[id] && <span className="dc-tag">{tag}</span>}
       </p>
-      <h2 className="font-display font-extrabold text-[clamp(22px,2.5vw,32px)] tracking-[-0.03em] leading-tight mb-6">
-        {heading}
-      </h2>
+      <h2 className="dc-h2">{heading}</h2>
       {children}
     </section>
   );
@@ -201,7 +201,7 @@ function DocSection({
 
 function Sub({ children }: { children: React.ReactNode }) {
   return (
-    <h3 className="text-[11px] font-bold uppercase tracking-[0.18em] text-graphite-border mt-8 mb-2">
+    <h3 className="dc-sub">
       {children}
     </h3>
   );
@@ -209,7 +209,7 @@ function Sub({ children }: { children: React.ReactNode }) {
 
 function Note({ children }: { children: React.ReactNode }) {
   return (
-    <div className="my-4 px-4 py-3 rounded-xl border border-sunshine-yellow/50 bg-sunshine-yellow/5 text-sm text-graphite-border leading-relaxed">
+    <div className="dc-note">
       <span className="font-semibold text-pitch-black">Note: </span>
       {children}
     </div>
@@ -218,7 +218,7 @@ function Note({ children }: { children: React.ReactNode }) {
 
 function OptGroup({ children }: { children: React.ReactNode }) {
   return (
-    <div className="rounded-2xl border border-pitch-black overflow-hidden">
+    <div className="dc-opts">
       <div className="px-4 sm:px-6 py-1">{children}</div>
     </div>
   );
@@ -242,54 +242,53 @@ export function DocsPage() {
   }, []);
 
   return (
-    <div className="bg-light-linen text-pitch-black min-h-screen">
+    <div className="docs">
 
-      {/* Nav */}
-      <nav className="sticky top-0 z-50 bg-light-linen/95 backdrop-blur-sm border-b border-pitch-black flex items-center justify-between px-4 md:px-12 h-14">
-        <Link href="/" className="font-display font-bold text-sm tracking-tight shrink-0">svg-scroll-draw</Link>
-
-        {/* Desktop */}
-        <div className="hidden lg:flex items-center gap-2">
-          <ThemeToggle />
-          <Link href="/docs" className="text-xs px-3.5 py-1.5 rounded-full bg-pitch-black text-light-linen font-medium whitespace-nowrap">Docs</Link>
-          <Link href="/examples" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Examples</Link>
-          <Link href="/blog" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Blog</Link>
-          <Link href="/playground" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">⚡ Playground</Link>
-          <a href={NPM} target="_blank" rel="noopener noreferrer" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono whitespace-nowrap">v2.10.0</a>
-          <a href={GH} target="_blank" rel="noopener noreferrer" className="text-sm px-4 py-1.5 rounded-full bg-pitch-black text-light-linen hover:bg-graphite-border transition-colors font-medium whitespace-nowrap">GitHub →</a>
+      {/* ── Opening ──────────────────────────────────────── */}
+      <header className="pg-head dc-head">
+        <div>
+        <p className="pg-kicker"><span>docs / api reference</span><span>v{SELF.version}</span></p>
+        <h1 className="pg-title">
+          Animate SVG on scroll<span className="sr-only"> — svg-scroll-draw API Reference</span>
+        </h1>
+        <p className="pg-lede">
+          Every option, method and entry point, with the code to paste. One call draws a path as the
+          page scrolls; the rest of the library reveals, pins, counts and scrubs on the same engine.
+        </p>
+        <div className="pg-actions">
+          <CopyCommand />
+          <Link href="/examples" className="btn" data-magnetic>See the examples</Link>
         </div>
-
-        {/* Mobile / tablet */}
-        <div className="flex lg:hidden items-center gap-2">
-          <ThemeToggle />
-          <MobileMenu />
+        <dl className="pg-facts">
+          <div><dt>Version</dt><dd>{SELF.version}</dd></div>
+          <div><dt>Gzipped</dt><dd>{SELF.gzipKb} KB</dd></div>
+          <div><dt>Unit tests</dt><dd>{UNIT_TESTS}</dd></div>
+          <div><dt>Browser tests</dt><dd>{BROWSER_TESTS} × 3</dd></div>
+        </dl>
         </div>
-      </nav>
+        <DocsAnatomy />
+      </header>
 
       {/* Mobile section nav — scrollable pill strip */}
-      <div className="md:hidden border-b border-pitch-black bg-marketplace-gray px-4 py-2 flex gap-2 overflow-x-auto scrollbar-hide">
+      <div className="dc-strip md:hidden scrollbar-hide">
         {NAV_GROUPS.flatMap((g) => g.items).map((item) => (
           <a
             key={item.id}
             href={`#${item.id}`}
-            className={`shrink-0 text-[11px] font-mono px-3 py-1 rounded-full border transition-all whitespace-nowrap ${
-              activeId === item.id
-                ? 'bg-pitch-black text-light-linen border-pitch-black'
-                : 'border-subtle-ash text-graphite-border hover:border-pitch-black'
-            }`}
+            aria-current={activeId === item.id ? 'location' : undefined}
           >
             {item.label}
           </a>
         ))}
       </div>
 
-      <div className="max-w-7xl mx-auto flex">
+      <div className="dc-cols">
 
         {/* Sidebar — desktop only */}
-        <aside className="hidden md:block w-52 shrink-0 sticky top-14 h-[calc(100vh-56px)] overflow-y-auto border-r border-pitch-black py-8 pl-6 pr-3">
+        <aside className="dc-side hidden md:block" aria-label="Sections">
           {NAV_GROUPS.map((group) => (
             <div key={group.label} className="mb-5">
-              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-graphite-border mb-1.5 px-2">
+              <p className="dc-side-group">
                 {group.label}
               </p>
               <ul>
@@ -297,11 +296,8 @@ export function DocsPage() {
                   <li key={item.id}>
                     <a
                       href={`#${item.id}`}
-                      className={`block text-[13px] px-2 py-1 rounded-lg transition-colors ${
-                        activeId === item.id
-                          ? 'bg-creator-pink text-pitch-black font-semibold'
-                          : 'text-graphite-border hover:text-pitch-black hover:bg-subtle-ash/40'
-                      }`}
+                      className="dc-side-link"
+                      aria-current={activeId === item.id ? 'location' : undefined}
                     >
                       {item.label}
                     </a>
@@ -313,10 +309,7 @@ export function DocsPage() {
         </aside>
 
         {/* Content */}
-        <main className="flex-1 min-w-0 px-4 sm:px-6 md:px-12 lg:px-16">
-
-          {/* H1 — visible to crawlers, styled as a subtle lead-in */}
-          <h1 className="sr-only">Animate SVG on Scroll — svg-scroll-draw API Reference</h1>
+        <main className="dc-main">
 
           {/* ── Installation ─────────────────────────────────── */}
           <DocSection id="installation" tag="Getting Started" heading="Installation">
