@@ -1,20 +1,15 @@
-/* Chapter 08 — switching, as a lens change. Scoped `.home .mg-…`; type
-   values match chapter 02 (caliber.css) so the chapters read as one. */
+/* Chapter 08 — switching, as before / after browser windows. Scoped
+   `.home .mg-…`; type values match chapter 02 (caliber.css). */
 
 .home .mg-stage {
   position: relative;
-  display: grid;
-  gap: clamp(28px, 4vw, 48px);
   padding: clamp(96px, 12vw, 180px) max(var(--gutter), calc((100% - 1560px) / 2));
 }
 
 /* ── Copy ─────────────────────────────────────────────────────────────── */
 
-.home .mg-copy { max-width: 560px; }
+.home .mg-head { display: grid; gap: 18px; align-items: end; margin-bottom: clamp(28px, 4vw, 48px); }
 .home .mg-kicker {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
   margin: 0 0 12px;
   font-family: var(--mono);
   font-size: 12px;
@@ -31,43 +26,137 @@
   color: var(--fg);
   text-wrap: balance;
 }
-.home .mg-body { margin: 18px 0 0; max-width: 46ch; font-size: 15px; line-height: 1.6; color: var(--fg-2); }
-
-.home .mg-rows { list-style: none; margin: clamp(18px, 3svh, 36px) 0 0; padding: 0; }
-.home .mg-row {
-  width: 100%;
-  display: grid;
-  grid-template-columns: 34px 1fr auto;
-  grid-template-areas: 'n name kb' '. code code';
-  gap: 6px 10px;
-  align-items: baseline;
-  padding: 14px 0;
-  border: 0;
-  border-top: 1px solid var(--line);
-  background: none;
-  color: var(--fg-3);
-  text-align: left;
-  font: inherit;
-  cursor: pointer;
-  transition: color 0.4s var(--ease);
+.home .mg-body { margin: 0; max-width: 44ch; font-size: 15px; line-height: 1.6; color: var(--fg-2); }
+@media (min-width: 1000px) {
+  .home .mg-head { grid-template-columns: minmax(0, 1fr) auto; }
 }
-.home li:last-child .mg-row { border-bottom: 1px solid var(--line); }
-.home .mg-row:hover { color: var(--fg-2); }
-.home .mg-row.is-on { color: var(--fg); }
-.home .mg-row-n { grid-area: n; font-family: var(--mono); font-size: 11px; letter-spacing: 0.04em; color: var(--fg-3); }
-.home .mg-row.is-on .mg-row-n { color: var(--accent); }
-.home .mg-row-name { grid-area: name; font-family: var(--sans); font-size: 16px; letter-spacing: -0.01em; }
-.home .mg-row-name small { font-family: var(--mono); font-size: 11px; color: var(--fg-3); margin-left: 6px; }
-.home .mg-row-kb { grid-area: kb; font-family: var(--mono); font-size: 11.5px; font-variant-numeric: tabular-nums; color: var(--fg-3); }
-.home .mg-row.is-on .mg-row-kb { color: var(--fg-2); }
-.home .mg-row-code { grid-area: code; font-family: var(--mono); font-size: 11.5px; line-height: 1.6; color: var(--fg-3); }
-.home .mg-row.is-on .mg-row-code { color: var(--fg-2); }
-.home .mg-k { opacity: 0.75; }
-.home .mg-row-code s { white-space: nowrap; text-decoration-color: var(--accent); text-decoration-thickness: 1.5px; }
-.home .mg-row-code b { white-space: nowrap; font-weight: 400; }
-.home .mg-row.is-on .mg-row-code b { color: var(--fg); }
 
-.home .mg-foot { margin-top: clamp(18px, 3svh, 32px); display: flex; flex-wrap: wrap; align-items: center; gap: 14px 22px; }
+/* ── Tabs ─────────────────────────────────────────────────────────────── */
+
+.home .mg-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: clamp(20px, 3vw, 32px); }
+.home .mg-tab {
+  height: 38px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid var(--line-2);
+  background: none;
+  color: var(--fg-2);
+  font-family: var(--sans);
+  font-size: 14px;
+  cursor: pointer;
+  transition: color 0.25s, border-color 0.25s, background 0.25s;
+}
+.home .mg-tab small { font-family: var(--mono); font-size: 10.5px; color: var(--fg-3); margin-left: 4px; }
+.home .mg-tab:hover { color: var(--fg); border-color: var(--fg-3); }
+.home .mg-tab[aria-selected='true'] { color: var(--bg); background: var(--fg); border-color: var(--fg); }
+.home .mg-tab[aria-selected='true'] small { color: var(--bg); opacity: 0.6; }
+
+/* ── The pair of windows ──────────────────────────────────────────────── */
+
+.home .mg-pair-in { display: grid; gap: 22px; }
+@media (min-width: 900px) {
+  .home .mg-pair-in { grid-template-columns: minmax(0, 1fr) 72px minmax(0, 1fr); align-items: center; gap: 0; }
+}
+
+.home .mg-win { margin: 0; display: grid; gap: 12px; min-width: 0; }
+.home .mg-cap { display: grid; gap: 6px; min-width: 0; }
+.home .mg-side {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+.home .mg-win-after .mg-side { color: var(--accent); }
+.home .mg-imp { font-family: var(--mono); font-size: clamp(12px, 1.05vw, 14px); color: var(--fg-2); white-space: nowrap; overflow-x: auto; }
+.home .mg-k { color: var(--fg-3); }
+.home .mg-pkg { color: var(--fg); }
+.home .mg-pkg-new {
+  background: var(--accent-2);
+  color: var(--fg);
+  padding: 2px 6px;
+  border-radius: 4px;
+  box-shadow: inset 0 -1.5px 0 var(--accent);
+}
+
+.home .mg-svg { display: block; width: 100%; height: auto; overflow: visible; }
+.home .mg-ink { fill: none; stroke: var(--fg); stroke-linecap: round; stroke-linejoin: round; }
+.home .mg-w-p { stroke-width: 2; }
+.home .mg-w-h { stroke-width: 1.1; }
+.home .mg-win-before .mg-ink { stroke: var(--fg-3); }
+.home .mg-url { font-family: var(--mono); font-size: 11px; fill: var(--fg-3); }
+
+/* The mock page: quiet blocks, the same in both windows. */
+.home .mg-bar { fill: none; stroke: var(--line-2); stroke-width: 7; stroke-linecap: round; }
+.home .mg-bar-l { stroke: var(--fg-3); stroke-width: 9; opacity: 0.6; }
+.home .mg-card { fill: var(--panel); stroke: var(--line-2); stroke-width: 1.2; }
+.home .mg-frame-soft { fill: none; stroke: var(--line); }
+.home .mg-img { fill: var(--bg-2); stroke: var(--line-2); stroke-width: 1; }
+.home .mg-attr { font-family: var(--mono); font-size: 12px; fill: var(--fg-3); }
+.home .mg-win-after .mg-card { stroke: var(--fg-3); }
+
+/* Entrances: hidden until the pair is in view, then the same timing on both
+   sides. A new tab remounts the page group, which replays them. */
+.home .mg-anim { opacity: 0; }
+.home [data-play] .mg-up { animation: mg-up 0.8s var(--ease) both; animation-delay: calc(var(--i) * 140ms + 150ms); }
+.home [data-play] .mg-pop { animation: mg-pop 0.7s var(--ease) both; animation-delay: calc(var(--i) * 90ms + 150ms); }
+.home .mg-line { fill: none; stroke: var(--fg); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
+.home .mg-line-sun { stroke: var(--accent); }
+.home [data-play] .mg-line { animation: mg-draw 1.3s var(--ease) both; animation-delay: calc(var(--i) * 160ms + 150ms); }
+@keyframes mg-up { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
+@keyframes mg-pop { from { opacity: 0; transform: scale(0.9) translateY(12px); } to { opacity: 1; transform: none; } }
+@keyframes mg-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+
+.home .mg-eq { display: grid; justify-items: center; gap: 4px; color: var(--fg-3); }
+.home .mg-eq span { font-family: var(--sans); font-size: 34px; font-weight: 300; color: var(--fg-2); line-height: 1; }
+.home .mg-eq small { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; }
+@media (max-width: 899.98px) {
+  .home .mg-eq { grid-auto-flow: column; align-items: center; justify-content: start; gap: 10px; }
+  .home .mg-eq span { font-size: 24px; }
+}
+
+/* Size, under each window. */
+.home .mg-size {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas: 'kb track' 'note note';
+  align-items: center;
+  gap: 4px 14px;
+}
+.home .mg-size-kb {
+  grid-area: kb;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: clamp(22px, 2vw, 30px);
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  color: var(--fg-2);
+}
+.home .mg-size-after .mg-size-kb { color: var(--accent); }
+.home .mg-size-track { grid-area: track; height: 2px; background: var(--line); position: relative; }
+.home .mg-size-track i {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: calc(var(--w) * 100%);
+  background: var(--fg-3);
+}
+.home .mg-size-after .mg-size-track i { background: var(--accent); }
+.home .mg-size-note { grid-area: note; font-family: var(--mono); font-size: 11px; color: var(--fg-3); }
+
+/* ── Footer of the chapter ────────────────────────────────────────────── */
+
+.home .mg-foot {
+  margin-top: clamp(32px, 4vw, 52px);
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 18px;
+  align-items: center;
+}
+.home .mg-summary { margin: 0; font-size: 15px; line-height: 1.6; color: var(--fg-2); max-width: 70ch; }
+.home .mg-summary code { font-family: var(--mono); font-size: 13px; color: var(--fg); }
+.home .mg-summary b { font-weight: 500; color: var(--accent); }
+.home .mg-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 22px; }
 .home .mg-link {
   font-family: var(--mono);
   font-size: 11px;
@@ -81,76 +170,14 @@
 .home .mg-link:hover { color: var(--accent); border-color: var(--accent); }
 .home .mg-link span { display: inline-block; transition: transform 0.35s var(--ease); }
 .home .mg-link:hover span { transform: translateX(4px); }
-
-/* ── Drawing ──────────────────────────────────────────────────────────── */
-
-.home .mg-art-wrap { position: relative; order: -1; }
-.home .mg-strokes {
-  margin: 0 0 6px;
-  text-align: right;
-  font-family: var(--mono);
-  font-size: 12px;
-  font-variant-numeric: tabular-nums;
-  color: var(--fg-3);
-}
-.home .mg-strokes span { color: var(--fg); }
-.home .mg-art { --mg-p: 0; position: relative; aspect-ratio: 888 / 580; }
-.home .mg-art::before {
-  content: '';
-  position: absolute;
-  inset: -6%;
-  background: radial-gradient(closest-side, var(--bg-2), transparent);
-  pointer-events: none;
-}
-.home .mg-ink-layer { position: absolute; inset: 0; }
-.home .mg-svg { position: absolute; inset: 0; display: block; width: 100%; height: 100%; overflow: visible; }
-.home .mg-svg-pencil { opacity: 0.16; }
-.home .mg-pencil { fill: none; color: var(--fg); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round; }
-
-.home .mg-ink { fill: none; stroke-linecap: round; stroke-linejoin: round; }
-/* Phone first, a step heavier; 1.8 / 1.1 / 0.6 at desktop size. */
-.home .mg-w-p { stroke-width: 3; }
-.home .mg-w-s { stroke-width: 1.8; }
-.home .mg-w-h { stroke-width: 1.1; }
-.home .mg-t-ink { color: var(--fg); }
-.home .mg-t-mute { color: var(--fg-3); }
-
-.home .mg-dot { fill: var(--accent); transition: filter 0.4s var(--ease); }
-.home .mg-art[data-locked] .mg-dot { filter: drop-shadow(0 0 6px var(--accent)); }
-.home .mg-ndot { fill: var(--fg); }
-
-/* Notes are set in type, not drawn: each fades in once its moment arrives. */
-/* Leaders and their notes only where the type can be read (≥ 8px). Butt
-   caps: an undrawn leader keeps a zero-length dash a round cap would show. */
-.home .mg-lead { stroke-linecap: butt; }
-.home .mg-lead,
-.home .mg-notes { visibility: hidden; }
-.home .mg-note { opacity: clamp(0, calc((var(--mg-p) - var(--mg-at, 1)) * 25), 1); }
-.home .mg-label, .home .mg-label-t { font-family: var(--mono); }
-.home .mg-label { font-size: 18px; fill: var(--fg-2); }
-.home .mg-label-accent { fill: var(--accent); }
-.home .mg-label-t { font-size: 13px; letter-spacing: 0.16em; fill: var(--fg-3); }
-
-/* ── Desktop: copy left, drawing right ────────────────────────────────── */
-
 @media (min-width: 1000px) {
-  .home .mg-stage {
-    grid-template-columns: minmax(300px, 0.78fr) minmax(0, 1.22fr);
-    align-items: center;
-    column-gap: clamp(32px, 4vw, 88px);
-  }
-  .home .mg-art-wrap { order: 0; }
-  .home .mg-w-p { stroke-width: 1.8; }
-  .home .mg-w-s { stroke-width: 1.1; }
-  .home .mg-w-h { stroke-width: 0.6; }
-  .home .mg-pencil { stroke-width: 0.8; }
-}
-/* Wide enough for the notes to be read at ≥ 8px. */
-@media (min-width: 1180px) {
-  .home .mg-lead,
-  .home .mg-notes { visibility: visible; }
+  .home .mg-foot { grid-template-columns: minmax(0, 1fr) auto; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .home .mg-row, .home .mg-dot { transition: none; }
+  .home .mg-anim { opacity: 1; }
+  .home .mg-line { stroke-dashoffset: 0; }
+  .home [data-play] .mg-up,
+  .home [data-play] .mg-pop,
+  .home [data-play] .mg-line { animation: none; }
 }

@@ -28,10 +28,11 @@ All notable changes to `svg-scroll-draw` are documented here.
   and WebKit gauges sweeping to 195, an odometer counting the unit tests, a
   size meter settling under its red CI budget line; 07 a circuit board that
   wires the core to every framework entry, with framework tabs that light
-  their trace; 08 a lens change on a rangefinder camera drawn from above —
-  the body (your markup) and the mount (the API) stay, the old library's
-  lens is set aside and the drop-in's lens, drawn to scale by KB, slides on
-  and locks when the red index dots align — in about one screen, no pinning; and a sign-off that is an engineering drawing
+  their trace; 08 before / after, said literally: two browser windows side
+  by side whose only difference is the import line — the same page, the same
+  markup (`data-aos="fade-up"`), the same entrance playing in both — with
+  each file's weight underneath; tabs for AOS, ScrollReveal and vivus;
+  and a sign-off that is an engineering drawing
   sheet: zone borders, the hand-lettered *draw* again, and a title block
   carrying the version, weight, tests and links. Every figure comes from
   `data/competitors.ts` or the page's claim-checked constants. Geist
