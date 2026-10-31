@@ -45,7 +45,12 @@ All notable changes to `svg-scroll-draw` are documented here.
   the revenue-chart example), a subscription-analytics product — the
   dashboard's MRR lines plot on scroll with the fill and tooltip following
   `onProgress`, cohort curves fan out, a forecast draws past today with a
-  widening confidence band, and three sparklines draw together. Showcase sites carry a "demo site" tab that
+  widening confidence band, and three sparklines draw together. Third:
+  **Quillmark** (`/showcase/quillmark`, the signature example), an
+  e-signature product — the client's signature writes itself on a lease in
+  one stroke as the contract comes into view and `onComplete` stamps it
+  signed; the steps draw in turn and the audit trail's rail draws down the
+  page. Showcase sites carry a "demo site" tab that
   links back to the example, and are kept out of search results.
 - **`/examples` rebuilt as a catalogue of drawings.** The 23 previews were
   the old site — Discord blurple, pink and yellow, emoji, the Syne display

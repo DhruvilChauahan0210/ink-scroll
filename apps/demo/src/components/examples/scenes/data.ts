@@ -53,5 +53,25 @@ export const SCENES: Record<string, SceneData> = {
 /* .area    { opacity: calc((var(--p) - .6) * 2.5) }
    .tooltip { opacity: calc((var(--p) - .93) * 14) } */`,
   },
+  signature: {
+    label: 'Quillmark',
+    tag: 'one stroke · autoplay · onComplete',
+    description:
+      "A full site for a fictional e-signature product. The client's signature writes itself on the contract in one continuous stroke when it comes into view, and onComplete flips the field to signed and stamps the time; further down, the steps draw in turn and the audit trail's rail draws down the page with the reader.",
+    code: `const [signed, setSigned] = useState(false);
 
+<div className={signed ? 'field is-signed' : 'field'}>
+  <span className="tag">{signed ? 'Signed' : 'Sign here'}</span>
+  <ScrollDraw
+    autoplay duration={2400} delay={500}
+    easing="ease-in-out" once
+    onComplete={() => setSigned(true)}
+  >
+    <svg viewBox="20 40 380 190">
+      {/* one continuous stroke, from the A to the flourish */}
+      <path className="ink" d="M 32 196 C 46 190 62 165 …" />
+    </svg>
+  </ScrollDraw>
+</div>`,
+  },
 };

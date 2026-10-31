@@ -31,4 +31,12 @@ export const SHOWCASE: Record<string, Showcase> = {
     width: 1920,
     height: 1200,
   },
+  signature: {
+    slug: 'quillmark',
+    brand: 'Quillmark',
+    what: 'E-signatures for small firms',
+    image: '/showcase/quillmark.webp',
+    width: 1920,
+    height: 1200,
+  },
 };
