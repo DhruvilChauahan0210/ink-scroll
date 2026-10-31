@@ -79,6 +79,9 @@ describe('SSR — no window, no document', () => {
       '../aos',
       '../scrollreveal',
       '../vivus',
+      '../aos/react',
+      '../scrollreveal/react',
+      '../vivus/react',
     ];
 
     for (const entry of entries) {

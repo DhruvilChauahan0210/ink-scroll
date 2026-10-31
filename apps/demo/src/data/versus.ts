@@ -87,6 +87,10 @@ export const VERSUS: Versus[] = [
         a: "No. Change the import (or the script tag to dist/cdn/vivus.global.js, which defines window.Vivus) and keep the rest — or run npx svg-scroll-draw migrate, which makes those edits and swaps the dependency. Options, types, start modes, data-start / data-duration / data-delay / data-async / data-ignore attributes and Vivus.EASE and friends are all supported.",
       },
       {
+        q: 'How do I use it in React or Next.js?',
+        a: "useVivus() from svg-scroll-draw/vivus/react creates the instance on the mounted <svg>, destroys it on unmount (StrictMode-safe) and returns it for play() and reset(). The entry is marked \"use client\", so it works in the Next.js App Router.",
+      },
+      {
         q: 'Is vivus still maintained?',
         a: `Its last release was ${COMPETITORS.vivus.version}, published ${COMPETITORS.vivus.lastPublish}. It is MIT-licensed and still works.`,
       },

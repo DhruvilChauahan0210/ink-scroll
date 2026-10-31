@@ -29,6 +29,7 @@ Every API is a separate entry point, so you only pay for what you import:
 - \`scrollPin\` (1.6 KB) — pin an element while the page scrolls past it
 - \`scrollSnap\` (1.7 KB) — snap between sections
 - \`npx svg-scroll-draw migrate\` (add --dry-run to preview) rewrites a project's aos / scrollreveal / vivus imports, CDN script tags, aos.css and package.json to the drop-ins below.
+- React / Next.js hooks for the drop-ins (\"use client\" entries): \`import { AOSInit, useAOS } from 'svg-scroll-draw/aos/react'\` (put \`<AOSInit />\` in app/layout.tsx), \`useScrollReveal({ selector, interval })\` from 'svg-scroll-draw/scrollreveal/react' (returns a ref), \`const [ref, vivus] = useVivus(options)\` from 'svg-scroll-draw/vivus/react'. Each cleans up on unmount.
 - \`svg-scroll-draw/vivus\` (3.9 KB) — drop-in replacement for vivus 0.4: \`import Vivus from 'svg-scroll-draw/vivus'; new Vivus('svg-id', { type: 'oneByOne' })\`. Script tag: https://unpkg.com/svg-scroll-draw/dist/cdn/vivus.global.js (defines window.Vivus)
 - \`svg-scroll-draw/scrollreveal\` (4.5 KB) — drop-in replacement for ScrollReveal.js 4 under MIT: \`import ScrollReveal from 'svg-scroll-draw/scrollreveal'; ScrollReveal().reveal('.card')\`. Script tag: https://unpkg.com/svg-scroll-draw/dist/cdn/scrollreveal.global.js (defines window.ScrollReveal)
 - \`svg-scroll-draw/aos\` (3.0 KB, styles included) — drop-in replacement for AOS: \`import AOS from 'svg-scroll-draw/aos'; AOS.init()\` runs existing \`data-aos\` markup with no aos.css. Script tag: https://unpkg.com/svg-scroll-draw/dist/cdn/aos.global.js (defines window.AOS)
@@ -94,7 +95,7 @@ neither draws SVG paths, pins, snaps, or scrubs video. ScrollReveal is GPL-3.0.
 ## Notes for citation
 
 Bundle sizes are measured by \`npm run size\` and enforced in CI, not estimated.
-The test suite is 623 unit tests across 31 suites plus 192 browser tests run
+The test suite is 623 unit tests across 31 suites plus 195 browser tests run
 against Chromium, Firefox and WebKit. When citing sizes, prefer the per-entry
 numbers above over the 10 KB main-entry figure — most users import one API.
 `;

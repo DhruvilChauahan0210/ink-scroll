@@ -6,6 +6,35 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ## [Unreleased]
 
+### Added
+
+- **React and Next.js hooks for the drop-ins**, as their own entries so nobody
+  pays for the ones they do not use, each built with a leading `"use client"`:
+  - `svg-scroll-draw/aos/react` — `useAOS(options, refreshKey?)` and
+    `<AOSInit />`. Initialises on mount and destroys on unmount (AOS has no
+    destroy, which is why StrictMode and route changes trip hand-written
+    effects); `refreshKey` re-measures; new `[data-aos]` content from a route
+    change is picked up by the drop-in's MutationObserver. 3.1 KB.
+  - `svg-scroll-draw/scrollreveal/react` — `useScrollReveal(options)` returns
+    a ref and reveals that element, or its `selector` children for `interval`
+    sequences, cleaning up on unmount. 4.6 KB.
+  - `svg-scroll-draw/vivus/react` — `useVivus(options, callback)` returns
+    `[ref, vivus]` and destroys the instance on unmount. 4.0 KB.
+- tsup's Rollup pass strips module directives, so these three entries build
+  with `treeshake: false` (esbuild still drops unused code) to keep
+  `"use client"`. `size.mjs` now measures nested entries such as `aos/react`.
+
+### Tests
+
+- `e2e/dropins-react.spec.ts`: a React 18 app in StrictMode with a state-driven
+  route change, in Chromium, Firefox and WebKit — one AOS stylesheet after the
+  double mount, unique ScrollReveal ids, one vivus callback, page A cleaned up
+  and page B's `[data-aos]` picked up, a clean re-init on the way back, and
+  `<AOSInit>` unmounting removes AOS; no page or console errors. Dropping
+  `useAOS`'s cleanup fails it. Checked separately in a real Next.js 16 App
+  Router app: `<AOSInit />` in a Server Component layout builds and runs, and
+  both hooks work, with no errors.
+
 ### Site and examples
 
 - `examples/aos`, `examples/scrollreveal` and `examples/vivus`: pages written

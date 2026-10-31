@@ -66,7 +66,12 @@
     "vivus",
     "vivus-alternative",
     "svg-line-drawing",
-    "line-drawing"
+    "line-drawing",
+    "react-aos",
+    "aos-react",
+    "scrollreveal-react",
+    "vivus-react",
+    "nextjs-aos"
   ],
   "homepage": "https://svg-scroll-draw.vercel.app",
   "repository": {
@@ -158,6 +163,15 @@
       ],
       "vivus": [
         "./dist/vivus/index.d.ts"
+      ],
+      "aos/react": [
+        "./dist/aos/react/index.d.ts"
+      ],
+      "scrollreveal/react": [
+        "./dist/scrollreveal/react/index.d.ts"
+      ],
+      "vivus/react": [
+        "./dist/vivus/react/index.d.ts"
       ]
     }
   },
@@ -405,6 +419,36 @@
       "require": {
         "types": "./dist/vivus/index.d.ts",
         "default": "./dist/vivus/index.cjs"
+      }
+    },
+    "./aos/react": {
+      "import": {
+        "types": "./dist/aos/react/index.d.mts",
+        "default": "./dist/aos/react/index.mjs"
+      },
+      "require": {
+        "types": "./dist/aos/react/index.d.ts",
+        "default": "./dist/aos/react/index.cjs"
+      }
+    },
+    "./scrollreveal/react": {
+      "import": {
+        "types": "./dist/scrollreveal/react/index.d.mts",
+        "default": "./dist/scrollreveal/react/index.mjs"
+      },
+      "require": {
+        "types": "./dist/scrollreveal/react/index.d.ts",
+        "default": "./dist/scrollreveal/react/index.cjs"
+      }
+    },
+    "./vivus/react": {
+      "import": {
+        "types": "./dist/vivus/react/index.d.mts",
+        "default": "./dist/vivus/react/index.mjs"
+      },
+      "require": {
+        "types": "./dist/vivus/react/index.d.ts",
+        "default": "./dist/vivus/react/index.cjs"
       }
     },
     "./package.json": "./package.json"

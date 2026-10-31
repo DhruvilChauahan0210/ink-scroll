@@ -41,6 +41,10 @@ const BUDGETS_KB = {
   // The ScrollReveal drop-in (ScrollReveal 4.0.9 itself is 5.6 KB).
   scrollreveal:      4.9,
   'cdn-scrollreveal': 4.9,
+  // React hooks for the drop-ins; each bundles its drop-in (React is external).
+  'aos/react':          3.6,
+  'scrollreveal/react': 5.2,
+  'vivus/react':        4.6,
   // The vivus drop-in (vivus 0.4.6 itself is 4.1 KB).
   vivus:             4.2,
   'cdn-vivus':       4.2,
@@ -75,6 +79,13 @@ function findEntries() {
   for (const name of readdirSync(DIST)) {
     const candidate = join(DIST, name, 'index.mjs');
     if (existsSync(candidate)) entries.set(name, candidate);
+    // Nested entries, e.g. aos/react.
+    const sub = join(DIST, name);
+    if (!statSync(sub).isDirectory()) continue;
+    for (const child of readdirSync(sub)) {
+      const nested = join(sub, child, 'index.mjs');
+      if (existsSync(nested)) entries.set(`${name}/${child}`, nested);
+    }
   }
 
   /*

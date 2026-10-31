@@ -384,6 +384,22 @@ No bundler? Swap the script tag, and drop the stylesheet link:
 <script>AOS.init();</script>
 ```
 
+**React and Next.js.** `svg-scroll-draw/aos/react` owns the lifecycle AOS never had: it initialises on mount,
+destroys on unmount (so StrictMode's double mount is safe), and new `[data-aos]` content from a route change is
+picked up automatically. The file is marked `"use client"`, so it drops straight into an App Router layout:
+
+```tsx
+// app/layout.tsx — a Server Component
+import { AOSInit } from 'svg-scroll-draw/aos/react';
+
+export default function RootLayout({ children }) {
+  return <html lang="en"><body><AOSInit once duration={600} />{children}</body></html>;
+}
+```
+
+Or call `useAOS(options, refreshKey)` in any client component; changing `refreshKey` (say, the pathname)
+re-measures positions.
+
 `init`, `refresh` and `refreshHard` behave as in AOS 2.3.4: the same trigger positions (anchor
 placements, `data-aos-anchor`, offsets — including AOS's rule that an inline anchor placement without an
 inline offset uses 0), the same `aos-init` / `aos-animate` classes, the same transforms and end states.
@@ -421,6 +437,20 @@ No bundler? `<script src="https://unpkg.com/svg-scroll-draw/dist/cdn/scrollrevea
 defines `window.ScrollReveal` as the function, like ScrollReveal's own file. With CommonJS,
 `require('svg-scroll-draw/scrollreveal').default` is the function.
 
+**React and Next.js.** `useScrollReveal()` from `svg-scroll-draw/scrollreveal/react` reveals the element its
+ref is on — or its children matching `selector`, for `interval` sequences — and cleans up on unmount, so
+components that mount later (a route change, a list that loads) are revealed too:
+
+```tsx
+'use client';
+import { useScrollReveal } from 'svg-scroll-draw/scrollreveal/react';
+
+export function Cards() {
+  const ref = useScrollReveal({ selector: '.card', interval: 80, distance: '30px' });
+  return <div ref={ref}>{/* .card children */}</div>;
+}
+```
+
 Every option behaves as in 4.0.9 — `distance` / `origin`, `opacity`, `scale`, `rotate`, `duration`,
 `delay`, `easing`, `interval` sequences, `reset`, `useDelay`, `viewFactor`, `viewOffset`,
 `container`, `mobile` / `desktop`, `cleanup` and the four callbacks — as do `reveal`, `clean`, `sync`,
@@ -453,6 +483,19 @@ On [vivus](https://github.com/maxwellito/vivus)? It has not shipped since 0.4.6 
 
 No bundler? `<script src="https://unpkg.com/svg-scroll-draw/dist/cdn/vivus.global.js"></script>`
 defines `window.Vivus`. With CommonJS, `require('svg-scroll-draw/vivus').default` is the class.
+
+**React and Next.js.** `useVivus()` from `svg-scroll-draw/vivus/react` creates the instance on the mounted
+`<svg>`, destroys it on unmount, and hands it back for `play()`, `reset()` and the rest:
+
+```tsx
+'use client';
+import { useVivus } from 'svg-scroll-draw/vivus/react';
+
+export function Logo() {
+  const [ref, vivus] = useVivus<SVGSVGElement>({ type: 'oneByOne', duration: 120 });
+  return <svg ref={ref} onClick={() => vivus?.reset().play()}>{/* paths */}</svg>;
+}
+```
 
 Every option, every animation type (`delayed`, `sync`, `async`, `nsync`, `oneByOne`, `scenario`,
 `scenario-sync`), the `start` modes, `file` and `<object>` loading, the `data-start` / `data-duration` /
@@ -561,6 +604,9 @@ devtools.highlight('#my-element'); // outline for 2 seconds
 | `svg-scroll-draw/aos` | `AOS` (default), `init`, `refresh`, `refreshHard`, `destroy` |
 | `svg-scroll-draw/scrollreveal` | `ScrollReveal` (default and named) |
 | `svg-scroll-draw/vivus` | `Vivus` (default and named) |
+| `svg-scroll-draw/aos/react` | `useAOS`, `AOSInit` (`"use client"`) |
+| `svg-scroll-draw/scrollreveal/react` | `useScrollReveal` (`"use client"`) |
+| `svg-scroll-draw/vivus/react` | `useVivus` (`"use client"`) |
 
 ---
 

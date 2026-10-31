@@ -193,6 +193,14 @@ export default function VsAosPage() {
 + import AOS from 'svg-scroll-draw/aos';
 
 AOS.init({ once: true });`}</CodeBlock>
+            <CodeBlock file="app/layout.tsx (Next.js)">{`import { AOSInit } from 'svg-scroll-draw/aos/react';
+
+// A Server Component is fine: the entry is "use client".
+// Initialises on mount, cleans up on unmount (StrictMode-safe),
+// and picks up [data-aos] content from route changes.
+export default function RootLayout({ children }) {
+  return <html lang="en"><body><AOSInit once />{children}</body></html>;
+}`}</CodeBlock>
             <CodeBlock file="terminal">{`# or let it do the edits: imports, script tags, aos.css, package.json
 npx svg-scroll-draw migrate --dry-run
 npx svg-scroll-draw migrate`}</CodeBlock>

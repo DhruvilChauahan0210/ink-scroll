@@ -34,6 +34,15 @@ export default defineConfig([
   base({ 'aos/index':       'src/aos/index.ts'         }),
   base({ 'scrollreveal/index': 'src/scrollreveal/index.ts' }),
   base({ 'vivus/index':     'src/vivus/index.ts'       }),
+  /*
+   * React hooks for the drop-ins. "use client" leads each built file so a Next.js
+   * App Router layout can render <AOSInit /> without a wrapper of its own.
+   * `treeshake: false` skips tsup's Rollup pass, which strips module directives
+   * ("use client" ... was ignored); esbuild's bundling still drops unused code.
+   */
+  { ...base({ 'aos/react/index': 'src/aos/react.ts' }, ['react']), banner: { js: '"use client";' }, treeshake: false },
+  { ...base({ 'scrollreveal/react/index': 'src/scrollreveal/react.ts' }, ['react']), banner: { js: '"use client";' }, treeshake: false },
+  { ...base({ 'vivus/react/index': 'src/vivus/react.ts' }, ['react']), banner: { js: '"use client";' }, treeshake: false },
   base({ 'progress/index':  'src/progress/index.ts'   }),
   base({ 'horizontal/index': 'src/horizontal/index.ts' }),
   /*

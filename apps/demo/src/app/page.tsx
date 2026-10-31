@@ -86,7 +86,7 @@ const MARQUEE_ITEMS = [
   '10 KB gzipped',
   'Zero dependencies',
   '623 tests passing',
-  '192 browser tests',
+  '195 browser tests',
   'SSR safe',
   'Native CSS fast path',
   'React · Vue · Svelte · Solid',
