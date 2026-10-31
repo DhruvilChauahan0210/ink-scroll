@@ -19,10 +19,13 @@ lifetime downloads, ~170 a month; 5 GitHub stars; 147 Google clicks in five
 months, 81% to the homepage; `/vs-gsap` at position 11 with 425 impressions.
 
 ### In flight
-- Branch `feat/migration-guides`: `/guides` with four migration guides. Site-only — deploys
-  from `main`, no npm release.
+- Branch `feat/homepage-redesign`: the new homepage, light and dark (`app/page.tsx`,
+  `app/home.css`, `components/home/*`). Site-only — deploys from `main`, no npm release.
+  Waiting for review before it is pushed.
 
 ### Shipped since
+- `/guides` — five migration guides, live from `main` (site-only).
+
 - **2.15.0** — React / Next.js hooks for the drop-ins: `useAOS` + `<AOSInit />`,
   `useScrollReveal`, `useVivus` (all `"use client"`). StackBlitz starters for each
   drop-in are live from `main`.

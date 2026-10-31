@@ -5,7 +5,7 @@
 > across Chromium/Firefox/WebKit) · **56 mutations**, each caught by the one test
 > named for it · **91.3% line coverage** (gate 90/90/82/82)
 > Bundle: **10.2 KB gzipped** (main entry; per-API entries from 0.2 KB) · zero runtime dependencies
-> Last updated: 2026-10-30
+> Last updated: 2026-10-31
 
 ---
 
@@ -88,7 +88,7 @@ at all.
 ## Demo App (`apps/demo`)
 
 ### Pages
-- [x] `/` — hero, scroll demos, interactive `scrollAnimate` demo, v2 API grid, API reference, framework tabs, bundle chart, live stats, CTA
+- [x] `/` — redesigned (branch `feat/homepage-redesign`): self-drawing hero sheet, eight-API bento, scrubbed how-it-works line, framework code tabs, engine lanes, measured size bars, drop-ins band, quality numbers, CTA; light and dark themes scoped under `.home`
 - [x] `/examples` — 23 examples with framework filter
 - [x] `/docs` — full API reference including v2.0–2.2 nav group with all 6 new APIs documented
 - [x] `/playground` — interactive SVG editor

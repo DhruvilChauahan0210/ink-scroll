@@ -8,6 +8,16 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### Site
 
+- **Homepage redesign.** A new `/` in both themes: an ink-on-paper light theme
+  and a deep-navy dark theme with a soft glow, Instrument Serif italic accents,
+  a hero sheet that draws itself with `<ScrollDraw autoplay>`, an eight-API
+  bento with drawn art per card, a "how it works" timeline whose line is
+  scrubbed by `scrollDraw`, framework code tabs, native-vs-JS engine lanes,
+  measured size bars read from `data/competitors.ts`, a drop-ins band and a
+  quality-numbers grid. Styles are scoped under `.home` in `app/home.css`, so
+  no other page changes. The examples count reads `EXAMPLE_COUNT` instead of
+  a typed number. The old homepage demo components are no longer imported
+  but stay in the repo.
 - **Migration guides** at `/guides`: AOS in Next.js, AOS in React, ScrollReveal
   in React and Next.js, vivus in React — the searches those libraries' users
   make. Each leads with `npx svg-scroll-draw migrate`, the hook, the StackBlitz
