@@ -1,0 +1,670 @@
+/* The sign-off — the end of the page as one drafting sheet. Every selector is
+   scoped `.home .so-…`; colours come only from the tokens on `.home`. Type
+   values match chapter 02 (caliber.css) so the two read as one book. */
+
+.home .so-stage {
+  --so-band: 18px;
+  --so-pad: 12px;
+  --so-crop: 11px;
+  --so-crop-gap: 5px;
+  --so-pin: 9px;
+  --so-arrow: 9px;
+  --so-bottom: clamp(24px, 2.4vw, 36px);
+  --so-split: 36%;
+  --so-hd: 30px;
+  --so-row: 38px;
+  /* The plate's width cap on desktop; the kicker and the flanks are measured off it. */
+  --so-plate: 92svh;
+  position: relative;
+  padding: clamp(72px, 9vw, 150px) var(--gutter) var(--so-bottom);
+  border-top: 1px solid var(--line);
+}
+
+.home .so-sheet {
+  /* 1 until the engine's first tick, so a sheet that is never scrolled — no
+     script, reduced motion — shows finished. */
+  --so-p: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: calc(var(--so-band) + var(--so-pad));
+}
+
+/* ── Lines ───────────────────────────────────────────────────────────────── */
+
+.home .so-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* One-axis rules: stretched along their length only, so a horizontal line is
+   1 unit = 1px tall at any width (and a vertical one 1px wide at any height). */
+.home .so-rule {
+  position: absolute;
+  display: block;
+  overflow: visible;
+  pointer-events: none;
+}
+.home .so-rule-h { height: 4px; margin-top: -2px; }
+.home .so-rule-v { width: 4px; margin-left: -2px; }
+
+/* Butt caps everywhere: an undrawn stroke keeps a zero-length dash at its
+   far end, which any other cap would show as a stray dot. Ink paths carry
+   stroke="currentColor" only so the library's dev check sees a stroke; the
+   tone classes below set the real colour. */
+.home .so-ink,
+.home .so-pencil {
+  fill: none;
+  stroke-linecap: butt;
+  stroke-linejoin: round;
+}
+/* The pencil underdrawing: one translucent hairline the ink, always at least
+   as wide, covers exactly. */
+.home .so-pencil { stroke: var(--fg); opacity: 0.16; }
+.home .so-rule .so-pencil { stroke-width: 0.75; }
+.home .so-rule .so-w-p { stroke-width: 1.6; }
+.home .so-rule .so-w-s { stroke-width: 1; }
+.home .so-rule .so-w-h { stroke-width: 0.75; }
+
+.home .so-t-ink { stroke: var(--fg); }
+.home .so-t-mute { stroke: var(--fg-2); }
+.home .so-t-faint { stroke: var(--line-2); }
+.home .so-t-accent { stroke: var(--accent); }
+
+/* Anything set in type, not drawn, fades in once the line it belongs to is inked. */
+.home .so-fade {
+  opacity: clamp(0, calc((var(--so-p) - var(--so-at, 1)) * 25), 1);
+}
+
+/* Centring arrows sit in the band, pointing into the drawing. */
+.home .so-arrow {
+  position: absolute;
+  width: var(--so-arrow);
+  height: var(--so-arrow);
+  overflow: visible;
+  pointer-events: none;
+}
+.home .so-arrow .so-ink { stroke-width: 1.1; }
+.home .so-arrow .so-pencil { stroke-width: 1; }
+.home .so-arrow-fill { fill: var(--fg); stroke: none; }
+.home .so-arrow-t { left: 50%; top: calc(var(--so-band) / 2); transform: translate(-50%, -50%); }
+.home .so-arrow-b { left: 50%; top: calc(100% - var(--so-band) / 2); transform: translate(-50%, -50%) rotate(180deg); }
+.home .so-arrow-l { left: calc(var(--so-band) / 2); top: 50%; transform: translate(-50%, -50%) rotate(-90deg); }
+.home .so-arrow-r { left: calc(100% - var(--so-band) / 2); top: 50%; transform: translate(-50%, -50%) rotate(90deg); }
+
+/* Zone references: numbers along the top and bottom, letters down the sides. */
+.home .so-zl {
+  position: absolute;
+  font: 500 9px/1 var(--mono);
+  letter-spacing: 0.04em;
+  color: var(--fg-3);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.home .so-zl-t { top: calc(var(--so-band) / 2); }
+.home .so-zl-b { top: calc(100% - var(--so-band) / 2); }
+.home .so-zl-l { left: calc(var(--so-band) / 2); }
+.home .so-zl-r { left: calc(100% - var(--so-band) / 2); }
+/* A phone gets four zones across, not eight. */
+.home .so-zl-wide,
+.home .so-tick-odd { display: none; }
+
+/* ── The head: kicker, the signed word, title, calls to action ──────────── */
+
+.home .so-head {
+  position: relative;
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: clamp(16px, 3svh, 40px) 0 clamp(32px, 4svh, 64px);
+}
+
+.home .so-kicker {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  width: min(100%, 640px);
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: var(--fg-3);
+}
+.home .so-count {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.home .so-count > span { color: var(--fg); }
+
+/* The plate: the word, its lettering guides and the line it is signed on.
+   On a phone the plate's margins (where the notes would go) are cropped and
+   the word fills the column. */
+.home .so-plate-clip {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  margin-top: clamp(6px, 1.6svh, 18px);
+}
+.home .so-plate {
+  position: relative;
+  width: 140%;
+  margin-left: -20%;
+  aspect-ratio: 1400 / 440;
+}
+.home .so-plate::before {
+  content: '';
+  position: absolute;
+  inset: -16% 10%;
+  background: radial-gradient(closest-side, var(--bg-2), transparent);
+  pointer-events: none;
+}
+.home .so-plate-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.home .so-plate .so-pencil { stroke-width: 2.4; }
+/* The plate's and the flanks' pencil is one translucent layer, as in chapter
+   02, so crossing construction lines never darken where they meet. */
+.home .so-plate-pencil,
+.home .so-flank-pencil { opacity: 0.16; }
+.home .so-plate-pencil .so-pencil,
+.home .so-flank-pencil .so-pencil { opacity: 1; }
+.home .so-plate .so-w-p { stroke-width: 5; }
+.home .so-plate .so-w-s { stroke-width: 3.6; }
+.home .so-plate .so-w-h { stroke-width: 2.4; }
+.home .so-word { position: absolute; }
+
+.home .so-lead,
+.home .so-notes { visibility: hidden; }
+.home .so-dot { fill: var(--fg); }
+/* Set so they render at chapter 02's sizes: the plate draws at ~0.59 px per
+   unit where the calibre draws at ~0.76, so 23.5 / 17 / 22 here read as its
+   18 / 13 / 17 there. */
+.home .so-label,
+.home .so-dim {
+  font-family: var(--mono);
+  font-size: 23.5px;
+  fill: var(--fg-2);
+}
+.home .so-label-t {
+  font-size: 17px;
+  letter-spacing: 0.16em;
+  fill: var(--fg-3);
+}
+.home .so-dim { font-size: 22px; }
+
+.home .so-title {
+  margin: clamp(8px, 1.6svh, 18px) 0 0;
+  max-width: 24ch;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: clamp(26px, 3.2vw, 52px);
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+  color: var(--fg);
+  text-wrap: balance;
+}
+
+.home .so-title > span { display: block; }
+
+.home .so-cta {
+  margin-top: clamp(20px, 3.4svh, 36px);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+/* ── The foot: parts list and title block, flush to the frame ───────────── */
+
+.home .so-foot-draw {
+  --so-p: 1;
+  position: relative;
+  margin: 0 calc(-1 * var(--so-pad)) calc(-1 * var(--so-pad));
+}
+.home .so-foot {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Parts list: one column per group, each with its own rules, so the table
+   holds together however the columns wrap. */
+.home .so-parts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.home .so-pl-col {
+  position: relative;
+  display: grid;
+  grid-template-rows: var(--so-hd) auto;
+  min-width: 0;
+}
+.home .so-pl-col.so-pl-no { display: none; }
+/* On a phone the third column wraps under the first; the slot beside it is
+   hatched, the drafting mark for "nothing here". */
+.home .so-parts::after {
+  content: '';
+  grid-column: 2;
+  margin: 1px 0 0 1px;
+  background: repeating-linear-gradient(135deg, var(--line-2) 0 1px, transparent 1px 7px);
+  opacity: 0.7;
+}
+.home .so-pl-h {
+  margin: 0;
+  align-self: center;
+  padding: 0 12px;
+  font: 500 10px/1 var(--mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+.home .so-pl-list {
+  display: grid;
+  grid-template-rows: repeat(4, var(--so-row));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.home .so-pl-list > li {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+/* Each link fills its cell, so the whole cell is the target. */
+.home .so-pl-a {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  height: 100%;
+  padding: 0 12px;
+  overflow: hidden;
+  font-size: 14px;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--fg-2);
+  transition: color 0.25s var(--ease), background-color 0.25s var(--ease);
+}
+.home .so-pl-a:hover { color: var(--fg); background: color-mix(in srgb, var(--bg-2) 80%, transparent); }
+.home .so-pl-ext {
+  font-size: 11px;
+  color: var(--fg-3);
+  transition: color 0.25s var(--ease), transform 0.35s var(--ease);
+}
+.home .so-pl-a:hover .so-pl-ext { color: var(--accent); transform: translate(2px, -2px); }
+.home .so-pl-num {
+  display: flex;
+  padding: 0 12px;
+  font: 500 11px/1 var(--mono);
+  letter-spacing: 0.04em;
+  color: var(--fg-3);
+}
+
+/* The narrowest phones: a long link takes two lines of its cell rather than
+   an ellipsis. */
+@media (max-width: 359px) {
+  .home .so-pl-a { white-space: normal; line-height: 1.12; }
+}
+
+/* Title block: on a phone a stacked table, field name left, value right. */
+.home .so-tb {
+  margin: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+.home .so-tb-cell {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--so-split) minmax(0, 1fr);
+  align-items: center;
+  min-height: 38px;
+}
+.home .so-tb-k {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  font: 500 9.5px/1.3 var(--mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+.home .so-tb-v {
+  margin: 0;
+  padding: 10px 12px;
+  font: 500 12px/1.35 var(--mono);
+  color: var(--fg);
+  min-width: 0;
+}
+.home .so-tb-name {
+  font-family: var(--sans);
+  font-size: 17px;
+  letter-spacing: -0.02em;
+}
+.home .so-tb-rev { color: var(--accent); }
+.home .so-tb-project .so-tb-top .so-ink { stroke: var(--fg); stroke-width: 1; }
+
+.home .so-delta {
+  flex: none;
+  width: 12px;
+  height: 11px;
+  overflow: visible;
+}
+.home .so-delta .so-ink { stroke-width: 2.4; }
+.home .so-delta .so-pencil { stroke-width: 2; }
+
+.home .so-proj {
+  display: block;
+  width: 56px;
+  height: auto;
+  overflow: visible;
+}
+.home .so-proj .so-w-s { stroke-width: 2; }
+.home .so-proj .so-w-h { stroke-width: 1.4; }
+.home .so-proj .so-pencil { stroke-width: 1.4; }
+
+/* ── The flanks: an instrument either side of the plate ────────────────────
+   Absolutely placed in the head's side margins, below the corner notes. Each
+   is a size container: its view is drawn as large as the margin allows, and
+   left out where it would come out under ~136px, with labels under 8px. */
+.home .so-flank {
+  position: absolute;
+  top: 150px;
+  bottom: clamp(32px, 4svh, 64px);
+  width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  container: so-flank / size;
+  pointer-events: none;
+}
+.home .so-flank-l { left: 0; }
+.home .so-flank-r { right: 0; }
+.home .so-flank-art {
+  position: relative;
+  flex: none;
+  /* At most 18.5svh: about the plate's own scale × 1.18, so the flank labels
+     (20 units) read at the plate labels' size (23.5 units). */
+  width: min(calc(100cqw - 20px), calc(100cqh * 240 / 440), 18.5svh);
+  aspect-ratio: 240 / 440;
+}
+/* The same soft vignette the plate (and chapter 02's drawing) sits on. */
+.home .so-flank-art::before {
+  content: '';
+  position: absolute;
+  inset: -4% -22%;
+  background: radial-gradient(closest-side, var(--bg-2), transparent);
+  pointer-events: none;
+}
+.home .so-flank-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+/* ~0.6–0.9 px per unit: 2 / 1.25 / 0.75 draw like the calibre's 1.8 / 1.1 / 0.6. */
+.home .so-flank .so-pencil { stroke-width: 1; }
+.home .so-flank .so-w-p { stroke-width: 2; }
+.home .so-flank .so-w-s { stroke-width: 1.25; }
+.home .so-flank .so-w-h { stroke-width: 0.75; }
+.home .so-flank .so-label { font-size: 20px; }
+.home .so-flank .so-label-t { font-size: 14.5px; }
+.home .so-flank .so-dim { font-size: 19px; }
+
+@container so-flank (max-width: 155px) or (max-height: 239px) {
+  .home .so-flank-art { opacity: 0; }
+}
+@media (max-height: 735px) {
+  .home .so-flank-art { opacity: 0; }
+}
+
+/* Corner notes and the graphic scale only appear where there is room. */
+.home .so-corner,
+.home .so-scale { display: none; }
+
+.home .so-corner {
+  position: absolute;
+  top: calc(var(--so-band) + var(--so-pad) + 4px);
+  width: 232px;
+  font: 400 11px/1.45 var(--mono);
+  color: var(--fg-2);
+}
+.home .so-corner-l { left: calc(var(--so-band) + var(--so-pad)); }
+.home .so-corner-r { right: calc(var(--so-band) + var(--so-pad)); width: 168px; }
+.home .so-cn-h {
+  position: relative;
+  margin: 0 0 12px;
+  padding-bottom: 9px;
+  font-size: 10px;
+  line-height: 1;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+.home .so-cn-list {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.home .so-cn-list > li {
+  display: flex;
+  align-items: baseline;
+}
+.home .so-cn-n {
+  display: inline-block;
+  flex: none;
+  width: 20px;
+  color: var(--fg-3);
+  font-variant-numeric: tabular-nums;
+}
+.home .so-corner-r .so-cn-n { width: 40px; color: var(--fg); }
+.home .so-corner-r .so-cn-list > li { color: var(--fg-3); }
+.home .so-cn-sample {
+  position: relative;
+  flex: none;
+  align-self: center;
+  width: 38px;
+  height: 9px;
+  margin-right: 14px;
+}
+
+.home .so-scale {
+  position: relative;
+  flex: none;
+  align-self: flex-end;
+  width: 100px;
+  margin: 0 0 22px;
+  font: 500 9px/1 var(--mono);
+  letter-spacing: 0.08em;
+  color: var(--fg-3);
+}
+.home .so-scale-t {
+  display: block;
+  margin-bottom: 9px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.home .so-scale-svg {
+  display: block;
+  width: 100px;
+  height: 6px;
+  overflow: visible;
+}
+.home .so-scale-svg .so-w-s { stroke-width: 1; }
+.home .so-scale-svg .so-w-h { stroke-width: 0.75; }
+.home .so-scale-svg .so-pencil { stroke-width: 0.75; }
+.home .so-scale-fill { fill: var(--fg); stroke: none; }
+.home .so-scale-n {
+  position: absolute;
+  top: calc(100% + 8px);
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+.home .so-scale-n:last-child { transform: translateX(-24%); }
+
+/* ── Desktop ─────────────────────────────────────────────────────────────── */
+
+@media (min-width: 900px) {
+  .home .so-stage {
+    --so-band: 26px;
+    --so-pad: clamp(16px, 2vw, 32px);
+    --so-crop: 16px;
+    --so-crop-gap: 7px;
+    --so-pin: 12px;
+    --so-arrow: 11px;
+    --so-split: 0px;
+    --so-hd: 32px;
+    --so-row: 38px;
+  }
+
+  /* At the very end of the page the whole sheet fits the screen under the nav. */
+  .home .so-sheet {
+    min-height: calc(100vh - var(--nav-h) - var(--so-bottom) - 10px);
+    min-height: calc(100svh - var(--nav-h) - var(--so-bottom) - 10px);
+  }
+
+  .home .so-zl { font-size: 10px; }
+  .home .so-zl-wide { display: block; }
+  .home .so-zl-phone { display: none; }
+  .home .so-tick-odd { display: block; }
+
+  .home .so-plate-clip {
+    width: min(100%, var(--so-plate));
+    overflow: visible;
+  }
+  /* The kicker spans exactly what the dimension under it measures: pen down
+     to pen up, 878.8 of the plate's 1400 units. */
+  .home .so-kicker { width: calc(min(100%, var(--so-plate)) * 0.6277); }
+  .home .so-plate {
+    width: 100%;
+    margin-left: 0;
+  }
+  .home .so-plate .so-pencil { stroke-width: 1; }
+  /* The margin either side of the plate. */
+  .home .so-flank { width: calc((100% - min(100%, var(--so-plate))) / 2); }
+  .home .so-plate .so-w-p { stroke-width: 2.4; }
+  .home .so-plate .so-w-s { stroke-width: 1.5; }
+  .home .so-plate .so-w-h { stroke-width: 1; }
+
+  .home .so-foot {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 24px;
+  }
+
+  .home .so-parts {
+    flex: 0 1 46%;
+    max-width: 760px;
+    grid-template-columns: 52px repeat(3, minmax(0, 1fr));
+  }
+  .home .so-parts::after,
+  .home .so-pl-close { display: none; }
+  .home .so-pl-col.so-pl-no { display: grid; }
+  .home .so-pl-a { font-size: 13px; padding: 0 10px; }
+  .home .so-pl-h { padding: 0 10px; }
+  .home .so-pl-col.so-pl-no .so-pl-h,
+  .home .so-pl-list > li.so-pl-num { padding: 0 0 0 14px; }
+
+  /* As tall as the parts list, so the two tables share a top edge; the
+     first row takes the header's height on top of its own. */
+  .home .so-tb {
+    flex: 0 1 40%;
+    max-width: 640px;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-rows: calc(var(--so-hd) + var(--so-row)) repeat(3, var(--so-row));
+  }
+  .home .so-tb-cell {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: stretch;
+    min-height: 0;
+    padding: 7px 12px 6px;
+  }
+  .home .so-tb-k { padding: 0; font-size: 9px; line-height: 1; }
+  .home .so-tb-v { padding: 0; font-size: 12px; line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .home .so-tb-name { display: block; font-size: 26px; line-height: 1.1; letter-spacing: -0.03em; }
+
+  .home .so-tb-project { grid-column: 1 / 5; }
+  .home .so-tb-projection { grid-column: 5 / 7; }
+  .home .so-tb-drawn { grid-column: 1 / 3; }
+  .home .so-tb-rev { grid-column: 3 / 5; }
+  .home .so-tb-licence { grid-column: 5 / 7; }
+  .home .so-tb-weight { grid-column: 1 / 3; }
+  .home .so-tb-tests { grid-column: 3 / 7; }
+  .home .so-tb-scale { grid-column: 1 / 3; }
+  .home .so-tb-sheet { grid-column: 3 / 5; }
+  .home .so-tb-strokes { grid-column: 5 / 7; }
+
+  .home .so-tb-projection .so-tb-v { display: flex; align-items: flex-end; }
+  .home .so-proj { width: 50px; }
+
+  /* The block's own outer edges are heavier than its internal rules. */
+  .home .so-tb-projection .so-tb-top .so-ink,
+  .home .so-tb-drawn .so-tb-left .so-ink,
+  .home .so-tb-weight .so-tb-left .so-ink,
+  .home .so-tb-scale .so-tb-left .so-ink,
+  .home .so-tb-project .so-tb-left .so-ink { stroke: var(--fg); stroke-width: 1; }
+}
+
+/* Short laptop screens: tighter tables, so the finished sheet still fits. */
+@media (min-width: 900px) and (max-height: 880px) {
+  .home .so-stage { --so-hd: 28px; --so-row: 34px; --so-band: 24px; --so-plate: 86svh; }
+  .home .so-tb-cell { padding: 6px 10px 5px; }
+  .home .so-tb-name { font-size: 22px; }
+}
+
+/* Narrow desktop: the two tables split the foot evenly and the item numbers
+   step out, so no value or link has to be cut short with an ellipsis. */
+@media (min-width: 900px) and (max-width: 1179px) {
+  .home .so-foot { gap: 16px; }
+  .home .so-parts {
+    flex: 0 1 50%;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .home .so-pl-col.so-pl-no { display: none; }
+  .home .so-tb { flex: 0 1 48%; }
+}
+
+/* ~768px-tall laptops: the title is near full size there, so the plate, the
+   rows and the head's air give way instead. */
+@media (min-width: 900px) and (max-height: 800px) {
+  .home .so-stage { --so-hd: 26px; --so-row: 32px; --so-plate: 80svh; }
+  .home .so-head { padding-top: 8px; }
+  .home .so-cta { margin-top: 18px; }
+}
+@media (min-width: 900px) and (max-height: 740px) {
+  .home .so-stage { --so-plate: 74svh; }
+}
+
+/* Wide enough for the plate's notes to be read (labels ≥ 8px). */
+@media (min-width: 1180px) {
+  .home .so-lead,
+  .home .so-notes { visibility: visible; }
+  .home .so-scale { display: block; }
+  .home .so-pl-a { font-size: 14px; padding: 0 12px; }
+  .home .so-pl-h { padding: 0 12px; }
+}
+
+/* The corner notes share the kicker's row: they need a landscape screen, where
+   the plate (and so the kicker over it) is narrower than the sheet. */
+@media (min-width: 1180px) and (min-aspect-ratio: 7 / 5) {
+  .home .so-corner { display: block; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home .so-pl-a,
+  .home .so-pl-ext { transition: none; }
+}

@@ -15,7 +15,13 @@ export function SmoothScroll() {
     let raf = 0;
     const loop = (t: number) => { lenis.raf(t); raf = requestAnimationFrame(loop); };
     raf = requestAnimationFrame(loop);
-    return () => { cancelAnimationFrame(raf); lenis.destroy(); };
+    // Lenis re-measures when <html> resizes, but <html> is `h-full` here and
+    // never changes size — while the pinned chapters set their stage heights
+    // after mount and grow the page. Without this its scroll limit stays at
+    // the first measurement and the page stops short of the end.
+    const ro = new ResizeObserver(() => lenis.resize());
+    ro.observe(document.body);
+    return () => { ro.disconnect(); cancelAnimationFrame(raf); lenis.destroy(); };
   }, []);
   return null;
 }

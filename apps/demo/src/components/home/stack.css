@@ -1,0 +1,605 @@
+/* Chapter 07 — the board. Every selector is scoped `.home .st-…`; colours come
+   only from the tokens the lead defines on `.home`, except the code panel,
+   which is the same near-black in both themes. Type values match caliber.css
+   exactly (kicker, title, SVG labels), so the chapters read as one book. */
+
+.home .st-stage {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: 'copy' 'art' 'code';
+  row-gap: clamp(28px, 6vw, 56px);
+  padding: clamp(96px, 12vw, 190px) var(--gutter);
+}
+
+/* ── The copy ────────────────────────────────────────────────────────────── */
+
+.home .st-copy {
+  grid-area: copy;
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+}
+
+.home .st-kicker {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0 0 12px;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: var(--fg-3);
+}
+
+.home .st-count {
+  font-variant-numeric: tabular-nums;
+  color: var(--fg-3);
+  white-space: nowrap;
+}
+.home .st-count > span { color: var(--fg); }
+
+.home .st-title {
+  margin: 0;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: clamp(26px, 3.2vw, 52px);
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+  color: var(--fg);
+  text-wrap: balance;
+}
+
+.home .st-lede {
+  margin: clamp(14px, 2svh, 22px) 0 0;
+  max-width: 42ch;
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.55;
+  letter-spacing: -0.01em;
+  color: var(--fg-2);
+}
+
+.home .st-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: clamp(18px, 2.6svh, 28px);
+}
+/* A phone fits both on one line with a little less padding. */
+@media (max-width: 420px) {
+  .home .st-links .btn { padding: 0 13px; }
+}
+
+/* ── The drawing ─────────────────────────────────────────────────────────── */
+
+/* Phone first: the art is the crop window, full bleed, and the plate inside
+   it is the whole sheet — wider than the window and shifted left — so the
+   chip and its six connectors fill the width. */
+.home .st-art {
+  --st-p: 0;
+  grid-area: art;
+  position: relative;
+  aspect-ratio: 828 / 840;
+  margin-inline: calc(-1 * var(--gutter));
+  overflow: hidden;
+}
+
+.home .st-art::before {
+  content: '';
+  position: absolute;
+  inset: -4%;
+  background: radial-gradient(closest-side, var(--bg-2), transparent);
+  pointer-events: none;
+}
+
+.home .st-art-in {
+  position: absolute;
+  inset: 0;
+}
+
+.home .st-plate {
+  position: absolute;
+  /* The sheet (VIEW, 1060 × 900 from −30, −30) placed so the crop window
+     shows grid x 86–914 and y 0–840 (CROP in the geometry): the board's edge
+     and its mounting holes fall outside it. */
+  left: -14.010%;
+  top: -3.571%;
+  width: 128.019%;
+  height: 107.143%;
+}
+
+.home .st-svg {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.home .st-ink,
+.home .st-pencil {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* The pencil underdrawing: one even hairline in one translucent layer. */
+.home .st-svg-pencil { opacity: 0.16; }
+.home .st-svg-pencil .st-pencil { stroke: var(--fg); stroke-width: 1; }
+
+/* Phone first: the sheet renders at ~0.48 px per unit here, so the
+   hierarchy is a step heavier, restored to 1.8 / 1.1 / 0.6 on wider screens. */
+.home .st-w-p { stroke-width: 2.6; }
+.home .st-w-s { stroke-width: 1.6; }
+.home .st-w-h { stroke-width: 1; }
+.home .st-t-ink { stroke: var(--fg); }
+.home .st-t-mute { stroke: var(--fg-2); }
+.home .st-t-faint { stroke: var(--line-2); }
+.home .st-t-accent { stroke: var(--accent); }
+
+/* A lit net: its trace, its vias and its connector's shell, in the accent.
+   Only the class changes; the dash the library writes is left alone. */
+.home .st-ink.is-lit {
+  stroke: var(--accent);
+  transition: stroke 0.35s var(--ease);
+}
+
+/* Phone: the three side connectors and everything that is only theirs. */
+.home .st-wide { visibility: hidden; }
+
+/* Butt caps: an undrawn leader keeps a zero-length dash at its far end, which
+   a round cap would show as a stray dot. */
+.home .st-lead { stroke-linecap: butt; }
+.home .st-lead,
+.home .st-cut,
+.home .st-annot,
+.home .st-dot { visibility: hidden; }
+
+/* Set in type, not drawn: each fades in once the stroke it belongs to is inked. */
+.home .st-note {
+  opacity: clamp(0, calc((var(--st-p) - var(--st-at, 1)) * 25), 1);
+}
+
+.home .st-hit {
+  fill: transparent;
+  pointer-events: all;
+  cursor: pointer;
+}
+
+.home .st-name,
+.home .st-clabel,
+.home .st-annot,
+.home .st-marking,
+.home .st-silk {
+  font-family: var(--mono);
+}
+
+/* Engraved on each connector's shell. */
+.home .st-name {
+  font-size: 19px;
+  letter-spacing: 0.04em;
+  fill: var(--fg-2);
+  transition: fill 0.35s var(--ease);
+}
+.home .st-conn:hover .st-name,
+.home .st-conn.is-lit .st-name { fill: var(--fg); }
+
+.home .st-clabel { font-size: 18px; fill: var(--fg-2); }
+.home .st-clabel-t {
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  fill: var(--fg-3);
+}
+/* The shared package name steps back, so each entry reads as its own word. */
+.home .st-pkg { fill: var(--fg-3); }
+.home .st-conn.is-lit .st-clabel-v,
+.home .st-conn.is-lit .st-short { fill: var(--accent); }
+.home .st-conn.is-lit .st-pkg { fill: var(--fg-3); }
+
+/* Phone: a short entry under each connector in place of the full label. */
+.home .st-full { display: none; }
+.home .st-short { font-size: 22px; }
+
+/* The package marking. Phone sizes keep every line at 8px or more in the
+   crop (~0.45 px per unit); the tablet block restores chapter 02's values. */
+.home .st-marking { fill: var(--fg-2); }
+.home .st-marking-t { font-size: 18px; letter-spacing: 0.04em; }
+.home .st-marking-v { font-size: 21px; fill: var(--fg); }
+.home .st-silk { font-size: 18px; letter-spacing: 0.1em; fill: var(--fg-3); }
+
+.home .st-annot { font-size: 18px; fill: var(--fg-2); }
+.home .st-annot-t {
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  fill: var(--fg-3);
+}
+
+.home .st-dot,
+.home .st-drill,
+.home .st-pin1 { fill: var(--fg); }
+.home .st-drill.is-lit { fill: var(--accent); }
+.home .st-fid { fill: var(--fg-2); }
+
+/* ── The pulse on a lit net ──────────────────────────────────────────────── */
+
+.home .st-pulse-g {
+  opacity: clamp(0, calc((var(--st-p) - var(--st-at, 1)) * 25), 1);
+  pointer-events: none;
+}
+
+/* The net highlight, as an EDA tool shows a selected net. */
+.home .st-halo {
+  fill: none;
+  stroke: var(--accent-2);
+  stroke-width: 12;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.home .st-pulse {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 3.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: var(--st-dash) 1000;
+  stroke-dashoffset: var(--st-from);
+  animation: st-run 2s linear infinite both;
+}
+.home .st-pulse-glow {
+  stroke-width: 12;
+  opacity: 0.55;
+}
+.home .st-pulse-loop {
+  stroke-dasharray: var(--st-dash) var(--st-gap);
+  animation-name: st-loop;
+  animation-fill-mode: none;
+}
+
+.home .st-art[data-idle] .st-pulse { animation-play-state: paused; }
+
+@keyframes st-run {
+  from { stroke-dashoffset: var(--st-from); }
+  to { stroke-dashoffset: var(--st-to); }
+}
+@keyframes st-loop {
+  from { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: -100; }
+}
+
+/* ── Tabs and the code panel ─────────────────────────────────────────────── */
+
+.home .st-code {
+  grid-area: code;
+  min-width: 0;
+}
+
+/* Phone: one row that scrolls sideways, bleeding to the screen's edges. */
+.home .st-tabs {
+  display: flex;
+  margin: 0 calc(-1 * var(--gutter)) 14px;
+  padding: 0 var(--gutter);
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 var(--gutter), #000 calc(100% - 40px), transparent);
+  mask-image: linear-gradient(to right, transparent, #000 var(--gutter), #000 calc(100% - 40px), transparent);
+}
+.home .st-tabs::-webkit-scrollbar { display: none; }
+
+.home .st-tab {
+  position: relative;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 13px 13px 14px;
+  border: 0;
+  background: none;
+  font: 500 11px/1 var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.3s var(--ease);
+}
+.home .st-tab:first-child { padding-left: 0; }
+.home .st-tab:hover { color: var(--fg-2); }
+.home .st-tab[aria-selected='true'] { color: var(--fg); }
+
+/* Each tab is a pin: an outlined square that fills with the accent when on. */
+.home .st-tab i {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border: 1px solid currentColor;
+  border-radius: 1px;
+  transition: background 0.3s var(--ease), border-color 0.3s var(--ease);
+}
+.home .st-tab[aria-selected='true'] i {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.home .st-tab::after {
+  content: '';
+  position: absolute;
+  left: 13px;
+  right: 13px;
+  bottom: 0;
+  height: 1px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform 0.45s var(--ease);
+}
+.home .st-tab:first-child::after { left: 0; }
+.home .st-tab[aria-selected='true']::after { transform: scaleX(1); }
+
+.home .st-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: #0e0e10;
+  color: #ece8e0;
+  border: 1px solid rgba(236, 232, 224, 0.1);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 40px 80px -48px rgba(0, 0, 0, 0.55);
+}
+
+.home .st-panel-head {
+  display: flex;
+  align-items: stretch;
+  min-height: 42px;
+  background: #131316;
+  border-bottom: 1px solid rgba(236, 232, 224, 0.08);
+}
+
+/* The file's tab, as an editor draws it: the panel's own colour, one hairline
+   of accent along its top. */
+.home .st-file {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0 18px 0 16px;
+  margin-bottom: -1px;
+  background: #0e0e10;
+  border-right: 1px solid rgba(236, 232, 224, 0.08);
+  font: 500 12px/1 var(--mono);
+  letter-spacing: 0.01em;
+  color: #ece8e0;
+  white-space: nowrap;
+}
+.home .st-file::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  background: var(--accent);
+}
+.home .st-file i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.home .st-panel-entry {
+  flex: 1;
+  min-width: 0;
+  align-self: center;
+  padding: 0 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font: 11px/1 var(--mono);
+  letter-spacing: 0.02em;
+  color: #66635d;
+}
+
+.home .st-copybtn {
+  flex: none;
+  align-self: center;
+  height: 26px;
+  margin-right: 10px;
+  padding: 0 12px;
+  border: 1px solid rgba(236, 232, 224, 0.18);
+  border-radius: 999px;
+  background: transparent;
+  font: 500 10px/1 var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #ece8e0;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+.home .st-copybtn:hover {
+  border-color: rgba(236, 232, 224, 0.5);
+  background: rgba(236, 232, 224, 0.06);
+}
+
+.home .st-pre {
+  flex: 1 0 auto;
+  margin: 0;
+  padding: 16px 0 14px;
+  min-height: calc(var(--st-lines) * 1.7em + 30px);
+  overflow-x: auto;
+  font: 13px/1.7 var(--mono);
+  color: #a19d95;
+  tab-size: 2;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(236, 232, 224, 0.15) transparent;
+}
+.home .st-pre code { display: block; min-width: max-content; font: inherit; }
+.home .st-ln {
+  display: block;
+  padding-right: 16px;
+  white-space: pre;
+  animation: st-line 0.5s var(--ease) both;
+  animation-delay: calc(var(--i) * 16ms);
+}
+@keyframes st-line {
+  from { opacity: 0; transform: translateY(4px); }
+}
+.home .st-num {
+  display: inline-block;
+  width: 2.7em;
+  padding-right: 1.1em;
+  text-align: right;
+  color: var(--fg-3);
+  user-select: none;
+}
+/* The status bar, as an editor draws one: the one install every tab shares,
+   and the parts this snippet lights on the board. */
+.home .st-panel-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  min-height: 34px;
+  padding: 0 16px;
+  background: #131316;
+  border-top: 1px solid rgba(236, 232, 224, 0.08);
+  font: 11px/1 var(--mono);
+  letter-spacing: 0.02em;
+  color: #a19d95;
+  white-space: nowrap;
+}
+.home .st-foot-cmd > span { color: #66635d; }
+.home .st-foot-net {
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+}
+.home .st-foot-k {
+  margin-right: 4px;
+  text-transform: uppercase;
+  color: #66635d;
+}
+
+.home .st-k-f,
+.home .st-k-g,
+.home .st-k-n { color: #ece8e0; }
+.home .st-k-k { color: #7f7a72; }
+.home .st-k-s { color: #d4c9b5; }
+.home .st-k-e { color: var(--accent); }
+.home .st-k-c { color: #5f5c56; }
+
+/* ── Tablet and up: the whole sheet, with its notes ──────────────────────── */
+
+@media (min-width: 700px) {
+  /* Never taller than the viewport, so the whole board can be seen inking. */
+  .home .st-art {
+    width: min(100%, calc((100svh - 48px) * 1060 / 900));
+    max-width: 1060px;
+    justify-self: center;
+    aspect-ratio: 1060 / 900;
+    margin-inline: 0;
+    overflow: visible;
+  }
+  .home .st-plate {
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .home .st-w-p { stroke-width: 1.8; }
+  .home .st-w-s { stroke-width: 1.1; }
+  .home .st-w-h { stroke-width: 0.6; }
+  .home .st-svg-pencil .st-pencil { stroke-width: 0.8; }
+
+  .home .st-wide,
+  .home .st-lead,
+  .home .st-cut,
+  .home .st-annot,
+  .home .st-dot { visibility: visible; }
+
+  .home .st-full { display: inline; }
+  .home .st-short { display: none; }
+
+  .home .st-name {
+    font-size: 15px;
+    letter-spacing: 0.16em;
+  }
+  .home .st-marking-t {
+    font-size: 13px;
+    letter-spacing: 0.16em;
+  }
+  .home .st-marking-v { font-size: 18px; }
+  .home .st-silk { font-size: 13px; }
+
+  .home .st-lede { font-size: 16px; }
+
+  .home .st-stage {
+    max-width: calc(1000px + 2 * var(--gutter));
+    margin-inline: auto;
+  }
+
+  /* The tabs become a pin table: four to a row, hairline rules between rows. */
+  .home .st-tabs {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin: 0 0 16px;
+    padding: 0;
+    overflow: visible;
+    border-bottom: 1px solid var(--line);
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .home .st-tab,
+  .home .st-tab:first-child {
+    padding: 14px 10px 15px 0;
+    border-top: 1px solid var(--line);
+  }
+  .home .st-tab::after,
+  .home .st-tab:first-child::after {
+    left: 0;
+    right: 12px;
+    bottom: -1px;
+  }
+}
+
+/* ── Desktop: copy and code left, the board right ────────────────────────── */
+
+@media (min-width: 1400px) {
+  .home .st-stage {
+    max-width: none;
+    grid-template-columns: 548px minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      'copy art'
+      'code art';
+    /* A tight gutter: every pixel goes to the board, whose 13-unit label
+       titles would otherwise fall under 8px at 1400. */
+    column-gap: clamp(40px, 3.2vw, 80px);
+    row-gap: 40px;
+    align-items: start;
+    /* Content caps at 1560px, as chapter 02 does. */
+    padding-inline: max(var(--gutter), calc((100% - 1560px) / 2));
+  }
+  .home .st-art {
+    align-self: center;
+    max-width: none;
+  }
+  /* The copy spans the whole column, so the stroke counter ends on the same
+     line as the pin table and the code panel under it. */
+  .home .st-copy { max-width: none; }
+  .home .st-code { align-self: end; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home .st-pulse { display: none; }
+  .home .st-ln { animation: none; }
+  .home .st-ink.is-lit,
+  .home .st-name,
+  .home .st-tab,
+  .home .st-tab i,
+  .home .st-tab::after { transition: none; }
+}

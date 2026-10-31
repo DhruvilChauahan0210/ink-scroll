@@ -1,0 +1,379 @@
+/* Chapter 06 — the instrument panel. Every selector is scoped `.home .ga-…`;
+   colours come only from the tokens the lead defines on `.home`. Type values
+   for kicker, title, code and labels are chapter 02's, so the book reads as one. */
+
+/* Content caps at 1560px, chapter 02's measure, so the two chapters share
+   their left edge on a wide screen. */
+.home .sec.ga-stage {
+  position: relative;
+  padding: clamp(88px, 11vw, 176px) max(var(--gutter), calc((100% - 1560px) / 2));
+  overflow-x: clip;
+}
+
+/* ── Head: kicker across, title left, the library call right ─────────────── */
+
+.home .ga-head {
+  display: grid;
+  margin: 0 0 clamp(40px, 6vw, 96px);
+}
+
+.home .ga-kicker {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0 0 12px;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: var(--fg-3);
+}
+
+.home .ga-count {
+  font-variant-numeric: tabular-nums;
+  color: var(--fg-3);
+  white-space: nowrap;
+}
+.home .ga-count > span { color: var(--fg); }
+
+.home .ga-title {
+  margin: 0;
+  max-width: 620px;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: clamp(26px, 3.2vw, 52px);
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+  color: var(--fg);
+  text-wrap: balance;
+}
+
+.home .ga-code {
+  display: block;
+  margin-top: clamp(18px, 3vw, 28px);
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  line-height: 1.7;
+  color: var(--fg-3);
+  white-space: nowrap;
+}
+.home .ga-c-l,
+.home .ga-c-o { display: block; }
+.home .ga-c-in { padding-left: 2ch; }
+/* On a phone the trigger's `end` drops under its `start` ("trigger: { " is
+   11 characters), until the column is wide enough for one line. */
+.home .ga-c-t { display: block; padding-left: 11ch; }
+.home .ga-c-k { color: var(--fg-2); }
+.home .ga-c-fn { color: var(--fg); }
+.home .ga-c-str { color: var(--fg-2); }
+.home .ga-c-num { color: var(--fg); }
+
+/* ── The banks ───────────────────────────────────────────────────────────── */
+
+.home .ga-bank {
+  --ga-p: 0;
+  position: relative;
+}
+.home .ga-bank-reads { margin-top: clamp(44px, 6vw, 96px); }
+
+.home .ga-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  row-gap: 30px;
+}
+
+/* Phone first: the dials two by two, the third centred under the pair. */
+.home .ga-grid-dials {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 10px;
+  row-gap: 26px;
+}
+.home .ga-grid-dials .ga-fig-gauge:nth-child(3) {
+  grid-column: 1 / -1;
+  justify-self: center;
+  width: calc(50% - 5px);
+}
+
+.home .ga-fig {
+  position: relative;
+  min-width: 0;
+  margin: 0;
+}
+.home .ga-fig-meter {
+  justify-self: center;
+  width: min(100%, 460px);
+}
+.home .ga-fig-plate {
+  justify-self: center;
+  width: min(100%, 300px);
+}
+
+.home .ga-art {
+  position: relative;
+  aspect-ratio: var(--ga-ar);
+  /* The label band across the top only holds the leader notes, which hide
+     below 1180px: crop it away there. Margin percentages are of the width. */
+  margin-top: calc(var(--ga-crop) * -1);
+  margin-bottom: calc(var(--ga-cropb) * -1);
+}
+
+.home .ga-art::before {
+  content: '';
+  position: absolute;
+  inset: -4% -6%;
+  background: radial-gradient(closest-side at var(--ga-gx) var(--ga-gy), var(--bg-2), transparent);
+  pointer-events: none;
+}
+
+.home .ga-svg {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.home .ga-ink,
+.home .ga-pencil {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* The pencil underdrawing: one even hairline in one translucent layer. */
+.home .ga-svg-pencil {
+  position: absolute;
+  inset: 0;
+  opacity: 0.16;
+}
+.home .ga-svg-pencil .ga-pencil { stroke: var(--fg); stroke-width: 1; }
+/* Moving parts at rest, as a draftsman's phantom line. */
+.home .ga-svg-pencil .ga-phantom { stroke-dasharray: 9 3 2 3; }
+
+/* Phone first: a step heavier, restored to the reference weights on desktop. */
+.home .ga-w-p { stroke-width: 2.4; }
+.home .ga-w-s { stroke-width: 1.5; }
+.home .ga-w-h { stroke-width: 0.9; }
+.home .ga-t-ink { stroke: var(--fg); }
+.home .ga-t-mute { stroke: var(--fg-2); }
+.home .ga-t-faint { stroke: var(--line-2); }
+.home .ga-t-accent { stroke: var(--accent); }
+
+/* A needle and the caps are solid: they hide the dial they pass over, once
+   their outline is inked (before that, the phantom beneath must show). */
+.home .ga-solid {
+  fill: var(--bg-2);
+  fill-opacity: clamp(0, calc((var(--ga-p) - var(--ga-at, 1)) * 25), 1);
+}
+.home .ga-solid-a { fill: var(--accent); }
+
+.home .ga-lead,
+.home .ga-notes { visibility: hidden; }
+/* Butt caps: an undrawn leader keeps a zero-length dash at its far end. */
+.home .ga-lead { stroke-linecap: butt; }
+
+/* Type is set, not drawn: each piece fades in once its stroke is inked. */
+.home .ga-note,
+.home .ga-e,
+.home .ga-digits,
+.home .ga-cap {
+  opacity: clamp(0, calc((var(--ga-p) - var(--ga-at, 1)) * 25), 1);
+}
+
+.home .ga-dot { fill: var(--fg); }
+.home .ga-dot-accent { fill: var(--accent); }
+.home .ga-label {
+  font-family: var(--mono);
+  fill: var(--fg-2);
+}
+.home .ga-label-t {
+  letter-spacing: 0.16em;
+  fill: var(--fg-3);
+}
+.home .ga-dim {
+  font-family: var(--mono);
+  fill: var(--fg-2);
+}
+/* Chapter 02's notes render at 13 / 18 units of a 1000-unit drawing shown
+   ~836px wide on a 1440 screen. Each instrument is shown at its own scale, so
+   each gets the units that land on the same pixels. */
+.home .ga-fig-gauge .ga-label-t { font-size: 10px; }
+.home .ga-fig-gauge .ga-label-v { font-size: 13.75px; }
+/* Chapter 02 sets its dimension a unit under its notes: 17 against 18. */
+.home .ga-fig-gauge .ga-dim { font-size: 13px; }
+.home .ga-fig-odo .ga-label-t,
+.home .ga-fig-meter .ga-label-t { font-size: 11px; }
+.home .ga-fig-odo .ga-label-v,
+.home .ga-fig-meter .ga-label-v { font-size: 15px; }
+
+/* Engraving. Sizes are in each drawing's own units, set per breakpoint so the
+   type never renders under 8px. */
+.home .ga-e {
+  font-family: var(--mono);
+  fill: var(--fg-2);
+  font-variant-numeric: tabular-nums;
+}
+.home .ga-e-num-end { fill: var(--fg); }
+.home .ga-e-plate,
+.home .ga-e-unit,
+.home .ga-e-small { letter-spacing: 0.18em; fill: var(--fg-3); }
+.home .ga-e-plate { fill: var(--fg-2); }
+
+.home .ga-fig-gauge .ga-e-num,
+.home .ga-fig-gauge .ga-e-num-end { font-size: 22px; }
+/* A phone shows the dial at ~165px: only the key numerals have room. */
+.home .ga-fig-gauge .ga-e-num:not(.ga-e-key) { display: none; }
+.home .ga-fig-gauge .ga-e-plate { font-size: 20px; letter-spacing: 0.1em; }
+.home .ga-fig-gauge .ga-e-unit { display: none; }
+.home .ga-fig-meter .ga-e-num { font-size: 17px; }
+.home .ga-fig-meter .ga-e-unit { font-size: 14px; letter-spacing: 0.2em; }
+.home .ga-fig-odo .ga-e-small { font-size: 19px; letter-spacing: 0.12em; }
+.home .ga-fig-plate .ga-e-plate { font-size: 17px; letter-spacing: 0.16em; }
+
+/* The odometer's digits: set in the mono face, rolled by onProgress. */
+.home .ga-drum text {
+  font-family: var(--mono);
+  font-size: 76px;
+  font-weight: 400;
+  fill: var(--fg);
+}
+.home .ga-drum-lead text { fill: var(--fg-3); }
+
+/* ── Captions ────────────────────────────────────────────────────────────── */
+
+.home .ga-cap {
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+  margin-top: 8px;
+  font-family: var(--mono);
+  text-align: center;
+}
+.home .ga-cap-t {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+.home .ga-cap-v {
+  font-size: 11.5px;
+  color: var(--fg-2);
+  font-variant-numeric: tabular-nums;
+}
+.home .ga-cap-v b { font-weight: 400; color: var(--fg); }
+
+/* Wide enough for the trigger object and the options to share a line. */
+@media (min-width: 600px) {
+  .home .ga-c-o,
+  .home .ga-c-t { display: inline; padding-left: 0; }
+}
+
+/* ── Tablet and up: one row of dials, then the odometer beside the meter ─── */
+
+@media (min-width: 720px) {
+  .home .ga-grid-dials {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: 0;
+  }
+  .home .ga-grid-dials .ga-fig-gauge:nth-child(3) {
+    grid-column: auto;
+    justify-self: stretch;
+    width: auto;
+  }
+
+  .home .ga-grid-reads {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    row-gap: clamp(36px, 4.5vw, 72px);
+  }
+  /* Top-aligned: the two housings start on one line, and so do their notes. */
+  .home .ga-fig-odo { grid-column: 1 / span 7; align-self: start; }
+  .home .ga-fig-meter {
+    grid-column: 8 / span 5;
+    justify-self: stretch;
+    width: auto;
+    align-self: start;
+    padding-left: clamp(12px, 2vw, 32px);
+  }
+  /* The maker's plate signs the whole panel, centred under it on a hairline
+     that runs out to both edges as the plate is inked. */
+  .home .ga-fig-plate {
+    --ga-pw: min(28%, 440px);
+    grid-column: 1 / -1;
+    justify-self: stretch;
+    width: auto;
+  }
+  .home .ga-fig-plate .ga-art {
+    width: var(--ga-pw);
+    margin-inline: auto;
+  }
+  .home .ga-fig-plate::before,
+  .home .ga-fig-plate::after {
+    content: '';
+    position: absolute;
+    top: calc(50% - 4px);
+    height: 9px;
+    background: linear-gradient(var(--line-2), var(--line-2)) center / 100% 1px no-repeat;
+    transform: scaleX(clamp(0, calc((var(--ga-p) - var(--ga-at, 1)) * 3), 1));
+    pointer-events: none;
+  }
+  .home .ga-fig-plate::before {
+    left: 0;
+    right: calc(50% + var(--ga-pw) / 2 + 24px);
+    border-left: 1px solid var(--line-2);
+    transform-origin: 100% 50%;
+  }
+  .home .ga-fig-plate::after {
+    left: calc(50% + var(--ga-pw) / 2 + 24px);
+    right: 0;
+    border-right: 1px solid var(--line-2);
+    transform-origin: 0 50%;
+  }
+
+  .home .ga-fig-gauge .ga-e-num,
+  .home .ga-fig-gauge .ga-e-num-end { font-size: 14.5px; }
+  .home .ga-fig-gauge .ga-e-num:not(.ga-e-key) { display: inline; }
+  .home .ga-fig-gauge .ga-e-plate { font-size: 15px; letter-spacing: 0.16em; }
+  .home .ga-fig-meter .ga-e-num { font-size: 19px; }
+  .home .ga-fig-meter .ga-e-unit { font-size: 16px; letter-spacing: 0.16em; }
+  .home .ga-fig-odo .ga-e-small { font-size: 16px; letter-spacing: 0.18em; }
+  .home .ga-fig-plate .ga-e-plate { font-size: 16px; letter-spacing: 0.2em; }
+
+  .home .ga-cap { margin-top: 4px; }
+  .home .ga-cap-v { font-size: 12px; }
+}
+
+@media (min-width: 900px) {
+  .home .ga-code { font-size: 12px; }
+
+  .home .ga-w-p { stroke-width: 1.8; }
+  .home .ga-w-s { stroke-width: 1.1; }
+  .home .ga-w-h { stroke-width: 0.6; }
+  .home .ga-svg-pencil .ga-pencil { stroke-width: 0.8; }
+}
+
+/* Wide enough for the leader notes to be read: the label band comes back,
+   and the head opens into a title on the left and the call on the right. */
+@media (min-width: 1180px) {
+  .home .ga-head {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    column-gap: clamp(32px, 5vw, 96px);
+  }
+  .home .ga-kicker { grid-column: 1 / -1; }
+  .home .ga-code { margin-top: 0; }
+
+  .home .ga-art { margin-block: 0; }
+  .home .ga-fig-gauge .ga-cap { margin-top: 10px; }
+  .home .ga-lead,
+  .home .ga-notes { visibility: visible; }
+
+  .home .ga-fig-gauge .ga-e-num,
+  .home .ga-fig-gauge .ga-e-num-end { font-size: 13px; }
+  .home .ga-fig-gauge .ga-e-plate { font-size: 12px; letter-spacing: 0.22em; }
+  .home .ga-fig-gauge .ga-e-unit { display: inline; font-size: 9.5px; letter-spacing: 0.24em; }
+  .home .ga-fig-meter .ga-e-num { font-size: 14.5px; }
+  .home .ga-fig-meter .ga-e-unit { font-size: 11px; letter-spacing: 0.24em; }
+  .home .ga-fig-odo .ga-e-small { font-size: 11px; letter-spacing: 0.26em; }
+  .home .ga-fig-plate .ga-e-plate { font-size: 15px; letter-spacing: 0.22em; }
+}

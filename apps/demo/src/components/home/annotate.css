@@ -1,38 +1,152 @@
-/* 04 — Annotations: a paragraph marked up in editor's red pen. Prefix an-. */
+/* Chapter 03 — the proof sheet. Every selector is scoped `.home .an-…`;
+   colours come only from the tokens the lead defines on `.home`. */
 
-.home .an {
+.home .an-stage {
+  --an-p: 0;
   position: relative;
-  padding: clamp(96px, 16vh, 184px) var(--gutter) clamp(112px, 18vh, 208px);
+  height: 280vh;
 }
 
-.home .an-label {
-  margin: 0 0 clamp(28px, 4vw, 52px);
-  font: 500 11px/1.4 var(--mono);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+.home .an-pin {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--nav-h, 64px) var(--gutter) clamp(12px, 2.4svh, 28px);
+  box-sizing: border-box;
+}
+
+/* The ink lives in a layer of its own over the whole stage — the same box as
+   the stage, so the library's trigger is the stage's — with a sticky child
+   that lines up with the pin exactly. */
+.home .an-draw {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.home .an-draw-pin {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+}
+
+/* ── The frame: head, plate, code — one column the width of the sheet ───── */
+
+.home .an-frame {
+  /* Phone first. */
+  --an-fs: clamp(18px, min(6.2vw, 3.05svh), 25px);
+  --an-bleed: 16px;
+  --an-pt: 62px;
+  --an-pl: 14px;
+  --an-pr: 18px;
+  --an-pb: calc(1.3 * var(--an-fs) + 46px);
+  position: relative;
+  width: 100%;
+  max-width: calc(var(--an-fs) * 20 + var(--an-pl) + var(--an-pr) + 2 * var(--an-bleed));
+  margin-inline: auto;
+}
+
+/* On a phone the head and the code sit on the plate's outer edge, where the
+   crop marks end; on a wide screen they line up with the trim. */
+.home .an-head {
+  margin-bottom: clamp(2px, 1svh, 12px);
+}
+
+.home .an-kicker {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 2px 12px;
+  margin: 0 0 12px;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.02em;
   color: var(--fg-3);
 }
-.home .an-label b { color: var(--accent); font-weight: 500; }
 
-.home .an-block {
-  position: relative;
-  font-size: clamp(26px, 3vw, 46px);
-  max-width: 22em;
+.home .an-kicker > span { white-space: nowrap; }
+.home .an-count {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+  color: var(--fg-3);
+  white-space: nowrap;
 }
+.home .an-count > span { color: var(--fg); }
 
-.home .an-p {
+.home .an-title {
   margin: 0;
   font-family: var(--sans);
   font-weight: 500;
-  font-size: 1em;
+  font-size: clamp(26px, 3.2vw, 52px);
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+  color: var(--fg);
+  text-wrap: balance;
+}
+
+.home .an-plate {
+  position: relative;
+  padding: var(--an-bleed);
+}
+/* A soft vignette behind the sheet, no box. */
+.home .an-plate::before {
+  content: '';
+  position: absolute;
+  inset: -4% -2%;
+  background: radial-gradient(closest-side, var(--bg-2), transparent);
+  pointer-events: none;
+}
+
+.home .an-sheet {
+  position: relative;
+  padding: var(--an-pt) var(--an-pr) var(--an-pb) var(--an-pl);
+}
+
+.home .an-folio {
+  position: absolute;
+  top: 11px;
+  left: var(--an-pl);
+  right: 10px;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 9px;
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+  color: var(--fg-3);
+  white-space: nowrap;
+  opacity: clamp(0, calc((var(--an-p) - var(--an-at, -1)) * 40), 1);
+}
+
+.home .an-p {
+  position: relative;
+  margin: 0;
+  max-width: 20em;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: var(--an-fs);
   line-height: 1.28;
   letter-spacing: -0.02em;
   color: var(--fg-2);
   text-wrap: pretty;
 }
 
-/* A marked phrase never breaks across lines: its mark is one shape. */
-.home .an-mk { white-space: nowrap; color: var(--fg); }
+/* A marked phrase never breaks across lines: its mark is one shape. It
+   lights up when the editor's mark lands on it. */
+.home .an-mk {
+  white-space: nowrap;
+  color: var(--fg-2);
+  transition: color 0.6s var(--ease);
+}
+.home .an-mk.is-on { color: var(--fg); }
 .home .an-mk--mit { padding-right: 0.13em; }
 
 /* Zero-size inline-block: its top edge sits exactly on the baseline. */
@@ -43,11 +157,25 @@
   vertical-align: baseline;
 }
 
-.home .an-ink {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
+.home .an-code {
+  display: block;
+  margin: clamp(2px, 1svh, 10px) 0 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  line-height: 1.7;
+  color: var(--fg-3);
+  white-space: nowrap;
 }
+.home .an-c-l { display: block; }
+.home .an-c-in { padding-left: 2ch; }
+.home .an-c-fn { color: var(--fg); }
+.home .an-c-str { color: var(--fg-2); }
+.home .an-c-num { color: var(--fg); }
+.home .an-c-cm { display: none; color: var(--fg-3); }
+
+/* ── The drawing ─────────────────────────────────────────────────────────── */
 
 .home .an-svg {
   position: absolute;
@@ -55,30 +183,139 @@
   top: 0;
   overflow: visible;
   fill: none;
-  stroke: var(--accent);
+}
+
+.home .an-svg-pencil { opacity: 0.16; }
+.home .an-pencil {
+  fill: none;
+  stroke: var(--fg);
+  stroke-width: 0.8;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
-/* Hidden until the engine takes the dashes over (it overrides these inline). */
-.home .an-svg path {
+.home .an-ink {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  /* Hidden until the engine takes the dashes over (it sets these inline). */
   stroke-dasharray: 100000;
   stroke-dashoffset: 100000;
 }
-.home .an-svg .an-rest { visibility: hidden; }
+.home .an-rest { visibility: hidden; }
+/* Butt caps: an undrawn leader keeps a zero-length dash at its far end, which
+   a round cap would show as a stray dot; and the pieces of a long straight
+   stroke meet end to end, where two round caps would leave a bright seam. */
+.home .an-butt { stroke-linecap: butt; }
 
-.home .an-note {
-  position: absolute;
-  margin: 0;
-  white-space: nowrap;
-  font: 400 clamp(11.5px, 0.9vw, 13px)/1.5 var(--mono);
-  letter-spacing: 0.01em;
-  color: var(--accent);
-  pointer-events: none;
-  will-change: opacity, transform;
+.home .an-w-p { stroke-width: 1.3; }
+.home .an-w-s { stroke-width: 0.9; }
+.home .an-w-h { stroke-width: 0.6; }
+.home .an-w-pen { stroke-width: var(--an-pen); }
+.home .an-w-thin { stroke-width: var(--an-thin); }
+.home .an-w-dot { stroke-width: calc(var(--an-pen) * 1.7); }
+.home .an-t-ink { stroke: var(--fg); }
+.home .an-t-mute { stroke: var(--fg-2); }
+.home .an-t-faint { stroke: var(--line-2); }
+.home .an-t-accent { stroke: var(--accent); }
+
+/* Type on the drawing fades in once the stroke it belongs to is inked. */
+.home .an-lab {
+  opacity: clamp(0, calc((var(--an-p) - var(--an-at, 1)) * 40), 1);
 }
-.home .an-note.is-narrow { text-align: right; }
+.home .an-patch { fill: var(--accent-2); stroke: none; }
+.home .an-nib { transition: opacity 0.3s var(--ease); }
+.home .an-nib-core { fill: #fff; }
+html:not(.dark) .home .an-nib-core { fill: var(--accent); }
+.home .an-dot { fill: var(--fg); }
+.home .an-num {
+  font-family: var(--mono);
+  font-size: 8.5px;
+  letter-spacing: 0.04em;
+  fill: var(--fg-3);
+}
+.home .an-dim {
+  font-family: var(--mono);
+  font-size: var(--an-dfs, 11px);
+  fill: var(--fg-2);
+}
+/* Set as the calibre's notes: a small spaced title over the value. Sizes are
+   written on the SVG from the paragraph's size, by the same functions that
+   fitted the notes into the margin. */
+.home .an-note {
+  font-family: var(--mono);
+  font-size: var(--an-nfs, 14.4px);
+  fill: var(--fg-2);
+}
+.home .an-note-t {
+  font-size: calc(var(--an-nfs, 14.4px) * 0.72);
+  letter-spacing: 0.16em;
+  fill: var(--fg-3);
+}
+.home .an-pen-note {
+  font-family: var(--mono);
+  font-size: var(--an-pfs, 11.5px);
+  fill: var(--accent);
+}
+
+/* ── Tablet: the phone's sheet, but with a margin wide enough for the notes
+   to sit beside the lines they refer to ─────────────────────────────────── */
+
+@media (min-width: 640px) and (max-width: 899.98px) {
+  .home .an-frame {
+    --an-fs: clamp(18px, min(3vw, 3.05svh), 25px);
+    /* Head room for the type note, which rises above line 1 to the ruler. */
+    --an-pt: 86px;
+    --an-pl: 26px;
+    --an-pr: 172px;
+  }
+}
+
+/* ── Desktop: the sheet large and centred, the margin wide ──────────────── */
+
+@media (min-width: 900px) {
+  .home .an-frame {
+    --an-fs: clamp(22px, min(2.75vw, 4.4svh), 48px);
+    --an-bleed: 46px;
+    --an-pt: 124px;
+    --an-pl: 78px;
+    --an-pr: clamp(200px, 19vw, 300px);
+    --an-pb: 82px;
+  }
+
+  /* The kicker runs the trim's full width, its count on the trim's right
+     edge, as the code line under the sheet does. */
+  .home .an-head {
+    margin-bottom: clamp(0px, 0.6svh, 8px);
+    padding: 0 var(--an-bleed);
+  }
+
+  .home .an-folio {
+    top: 18px;
+    right: 22px;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+  }
+
+  .home .an-num { font-size: 9.5px; }
+
+  .home .an-w-p { stroke-width: 1.5; }
+  .home .an-w-s { stroke-width: 1; }
+
+  .home .an-code {
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    margin-inline: var(--an-bleed);
+    font-size: 12px;
+  }
+  .home .an-c-l { display: inline; }
+  .home .an-c-in { padding: 0 0.6ch; }
+  .home .an-c-cm { display: inline; }
+}
 
 @media (prefers-reduced-motion: reduce) {
-  .home .an-note { transform: none !important; }
+  .home .an-stage { --an-p: 1; }
+  .home .an-mk { transition: none; }
+  .home .an-nib { display: none; }
 }

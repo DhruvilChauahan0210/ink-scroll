@@ -10,21 +10,35 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 - **Homepage redesign — every line is a real use case.** A new `/` where
   nothing is decoration: each drawing is something people build with the
-  library, inked by the library. The hero writes the word *draw* in one
-  continuous hand-lettered stroke with a glowing nib riding the pen (the
-  nib follows the engine's own `onProgress` via `getPointAtLength`); a
-  gallery draws a signature, a route map, a chart, a product sketch, a logo
-  and a system diagram as each tile arrives; a pinned chapter inks a
-  watchmaker's drawing of a mechanical movement — case, bridges, gear train,
-  escapement, hairspring — stroke by stroke under your scroll; a paragraph
-  gets marked up in editor's red pen as you read it; and the GSAP comparison
-  shows the same effect written both ways (17 lines vs 7) before drawing the
-  download weights to length. The toolkit rail, numbers, framework tabs and
-  drop-in rows stay, restyled; the page signs off by writing *draw* again as
-  you reach the end. Geist throughout, ink on near-black or ink on paper,
-  one accent (editor's red). Lenis smooth scroll (demo-only dependency).
-  Styles scoped under `.home`; each art component carries its own scoped
-  CSS. The mascot stays off `/`. The examples count reads `EXAMPLE_COUNT`.
+  library, inked by the library over a faint pencil underdrawing, annotated
+  like a blueprint with real values. The hero writes the word *draw* in one
+  continuous hand-lettered stroke with a glowing nib riding the pen (the nib
+  follows the engine's own `onProgress` via `getPointAtLength`). Then:
+  01 a gallery that draws a signature, a route map, a chart, a product
+  sketch, a logo and a system diagram as each tile arrives; 02 a pinned
+  watchmaker's drawing of a mechanical movement inked stroke by stroke;
+  03 a printer's proof sheet — crop marks, ruler, registration targets —
+  marked up in editor's red pen as you read; 04 GSAP vs svg-scroll-draw on a
+  precision balance that tips as the weights land (47.5 KB of GSAP +
+  ScrollTrigger + DrawSVG against 10.2 KB), beside the same effect written
+  both ways (17 lines vs 7); 05 the eight APIs as blueprint plates on a
+  pinned sideways rail (a pen nib, a keyframe track, an exploded word, a
+  pushpin, parallax planes, a film strip, an odometer, snap slots), each
+  inked as it crosses the centre; 06 an instrument panel — Chromium, Firefox
+  and WebKit gauges sweeping to 195, an odometer counting the unit tests, a
+  size meter settling under its red CI budget line; 07 a circuit board that
+  wires the core to every framework entry, with framework tabs that light
+  their trace; 08 each drop-in drawn as the plug you have today above the
+  one that replaces it — same pins, a body drawn to scale by KB — inked in
+  half a screen, no pinning; and a sign-off that is an engineering drawing
+  sheet: zone borders, the hand-lettered *draw* again, and a title block
+  carrying the version, weight, tests and links. Every figure comes from
+  `data/competitors.ts` or the page's claim-checked constants. Geist
+  throughout, ink on near-black or ink on paper, one accent (editor's red).
+  Lenis smooth scroll (demo-only dependency), re-measured whenever the page
+  grows so it always reaches the end. Styles scoped under `.home`; each
+  chapter carries its own scoped CSS and deterministic geometry. The mascot
+  stays off `/`. The examples count reads `EXAMPLE_COUNT`.
 - **Dark is the site default.** With no stored preference the no-flash
   script now adds `.dark`; a stored `light` is the only thing that keeps it
   off. Every page already had the dark theme — this only changes the first

@@ -20,11 +20,11 @@ months, 81% to the homepage; `/vs-gsap` at position 11 with 425 impressions.
 
 ### In flight
 - Branch `feat/homepage-redesign`: the new homepage (`app/page.tsx`, `app/home.css`,
-  `components/home/*` with per-component CSS and `components/home/art/*` geometry; Lenis
-  added to the demo; the site defaults to dark in `layout.tsx`). After four rejected
-  directions (SaaS cards, giant editorial type, generative ink, a torus knot) the rule is:
-  every drawing must be a real use case of the library. Site-only — deploys from `main`, no
-  npm release. Waiting for review before it is pushed.
+  `components/home/*` with per-chapter CSS and `components/home/art/*` geometry; Lenis in the
+  demo, re-measured on body resize; the site defaults to dark in `layout.tsx`). The rule that
+  finally landed: every drawing is a real use case, drawn like chapter 02's watch movement
+  (pencil underdrawing, ink by scroll, blueprint labels with real values). Site-only — deploys
+  from `main`, no npm release. Waiting for review before it is pushed.
 
 ### Shipped since
 - `/guides` — five migration guides, live from `main` (site-only).

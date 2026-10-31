@@ -1,0 +1,133 @@
+/* Chapter 08 — switching, as three plug drawings. Scoped `.home .mg-…`;
+   type values match chapter 02 (caliber.css) so the chapters read as one. */
+
+.home .mg-stage {
+  position: relative;
+  padding: clamp(96px, 12vw, 180px) max(var(--gutter), calc((100% - 1560px) / 2));
+}
+
+/* ── Copy ─────────────────────────────────────────────────────────────── */
+
+.home .mg-head { max-width: 640px; margin-bottom: clamp(36px, 5vw, 72px); }
+.home .mg-kicker {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0 0 12px;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: var(--fg-3);
+}
+.home .mg-count { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.home .mg-title {
+  margin: 0;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: clamp(26px, 3.2vw, 52px);
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+  color: var(--fg);
+  text-wrap: balance;
+}
+.home .mg-body {
+  margin: 18px 0 0;
+  max-width: 52ch;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--fg-2);
+}
+
+/* ── Cards ────────────────────────────────────────────────────────────── */
+
+.home .mg-grid { display: grid; gap: clamp(36px, 4vw, 56px) clamp(20px, 2.4vw, 40px); }
+@media (min-width: 1024px) { .home .mg-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+.home .mg-card { display: grid; gap: 18px; align-content: start; }
+
+.home .mg-art { position: relative; aspect-ratio: 400 / 260; }
+.home .mg-art::before {
+  content: '';
+  position: absolute;
+  inset: -8%;
+  background: radial-gradient(closest-side, var(--bg-2), transparent);
+  pointer-events: none;
+}
+.home .mg-n {
+  position: absolute;
+  left: 0;
+  top: -4px;
+  z-index: 1;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--fg-3);
+}
+.home .mg-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.home .mg-svg-pencil { opacity: 0.16; }
+.home .mg-pencil { fill: none; stroke: var(--fg); stroke-width: 0.8; stroke-linecap: round; stroke-linejoin: round; }
+
+.home .mg-ink { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.home .mg-lead { stroke-linecap: butt; }
+/* Phone first, a step heavier; 1.8 / 1.1 / 0.6 once the card is ~400px. */
+.home .mg-w-p { stroke-width: 2.2; }
+.home .mg-w-s { stroke-width: 1.4; }
+.home .mg-w-h { stroke-width: 0.9; }
+.home .mg-t-ink { stroke: var(--fg); }
+.home .mg-t-mute { stroke: var(--fg-3); }
+.home .mg-t-accent { stroke: var(--accent); }
+.home .mg-ghost { fill: var(--accent-2); stroke: var(--line-2); stroke-width: 0.8; opacity: 0.55; }
+
+.home .mg-tx { font-family: var(--mono); font-size: 11px; letter-spacing: 0.02em; fill: var(--fg); }
+.home .mg-tx-mute { fill: var(--fg-3); }
+.home .mg-tx-save { fill: var(--accent); }
+
+/* ── Meta under each drawing ──────────────────────────────────────────── */
+
+.home .mg-meta { display: grid; gap: 10px; padding-top: 16px; border-top: 1px solid var(--line); }
+.home .mg-name {
+  margin: 0;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+  color: var(--fg);
+}
+.home .mg-name span { font-family: var(--mono); font-size: 11px; letter-spacing: 0.04em; color: var(--fg-3); margin-left: 6px; }
+.home .mg-code {
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--fg-2);
+}
+/* Package names wrap as whole tokens, never mid-name. */
+.home .mg-code s,
+.home .mg-code b { white-space: nowrap; }
+.home .mg-k { color: var(--fg-3); }
+.home .mg-code s { color: var(--fg-3); text-decoration-color: var(--accent); text-decoration-thickness: 1.5px; }
+.home .mg-code b { font-weight: 400; color: var(--fg); }
+.home .mg-methods { margin: 0; font-family: var(--mono); font-size: 11.5px; color: var(--fg-2); }
+.home .mg-methods span { color: var(--fg-3); }
+.home .mg-link {
+  justify-self: start;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg);
+  padding: 6px 0;
+  border-bottom: 1px solid var(--line-2);
+  transition: border-color 0.25s, color 0.25s;
+}
+.home .mg-link:hover { color: var(--accent); border-color: var(--accent); }
+.home .mg-link span { display: inline-block; transition: transform 0.35s var(--ease); }
+.home .mg-link:hover span { transform: translateX(4px); }
+
+.home .mg-cmd { margin-top: clamp(40px, 5vw, 64px); display: flex; flex-wrap: wrap; align-items: center; gap: 14px 24px; }
+.home .mg-cmd-note { font-family: var(--mono); font-size: 11px; letter-spacing: 0.04em; color: var(--fg-3); }
+
+@media (min-width: 1024px) {
+  .home .mg-w-p { stroke-width: 1.8; }
+  .home .mg-w-s { stroke-width: 1.1; }
+  .home .mg-w-h { stroke-width: 0.6; }
+}

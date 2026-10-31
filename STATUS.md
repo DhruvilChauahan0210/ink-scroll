@@ -88,7 +88,7 @@ at all.
 ## Demo App (`apps/demo`)
 
 ### Pages
-- [x] `/` — redesigned (branch `feat/homepage-redesign`): every drawing a real use case — hand-lettered *draw* hero with a nib that rides the stroke, a six-tile use-case gallery (signature, route map, chart, product sketch, logo, diagram), a pinned watch-movement blueprint inked by scroll, an editor's-red-pen annotated paragraph, GSAP-vs-us code + weights, toolkit rail, numbers, framework tabs, drop-ins, a sign-off that writes *draw* again; dark default, ink-on-paper light
+- [x] `/` — redesigned (branch `feat/homepage-redesign`): every drawing a real use case, inked by scroll over a pencil underdrawing — lettered *draw* hero with a nib, use-case gallery, watch-movement blueprint, red-pen proof sheet, GSAP weighed on a balance, eight API blueprint plates on a sideways rail, browser-test gauges + size-budget meter, framework circuit board, drop-in plug drawings, engineering-sheet footer; dark default, ink-on-paper light
 - [x] `/examples` — 23 examples with framework filter
 - [x] `/docs` — full API reference including v2.0–2.2 nav group with all 6 new APIs documented
 - [x] `/playground` — interactive SVG editor
