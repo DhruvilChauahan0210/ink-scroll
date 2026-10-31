@@ -78,27 +78,27 @@ export const SCENES: Record<string, SceneData> = {
     label: 'Hearth & Field',
     tag: 'selector · stagger · autoplay',
     description:
-      "A homeware shop's checkout. The progress stepper inks its icons and connectors in, step by step, up to the step the customer is on, and each product in the order summary is a line drawing that inks in after the one before it.",
+      "A homeware shop's order confirmation. The check draws as the page opens, then the delivery journey draws in order — each station, then the road on to the next — up to where the parcel is now, with the stretch still to come left dashed; the products ink in as their cards arrive.",
     code: `<ScrollDraw
-  selector=".ink" stagger={0.35}
-  autoplay duration={600} delay={200}
-  easing="ease-out" once
+  selector=".go" stagger={0.32}
+  autoplay duration={700} delay={900}
+  easing="ease-in-out" once
 >
-  <ol className="steps">
-    {steps.map((s) => (
-      <li key={s.k} className={s.done ? 'is-done' : ''}>
-        <svg viewBox="0 0 32 32">
-          {s.icon.map((d) => (
-            <path className={s.done || s.now ? 'ink' : 'idle'} d={d} />
-          ))}
-        </svg>
-        {s.k}
-        <svg className="connector" viewBox="0 0 100 2">
-          <path className={s.done ? 'ink' : 'idle'} d="M0 1 H100" />
-        </svg>
-      </li>
+  <svg viewBox="0 0 1000 220">
+    {stations.map((s, i) => (
+      <g key={s.k}>
+        <g transform={\`translate(\${s.x} \${s.y})\`}>
+          <circle r="32" />
+          {s.icon.map((d) => <path className={s.reached ? 'go' : 'idle'} d={d} />)}
+        </g>
+        {/* DOM order is drawing order: the station, then the road on */}
+        {next(i) && (
+          <path className={next(i).reached ? 'go road' : 'road-ahead'} d={road(s, next(i))} />
+        )}
+      </g>
     ))}
-  </ol>
+  </svg>
 </ScrollDraw>`,
   },
+
 };

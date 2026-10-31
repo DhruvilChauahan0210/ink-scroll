@@ -42,7 +42,7 @@ export const SHOWCASE: Record<string, Showcase> = {
   flowchart: {
     slug: 'hearth',
     brand: 'Hearth & Field',
-    what: 'A homeware shop’s checkout',
+    what: 'A homeware shop’s order confirmation',
     image: '/showcase/hearth.webp',
     width: 1920,
     height: 1200,

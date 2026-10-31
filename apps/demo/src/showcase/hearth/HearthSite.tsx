@@ -5,127 +5,148 @@ import { ScrollDraw } from 'svg-scroll-draw/react';
 import { BuiltWith } from '../BuiltWith';
 
 /*
- * Hearth & Field — a demo checkout for a fictional homeware shop, built with
- * svg-scroll-draw:
- *   · the progress stepper's icons and connectors ink in, step by step, up to
- *     the step the customer is on (selector + stagger)
- *   · each product in the order summary is a line drawing that inks in, one
- *     after another
+ * Hearth & Field — a demo order-confirmation page for a fictional homeware
+ * shop, built with svg-scroll-draw:
+ *   · the confirmation check draws itself as the page opens (autoplay)
+ *   · the delivery journey draws in order — the road from one station to the
+ *     next, then each station's icon — up to where the parcel is now
+ *     (selector + stagger); the stretch still to come stays dashed
+ *   · each product is a large line drawing that inks in as its card arrives
  */
 
-const STEPS = [
-  { k: 'Bag', done: true, icon: ['M6 10h20l-2 16H8z', 'M11 10V8a5 5 0 0 1 10 0v2'] },
-  { k: 'Shipping', done: true, icon: ['M3 9h16v13H3z', 'M19 13h6l4 5v4H19', 'M8 26a2.5 2.5 0 1 0 0.01 0M24 26a2.5 2.5 0 1 0 0.01 0'] },
-  { k: 'Payment', done: false, now: true, icon: ['M3 8h26v17H3z', 'M3 13h26', 'M7 20h7'] },
-  { k: 'Review', done: false, icon: ['M6 4h14l6 6v18H6z', 'M10 17l4 4 8-8'] },
+/* The journey, in a 1000 × 220 box: a gentle road through four stations. */
+const ST = [
+  { x: 90, y: 150, k: 'Ordered', when: 'Today, 14:02', done: true, icon: ['M-14 -8h28l-3 22h-22z', 'M-7 -8v-4a7 7 0 0 1 14 0v4'] },
+  { x: 370, y: 96, k: 'Packed', when: 'Tomorrow', done: true, icon: ['M-15 -6 L0 -14 L15 -6 V12 L0 20 L-15 12 Z', 'M-15 -6 L0 2 L15 -6 M0 2 V20', 'M-8 -10 L8 -2'] },
+  { x: 640, y: 132, k: 'On its way', when: 'Wed 5 Nov', now: true, icon: ['M-18 -8h20v16h-20z', 'M2 -3h8l7 7v4H2', 'M-10 12a3.5 3.5 0 1 0 .01 0M10 12a3.5 3.5 0 1 0 .01 0'] },
+  { x: 910, y: 82, k: 'Delivered', when: 'Thu 6 Nov', icon: ['M-15 0 L0 -13 L15 0', 'M-11 -3 V15 H11 V-3', 'M-4 15 V6 H4 V15'] },
 ];
+/* Phones: the same journey, upright — stations down the left, labels beside them. */
+const TALL = ST.map((s, i) => ({ ...s, x: 54, y: 46 + i * 118 }));
+const segTall = (a: (typeof TALL)[number], b: (typeof TALL)[number]) =>
+  `M ${a.x} ${a.y + 34} C ${a.x + 10} ${a.y + 60}, ${b.x - 10} ${b.y - 60}, ${b.x} ${b.y - 34}`;
+
+const seg = (a: (typeof ST)[number], b: (typeof ST)[number]) => {
+  const mx = (a.x + b.x) / 2;
+  return `M ${a.x + 34} ${a.y} C ${mx} ${a.y}, ${mx} ${b.y}, ${b.x - 34} ${b.y}`;
+};
 
 const ITEMS = [
   {
-    name: 'Stoneware mug, ash glaze', meta: '350 ml · set of 2', qty: 1, price: 58,
-    draw: ['M18 24 H50 V52 A8 8 0 0 1 42 60 H26 A8 8 0 0 1 18 52 Z', 'M50 32 H56 A8 8 0 0 1 56 48 H50', 'M27 18 C 24 13 30 11 27 6 M35 18 C 32 13 38 11 35 6 M43 18 C 40 13 46 11 43 6'],
+    name: 'Stoneware mug, ash glaze', meta: '350 ml · set of 2', price: '€58.00', tone: 'clay',
+    draw: ['M30 46 H96 V104 A16 16 0 0 1 80 120 H46 A16 16 0 0 1 30 104 Z', 'M96 60 H108 A16 16 0 0 1 108 92 H96', 'M48 36 C 42 26 54 22 48 12 M64 36 C 58 26 70 22 64 12 M80 36 C 74 26 86 22 80 12', 'M22 128 H106'],
   },
   {
-    name: 'Linen throw, moss', meta: '130 × 170 cm', qty: 1, price: 72,
-    draw: ['M10 22 H62 V34 H10 Z', 'M14 34 H58 V46 H14 Z', 'M10 46 H62 V58 H10 Z', 'M14 58 V64 M20 58 V64 M26 58 V64 M32 58 V64 M38 58 V64 M44 58 V64 M50 58 V64 M56 58 V64'],
+    name: 'Linen throw, moss', meta: '130 × 170 cm', price: '€72.00', tone: 'sage',
+    draw: ['M14 40 H114 V62 H14 Z', 'M22 62 H106 V84 H22 Z', 'M14 84 H114 V106 H14 Z', 'M20 106 V118 M30 106 V118 M40 106 V118 M50 106 V118 M60 106 V118 M70 106 V118 M80 106 V118 M90 106 V118 M100 106 V118 M108 106 V118'],
   },
   {
-    name: 'Beeswax candle, juniper', meta: '220 g · 45 h burn', qty: 1, price: 18,
-    draw: ['M22 30 H50 V62 H22 Z', 'M20 30 H52', 'M24 42 H48', 'M36 30 V22', 'M36 22 C 30 16 34 9 36 5 C 38 9 42 16 36 22'],
+    name: 'Beeswax candle, juniper', meta: '220 g · 45 h burn', price: '€18.00', tone: 'oat',
+    draw: ['M38 56 H90 V120 H38 Z', 'M34 56 H94', 'M42 78 H86', 'M64 56 V42', 'M64 42 C 52 30 60 16 64 6 C 68 16 76 30 64 42'],
   },
 ];
-
-const eur = (n: number) => `€${n.toFixed(2)}`;
-const SUBTOTAL = ITEMS.reduce((s, i) => s + i.price * i.qty, 0);
 
 export function HearthSite() {
   return (
     <div className="hf">
       <header className="hf-top">
         <a className="hf-brand" href="#top">Hearth <i>&amp;</i> Field</a>
-        <span className="hf-secure">
-          <svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path d="M4.5 7V5a3.5 3.5 0 0 1 7 0v2M3.5 7h9v7h-9z" fill="none" stroke="currentColor" strokeWidth="1.4" /></svg>
-          Secure checkout
-        </span>
+        <nav className="hf-nav" aria-label="Shop"><a href="#items">Home</a><a href="#items">Kitchen</a><a href="#items">Textiles</a><a href="#items">Candles</a></nav>
+        <span className="hf-order">Order <b>#HF-20481</b></span>
       </header>
 
-      <main className="hf-main" id="top">
-        {/* The stepper: icons and connectors ink in up to the current step */}
-        <ScrollDraw className="hf-steps" selector=".hf-ink" autoplay duration={600} delay={200} stagger={0.35} easing="ease-out" once>
-          <ol>
-            {STEPS.map((s, i) => (
-              <li key={s.k} className={`${s.done ? 'is-done' : ''}${s.now ? ' is-now' : ''}`} aria-current={s.now ? 'step' : undefined}>
-                <span className="hf-step-icon">
-                  <svg viewBox="0 0 32 32" aria-hidden="true">
-                    {s.icon.map((d, k) => <path key={k} className={s.done || s.now ? 'hf-ink' : 'hf-idle'} d={d} />)}
-                  </svg>
-                </span>
-                <span className="hf-step-k">{s.k}</span>
-                {i < STEPS.length - 1 && (
-                  <svg className="hf-conn" viewBox="0 0 100 2" preserveAspectRatio="none" aria-hidden="true">
-                    <path className={s.done ? 'hf-ink' : 'hf-idle'} d="M0 1 H100" />
-                  </svg>
-                )}
+      <main id="top">
+        {/* ── Confirmation: the check draws as the page opens ── */}
+        <section className="hf-hero">
+          <ScrollDraw className="hf-check" autoplay duration={900} delay={200} stagger={0.4} easing="ease-out" once>
+            <svg viewBox="0 0 96 96" aria-hidden="true">
+              <path className="hf-check-ring" d="M48 6 A42 42 0 1 1 47.99 6" />
+              <path className="hf-check-tick" d="M28 49 L42 63 L69 34" />
+            </svg>
+          </ScrollDraw>
+          <p className="hf-kick">Order confirmed</p>
+          <h1 className="hf-h1">Thank you, Ada.</h1>
+          <p className="hf-lede">We&apos;re packing your order in our Porto studio. You&apos;ll get an email with tracking the moment it leaves — expected on your doorstep <b>Thursday 6 November</b>.</p>
+        </section>
+
+        {/* ── The journey: road and stations draw in order, up to now ── */}
+        <section className="hf-journey" aria-label="Delivery progress">
+          <ScrollDraw className="hf-road hf-road-wide" selector=".hf-go" autoplay duration={700} delay={900} stagger={0.32} easing="ease-in-out" once>
+            <svg viewBox="0 0 1000 220" role="img" aria-label="Ordered today, packed tomorrow, on its way Wednesday, delivered Thursday">
+              <path className="hf-road-bed" d={`${seg(ST[0], ST[1])} ${seg(ST[1], ST[2])} ${seg(ST[2], ST[3])}`} />
+              {/* DOM order is drawing order: each station, then the road on to the next. */}
+              {ST.map((s, i) => {
+                const next = ST[i + 1];
+                const reached = next && (next.done || next.now);
+                return (
+                  <g key={s.k}>
+                    <g transform={`translate(${s.x} ${s.y})`} className={`hf-st${s.done ? ' is-done' : ''}${s.now ? ' is-now' : ''}`}>
+                      <circle className="hf-st-disc" r="32" />
+                      {s.icon.map((d, k) => <path key={k} className={s.done || s.now ? 'hf-go hf-st-ink' : 'hf-st-idle'} d={d} />)}
+                    </g>
+                    {next && <path className={reached ? 'hf-go hf-road-done' : 'hf-road-next'} d={seg(s, next)} />}
+                  </g>
+                );
+              })}
+            </svg>
+          </ScrollDraw>
+          <ScrollDraw className="hf-road hf-road-tall" selector=".hf-go" trigger={{ start: 'top 85%', end: 'top 30%' }} stagger={0.32} easing="ease-in-out" once>
+            <svg viewBox="0 0 300 450" role="img" aria-label="Ordered today, packed tomorrow, on its way Wednesday, delivered Thursday">
+              {TALL.map((s, i) => {
+                const next = TALL[i + 1];
+                const reached = next && (next.done || next.now);
+                return (
+                  <g key={s.k}>
+                    <g transform={`translate(${s.x} ${s.y})`} className={`hf-st${s.done ? ' is-done' : ''}${s.now ? ' is-now' : ''}`}>
+                      <circle className="hf-st-disc" r="32" />
+                      {s.icon.map((d, k) => <path key={k} className={s.done || s.now ? 'hf-go hf-st-ink' : 'hf-st-idle'} d={d} />)}
+                    </g>
+                    <text className={`hf-tall-k${s.done || s.now ? ' on' : ''}`} x={s.x + 52} y={s.y - 2}>{s.k}</text>
+                    <text className={`hf-tall-w${s.now ? ' now' : ''}`} x={s.x + 52} y={s.y + 20}>{s.when}</text>
+                    {next && <path className={reached ? 'hf-go hf-road-done' : 'hf-road-next'} d={segTall(s, next)} />}
+                  </g>
+                );
+              })}
+            </svg>
+          </ScrollDraw>
+          <ol className="hf-labels">
+            {ST.map((s) => (
+              <li key={s.k} className={`${s.done ? 'is-done' : ''}${s.now ? ' is-now' : ''}`} style={{ '--x': s.x / 1000 } as React.CSSProperties}>
+                <b>{s.k}</b><span>{s.when}</span>
               </li>
             ))}
           </ol>
-        </ScrollDraw>
+        </section>
 
-        <div className="hf-grid">
-          <div className="hf-form">
-            <section className="hf-box">
-              <div className="hf-row"><span className="hf-lab">Contact</span><span>ada.park@example.com</span><a href="#top">Change</a></div>
-              <div className="hf-row"><span className="hf-lab">Ship to</span><span>Rua das Flores 112, 2º, 1200-195 Lisboa, Portugal</span><a href="#top">Change</a></div>
-              <div className="hf-row"><span className="hf-lab">Delivery</span><span>Standard · 2–3 working days · <b>Free</b></span><a href="#top">Change</a></div>
-            </section>
-
-            <h1 className="hf-h">Payment</h1>
-            <p className="hf-sub">All transactions are secure and encrypted.</p>
-            <section className="hf-box hf-pay">
-              <div className="hf-pay-head">
-                <span><span className="hf-radio is-on" /> Credit or debit card</span>
-                <span className="hf-cards" aria-hidden="true"><i>VISA</i><i>MC</i><i>AMEX</i></span>
-              </div>
-              <div className="hf-fields">
-                <label className="hf-field hf-wide"><span>Card number</span><input readOnly value="4242 4242 4242 4242" aria-label="Card number" /></label>
-                <label className="hf-field"><span>Expiry (MM / YY)</span><input readOnly value="09 / 28" aria-label="Expiry" /></label>
-                <label className="hf-field"><span>Security code</span><input readOnly value="•••" aria-label="Security code" /></label>
-                <label className="hf-field hf-wide"><span>Name on card</span><input readOnly value="Ada Park" aria-label="Name on card" /></label>
-              </div>
-              <div className="hf-pay-alt"><span className="hf-radio" /> Pay with MB WAY</div>
-            </section>
-            <label className="hf-check"><span className="hf-box-tick" /> Billing address is the same as shipping</label>
-            <a className="hf-pay-btn" href="#top">Pay {eur(SUBTOTAL)}</a>
-            <p className="hf-fine">Free returns within 30 days. Questions? hello@hearthandfield.example</p>
-          </div>
-
-          {/* The order: each product inks in, one after another */}
-          <aside className="hf-sum" aria-label="Order summary">
-            <ScrollDraw className="hf-items" selector=".hf-prod" autoplay duration={900} delay={700} stagger={0.12} easing="ease-out" once>
-              {ITEMS.map((it) => (
-                <div key={it.name} className="hf-item">
-                  <span className="hf-thumb">
-                    <svg viewBox="0 0 72 72" aria-hidden="true">{it.draw.map((d, k) => <path key={k} className="hf-prod" d={d} />)}</svg>
-                    <b>{it.qty}</b>
-                  </span>
-                  <span className="hf-item-t"><b>{it.name}</b><span>{it.meta}</span></span>
-                  <span className="hf-item-p">{eur(it.price)}</span>
+        {/* ── The order: each product inks in as its card arrives ── */}
+        <section className="hf-items" id="items">
+          <h2 className="hf-h2">In your parcel</h2>
+          <div className="hf-grid">
+            {ITEMS.map((it) => (
+              <article key={it.name} className={`hf-card tone-${it.tone}`}>
+                <ScrollDraw className="hf-art" trigger={{ start: 'top 92%', end: 'top 55%' }} stagger={0.1} easing="ease-out" once>
+                  <svg viewBox="0 0 128 132" aria-hidden="true">{it.draw.map((d, k) => <path key={k} className="hf-prod" d={d} />)}</svg>
+                </ScrollDraw>
+                <div className="hf-card-body">
+                  <h3>{it.name}</h3>
+                  <p>{it.meta}</p>
+                  <span>{it.price}</span>
                 </div>
-              ))}
-            </ScrollDraw>
-            <div className="hf-code"><input readOnly placeholder="Gift card or discount code" aria-label="Discount code" /><span>Apply</span></div>
-            <dl className="hf-totals">
-              <div><dt>Subtotal</dt><dd>{eur(SUBTOTAL)}</dd></div>
-              <div><dt>Shipping</dt><dd>Free</dd></div>
-              <div className="hf-total"><dt>Total</dt><dd><small>EUR</small> {eur(SUBTOTAL)}</dd></div>
-            </dl>
-            <p className="hf-vat">Including {eur(SUBTOTAL - SUBTOTAL / 1.23)} VAT</p>
-          </aside>
-        </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="hf-details">
+          <div><h3>Delivering to</h3><p>Ada Park<br />Rua das Flores 112, 2º<br />1200-195 Lisboa, Portugal</p></div>
+          <div><h3>Paid with</h3><p>Visa ending 4242<br />€148.00 · incl. €27.67 VAT</p></div>
+          <div><h3>Need to change something?</h3><p>Reply to your confirmation email before Wednesday and we&apos;ll sort it.</p><a href="#top">Manage order →</a></div>
+        </section>
       </main>
 
       <footer className="hf-foot">
-        <span>Refund policy</span><span>Shipping</span><span>Privacy</span><span>Terms</span>
+        <span className="hf-brand">Hearth <i>&amp;</i> Field</span>
+        <span>Made slowly in Porto · Free returns within 30 days</span>
         <span className="hf-legal">© 2026 Hearth &amp; Field — a fictional shop; this is a demo site.</span>
       </footer>
 
