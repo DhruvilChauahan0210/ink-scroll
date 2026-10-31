@@ -1,6 +1,6 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **2.13.0** — published on npm with provenance through `release.yml` (2026-10-31)
+> Current version: **2.14.0** — published on npm with provenance through `release.yml` (2026-10-31)
 > Tests: **623 unit** across 31 suites · **192 browser tests** per engine (576 runs
 > across Chromium/Firefox/WebKit) · **56 mutations**, each caught by the one test
 > named for it · **91.3% line coverage** (gate 90/90/82/82)
@@ -127,10 +127,10 @@ at all.
 
 ## Remaining / Next
 
-### Unreleased — migrate CLI (branch `feat/migrate-cli`, 2026-10-31)
+### 2.14.0 — migrate CLI (branch `feat/migrate-cli`, 2026-10-31)
 - [x] `npx svg-scroll-draw migrate` (imports, CDN tags, aos.css, package.json; `--dry-run`, git-dirty guard)
 - [x] 17 unit tests; real Vite apps migrated, installed and built; CDN page loads with no errors
-- [ ] Release as 2.14.0
+- [x] Released as 2.14.0
 
 ### 2.13.0 — vivus drop-in (branch `feat/vivus-dropin`, 2026-10-31)
 - [x] `svg-scroll-draw/vivus` + `dist/cdn/vivus.global.js` (3.9 KB gzip, budgets 4.2)

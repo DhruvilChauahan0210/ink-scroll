@@ -1,6 +1,6 @@
 # Next Session Plan — svg-scroll-draw
 
-> Updated: 2026-10-31 — **2.13.0 published** (vivus drop-in).
+> Updated: 2026-10-31 — **2.14.0 published** (migrate CLI).
 
 ---
 
@@ -18,10 +18,9 @@ Numbers that set the priorities (Search Console and npm, 2026-10-30): 4,020
 lifetime downloads, ~170 a month; 5 GitHub stars; 147 Google clicks in five
 months, 81% to the homepage; `/vs-gsap` at position 11 with 425 impressions.
 
-### In flight
-- Branch `feat/migrate-cli`: `npx svg-scroll-draw migrate`. Ready to release as **2.14.0**.
-
 ### Shipped since
+- **2.14.0** — `npx svg-scroll-draw migrate`: one command to switch from AOS,
+  ScrollReveal or vivus.
 - **2.13.0** — `svg-scroll-draw/vivus`, the vivus drop-in, with an exact
   SVG-markup parity suite against vivus 0.4.6, and the `/vs-vivus` page.
 - **2.12.0** — `svg-scroll-draw/scrollreveal`, the MIT ScrollReveal drop-in, with a
