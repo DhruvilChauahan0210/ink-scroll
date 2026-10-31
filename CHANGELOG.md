@@ -35,8 +35,9 @@ All notable changes to `svg-scroll-draw` are documented here.
   becoming a complete demo site for a fictional company under
   `/showcase/<name>`, so the examples show how the library is used in a real
   product rather than in this site's own style. The example's card and its
-  own page show the site's first screen and link to the live site, with the
-  code beside it. First: **Ferrow Coffee Roasters** (`/showcase/ferrow`, the
+  own page show the site's first screen edge to edge — hover dims it and
+  offers "Open live site" — under one header with what the company is, its
+  name and a single "Live site" button, with the code beside it. First: **Ferrow Coffee Roasters** (`/showcase/ferrow`, the
   logo-reveal example) — the emblem draws on load and `onComplete` floods it
   with the brand colours; origin drawings, farm-to-roastery routes, a roast
   profile whose milestones follow `onProgress`, and the head roaster's

@@ -6,7 +6,7 @@ export type SceneData = { label: string; tag: string; description: string; code:
 
 export const SCENES: Record<string, SceneData> = {
   'logo-reveal': {
-    label: 'Ferrow — a coffee roaster',
+    label: 'Ferrow Coffee Roasters',
     tag: 'autoplay · onComplete · fill',
     description:
       "A full launch site for a fictional Lisbon roaster. The emblem draws itself as the page loads and onComplete floods it with the brand colours; further down, origin drawings, farm-to-roastery routes, a roast profile and the head roaster's signature draw as you scroll.",

@@ -143,29 +143,67 @@
 
 /* ── A showcase site, linked from its example ────────────────────────── */
 
-.site .sx-shot { display: grid; gap: 12px; width: 100%; color: var(--fg); }
-.site .sx-frame {
+/* The site's first screen, edge to edge across the card. */
+.site .sx-media {
+  position: relative;
   display: block;
-  border-radius: 10px;
   overflow: hidden;
-  border: 1px solid var(--line-2);
-  box-shadow: 0 30px 60px -36px rgba(0, 0, 0, 0.55);
-  transition: transform 0.5s var(--ease), box-shadow 0.5s var(--ease);
-}
-.site .sx-shot:hover .sx-frame { transform: translateY(-3px); box-shadow: 0 40px 70px -36px rgba(0, 0, 0, 0.6); }
-.site .sx-bar {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  height: 26px;
-  padding: 0 10px;
-  background: var(--bg-2);
+  background: var(--panel);
   border-bottom: 1px solid var(--line);
 }
-.site .sx-bar i { width: 8px; height: 8px; border-radius: 50%; background: var(--line-2); }
-.site .sx-url { margin-left: 10px; font: 500 10px/1 var(--mono); color: var(--fg-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.site .sx-img { display: block; width: 100%; height: auto; }
-.site .sx-go { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 16px; font-size: 13px; color: var(--fg-2); }
-.site .sx-go b { font-weight: 500; color: var(--fg); }
-.site .sx-cta { font: 500 11px/1.6 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
-.site .sx-shot:hover .sx-cta { text-decoration: underline; text-underline-offset: 3px; }
+.site .sx-img { display: block; width: 100%; height: auto; transition: transform 0.9s var(--ease); }
+.site .sx-media:hover .sx-img { transform: scale(1.025); }
+.site .sx-hover {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(12, 12, 14, 0.32);
+  opacity: 0;
+  transition: opacity 0.35s var(--ease);
+}
+.site .sx-hover > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 42px;
+  padding: 0 20px;
+  border-radius: 999px;
+  background: #fff;
+  color: #121110;
+  font: 500 11px/1 var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  box-shadow: 0 14px 34px -12px rgba(0, 0, 0, 0.55);
+  transform: translateY(8px);
+  transition: transform 0.45s var(--ease);
+}
+.site .sx-media:hover .sx-hover, .site .sx-media:focus-visible .sx-hover { opacity: 1; }
+.site .sx-media:hover .sx-hover > span { transform: none; }
+
+/* Name and the one button, then the description. */
+.site .ex-card-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; }
+.site .ex-card-k { margin: 0 0 6px; font: 500 10.5px/1.4 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-3); }
+.site .ex-card-head .ex-card-t { margin: 0; }
+.site .sx-live {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 15px 0 17px;
+  border-radius: 999px;
+  border: 1px solid var(--fg);
+  background: var(--fg);
+  color: var(--bg);
+  font: 500 10.5px/1 var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: background-color 0.25s, border-color 0.25s, color 0.25s;
+}
+.site .sx-live:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+.site .ex-card.is-site .ex-card-foot { padding-top: 20px; }
+
+/* On an example's own page. */
+.site .sx-detail { display: grid; gap: 18px; }
+.site .sx-detail .sx-media { border: 1px solid var(--line-2); }

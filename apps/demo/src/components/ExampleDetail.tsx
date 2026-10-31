@@ -8,7 +8,7 @@ import { Plate } from './site/Plate';
 import { CopyCommand } from './home/CopyCommand';
 import { EXAMPLE_SEO } from '@/data/examples-seo';
 import { SHOWCASE } from '@/showcase';
-import { ShowcaseShot } from '@/showcase/ShowcaseShot';
+import { ShowcaseMedia, LiveButton } from '@/showcase/ShowcaseShot';
 
 export function ExampleDetail({ slug }: { slug: string }) {
   const example = EXAMPLES.find((e) => e.id === slug);
@@ -58,7 +58,18 @@ export function ExampleDetail({ slug }: { slug: string }) {
             <CodeBox file="Hero.tsx">{example.code}</CodeBox>
           </div>
           <div className="ex-plate">
-            {site ? <ShowcaseShot site={site} priority /> : <Plate n={n} dark={isDark}>{example.preview}</Plate>}
+            {site ? (
+              <div className="sx-detail">
+                <ShowcaseMedia site={site} priority />
+                <div className="ex-card-head">
+                  <div>
+                    <p className="ex-card-k">{site.what}</p>
+                    <p className="ex-card-t">{site.brand}</p>
+                  </div>
+                  <LiveButton site={site} />
+                </div>
+              </div>
+            ) : <Plate n={n} dark={isDark}>{example.preview}</Plate>}
           </div>
         </section>
       </div>

@@ -20,7 +20,7 @@ export const SHOWCASE: Record<string, Showcase> = {
     brand: 'Ferrow Coffee Roasters',
     what: 'A small-lot coffee roaster in Lisbon',
     image: '/showcase/ferrow.webp',
-    width: 1440,
-    height: 900,
+    width: 1920,
+    height: 1200,
   },
 };

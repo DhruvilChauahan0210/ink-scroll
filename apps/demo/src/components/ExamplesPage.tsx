@@ -21,7 +21,7 @@ import { CODES_A, DESCRIPTIONS_A } from './examples/ink/ui-a.codes';
 import { CODES_B, DESCRIPTIONS_B } from './examples/ink/ui-b.codes';
 import { SCENES } from './examples/scenes/data';
 import { SHOWCASE } from '@/showcase';
-import { ShowcaseShot } from '@/showcase/ShowcaseShot';
+import { ShowcaseMedia, LiveButton } from '@/showcase/ShowcaseShot';
 import { ChartScene } from './examples/scenes/ChartScene';
 import { LogoRevealScene } from './examples/scenes/LogoRevealScene';
 import { SELF } from '@/data/competitors';
@@ -512,8 +512,9 @@ export function ExamplesPage() {
           const n = EXAMPLES.indexOf(ex) + 1;
           const fws = EXAMPLE_FRAMEWORKS[ex.id] ?? [];
           const lines = ex.code.replace(/\n+$/, '').split('\n').length;
+          const site = SHOWCASE[ex.id];
           return (
-            <article key={ex.id} id={ex.id} className="ex-card">
+            <article key={ex.id} id={ex.id} className={`ex-card${site ? ' is-site' : ''}`}>
               <header className="ex-card-cap">
                 <span className="ex-card-n">fig. {String(n).padStart(2, '0')}</span>
                 <span className="ex-card-tag">{ex.tag}</span>
@@ -524,11 +525,19 @@ export function ExamplesPage() {
                   <Link href={`/examples/${ex.id}`} className="ex-card-go">guide <span aria-hidden="true">→</span></Link>
                 )}
               </header>
-              <div className="ex-card-plate">
-                {SHOWCASE[ex.id] ? <ShowcaseShot site={SHOWCASE[ex.id]} /> : ex.preview}
-              </div>
+              {site ? <ShowcaseMedia site={site} /> : <div className="ex-card-plate">{ex.preview}</div>}
               <div className="ex-card-foot">
-                <h2 className="ex-card-t">{ex.label}</h2>
+                {site ? (
+                  <div className="ex-card-head">
+                    <div>
+                      <p className="ex-card-k">{site.what}</p>
+                      <h2 className="ex-card-t">{site.brand}</h2>
+                    </div>
+                    <LiveButton site={site} />
+                  </div>
+                ) : (
+                  <h2 className="ex-card-t">{ex.label}</h2>
+                )}
                 <p className="ex-card-d">{ex.description}</p>
                 <details className="ex-code">
                   <summary>
