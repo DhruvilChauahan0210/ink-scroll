@@ -44,9 +44,9 @@ const jsonLd = {
 };
 
 /* Figures shown in chapter 06 and on the sign-off sheet. check:claims reads this
-   comment, so it fails the build if they drift: 623 tests, 195 browser tests per engine. */
-const UNIT_TESTS = 623;
-const BROWSER_TESTS = 195;
+   comment, so it fails the build if they drift: 626 tests, 196 browser tests per engine. */
+const UNIT_TESTS = 626;
+const BROWSER_TESTS = 196;
 /* The main entry's CI budget (packages/svg-scroll-draw/scripts/size.mjs, '.'). */
 const BUDGET_KB = 10.5;
 

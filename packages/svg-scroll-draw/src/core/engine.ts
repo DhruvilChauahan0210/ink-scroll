@@ -28,11 +28,37 @@ function supportsNativeTimeline(): boolean {
   );
 }
 
+/**
+ * The paint that actually applies to `el`. Computed style folds in CSS classes,
+ * inline styles and presentation attributes; the attribute is the fallback only
+ * where there is no style engine to ask. Reading the attribute alone warned
+ * "no stroke" for every path stroked from CSS — a class, Tailwind's
+ * `stroke-current` — though those paths draw perfectly well.
+ */
+function paintOf(el: SVGElement, prop: 'stroke' | 'fill'): string {
+  let computed = '';
+  try {
+    computed = getComputedStyle(el).getPropertyValue(prop).trim();
+  } catch {
+    /* no CSSOM — fall back to the attribute */
+  }
+  return computed || (el.getAttribute(prop) ?? '').trim();
+}
+
+const NO_PAINT = new Set(['', 'none', 'transparent', 'rgba(0, 0, 0, 0)']);
+
 function checkElement(el: SVGElement): void {
-  const stroke = el.getAttribute('stroke');
-  const fill   = el.getAttribute('fill');
-  if (!stroke || stroke === 'none') warnDev('Element has no stroke — path will not be visible.', el);
-  else if (fill && fill !== 'none' && fill !== 'transparent') warnDev('Element has a fill — it may obscure the stroke animation.', el);
+  if (!IS_DEV) return;
+  const stroke = paintOf(el, 'stroke');
+  if (!stroke || stroke === 'none') {
+    warnDev('Element has no stroke — path will not be visible.', el);
+    return;
+  }
+  // Only a fill someone declared: browsers compute an unset fill as black, and
+  // warning on every path that never mentions fill would be noise of its own.
+  const declaredFill = (el.getAttribute('fill') ?? '').trim();
+  if (declaredFill && !NO_PAINT.has(declaredFill) && !NO_PAINT.has(paintOf(el, 'fill')))
+    warnDev('Element has a fill — it may obscure the stroke animation.', el);
 }
 
 /**

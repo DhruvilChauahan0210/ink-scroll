@@ -7,18 +7,30 @@
   * { box-sizing: border-box; }
   html { scroll-behavior: auto; }
   body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
-  #box { height: 300px; margin: 400px 40px; }
+  #box, #css, #attr { height: 300px; margin: 400px 40px; }
   svg { width: 100%; height: 100%; display: block; }
-  /* The stroke comes from CSS rather than a `stroke` attribute — a completely
-     ordinary thing to do, and the case the engine warns about. */
-  #box path { fill: none; stroke: #000; stroke-width: 3; }
+  /* #box is a genuine mistake: no stroke anywhere, so nothing would draw. */
+  #box path { fill: none; stroke-width: 3; }
+  /* #css takes its stroke from a stylesheet rather than a `stroke` attribute —
+     a completely ordinary thing to do, which the engine used to warn about. */
+  #css path { fill: none; stroke: #000; stroke-width: 3; }
 </style>
 </head>
 <body>
 
 <div id="box">
   <svg viewBox="0 0 200 100" preserveAspectRatio="none">
-    <path d="M10 50 C 40 10, 80 10, 100 50 S 160 90, 190 50"></path>
+    <path id="bare" d="M10 50 C 40 10, 80 10, 100 50 S 160 90, 190 50"></path>
+  </svg>
+</div>
+<div id="css">
+  <svg viewBox="0 0 200 100" preserveAspectRatio="none">
+    <path id="css-path" d="M10 50 C 40 10, 80 10, 100 50 S 160 90, 190 50"></path>
+  </svg>
+</div>
+<div id="attr">
+  <svg viewBox="0 0 200 100" preserveAspectRatio="none">
+    <path id="attr-path" d="M10 50 C 40 10, 80 10, 100 50 S 160 90, 190 50" stroke="#000" stroke-width="3" fill="none"></path>
   </svg>
 </div>
 
@@ -30,7 +42,9 @@
 <script>
   window.__warnings = [];
   const nativeWarn = console.warn.bind(console);
-  console.warn = (...args) => { window.__warnings.push(args.map(String).join(' ')); nativeWarn(...args); };
+  // Elements are recorded by id, so a spec can tell which path a warning is about.
+  const label = (a) => (a && a.nodeType === 1 ? `#${a.id}` : String(a));
+  console.warn = (...args) => { window.__warnings.push(args.map(label).join(' ')); nativeWarn(...args); };
 
   const build = new URLSearchParams(location.search).get('build') === 'dev'
     ? 'svg-scroll-draw.dev.global.js'
@@ -41,8 +55,11 @@
   s.onload = () => {
     const api = window.SvgScrollDraw;
 
-    // 1. A path with no `stroke` attribute → the "no stroke" dev warning.
+    // 1. A path with no stroke at all → the "no stroke" dev warning.
     api.scrollDraw('#box');
+    // Stroked from CSS and from an attribute → no warning for either.
+    api.scrollDraw('#css');
+    api.scrollDraw('#attr');
 
     // 2. A target that does not exist → the "container not found" dev warning.
     api.scrollDraw('#does-not-exist');

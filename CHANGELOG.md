@@ -6,6 +6,32 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ## [Unreleased]
 
+---
+
+## [2.15.1] — 2026-10-31
+
+### Fixed
+
+- **No more "Element has no stroke" for paths stroked from CSS.** The dev
+  check read only the `stroke` attribute, so every path styled with a class,
+  a stylesheet or Tailwind's `stroke-current` was reported as invisible while
+  it drew perfectly well — on this project's own homepage that was hundreds of
+  warnings per page load. It now reads the computed stroke (which folds in CSS
+  and presentation attributes) and falls back to the attribute only where
+  there is no style engine. A stroke CSS turns off (`stroke: none` over a
+  `stroke` attribute) is now reported, and a `fill` attribute that CSS turns
+  off no longer is. The check is skipped outright in production builds.
+
+### Tests
+
+- Three unit tests: a stroke from a CSS class does not warn, CSS
+  `stroke: none` over an attribute does, and a `fill` attribute that CSS turns
+  off does not.
+- `e2e/cdn.spec.ts`: the dev-build fixture's "mistake" path used to be stroked
+  from CSS and relied on the false warning; it now has no stroke at all, and
+  two new paths, stroked from a stylesheet and from an attribute, must stay
+  silent in Chromium, Firefox and WebKit.
+
 ### Site
 
 - **The live project stats can't go quietly stale.** A failed hourly refresh

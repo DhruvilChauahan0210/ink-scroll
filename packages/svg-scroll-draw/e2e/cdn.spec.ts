@@ -74,6 +74,19 @@ test.describe('CDN builds', () => {
     for (const w of row.warnings) expect(w).toContain('[svg-scroll-draw]');
   });
 
+  test('the dev build does not mistake a CSS stroke for a missing one', async ({ page }) => {
+    const row = await open(page, 'dev');
+    const noStroke = row.warnings.filter((w) => /no stroke/i.test(w));
+    // The genuinely unstroked path is still reported…
+    expect(noStroke.some((w) => w.includes('#bare')), 'the unstroked path was not reported').toBe(true);
+    // …but a stroke from a stylesheet or an attribute is a stroke. Reading only
+    // the attribute flagged every CSS-stroked path, flooding real dev consoles.
+    expect(
+      noStroke.filter((w) => w.includes('#css-path') || w.includes('#attr-path')),
+      'a stroked path was reported as having no stroke',
+    ).toEqual([]);
+  });
+
   test('the two builds are otherwise the same library', async ({ page }) => {
     const dev = await open(page, 'dev');
     const prod = await open(page, 'prod');

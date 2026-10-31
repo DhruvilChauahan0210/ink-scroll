@@ -144,6 +144,44 @@ describe('createEngine — warnings', () => {
     expect(spy.mock.calls[0][0]).toContain('no stroke');
   });
 
+  it('does not warn when the stroke comes from a CSS class', () => {
+    const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const style = document.createElement('style');
+    style.textContent = '.ssd-css-stroke { stroke: currentColor; }';
+    document.head.appendChild(style);
+    const path = makeSvgPath();
+    path.removeAttribute('stroke');
+    path.setAttribute('class', 'ssd-css-stroke');
+    const container = makeContainer([path]);
+    document.body.appendChild(container);
+    createEngine(container);
+    expect(spy.mock.calls.filter((c) => String(c[0]).includes('no stroke'))).toHaveLength(0);
+    container.remove();
+    style.remove();
+  });
+
+  it('warns when CSS sets stroke: none over a stroke attribute', () => {
+    const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const path = makeSvgPath({ stroke: 'black' });
+    path.style.stroke = 'none';
+    const container = makeContainer([path]);
+    document.body.appendChild(container);
+    createEngine(container);
+    expect(spy.mock.calls.some((c) => String(c[0]).includes('no stroke'))).toBe(true);
+    container.remove();
+  });
+
+  it('does not warn about a fill attribute that CSS turns off', () => {
+    const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const path = makeSvgPath({ stroke: 'black', fill: 'red' });
+    path.style.fill = 'none';
+    const container = makeContainer([path]);
+    document.body.appendChild(container);
+    createEngine(container);
+    expect(spy.mock.calls.filter((c) => String(c[0]).includes('fill'))).toHaveLength(0);
+    container.remove();
+  });
+
   it('warns when element has a non-none fill', () => {
     const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const path = makeSvgPath({ stroke: 'black', fill: 'red' });

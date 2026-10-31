@@ -1,7 +1,7 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **2.15.0** — published on npm with provenance through `release.yml` (2026-10-31)
-> Tests: **623 unit** across 31 suites · **195 browser tests** per engine (585 runs
+> Current version: **2.15.1** — published on npm with provenance through `release.yml` (2026-10-31)
+> Tests: **626 unit** across 31 suites · **196 browser tests** per engine (588 runs
 > across Chromium/Firefox/WebKit) · **56 mutations**, each caught by the one test
 > named for it · **91.3% line coverage** (gate 90/90/82/82)
 > Bundle: **10.2 KB gzipped** (main entry; per-API entries from 0.2 KB) · zero runtime dependencies
@@ -49,11 +49,11 @@
 - [x] `scrollAnimateGroup` + `scrollAnimateSequence` + `scrollParallaxGroup` in `svg-scroll-draw/group`
 
 ### Testing
-- [x] 623 tests across 31 suites — `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollText` (23)
+- [x] 626 tests across 31 suites — `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollText` (23)
 - [x] Initial state fix — `createAnimateEngine` and `scrollCounter` now apply correct alpha immediately on init (no flash before IO fires)
 
 ### Browser tests (Phase 2, `packages/svg-scroll-draw/e2e`)
-195 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
+196 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
 `helpers.ts` (deterministic sweep — scroll to a fixed offset, wait two frames,
 read) and `fixtures/_probe.mjs` (parsing stays in the page, so specs assert on
 numbers).
@@ -74,7 +74,7 @@ numbers).
 - [x] `timeline` — per-track `from`/`to` windows, a track driving every element it matches, per-track easing, `fade`, the `--scroll-draw-progress` custom property, `onComplete`, `seek`/`replay`, `refresh()`, time-driven `loop`, reduced motion (scrubbing continues, the loop does not), `debug` panel lifecycle, destroy restores the paths
 - [x] `cinematic` — the whole structure built from a story (400vh mount, sticky stage, canvas viewBox, stroke widths, pre-measured vs self-measured path lengths), per-animation scene windows, fade curve, first paint mid-story, a story shorter than the viewport, reduced motion, destroy leaves the built DOM
 - [x] `frameworks` — all eight wrappers (React, Vue, Solid, Svelte, Angular, Astro, Nuxt, the web component) mounted for real and held to one contract: the engine runs, unmounting leaks no observer and no frame loop, re-mounting works, and option changes reach the engine only where the wrapper claims they do. React/Vue/Solid/Nuxt are bundled from `dist/` by `e2e/build-fixtures.mjs`
-- [x] `cdn` — both CDN builds loaded from a plain `<script src>`: the production one exposes the API, registers `<scroll-draw>` and says nothing; the dev one reports the same mistakes the production build hides
+- [x] `cdn` — both CDN builds loaded from a plain `<script src>`: the production one exposes the API, registers `<scroll-draw>` and says nothing; the dev one reports the same mistakes the production build hides, and does not mistake a stroke set from CSS for a missing one
 - [x] `scripts/mutation-check.mjs` — 56 one-line source mutations, each required to fail the single test named for it
 - [x] `scripts/make-fixture-video.mjs` — reproducible 4s scrub clip, no system tooling needed
 
@@ -129,6 +129,12 @@ at all.
 
 ### Unreleased — migration guides (branch `feat/migration-guides`, 2026-10-31; site-only)
 - [x] `/guides` + 4 guides (AOS Next.js, AOS React, ScrollReveal React, vivus React), sitemap, nav, vs-page and README links
+
+### 2.15.1 — the "no stroke" warning reads CSS (2026-10-31)
+
+- [x] Dev check reads the computed stroke, so CSS-stroked paths no longer warn; skipped in production builds
+- [x] Unit tests for CSS class, CSS `stroke: none` and CSS-cancelled fill; browser test in all three engines
+- [x] Released as 2.15.1
 
 ### 2.15.0 — React hooks for the drop-ins (branch `feat/drop-in-react-hooks`, 2026-10-31)
 - [x] `svg-scroll-draw/aos/react` (`useAOS`, `AOSInit`), `/scrollreveal/react` (`useScrollReveal`), `/vivus/react` (`useVivus`), all `"use client"`

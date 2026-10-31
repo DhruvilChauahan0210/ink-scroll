@@ -30,6 +30,7 @@
 - [x] `pause` / `resume` / `seek` / `replay` / `getProgress` / `destroy` instance API
 - [x] `rect` + `circle` support — perimeter-based length calculation
 - [x] `Cinematic` class — reads `story.json` from Cinematic Studio, builds sticky-stage timeline
+- [x] Dev warnings read the computed stroke, so CSS-stroked paths are not reported as invisible (2.15.1)
 - [x] Zero runtime dependencies, ~4.4 KB gzipped
 
 ### Framework Wrappers
