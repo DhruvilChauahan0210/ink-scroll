@@ -4,6 +4,23 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ---
 
+## [Unreleased]
+
+### Site
+
+- **Migration guides** at `/guides`: AOS in Next.js, AOS in React, ScrollReveal
+  in React and Next.js, vivus in React — the searches those libraries' users
+  make. Each leads with `npx svg-scroll-draw migrate`, the hook, the StackBlitz
+  starter and what stays the same, with HowTo and FAQ structured data. Data
+  lives in `data/guides.ts`; every claim about the original library is checked
+  against its last release (for example, AOS 2.3.4 does pick up new elements
+  through its own MutationObserver, so the guides do not claim otherwise —
+  its problem in React is that init() can't be undone). Linked from the home
+  and mobile nav, `/vs-aos`, `/vs-vivus` (comparison pages can now carry a
+  `guide` link), the READMEs and llms.txt; in the sitemap.
+
+---
+
 ## [2.15.0] — 2026-10-31
 
 ### Added

@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { SEO_SLUGS } from "@/data/examples-seo";
 import { FRAMEWORK_SLUGS } from "@/data/framework-landings";
 import { VERSUS_SLUGS } from "@/data/versus";
+import { GUIDE_SLUGS } from "@/data/guides";
 
 export const dynamic = "force-static";
 
@@ -96,6 +97,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date("2026-08-15"),
       changeFrequency: "monthly" as const,
       priority: 0.8,
+    })),
+
+    // ── Migration guides (AOS / ScrollReveal / vivus in React and Next.js) ──
+    {
+      url: `${SITE_URL}/guides`,
+      lastModified: new Date("2026-10-31"),
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
+    },
+    ...GUIDE_SLUGS.map((slug) => ({
+      url: `${SITE_URL}/guides/${slug}`,
+      lastModified: new Date("2026-10-31"),
+      changeFrequency: "monthly" as const,
+      priority: 0.9,
     })),
 
     // ── New comparison pages + the Lenis integration guide ──────────────────

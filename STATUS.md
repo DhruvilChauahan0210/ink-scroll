@@ -127,6 +127,9 @@ at all.
 
 ## Remaining / Next
 
+### Unreleased — migration guides (branch `feat/migration-guides`, 2026-10-31; site-only)
+- [x] `/guides` + 4 guides (AOS Next.js, AOS React, ScrollReveal React, vivus React), sitemap, nav, vs-page and README links
+
 ### 2.15.0 — React hooks for the drop-ins (branch `feat/drop-in-react-hooks`, 2026-10-31)
 - [x] `svg-scroll-draw/aos/react` (`useAOS`, `AOSInit`), `/scrollreveal/react` (`useScrollReveal`), `/vivus/react` (`useVivus`), all `"use client"`
 - [x] StrictMode + route-change e2e in three engines; real Next.js 16 App Router build and run

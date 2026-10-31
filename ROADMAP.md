@@ -171,7 +171,8 @@ of examining a single API in a real browser.
 - [x] vivus drop-in (`svg-scroll-draw/vivus`), SVG markup matched exactly against vivus 0.4.6 (last release April 2021); `/vs-vivus` page
 - [x] `npx svg-scroll-draw migrate` — one-command switch from AOS / ScrollReveal / vivus
 - [x] React / Next.js hooks for the drop-ins (`useAOS` + `<AOSInit />`, `useScrollReveal`, `useVivus`)
-- [ ] On-site migration guides: AOS in Next.js / React, ScrollReveal in React, vivus in React
+- [x] On-site migration guides (`/guides`): AOS in Next.js / React, ScrollReveal in React, vivus in React
+- [ ] Check Search Console in ~2 weeks for /guides/* and /vs-* impressions and clicks
 - [x] StackBlitz "already migrated" starters for each drop-in, linked from the comparison pages and READMEs
 - [ ] More blocks (the registry pattern grows by count), and a Vue/Svelte flavour of each
 - [ ] Desktop nav links are hand-typed per page — only the homepage and mobile menu link `/blocks`; move the nav into one component

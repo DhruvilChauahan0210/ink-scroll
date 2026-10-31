@@ -83,6 +83,11 @@ export function VersusPage({ slug }: { slug: string }) {
                   {v.tryUrl.label}
                 </a>
               )}
+              {v.guide && (
+                <Link href={v.guide.href} className="px-5 py-2.5 rounded-full border border-pitch-black text-sm font-medium hover:bg-pitch-black hover:text-light-linen transition-colors">
+                  {v.guide.label}
+                </Link>
+              )}
               <Link href="/examples" className="px-5 py-2.5 rounded-full border border-pitch-black text-sm font-medium hover:bg-pitch-black hover:text-light-linen transition-colors">
                 23 live examples →
               </Link>
@@ -205,6 +210,7 @@ export function VersusPage({ slug }: { slug: string }) {
                 { href: '/vs-framer-motion', label: 'framer motion' },
                 { href: '/vs-aos', label: 'aos / scrollreveal' },
                 { href: '/lenis-scroll-animation', label: 'lenis (integration)' },
+                { href: '/guides', label: 'migration guides' },
               ].map((l) => (
                 <Link key={l.href} href={l.href} className="px-4 py-2 rounded-full border border-pitch-black bg-light-linen text-sm font-medium hover:shadow-[3px_3px_0px_#000] transition-shadow">
                   {l.label}

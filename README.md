@@ -627,6 +627,8 @@ No bundler? Swap the script tag, and drop the stylesheet link:
 <script>AOS.init();</script>
 ```
 
+Step-by-step guides: [AOS in Next.js](https://svg-scroll-draw.vercel.app/guides/aos-nextjs) · [AOS in React](https://svg-scroll-draw.vercel.app/guides/aos-react).
+
 **React and Next.js.** `svg-scroll-draw/aos/react` owns the lifecycle AOS never had: it initialises on mount,
 destroys on unmount (so StrictMode's double mount is safe), and new `[data-aos]` content from a route change is
 picked up automatically. The file is marked `"use client"`, so it drops straight into an App Router layout:
@@ -680,6 +682,8 @@ No bundler? `<script src="https://unpkg.com/svg-scroll-draw/dist/cdn/scrollrevea
 defines `window.ScrollReveal` as the function, like ScrollReveal's own file. With CommonJS,
 `require('svg-scroll-draw/scrollreveal').default` is the function.
 
+Step-by-step guide: [ScrollReveal in React and Next.js](https://svg-scroll-draw.vercel.app/guides/scrollreveal-react).
+
 **React and Next.js.** `useScrollReveal()` from `svg-scroll-draw/scrollreveal/react` reveals the element its
 ref is on — or its children matching `selector`, for `interval` sequences — and cleans up on unmount, so
 components that mount later (a route change, a list that loads) are revealed too:
@@ -726,6 +730,8 @@ On [vivus](https://github.com/maxwellito/vivus)? It has not shipped since 0.4.6 
 
 No bundler? `<script src="https://unpkg.com/svg-scroll-draw/dist/cdn/vivus.global.js"></script>`
 defines `window.Vivus`. With CommonJS, `require('svg-scroll-draw/vivus').default` is the class.
+
+Step-by-step guide: [vivus in React](https://svg-scroll-draw.vercel.app/guides/vivus-react).
 
 **React and Next.js.** `useVivus()` from `svg-scroll-draw/vivus/react` creates the instance on the mounted
 `<svg>`, destroys it on unmount, and hands it back for `play()`, `reset()` and the rest:

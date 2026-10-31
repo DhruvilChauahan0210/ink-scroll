@@ -220,6 +220,9 @@ npx svg-scroll-draw migrate`}</CodeBlock>
           <a href="https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/aos" target="_blank" rel="noopener noreferrer" className="inline-block mt-6 px-5 py-2.5 rounded-full bg-creator-pink border border-pitch-black text-sm font-semibold hover:opacity-90 transition-opacity">
             Try the AOS drop-in on StackBlitz →
           </a>
+          <p className="mt-4 text-[13px] text-graphite-border">
+            Step-by-step: <Link href="/guides/aos-nextjs" className="underline underline-offset-2 hover:text-pitch-black">AOS in Next.js</Link> · <Link href="/guides/aos-react" className="underline underline-offset-2 hover:text-pitch-black">AOS in React</Link>
+          </p>
         </div>
       </section>
 
@@ -247,6 +250,9 @@ ScrollReveal({ distance: '40px' }).reveal('.card', { interval: 80 });`}</CodeBlo
           <a href="https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/scrollreveal" target="_blank" rel="noopener noreferrer" className="inline-block mt-6 px-5 py-2.5 rounded-full bg-creator-pink border border-pitch-black text-sm font-semibold hover:opacity-90 transition-opacity">
             Try the ScrollReveal drop-in on StackBlitz →
           </a>
+          <p className="mt-4 text-[13px] text-graphite-border">
+            Step-by-step: <Link href="/guides/scrollreveal-react" className="underline underline-offset-2 hover:text-pitch-black">ScrollReveal in React and Next.js</Link>
+          </p>
         </div>
       </section>
 
