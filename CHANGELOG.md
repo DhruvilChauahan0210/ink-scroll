@@ -8,26 +8,28 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### Site
 
-- **Homepage redesign — "the page is the pen".** A new `/` built the way the
-  sites that win design awards are built: two colours and one accent (paper,
-  ink, vermilion; flipped in dark mode), editorial type (Instrument Serif for
-  every headline, Big Shoulders only for numbers and the wordmark), almost no
-  boxes, and one story told by scroll. The page reacts to the hand: a hero of
-  264 generative ink streamlines draws itself the moment the curtain lifts
-  and drifts in three depths with the pointer, the cursor is a brush that
-  leaves fading ink on the hero, a vermilion nib cursor grows into a labelled
-  ring over anything it can open, and buttons pull towards the hand. Every
-  scroll motion is the library's own API: a 320vh pinned chapter where
-  fourteen contour rings ink in under `scrollDraw`, a manifesto whose words
-  arrive through `scrollText`, the eight APIs on a pinned horizontal rail
-  scrubbed by `scrollAnimate`, numbers that count with `scrollCounter`,
-  weight bars drawn to length, the hero's exit and the nav's hairline progress
-  through `scrollAnimate`, then a sticky dark finale the last chapter slides
-  up to reveal. Lenis smooth scroll (demo-only dependency), a one-second ink
-  preloader that runs once per tab, paper grain. All of it is pointer-gated
-  and reduced-motion-safe. Styles scoped under `.home`; the mascot stays off
-  `/`. The examples count reads `EXAMPLE_COUNT`. The old homepage demo
-  components are no longer imported but stay in the repo.
+- **Homepage redesign.** A new `/` built on the grammar the premium
+  animation-library sites share (motion.dev, animejs.com, lenis.dev): black
+  by default, one glowing rendered object, quiet type, hairlines and room.
+  The object is ours — a torus knot as a wireframe of 60 SVG strokes,
+  projected with perspective and shaded by depth, computed on the server so
+  it is there at first paint, drawn in by `scrollDraw` on load, then turning
+  slowly and leaning toward the pointer. Geist throughout (no extra font
+  fetch), one warm-gold accent, a dark/light pair where light is the same
+  page as a pen drawing on off-white. Every scroll motion is the library's
+  own API: a 300vh pinned panel where fourteen contour rings ink in under
+  `scrollDraw`, a `scrollText` manifesto, the eight APIs on a pinned
+  horizontal rail scrubbed by `scrollAnimate`, `scrollCounter` numbers,
+  weight bars drawn to length, the hero's exit and the nav's hairline
+  progress through `scrollAnimate`. Lenis smooth scroll (demo-only
+  dependency), magnetic buttons, a glowing finale. Styles scoped under
+  `.home`; the mascot stays off `/`. The examples count reads
+  `EXAMPLE_COUNT`. The old homepage demo components are no longer imported
+  but stay in the repo.
+- **Dark is the site default.** With no stored preference the no-flash
+  script now adds `.dark`; a stored `light` is the only thing that keeps it
+  off. Every page already had the dark theme — this only changes the first
+  impression.
 - **Migration guides** at `/guides`: AOS in Next.js, AOS in React, ScrollReveal
   in React and Next.js, vivus in React — the searches those libraries' users
   make. Each leads with `npx svg-scroll-draw migrate`, the hook, the StackBlitz

@@ -66,25 +66,27 @@ export function ContourDraw() {
       easing="ease-in-out"
     >
       <div className="draw-sticky">
-        <div className="draw-top">
-          <span className="label"><b>01</b> / scrollDraw</span>
-          <h2 id="draw-title" className="h2">Scroll <em>is</em> the pen.</h2>
-        </div>
-        <div className="contour">
-          <svg viewBox="0 0 1000 840" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
-            {PATHS.map((p, i) => (
-              <path key={i} d={p.d} className={p.accent ? 'ring ring-accent' : 'ring'} />
-            ))}
-          </svg>
-        </div>
-        <div className="draw-bottom">
-          <p className="body">
-            Fourteen rings, drawn by your scroll position. Go back up and they un-draw.
-            No timeline to tune, no plugin to buy — one call, and the stroke follows the page.
-          </p>
-          <code className="draw-code">
-            <b>scrollDraw</b>(&apos;#rings&apos;, {'{'} stagger: 0.045, easing: &apos;ease-in-out&apos; {'}'})
-          </code>
+        <div className="draw-panel">
+          <div className="draw-top">
+            <span className="label"><b>01</b> / scrollDraw</span>
+            <h2 id="draw-title" className="h2">Scroll is the pen. <span className="dim">Scrub it.</span></h2>
+          </div>
+          <div className="contour">
+            <svg viewBox="0 0 1000 840" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+              {PATHS.map((p, i) => (
+                <path key={i} d={p.d} className={p.accent ? 'ring ring-accent' : 'ring'} />
+              ))}
+            </svg>
+          </div>
+          <div className="draw-bottom">
+            <p className="body">
+              Fourteen rings, drawn by your scroll position. Go back up and they un-draw.
+              No timeline to tune, no plugin to buy — one call, and the stroke follows the page.
+            </p>
+            <code className="draw-code">
+              <b>scrollDraw</b>(&apos;#rings&apos;, {'{'} stagger: 0.045, easing: &apos;ease-in-out&apos; {'}'})
+            </code>
+          </div>
         </div>
       </div>
     </ScrollDraw>

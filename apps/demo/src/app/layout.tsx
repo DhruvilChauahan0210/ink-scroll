@@ -6,7 +6,8 @@ import { TITLE_TEMPLATE } from "./_lib/seo";
 
 const THEME_SCRIPT = `(function(){
   var s = localStorage.getItem('theme');
-  if (s === 'dark') document.documentElement.classList.add('dark');
+  // Dark is the default; a stored 'light' is the only thing that keeps it off.
+  if (s !== 'light') document.documentElement.classList.add('dark');
 })();`;
 
 const geistSans = Geist({

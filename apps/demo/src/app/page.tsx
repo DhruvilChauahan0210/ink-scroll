@@ -1,21 +1,18 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Big_Shoulders, Instrument_Serif } from 'next/font/google';
 import './home.css';
 import { MobileMenu } from '@/components/MobileMenu';
 import { SmoothScroll } from '@/components/home/SmoothScroll';
-import { Preloader } from '@/components/home/Preloader';
 import { HomeThemeToggle } from '@/components/home/HomeThemeToggle';
+import { Progress } from '@/components/home/Progress';
+import { Knot } from '@/components/home/Knot';
+import { ScrollFx } from '@/components/home/ScrollFx';
+import { Magnetic } from '@/components/home/Magnetic';
 import { ContourDraw } from '@/components/home/ContourDraw';
 import { Manifesto } from '@/components/home/Manifesto';
+import { ApiRail } from '@/components/home/ApiRail';
 import { Counters } from '@/components/home/Counters';
 import { VersusBars } from '@/components/home/VersusBars';
-import { InkField } from '@/components/home/InkField';
-import { InkTrail } from '@/components/home/InkTrail';
-import { Cursor } from '@/components/home/Cursor';
-import { Progress } from '@/components/home/Progress';
-import { ApiRail } from '@/components/home/ApiRail';
-import { ScrollFx } from '@/components/home/ScrollFx';
 import { CodeTabs } from '@/components/home/CodeTabs';
 import { CopyCommand } from '@/components/home/CopyCommand';
 import { COMPETITORS, SELF, MEASURED_ON } from '@/data/competitors';
@@ -24,22 +21,6 @@ import { EXAMPLE_COUNT } from '@/data/examples-index';
 export const metadata: Metadata = {
   alternates: { canonical: 'https://svg-scroll-draw.vercel.app' },
 };
-
-/* The two voices of the page: a condensed display for the big words, an
-   italic serif for the one soft word in each line. */
-const display = Big_Shoulders({
-  subsets: ['latin'],
-  weight: ['800', '900'],
-  variable: '--font-ink-display',
-  display: 'swap',
-});
-const serif = Instrument_Serif({
-  subsets: ['latin'],
-  weight: '400',
-  style: ['normal', 'italic'],
-  variable: '--font-ink-serif',
-  display: 'swap',
-});
 
 const GH = 'https://github.com/DhruvilChauahan0210/ink-scroll';
 const NPM = 'https://www.npmjs.com/package/svg-scroll-draw';
@@ -100,11 +81,10 @@ function Mark() {
 export default function HomePage() {
   const marquee = [...FRAMEWORKS, ...FRAMEWORKS];
   return (
-    <div className={`home ${display.variable} ${serif.variable}`}>
+    <div className="home">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <SmoothScroll />
-      <Preloader />
-      <Cursor />
+      <Magnetic />
 
       {/* ── Nav ──────────────────────────────────────────────────────── */}
       <header className="nav">
@@ -113,59 +93,61 @@ export default function HomePage() {
           <Mark />
           svg-scroll-draw
         </Link>
-        <div className="nav-center">v{SELF.version} — {SELF.gzipKb} KB — MIT</div>
+        <nav className="nav-links" aria-label="Primary">
+          <Link href="/docs">Docs</Link>
+          <Link href="/examples">Examples</Link>
+          <Link href="/guides">Guides</Link>
+          <Link href="/blocks">Blocks</Link>
+          <Link href="/blog">Blog</Link>
+        </nav>
         <div className="nav-right">
-          <nav className="nav-links" aria-label="Primary">
-            <Link href="/docs">Docs</Link>
-            <Link href="/examples">Examples</Link>
-            <Link href="/guides">Guides</Link>
-            <Link href="/blocks">Blocks</Link>
-            <a href={GH} target="_blank" rel="noopener noreferrer">GitHub</a>
-          </nav>
+          <a href={GH} className="nav-gh" target="_blank" rel="noopener noreferrer">GitHub</a>
           <HomeThemeToggle />
+          <Link href="/docs" className="btn btn-sm nav-cta">Get started</Link>
           <div className="nav-menu"><MobileMenu /></div>
         </div>
       </header>
 
       <main>
         {/* ── Hero ─────────────────────────────────────────────────── */}
-        <section className="hero" aria-label="Introduction" data-cursor="draw">
-          <InkField />
-          <InkTrail />
+        <section className="hero" aria-label="Introduction">
           <ScrollFx
-            className="hero-inner"
-            props={{ opacity: [1, 0], transform: ['translateY(0px)', 'translateY(-90px)'] }}
+            className="hero-stage"
+            props={{ opacity: [1, 0.15], transform: ['translateY(0px) scale(1)', 'translateY(-60px) scale(0.92)'] }}
             trigger={{ start: 'top top', end: 'bottom top' }}
             triggerSelector=".hero"
             easing="ease-in"
           >
-            <h1 className="hero-words">
-              <span className="mask" style={{ '--i': 0 } as React.CSSProperties}><span>The page</span></span>
-              <span className="mask is-italic" style={{ '--i': 1 } as React.CSSProperties}><span>draws</span></span>
-              <span className="mask is-offset" style={{ '--i': 2 } as React.CSSProperties}><span>itself.</span></span>
-            </h1>
-            <div className="hero-foot">
-              <div>
-                <p className="hero-lede">
-                  <b>svg-scroll-draw</b> is an SVG and scroll animation library. It draws paths, reveals
-                  content, pins sections, splits text and scrubs video from scroll — on the browser’s own
-                  scroll timeline wherever it can.
-                </p>
-                <div className="hero-meta label">
-                  <span><b>{SELF.gzipKb} KB</b> gzipped</span>
-                  <span><b>0</b> dependencies</span>
-                  <span><b>623</b> tests</span>
-                  <span><b>MIT</b></span>
-                </div>
-              </div>
+            <Knot />
+          </ScrollFx>
+          <div className="hero-foot">
+            <div>
+              <h1 className="h1">
+                The scroll animation library <span className="dim">that draws.</span>
+              </h1>
+              <p className="hero-sub">
+                Draw SVG paths, reveal content, pin sections and scrub video from scroll —
+                on the browser’s own scroll timeline where it has one. {SELF.gzipKb} KB, zero dependencies.
+              </p>
+            </div>
+            <div>
               <div className="hero-cta">
                 <CopyCommand />
-                <Link href="/docs" className="btn btn-solid" data-magnetic data-cursor="">Read the docs</Link>
-                <span className="scroll-cue label"><i /> scroll</span>
+                <Link href="/docs" className="btn btn-solid" data-magnetic>Get started</Link>
               </div>
+              <p className="hero-note" style={{ marginTop: 14, textAlign: 'right' }}>Free and open source · MIT</p>
             </div>
-          </ScrollFx>
+          </div>
         </section>
+
+        <div className="strip" aria-label="At a glance">
+          <span><b>{SELF.gzipKb} KB</b> gzipped</span>
+          <span><b>0</b> dependencies</span>
+          <span><b>623</b> tests</span>
+          <span><b>195</b> browser tests × 3 engines</span>
+          <span><b>8</b> framework wrappers</span>
+          <span><b>MIT</b></span>
+        </div>
 
         {/* ── 01 Draw ──────────────────────────────────────────────── */}
         <section className="draw" aria-labelledby="draw-title">
@@ -186,7 +168,7 @@ export default function HomePage() {
           <div className="chapter-head">
             <span className="label"><b>03</b> / the toolkit</span>
             <div>
-              <h2 id="inst-title" className="h2">Eight <em>instruments,</em> one hand.</h2>
+              <h2 id="inst-title" className="h2">Eight small APIs. <span className="dim">One hand.</span></h2>
               <p className="body">
                 Every API is its own entry point with the same instance shape — destroy, replay,
                 pause, resume, seek, getProgress — so learning one teaches you the rest. Keep scrolling;
@@ -201,7 +183,7 @@ export default function HomePage() {
         <section className="chapter" aria-labelledby="num-title">
           <div className="chapter-head">
             <span className="label"><b>04</b> / scrollCounter</span>
-            <h2 id="num-title" className="h2">Tested in <em>real</em> browsers.</h2>
+            <h2 id="num-title" className="h2">Tested in real browsers, <span className="dim">not just in theory.</span></h2>
           </div>
           <Counters />
         </section>
@@ -211,10 +193,10 @@ export default function HomePage() {
           <div className="chapter-head">
             <span className="label"><b>05</b> / weight</span>
             <div>
-              <h2 id="w-title" className="h2">A fifth of the <em>bytes.</em></h2>
+              <h2 id="w-title" className="h2">A fifth of the bytes <span className="dim">for the effects you ship.</span></h2>
               <p className="body">
-                The scroll effects you actually ship — drawing, reveals, pins, counters — in one
-                import. Most pages add a single entry point and stop there.
+                Drawing, reveals, pins, counters — in one import. Most pages add a single entry
+                point and stop there.
               </p>
             </div>
           </div>
@@ -235,8 +217,8 @@ export default function HomePage() {
           <div className="code-grid">
             <div>
               <span className="label"><b>06</b> / your stack</span>
-              <h2 id="code-title" className="h2" style={{ marginTop: 18 }}>Write it the way <em>your</em> framework writes.</h2>
-              <p className="body" style={{ marginTop: 24 }}>
+              <h2 id="code-title" className="h2" style={{ marginTop: 16 }}>Written the way <span className="dim">your framework writes.</span></h2>
+              <p className="body" style={{ marginTop: 20 }}>
                 A component in React and Vue, an action in Svelte, a hook in Solid, a custom element
                 for plain HTML. SSR-safe: importing on a server never touches the DOM.
               </p>
@@ -254,7 +236,7 @@ export default function HomePage() {
           <div className="chapter-head">
             <span className="label"><b>07</b> / switching</span>
             <div>
-              <h2 id="sw-title" className="h2">Already on AOS? <em>Change one import.</em></h2>
+              <h2 id="sw-title" className="h2">Already on AOS? <span className="dim">Change one import.</span></h2>
               <p className="body">
                 Each has a drop-in that keeps its API and your markup, tested side by side against
                 the real library in three browsers — and a React hook that cleans up after itself.
@@ -263,7 +245,7 @@ export default function HomePage() {
           </div>
           <div className="switch">
             {SWITCH.map((s) => (
-              <Link href={s.guide} className="switch-row" key={s.from} data-cursor="guide">
+              <Link href={s.guide} className="switch-row" key={s.from}>
                 <span className="switch-from"><small>from</small>{s.from}</span>
                 <span className="switch-entry">{s.entry}</span>
                 <span className="switch-arrow" aria-hidden="true">→</span>
@@ -278,19 +260,19 @@ export default function HomePage() {
 
         {/* ── Final ────────────────────────────────────────────────── */}
         <section className="final" aria-labelledby="final-title">
-          <h2 id="final-title" className="final-words">
-            Start<em>drawing.</em>
-          </h2>
+          <h2 id="final-title" className="final-words">Start <em>drawing</em> today.</h2>
+          <p className="final-sub">One install, one call, and the page follows the scroll.</p>
           <div className="final-cta">
             <CopyCommand />
-            <Link href="/docs" className="btn" data-magnetic>Read the docs</Link>
+            <Link href="/docs" className="btn btn-solid" data-magnetic>Read the docs</Link>
             <a href={GH} target="_blank" rel="noopener noreferrer" className="btn" data-magnetic>Star on GitHub</a>
           </div>
 
           <footer className="foot">
             <div className="foot-col">
               <p className="foot-meta">
-                svg-scroll-draw v{SELF.version} · {SELF.gzipKb} KB gzipped · 623 tests · 195 browser tests × 3 engines · MIT
+                svg-scroll-draw v{SELF.version}<br />
+                {SELF.gzipKb} KB gzipped · 623 tests · 195 browser tests × 3 engines · MIT
               </p>
             </div>
             <div className="foot-col">
@@ -315,7 +297,6 @@ export default function HomePage() {
               <Link href="/blog">Blog</Link>
             </div>
           </footer>
-          <div className="wordmark" aria-hidden="true"><span>svg-scroll-draw</span></div>
         </section>
       </main>
     </div>
