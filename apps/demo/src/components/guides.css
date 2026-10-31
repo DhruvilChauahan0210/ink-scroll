@@ -1,0 +1,141 @@
+/* /guides and each guide, in the homepage's design. Scoped `.site .guide`. */
+
+.site .gd-head { display: grid; gap: clamp(32px, 4vw, 64px); align-items: center; }
+@media (min-width: 1100px) { .site .gd-head { grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr); } }
+.site .gd-title { max-width: 16ch; font-size: clamp(38px, 5.2vw, 84px); }
+
+/* fig. 1 — the swap */
+.site .sw { margin: 0; min-width: 0; }
+.site .sw-grid { border-top: 1px solid var(--fg-3); }
+.site .sw-row {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr) 44px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--line);
+}
+.site .sw-hd { padding: 10px 0; border-bottom-color: var(--line-2); font: 500 10px/1.4 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-3); }
+.site .sw-hd span:last-child { color: var(--accent); }
+.site .sw-k { font: 500 10px/1.4 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-3); }
+.site .sw-b { font: 400 13.5px/1.4 var(--mono); color: var(--fg-3); text-decoration: line-through; text-decoration-color: var(--line-2); overflow-wrap: anywhere; }
+.site .sw-a { font: 500 13.5px/1.4 var(--mono); color: var(--fg); overflow-wrap: anywhere; }
+.site .sw-arrow { width: 40px; height: 12px; overflow: visible; color: var(--accent); }
+.site .sw-ink { fill: none; stroke-width: 1.3; stroke-linecap: round; stroke-linejoin: round; }
+.site .sw-cap { margin-top: 14px; font: 500 11px/1.4 var(--mono); letter-spacing: 0.04em; color: var(--fg-3); }
+
+/* Body */
+.site .gd-body { padding: 0 max(var(--gutter), calc((100% - 1560px) / 2)); }
+.site .gd-sec { max-width: 920px; padding: clamp(48px, 5.5vw, 84px) 0; border-bottom: 1px solid var(--line); }
+.site .gd-sec:last-child { border-bottom: 0; }
+.site .gd-h2 {
+  margin: 20px 0 24px;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: clamp(30px, 3.3vw, 52px);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  color: var(--fg);
+  text-wrap: balance;
+}
+.site .gd-p { margin: 0 0 14px; font-size: 15px; line-height: 1.7; color: var(--fg-2); }
+
+/* 01 — the problem, as the sheet's numbered notes */
+.site .gd-notes { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--fg-3); }
+.site .gd-notes li {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--fg-2);
+}
+.site .gd-notes-n { font: 500 12px/1.9 var(--mono); color: var(--accent); }
+
+/* 02 — the steps, along an inked rail */
+.site .rail { position: relative; }
+.site .rail-svg { position: absolute; left: 15px; top: 16px; bottom: 16px; width: 2px; height: calc(100% - 32px); overflow: visible; color: var(--accent); }
+.site .rail::before { content: ''; position: absolute; left: 15.5px; top: 16px; bottom: 16px; width: 1px; background: var(--line-2); }
+.site .rail-ink { fill: none; stroke-width: 2; }
+.site .gd-steps { margin: 0; padding: 0; list-style: none; }
+.site .gd-step { position: relative; padding: 0 0 clamp(36px, 4vw, 56px) 60px; }
+.site .gd-step:last-child { padding-bottom: 0; }
+.site .gd-node {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--line-2);
+  border-radius: 50%;
+  background: var(--bg);
+  font: 500 12px/1 var(--mono);
+  color: var(--fg);
+}
+.site .gd-step-k { margin: 6px 0 8px; font: 500 11px/1.4 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-3); }
+.site .gd-step-k span { text-transform: none; letter-spacing: 0.02em; color: var(--fg-2); }
+.site .gd-h3 { margin: 0 0 12px; font-size: clamp(22px, 2vw, 28px); font-weight: 500; line-height: 1.15; letter-spacing: -0.03em; color: var(--fg); }
+
+/* 03 — what stays the same */
+.site .gd-checks { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--fg-3); }
+.site .gd-checks li {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  align-items: start;
+  padding: 15px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--fg-2);
+}
+.site .gd-checks svg { width: 16px; height: 16px; margin-top: 4px; fill: none; stroke: var(--accent); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+/* 04 — questions */
+.site .gd-faq { border-top: 1px solid var(--fg-3); }
+.site .gd-q { display: grid; grid-template-columns: 52px minmax(0, 1fr); padding: 22px 0 8px; border-bottom: 1px solid var(--line); }
+.site .gd-q-n { font: 500 12px/1.9 var(--mono); color: var(--accent); }
+.site .gd-q-t { margin: 0 0 8px; font-size: clamp(18px, 1.6vw, 22px); font-weight: 500; line-height: 1.3; letter-spacing: -0.02em; color: var(--fg); }
+
+/* The index */
+.site .gd-index { padding: clamp(40px, 5vw, 80px) max(var(--gutter), calc((100% - 1560px) / 2)); }
+.site .gd-index .ex-rel-t { font-size: clamp(20px, 2vw, 28px); }
+.site .sw-row.is-same .sw-b { text-decoration: none; color: var(--fg-2); }
+.site .sw-eq { width: 40px; text-align: center; font: 500 14px/1 var(--mono); color: var(--fg-3); }
+@media (max-width: 559px) {
+  .site .sw-row { grid-template-columns: 58px minmax(0, 1fr) 28px minmax(0, 1fr); gap: 8px; }
+  .site .sw-arrow, .site .sw-eq { width: 28px; }
+  .site .sw-b, .site .sw-a { font-size: 12px; }
+}
+
+/* Contents, beside the body on wide screens. In-page links glide. */
+html:has(.site .guide) { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html:has(.site .guide) { scroll-behavior: auto; } }
+.site .gd-sec h2 { scroll-margin-top: calc(var(--nav-h) + 90px); }
+.site .gd-toc { display: none; }
+@media (min-width: 1200px) {
+  .site .gd-body { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: clamp(40px, 5vw, 96px); align-items: start; }
+  .site .gd-main { order: 1; min-width: 0; }
+  .site .gd-toc {
+    order: 2;
+    display: block;
+    position: sticky;
+    top: calc(var(--nav-h) + 40px);
+    margin-top: clamp(48px, 5.5vw, 84px);
+  }
+}
+.site .gd-toc-h { margin: 0; padding-bottom: 8px; border-bottom: 1px solid var(--line-2); font: 500 10px/1.4 var(--mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--fg-3); }
+.site .gd-toc-a {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 13.5px;
+  color: var(--fg-2);
+  transition: color 0.2s;
+}
+.site .gd-toc-a span { font: 500 10.5px/1.9 var(--mono); color: var(--fg-3); }
+.site .gd-toc-a:hover { color: var(--fg); }
+.site .gd-toc-a:hover span { color: var(--accent); }

@@ -37,8 +37,8 @@ months, 81% to the homepage; `/vs-gsap` at position 11 with 425 impressions.
   Wrap the route in `components/site/SiteShell` (nav, tokens, sign-off footer), add
   the route to `components/site/routes.ts` (keeps the mascot off it), give the page
   a `pg-head` opening and restyle its own pieces (shared: `CodeBox` listings,
-  `Plate` previews, `tb` title strips, `pill`s). Done: `/docs`, `/examples` (+ detail).
-  Next, in order: `/guides` (+ detail), `/blocks`, `/blog` (+ posts), the
+  `Plate` previews, `tb` title strips, `pill`s). Done: `/docs`, `/examples` (+ detail), `/guides` (+ each guide).
+  Also shared: `StepRail` (an inked procedure rail). Next, in order: `/blocks`, `/blog` (+ posts), the
   `vs-*` pages (one `VersusPage` template), `/changelog`, `/playground`, the
   framework landing pages, `/verify`.
 

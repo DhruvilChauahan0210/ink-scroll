@@ -1,7 +1,10 @@
 import type { Metadata } from 'next';
+import '@/components/guides.css';
 import Link from 'next/link';
 import { seoTitle } from '../_lib/seo';
 import { GUIDES } from '@/data/guides';
+import { COMPETITORS, SELF_ENTRIES } from '@/data/competitors';
+import { SiteShell } from '@/components/site/SiteShell';
 
 export const metadata: Metadata = {
   title: seoTitle('Migration Guides: AOS, ScrollReveal and vivus in React'),
@@ -10,26 +13,45 @@ export const metadata: Metadata = {
   alternates: { canonical: '/guides' },
 };
 
+const pad = (n: number) => String(n).padStart(2, '0');
+const DROP_INS = ['aos', 'scrollreveal', 'vivus'];
+
 export default function GuidesIndex() {
   return (
-    <div className="bg-light-linen text-pitch-black min-h-screen px-4 sm:px-6 md:px-12 py-14 sm:py-20">
-      <div className="max-w-3xl mx-auto">
-        <Link href="/" className="font-display font-bold text-sm tracking-tight hover:opacity-70">svg-scroll-draw</Link>
-        <h1 className="font-display font-extrabold text-[clamp(32px,6vw,56px)] leading-[0.95] tracking-[-0.04em] mt-10 mb-4">Migration guides</h1>
-        <p className="text-graphite-border text-base sm:text-lg leading-relaxed mb-10">
-          Already on AOS, ScrollReveal or vivus? Each guide moves one of them onto its drop-in in React or Next.js — the same
-          API and markup, maintained, MIT, with hooks that clean up after themselves.
-        </p>
-        <div className="grid gap-4">
-          {GUIDES.map((g) => (
-            <Link key={g.slug} href={`/guides/${g.slug}`} className="block rounded-xl border border-pitch-black bg-white p-5 hover:shadow-[4px_4px_0px_#000] transition-shadow">
-              <p className="text-[11px] uppercase tracking-[0.2em] text-graphite-border font-mono mb-1">{g.from} · {g.framework}</p>
-              <p className="font-display font-extrabold text-xl tracking-[-0.02em] mb-1">{g.title}</p>
-              <p className="text-[14px] text-graphite-border leading-relaxed">{g.description}</p>
-            </Link>
-          ))}
-        </div>
+    <SiteShell active="/guides" kicker="guides / your turn">
+      <div className="guide">
+        <header className="pg-head">
+          <p className="pg-kicker"><span>guides / {GUIDES.length} migrations</span><span>react · next.js</span></p>
+          <h1 className="pg-title">Migration guides</h1>
+          <p className="pg-lede">
+            Already on AOS, ScrollReveal or vivus? Each guide moves one of them onto its drop-in in React or
+            Next.js — the same API and markup, maintained, MIT, with hooks that clean up after themselves.
+          </p>
+          <dl className="pg-facts">
+            {DROP_INS.map((k) => (
+              <div key={k}>
+                <dt>{COMPETITORS[k].label}</dt>
+                <dd>{COMPETITORS[k].gzipKb.toFixed(1)} → {SELF_ENTRIES[k].toFixed(1)} KB</dd>
+              </div>
+            ))}
+            <div><dt>Migrate</dt><dd>1 command</dd></div>
+          </dl>
+        </header>
+        <section className="gd-index" aria-label="Guides">
+          <div className="ex-rel-list">
+            {GUIDES.map((g, i) => (
+              <Link key={g.slug} href={`/guides/${g.slug}`} className="ex-rel-row">
+                <span className="ex-rel-n">{pad(i + 1)}</span>
+                <span>
+                  <span className="ex-rel-t">{g.title}</span>
+                  <span className="ex-rel-d">{g.from} · {g.framework} — {g.description}</span>
+                </span>
+                <span className="ex-rel-go" aria-hidden="true">read →</span>
+              </Link>
+            ))}
+          </div>
+        </section>
       </div>
-    </div>
+    </SiteShell>
   );
 }

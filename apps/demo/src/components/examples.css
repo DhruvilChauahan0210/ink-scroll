@@ -59,20 +59,4 @@
 .site .ex-detail .pg-title { max-width: 18ch; font-size: clamp(38px, 5.4vw, 88px); }
 .site .ex-rel { padding: clamp(40px, 5vw, 80px) max(var(--gutter), calc((100% - 1560px) / 2)); border-top: 1px solid var(--line); }
 .site .ex-rel-h { margin: 0 0 18px; font: 500 12px/1.4 var(--mono); letter-spacing: 0.02em; color: var(--fg-3); }
-.site .ex-rel-list { border-top: 1px solid var(--fg-3); }
-.site .ex-rel-row {
-  display: grid;
-  grid-template-columns: 56px minmax(0, 1fr) auto;
-  gap: 16px;
-  align-items: baseline;
-  padding: 18px 0;
-  border-bottom: 1px solid var(--line);
-  transition: background-color 0.2s;
-}
-.site .ex-rel-row:hover { background: var(--bg-2); }
-.site .ex-rel-n { font: 500 11px/1 var(--mono); color: var(--accent); padding-left: 4px; }
-.site .ex-rel-t { display: block; font-size: clamp(18px, 1.6vw, 22px); font-weight: 500; letter-spacing: -0.02em; color: var(--fg); }
-.site .ex-rel-d { display: block; margin-top: 4px; font-size: 14px; line-height: 1.55; color: var(--fg-2); }
-.site .ex-rel-go { font: 500 11px/1 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-3); padding-right: 4px; }
-.site .ex-rel-row:hover .ex-rel-go { color: var(--accent); }
 .site .ex-rel-note { margin: 18px 0 0; max-width: 64ch; font-size: 14px; line-height: 1.6; color: var(--fg-2); }

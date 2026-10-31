@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { seoTitle } from '../../_lib/seo';
 import { GuidePage } from '@/components/GuidePage';
+import { SiteShell } from '@/components/site/SiteShell';
 import { GUIDES, GUIDE_SLUGS } from '@/data/guides';
 
 const SITE_URL = 'https://svg-scroll-draw.vercel.app';
@@ -30,5 +31,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   if (!GUIDE_SLUGS.includes(slug)) notFound();
-  return <GuidePage slug={slug} />;
+  return (
+    <SiteShell active="/guides" kicker="guides / your turn">
+      <GuidePage slug={slug} />
+    </SiteShell>
+  );
 }

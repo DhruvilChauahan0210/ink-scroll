@@ -203,3 +203,21 @@
 .site .pill:hover { color: var(--fg); border-color: var(--fg-3); }
 .site .pill[aria-pressed='true'] { background: var(--fg); border-color: var(--fg); color: var(--bg); }
 .site .pill-n { opacity: 0.55; }
+
+/* A parts list of links: number, title and note, then "open". */
+.site .ex-rel-list { border-top: 1px solid var(--fg-3); }
+.site .ex-rel-row {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: baseline;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--line);
+  transition: background-color 0.2s;
+}
+.site .ex-rel-row:hover { background: var(--bg-2); }
+.site .ex-rel-n { font: 500 11px/1 var(--mono); color: var(--accent); padding-left: 4px; }
+.site .ex-rel-t { display: block; font-size: clamp(18px, 1.6vw, 22px); font-weight: 500; letter-spacing: -0.02em; color: var(--fg); }
+.site .ex-rel-d { display: block; margin-top: 4px; font-size: 14px; line-height: 1.55; color: var(--fg-2); }
+.site .ex-rel-go { font: 500 11px/1 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-3); padding-right: 4px; }
+.site .ex-rel-row:hover .ex-rel-go { color: var(--accent); }

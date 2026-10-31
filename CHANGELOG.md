@@ -41,6 +41,16 @@ All notable changes to `svg-scroll-draw` are documented here.
   example's own page gets a breadcrumb kicker, the install command, the same
   code-and-plate row and its related examples as a parts list. The old pink
   call-to-action band and footer give way to the sign-off sheet.
+- **`/guides` and each migration guide follow.** The index is a parts list of
+  the four guides under hairline cells with each drop-in's measured weight
+  against the library it replaces. A guide opens beside fig. 1, the swap:
+  import, version, licence, gzip size and the React hook, before and after,
+  from `data/competitors.ts`, with arrows the library inks on load (a value
+  that does not change gets an equals sign instead of a strike-through).
+  Below, numbered sections: the problems as the sheet's notes, the steps
+  along a rail the library inks as you read down the procedure, what stays
+  the same as a checked list, the questions numbered, and the other guides
+  as a parts list — with a sticky contents list on wide screens.
 
 ---
 

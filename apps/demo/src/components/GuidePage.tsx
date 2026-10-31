@@ -1,38 +1,43 @@
+import './guides.css';
 import Link from 'next/link';
-import { MobileMenu } from './MobileMenu';
-import { SELF } from '@/data/competitors';
+import { COMPETITORS, SELF, SELF_ENTRIES } from '@/data/competitors';
 import { GUIDES } from '@/data/guides';
 import { jsonLd as serialiseJsonLd } from '@/lib/json-ld';
+import { CodeBox } from './site/CodeBox';
+import { StepRail } from './site/StepRail';
+import { SwapSheet, type SwapRow } from './guides/SwapSheet';
 
-function Nav() {
-  return (
-    <nav className="sticky top-0 z-50 bg-light-linen/95 backdrop-blur-sm border-b border-pitch-black flex items-center justify-between px-4 md:px-12 h-14">
-      <Link href="/" className="font-display font-bold text-sm tracking-tight hover:opacity-70 transition-opacity shrink-0">
-        svg-scroll-draw
-      </Link>
-      <div className="hidden lg:flex items-center gap-2">
-        {['Docs', 'Examples', 'Blocks', 'Guides', 'Blog'].map((l) => (
-          <Link key={l} href={`/${l.toLowerCase()}`} className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium">
-            {l}
-          </Link>
-        ))}
-      </div>
-      <div className="flex lg:hidden"><MobileMenu /></div>
-    </nav>
-  );
+const pad = (n: number) => String(n).padStart(2, '0');
+
+/** What a React user calls instead of a hand-written effect, per drop-in. */
+const HOOK: Record<string, string> = {
+  aos: 'useAOS · <AOSInit />',
+  scrollreveal: 'useScrollReveal',
+  vivus: 'useVivus',
+};
+
+function swapRows(key: string): SwapRow[] {
+  const c = COMPETITORS[key];
+  if (!c) return [];
+  return [
+    { k: 'import', before: c.name, after: `svg-scroll-draw/${key}` },
+    { k: 'version', before: `${c.version}${c.lastPublish ? ` · ${c.lastPublish.slice(0, 4)}` : ''}`, after: `${SELF.version} · maintained` },
+    { k: 'licence', before: c.license, after: 'MIT' },
+    { k: 'gzip', before: `${c.gzipKb.toFixed(1)} KB`, after: `${SELF_ENTRIES[key].toFixed(1)} KB` },
+    { k: 'in React', before: 'your own effect', after: HOOK[key] ?? 'hook' },
+  ];
 }
 
-/** Code card whose dark body fills the card, so a short sample never shows a white strip. */
-function Code({ file, children }: { file?: string; children: string }) {
+/** A section head: its number and name in a title strip, then the heading. */
+function Head({ n, k, children, id }: { n: number; k: string; children: React.ReactNode; id: string }) {
   return (
-    <div className="rounded-2xl overflow-hidden border border-pitch-black flex flex-col min-w-0">
-      {file && (
-        <div className="bg-[#111] px-4 py-2.5">
-          <span className="text-[11px] text-[#888] font-mono">{file}</span>
-        </div>
-      )}
-      <pre className="flex-1 bg-[#1c1c1c] text-[#e8e8e3] px-4 sm:px-6 py-4 text-[12px] sm:text-[13px] font-mono leading-[1.75] overflow-x-auto">{children}</pre>
-    </div>
+    <>
+      <div className="tb gd-tb">
+        <span className="tb-n">{pad(n)}</span>
+        <span>{k}</span>
+      </div>
+      <h2 id={id} className="gd-h2">{children}</h2>
+    </>
   );
 }
 
@@ -55,105 +60,122 @@ export function GuidePage({ slug }: { slug: string }) {
     },
   ];
   const others = GUIDES.filter((x) => x.slug !== g.slug);
+  const key = g.from.toLowerCase();
 
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serialiseJsonLd(jsonLd) }} />
-      <div className="bg-light-linen text-pitch-black min-h-screen">
-        <Nav />
+      <div className="guide">
 
-        <header className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-14 sm:py-20">
-          <div className="max-w-3xl mx-auto">
-            <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-4 font-mono font-medium">
-              Guide · {g.from} in {g.framework}
+        {/* ── Opening ────────────────────────────────────── */}
+        <header className="pg-head gd-head">
+          <div>
+            <p className="pg-kicker">
+              <span>guide / {g.from.toLowerCase()} in {g.framework.toLowerCase()}</span>
+              <span>{g.steps.length} steps</span>
             </p>
-            <h1 className="font-display font-extrabold text-[clamp(32px,6.5vw,64px)] leading-[0.95] tracking-[-0.04em] mb-6">{g.headline}</h1>
-            <p className="text-base sm:text-lg text-graphite-border leading-relaxed mb-8">{g.intro}</p>
-            <div className="flex flex-wrap gap-3">
-              <a href={g.starter} target="_blank" rel="noopener noreferrer" className="px-5 py-2.5 rounded-full bg-creator-pink border border-pitch-black text-sm font-semibold hover:opacity-90 transition-opacity">
-                Try it on StackBlitz →
+            <h1 className="pg-title gd-title">{g.headline}</h1>
+            <p className="pg-lede">{g.intro}</p>
+            <div className="pg-actions">
+              <a href={g.starter} target="_blank" rel="noopener noreferrer" className="btn btn-solid" data-magnetic>
+                Try it on StackBlitz ↗
               </a>
-              <Link href={g.compare.href} className="px-5 py-2.5 rounded-full border border-pitch-black text-sm font-medium hover:bg-pitch-black hover:text-light-linen transition-colors">
-                {g.compare.label}
-              </Link>
+              <Link href={g.compare.href} className="btn" data-magnetic>{g.compare.label}</Link>
             </div>
           </div>
+          <SwapSheet from={g.from} rows={swapRows(key)} />
         </header>
 
-        <section className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-12">
-          <div className="max-w-3xl mx-auto">
-            <h2 className="font-display font-extrabold text-2xl sm:text-3xl tracking-[-0.03em] mb-5">What goes wrong with the usual setup</h2>
-            <ul className="space-y-3">
-              {g.problems.map((p) => (
-                <li key={p} className="flex gap-3 text-[15px] leading-relaxed text-graphite-border">
-                  <span aria-hidden className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-pitch-black" />
-                  <span>{p}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
-
-        <section className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-12">
-          <div className="max-w-3xl mx-auto space-y-12">
-            {g.steps.map((s, i) => (
-              <div key={s.title}>
-                <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-2 font-mono font-medium">Step {i + 1}</p>
-                <h2 className="font-display font-extrabold text-2xl sm:text-3xl tracking-[-0.03em] mb-3">{s.title}</h2>
-                <p className="text-[15px] text-graphite-border leading-relaxed mb-5">{s.body}</p>
-                {s.code && <Code file={s.file}>{s.code}</Code>}
-              </div>
+        <div className="gd-body">
+          <nav className="gd-toc" aria-label="On this guide">
+            <p className="gd-toc-h">on this guide</p>
+            {[
+              ['gd-problem', 'The problem'],
+              ['gd-steps', `The steps · ${g.steps.length}`],
+              ['gd-same', 'Unchanged'],
+              ['gd-faq', `Questions · ${g.faq.length}`],
+              ['gd-more', 'More guides'],
+            ].map(([id, label], i) => (
+              <a key={id} href={`#${id}`} className="gd-toc-a"><span>{pad(i + 1)}</span>{label}</a>
             ))}
-          </div>
-        </section>
+          </nav>
+          <div className="gd-main">
 
-        <section className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-12">
-          <div className="max-w-3xl mx-auto">
-            <h2 className="font-display font-extrabold text-2xl sm:text-3xl tracking-[-0.03em] mb-5">What stays exactly the same</h2>
-            <ul className="space-y-3">
+          {/* ── 01 The problem ─────────────────────────────── */}
+          <section className="gd-sec" aria-labelledby="gd-problem">
+            <Head n={1} k="the problem" id="gd-problem">What goes wrong with the usual setup</Head>
+            <ol className="gd-notes">
+              {g.problems.map((p, i) => (
+                <li key={p}><span className="gd-notes-n">{i + 1}</span><span>{p}</span></li>
+              ))}
+            </ol>
+          </section>
+
+          {/* ── 02 The steps ───────────────────────────────── */}
+          <section className="gd-sec" aria-labelledby="gd-steps">
+            <Head n={2} k={`${g.steps.length} steps`} id="gd-steps">The switch, step by step</Head>
+            <StepRail>
+              <ol className="gd-steps">
+                {g.steps.map((s, i) => (
+                  <li key={s.title} className="gd-step">
+                    <span className="gd-node" aria-hidden="true">{i + 1}</span>
+                    <p className="gd-step-k">step {pad(i + 1)}{s.file ? <> · <span>{s.file}</span></> : null}</p>
+                    <h3 className="gd-h3">{s.title}</h3>
+                    <p className="gd-p">{s.body}</p>
+                    {s.code && <CodeBox file={s.file ?? 'snippet'}>{s.code}</CodeBox>}
+                  </li>
+                ))}
+              </ol>
+            </StepRail>
+          </section>
+
+          {/* ── 03 Unchanged ───────────────────────────────── */}
+          <section className="gd-sec" aria-labelledby="gd-same">
+            <Head n={3} k="unchanged" id="gd-same">What stays exactly the same</Head>
+            <ul className="gd-checks">
               {g.unchanged.map((u) => (
-                <li key={u} className="flex gap-3 text-[15px] leading-relaxed text-graphite-border">
-                  <span aria-hidden className="text-[#22c55e] font-bold">✓</span>
+                <li key={u}>
+                  <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5 L6.5 12 L13 4.5" /></svg>
                   <span>{u}</span>
                 </li>
               ))}
             </ul>
-          </div>
-        </section>
+          </section>
 
-        <section className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-12">
-          <div className="max-w-3xl mx-auto">
-            <h2 className="font-display font-extrabold text-2xl sm:text-3xl tracking-[-0.03em] mb-8">Questions</h2>
-            <div className="space-y-6">
-              {g.faq.map((item) => (
-                <div key={item.q}>
-                  <h3 className="font-display font-extrabold text-lg tracking-[-0.02em] mb-2">{item.q}</h3>
-                  <p className="text-graphite-border leading-relaxed text-[15px]">{item.a}</p>
+          {/* ── 04 Questions ───────────────────────────────── */}
+          <section className="gd-sec" aria-labelledby="gd-faq">
+            <Head n={4} k="questions" id="gd-faq">Questions</Head>
+            <div className="gd-faq">
+              {g.faq.map((item, i) => (
+                <div key={item.q} className="gd-q">
+                  <span className="gd-q-n">Q{i + 1}</span>
+                  <div>
+                    <h3 className="gd-q-t">{item.q}</h3>
+                    <p className="gd-p">{item.a}</p>
+                  </div>
                 </div>
               ))}
             </div>
-          </div>
-        </section>
+          </section>
 
-        <section className="px-4 sm:px-6 md:px-12 py-12 bg-marketplace-gray border-b border-pitch-black">
-          <div className="max-w-3xl mx-auto">
-            <h2 className="font-display font-extrabold text-2xl tracking-[-0.02em] mb-6">More migration guides</h2>
-            <div className="flex flex-wrap gap-3">
+          {/* ── 05 More guides ─────────────────────────────── */}
+          <section className="gd-sec" aria-labelledby="gd-more">
+            <Head n={5} k="more guides" id="gd-more">More migration guides</Head>
+            <div className="ex-rel-list">
               {others.map((o) => (
-                <Link key={o.slug} href={`/guides/${o.slug}`} className="px-4 py-2 rounded-full border border-pitch-black bg-light-linen text-sm font-medium hover:shadow-[3px_3px_0px_#000] transition-shadow">
-                  {o.from} in {o.framework}
+                <Link key={o.slug} href={`/guides/${o.slug}`} className="ex-rel-row">
+                  <span className="ex-rel-n">{pad(GUIDES.indexOf(o) + 1)}</span>
+                  <span>
+                    <span className="ex-rel-t">{o.from} in {o.framework}</span>
+                    <span className="ex-rel-d">{o.description}</span>
+                  </span>
+                  <span className="ex-rel-go" aria-hidden="true">open →</span>
                 </Link>
               ))}
             </div>
+          </section>
           </div>
-        </section>
-
-        <footer className="px-6 md:px-12 py-6 text-center text-[11px] font-mono text-graphite-border">
-          svg-scroll-draw · MIT · {SELF.gzipKb} KB gzipped ·{' '}
-          <a href="https://github.com/DhruvilChauahan0210/ink-scroll" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-pitch-black transition-colors">
-            GitHub
-          </a>
-        </footer>
+        </div>
       </div>
     </>
   );
