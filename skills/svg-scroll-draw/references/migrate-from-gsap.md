@@ -7,7 +7,7 @@ the full toolset at no charge in 2025, and it does far more than this library.
 Cost is not a reason to migrate. Reasons that are real:
 
 - **Size.** gsap 3.15.0 core + ScrollTrigger is 45.3 KB gzipped, 47.5 KB with
-  DrawSVG. svg-scroll-draw's main entry is 10.2 KB; single entries are smaller
+  DrawSVG. svg-scroll-draw's main entry is 10.7 KB; single entries are smaller
   (`/reveal` 4.5 KB, `/text` 2.5 KB, `/pin` 1.6 KB, `/snap` 1.7 KB).
 - **Native CSS.** Simple `scrollDraw` / `scrollAnimate` configs compile to
   `animation-timeline: view()` and run with no per-frame JavaScript in Chrome/Edge

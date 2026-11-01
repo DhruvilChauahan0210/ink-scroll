@@ -167,6 +167,6 @@ export const NOTES: Note[] = [
   { key: 'section', at: [-28 + 230, -27], elbow: [330, 250], end: 470, anchor: 'end', title: 'SECTION · WHAT YOU HOLD', value: 'one call' },
   { key: 'cap', at: [54 + 846, -96 - 10], elbow: [930, 92], end: 996, anchor: 'end', title: 'CAP', value: 'MIT · open source' },
   { key: 'feed', at: [-36 + 150, 90 + 11], elbow: [240, 640], end: 10, anchor: 'start', title: 'FEED', value: 'native timeline · rAF fallback' },
-  { key: 'converter', at: [26 + 440, 94 + 17], elbow: [520, 668], end: 720, anchor: 'end', title: 'CONVERTER · INK', value: '10.2 KB gzipped' },
+  { key: 'converter', at: [26 + 440, 94 + 17], elbow: [520, 668], end: 720, anchor: 'end', title: 'CONVERTER · INK', value: '10.7 KB gzipped' },
   { key: 'barrel', at: [36 + 600, 31], elbow: [860, 470], end: 996, anchor: 'end', title: 'BARREL', value: '0 dependencies' },
 ];

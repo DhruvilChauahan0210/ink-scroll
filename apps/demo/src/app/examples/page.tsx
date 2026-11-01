@@ -34,7 +34,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'SVG Scroll Animation Examples — svg-scroll-draw',
-    description: 'Real-world SVG scroll animations. No GSAP. ~10 KB.',
+    description: 'Real-world SVG scroll animations. No GSAP. ~11 KB.',
   },
 };
 

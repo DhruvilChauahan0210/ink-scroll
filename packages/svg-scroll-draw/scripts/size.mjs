@@ -2,109 +2,89 @@
 /**
  * Measures the real gzipped size of every built entry point.
  *
- * Two modes:
- *   node scripts/size.mjs          → print a markdown table (paste into README)
- *   node scripts/size.mjs --check  → fail if any entry exceeds its budget
+ *   node scripts/size.mjs            → print the table
+ *   node scripts/size.mjs --write    → regenerate the size tables in both READMEs
+ *   node scripts/size.mjs --check    → fail if an entry exceeds its budget, or if
+ *                                      either README's table no longer matches
+ *
+ * An entry's size is its own file plus every shared chunk it imports, gzipped
+ * together (see bundle-size.mjs) — the ESM entries share code through chunks, so
+ * gzipping an entry file alone would report a few hundred bytes for the library.
  *
  * The budgets below exist so a size regression breaks the build instead of
  * quietly making the README's claims false — which is exactly what happened
- * between v1 and v2.9.0 (README said 4.4 KB; the real figure was 8.9 KB).
+ * between v1 and v2.9.0 (README said 4.4 KB; the real figure was 8.9 KB). The
+ * README tables are written by this script for the same reason: the hand-pasted
+ * one drifted, and missed three entries outright.
  */
-import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
-import { gzipSync } from 'node:zlib';
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { findEntries, closure, measure, measureTogether, entryFile, CDN } from './bundle-size.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-const DIST = join(ROOT, 'dist');
 
-// Budget = current size + ~15% headroom, rounded. Tighten as the library shrinks.
+/*
+ * Budget = current size + a little headroom. Tighten as the library shrinks.
+ *
+ * When the ESM build moved to shared chunks, an entry measured as shipped files
+ * started paying for the `import … from './chunk-….mjs'` lines that join it to
+ * its chunks, 0.1–0.5 KB gzipped, and the budgets moved with it. Through a
+ * bundler nothing grew: esbuild-bundling `export *` from each entry measured
+ * within 0.01 KB of the unsplit build, and pin 0.3 KB smaller.
+ */
 const BUDGETS_KB = {
-  '.':              10.5,
+  '.':              11.0,
   // The whole library in one IIFE, web component included — the single file a
-  // `<script src>` user downloads, and until now the only entry with no budget.
+  // `<script src>` user downloads. Not split, so unchanged by the chunks.
   cdn:              11.5,
-  react:            11.5,
-  vue:              11.5,
-  nuxt:             11.5,
-  svelte:           11.0,
-  solid:            11.0,
-  angular:          11.0,
-  astro:            10.5,
-  group:             9.0,
-  // 6.57 after the shared devtools registry (2.10.1) taught scrollDraw to register.
-  'web-component':   6.8,
-  reveal:            4.8,
+  react:            12.1,
+  vue:              12.2,
+  nuxt:             12.3,
+  svelte:           11.6,
+  solid:            11.6,
+  angular:          11.6,
+  astro:            11.1,
+  group:             9.6,
+  'web-component':   7.2,
+  reveal:            5.2,
   // The AOS drop-in, stylesheet included (AOS itself is 6.7 KB with aos.css).
   aos:               3.2,
   'cdn-aos':         3.4,
   // The ScrollReveal drop-in (ScrollReveal 4.0.9 itself is 5.6 KB).
   scrollreveal:      4.9,
   'cdn-scrollreveal': 4.9,
-  // React hooks for the drop-ins; each bundles its drop-in (React is external).
+  // React hooks for the drop-ins. Each shares its drop-in's chunk, so an app
+  // using AOS and useAOS ships the drop-in once (React is external).
   'aos/react':          3.6,
   'scrollreveal/react': 5.2,
   'vivus/react':        4.6,
   // The vivus drop-in (vivus 0.4.6 itself is 4.1 KB).
   vivus:             4.2,
   'cdn-vivus':       4.2,
-  // 4.30 after teaching the default `distance` about `scrollContainer`.
-  horizontal:        4.5,
-  timeline:          3.5,
-  text:              2.8,
-  video:             2.2,
-  cinematic:         2.1,
-  progress:          2.0,
+  horizontal:        4.8,
+  timeline:          3.9,
+  text:              2.9,
+  video:             2.4,
+  cinematic:         2.3,
+  progress:          2.2,
   devtools:          1.9,
-  pin:               1.8,
-  // 1.68 once scrollSnap registered with devtools (2.10.1).
-  snap:              1.9,
+  snap:              2.0,
+  // 1.39 once clamp got a file of its own; it used to drag every easing along.
+  pin:               1.5,
   lenis:             0.5,
 };
 
-function gzipKb(file) {
-  return gzipSync(readFileSync(file), { level: 9 }).length / 1024;
-}
+/*
+ * Entries an app imports together. Before the chunks, each entry bundled its
+ * own engine and these were close to the sum of their parts (main + react was
+ * 18.1 KB); the budget is what keeps the sharing from quietly coming undone.
+ */
+const COMBINATIONS = [
+  { names: ['.', 'react'], budget: 14.0 },
+];
 
-function rawKb(file) {
-  return statSync(file).size / 1024;
-}
-
-/** Discover every built ESM entry as `name → path`. */
-function findEntries() {
-  const entries = new Map();
-  const rootEsm = join(DIST, 'index.mjs');
-  if (existsSync(rootEsm)) entries.set('.', rootEsm);
-
-  for (const name of readdirSync(DIST)) {
-    const candidate = join(DIST, name, 'index.mjs');
-    if (existsSync(candidate)) entries.set(name, candidate);
-    // Nested entries, e.g. aos/react.
-    const sub = join(DIST, name);
-    if (!statSync(sub).isDirectory()) continue;
-    for (const child of readdirSync(sub)) {
-      const nested = join(sub, child, 'index.mjs');
-      if (existsSync(nested)) entries.set(`${name}/${child}`, nested);
-    }
-  }
-
-  /*
-   * The CDN bundle is an IIFE, so the index.mjs scan above never saw it — the one
-   * file a script-tag user actually downloads was the one file with no size
-   * budget. Its dev twin stays out: unminified on purpose, and nobody should be
-   * shipping it.
-   */
-  const cdn = join(DIST, 'cdn', 'svg-scroll-draw.global.js');
-  if (existsSync(cdn)) entries.set('cdn', cdn);
-  const cdnAos = join(DIST, 'cdn', 'aos.global.js');
-  if (existsSync(cdnAos)) entries.set('cdn-aos', cdnAos);
-  const cdnSr = join(DIST, 'cdn', 'scrollreveal.global.js');
-  if (existsSync(cdnSr)) entries.set('cdn-scrollreveal', cdnSr);
-  const cdnVivus = join(DIST, 'cdn', 'vivus.global.js');
-  if (existsSync(cdnVivus)) entries.set('cdn-vivus', cdnVivus);
-
-  return entries;
-}
+// ── Measure ──────────────────────────────────────────────────────────────────
 
 const entries = findEntries();
 
@@ -114,12 +94,107 @@ if (entries.size === 0) {
 }
 
 const rows = [...entries]
-  .map(([name, file]) => ({ name, raw: rawKb(file), gzip: gzipKb(file) }))
-  .sort((a, b) => b.gzip - a.gzip);
+  .map(([name, file]) => ({ name, ...measure(closure(file)) }))
+  .sort((a, b) => b.gzip - a.gzip || a.name.localeCompare(b.name));
+const byName = new Map(rows.map((r) => [r.name, r]));
 
-const check = process.argv.includes('--check');
+const combos = COMBINATIONS.map((c) => {
+  const files = c.names.map((n) => entryFile(n));
+  return { ...c, ...(files.every(Boolean) ? measureTogether(files) : { raw: NaN, gzip: NaN }) };
+});
 
-if (check) {
+// ── README tables ────────────────────────────────────────────────────────────
+
+const kb = (n) => `${n.toFixed(1)} KB`;
+const label = (n) =>
+  n === '.' ? '`svg-scroll-draw`'
+  : n in CDN ? `\`dist/cdn/${CDN[n]}\``
+  : `\`svg-scroll-draw/${n}\``;
+const together = (names) => names.map(label).join(' + ');
+
+/** The root README: every entry, largest first. */
+function rootTable() {
+  const pad = Math.max(...rows.map((r) => label(r.name).length));
+  const lines = [
+    `| ${'Entry point'.padEnd(pad)} | Raw | Gzipped |`,
+    `|${'-'.repeat(pad + 2)}|----:|--------:|`,
+    ...rows.map((r) => `| ${label(r.name).padEnd(pad)} | ${kb(r.raw)} | **${kb(r.gzip)}** |`),
+    '',
+    ...combos.map((c) =>
+      `Entries share code through chunks instead of each carrying its own copy, so ` +
+      `${together(c.names)} together is **${kb(c.gzip)}**, not ` +
+      `${c.names.map((n) => kb(byName.get(n).gzip)).join(' + ')}.`),
+  ];
+  return lines.join('\n');
+}
+
+/*
+ * The npm README: the entries people ask about, in the order they ask, with the
+ * caveats that keep each figure honest. Same measurements, fewer rows.
+ */
+const NPM_ROWS = [
+  { names: ['.'], before: '(main, every core API)' },
+  { names: ['react'], before: '(includes the engine)' },
+  { names: ['.', 'react'], before: '(together; the engine ships once)' },
+  { names: ['reveal'] },
+  { names: ['text'] },
+  { names: ['video'] },
+  { names: ['scrollreveal'] },
+  { names: ['vivus'] },
+  { names: ['aos'], before: '(styles included)' },
+  { names: ['snap'] },
+  { names: ['devtools'], after: '(dev only)' },
+  { names: ['pin'] },
+];
+
+function npmTable() {
+  const lines = ['| Entry | Gzipped |', '|---|---|'];
+  for (const { names, before, after } of NPM_ROWS) {
+    const gzip = names.length === 1
+      ? byName.get(names[0])?.gzip
+      : combos.find((c) => c.names.join() === names.join())?.gzip;
+    if (gzip === undefined || Number.isNaN(gzip)) throw new Error(`size.mjs: no measurement for ${names.join(' + ')}`);
+    lines.push(`| ${together(names)}${before ? ` ${before}` : ''} | ${kb(gzip)}${after ? ` ${after}` : ''} |`);
+  }
+  return lines.join('\n');
+}
+
+const START = '<!-- size-table:start -->';
+const END = '<!-- size-table:end -->';
+
+const READMES = [
+  { file: join(ROOT, '..', '..', 'README.md'), name: 'README.md', table: rootTable },
+  { file: join(ROOT, 'README.md'), name: 'packages/svg-scroll-draw/README.md', table: npmTable },
+];
+
+/** The README with its table replaced, or an error string. */
+function withTable({ file, name, table }) {
+  const src = readFileSync(file, 'utf8');
+  const start = src.indexOf(START);
+  const end = src.indexOf(END);
+  if (start === -1 || end === -1 || end < start) {
+    return { error: `${name} has no ${START} … ${END} block for the size table` };
+  }
+  const next = `${src.slice(0, start + START.length)}\n${table()}\n${src.slice(end)}`;
+  return { src, next };
+}
+
+// ── Modes ────────────────────────────────────────────────────────────────────
+
+const args = process.argv.slice(2);
+
+if (args.includes('--write')) {
+  for (const readme of READMES) {
+    if (!existsSync(readme.file)) continue;
+    const { error, src, next } = withTable(readme);
+    if (error) { console.error(`✗ ${error}`); process.exit(1); }
+    if (next !== src) writeFileSync(readme.file, next);
+    console.log(`${next === src ? '·' : '✓'} ${readme.name}${next === src ? ' (already current)' : ' size table written'}`);
+  }
+  process.exit(0);
+}
+
+if (args.includes('--check')) {
   let failed = 0;
   let unbudgeted = 0;
 
@@ -136,31 +211,47 @@ if (check) {
     }
   }
 
+  for (const c of combos) {
+    if (!(c.gzip <= c.budget)) {
+      console.error(`✗ ${c.names.join(' + ')} together — ${c.gzip.toFixed(2)} KB gzip exceeds budget ${c.budget} KB`);
+      failed++;
+    }
+  }
+
   if (failed > 0) {
     console.error(
       `\n${failed} ${failed === 1 ? 'entry' : 'entries'} over budget. ` +
       `Either shrink the code or raise the budget in scripts/size.mjs — ` +
-      `and update every size claim in README.md to match.`
+      `then run \`npm run size -- --write\` and \`npm run check:claims\`.`
     );
     process.exit(1);
   }
 
+  /*
+   * The tables are generated, so a stale one is a forgotten `--write`, not a
+   * judgement call. A README missing from disk (a packed tarball) is skipped.
+   */
+  const stale = [];
+  for (const readme of READMES) {
+    if (!existsSync(readme.file)) continue;
+    const { error, src, next } = withTable(readme);
+    if (error) stale.push(error);
+    else if (next !== src) stale.push(`${readme.name}: the size table does not match the build`);
+  }
+  if (stale.length) {
+    for (const s of stale) console.error(`✗ ${s}`);
+    console.error('\nRegenerate with `npm run size -- --write`.');
+    process.exit(1);
+  }
+
   console.log(
-    `✓ All ${rows.length} entries within budget` +
-    (unbudgeted ? ` (${unbudgeted} unbudgeted)` : '')
+    `✓ All ${rows.length} entries and ${combos.length} combination${combos.length === 1 ? '' : 's'} within budget` +
+    (unbudgeted ? ` (${unbudgeted} unbudgeted)` : '') +
+    '; README size tables current'
   );
   process.exit(0);
 }
 
-// Report mode — markdown, ready to paste into the README.
-const label = (n) => (n === '.' ? '`svg-scroll-draw`' : `\`svg-scroll-draw/${n}\``);
-const pad = Math.max(...rows.map((r) => label(r.name).length));
-
-console.log(`| Entry point${' '.repeat(Math.max(0, pad - 11))} | Raw | Gzipped |`);
-console.log(`|${'-'.repeat(pad + 2)}|----:|--------:|`);
-for (const { name, raw, gzip } of rows) {
-  console.log(
-    `| ${label(name).padEnd(pad)} | ${raw.toFixed(1)} KB | **${gzip.toFixed(1)} KB** |`
-  );
-}
-console.log(`\nTotal entries: ${rows.length}`);
+// Report mode — the root README's table, as it would be written.
+console.log(rootTable());
+console.log(`\nTotal entries: ${rows.length}. Write it into both READMEs with \`npm run size -- --write\`.`);

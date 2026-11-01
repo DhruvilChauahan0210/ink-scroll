@@ -1,50 +1,123 @@
+import { readFileSync, writeFileSync } from 'node:fs';
 import { defineConfig } from 'tsup';
 
-const base = (entry: Record<string, string>, external: string[] = []) =>
-  ({
-    format: ['esm', 'cjs'] as const,
-    outExtension: ({ format }: { format: string }) => ({ js: format === 'cjs' ? '.cjs' : '.mjs' }),
-    dts: true,
-    treeshake: true,
-    minify: true,
-    entry,
-    external,
-  });
+/**
+ * Every package entry, as `dist path → source`. One list feeds both module
+ * formats, so an entry cannot exist in one and be missing from the other.
+ */
+const ENTRIES: Record<string, string> = {
+  index:                      'src/index.ts',
+  'react/index':              'src/react/index.tsx',
+  'vue/index':                'src/vue/index.ts',
+  'svelte/index':             'src/svelte/index.ts',
+  'solid/index':              'src/solid/index.ts',
+  'angular/index':            'src/angular/index.ts',
+  'astro/index':              'src/astro/index.ts',
+  'nuxt/index':               'src/nuxt/index.ts',
+  'group/index':              'src/group/index.ts',
+  'cinematic/index':          'src/cinematic/index.ts',
+  'timeline/index':           'src/timeline/index.ts',
+  'web-component/index':      'src/web-component/index.ts',
+  'video/index':              'src/video/index.ts',
+  'text/index':               'src/text/index.ts',
+  'devtools/index':           'src/devtools/index.ts',
+  'pin/index':                'src/pin/index.ts',
+  'snap/index':               'src/snap/index.ts',
+  'lenis/index':              'src/lenis/index.ts',
+  'reveal/index':             'src/reveal/index.ts',
+  'aos/index':                'src/aos/index.ts',
+  'scrollreveal/index':       'src/scrollreveal/index.ts',
+  'vivus/index':              'src/vivus/index.ts',
+  'aos/react/index':          'src/aos/react.ts',
+  'scrollreveal/react/index': 'src/scrollreveal/react.ts',
+  'vivus/react/index':        'src/vivus/react.ts',
+  'progress/index':           'src/progress/index.ts',
+  'horizontal/index':         'src/horizontal/index.ts',
+};
+
+/*
+ * React hooks for the drop-ins. "use client" leads each built file so a Next.js
+ * App Router layout can render <AOSInit /> without a wrapper of its own.
+ *
+ * It is written after the build rather than as a `banner`: a banner lands on
+ * every output file, shared chunks included, and a chunk the plain
+ * `svg-scroll-draw/aos` entry also imports must not turn that entry into a
+ * client module. Tsup's Rollup pass strips the directive from source anyway
+ * ("use client" ... was ignored).
+ */
+const USE_CLIENT = ['aos/react/index', 'scrollreveal/react/index', 'vivus/react/index'];
+
+const addUseClient = (ext: '.mjs' | '.cjs') => async () => {
+  for (const name of USE_CLIENT) {
+    const file = `dist/${name}${ext}`;
+    const code = readFileSync(file, 'utf8');
+    if (!code.startsWith('"use client";')) writeFileSync(file, `"use client";\n${code}`);
+  }
+};
+
+/*
+ * package.json declares `./dist/web-component/*` as the one ESM path with side
+ * effects, because importing it registers <scroll-draw>. That holds only while
+ * `customElements.define` stays in the entry file. If another entry ever imports
+ * the web component, esbuild moves its code into a shared chunk, a bundler that
+ * trusts `sideEffects` drops `import 'svg-scroll-draw/web-component'`, and the
+ * element silently never registers. Fail the build instead.
+ */
+const assertSideEffectsStayPut = () => {
+  if (!readFileSync('dist/web-component/index.mjs', 'utf8').includes('customElements.define(')) {
+    throw new Error(
+      'customElements.define moved out of dist/web-component/index.mjs into a shared chunk; ' +
+      'list that chunk under "sideEffects" in package.json or stop importing src/web-component elsewhere.',
+    );
+  }
+};
+
+const shared = {
+  entry: ENTRIES,
+  // Peer dependencies; tsup externalises them anyway, this just says so.
+  external: ['react', 'vue', 'solid-js'],
+  dts: true,
+  treeshake: true,
+  minify: true,
+};
 
 export default defineConfig([
-  { ...base({ index: 'src/index.ts' }), clean: true },
-  base({ 'react/index':   'src/react/index.tsx'   }, ['react']),
-  base({ 'vue/index':     'src/vue/index.ts'       }, ['vue']),
-  base({ 'svelte/index':  'src/svelte/index.ts'    }),
-  base({ 'solid/index':   'src/solid/index.ts'     }, ['solid-js']),
-  base({ 'angular/index': 'src/angular/index.ts'   }),
-  base({ 'astro/index':   'src/astro/index.ts'     }),
-  base({ 'nuxt/index':    'src/nuxt/index.ts'      }, ['vue']),
-  base({ 'group/index':        'src/group/index.ts'          }),
-  base({ 'cinematic/index':   'src/cinematic/index.ts'      }),
-  base({ 'timeline/index':    'src/timeline/index.ts'       }),
-  base({ 'web-component/index': 'src/web-component/index.ts' }),
-  base({ 'video/index':    'src/video/index.ts'    }),
-  base({ 'text/index':     'src/text/index.ts'     }),
-  base({ 'devtools/index': 'src/devtools/index.ts' }),
-  base({ 'pin/index':     'src/pin/index.ts'       }),
-  base({ 'snap/index':    'src/snap/index.ts'      }),
-  base({ 'lenis/index':   'src/lenis/index.ts'     }),
-  base({ 'reveal/index':    'src/reveal/index.ts'      }),
-  base({ 'aos/index':       'src/aos/index.ts'         }),
-  base({ 'scrollreveal/index': 'src/scrollreveal/index.ts' }),
-  base({ 'vivus/index':     'src/vivus/index.ts'       }),
   /*
-   * React hooks for the drop-ins. "use client" leads each built file so a Next.js
-   * App Router layout can render <AOSInit /> without a wrapper of its own.
-   * `treeshake: false` skips tsup's Rollup pass, which strips module directives
-   * ("use client" ... was ignored); esbuild's bundling still drops unused code.
+   * ESM: every entry in one build with code splitting, so the engine and
+   * whatever else two entries have in common is written once, to a shared chunk
+   * (`dist/chunk-*.mjs`) that each of them imports. Built one entry per config,
+   * an app importing `svg-scroll-draw` and `svg-scroll-draw/react` shipped the
+   * engine twice — and two copies of its module state, so `AOS.refresh()` from
+   * `svg-scroll-draw/aos` never reached the instance `useAOS` had started.
+   *
+   * scripts/size.mjs counts an entry as its own file plus every chunk it
+   * imports, so the per-entry figures stay what a user actually ships.
    */
-  { ...base({ 'aos/react/index': 'src/aos/react.ts' }, ['react']), banner: { js: '"use client";' }, treeshake: false },
-  { ...base({ 'scrollreveal/react/index': 'src/scrollreveal/react.ts' }, ['react']), banner: { js: '"use client";' }, treeshake: false },
-  { ...base({ 'vivus/react/index': 'src/vivus/react.ts' }, ['react']), banner: { js: '"use client";' }, treeshake: false },
-  base({ 'progress/index':  'src/progress/index.ts'   }),
-  base({ 'horizontal/index': 'src/horizontal/index.ts' }),
+  {
+    ...shared,
+    format: ['esm'],
+    splitting: true,
+    outExtension: () => ({ js: '.mjs' }),
+    clean: true,
+    onSuccess: async () => {
+      await addUseClient('.mjs')();
+      assertSideEffectsStayPut();
+    },
+  },
+  /*
+   * CJS stays one self-contained file per entry. Esbuild splits ESM only; tsup's
+   * CJS splitting is an experimental rewrite layered on top, and `require()`
+   * callers are mostly Node and test runners, where bytes on the wire are moot.
+   * The cost: under `require()` each entry still carries its own copy of any
+   * module state, as every entry did before the ESM build was split.
+   */
+  {
+    ...shared,
+    format: ['cjs'],
+    splitting: false,
+    outExtension: () => ({ js: '.cjs' }),
+    onSuccess: addUseClient('.cjs'),
+  },
   /*
    * Two CDN builds from the same entry.
    *

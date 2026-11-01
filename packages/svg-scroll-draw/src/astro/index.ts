@@ -1,5 +1,5 @@
 import { createEngine } from '../core/engine';
-import { createAnimateEngine } from '../animate';
+import { createAnimateEngine } from '../animate/engine';
 import { scrollCounter } from '../counter';
 import { scrollText } from '../text';
 import type { ScrollDrawOptions, ScrollDrawInstance } from '../core/types';
@@ -8,7 +8,7 @@ import type { ScrollCounterOptions } from '../counter';
 import type { ScrollTextOptions } from '../text';
 import { warn } from '../core/env';
 
-export { scrollDraw } from '../index';
+export { scrollDraw } from '../core/scroll-draw';
 export type { ScrollDrawOptions, ScrollDrawInstance };
 
 /**

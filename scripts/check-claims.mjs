@@ -23,10 +23,11 @@
  * true at the time of a release and must not be rewritten.
  */
 import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
-import { gzipSync } from 'node:zlib';
 import { execFileSync } from 'node:child_process';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+// The same measurement size.mjs budgets: an entry plus every chunk it imports.
+import { entryKb } from '../packages/svg-scroll-draw/scripts/bundle-size.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -114,15 +115,14 @@ function actualBrowserTestCount() {
 }
 
 /**
- * Real gzipped size of the main entry, in KB to one decimal.
+ * Real gzipped size of the main entry, in KB to one decimal: dist/index.mjs and
+ * the shared chunks it imports. Alone, that file is a page of re-exports.
  *
  * Returns null when dist/ has not been built — the count claims are still worth
  * checking on a machine that has not run a build.
  */
 function actualMainEntryKb() {
-  const dist = join(ROOT, 'packages/svg-scroll-draw/dist/index.mjs');
-  if (!existsSync(dist)) return null;
-  return Math.round((gzipSync(readFileSync(dist), { level: 9 }).length / 1024) * 10) / 10;
+  return entryKb('.');
 }
 
 // ── Actual example count, straight from the demo source ──────────────────────
@@ -262,12 +262,6 @@ const API_ENTRY = {
   scrollReveal: 'reveal', scrollPin: 'pin', scrollSnap: 'snap', scrollText: 'text',
   scrollVideo: 'video', scrollHorizontal: 'horizontal', scrollProgress: 'progress',
 };
-
-function entryKb(entry) {
-  const dist = join(ROOT, 'packages/svg-scroll-draw/dist', entry, 'index.mjs');
-  if (!existsSync(dist)) return null;
-  return Math.round((gzipSync(readFileSync(dist), { level: 9 }).length / 1024) * 10) / 10;
-}
 
 /** Every file a reader can see: both READMEs, the whole demo source, the launch drafts. */
 function publicFiles() {

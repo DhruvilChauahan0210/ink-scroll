@@ -1,7 +1,9 @@
 import type { EasingName } from '../core/types';
-import { EASINGS, clamp } from '../core/utils';
+import { EASINGS } from '../core/easing';
+import { clamp } from '../core/math';
 import { warn } from '../core/env';
-import { prefersReducedMotion, watchReducedMotion } from '../core/motion';
+import { prefersReducedMotion } from '../core/motion';
+import { watchReducedMotion } from '../core/motion-watch';
 import { _register, _unregister } from '../core/registry';
 
 export interface ScrollSnapOptions {

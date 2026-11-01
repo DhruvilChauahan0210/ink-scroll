@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 // Capture the trigger window each element is given, without running the engine.
 const engine = vi.hoisted(() => ({ calls: [] as { trigger: { start: string; end: string } }[] }));
-vi.mock('../animate', () => ({
+vi.mock('../animate/engine', () => ({
   createAnimateEngine: (_el: Element, opts: { trigger: { start: string; end: string } }) => {
     engine.calls.push({ trigger: opts.trigger });
     return { destroy: () => {} };

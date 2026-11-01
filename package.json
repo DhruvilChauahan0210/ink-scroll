@@ -13,7 +13,7 @@
     "vercel-build": "npm run build:lib:lowmem && npm run build:demo",
     "test": "vitest run",
     "typecheck": "npm run typecheck --workspace=packages/svg-scroll-draw && tsc --noEmit --project apps/demo",
-    "size": "npm run size --workspace=packages/svg-scroll-draw",
+    "size": "npm run size --workspace=packages/svg-scroll-draw --",
     "check:claims": "node scripts/check-claims.mjs",
     "verify": "npm run typecheck --workspace=packages/svg-scroll-draw && npm run build:lib && tsc --noEmit --project apps/demo && npm run lint --workspace=apps/demo -- --max-warnings=0 && node apps/demo/scripts/check-jsx-text.mjs && npm run test && npm run size --workspace=packages/svg-scroll-draw -- --check && npm run check:claims",
     "test:e2e": "npm run test:e2e --workspace=packages/svg-scroll-draw"

@@ -13,7 +13,7 @@ import { C, Note, Sec, Toc, pad } from '@/components/stack/parts';
 
 const TITLE = 'Next.js Scroll Animation for the App Router, SSR-Safe';
 const DESCRIPTION =
-  "Scroll animations for Next.js: one 'use client' component, SSR-safe, no hydration errors. Reveal, pin, text split, SVG draw. 10.2 KB gzip, MIT, TypeScript.";
+  "Scroll animations for Next.js: one 'use client' component, SSR-safe, no hydration errors. Reveal, pin, text split, SVG draw. 10.7 KB gzip, MIT, TypeScript.";
 
 /** Shown in the hero so the copy-paste answer is above the fold. */
 const HERO_SNIPPET = `// components/FadeUp.tsx

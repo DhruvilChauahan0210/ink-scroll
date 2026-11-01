@@ -1,0 +1,525 @@
+import type { EasingName, ScrollDrawInstance, TriggerConfig } from '../core/types';
+import { EASINGS } from '../core/easing';
+import { parseTrigger, computeProgress, computeTriggers } from '../core/trigger';
+import { measureTriggerFrame } from '../core/trigger-frame';
+import { lerpColor } from '../core/color';
+import { cssTimingFor } from '../core/css-easing';
+import { _register, _unregister } from '../core/registry';
+import { warn } from '../core/env';
+
+// ── Public types ──────────────────────────────────────────────────────────────
+
+export interface ScrollAnimateOptions {
+  props: Record<string, string | number | [string | number, string | number]>;
+  trigger?: TriggerConfig;
+  easing?: EasingName | ((t: number) => number);
+  speed?: number;
+  once?: boolean;
+  axis?: 'x' | 'y';
+  scrollContainer?: string | Element;
+  native?: boolean;
+  /**
+   * Scale animation speed by scroll velocity — faster scrolling = faster animation.
+   * Pass `true` for default sensitivity (1) or a number to control it.
+   * Higher values = more dramatic speed-up. Default sensitivity: 1.
+   */
+  velocityScale?: boolean | number;
+  /**
+   * Honour `prefers-reduced-motion: reduce` by applying the final state and not
+   * animating. Default: `true`.
+   *
+   * Set to `false` only when the movement is *scroll-linked scrubbing* rather
+   * than autonomous motion — it advances solely as the user scrolls, 1:1 with
+   * their input, so it is direct manipulation rather than something that plays at
+   * them. `scrollHorizontal` sets this, because jumping to the final state there
+   * would leave every panel but the last unreachable inside the sticky
+   * `overflow: hidden` container.
+   */
+  respectReducedMotion?: boolean;
+  /**
+   * Element whose geometry defines the trigger window, when that is not the
+   * element being animated. Defaults to the animated element.
+   *
+   * Needed whenever the animated element cannot supply the scroll length itself —
+   * the case that matters is a `position: sticky` stage, where the pinned element
+   * is exactly one viewport tall and all of the scroll room belongs to its
+   * container. Resolving `top top` → `bottom bottom` against the pinned element
+   * there yields tStart === tEnd, a zero-length window, and no movement at all.
+   *
+   * Setting this disables the native CSS fast path: `animation-timeline: view()`
+   * always measures the element the animation is attached to, so it cannot express
+   * a separate subject.
+   */
+  triggerElement?: Element;
+  onProgress?: (alpha: number) => void;
+  onComplete?: () => void;
+  /** Fires when scroll enters the trigger zone (scrolling forward). */
+  onEnter?: () => void;
+  /** Fires when scroll exits the trigger zone at the end (scrolling forward). */
+  onLeave?: () => void;
+  /** Fires when scroll re-enters the trigger zone from the end (scrolling back). */
+  onEnterBack?: () => void;
+  /** Fires when scroll exits the trigger zone at the start (scrolling back). */
+  onLeaveBack?: () => void;
+}
+
+// ── Value interpolation ───────────────────────────────────────────────────────
+
+function isColorValue(val: string): boolean {
+  return val.startsWith('#') || val.startsWith('rgb') || val.startsWith('hsl');
+}
+
+function parseTransformFns(str: string): Array<{ fn: string; nums: number[]; units: string[] }> {
+  const result: Array<{ fn: string; nums: number[]; units: string[] }> = [];
+  const re = /([\w]+)\(([^)]*)\)/g;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(str)) !== null) {
+    const nums: number[] = [];
+    const units: string[] = [];
+    const raw = m[2].trim();
+    if (raw) {
+      for (const arg of raw.split(/[\s,]+/)) {
+        const pm = arg.match(/^([-+]?[\d.eE]+)(.*)$/);
+        nums.push(pm ? parseFloat(pm[1]) : 0);
+        units.push(pm ? pm[2] : '');
+      }
+    }
+    result.push({ fn: m[1], nums, units });
+  }
+  return result;
+}
+
+function interpolateTransform(from: string, to: string, t: number): string {
+  const fp = parseTransformFns(from);
+  const tp = parseTransformFns(to);
+  if (fp.length === 0 || fp.length !== tp.length) return t < 1 ? from : to;
+  return fp.map((f, i) => {
+    const tf = tp[i];
+    if (f.fn !== tf.fn || f.nums.length !== tf.nums.length) {
+      return t < 1
+        ? `${f.fn}(${f.nums.map((n, j) => `${n}${f.units[j]}`).join(', ')})`
+        : `${tf.fn}(${tf.nums.map((n, j) => `${n}${tf.units[j]}`).join(', ')})`;
+    }
+    return `${f.fn}(${f.nums.map((n, j) => `${n + (tf.nums[j] - n) * t}${f.units[j]}`).join(', ')})`;
+  }).join(' ');
+}
+
+export function interpolateValue(from: string | number, to: string | number, t: number): string {
+  if (typeof from === 'number' && typeof to === 'number') {
+    return String(from + (to - from) * t);
+  }
+  const f = String(from);
+  const tStr = String(to);
+
+  if (isColorValue(f)) return lerpColor(f, tStr, t);
+  if (f.includes('(')) return interpolateTransform(f, tStr, t);
+
+  const fm = f.match(/^([-+]?[\d.]+)(.*)$/);
+  const tm = tStr.match(/^([-+]?[\d.]+)(.*)$/);
+  if (fm && tm) {
+    const fNum = parseFloat(fm[1]);
+    const tNum = parseFloat(tm[1]);
+    return `${fNum + (tNum - fNum) * t}${fm[2] || tm[2]}`;
+  }
+
+  return t < 1 ? f : tStr;
+}
+
+// ── Prop normalisation ────────────────────────────────────────────────────────
+
+function toCSSProp(prop: string): string {
+  return prop.replace(/([A-Z])/g, (m) => `-${m.toLowerCase()}`);
+}
+
+interface PropEntry {
+  prop: string;
+  from: string | number;
+  to: string | number;
+}
+
+// ── Native CSS fast path ──────────────────────────────────────────────────────
+
+const NATIVE_SAFE_PROPS = new Set([
+  'opacity', 'transform', 'background-color', 'color',
+  'filter', 'scale', 'translate', 'rotate',
+]);
+
+let animateNativeUid = 0;
+
+/** Custom property the engine mirrors progress into, for CSS to read. */
+const PROGRESS_VAR = '--scroll-draw-progress';
+
+function supportsNativeTimeline(): boolean {
+  return (
+    typeof CSS !== 'undefined' &&
+    typeof CSS.supports === 'function' &&
+    CSS.supports('animation-timeline: view()')
+  );
+}
+
+// ── Engine ────────────────────────────────────────────────────────────────────
+
+export function createAnimateEngine(
+  el: Element,
+  options: ScrollAnimateOptions,
+): ScrollDrawInstance {
+  const NOOP: ScrollDrawInstance = {
+    destroy: () => {}, replay: () => {}, pause: () => {},
+    resume: () => {}, seek: () => {}, getProgress: () => 0,
+  };
+  if (typeof window === 'undefined') return NOOP;
+
+  const {
+    props,
+    trigger  = {},
+    easing   = 'ease-out',
+    speed    = 1,
+    once     = false,
+    axis     = 'y',
+    scrollContainer,
+    native   = true,
+    velocityScale = false,
+    respectReducedMotion = true,
+    triggerElement,
+    onProgress,
+    onComplete,
+    onEnter,
+    onLeave,
+    onEnterBack,
+    onLeaveBack,
+  } = options;
+
+  const prefersReduced =
+    respectReducedMotion && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const easeFn         = typeof easing === 'function' ? easing : (EASINGS[easing] ?? EASINGS['ease-out']);
+  const startConfig    = parseTrigger(trigger.start ?? 'top bottom');
+  const endConfig      = parseTrigger(trigger.end   ?? 'bottom top');
+
+  /** Element the trigger window is measured from — the animated one unless overridden. */
+  const triggerEl: Element = triggerElement ?? el;
+
+  const scrollEl: Element | null =
+    typeof scrollContainer === 'string'
+      ? document.querySelector(scrollContainer)
+      : (scrollContainer ?? null);
+
+  const entries: PropEntry[] = Object.entries(props).map(([key, val]) => ({
+    prop: toCSSProp(key),
+    from: Array.isArray(val) ? val[0] : '',
+    to:   Array.isArray(val) ? val[1] : val,
+  }));
+
+  function resolveFromValues(): void {
+    const computed = window.getComputedStyle(el);
+    for (const entry of entries) {
+      if (entry.from === '') {
+        entry.from = computed.getPropertyValue(entry.prop).trim() || '0';
+      }
+    }
+  }
+
+  function applyFinal(): void {
+    for (const entry of entries) {
+      (el as HTMLElement).style.setProperty(entry.prop, String(entry.to));
+    }
+  }
+
+  /**
+   * Inline styles as they were before this engine touched the element.
+   *
+   * Captured before the first write so `destroy()` can put them back. Without
+   * this the engine leaves whatever the last frame wrote: destroy an element
+   * mid-animation and it stays frozen at, say, opacity 0.34 and translateY(21px)
+   * for the rest of the page's life — permanently faded and offset, which is
+   * worse for the user than never having animated at all. `scrollPin` and
+   * `scrollText` both restore on destroy; this one silently did not, which also
+   * made `scrollReveal`'s documented "restore original styles" untrue.
+   */
+  const savedInline = new Map<string, string>();
+  for (const prop of [...entries.map((e) => e.prop), PROGRESS_VAR]) {
+    savedInline.set(prop, (el as HTMLElement).style.getPropertyValue(prop));
+  }
+
+  function restoreInline(): void {
+    for (const [prop, value] of savedInline) {
+      if (value) (el as HTMLElement).style.setProperty(prop, value);
+      else (el as HTMLElement).style.removeProperty(prop);
+    }
+  }
+
+  if (prefersReduced) {
+    applyFinal();
+    onComplete?.();
+    // Nothing to tear down, but destroy() must still undo the styles it wrote —
+    // otherwise the contract depends on the visitor's motion preference.
+    return { ...NOOP, destroy: restoreInline, getProgress: () => 1 };
+  }
+
+  resolveFromValues();
+
+  // ── Native fast path ────────────────────────────────────────────────────────
+
+  /**
+   * The CSS timing function that reproduces this instance's easing, or null
+   * when there is none — see core/css-easing. Resolved once, because it is both
+   * the eligibility test and the value the stylesheet needs.
+   */
+  const cssTiming = typeof easing === 'string' ? cssTimingFor(easing) : null;
+
+  function nativeEligible(): boolean {
+    if (!native) return false;
+    if (!supportsNativeTimeline()) return false;
+    if (!cssTiming) return false;
+    if (axis !== 'y') return false;
+    if (scrollEl) return false;
+    // `animation-timeline: view()` always measures the element the animation is
+    // attached to, so a separate trigger subject cannot be expressed in CSS.
+    if (triggerEl !== el) return false;
+    if (once) return false;
+    if (speed !== 1) return false;
+    if (onProgress || onComplete || onEnter || onLeave || onEnterBack || onLeaveBack) return false;
+    if (velocityScale !== false) return false;
+    if ((trigger.start ?? 'top bottom').trim() !== 'top bottom') return false;
+    if ((trigger.end   ?? 'bottom top').trim() !== 'bottom top') return false;
+    for (const entry of entries) {
+      if (!NATIVE_SAFE_PROPS.has(entry.prop)) return false;
+    }
+    return true;
+  }
+
+  function buildNative(): ScrollDrawInstance {
+    const cls = `ssd-a-${++animateNativeUid}`;
+    const fromBody = entries.map((e) => `${e.prop}:${e.from}`).join(';');
+    const toBody   = entries.map((e) => `${e.prop}:${e.to}`).join(';');
+    const style    = document.createElement('style');
+    style.setAttribute('data-ssd-animate', '');
+    style.textContent =
+      `@keyframes ${cls}{from{${fromBody}}to{${toBody}}}` +
+      `.${cls}{animation-name:${cls};animation-duration:auto;` +
+      `animation-timing-function:${cssTiming};` +
+      `animation-fill-mode:both;animation-timeline:view();` +
+      `animation-range:cover 0% cover 100%;}`;
+    document.head.appendChild(style);
+    (el as HTMLElement).classList.add(cls);
+
+    const scrollPos = (): number => (axis === 'x' ? window.scrollX : window.scrollY);
+    const vpSize    = (): number => (axis === 'x' ? window.innerWidth : window.innerHeight);
+    const liveTriggers = () => {
+      const rect = el.getBoundingClientRect();
+      return computeTriggers({ top: rect.top, height: rect.height }, scrollPos(), vpSize(), startConfig, endConfig);
+    };
+
+    // The JS path below registers too. This one used to skip it, so a plain
+    // scrollAnimate() — which takes this path in every browser with scroll
+    // timelines — never showed up in devtools.
+    _register(el, {
+      type: 'animate',
+      getProgress: () => instance.getProgress(),
+      getTrigger: liveTriggers,
+    });
+
+    const instance: ScrollDrawInstance = {
+      destroy() {
+        (el as HTMLElement).classList.remove(cls);
+        style.remove();
+        // seek()/pause() on this path write inline styles too, so the same
+        // restore applies whether or not the animation was ever scrubbed.
+        (el as HTMLElement).style.animationPlayState = '';
+        restoreInline();
+        _unregister(el);
+      },
+      replay() {
+        (el as HTMLElement).classList.remove(cls);
+        void (el as HTMLElement).offsetWidth;
+        (el as HTMLElement).classList.add(cls);
+      },
+      pause()  { (el as HTMLElement).style.animationPlayState = 'paused'; },
+      resume() { (el as HTMLElement).style.animationPlayState = ''; },
+      seek(p: number) {
+        const clamped = Math.min(1, Math.max(0, p));
+        (el as HTMLElement).classList.remove(cls);
+        for (const entry of entries) {
+          (el as HTMLElement).style.setProperty(entry.prop, interpolateValue(entry.from, entry.to, clamped));
+        }
+      },
+      getProgress() {
+        const { tStart, tEnd } = liveTriggers();
+        return easeFn(computeProgress(scrollPos(), tStart, tEnd, speed));
+      },
+    };
+    return instance;
+  }
+
+  if (nativeEligible()) return buildNative();
+
+  // ── JS scroll engine ────────────────────────────────────────────────────────
+
+  let tStart           = 0;
+  let tEnd             = 0;
+  let rafId            = 0;
+  let isVisible        = false;
+  let paused           = false;
+  let frozenAlpha      = -1;
+  let currentAlpha     = 0;
+  let completed        = false;
+  let prevRawProgress  = NaN;
+  let prevVelScroll    = -1;
+  let prevVelTime      = 0;
+
+  const scrollPos = (): number => {
+    if (scrollEl) return axis === 'x' ? scrollEl.scrollLeft : scrollEl.scrollTop;
+    return axis === 'x' ? window.scrollX : window.scrollY;
+  };
+
+  const vpSize = (): number => {
+    if (scrollEl) return axis === 'x' ? scrollEl.clientWidth : scrollEl.clientHeight;
+    return axis === 'x' ? window.innerWidth : window.innerHeight;
+  };
+
+  function cacheTriggers(): void {
+    const frame  = measureTriggerFrame(triggerEl, scrollEl, axis);
+    const result = computeTriggers(frame, frame.scroll, vpSize(), startConfig, endConfig);
+    tStart = result.tStart;
+    tEnd   = result.tEnd;
+  }
+
+  function applyAlpha(alpha: number): void {
+    (el as HTMLElement).style.setProperty(PROGRESS_VAR, String(alpha));
+    for (const entry of entries) {
+      (el as HTMLElement).style.setProperty(entry.prop, interpolateValue(entry.from, entry.to, alpha));
+    }
+    onProgress?.(alpha);
+  }
+
+  function fireScrollCallbacks(raw: number): void {
+    if (isNaN(prevRawProgress)) { prevRawProgress = raw; return; }
+    if (prevRawProgress <= 0 && raw > 0) onEnter?.();
+    else if (prevRawProgress > 0 && raw <= 0) onLeaveBack?.();
+    if (prevRawProgress < 1 && raw >= 1) onLeave?.();
+    else if (prevRawProgress >= 1 && raw < 1) onEnterBack?.();
+    prevRawProgress = raw;
+  }
+
+  function update(): void {
+    if (!isVisible || paused) return;
+    const now           = performance.now();
+    const currentScroll = scrollPos();
+
+    let effectiveSpeed = speed;
+    if (velocityScale !== false) {
+      const dt  = now - prevVelTime;
+      const vel = dt > 0 ? Math.abs(currentScroll - (prevVelScroll < 0 ? currentScroll : prevVelScroll)) / dt : 0;
+      const sensitivity = typeof velocityScale === 'number' ? velocityScale : 1;
+      effectiveSpeed = speed * Math.max(0.2, 1 + vel * sensitivity * 0.04);
+    }
+    prevVelScroll = currentScroll;
+    prevVelTime   = now;
+
+    const raw = tEnd === tStart ? 0 : (currentScroll - tStart) / (tEnd - tStart);
+    fireScrollCallbacks(raw);
+    let alpha = easeFn(computeProgress(currentScroll, tStart, tEnd, effectiveSpeed));
+    if (once) {
+      frozenAlpha = Math.max(frozenAlpha, alpha);
+      alpha = frozenAlpha;
+    }
+    currentAlpha = alpha;
+    applyAlpha(alpha);
+    if (alpha >= 1 && !completed) {
+      completed = true;
+      onComplete?.();
+    } else if (alpha < 1 && !once) {
+      completed = false;
+    }
+    rafId = requestAnimationFrame(update);
+  }
+
+  cacheTriggers();
+
+  // A zero-length trigger window can never produce progress above 0, so the
+  // element is silently inert — it looks configured, and nothing ever moves. This
+  // is how `scrollHorizontal` shipped broken: its default `top top` → `bottom
+  // bottom` window was measured against a sticky-pinned track exactly one
+  // viewport tall, which collapses both ends onto the same scroll position.
+  // Cheap to detect here, and it names the likely cause.
+  if (tEnd === tStart) {
+    warn(
+      'scrollAnimate: the trigger window has zero length (start and end resolve to the ' +
+        'same scroll position), so this element will never animate. If the target is ' +
+        'inside a position:sticky stage, measure the trigger from the container that ' +
+        'holds the scroll room via `triggerElement`.',
+      el,
+    );
+  }
+
+  // Apply initial state immediately so elements never flash at their "to" value
+  // before the IntersectionObserver fires for the first time.
+  {
+    const initAlpha = easeFn(computeProgress(scrollPos(), tStart, tEnd, speed));
+    if (once && initAlpha > 0) frozenAlpha = initAlpha;
+    currentAlpha = initAlpha;
+    applyAlpha(initAlpha);
+  }
+
+  const observer = new IntersectionObserver(
+    (ioEntries) => {
+      ioEntries.forEach((e) => {
+        isVisible = e.isIntersecting;
+        if (isVisible && !paused) rafId = requestAnimationFrame(update);
+        else cancelAnimationFrame(rafId);
+      });
+    },
+    { root: scrollEl ?? null },
+  );
+
+  let resizeTimer: ReturnType<typeof setTimeout>;
+  function onResize(): void {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(cacheTriggers, 150);
+  }
+  window.addEventListener('resize', onResize);
+  window.addEventListener('orientationchange', onResize);
+  observer.observe(el);
+
+  _register(el, {
+    type: 'animate',
+    getProgress: () => currentAlpha,
+    getTrigger: () => ({ tStart, tEnd }),
+  });
+
+  return {
+    destroy() {
+      cancelAnimationFrame(rafId);
+      observer.disconnect();
+      window.removeEventListener('resize', onResize);
+      window.removeEventListener('orientationchange', onResize);
+      clearTimeout(resizeTimer);
+      restoreInline();
+      _unregister(el);
+    },
+    replay() {
+      frozenAlpha  = -1;
+      completed    = false;
+      currentAlpha = 0;
+      paused       = false;
+      applyAlpha(0);
+    },
+    pause() {
+      paused = true;
+      cancelAnimationFrame(rafId);
+    },
+    resume() {
+      if (!paused) return;
+      paused = false;
+      if (isVisible) rafId = requestAnimationFrame(update);
+    },
+    seek(p: number) {
+      const clamped = Math.min(1, Math.max(0, p));
+      currentAlpha  = clamped;
+      frozenAlpha   = clamped;
+      paused        = true;
+      cancelAnimationFrame(rafId);
+      applyAlpha(clamped);
+    },
+    getProgress() { return currentAlpha; },
+  };
+}

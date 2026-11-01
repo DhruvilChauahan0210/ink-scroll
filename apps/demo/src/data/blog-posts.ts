@@ -62,7 +62,7 @@ export const POSTS: BlogPost[] = [
     slug: 'scroll-pin-without-gsap',
     title: 'Pin sections on scroll without GSAP — scrollPin',
     description:
-      'How to pin any element at a viewport position while the page scrolls past it. Wrapper-based layout, zero layout shift, full lifecycle callbacks (onEnter/onLeave/onEnterBack/onLeaveBack). No GSAP. ~10 KB total.',
+      'How to pin any element at a viewport position while the page scrolls past it. Wrapper-based layout, zero layout shift, full lifecycle callbacks (onEnter/onLeave/onEnterBack/onLeaveBack). No GSAP. ~11 KB total.',
     tag: 'How-To',
     tagColor: '#f59e0b',
     readTime: '7 min read',

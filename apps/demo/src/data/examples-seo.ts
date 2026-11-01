@@ -37,7 +37,7 @@ export const EXAMPLE_SEO: Record<string, ExampleSeo> = {
     slug: 'logo-reveal',
     title: 'Animate a Logo on Scroll — SVG Draw-On Reveal',
     description:
-      'Draw an SVG logo stroke-by-stroke as the user scrolls, then flood it with brand colour on completion. Copy-paste React code, ~10 KB, no GSAP.',
+      'Draw an SVG logo stroke-by-stroke as the user scrolls, then flood it with brand colour on completion. Copy-paste React code, ~11 KB, no GSAP.',
     heading: 'Logo reveal on scroll',
     intro:
       'A logo that draws itself in is the most-requested scroll effect there is, and it is almost always built with GSAP DrawSVG for what amounts to one animated stroke-dashoffset. This example does it with a single component and no plugin registration. The interesting part is not the draw — it is what happens at 100%: onComplete fires, the outline floods with brand colour, and a second animation runs off the back of it.',
@@ -161,7 +161,7 @@ export const EXAMPLE_SEO: Record<string, ExampleSeo> = {
     slug: 'vue',
     title: 'Vue 3 Scroll Animation — ScrollDraw & useScrollDraw',
     description:
-      'Scroll-driven SVG animation in Vue 3 with a component or a composable. Full ref control, SSR-safe, ~10 KB, no GSAP. Copy-paste Vue code.',
+      'Scroll-driven SVG animation in Vue 3 with a component or a composable. Full ref control, SSR-safe, ~11 KB, no GSAP. Copy-paste Vue code.',
     heading: 'Vue 3 scroll animation',
     intro:
       'Vue gets first-class treatment here rather than a vanilla escape hatch: a <ScrollDraw> component for the common case, and a useScrollDraw composable when you need the instance to pause, seek or replay it. Both ship in the same package — there is no separate Vue build to install, and both clean up on unmount so nothing leaks across route changes.',
@@ -201,7 +201,7 @@ export const EXAMPLE_SEO: Record<string, ExampleSeo> = {
     slug: 'solid',
     title: 'Solid.js Scroll Animation — useScrollDraw Hook',
     description:
-      'Scroll-driven SVG animation in Solid.js with a hook that respects fine-grained reactivity. No re-renders, ~10 KB, zero dependencies.',
+      'Scroll-driven SVG animation in Solid.js with a hook that respects fine-grained reactivity. No re-renders, ~11 KB, zero dependencies.',
     heading: 'Solid.js scroll animation',
     intro:
       'Solid’s fine-grained reactivity means an animation library must not force re-renders to move a value, and this one does not — the draw runs outside the reactive graph entirely, driven by scroll position. The example animates a signal feeding two memos into an effect, which is a fitting subject: the diagram explains the model the code is written in.',
@@ -447,7 +447,7 @@ export const EXAMPLE_SEO: Record<string, ExampleSeo> = {
     slug: 'scroll-snap',
     title: 'Horizontal Snap Carousel on Scroll — scrollSnap',
     description:
-      'Drag or swipe between cards with threshold-based snapping and custom easing. onSnap keeps indicators in sync. 1.7 KB, no carousel library.',
+      'Drag or swipe between cards with threshold-based snapping and custom easing. onSnap keeps indicators in sync. 1.9 KB, no carousel library.',
     heading: 'Horizontal snap carousel',
     intro:
       'CSS scroll-snap is excellent until you need to know which slide you landed on, or want easing other than the browser default. scrollSnap keeps the drag feel but adds a threshold you control, custom easing, and an onSnap callback — which is what the dot indicators in this example are wired to, rather than polling scroll position.',

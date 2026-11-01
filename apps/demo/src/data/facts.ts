@@ -11,4 +11,4 @@ export const BROWSER_TESTS = 198;
  * fails the build if this list and the library drift apart. */
 export const REVEAL_PRESETS = ['fadeUp', 'fadeDown', 'fadeLeft', 'fadeRight', 'scale', 'flip', 'flipX'] as const;
 /** The main entry's CI budget (packages/svg-scroll-draw/scripts/size.mjs, '.'). */
-export const BUDGET_KB = 10.5;
+export const BUDGET_KB = 11.0;

@@ -40,7 +40,7 @@ export default function OgImage() {
           padding: '6px 16px', fontSize: 13, color: '#666',
           marginBottom: 36, letterSpacing: '0.15em', textTransform: 'uppercase',
         }}>
-          Free Alternative · MIT · ~10 KB
+          Free Alternative · MIT · ~11 KB
         </div>
 
         {/* Headline */}

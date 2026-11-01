@@ -7,7 +7,7 @@
 [![license](https://img.shields.io/npm/l/svg-scroll-draw)](./LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/DhruvilChauahan0210/ink-scroll?style=flat)](https://github.com/DhruvilChauahan0210/ink-scroll/stargazers)
 
-> Draw SVG paths on scroll — plus reveal, pin, snap, parallax, counters, video scrub and text splitting. **10.2 KB gzipped for every API, from 1.6 KB if you import one.** Zero dependencies, MIT, and a native CSS fast path that runs with no per-frame JavaScript. Works in React, Next.js, Vue, Svelte, Solid, Angular, Astro, Nuxt and vanilla JS.
+> Draw SVG paths on scroll — plus reveal, pin, snap, parallax, counters, video scrub and text splitting. **10.7 KB gzipped for every API, from 1.4 KB if you import one.** Zero dependencies, MIT, and a native CSS fast path that runs with no per-frame JavaScript. Works in React, Next.js, Vue, Svelte, Solid, Angular, Astro, Nuxt and vanilla JS.
 
 **[Live Demo](https://svg-scroll-draw.vercel.app)** · [npm](https://www.npmjs.com/package/svg-scroll-draw) · [Docs](https://svg-scroll-draw.vercel.app/docs) · [Examples](https://svg-scroll-draw.vercel.app/examples) · [Report a bug](https://github.com/DhruvilChauahan0210/ink-scroll/issues)
 
@@ -28,7 +28,7 @@
 | `scrollParallax` | `svg-scroll-draw` | Move any element at a different rate than scroll. Speed multiplier, reverse direction. |
 | `scrollDraw` | `svg-scroll-draw` | The original — scroll-driven SVG path drawing via `stroke-dashoffset`. |
 | `scrollVideo` | `svg-scroll-draw/video` | Tie `<video>.currentTime` to scroll. The Apple/Stripe product-page pattern. |
-| `scrollText` | `svg-scroll-draw/text` | Split text into chars/words/lines and stagger-animate each on scroll. 2.5 KB, nothing else to load. |
+| `scrollText` | `svg-scroll-draw/text` | Split text into chars/words/lines and stagger-animate each on scroll. 2.8 KB, nothing else to load. |
 | `devtools` | `svg-scroll-draw/devtools` | Visual overlay showing every active animation's triggers and progress. Dev-only. |
 | `AOS` | `svg-scroll-draw/aos` | Drop-in replacement for AOS: same `AOS.init()`, same `data-aos` markup, no `aos.css`. |
 | `ScrollReveal` | `svg-scroll-draw/scrollreveal` | Drop-in replacement for ScrollReveal.js 4, MIT instead of GPL-3.0. |
@@ -365,7 +365,7 @@ import { ScrollDraw } from 'svg-scroll-draw/vue';
 Already using [AOS](https://github.com/michalsnik/aos)? `svg-scroll-draw/aos` speaks its API and
 reads its markup, so the move is an import change — or one command: `npx svg-scroll-draw migrate`. Keep every `data-aos`, `data-aos-offset`,
 `data-aos-delay`, `data-aos-anchor-placement` and custom animation; delete `aos.css` — the styles ship
-inside the module. 3.0 KB gzipped with the styles, against 6.7 KB for AOS 2.3.4 with its stylesheet.
+inside the module. 3.1 KB gzipped with the styles, against 6.7 KB for AOS 2.3.4 with its stylesheet.
 
 ```diff
 - import AOS from 'aos';
@@ -474,7 +474,7 @@ Differences, on purpose:
 
 On [vivus](https://github.com/maxwellito/vivus)? It has not shipped since 0.4.6 (April 2021).
 `svg-scroll-draw/vivus` runs the same API, so the move is an import change — or one command:
-`npx svg-scroll-draw migrate`. 3.9 KB gzipped, against 4.1 KB.
+`npx svg-scroll-draw migrate`. 4.0 KB gzipped, against 4.1 KB.
 
 ```diff
 - import Vivus from 'vivus';
@@ -618,21 +618,24 @@ devtools.highlight('#my-element'); // outline for 2 seconds
 
 ## Bundle sizes
 
+<!-- size-table:start -->
 | Entry | Gzipped |
 |---|---|
-| `svg-scroll-draw` (main, every core API) | 10.2 KB |
-| `svg-scroll-draw/react` (includes the engine) | 11.2 KB |
-| `svg-scroll-draw/reveal` | 4.7 KB |
-| `svg-scroll-draw/text` | 2.5 KB |
-| `svg-scroll-draw/video` | 2.0 KB |
+| `svg-scroll-draw` (main, every core API) | 10.7 KB |
+| `svg-scroll-draw/react` (includes the engine) | 11.8 KB |
+| `svg-scroll-draw` + `svg-scroll-draw/react` (together; the engine ships once) | 13.2 KB |
+| `svg-scroll-draw/reveal` | 5.0 KB |
+| `svg-scroll-draw/text` | 2.8 KB |
+| `svg-scroll-draw/video` | 2.3 KB |
 | `svg-scroll-draw/scrollreveal` | 4.5 KB |
-| `svg-scroll-draw/vivus` | 3.9 KB |
-| `svg-scroll-draw/aos` (styles included) | 3.0 KB |
-| `svg-scroll-draw/snap` | 1.7 KB |
-| `svg-scroll-draw/devtools` | 1.7 KB (dev only) |
-| `svg-scroll-draw/pin` | 1.6 KB |
+| `svg-scroll-draw/vivus` | 4.0 KB |
+| `svg-scroll-draw/aos` (styles included) | 3.1 KB |
+| `svg-scroll-draw/snap` | 1.9 KB |
+| `svg-scroll-draw/devtools` | 1.8 KB (dev only) |
+| `svg-scroll-draw/pin` | 1.4 KB |
+<!-- size-table:end -->
 
-Measured with `npm run size` (minified, gzip level 9). For comparison, GSAP 3.15.0 core + ScrollTrigger is 45.3 KB gzipped, and 47.5 KB with DrawSVG. GSAP does far more than scroll animation; for the scroll effects this library covers, that is the size difference.
+Measured with `npm run size`: each entry plus the shared chunks it imports, minified, gzip level 9. Entries share their code through those chunks, so importing several costs less than the sum. For comparison, GSAP 3.15.0 core + ScrollTrigger is 45.3 KB gzipped, and 47.5 KB with DrawSVG. GSAP does far more than scroll animation; for the scroll effects this library covers, that is the size difference.
 
 ---
 

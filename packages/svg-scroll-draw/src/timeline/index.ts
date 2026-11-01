@@ -1,5 +1,8 @@
-import { EASINGS, parseTrigger, computeProgress, computeTriggers, getElementLength } from '../core/utils';
-import { prefersReducedMotion, watchReducedMotion } from '../core/motion';
+import { EASINGS } from '../core/easing';
+import { parseTrigger, computeProgress, computeTriggers } from '../core/trigger';
+import { getElementLength } from '../core/geometry';
+import { prefersReducedMotion } from '../core/motion';
+import { watchReducedMotion } from '../core/motion-watch';
 import { warn } from '../core/env';
 import { _register, _unregister } from '../core/registry';
 import type { ScrollDrawInstance, EasingName } from '../core/types';

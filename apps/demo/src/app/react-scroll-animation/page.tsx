@@ -13,7 +13,7 @@ import { C, Sec, Toc, pad } from '@/components/stack/parts';
 
 const TITLE = 'React Scroll Animation: Components & Hooks, 10 KB';
 const DESCRIPTION =
-  'Scroll animations in React with typed components and hooks: fade, pin, snap, text split, SVG draw. 10.2 KB gzip, MIT, works in the Next.js App Router.';
+  'Scroll animations in React with typed components and hooks: fade, pin, snap, text split, SVG draw. 10.7 KB gzip, MIT, works in the Next.js App Router.';
 
 export const metadata: Metadata = {
   title: seoTitle(TITLE),

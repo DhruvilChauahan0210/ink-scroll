@@ -7,8 +7,8 @@ description: Use when building scroll-driven animation on the web with the svg-s
 
 Zero-dependency, MIT scroll animation library (`npm i svg-scroll-draw`, v2.10.x).
 Every API is its own entry point, so import only what you use. Main entry is
-10.2 KB gzipped; `svg-scroll-draw/reveal` 4.5 KB, `/text` 2.5 KB, `/pin` 1.6 KB,
-`/snap` 1.7 KB.
+10.7 KB gzipped; `svg-scroll-draw/reveal` 5.0 KB, `/text` 2.8 KB, `/pin` 1.4 KB,
+`/snap` 1.9 KB.
 
 Where the browser supports CSS scroll-driven animations (`animation-timeline`:
 Chrome/Edge 115+, Safari 26+, Firefox 159+), simple `scrollDraw` and

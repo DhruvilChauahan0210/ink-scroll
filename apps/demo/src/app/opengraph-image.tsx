@@ -112,13 +112,13 @@ export default function OgImage() {
 
         {/* sub */}
         <div style={{ fontSize: 24, color: "#666", marginBottom: 48, maxWidth: 600 }}>
-          The scroll animation platform. ~10 KB gzipped.
+          The scroll animation platform. ~11 KB gzipped.
           Works in React, Next.js, Vue 3, and vanilla JS.
         </div>
 
         {/* stats row */}
         <div style={{ display: "flex", gap: 24 }}>
-          {["~10 KB gzipped", "Zero deps", "632 tests", "React · Vue · Solid · More"].map(
+          {["~11 KB gzipped", "Zero deps", "632 tests", "React · Vue · Solid · More"].map(
             (label) => (
               <div
                 key={label}

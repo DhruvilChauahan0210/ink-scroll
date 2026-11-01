@@ -1,5 +1,5 @@
 import type { EasingName, TriggerConfig, ScrollDrawInstance } from '../core/types';
-import { createAnimateEngine } from '../animate';
+import { createAnimateEngine } from '../animate/engine';
 import { warn } from '../core/env';
 
 // ── Types ─────────────────────────────────────────────────────────────────────

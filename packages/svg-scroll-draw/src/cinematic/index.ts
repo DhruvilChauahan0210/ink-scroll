@@ -1,4 +1,4 @@
-import { EASINGS } from '../core/utils';
+import { EASINGS } from '../core/easing';
 import { warn } from '../core/env';
 import { _register, _unregister } from '../core/registry';
 import type { Story, StoryEasing, StoryAnimation } from './story';

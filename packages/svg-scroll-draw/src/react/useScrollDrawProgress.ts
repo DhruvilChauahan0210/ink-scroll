@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, type RefObject } from 'react';
-import { EASINGS, parseTrigger, computeProgress, computeTriggers } from '../core/utils';
+import { EASINGS } from '../core/easing';
+import { parseTrigger, computeProgress, computeTriggers } from '../core/trigger';
 import type { EasingName, TriggerConfig } from '../core/types';
 
 export interface UseScrollDrawProgressOptions {

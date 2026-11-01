@@ -1,4 +1,4 @@
-import { clamp } from '../core/utils';
+import { clamp } from '../core/math';
 import { _register, _unregister } from '../core/registry';
 import { warn } from '../core/env';
 

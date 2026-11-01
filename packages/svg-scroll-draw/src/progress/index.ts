@@ -1,7 +1,7 @@
 import type { EasingName, TriggerConfig, ScrollDrawInstance } from '../core/types';
-import {
-  EASINGS, parseTrigger, computeProgress, computeTriggers, measureTriggerFrame,
-} from '../core/utils';
+import { EASINGS } from '../core/easing';
+import { parseTrigger, computeProgress, computeTriggers } from '../core/trigger';
+import { measureTriggerFrame } from '../core/trigger-frame';
 import { _register, _unregister } from '../core/registry';
 import { warn } from '../core/env';
 

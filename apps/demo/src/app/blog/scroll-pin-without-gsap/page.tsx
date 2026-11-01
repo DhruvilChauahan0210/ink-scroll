@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   alternates: { canonical: '/blog/scroll-pin-without-gsap' },
   openGraph: {
     title: 'Pin sections on scroll without GSAP — scrollPin',
-    description: 'A wrapper-based pin implementation with full lifecycle callbacks. Zero GSAP. ~10 KB total.',
+    description: 'A wrapper-based pin implementation with full lifecycle callbacks. Zero GSAP. ~11 KB total.',
     url: 'https://svg-scroll-draw.vercel.app/blog/scroll-pin-without-gsap',
   },
   twitter: {

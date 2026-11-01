@@ -1,4 +1,4 @@
-import { EASINGS } from './utils';
+import { EASINGS } from './easing';
 
 /**
  * CSS timing functions that reproduce this library's own easing curves.

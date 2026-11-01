@@ -1,6 +1,6 @@
 import { onMount, onCleanup } from 'solid-js';
 import { createEngine } from '../core/engine';
-import { createAnimateEngine } from '../animate';
+import { createAnimateEngine } from '../animate/engine';
 import { scrollCounter } from '../counter';
 import { scrollVideo } from '../video';
 import { scrollText } from '../text';

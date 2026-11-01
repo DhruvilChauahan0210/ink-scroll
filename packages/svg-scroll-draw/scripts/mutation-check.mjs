@@ -44,7 +44,7 @@ const MUTATIONS = [
   {
     id: 'reveal/once-latch',
     what: 'once:true stops latching and reverses like once:false',
-    file: 'src/animate/index.ts',
+    file: 'src/animate/engine.ts',
     from: 'frozenAlpha = Math.max(frozenAlpha, alpha);',
     to: 'frozenAlpha = alpha;',
     spec: 'reveal',
@@ -53,7 +53,7 @@ const MUTATIONS = [
   {
     id: 'reveal/destroy-restore',
     what: 'destroy() leaves the last animated frame’s inline styles behind',
-    file: 'src/animate/index.ts',
+    file: 'src/animate/engine.ts',
     from: '      restoreInline();\n      _unregister(el);',
     to: '      _unregister(el);',
     spec: 'reveal',
@@ -62,7 +62,7 @@ const MUTATIONS = [
   {
     id: 'reveal/reduced-motion',
     what: 'prefers-reduced-motion is ignored and the scroll animation runs anyway',
-    file: 'src/animate/index.ts',
+    file: 'src/animate/engine.ts',
     from: '  if (prefersReduced) {\n    applyFinal();',
     to: '  if (false as boolean) {\n    applyFinal();',
     spec: 'reveal',
@@ -307,7 +307,7 @@ const MUTATIONS = [
   {
     id: 'animate/native-eligibility',
     what: 'once:true wrongly takes the fast path, which cannot latch progress',
-    file: 'src/animate/index.ts',
+    file: 'src/animate/engine.ts',
     from: '    if (once) return false;',
     to: '    if (false) return false;',
     spec: 'animate-parity',
@@ -437,7 +437,7 @@ const MUTATIONS = [
   {
     id: 'utils/trigger-frame-scroll',
     what: 'a container-relative trigger window counts the scroll position twice',
-    file: 'src/core/utils.ts',
+    file: 'src/core/trigger-frame.ts',
     from: '    return { top, height: size, scroll: 0 };',
     to: '    return { top, height: size, scroll: axis === \'x\' ? scrollEl.scrollLeft : scrollEl.scrollTop };',
     spec: 'horizontal',

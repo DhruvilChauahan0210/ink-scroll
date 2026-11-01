@@ -14,6 +14,7 @@ import {
 } from 'react';
 import { ScrollDraw } from 'svg-scroll-draw/react';
 import { SELF } from '@/data/competitors';
+import { BUDGET_KB } from '@/data/facts';
 import { EXAMPLE_COUNT } from '@/data/examples-index';
 import {
   CHIP_DONE_AT,
@@ -533,7 +534,7 @@ function Drawing({ tab, lit, onPick }: { tab: Tab; lit: ReadonlySet<NetId>; onPi
               GZIP · CI BUDGET
             </tspan>
             <tspan className="st-annot-v" x={DIMENSION.x} y={DIMENSION.y + 15}>
-              {SELF.gzipKb} / 10.5 KB
+              {SELF.gzipKb} / {BUDGET_KB.toFixed(1)} KB
             </tspan>
           </text>
 

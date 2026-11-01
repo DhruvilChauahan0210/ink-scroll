@@ -53,26 +53,26 @@ export const SELF: Competitor = {
   label: 'svg-scroll-draw (all APIs)',
   version: '2.15.3',
   license: 'MIT',
-  gzipKb: 10.2,
+  gzipKb: 10.7,
   lastPublish: '2026-08-14',
   command: 'npm run size',
   measured: true,
   caveat:
-    'Main entry, every API at once. Each API is a separate entry point — scrollReveal alone is 4.7 KB, scrollPin 1.6 KB, scrollSnap 1.7 KB.',
+    'Main entry, every API at once. Each API is a separate entry point — scrollReveal alone is 5.0 KB, scrollPin 1.4 KB, scrollSnap 1.9 KB.',
 };
 
 /** Per-entry-point sizes, for like-for-like comparisons against single-purpose libraries. */
 export const SELF_ENTRIES: Record<string, number> = {
-  reveal: 4.7,
-  pin: 1.6,
-  snap: 1.7,
+  reveal: 5.0,
+  pin: 1.4,
+  snap: 1.9,
   // The AOS drop-in, its stylesheet included (`svg-scroll-draw/aos`).
-  aos: 3.0,
+  aos: 3.1,
   // The ScrollReveal drop-in (`svg-scroll-draw/scrollreveal`).
   scrollreveal: 4.5,
   // The vivus drop-in (`svg-scroll-draw/vivus`).
-  vivus: 3.9,
-  text: 2.5,
+  vivus: 4.0,
+  text: 2.8,
 };
 
 export const COMPETITORS: Record<string, Competitor> = {
@@ -235,7 +235,7 @@ export const COMPETITORS: Record<string, Competitor> = {
   },
 };
 
-/** "10.2 KB vs 47.5 KB" → 4.66. Rounded to 2dp so pages cannot drift from the source. */
+/** "10.7 KB vs 47.5 KB" → 4.44. Rounded to 2dp so pages cannot drift from the source. */
 export function ratioVsSelf(key: keyof typeof COMPETITORS): number {
   return Math.round((COMPETITORS[key].gzipKb / SELF.gzipKb) * 100) / 100;
 }

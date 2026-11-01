@@ -1,8 +1,9 @@
 import type { ScrollDrawOptions, ScrollDrawInstance } from './types';
-import {
-  EASINGS, parseTrigger, computeProgress, computeTriggers, measureTriggerFrame,
-  getElementLength, lerpColor,
-} from './utils';
+import { EASINGS } from './easing';
+import { parseTrigger, computeProgress, computeTriggers } from './trigger';
+import { measureTriggerFrame } from './trigger-frame';
+import { getElementLength } from './geometry';
+import { lerpColor } from './color';
 import { PRESETS } from './presets';
 import { IS_DEV, warn as warnDev } from './env';
 import { cssTimingFor } from './css-easing';
