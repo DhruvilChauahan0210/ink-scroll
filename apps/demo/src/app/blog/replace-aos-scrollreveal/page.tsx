@@ -153,7 +153,7 @@ export default function Page() {
         </ul>
         <p>
           <code>scrollReveal</code> from svg-scroll-draw is the JS-first alternative: all configuration lives in your
-          JavaScript, it&apos;s fully typed, and it&apos;s part of a broader scroll animation platform — not a standalone
+          JavaScript, it’s fully typed, and it’s part of a broader scroll animation platform — not a standalone
           one-trick library.
         </p>
       </Section>
@@ -215,7 +215,7 @@ scrollReveal('.list-item', {
 
       <Section id="stagger" k="stagger" title="Stagger">
         <p>
-          The <code>stagger</code> option offsets each element&apos;s trigger window — earlier elements in the list start
+          The <code>stagger</code> option offsets each element’s trigger window — earlier elements in the list start
           animating sooner, later ones start a little further down the viewport. This creates a natural cascade without
           any per-element delay config:
         </p>

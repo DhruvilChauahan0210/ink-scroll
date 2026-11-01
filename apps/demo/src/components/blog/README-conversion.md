@@ -100,5 +100,5 @@ make SVG labels at least 12 units, so they're still legible at 390px.
 - Screenshot at 1440×900 and 390×844 in dark and light (toggle `html.dark`), scroll the whole page, and check
   for no horizontal overflow and no console errors.
 - `cd apps/demo && npx eslint <your files>`.
-- Add the route to `components/site/routes.ts` only through the main session (it hides the old mascot).
-  `/blog` is not listed there yet.
+- `node scripts/check-jsx-text.mjs` — prose uses ’ “ ”, not `&apos;` `&ldquo;` `&rdquo;` (SWC drops the space
+  in front of a multi-line JSX text that contains an entity).

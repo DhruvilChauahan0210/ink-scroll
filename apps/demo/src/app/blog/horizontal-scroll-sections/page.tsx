@@ -153,7 +153,7 @@ scrollHorizontal(track, {
       <Section id="runway" k="triggerElement" title="Which element sets the runway">
         <p>
           Note <em>which</em> element that window is measured from: the outer container, not the track. The track
-          can&apos;t supply it — the sticky stage pins the track at exactly one viewport tall, so measuring against it
+          can’t supply it — the sticky stage pins the track at exactly one viewport tall, so measuring against it
           would put the start and end of the window at the same scroll position, and nothing would move.{' '}
           <code>scrollHorizontal</code> finds the outer container for you by walking up to the nearest{' '}
           <code>position: sticky</code> ancestor and taking its parent, which is the structure above.

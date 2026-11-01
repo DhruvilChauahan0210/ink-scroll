@@ -51,7 +51,6 @@ const SIZE_CLAIM_FILES = [
   'apps/demo/src/app/layout.tsx',
   'apps/demo/src/app/page.tsx',
   'apps/demo/src/app/opengraph-image.tsx',
-  'apps/demo/src/components/MobileMenu.tsx',
   // The README npm renders is a different file from the root one, and it went a
   // whole release advertising "~9 KB" because nothing here read it.
   'packages/svg-scroll-draw/README.md',

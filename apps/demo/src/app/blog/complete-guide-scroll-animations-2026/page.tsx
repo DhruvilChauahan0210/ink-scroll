@@ -166,7 +166,7 @@ scrollAnimate('#image', {
       <Section id={id(4)} k="scrollPin" title="Sticky / pin sections">
         <p>
           The Apple product page pattern. An element stays fixed while content scrolls past it.
-          Use <code>scrollPin</code> — it wraps the target in a spacer so the page layout doesn&apos;t jump.
+          Use <code>scrollPin</code> — it wraps the target in a spacer so the page layout doesn’t jump.
         </p>
         <Code file="app.js">{`import { scrollPin } from 'svg-scroll-draw/pin';
 

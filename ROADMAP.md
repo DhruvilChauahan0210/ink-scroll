@@ -151,13 +151,13 @@ of examining a single API in a real browser.
 ### Release (Phase 2, Priority 6)
 - [x] Push `phase0-production-ready`
 - [x] Cut 2.10.0 — user-visible fixes plus new behaviour, no breaking API change
-- [ ] Watch CI go green remotely — the e2e job has still never run outside this laptop
+- [x] CI green remotely — every release run (2.15.2, 2.15.3) runs the browser suite on GitHub Actions before it publishes
 - [x] `npm publish` through the provenance-signed workflow — 2.10.1, 2026-10-30
 - [x] 2.10.1 staged: devtools registry fix, npm README and site claims corrected, `check-claims` widened to every public file
 
 ### Reach (Phase 2, Priorities 4–5 — deliberately after the above)
 - [ ] **Naming decision** — repo `ink-scroll`, package `svg-scroll-draw`, docs "a scroll animation platform". 21 entry points, most unrelated to SVG; nobody searching npm for "scroll reveal" finds `svg-scroll-draw`. Recommended: publish under a new name, keeping `svg-scroll-draw` as a deprecated alias that re-exports.
-- [ ] **Migration guides** from GSAP ScrollTrigger, AOS and ScrollReveal.js — the highest-intent traffic there is
+- [x] **Migration guides** from GSAP ScrollTrigger, AOS, ScrollReveal.js and vivus — five on `/guides`
 - [ ] **Real-world recipes** instead of option tables: animated logo, sticky feature section, horizontal case-study strip, animated stat row, scrubbed explainer video
 - [ ] Auto-generate the README size table from `npm run size` rather than pasting it (per-entry sizes are now *checked* by `check-claims`, just not written)
 - [x] StackBlitz starters (`examples/vanilla`, `examples/react`) linked from both READMEs
@@ -172,16 +172,18 @@ of examining a single API in a real browser.
 - [x] vivus drop-in (`svg-scroll-draw/vivus`), SVG markup matched exactly against vivus 0.4.6 (last release April 2021); `/vs-vivus` page
 - [x] `npx svg-scroll-draw migrate` — one-command switch from AOS / ScrollReveal / vivus
 - [x] React / Next.js hooks for the drop-ins (`useAOS` + `<AOSInit />`, `useScrollReveal`, `useVivus`)
-- [x] On-site migration guides (`/guides`): AOS in Next.js / React, ScrollReveal in React, vivus in React
+- [x] On-site migration guides (`/guides`): AOS in Next.js / React, ScrollReveal in React, vivus in React, GSAP ScrollTrigger in React
 - [ ] Check Search Console in ~2 weeks for /guides/* and /vs-* impressions and clicks
 - [x] Homepage redesign — every chapter a blueprint-grade drawing of a real use case (fountain-pen hero, gallery, watch, proof sheet, balance, API plates, gauges, circuit board, before/after windows, live GitHub + npm stats, drawing-sheet footer), scoped under `.home`
 - [x] Showcase sites — one real demo site per example (all 23), linked from the examples pages; 19 rebuilt to industry level, Aural (scroll-video) sets the bar with a rendered product film
 - [x] Carry the homepage's look to every page through `SiteShell` — /docs, /examples (+ detail pages), /guides (+ each guide), /blog (+ all 12 posts on one article frame), /blocks, /changelog, /playground, /verify, all seven vs-* pages, the six framework landings and the React / Next.js / Lenis landings; the old ink-bottle mascot is off every page
-- [ ] Delete the dead ink-preview code once nobody wants it back: `components/examples/ink/*.codes.ts` (unused since every example card shows its showcase site) and `PlaygroundV2Tab.tsx` (nothing imports it)
+- [x] Dead code deleted: the ink-preview `*.codes.ts`, `PlaygroundV2Tab.tsx`, every pre-redesign demo component nothing imported, the old `MobileMenu` / `ThemeToggle`, and the mascot with its CSS — 32 files; the 404 page moved into `SiteShell`
 - [x] StackBlitz "already migrated" starters for each drop-in, linked from the comparison pages and READMEs
 - [ ] More blocks (the registry pattern grows by count), and a Vue/Svelte flavour of each
-- [ ] Desktop nav links are hand-typed per page — only the homepage and mobile menu link `/blocks`; move the nav into one component
-- [ ] Document the known jump-scroll asymmetry in the docs, not only in a test comment
+- [x] One nav for every page — `SiteShell` renders `HomeNav`, which links `/blocks`
+- [x] Jump-scroll asymmetry documented in `/docs` (native CSS section), not only in a test comment
+- [x] `/verify` section 15 — named-easing parity on both engines; the 0.83 was the page's harness, not the library
+- [x] Demo lint clean (52 → 0) and enforced in CI and `verify`, with `check-jsx-text` guarding SWC's dropped spaces
 
 ---
 

@@ -83,7 +83,7 @@ export function GuidePage({ slug }: { slug: string }) {
               <Link href={g.compare.href} className="btn" data-magnetic>{g.compare.label}</Link>
             </div>
           </div>
-          <SwapSheet from={g.from} rows={swapRows(key)} />
+          <SwapSheet from={g.from} to={g.swap?.to} rows={g.swap?.rows ?? swapRows(key)} />
         </header>
 
         <div className="gd-body">

@@ -44,6 +44,13 @@ jobs:
         run: npx tsc --noEmit
         working-directory: apps/demo
 
+      # The demo carried 52 lint errors for months because nothing ran eslint.
+      # check-jsx-text: SWC drops the space in front of a multi-line JSX text
+      # that contains an HTML entity, which had run words together on 22 lines.
+      - name: Lint demo
+        run: npm run lint -- --max-warnings=0 && node scripts/check-jsx-text.mjs
+        working-directory: apps/demo
+
       - name: Run tests (all workspaces)
         run: npx vitest run
 

@@ -95,7 +95,9 @@ export function LiveParityProof() {
     const STEPS = 11;
     for (let i = 1; i < STEPS; i++) {
       const y = Math.round(tStart + ((tEnd - tStart) * i) / STEPS);
-      window.scrollTo(0, y);
+      // Instant: the page scrolls smoothly, and a smooth jump is still gliding
+      // when the sample is read.
+      window.scrollTo({ top: y, behavior: 'instant' });
       await twoFrames();
       await twoFrames();
       const n = drawnFraction(nativePath);
@@ -103,7 +105,7 @@ export function LiveParityProof() {
       rows.push({ y, native: n, js: j, delta: Math.abs(n - j) });
     }
 
-    window.scrollTo(0, restore);
+    window.scrollTo({ top: restore, behavior: 'instant' });
     setSweep({ rows, worst: rows.reduce((m, r) => Math.max(m, r.delta), 0) });
     setBusy(false);
   }
@@ -204,7 +206,7 @@ export function LiveParityProof() {
             Both engines agree at every sampled offset (worst Δ{' '}
             <strong>{sweep.worst.toFixed(4)}</strong>). The timeline is a named{' '}
             <code>view-timeline</code> on the container, so its box
-            defines the range — which is exactly the JS engine&apos;s{' '}
+            defines the range — which is exactly the JS engine’s{' '}
             <code>top bottom</code> →{' '}
             <code>bottom top</code> window.
           </>
@@ -283,9 +285,9 @@ export function ProcessGuardProof() {
         Both expressions were just evaluated inside a fresh <code>iframe</code>{' '}
         — a scope with no bundler-injected <code>process</code>, exactly what a
         CDN user has. The old guard sat in front of <em>every</em> dev warning in 13 modules, so
-        reaching one threw instead of logging. The concrete repro: style a path&apos;s stroke with
-        CSS instead of a <code>stroke</code> attribute, and the engine&apos;s
-        &ldquo;no stroke&rdquo; warning took down the whole call.
+        reaching one threw instead of logging. The concrete repro: style a path’s stroke with
+        CSS instead of a <code>stroke</code> attribute, and the engine’s
+        “no stroke” warning took down the whole call.
       </Verdict>
     </div>
   );
@@ -471,7 +473,7 @@ export function ReducedMotionProof() {
       <Verdict ok>
         <code>scrollSnap</code> animates{' '}
         <code>window.scrollTo</code> over a duration with an easing curve,
-        driven off a debounced scroll handler — it takes over the user&apos;s scrolling. It had{' '}
+        driven off a debounced scroll handler — it takes over the user’s scrolling. It had{' '}
         <strong>no reduced-motion check of any kind</strong>, which was the clearest accessibility
         defect in the library. It now jumps straight to the target section; snapping still happens,
         only the animated scroll is dropped. <code>respectReducedMotion: false</code>{' '}

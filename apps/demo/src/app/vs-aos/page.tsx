@@ -292,7 +292,7 @@ ScrollReveal({ distance: '40px' }).reveal('.card', { interval: 80 });` },
               <Nb>
                 <strong>Read the right row.</strong>{' '}
                 The AOS drop-in is {SELF_ENTRIES.aos} KB with its styles, against AOS&apos;s {AOS.gzipKb} KB. But AOS and
-                ScrollReveal are both <em>smaller</em> than svg-scroll-draw&apos;s main entry. They also do
+                ScrollReveal are both <em>smaller</em> than svg-scroll-draw’s main entry. They also do
                 considerably less — neither draws SVG paths, pins, snaps, splits text or scrubs video. If all you need is
                 fade-up-on-scroll, they are a perfectly good choice and you should use them. Our{' '}
                 <code>svg-scroll-draw/reveal</code> entry point is {SELF_ENTRIES.reveal} KB if you want just that piece — that is

@@ -327,7 +327,7 @@ scrollProgress('#hero', { easing: 'ease-in-out' });`}</CodeBox>
             </>
           }
         >
-          {SELF.gzipKb} KB. Framework-agnostic. MIT. Works everywhere Framer Motion doesn&apos;t.
+          {SELF.gzipKb} KB. Framework-agnostic. MIT. Works everywhere Framer Motion doesn’t.
         </Closing>
       </div>
     </SiteShell>

@@ -99,7 +99,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     })),
 
-    // ── Migration guides (AOS / ScrollReveal / vivus in React and Next.js) ──
+    // ── Migration guides (AOS / ScrollReveal / vivus / GSAP ScrollTrigger) ──
     {
       url: `${SITE_URL}/guides`,
       lastModified: new Date("2026-10-31"),

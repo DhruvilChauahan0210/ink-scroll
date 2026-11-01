@@ -7,9 +7,10 @@ export type SwapRow = { k: string; before: string; after: string };
 /**
  * The guide's opening drawing: the library being replaced and its drop-in,
  * side by side, row by row, from the site's measured data. The arrows between
- * the columns are inked by the library on load.
+ * the columns are inked by the library on load. `to` heads the right-hand
+ * column — "drop-in" unless the guide is a rewrite rather than a swap.
  */
-export function SwapSheet({ from, rows }: { from: string; rows: SwapRow[] }) {
+export function SwapSheet({ from, to = 'drop-in', rows }: { from: string; to?: string; rows: SwapRow[] }) {
   return (
     <figure className="sw">
       <ScrollDraw className="sw-grid" selector=".sw-ink" autoplay duration={700} delay={350} stagger={0.14} easing="ease-out" once>
@@ -17,7 +18,7 @@ export function SwapSheet({ from, rows }: { from: string; rows: SwapRow[] }) {
           <span />
           <span>{from}</span>
           <span />
-          <span>drop-in</span>
+          <span>{to}</span>
         </div>
         {rows.map((r) => {
           // A row that does not change says so, rather than striking out a value that stays.

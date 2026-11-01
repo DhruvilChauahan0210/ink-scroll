@@ -138,6 +138,14 @@ at all.
 ### Unreleased — migration guides (branch `feat/migration-guides`, 2026-10-31; site-only)
 - [x] `/guides` + 4 guides (AOS Next.js, AOS React, ScrollReveal React, vivus React), sitemap, nav, vs-page and README links
 
+### Unreleased — site cleanup (2026-11-01; site-only)
+- [x] `/guides/gsap-scrolltrigger-react` — the fifth guide; `/vs-gsap`, `/guides`, playground, `llms.txt` and README link it
+- [x] `/verify` section 15 (named-easing parity) wired in; sweeps jump instantly; limits list brought up to date
+- [x] 22 sentences no longer run words together (SWC + entity); `check-jsx-text` in build, CI and `verify`
+- [x] 32 dead files removed (~4,900 lines), mascot and its CSS included; 404 page in `SiteShell`
+- [x] Demo lint 52 → 0, enforced with `--max-warnings=0`
+- [x] `/docs`: jump-scroll asymmetry documented; Note boxes fixed
+
 ### 2.15.3 — scrollReveal's stagger (2026-11-01)
 
 - [x] `scrollReveal` `stagger` is a fraction of the reveal window, counted per row from the layout, capped at one window, and applied on top of a custom `trigger` (default 0.15); `reveal` entry 4.7 KB

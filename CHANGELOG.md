@@ -162,6 +162,48 @@ All notable changes to `svg-scroll-draw` are documented here.
   post's support table sets its version marks with the stylesheet every post
   uses, so the post's own override sheet is gone.
 
+- **`/verify` section 15: a named easing on both engines.** The proof had been
+  written and withheld since 2.10.0 because it measured the native path and the
+  JS engine 0.83 apart with `easing: 'ease-out'`, while the browser suite's own
+  ease-out case passed on every engine. The suite was right. The native cell
+  was keyed by its label, the label changes once native support is detected,
+  and React replaced that cell after the library had attached to it, leaving a
+  fresh, undrawn path that read as fully drawn. Keyed by role, it reads 0.0001
+  in Chromium and 0.0000 in Firefox. Both sweeps on the page (06 and 15) now
+  jump instantly — `/verify` scrolls smoothly, so a smooth jump was still
+  gliding when the samples were read. The page's list of what is not proven
+  drops the resolved entries (remote CI, provenance, the withheld demo).
+- **Words no longer run together after a code span or a link.** Next's SWC
+  drops the leading space of a JSX text that spans more than one line and
+  contains an HTML entity, so `<code>view-timeline</code> on the container…
+  engine&apos;s` rendered "view-timelineon the container". Twenty-two
+  sentences across the blog, the `vs-*` pages, `/docs` and `/verify` were
+  affected; their entities are now typographic characters (’ “ ”), and
+  `scripts/check-jsx-text.mjs` fails the build if one comes back.
+- **A migration guide from GSAP ScrollTrigger**, the fifth guide: each
+  ScrollTrigger and DrawSVG call mapped to its equivalent — trigger strings,
+  `scrub`, `pin`, timelines, callbacks, `refresh()`, markers, React — and a
+  plain list of what has none (clock-driven tweens, snapping to labels, scrub
+  smoothing, `batch()`, pixel offsets, DrawSVG segments). Sizes come from
+  `data/competitors.ts`; fig. 1 reads "GreenSock Standard (free of charge)",
+  not a paid licence, and its column says svg-scroll-draw, not "drop-in". The
+  `/vs-gsap` migration buttons, `/guides`, the playground, `llms.txt` and the
+  README point at it.
+- **Dead code removed: 32 files, about 4,900 lines.** The pre-redesign demo
+  components nothing imported any more (the old hero, install and framework
+  tabs, thirteen `*Demo` / `*Interactive` sections, `PlaygroundV2Tab`, the ink
+  preview `*.codes.ts`), the old `MobileMenu` and `ThemeToggle`, the native
+  CSS badge, and the ink-bottle mascot with its 229 lines of CSS — every route
+  is on the new design, so it only still appeared on the 404 page. That page
+  is now in the site's frame instead of Next's default white one, with the
+  places most links lead.
+- **`/docs`:** a "Jumping straight past a drawing" note in the native CSS
+  section documents the one place the two paths differ (it was only a test
+  comment), and the Note boxes render as a sentence again — their two-column
+  grid had put every code span in a cell of its own.
+- **Lint is clean** — the demo carried 52 errors (unescaped quotes, mostly in
+  the docs' option tables, and setState-in-effect in components now deleted).
+
 ### CI
 
 - **One release run per tag at a time.** Re-pushing `v2.15.3` while its first
@@ -171,6 +213,8 @@ All notable changes to `svg-scroll-draw` are documented here.
   (it then stops at "Confirm this version is not already published"), and
   never cancels a run in progress, since stopping mid-publish could leave npm
   and the GitHub release out of step.
+- **The demo is linted in CI and in `npm run verify`**, with no warnings
+  allowed, followed by `check-jsx-text`.
 
 ---
 

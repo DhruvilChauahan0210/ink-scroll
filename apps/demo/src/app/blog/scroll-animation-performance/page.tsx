@@ -74,7 +74,7 @@ export default function ScrollPerformancePage() {
         <>
           Most scroll animation libraries run JavaScript on every scroll event. svg-scroll-draw takes a different approach:
           use the browser&apos;s native <code>animation-timeline: view()</code> when possible — no per-frame JavaScript —
-          and fall back to a lean JS engine when it&apos;s not.
+          and fall back to a lean JS engine when it’s not.
         </>
       }
       facts={[
@@ -110,7 +110,7 @@ export default function ScrollPerformancePage() {
           CSS Scroll-Driven Animations (<code>animation-timeline: view()</code>) map scroll to the animation inside the
           browser, with <strong>zero JavaScript involvement</strong>: no scroll listeners, no rAF, no per-frame objects for
           the garbage collector. For <code>opacity</code> and <code>transform</code> the browser can also run the animation on
-          the compositor, off the main thread. Other properties — colours, an SVG stroke&apos;s <code>stroke-dashoffset</code>
+          the compositor, off the main thread. Other properties — colours, an SVG stroke’s <code>stroke-dashoffset</code>
           — still restyle and repaint on the main thread each frame, only without a script.
         </p>
         <p>Supported in Chrome and Edge 115+, Safari 26+, and Firefox 159+ (on by default since October 2026).</p>

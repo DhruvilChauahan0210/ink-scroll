@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { seoTitle } from '../_lib/seo';
+import { UNIT_TESTS, BROWSER_TESTS } from '@/data/facts';
 import { SiteShell } from '@/components/site/SiteShell';
 // After SiteShell, so this page's rules follow the shared ones in the cascade.
 import '@/components/verify.css';
@@ -23,6 +24,7 @@ import {
   HorizontalTriggerProof,
 } from '@/components/VerifyPhase2';
 import {
+  EasingParityProof,
   SequenceCompletionProof,
   SplitLinesSpacingProof,
 } from '@/components/VerifyPhase3';
@@ -121,13 +123,13 @@ const PHASES: Phase[] = [
     tag: 'Phase 2',
     heading: 'The rest of the surface',
     items: ['scrollHorizontal never moved', 'destroy() abandoned styles', 'onSnap fired twice', 'viewport override in the harness', 'no Range support = dead video'],
-    sections: '10 – 12',
+    sections: '10 – 15',
     first: '10',
     banner: {
-      phase: 'Phase 2 · sections 10 – 12',
+      phase: 'Phase 2 · sections 10 – 15',
       title: 'Everything else.',
       blurb:
-        "Phase 1 examined one API in a real browser and found five bugs. Everything else was unexamined, so this phase went through the rest of the surface: the other nine APIs, then Group / Sequence / Timeline / Cinematic, then scrollAnimate's own native fast path, then all eight framework wrappers and the CDN builds, and finally the same code again with no DOM at all. It found the worst defect of the three phases — an API that did nothing in the arrangement its own documentation prescribed — and ten more after that, including a server-side import that crashed the render and a CDN bundle shipping without the component it advertises. Sections 10–12 show three of them; the rest are in the changelog for 2.10.0.",
+        "Phase 1 examined one API in a real browser and found five bugs. Everything else was unexamined, so this phase went through the rest of the surface: the other nine APIs, then Group / Sequence / Timeline / Cinematic, then scrollAnimate's own native fast path, then all eight framework wrappers and the CDN builds, and finally the same code again with no DOM at all. It found the worst defect of the three phases — an API that did nothing in the arrangement its own documentation prescribed — and ten more after that, including a server-side import that crashed the render and a CDN bundle shipping without the component it advertises. Sections 10–12 show three of them, and 13–15 the three 2.10.0 fixes; the rest are in the changelog for 2.10.0.",
       bullets: [
         ['Browser tests', '30 → 175, on all three engines'],
         ['Defects found', '14 in the library, 2 in the test harness'],
@@ -142,16 +144,8 @@ const PHASES: Phase[] = [
 
 const LIMITS: [string, string][] = [
   [
-    'CI going green',
-    'The browser suite has only ever been proven on one laptop. Pushing the v2.10.0 tag triggered the first remote run; its result lives on GitHub Actions, not here. That run also fails deliberately at "is this version already published", because 2.10.0 went out by hand — see the next item.',
-  ],
-  [
-    '2.10.0 has no provenance attestation',
-    'The release workflow publishes with --provenance, which cryptographically ties a package to the commit and workflow run that built it. It needs an NPM_TOKEN repository secret, which was not set, so this version was published from a laptop instead. The workflow is wired and waiting; the claim is simply not yet true of anything on npm.',
-  ],
-  [
-    '531 unit tests are still jsdom',
-    'getTotalLength is stubbed to a constant and IntersectionObserver is faked. They verify engine arithmetic. The 175 Playwright tests per engine are what cover browser behaviour, and a separate suite with no DOM at all covers what happens on a server.',
+    `${UNIT_TESTS} unit tests are still jsdom`,
+    `getTotalLength is stubbed to a constant and IntersectionObserver is faked. They verify engine arithmetic. The ${BROWSER_TESTS} Playwright tests per engine are what cover browser behaviour — now run on GitHub Actions before every release, not only on one laptop — and a separate suite with no DOM at all covers what happens on a server.`,
   ],
   [
     'The wrappers are tested through their contracts, not their build pipelines',
@@ -166,16 +160,12 @@ const LIMITS: [string, string][] = [
     'Section 06 kept reporting a constant 0.0201 offset. Trigger points were cached at init and only recomputed on a window resize, so a 21px layout shift during hydration left the JS engine permanently offset while the native CSS path stayed correct. Now fixed with a ResizeObserver — but only a busy, real page surfaced it, which says something about how much the isolated fixtures can prove.',
   ],
   [
+    'And the e2e suite caught this page out',
+    'Section 15 was withheld for months because its harness measured the two engines 0.83 apart with easing: "ease-out". The suite’s own ease-out case had passed all along. The page was wrong: the native cell was keyed by its label, the label changed once support was detected, and React replaced that cell after the library had attached to it — leaving a fresh, undrawn path that read as fully drawn. Keyed by role, it reads 0.0001. Both sweeps also jump instantly now; this page scrolls smoothly, and a smooth jump was still gliding when the samples were read.',
+  ],
+  [
     'Dev warnings still need opting into',
     'They were unreachable for CDN users entirely: IS_DEV is derived from process.env.NODE_ENV, and process does not exist in a browser without a bundler. 2.10.0 ships svg-scroll-draw.dev.global.js, which reports them — but you have to know to load it, and the production bundle has them removed at build time.',
-  ],
-  [
-    'Two of the three 2.10.0 fixes are now demonstrated — sections 13 and 14',
-    'A finished sequence reporting its real progress, and split: "lines" keeping its spaces, both now measure the current build live rather than replaying a recorded number.',
-  ],
-  [
-    'The named-easing parity demo is withheld, and that is a finding in itself',
-    'A harness written for it measured the native CSS path and the JS engine 0.83 apart with easing: "ease-out", against 0.00 for the same harness on the default curve — one variable changed. That is far larger than the 0.069 divergence 2.10.0 fixed, and too large to be an easing curve difference, which points at the animation range rather than the timing function. It is one new harness on one browser and it may well be measuring wrong, so it is not being published as a verdict about the library. It is written up in NEXT-SESSION-PLAN.md with the repro, and this page will carry the section once the number is understood.',
   ],
 ];
 
@@ -447,6 +437,22 @@ const SECTIONS: Sec[] = [
       </>
     ),
     body: <SplitLinesSpacingProof />,
+  },
+  {
+    phase: 2,
+    kind: 'live proof',
+    short: 'Named easings on both engines',
+    title: 'A named easing drew a different curve on the native path.',
+    lead: (
+      <>
+        Section 06 proves the two engines agree on the default curve, where there is nothing to get wrong.
+        Before 2.10.0 the native path handed CSS the keyword of the same name — <code>ease-out</code> became{' '}
+        <code>animation-timing-function: ease-out</code> — but the keywords are fixed cubic-béziers and this
+        library’s easings are its own curves, so the two engines drew up to 0.069 apart mid-scroll. The
+        same SVG below runs <code>easing: &apos;ease-out&apos;</code> on both.
+      </>
+    ),
+    body: <EasingParityProof />,
   },
   {
     phase: null,

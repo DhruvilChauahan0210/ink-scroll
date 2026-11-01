@@ -317,12 +317,12 @@ export default function VsGsapPage() {
             </h1>
             <p className="pg-lede">
               GSAP is free since 2025 — every plugin — and it does more than we do. This page isn&#39;t about price.
-              It&#39;s that for scroll work alone you ship {COMPETITORS.gsapStack.gzipKb} KB and an API surface you&#39;ll
+              It&#39;s that for scroll work alone you ship {COMPETITORS.gsapStack.gzipKb} KB and an API surface you’ll
               use a fraction of.
             </p>
             <div className="pg-actions">
               <Link href="/" className="btn btn-solid" data-magnetic>Get started free →</Link>
-              <Link href="/blog/replace-gsap-scrolltrigger" className="btn" data-magnetic>Migration guide →</Link>
+              <Link href="/guides/gsap-scrolltrigger-react" className="btn" data-magnetic>Migration guide →</Link>
               <a href="#when-gsap" className="btn" data-magnetic>When GSAP is the better call ↓</a>
             </div>
             <dl className="pg-facts">
@@ -468,7 +468,7 @@ export default function VsGsapPage() {
           actions={
             <>
               <Link href="/docs" className="btn btn-solid" data-magnetic>Read the docs →</Link>
-              <Link href="/blog/replace-gsap-scrolltrigger" className="btn" data-magnetic>Migration guide →</Link>
+              <Link href="/guides/gsap-scrolltrigger-react" className="btn" data-magnetic>Migration guide →</Link>
             </>
           }
         >

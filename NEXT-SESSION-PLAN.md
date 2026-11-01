@@ -30,9 +30,8 @@ months, 81% to the homepage; `/vs-gsap` at position 11 with 425 impressions.
   busts Next's image cache, a same-name file keeps serving the old picture — and point
   `SHOWCASE` in `src/showcase/index.ts` at it. Card copy and code live in
   `components/examples/scenes/data.ts`.
-- `components/examples/ink/*.codes.ts` and the ink previews are only used now for the
-  `preview` field, which no card shows while a site exists; they can be deleted once
-  nobody wants the ink plates back.
+- The ink previews in `components/examples/ink/` are only used now for the `preview`
+  field, which no card shows while a site exists (their `*.codes.ts` are deleted).
 - Fictional brands only, no real logos; realistic copy; check desktop and 390px.
 
 ### Gotcha: intermittent Vercel production failures
@@ -177,8 +176,13 @@ convincing they are:
 - [x] `split: 'lines'` keeping its spaces. **Done (2026-08-15)** — section 14,
       `SplitLinesSpacingProof`. Counts whitespace before and after the split;
       currently 11 and 11.
-- [ ] Native-vs-JS easing parity — **built, withheld, and it turned up a number
-      that needs explaining before it ships.**
+- [x] Native-vs-JS easing parity — **section 15, live (2026-11-01).** The 0.83
+      below was the page's harness: the native cell's React key was its label,
+      which changes once support is detected, so React replaced the cell after the
+      library attached. `e2e/parity.spec.ts` already had an ease-out case passing
+      on every engine. Keyed by role it reads 0.0001. Kept below as the record.
+      What follows is the original write-up, from when it was **built, withheld,
+      and turned up a number that needed explaining before it shipped.**
 
       `EasingParityProof` in `apps/demo/src/components/VerifyPhase3.tsx` is
       written and works; it is deliberately not wired into `/verify`.

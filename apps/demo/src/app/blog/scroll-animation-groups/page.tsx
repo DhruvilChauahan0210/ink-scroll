@@ -188,7 +188,7 @@ scrollAnimateSequence(
   }
 );`}</Code>
         <p>
-          Internally each step is forced to <code>once: true</code> so completing a step and scrolling back doesn&apos;t
+          Internally each step is forced to <code>once: true</code> so completing a step and scrolling back doesn’t
           reset it and break the chain.
         </p>
       </Section>

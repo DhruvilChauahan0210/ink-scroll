@@ -106,7 +106,7 @@ const MORE = [
   { href: '/docs', title: 'API reference', note: 'Every option on the bench, and the ones it leaves out: triggers, callbacks, timelines, framework wrappers.' },
   { href: '/examples', title: 'Examples', note: 'Logo reveals, line charts, signatures — real interfaces drawn on scroll, each with its code.' },
   { href: '/blocks', title: 'Blocks', note: 'Copy-paste scroll animation blocks for React and Tailwind, one file each.' },
-  { href: '/guides', title: 'Migration guides', note: 'Moving from AOS, ScrollReveal or vivus onto the maintained drop-ins.' },
+  { href: '/guides', title: 'Migration guides', note: 'Moving from AOS, ScrollReveal or vivus onto the maintained drop-ins, or from GSAP ScrollTrigger.' },
 ];
 
 function Head({ n, k, id, children }: { n: number; k: string; id: string; children: React.ReactNode }) {

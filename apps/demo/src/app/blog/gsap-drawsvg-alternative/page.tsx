@@ -190,7 +190,7 @@ export default function Page() {
         <p>
           GSAP stack includes gsap core ({kb(CORE)}) + ScrollTrigger ({kb(TRIGGER)}) + DrawSVG plugin ({kb(DRAWSVG)}).
           Where the browser supports <code>animation-timeline: view()</code> (Chrome and Edge 115+, Safari 26+, Firefox
-          159+), svg-scroll-draw also hands the simple draw case to the browser&apos;s native CSS scroll timeline — zero
+          159+), svg-scroll-draw also hands the simple draw case to the browser’s native CSS scroll timeline — zero
           per-frame JavaScript.
         </p>
       </Section>

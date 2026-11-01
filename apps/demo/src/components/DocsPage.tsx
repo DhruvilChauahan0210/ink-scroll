@@ -199,7 +199,9 @@ function Note({ children }: { children: React.ReactNode }) {
   return (
     <div className="dc-note">
       <span className="dc-note-k">Note</span>
-      {children}
+      {/* One cell: the note is a two-column grid, and loose text and code spans
+          each became a grid item of their own, stacking the sentence vertically. */}
+      <div>{children}</div>
     </div>
   );
 }
@@ -496,7 +498,7 @@ instance.destroy();   // cleanup on unmount`}
             </CodeBlock>
             <Note>
               SVG elements must have a <code className="font-mono">stroke</code> attribute and{' '}
-              <code className="font-mono">fill="none"</code>.
+              <code className="font-mono">{'fill="none"'}</code>.
               In dev mode, a warning is logged if either condition is violated.
             </Note>
           </DocSection>
@@ -518,8 +520,8 @@ instance.destroy();   // cleanup on unmount`}
                 Easing curve applied to draw progress. Pass a custom function for full control — receives and returns a 0–1 value.
               </Opt>
               <Opt name="direction" type="'forward' | 'reverse'" defaultVal="'forward'">
-                <code className="font-mono text-pitch-black">'forward'</code> draws the path as you scroll in.{' '}
-                <code className="font-mono text-pitch-black">'reverse'</code> starts fully drawn and erases it — useful for "write then erase" effects.
+                <code className="font-mono text-pitch-black">{"'forward'"}</code> draws the path as you scroll in.{' '}
+                <code className="font-mono text-pitch-black">{"'reverse'"}</code> starts fully drawn and erases it — useful for “write then erase” effects.
               </Opt>
               <Opt name="stagger" type="number" defaultVal="0">
                 Delay between each path starting, as a fraction of the total scroll range.{' '}
@@ -535,20 +537,20 @@ instance.destroy();   // cleanup on unmount`}
           <DocSection id="trigger" tag="Options" heading="Trigger">
             <p className="text-sm text-graphite-border leading-relaxed mb-4">
               Triggers define when the animation starts and ends relative to the scroll position.
-              Both use an <code className="font-mono text-pitch-black">"element-anchor viewport-anchor"</code> string format,
-              or a percentage like <code className="font-mono text-pitch-black">"20%"</code>.
+              Both use an <code className="font-mono text-pitch-black">{'"element-anchor viewport-anchor"'}</code> string format,
+              or a percentage like <code className="font-mono text-pitch-black">{'"20%"'}</code>.
             </p>
             <OptGroup>
               <Opt name="trigger.start" type="string" defaultVal="'top bottom'">
                 When the animation begins.{' '}
-                <code className="font-mono text-pitch-black">'top bottom'</code> means "when the top of the element
-                hits the bottom of the viewport." Valid anchors:{' '}
+                <code className="font-mono text-pitch-black">{"'top bottom'"}</code> means “when the top of the element
+                hits the bottom of the viewport.” Valid anchors:{' '}
                 <code className="font-mono text-pitch-black">top | center | bottom</code>.
               </Opt>
               <Opt name="trigger.end" type="string" defaultVal="'bottom top'">
                 When the animation completes.{' '}
-                <code className="font-mono text-pitch-black">'bottom top'</code> means "when the bottom of the element
-                reaches the top of the viewport."
+                <code className="font-mono text-pitch-black">{"'bottom top'"}</code> means “when the bottom of the element
+                reaches the top of the viewport.”
               </Opt>
             </OptGroup>
             <CodeBlock file="triggers.js">
@@ -568,7 +570,7 @@ scrollDraw('#svg', { trigger: { start: '20%', end: '80%' } });`}
             <OptGroup>
               <Opt name="fade" type="boolean" defaultVal="false">
                 Fade the element opacity from 0→1 in sync with the draw. Combine with{' '}
-                <code className="font-mono text-pitch-black">direction: 'reverse'</code> to fade out while erasing.
+                <code className="font-mono text-pitch-black">{"direction: 'reverse'"}</code> to fade out while erasing.
               </Opt>
               <Opt name="strokeColor" type="string | [string, string]">
                 Static stroke color override, or interpolate between two colors as the path draws.
@@ -585,7 +587,7 @@ scrollDraw('#svg', { trigger: { start: '20%', end: '80%' } });`}
                 Reveal the container using CSS <code className="font-mono text-pitch-black">clip-path</code> instead
                 of stroke animation. Works on any content — images, text, divs.{' '}
                 <code className="font-mono text-pitch-black">true</code> defaults to{' '}
-                <code className="font-mono text-pitch-black">'left'</code>.
+                <code className="font-mono text-pitch-black">{"'left'"}</code>.
               </Opt>
               <Opt name="morphTo" type="string">
                 Target SVG <code className="font-mono text-pitch-black">d</code> attribute to morph toward as the
@@ -657,7 +659,7 @@ scrollDraw('#shape', { morphTo: 'M10 80 Q50 10 90 80', easing: 'spring' });`}
                 <code className="font-mono text-pitch-black">direction</code>.
               </Opt>
               <Opt name="axis" type="'x' | 'y'" defaultVal="'y'">
-                Scroll axis to track. Use <code className="font-mono text-pitch-black">'x'</code> for
+                Scroll axis to track. Use <code className="font-mono text-pitch-black">{"'x'"}</code> for
                 horizontally-scrolling containers.
               </Opt>
               <Opt name="scrollContainer" type="string | Element">
@@ -674,7 +676,7 @@ scrollDraw('#shape', { morphTo: 'M10 80 Q50 10 90 80', easing: 'spring' });`}
               </Opt>
               <Opt name="repeat" type="number | 'infinite'" defaultVal="0">
                 Repeat the animation N times after completion.
-                Use <code className="font-mono text-pitch-black">'infinite'</code> to loop forever.
+                Use <code className="font-mono text-pitch-black">{"'infinite'"}</code> to loop forever.
               </Opt>
               <Opt name="repeatDelay" type="number" defaultVal="0">
                 Milliseconds to wait between animation repeats.
@@ -770,7 +772,7 @@ export function Hero() {
             <Note>
               The <code className="font-mono">ScrollDraw</code> component is SSR-safe — it uses{' '}
               <code className="font-mono">useEffect</code> internally and works in Next.js App Router
-              without a <code className="font-mono">'use client'</code> wrapper on the consumer side.
+              without a <code className="font-mono">{"'use client'"}</code> wrapper on the consumer side.
             </Note>
           </DocSection>
 
@@ -871,7 +873,7 @@ function HeroWithReplay() {
           <DocSection id="angular" tag="Frameworks" heading="Angular">
             <p className="text-sm text-graphite-border leading-relaxed mb-2">
               All v2 APIs are available as class-based <code className="font-mono text-pitch-black">Ref</code> objects
-              that integrate with Angular&apos;s component lifecycle. No peer dependency on{' '}
+              that integrate with Angular’s component lifecycle. No peer dependency on{' '}
               <code className="font-mono text-pitch-black">@angular/core</code> is required in the library.
             </p>
 
@@ -1252,7 +1254,7 @@ export function ParallaxSection() {
             <OptGroup>
               <Opt name="speed" type="number" defaultVal="1">Same speed multiplier as <code className="font-mono text-pitch-black">scrollDraw()</code>.</Opt>
               <Opt name="easing" type="EasingName | (t: number) => number" defaultVal="'linear'">Same easing curves as <code className="font-mono text-pitch-black">scrollDraw()</code>.</Opt>
-              <Opt name="trigger" type="TriggerConfig">Same trigger syntax. Default: start <code className="font-mono text-pitch-black">'top bottom'</code>, end <code className="font-mono text-pitch-black">'bottom top'</code>.</Opt>
+              <Opt name="trigger" type="TriggerConfig">Same trigger syntax. Default: start <code className="font-mono text-pitch-black">{"'top bottom'"}</code>, end <code className="font-mono text-pitch-black">{"'bottom top'"}</code>.</Opt>
               <Opt name="axis" type="'x' | 'y'" defaultVal="'y'">Scroll axis.</Opt>
               <Opt name="scrollContainer" type="string | Element">Custom scroll container.</Opt>
               <Opt name="once" type="boolean" defaultVal="false">Lock at max progress once reached — never decreases on scroll back.</Opt>
@@ -1263,7 +1265,7 @@ export function ParallaxSection() {
           <DocSection id="native-css" tag="v1.1.0" heading="Native CSS rendering">
             <p className="text-sm text-graphite-border leading-relaxed mb-4">
               For the common case, <code className="font-mono text-pitch-black">svg-scroll-draw</code> hands
-              the animation to the browser&apos;s native{' '}
+              the animation to the browser’s native{' '}
               <code className="font-mono text-pitch-black">animation-timeline: view()</code>.
               The browser drives the draw from the scroll position, with{' '}
               <strong>zero per-frame JavaScript and no scroll or resize listeners.</strong>{' '}
@@ -1303,6 +1305,21 @@ export function ParallaxSection() {
               <code className="font-mono text-pitch-black">speed ≠ 1</code>,{' '}
               <code className="font-mono text-pitch-black">spring</code> easing, animated color/width/fill.
             </p>
+            <Sub>Jumping straight past a drawing</Sub>
+            <p className="text-sm text-graphite-border leading-relaxed mb-4">
+              The one place the two paths differ. Jump past a drawing without ever showing it — a deep link,
+              a restored scroll position,{' '}
+              <code className="font-mono text-pitch-black">scrollTo(0, document.body.scrollHeight)</code> — and
+              the native path holds its end state, because the animation fills both ways, while the JS
+              engine, which only runs while the container is on screen, leaves it undrawn. You can’t see
+              either while it is off screen, and the JS engine catches up on the first frame the drawing
+              scrolls back into view. What you can see is the reading: off screen,{' '}
+              <code className="font-mono text-pitch-black">getProgress()</code> and the path’s computed{' '}
+              <code className="font-mono text-pitch-black">stroke-dashoffset</code> report the end on the
+              native path and the start on the JS engine. The browser suite pins this
+              behaviour in <code className="font-mono text-pitch-black">e2e/parity.spec.ts</code>, so a change
+              to it is a decision rather than an accident.
+            </p>
             <CodeBlock file="native.js">
 {`// Uses animation-timeline: view() on supporting browsers
 scrollDraw('#svg', { easing: 'ease-out', fade: true });
@@ -1324,7 +1341,7 @@ scrollDraw('#svg', { native: false, easing: 'spring' });`}
           <DocSection id="create-spring" tag="v1.0.0" heading="createSpring">
             <p className="text-sm text-graphite-border leading-relaxed mb-2">
               Returns a custom spring easing function. The built-in{' '}
-              <code className="font-mono text-pitch-black">'spring'</code> easing is hardcoded —{' '}
+              <code className="font-mono text-pitch-black">{"'spring'"}</code> easing is hardcoded —{' '}
               <code className="font-mono text-pitch-black">createSpring</code> lets you tune it.
             </p>
             <OptGroup>
@@ -1349,7 +1366,7 @@ scrollDraw('#svg', { easing: createSpring({ tension: 1.5, friction: 1.2 }) });`}
             </CodeBlock>
             <Note>
               <code className="font-mono">createSpring()</code> with no arguments produces the same curve as{' '}
-              <code className="font-mono">easing: 'spring'</code>. Use it when you need to parameterize the bounce.
+              <code className="font-mono">{"easing: 'spring'"}</code>. Use it when you need to parameterize the bounce.
             </Note>
           </DocSection>
 
@@ -1462,10 +1479,10 @@ instance.destroy();`}
                 Progress value (0–1) within the overall range where this track finishes drawing.
               </Opt>
               <Opt name="easing" type="EasingName | function" defaultVal="'linear'">
-                Easing applied to this track's local progress independently of other tracks.
+                Easing applied to this track’s local progress independently of other tracks.
               </Opt>
               <Opt name="fade" type="boolean" defaultVal="false">
-                Fade opacity in sync with this track's draw progress.
+                Fade opacity in sync with this track’s draw progress.
               </Opt>
             </OptGroup>
             <Sub>Timeline-level options</Sub>
@@ -1488,7 +1505,7 @@ instance.destroy();`}
               </Opt>
               <Opt name="loopDuration" type="number" defaultVal="1500">Duration of each time-driven loop iteration in milliseconds.</Opt>
               <Opt name="debug" type="boolean" defaultVal="false">
-                Inject a fixed HUD panel into <code className="font-mono text-pitch-black">document.body</code> showing each track&apos;s
+                Inject a fixed HUD panel into <code className="font-mono text-pitch-black">document.body</code> showing each track’s
                 scroll window as a coloured progress bar with live fill and global progress. Removed on{' '}
                 <code className="font-mono text-pitch-black">destroy()</code>. Useful for tuning{' '}
                 <code className="font-mono text-pitch-black">from</code>/<code className="font-mono text-pitch-black">to</code> values.
@@ -1986,7 +2003,7 @@ scrollProgress('#section', {
           <DocSection id="scroll-horizontal" tag="v2.9.0" heading="scrollHorizontal">
             <p className="text-sm text-graphite-border leading-relaxed mb-2">
               Drive horizontal <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">translateX</code> from vertical scroll —
-              the Apple / Stripe &ldquo;scroll sideways&rdquo; pattern. You handle the sticky CSS;
+              the Apple / Stripe “scroll sideways” pattern. You handle the sticky CSS;
               <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">scrollHorizontal</code> drives the transform.
             </p>
             <CodeBlock file="index.js">

@@ -11,7 +11,7 @@ const subscribe = (cb: () => void) => {
 };
 const getDark = () => document.documentElement.classList.contains('dark');
 
-/** Round icon button for the homepage nav; same storage as ThemeToggle. */
+/** Round icon button for the site nav. */
 export function HomeThemeToggle() {
   const dark = useSyncExternalStore<boolean | null>(subscribe, getDark, () => null);
 

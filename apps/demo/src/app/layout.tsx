@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Syne } from "next/font/google";
 import "./globals.css";
-import { Mascot } from "@/components/Mascot";
 import { TITLE_TEMPLATE } from "./_lib/seo";
 
 const THEME_SCRIPT = `(function(){
@@ -133,7 +132,6 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
         {children}
-        <Mascot />
       </body>
     </html>
   );

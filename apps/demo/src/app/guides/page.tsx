@@ -3,13 +3,13 @@ import '@/components/guides.css';
 import Link from 'next/link';
 import { seoTitle } from '../_lib/seo';
 import { GUIDES } from '@/data/guides';
-import { COMPETITORS, SELF_ENTRIES } from '@/data/competitors';
+import { COMPETITORS, SELF, SELF_ENTRIES } from '@/data/competitors';
 import { SiteShell } from '@/components/site/SiteShell';
 
 export const metadata: Metadata = {
-  title: seoTitle('Migration Guides: AOS, ScrollReveal and vivus in React'),
+  title: seoTitle('Migration Guides: GSAP, AOS, ScrollReveal and vivus'),
   description:
-    'Step-by-step guides for moving AOS, ScrollReveal and vivus projects in React and Next.js onto maintained, MIT drop-ins — one command, same markup.',
+    'Move AOS, ScrollReveal and vivus projects in React and Next.js onto MIT drop-ins in one command, or map GSAP ScrollTrigger code to svg-scroll-draw call by call.',
   alternates: { canonical: '/guides' },
 };
 
@@ -24,17 +24,22 @@ export default function GuidesIndex() {
           <p className="pg-kicker"><span>guides / {GUIDES.length} migrations</span><span>react · next.js</span></p>
           <h1 className="pg-title">Migration guides</h1>
           <p className="pg-lede">
-            Already on AOS, ScrollReveal or vivus? Each guide moves one of them onto its drop-in in React or
+            Already on AOS, ScrollReveal or vivus? Each of those guides moves one onto its drop-in in React or
             Next.js — the same API and markup, maintained, MIT, with hooks that clean up after themselves.
+            Coming from GSAP ScrollTrigger? That guide maps each call to its svg-scroll-draw equivalent, and
+            says plainly what has none.
           </p>
           <dl className="pg-facts">
+            <div>
+              <dt>GSAP stack</dt>
+              <dd>{COMPETITORS.gsapStack.gzipKb.toFixed(1)} → {SELF.gzipKb.toFixed(1)} KB</dd>
+            </div>
             {DROP_INS.map((k) => (
               <div key={k}>
                 <dt>{COMPETITORS[k].label}</dt>
                 <dd>{COMPETITORS[k].gzipKb.toFixed(1)} → {SELF_ENTRIES[k].toFixed(1)} KB</dd>
               </div>
             ))}
-            <div><dt>Migrate</dt><dd>1 command</dd></div>
           </dl>
         </header>
         <section className="gd-index" aria-label="Guides">

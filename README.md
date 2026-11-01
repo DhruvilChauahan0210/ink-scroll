@@ -102,6 +102,9 @@ Sizes measured 2026-08-14 at gzip level 9 — see `CLAIMS-AUDIT.md` for the comm
 (`scrollReveal` alone is 4.7 KB). If you need one effect, the small libraries above are a
 fair choice. If you need several, one dependency beats four.
 
+Moving from GSAP ScrollTrigger? The [step-by-step guide](https://svg-scroll-draw.vercel.app/guides/gsap-scrolltrigger-react)
+maps each option to its equivalent here, and lists what has none.
+
 ---
 
 ## Quick start

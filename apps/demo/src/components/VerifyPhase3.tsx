@@ -73,7 +73,9 @@ export function EasingParityProof() {
    * Free-scrolling this section recorded deltas around 0.86 on a build with no
    * divergence at all. VerifyPhase1 hit the same trap and documents it.
    *
-   * So: step to fixed offsets, wait for both engines to settle, then read.
+   * So: step to fixed offsets, wait for both engines to settle, then read. The
+   * jumps are instant: this page scrolls smoothly, and a smooth scrollTo is still
+   * gliding when the samples are read.
    */
   async function runSweep() {
     const box = nativeBox.current;
@@ -98,7 +100,7 @@ export function EasingParityProof() {
     const STEPS = 11;
     for (let i = 1; i < STEPS; i++) {
       const y = Math.round(tStart + ((tEnd - tStart) * i) / STEPS);
-      window.scrollTo(0, y);
+      window.scrollTo({ top: y, behavior: 'instant' });
       await twoFrames();
       await twoFrames();
       const n = drawnFraction(nativePath);
@@ -110,7 +112,7 @@ export function EasingParityProof() {
       }
     }
 
-    window.scrollTo(0, restore);
+    window.scrollTo({ top: restore, behavior: 'instant' });
     setSweep({ worst, samples });
     setBusy(false);
   }
@@ -118,11 +120,15 @@ export function EasingParityProof() {
   return (
     <div>
       <div className="vf-pair is-fixed">
+        {/* Keyed by role, not by label: the native cell's label changes once support
+            is known, and a changed key made React replace that cell's DOM after the
+            library had attached to it — leaving a fresh, undrawn path that read as
+            fully drawn. That, not the library, was the 0.83 this section once showed. */}
         {[
-          { ref: nativeBox, label: live.supported ? 'native CSS · ease-out' : 'JS fallback · ease-out', value: live.native },
-          { ref: jsBox, label: 'JS forced · ease-out', value: live.js },
-        ].map(({ ref, label, value }) => (
-          <div key={label} className="vf-cell">
+          { id: 'native', ref: nativeBox, label: live.supported ? 'native CSS · ease-out' : 'JS fallback · ease-out', value: live.native },
+          { id: 'js', ref: jsBox, label: 'JS forced · ease-out', value: live.js },
+        ].map(({ id, ref, label, value }) => (
+          <div key={id} className="vf-cell">
             <div className="vf-cell-head">
               <span className="vf-cell-k">{label}</span>
               <span className="vf-cell-v">{value.toFixed(4)}</span>
@@ -162,7 +168,7 @@ export function EasingParityProof() {
               <strong className="vf-num">{sweep.worst.toFixed(4)}</strong>. Before 2.10.0 this reached{' '}
               <strong className="vf-num">0.069</strong> on this configuration, because the native path
               emitted the CSS <code>ease-out</code> keyword while the JS engine ran this
-              library&apos;s own curve — same name, different function.
+              library’s own curve — same name, different function.
               {!live.supported && ' Your browser has no native scroll timeline, so both sides here are the JS engine; the parity that matters is measured where the fast path exists.'}
             </>
           )

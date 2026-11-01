@@ -118,7 +118,7 @@ const instance = scrollPin('#panel', {
 // Later: remove pin and restore the DOM
 // instance.destroy();`}</Code>
         <p>
-          That&apos;s it. <code>scrollPin</code> wraps the target in a spacer div (so the page layout doesn&apos;t jump),
+          That&apos;s it. <code>scrollPin</code> wraps the target in a spacer div (so the page layout doesn’t jump),
           applies <code>position: fixed</code> when the element hits the viewport top, and releases it when the pin zone ends.
         </p>
       </Section>
