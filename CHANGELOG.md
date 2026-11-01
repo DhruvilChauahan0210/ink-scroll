@@ -204,6 +204,19 @@ All notable changes to `svg-scroll-draw` are documented here.
 - **Lint is clean** — the demo carried 52 errors (unescaped quotes, mostly in
   the docs' option tables, and setState-in-effect in components now deleted).
 
+- **Every page is reachable from every page.** The nav linked five sections
+  and the footer twelve links, so the nine framework pages and four of the
+  seven comparisons had no link from the site's chrome: React and Next.js sat
+  four clicks from the homepage, reachable only through one blog post. The
+  desktop nav gains a "More" menu (Frameworks, Compare, Resources), the phone
+  menu lists the same groups under the five sections, and an index band under
+  the footer's drawing sheet links every page. All three read one list,
+  `components/site/sitemap.ts`, built from the data that generates the
+  framework and comparison pages; framework, comparison and `/verify` pages
+  now mark their place in the nav. A crawl from the homepage finds no page more
+  than two clicks deep (eight were three or four), and `check-nav` fails the
+  build if a new top-level page is missing from the list.
+
 ### CI
 
 - **One release run per tag at a time.** Re-pushing `v2.15.3` while its first
@@ -214,7 +227,7 @@ All notable changes to `svg-scroll-draw` are documented here.
   never cancels a run in progress, since stopping mid-publish could leave npm
   and the GitHub release out of step.
 - **The demo is linted in CI and in `npm run verify`**, with no warnings
-  allowed, followed by `check-jsx-text`.
+  allowed, followed by `check-jsx-text` and `check-nav`.
 
 ---
 

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "node scripts/check-competitors.mjs && node scripts/check-examples.mjs && node scripts/check-jsx-text.mjs && node scripts/build-registry.mjs --check && next build",
+    "build": "node scripts/check-competitors.mjs && node scripts/check-examples.mjs && node scripts/check-jsx-text.mjs && node scripts/check-nav.mjs && node scripts/build-registry.mjs --check && next build",
     "start": "next start",
     "lint": "eslint",
     "sitemap:dates": "node scripts/refresh-sitemap-dates.mjs",

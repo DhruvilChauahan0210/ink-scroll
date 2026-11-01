@@ -141,7 +141,7 @@ const TOC: [string, string][] = [
 
 export default function VsAosPage() {
   return (
-    <SiteShell kicker="vs aos / your turn" cta={{ href: '/guides', label: 'Migration guides' }}>
+    <SiteShell active="/vs-aos" kicker="vs aos / your turn" cta={{ href: '/guides', label: 'Migration guides' }}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(pageJsonLd) }} />
       <div className="h2h">
 

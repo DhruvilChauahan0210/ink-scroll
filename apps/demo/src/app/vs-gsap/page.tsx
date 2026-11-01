@@ -300,7 +300,7 @@ const TOC: [string, string][] = [
 
 export default function VsGsapPage() {
   return (
-    <SiteShell kicker="vs gsap / your turn">
+    <SiteShell active="/vs-gsap" kicker="vs gsap / your turn">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(pageJsonLd) }} />
       <div className="h2h">
 

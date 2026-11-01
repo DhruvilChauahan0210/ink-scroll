@@ -175,7 +175,7 @@ const TOC: [string, string][] = [
 
 export default function VsFramerMotionPage() {
   return (
-    <SiteShell kicker="vs framer motion / your turn">
+    <SiteShell active="/vs-framer-motion" kicker="vs framer motion / your turn">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(pageJsonLd) }} />
       <div className="h2h">
 

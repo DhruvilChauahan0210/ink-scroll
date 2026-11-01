@@ -16,6 +16,8 @@ import { LiveStats } from '@/components/home/LiveStats';
 import { SignOff } from '@/components/home/SignOff';
 import { SELF } from '@/data/competitors';
 import { UNIT_TESTS, BROWSER_TESTS, BUDGET_KB } from '@/data/facts';
+import { MORE } from '@/components/site/sitemap';
+import { SiteIndex } from '@/components/site/SiteIndex';
 
 export const metadata: Metadata = {
   alternates: { canonical: 'https://svg-scroll-draw.vercel.app' },
@@ -53,7 +55,7 @@ export default function HomePage() {
       <Magnetic />
 
       {/* ── Nav ──────────────────────────────────────────────────────── */}
-      <HomeNav version={SELF.version} />
+      <HomeNav version={SELF.version} more={MORE} />
 
       <main>
         {/* ── 00 Hero: the lettering sheet ────────────────────────────── */}
@@ -111,6 +113,7 @@ export default function HomePage() {
 
         {/* ── Sign-off: the page ends on a signed drawing sheet ────────── */}
         <SignOff version={SELF.version} gzipKb={SELF.gzipKb} unitTests={UNIT_TESTS} browserTests={BROWSER_TESTS} />
+        <SiteIndex />
       </main>
     </div>
   );

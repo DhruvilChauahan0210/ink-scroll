@@ -4,6 +4,8 @@ import type { ReactNode } from 'react';
 import { HomeNav } from '@/components/home/HomeNav';
 import { Magnetic } from '@/components/home/Magnetic';
 import { SignOff } from '@/components/home/SignOff';
+import { MORE } from './sitemap';
+import { SiteIndex } from './SiteIndex';
 import { SELF } from '@/data/competitors';
 import { UNIT_TESTS, BROWSER_TESTS } from '@/data/facts';
 
@@ -29,7 +31,7 @@ export function SiteShell({
   return (
     <div className="home site">
       <Magnetic />
-      <HomeNav version={SELF.version} active={active} solid />
+      <HomeNav version={SELF.version} active={active} solid more={MORE} />
       <div className="site-body">{children}</div>
       <footer className="sec-cal">
         <SignOff
@@ -40,6 +42,7 @@ export function SiteShell({
           kicker={kicker}
           cta={cta}
         />
+        <SiteIndex />
       </footer>
     </div>
   );

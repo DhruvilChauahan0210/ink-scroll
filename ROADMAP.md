@@ -181,6 +181,7 @@ of examining a single API in a real browser.
 - [x] StackBlitz "already migrated" starters for each drop-in, linked from the comparison pages and READMEs
 - [ ] More blocks (the registry pattern grows by count), and a Vue/Svelte flavour of each
 - [x] One nav for every page — `SiteShell` renders `HomeNav`, which links `/blocks`
+- [x] Every page linked from every page — nav "More" menu, phone-menu groups and a footer index, one list built from the page data; `check-nav` guards new routes
 - [x] Jump-scroll asymmetry documented in `/docs` (native CSS section), not only in a test comment
 - [x] `/verify` section 15 — named-easing parity on both engines; the 0.83 was the page's harness, not the library
 - [x] Demo lint clean (52 → 0) and enforced in CI and `verify`, with `check-jsx-text` guarding SWC's dropped spaces

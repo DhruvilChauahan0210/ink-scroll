@@ -564,7 +564,7 @@ export default function VerifyPage() {
   ];
 
   return (
-    <SiteShell kicker="verify / your turn">
+    <SiteShell active="/verify" kicker="verify / your turn">
       <div className="vf">
 
         {/* ── Opening ──────────────────────────────────────── */}

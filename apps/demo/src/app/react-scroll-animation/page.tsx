@@ -220,7 +220,7 @@ const TOC = [
 
 export default function ReactScrollAnimationPage() {
   return (
-    <SiteShell kicker="react / your turn">
+    <SiteShell active="/react-scroll-animation" kicker="react / your turn">
       <div className="stk stk-react">
 
         {/* ── Opening ────────────────────────────────────── */}

@@ -189,7 +189,7 @@ const TOC = [
 
 export default function NextjsScrollAnimationPage() {
   return (
-    <SiteShell kicker="next.js / your turn">
+    <SiteShell active="/nextjs-scroll-animation" kicker="next.js / your turn">
       <div className="stk stk-next">
 
         {/* ── Opening ────────────────────────────────────── */}

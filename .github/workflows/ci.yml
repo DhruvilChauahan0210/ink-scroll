@@ -48,7 +48,7 @@ jobs:
       # check-jsx-text: SWC drops the space in front of a multi-line JSX text
       # that contains an HTML entity, which had run words together on 22 lines.
       - name: Lint demo
-        run: npm run lint -- --max-warnings=0 && node scripts/check-jsx-text.mjs
+        run: npm run lint -- --max-warnings=0 && node scripts/check-jsx-text.mjs && node scripts/check-nav.mjs
         working-directory: apps/demo
 
       - name: Run tests (all workspaces)

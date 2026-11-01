@@ -145,6 +145,7 @@ at all.
 - [x] 32 dead files removed (~4,900 lines), mascot and its CSS included; 404 page in `SiteShell`
 - [x] Demo lint 52 → 0, enforced with `--max-warnings=0`
 - [x] `/docs`: jump-scroll asymmetry documented; Note boxes fixed
+- [x] Navigation: nav "More" menu, phone-menu groups and a footer index from one list (`components/site/sitemap.ts`); no page more than two clicks from the homepage; `check-nav` in build, CI and `verify`
 
 ### 2.16.0 — shared ESM chunks (2026-11-01)
 

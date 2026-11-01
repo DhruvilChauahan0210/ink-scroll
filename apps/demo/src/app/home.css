@@ -147,13 +147,13 @@ html.dark .home .nav.is-open .nav-in { box-shadow: 0 16px 40px -20px rgba(0, 0, 
 @media (min-width: 640px) { .home .nav-ver { display: inline-block; } }
 
 .home .nav-links { display: none; gap: 28px; justify-self: center; }
-.home .nav-links a, .home .nav-gh {
+.home .nav-links a, .home .nav-gh, .home .nav-more {
   position: relative;
   padding: 8px 0;
   color: var(--fg-2);
   transition: color 0.2s;
 }
-.home .nav-links a::after, .home .nav-gh::after {
+.home .nav-links a::after, .home .nav-gh::after, .home .nav-more::after {
   content: '';
   position: absolute;
   left: 0; right: 0; bottom: 3px;
@@ -163,8 +163,8 @@ html.dark .home .nav.is-open .nav-in { box-shadow: 0 16px 40px -20px rgba(0, 0, 
   transform-origin: right;
   transition: transform 0.35s var(--ease);
 }
-.home .nav-links a:hover, .home .nav-gh:hover { color: var(--fg); }
-.home .nav-links a:hover::after, .home .nav-gh:hover::after { transform: scaleX(1); transform-origin: left; }
+.home .nav-links a:hover, .home .nav-gh:hover, .home .nav-more:hover, .home .nav-more[aria-expanded='true'] { color: var(--fg); }
+.home .nav-links a:hover::after, .home .nav-gh:hover::after, .home .nav-more:hover::after { transform: scaleX(1); transform-origin: left; }
 .home .nav-gh span { color: var(--fg-3); }
 .home .nav-links a[aria-current='page'] { color: var(--fg); }
 .home .nav-links a[aria-current='page']::after { transform: scaleX(1); background: var(--accent); }
@@ -260,6 +260,102 @@ html.dark .home .nav.is-open .nav-in { box-shadow: 0 16px 40px -20px rgba(0, 0, 
 .home .menu-meta { margin-left: auto; color: var(--fg-3); }
 @media (min-width: 1024px) { .home .menu { display: none; } }
 
+/* "More": every page the five links leave out, under one button. */
+.home .nav-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 0;
+  background: none;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+}
+.home .nav-more svg { width: 9px; height: 6px; fill: none; stroke: currentColor; stroke-width: 1.4; transition: transform 0.3s var(--ease); }
+.home .nav-more[aria-expanded='true'] svg { transform: rotate(180deg); }
+.home .nav-more.is-current { color: var(--fg); }
+.home .nav-more.is-current::after { transform: scaleX(1); background: var(--accent); }
+
+.home .nav-panel {
+  pointer-events: auto;
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(760px, calc(100vw - 2 * var(--gutter)));
+  display: grid;
+  grid-template-columns: 1.25fr 1.15fr 0.8fr;
+  gap: 32px;
+  padding: 22px 26px 24px;
+  border: 1px solid var(--line-2);
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  backdrop-filter: blur(18px) saturate(1.4);
+  box-shadow: 0 24px 48px -24px rgba(0, 0, 0, 0.45);
+  text-transform: none;
+  letter-spacing: normal;
+  animation: panel-in 0.28s var(--ease);
+}
+html.dark .home .nav-panel { box-shadow: 0 28px 56px -24px rgba(0, 0, 0, 0.95), inset 0 1px 0 rgba(255, 255, 255, 0.04); }
+.home .nav-panel[hidden] { display: none; }
+@keyframes panel-in { from { opacity: 0; transform: translate(-50%, -6px); } }
+.home .nav-panel-h {
+  padding-bottom: 10px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+  font: 500 10px/1 var(--mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+.home .nav-panel ul { list-style: none; margin: 0; padding: 0; }
+.home .nav-panel-frameworks ul { columns: 2; column-gap: 20px; }
+.home .nav-panel a {
+  display: block;
+  padding: 6px 0;
+  font: 400 15px/1.3 var(--sans);
+  letter-spacing: -0.01em;
+  color: var(--fg-2);
+  transition: color 0.2s;
+}
+.home .nav-panel a:hover { color: var(--fg); }
+.home .nav-panel a[aria-current='page'] { color: var(--accent); }
+@media (max-width: 1023px) { .home .nav-panel { display: none; } }
+
+/* Phone menu: the five sections large, every other page below them, and the
+   whole sheet scrolls when it outgrows the screen. */
+.home .menu { grid-template-rows: auto auto auto; align-content: start; overflow-y: auto; overscroll-behavior: contain; }
+.home .menu-links { align-content: start; }
+.home .menu-more { display: grid; gap: 22px; padding: 28px 0 8px; }
+.home .menu-more-g {
+  opacity: 0;
+  transform: translateY(14px);
+  animation: menu-in 0.5s var(--ease) forwards;
+  animation-delay: calc(var(--i) * 45ms + 60ms);
+}
+.home .menu-more-h {
+  margin-bottom: 10px;
+  font: 500 10px/1 var(--mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+.home .menu-more-links { display: flex; flex-wrap: wrap; gap: 8px; }
+.home .menu-more-links a {
+  padding: 9px 13px;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  font: 400 15px/1 var(--sans);
+  color: var(--fg-2);
+  text-transform: none;
+  letter-spacing: -0.005em;
+  transition: color 0.2s, border-color 0.2s;
+}
+.home .menu-more-links a:hover { color: var(--fg); border-color: var(--fg-3); }
+.home .menu-more-links a[aria-current='page'] { color: var(--accent); border-color: var(--accent); }
+
 /* ── Buttons & chip ───────────────────────────────────────────────────── */
 
 .home .btn {
@@ -352,6 +448,43 @@ html:not(.dark) .home .hs-nib-core { fill: var(--accent); }
 
 @media (prefers-reduced-motion: reduce) {
   .home .nav-in, .home .menu { transition: none; }
-  .home .menu-links a { animation: none; opacity: 1; transform: none; }
+  .home .menu-links a, .home .menu-more-g { animation: none; opacity: 1; transform: none; }
+  .home .nav-panel { animation: none; }
   .home .hs-nib { display: none; }
 }
+
+/* ── Site index: every page, under the drawing sheet ─────────────────────── */
+.home .site-index {
+  padding: clamp(36px, 4vw, 56px) max(var(--gutter), calc((100% - 1560px) / 2)) clamp(40px, 5vw, 72px);
+  border-top: 1px solid var(--line);
+}
+.home .site-index-k {
+  margin-bottom: 22px;
+  font: 500 10px/1 var(--mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+.home .site-index-cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 24px; }
+@media (min-width: 900px) { .home .site-index-cols { grid-template-columns: 0.8fr 1.4fr 1.3fr 0.8fr; gap: 32px; } }
+.home .site-index-h {
+  padding-bottom: 10px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--line-2);
+  font: 500 10px/1 var(--mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--fg-2);
+}
+.home .site-index ul { list-style: none; margin: 0; padding: 0; }
+@media (min-width: 900px) {
+  .home .site-index-frameworks ul, .home .site-index-compare ul { columns: 2; column-gap: 20px; }
+}
+.home .site-index a {
+  display: inline-block;
+  padding: 5px 0;
+  font: 400 14px/1.35 var(--sans);
+  color: var(--fg-2);
+  transition: color 0.2s;
+}
+.home .site-index a:hover { color: var(--fg); }
