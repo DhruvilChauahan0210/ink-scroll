@@ -1,49 +1,10 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { scrollDraw } from 'svg-scroll-draw';
+import { Meter, Stat, Stats, Tag, Verdict } from './VerifyKit';
 
 const PATH_D = 'M10 50 C 40 10, 80 10, 100 50 S 160 90, 190 50';
-
-/* ── shared ─────────────────────────────────────────────────────────────────── */
-
-/** `ok: null` renders WAIT — an unmeasured proof must not look like a result. */
-function Verdict({ ok, children }: { ok: boolean | null; children: React.ReactNode }) {
-  const tone =
-    ok === null
-      ? { bg: 'rgba(0,0,0,0.04)', border: '#d1d5dc', fg: '#6b6b6b', label: 'WAIT' }
-      : ok
-        ? { bg: 'rgba(241,243,51,0.18)', border: '#c9cb1e', fg: '#5c5e00', label: 'PASS' }
-        : { bg: 'rgba(220,52,0,0.10)', border: '#dc3400', fg: '#dc3400', label: 'BUG' };
-
-  return (
-    <div
-      className="flex items-start gap-2.5 rounded-xl px-4 py-3 text-[13px] leading-relaxed"
-      style={{ background: tone.bg, border: `1px solid ${tone.border}` }}
-    >
-      <span className="font-mono font-bold shrink-0" style={{ color: tone.fg }}>
-        {tone.label}
-      </span>
-      <span className="text-pitch-black">{children}</span>
-    </div>
-  );
-}
-
-function Stat({ label, value, tone }: { label: string; value: string; tone?: 'bad' | 'good' }) {
-  return (
-    <div>
-      <p className="text-[10px] uppercase tracking-[0.15em] text-graphite-border font-mono mb-0.5">
-        {label}
-      </p>
-      <p
-        className="font-mono text-xl font-bold tabular-nums"
-        style={{ color: tone === 'bad' ? '#dc3400' : undefined }}
-      >
-        {value}
-      </p>
-    </div>
-  );
-}
 
 /* ── 1. Live native-vs-JS parity ────────────────────────────────────────────── */
 
@@ -153,75 +114,62 @@ export function LiveParityProof() {
     <div>
       {/* Side by side so both share identical vertical geometry — at any scroll
           offset the correct answer is the same for both. */}
-      <div className="flex flex-col sm:flex-row gap-6 mb-5">
+      <div className="vf-pair">
         {[
-          { label: 'native CSS view-timeline', ref: nativeBox, value: live.native, colour: '#ff90e8' },
-          { label: 'JS engine (native: false)', ref: jsBox, value: live.js, colour: '#0a0a0a' },
-        ].map(({ label, ref, value, colour }) => (
-          <div key={label} className="flex-1 min-w-0">
-            <div className="flex items-baseline justify-between mb-2">
-              <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-graphite-border">
-                {label}
-              </span>
-              <span className="font-mono text-sm font-bold tabular-nums">{value.toFixed(4)}</span>
+          { label: 'native CSS view-timeline', ref: nativeBox, value: live.native, tone: 'accent' as const },
+          { label: 'JS engine (native: false)', ref: jsBox, value: live.js, tone: 'ink' as const },
+        ].map(({ label, ref, value, tone }) => (
+          <div key={label} className="vf-cell">
+            <div className="vf-cell-head">
+              <span className="vf-cell-k">{label}</span>
+              <span className="vf-cell-v">{value.toFixed(4)}</span>
             </div>
             {/* A tall container with a short path is deliberate: the bug's size is
                 proportional to the gap between the path's bbox and the container's
                 box, so a path that fills its container hides it almost entirely. */}
-            <div ref={ref} className="rounded-xl border border-subtle-ash bg-white px-4 py-10">
-              <svg viewBox="0 0 200 100" preserveAspectRatio="none" className="w-full block" style={{ overflow: 'visible', height: 70 }}>
-                <path d={PATH_D} stroke={colour} strokeWidth="3" strokeLinecap="round" fill="none" />
+            <div ref={ref} className={`vf-spec vf-spec-tall${tone === 'accent' ? ' is-accent' : ''}`}>
+              <svg viewBox="0 0 200 100" preserveAspectRatio="none" style={{ display: 'block', width: '100%', overflow: 'visible', height: 70 }}>
+                <path d={PATH_D} stroke="currentColor" strokeWidth="3" strokeLinecap="round" fill="none" />
               </svg>
             </div>
-            <div className="h-1.5 rounded-full bg-subtle-ash overflow-hidden mt-2">
-              <div className="h-full" style={{ width: `${value * 100}%`, background: colour }} />
-            </div>
+            <Meter value={value} tone={tone} />
           </div>
         ))}
       </div>
 
-      <div className="flex flex-wrap items-end gap-8 mb-5">
-        <button
-          onClick={runSweep}
-          disabled={busy}
-          className="px-5 py-2 rounded-full bg-pitch-black text-light-linen text-[13px] font-semibold hover:opacity-90 transition-opacity disabled:opacity-40"
-        >
+      <div className="vf-actions">
+        <button type="button" onClick={runSweep} disabled={busy} className="btn btn-sm btn-solid vf-btn">
           {busy ? 'Sweeping…' : 'Run parity sweep'}
         </button>
+      </div>
+      <Stats cols={4}>
         <Stat label="live Δ (while you scroll)" value={liveDelta.toFixed(4)} />
         <Stat
           label="worst Δ in sweep"
           value={sweep ? sweep.worst.toFixed(4) : '—'}
-          tone={sweep && sweep.worst > 0.02 ? 'bad' : undefined}
+          tone={sweep ? (sweep.worst > 0.02 ? 'bad' : 'good') : undefined}
         />
         <Stat label="native supported" value={live.supported ? 'yes' : 'no'} />
         <Stat label="fast path engaged" value={live.engaged ? 'yes' : 'no'} />
-      </div>
+      </Stats>
 
       {sweep && (
-        <div className="rounded-2xl border border-pitch-black overflow-hidden mb-5">
-          <table className="w-full text-[12px] font-mono">
+        <div className="vf-table-wrap">
+          <table className="vf-table is-num">
             <thead>
-              <tr className="bg-marketplace-gray border-b border-pitch-black">
+              <tr>
                 {['scrollY', 'native', 'js', 'Δ'].map((h) => (
-                  <th key={h} className="text-right px-4 py-2 text-[10px] uppercase tracking-wider text-graphite-border">
-                    {h}
-                  </th>
+                  <th key={h}>{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {sweep.rows.map((r) => (
-                <tr key={r.y} className="border-b border-subtle-ash last:border-0">
-                  <td className="text-right px-4 py-1.5 text-graphite-border">{r.y}</td>
-                  <td className="text-right px-4 py-1.5">{r.native.toFixed(4)}</td>
-                  <td className="text-right px-4 py-1.5">{r.js.toFixed(4)}</td>
-                  <td
-                    className="text-right px-4 py-1.5 font-bold"
-                    style={{ color: r.delta > 0.02 ? '#dc3400' : undefined }}
-                  >
-                    {r.delta.toFixed(4)}
-                  </td>
+                <tr key={r.y}>
+                  <td className="is-dim">{r.y}</td>
+                  <td>{r.native.toFixed(4)}</td>
+                  <td>{r.js.toFixed(4)}</td>
+                  <td className={r.delta > 0.02 ? 'is-bad' : 'is-strong'}>{r.delta.toFixed(4)}</td>
                 </tr>
               ))}
             </tbody>
@@ -242,8 +190,8 @@ export function LiveParityProof() {
             container&apos;s trigger window, waiting for the compositor to settle at each
             one, and compares both engines. Before the fix this diverged by up to{' '}
             <strong>0.063</strong> in Chromium and <strong>0.114</strong> in WebKit,
-            because <code className="font-mono">animation-timeline: view()</code> sat on
-            each <code className="font-mono">&lt;path&gt;</code> — making the path its
+            because <code>animation-timeline: view()</code> sat on
+            each <code>&lt;path&gt;</code> — making the path its
             own timeline subject rather than the container.
           </>
         ) : sweep.worst > 0.02 ? (
@@ -255,10 +203,10 @@ export function LiveParityProof() {
           <>
             Both engines agree at every sampled offset (worst Δ{' '}
             <strong>{sweep.worst.toFixed(4)}</strong>). The timeline is a named{' '}
-            <code className="font-mono">view-timeline</code> on the container, so its box
+            <code>view-timeline</code> on the container, so its box
             defines the range — which is exactly the JS engine&apos;s{' '}
-            <code className="font-mono">top bottom</code> →{' '}
-            <code className="font-mono">bottom top</code> window.
+            <code>top bottom</code> →{' '}
+            <code>bottom top</code> window.
           </>
         )}
       </Verdict>
@@ -275,36 +223,44 @@ export function ProcessGuardProof() {
     // An <iframe> gives a fresh global scope with no bundler-injected `process`,
     // which is what a CDN or <script type="module"> user actually has. Evaluating
     // both guards there shows the difference directly rather than describing it.
-    const frame = document.createElement('iframe');
-    frame.style.display = 'none';
-    document.body.appendChild(frame);
+    // Run a frame after mount so the result lands as its own render.
+    const raf = requestAnimationFrame(() => {
+      const frame = document.createElement('iframe');
+      frame.style.display = 'none';
+      document.body.appendChild(frame);
 
-    const run = (expr: string): string => {
-      try {
-        const fn = new (frame.contentWindow as Window & { Function: typeof Function }).Function(
-          `return (${expr});`,
-        );
-        return `returned ${String(fn())}`;
-      } catch (e) {
-        return `THREW: ${(e as Error).message}`;
-      }
-    };
+      const run = (expr: string): string => {
+        try {
+          const fn = new (frame.contentWindow as Window & { Function: typeof Function }).Function(
+            `return (${expr});`,
+          );
+          return `returned ${String(fn())}`;
+        } catch (e) {
+          return `THREW: ${(e as Error).message}`;
+        }
+      };
 
-    setResult({
-      old: run("process.env.NODE_ENV !== 'production'"),
-      next: run(
-        "typeof process !== 'undefined' && typeof process.env !== 'undefined' && process.env.NODE_ENV !== 'production'",
-      ),
+      setResult({
+        old: run("process.env.NODE_ENV !== 'production'"),
+        next: run(
+          "typeof process !== 'undefined' && typeof process.env !== 'undefined' && process.env.NODE_ENV !== 'production'",
+        ),
+      });
+
+      frame.remove();
     });
-
-    frame.remove();
+    return () => cancelAnimationFrame(raf);
   }, []);
 
   const threw = result?.old.startsWith('THREW');
 
   return (
     <div>
-      <div className="rounded-2xl border border-pitch-black overflow-hidden mb-5">
+      <div className="vf-guard">
+        <p className="vf-guard-hd">
+          <span>iframe · no <code>process</code> in scope</span>
+          <span>result</span>
+        </p>
         {[
           { label: 'before', code: "process.env.NODE_ENV !== 'production'", out: result?.old },
           {
@@ -313,36 +269,22 @@ export function ProcessGuardProof() {
             out: result?.next,
           },
         ].map(({ label, code, out }, i) => (
-          <div key={label} className={i === 0 ? 'border-b border-subtle-ash' : ''}>
-            <div className="flex items-center gap-2 px-4 pt-3">
-              <span
-                className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full"
-                style={
-                  i === 0
-                    ? { background: '#dc3400', color: '#fff' }
-                    : { background: '#f1f333', color: '#0a0a0a' }
-                }
-              >
-                {label}
-              </span>
-              <code className="font-mono text-[11px] text-graphite-border break-all">{code}</code>
-            </div>
-            <p
-              className="font-mono text-[13px] font-bold px-4 pb-3 pt-1.5"
-              style={{ color: out?.startsWith('THREW') ? '#dc3400' : undefined }}
-            >
-              {out ?? '…'}
+          <div key={label} className="vf-guard-row">
+            <Tag tone={i === 0 ? 'old' : 'new'}>{label}</Tag>
+            <code className="vf-guard-code">{code}</code>
+            <p className={`vf-guard-out${out?.startsWith('THREW') ? ' is-bad' : ''}`}>
+              <span aria-hidden="true">→ </span>{out ?? '…'}
             </p>
           </div>
         ))}
       </div>
 
       <Verdict ok={result === null ? null : !!threw}>
-        Both expressions were just evaluated inside a fresh <code className="font-mono">iframe</code>{' '}
-        — a scope with no bundler-injected <code className="font-mono">process</code>, exactly what a
+        Both expressions were just evaluated inside a fresh <code>iframe</code>{' '}
+        — a scope with no bundler-injected <code>process</code>, exactly what a
         CDN user has. The old guard sat in front of <em>every</em> dev warning in 13 modules, so
         reaching one threw instead of logging. The concrete repro: style a path&apos;s stroke with
-        CSS instead of a <code className="font-mono">stroke</code> attribute, and the engine&apos;s
+        CSS instead of a <code>stroke</code> attribute, and the engine&apos;s
         &ldquo;no stroke&rdquo; warning took down the whole call.
       </Verdict>
     </div>
@@ -430,35 +372,34 @@ export function IdleCostProof() {
   return (
     <div>
       {/* Eight instances, three paths each — the same shape as the e2e fixture. */}
-      <div ref={hostRef} className="flex gap-1.5 mb-5 overflow-hidden">
+      <div ref={hostRef} className="vf-eight">
         {Array.from({ length: 8 }, (_, i) => (
-          <div key={i} data-box className="flex-1 rounded-lg border border-subtle-ash bg-white p-1.5">
-            <svg viewBox="0 0 200 100" preserveAspectRatio="none" className="w-full block" style={{ height: 56 }}>
-              <path d={PATH_D} stroke="#0a0a0a" strokeWidth="4" fill="none" />
-              <path d="M10 15 L 190 15" stroke="#0a0a0a" strokeWidth="4" fill="none" />
-              <path d="M10 85 L 190 85" stroke="#0a0a0a" strokeWidth="4" fill="none" />
+          <div key={i} data-box className="vf-spec vf-eight-box">
+            <svg viewBox="0 0 200 100" preserveAspectRatio="none" style={{ display: 'block', width: '100%', height: 56 }}>
+              <path d={PATH_D} stroke="currentColor" strokeWidth="4" fill="none" />
+              <path d="M10 15 L 190 15" stroke="currentColor" strokeWidth="4" fill="none" />
+              <path d="M10 85 L 190 85" stroke="currentColor" strokeWidth="4" fill="none" />
             </svg>
           </div>
         ))}
       </div>
 
-      <div className="flex flex-wrap items-end gap-8 mb-5">
-        <button
-          onClick={run}
-          disabled={!!busy}
-          className="px-5 py-2 rounded-full bg-pitch-black text-light-linen text-[13px] font-semibold hover:opacity-90 transition-opacity disabled:opacity-40"
-        >
+      <div className="vf-actions">
+        <button type="button" onClick={run} disabled={!!busy} className="btn btn-sm btn-solid vf-btn">
           {busy ? `Measuring — ${busy}` : 'Measure (takes 4s)'}
         </button>
+      </div>
+      <Stats cols={3}>
         <Stat label="parked (1s)" value={idle === null ? '—' : `${idle} ms`} />
         <Stat label="scrolling (1s)" value={active === null ? '—' : `${active} ms`} />
         <Stat
           label="ratio"
           value={!measured ? '—' : idle! < 0.1 ? `>${ratio!.toFixed(0)}×` : `${ratio!.toFixed(1)}×`}
+          tone={measured ? (ratio! >= 2 ? 'good' : 'bad') : undefined}
         />
-      </div>
+      </Stats>
 
-      <p className="text-[12px] text-graphite-border leading-relaxed mb-4 font-mono">
+      <p className="vf-note">
         Both figures are baseline-subtracted: the page is timed once with no
         instances, then again with 8 alive. Without that subtraction this readout is
         dominated by React and the other live proofs on this page, which poll every
@@ -477,10 +418,10 @@ export function IdleCostProof() {
           <>
             Parked costs <strong>{ratio!.toFixed(0)}×</strong> less than scrolling. Before
             the fix that ratio was ~1× — the loop recomputed everything every frame
-            regardless. <code className="font-mono">update()</code> now returns early
+            regardless. <code>update()</code> now returns early
             when the scroll position is unchanged and nothing has invalidated the
             frame. The clean cross-browser figures come from{' '}
-            <code className="font-mono">e2e/idle.spec.ts</code>: 2.8 ms vs 20 (Chromium),
+            <code>e2e/idle.spec.ts</code>: 2.8 ms vs 20 (Chromium),
             3.0 vs 51 (Firefox), 2.0 vs 83 (WebKit).
           </>
         )}
@@ -491,22 +432,26 @@ export function IdleCostProof() {
 
 /* ── 4. Reduced motion ──────────────────────────────────────────────────────── */
 
-export function ReducedMotionProof() {
-  const [reduced, setReduced] = useState<boolean | null>(null);
+const REDUCE = '(prefers-reduced-motion: reduce)';
+// The library now tracks this live too — it used to read the value once at
+// construction, so toggling the OS setting did nothing until a reload.
+const subscribeReduced = (cb: () => void) => {
+  const mq = window.matchMedia(REDUCE);
+  mq.addEventListener('change', cb);
+  return () => mq.removeEventListener('change', cb);
+};
 
-  useEffect(() => {
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setReduced(mq.matches);
-    // The library now tracks this live too — it used to read the value once at
-    // construction, so toggling the OS setting did nothing until a reload.
-    const onChange = (e: MediaQueryListEvent) => setReduced(e.matches);
-    mq.addEventListener('change', onChange);
-    return () => mq.removeEventListener('change', onChange);
-  }, []);
+export function ReducedMotionProof() {
+  // null on the server and during hydration: unmeasured, rendered as '…'.
+  const reduced = useSyncExternalStore<boolean | null>(
+    subscribeReduced,
+    () => window.matchMedia(REDUCE).matches,
+    () => null,
+  );
 
   return (
     <div>
-      <div className="flex flex-wrap gap-8 mb-5">
+      <Stats cols={2}>
         <Stat
           label="your OS preference"
           value={reduced === null ? '…' : reduced ? 'reduce' : 'no-preference'}
@@ -515,21 +460,21 @@ export function ReducedMotionProof() {
           label="scrollSnap would"
           value={reduced === null ? '…' : reduced ? 'jump instantly' : 'animate the scroll'}
         />
-      </div>
+      </Stats>
 
-      <p className="text-[13px] text-graphite-border leading-relaxed mb-4">
+      <p className="vf-note">
         This readout is live — toggle <em>Reduce motion</em> in System Settings →
         Accessibility → Display and it updates without a reload. That is the same
         listener the library now uses.
       </p>
 
       <Verdict ok>
-        <code className="font-mono">scrollSnap</code> animates{' '}
-        <code className="font-mono">window.scrollTo</code> over a duration with an easing curve,
+        <code>scrollSnap</code> animates{' '}
+        <code>window.scrollTo</code> over a duration with an easing curve,
         driven off a debounced scroll handler — it takes over the user&apos;s scrolling. It had{' '}
         <strong>no reduced-motion check of any kind</strong>, which was the clearest accessibility
         defect in the library. It now jumps straight to the target section; snapping still happens,
-        only the animated scroll is dropped. <code className="font-mono">respectReducedMotion: false</code>{' '}
+        only the animated scroll is dropped. <code>respectReducedMotion: false</code>{' '}
         is the documented opt-out.
       </Verdict>
     </div>

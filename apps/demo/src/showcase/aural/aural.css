@@ -1,0 +1,130 @@
+/* Aural — warm black, champagne metal, umber leather. The page is the film's
+   own background (#0a0a0a, as the browser decodes it), so the film has no edge. */
+
+html:has(.au) body { background: #0a0a0a; }
+.au {
+  --bg: #0a0a0a; --bg-2: #121211; --fg: #f2ede5; --mut: #8e8881; --line: #1f1e1c; --card: #121211;
+  --accent: #d6c19c; --accent-fg: #17130c; --radius: 18px;
+}
+.au .sk-brand { font-size: 15px; font-weight: 500; letter-spacing: 0.38em; text-transform: uppercase; }
+.au .sk-btn { border-radius: 999px; }
+.au .sk-btn-ghost { border-color: #34312d; }
+.au .sk-kick { font-weight: 500; letter-spacing: 0.16em; }
+.au .sk-h1 { font-weight: 500; letter-spacing: -0.045em; }
+.au .sk-h2 { font-weight: 500; letter-spacing: -0.035em; }
+.au .sk-hero { padding-bottom: clamp(20px, 3vw, 48px); }
+.au-price { display: block; margin-top: 18px; font-size: 22px; font-weight: 500; letter-spacing: -0.01em; color: var(--fg); }
+
+/* A held frame of the film */
+.au-still { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; background: #0a0a0a; }
+.au-still.is-broken { visibility: hidden; }
+
+/* ── The film: a tall track, and a stage pinned to the bottom of the viewport
+   while the track scrolls past ─────────────────────────────────────────── */
+.au-film { position: relative; display: flex; flex-direction: column; justify-content: flex-end; height: 420svh; }
+.au-stage {
+  --p: 0;
+  position: sticky; bottom: 0; height: 100svh; overflow: hidden;
+  display: grid; grid-template-columns: minmax(230px, 300px) minmax(0, 1fr); align-items: center;
+  gap: clamp(24px, 3.5vw, 64px); padding: 80px var(--pad) 72px;
+}
+.au-stage.is-measuring { position: relative; }
+
+.au-side h2 { margin: 0 0 28px; font: 500 clamp(24px, 2.2vw, 32px)/1.12 var(--head); letter-spacing: -0.03em; text-wrap: balance; }
+.au-parts { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.au-parts li { display: grid; grid-template-columns: 24px minmax(0, 1fr); column-gap: 12px; padding: 9px 0; border-top: 1px solid var(--line); opacity: 0.32; transition: opacity 0.35s; }
+.au-parts li.is-on { opacity: 1; }
+.au-parts i, .au-pin { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; font: 600 11.5px/1 var(--body); font-style: normal; font-variant-numeric: tabular-nums; }
+.au-parts i { grid-row: span 2; margin-top: 1px; border: 1px solid #3a3631; color: var(--mut); transition: background-color 0.35s, color 0.35s, border-color 0.35s; }
+.au-parts li.is-on i { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
+.au-parts b { font-size: 14.5px; font-weight: 600; }
+.au-parts span { font-size: 13px; line-height: 1.45; color: var(--mut); }
+
+.au-frame { position: relative; justify-self: center; width: min(100%, calc((100svh - 152px) * 4 / 3)); aspect-ratio: 4 / 3; }
+.au-frame video {
+  display: block; width: 100%; height: 100%; opacity: 0; transition: opacity 0.6s;
+  /* the film is framed tight, so let whatever it crops fade into the page instead of stopping at a line */
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 7%, #000 93%, transparent), linear-gradient(transparent, #000 7%, #000 93%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to right, transparent, #000 7%, #000 93%, transparent), linear-gradient(transparent, #000 7%, #000 93%, transparent);
+  mask-composite: intersect;
+}
+.is-ready .au-frame video { opacity: 1; }
+
+/* a numbered pin on each part, carried along with it frame by frame */
+.au-pin {
+  position: absolute; left: calc(var(--x, 0) * 100%); top: calc(var(--y, 0) * 100%);
+  margin: -11px 0 0 -11px; background: var(--accent); color: var(--accent-fg);
+  box-shadow: 0 0 0 5px rgba(214, 193, 156, 0.2), 0 4px 14px rgba(0, 0, 0, 0.5);
+  opacity: 0; transform: scale(0.6); transition: opacity 0.35s, transform 0.35s;
+}
+.au-pin.is-on { opacity: 1; transform: none; }
+
+.au-rail { position: relative; height: 1px; margin: 26px 0 30px; background: var(--line); }
+.au-rail-fill { position: absolute; inset: 0; background: var(--accent); transform-origin: left; transform: scaleX(var(--p)); }
+.au-rail span { position: absolute; top: 10px; font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; white-space: nowrap; color: var(--mut); }
+
+.no-film { height: auto; }
+.no-film .au-stage { position: relative; height: auto; grid-template-columns: minmax(0, 1fr); }
+.no-film .au-frame, .no-film .au-rail { display: none; }
+.no-film .au-parts li { opacity: 1; }
+
+/* ── Specs ─────────────────────────────────────────────────────────────── */
+.au-specs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: var(--line); }
+.au-spec { display: grid; align-content: start; gap: 10px; padding: clamp(22px, 2.6vw, 36px); background: var(--bg); }
+.au-spec span { font-size: 12.5px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--mut); }
+.au-spec b { font: 400 clamp(36px, 3.6vw, 52px)/1 var(--head); letter-spacing: -0.04em; color: var(--accent); }
+.au-spec p { margin: 4px 0 0; max-width: 34ch; font-size: 15px; line-height: 1.6; color: var(--mut); }
+
+/* ── Colourways ────────────────────────────────────────────────────────── */
+.au .sk-alt { background: #0a0a0a; }
+.au-colours { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: clamp(24px, 4vw, 64px); align-items: center; }
+.au-swatches { display: grid; gap: 10px; }
+.au-swatches button {
+  display: grid; grid-template-columns: 36px minmax(0, 1fr); column-gap: 14px; align-items: center;
+  padding: 14px 16px; border: 1px solid var(--line); border-radius: 14px; background: transparent;
+  color: var(--fg); font: inherit; text-align: left; cursor: pointer; transition: border-color 0.25s, background-color 0.25s;
+}
+.au-swatches button:hover { border-color: #3a3631; }
+.au-swatches button.is-on { border-color: var(--accent); background: #13120f; }
+.au-swatches i, .au-buy-pick i { width: 30px; height: 30px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--sw) 55%, #fff), var(--sw) 55%, color-mix(in srgb, var(--sw) 70%, #000)); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12); }
+.au-swatches i { grid-row: span 2; }
+.au-swatches b { font-size: 15.5px; font-weight: 600; }
+.au-swatches span { font-size: 13.5px; color: var(--mut); }
+
+/* ── Buy ───────────────────────────────────────────────────────────────── */
+.au-buy { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 16px; }
+.au-buy-box, .au-box { padding: clamp(24px, 3vw, 40px); border: 1px solid var(--line); border-radius: var(--radius); background: var(--card); }
+.au-buy-price { margin: 0; font-size: 15px; color: var(--mut); }
+.au-buy-price b { display: block; margin-bottom: 6px; font: 500 clamp(44px, 4.4vw, 60px)/1 var(--head); letter-spacing: -0.04em; color: var(--fg); }
+.au-buy-pick { display: flex; align-items: center; gap: 12px; margin: 22px 0 24px; font-size: 15px; }
+.au-buy-pick i { flex: none; width: 22px; height: 22px; }
+.au-buy-box .sk-btn { width: 100%; max-width: 360px; }
+.au-buy ul { display: grid; gap: 10px; margin: 22px 0 0; padding: 0; list-style: none; font-size: 14.5px; color: var(--mut); }
+.au-buy-box li::before { content: '—'; margin-right: 10px; color: var(--accent); }
+.au-box h3 { margin: 0; font: 500 20px var(--head); }
+.au-box li { padding-bottom: 10px; border-bottom: 1px solid var(--line); color: var(--fg); }
+.au-box li:last-child { border-bottom: 0; }
+
+@media (max-width: 900px) {
+  /* one column: the heading, the film (a little closer, the sides cropped), then the newest part */
+  .au-stage { grid-template-columns: minmax(0, 1fr); align-content: center; gap: 14px; padding: 76px 0 70px; }
+  .au-side { display: contents; }
+  .au-side .sk-kick { margin: 0 var(--pad) -6px; }
+  .au-side h2 { margin: 0 var(--pad); font-size: 24px; }
+  .au-frame { order: 1; width: 130%; margin-left: -15%; }
+  .au-parts { order: 2; display: grid; margin: 0 var(--pad); min-height: 64px; }
+  .au-rail { order: 3; margin: 2px var(--pad) 18px; }
+  .au-parts li, .au-parts li.is-on { grid-area: 1 / 1; align-content: start; border-top: 0; padding: 0; opacity: 0; transform: translateY(6px); transition: opacity 0.3s, transform 0.3s; }
+  .au-parts li.is-new { opacity: 1; transform: none; }
+  .no-film .au-parts li { position: static; grid-area: auto; opacity: 1; transform: none; }
+  .au-specs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .au-colours, .au-buy { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 560px) {
+  .au-specs { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .au-film { height: auto; }
+  .au-stage { position: relative; }
+}

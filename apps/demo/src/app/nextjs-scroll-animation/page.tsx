@@ -1,9 +1,15 @@
 import type { Metadata } from 'next';
+import '@/components/stack/stack.css';
+import type { ReactNode } from 'react';
 import Link from 'next/link';
-import { MobileMenu } from '@/components/MobileMenu';
-import { CopyButton } from '@/components/CopyButton';
-import { COMPETITORS, SELF, ratioVsSelf } from '@/data/competitors';
+import { COMPETITORS, SELF, ratioVsSelf, provenance } from '@/data/competitors';
 import { seoTitle } from '../_lib/seo';
+import { SiteShell } from '@/components/site/SiteShell';
+import { CodeBox } from '@/components/site/CodeBox';
+import { CopyCommand } from '@/components/home/CopyCommand';
+import { RenderPath } from '@/components/stack/RenderPath';
+import { SizeBars } from '@/components/stack/SizeBars';
+import { C, Note, Sec, Toc, pad } from '@/components/stack/parts';
 
 const TITLE = 'Next.js Scroll Animation for the App Router, SSR-Safe';
 const DESCRIPTION =
@@ -52,82 +58,12 @@ export const metadata: Metadata = {
   twitter: { card: 'summary_large_image', title: TITLE, description: DESCRIPTION },
 };
 
-function Nav() {
-  return (
-    <nav className="sticky top-0 z-50 bg-light-linen/95 backdrop-blur-sm border-b border-pitch-black flex items-center justify-between px-4 md:px-12 h-14">
-      <Link href="/" className="font-display font-bold text-sm tracking-tight hover:opacity-70 transition-opacity shrink-0">svg-scroll-draw</Link>
-      <div className="hidden lg:flex items-center gap-2">
-        {['Home','Docs','Examples','Blog'].map(l => (
-          <Link key={l} href={l==='Home'?'/':`/${l.toLowerCase()}`} className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium">{l}</Link>
-        ))}
-        <Link href="/playground" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium">⚡ Playground</Link>
-      </div>
-      <div className="flex lg:hidden"><MobileMenu /></div>
-    </nav>
-  );
-}
-
-function CodeBlock({ file, children }: { file: string; children: string }) {
-  return (
-    <div className="rounded-2xl overflow-hidden border border-pitch-black my-4">
-      <div className="bg-[#111] flex items-center justify-between px-4 py-2.5">
-        <div className="flex gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[#444]"/><span className="w-2.5 h-2.5 rounded-full bg-[#444]"/><span className="w-2.5 h-2.5 rounded-full bg-[#444]"/></div>
-        <span className="text-[11px] text-[#888] font-mono">{file}</span>
-        <CopyButton text={children} />
-      </div>
-      <pre className="bg-[#1c1c1c] text-[#e8e8e3] px-4 sm:px-6 py-4 text-[12px] sm:text-[13px] font-mono leading-[1.75] overflow-x-auto">{children}</pre>
-    </div>
-  );
-}
-
-function Callout({ emoji, title, children }: { emoji: string; title: string; children: React.ReactNode }) {
-  return (
-    <div className="border border-subtle-ash rounded-xl p-5 my-5 bg-white">
-      <p className="font-semibold text-sm mb-2">{emoji} {title}</p>
-      <div className="text-[13px] text-graphite-border leading-relaxed">{children}</div>
-    </div>
-  );
-}
-
-export default function NextjsScrollAnimationPage() {
-  return (
-    <div className="bg-light-linen text-pitch-black min-h-screen">
-      <Nav />
-
-      <header className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-10 sm:py-14">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-center gap-3 mb-5">
-            <span className="text-[10px] font-mono font-semibold px-2.5 py-1 rounded-full bg-pitch-black text-light-linen">Next.js</span>
-            <span className="text-[10px] font-mono text-graphite-border">App Router · Pages Router · SSR-safe</span>
-          </div>
-          <h1 className="font-display font-extrabold text-[clamp(32px,7vw,76px)] leading-[0.9] tracking-[-0.04em] mb-6">
-            Scroll animations<br />for Next.js.
-          </h1>
-          <p className="text-base sm:text-lg text-graphite-border leading-relaxed max-w-2xl mb-8">
-            svg-scroll-draw is built SSR-first. All scroll APIs guard against{' '}
-            <code className="font-mono text-[0.9em] bg-marketplace-gray px-1.5 py-0.5 rounded">window</code> being undefined.
-            Works in App Router Server Components, Client Components, and Pages Router — no hydration errors, no{' '}
-            <code className="font-mono text-[0.9em] bg-marketplace-gray px-1.5 py-0.5 rounded">document is not defined</code>.
-          </p>
-          <div className="flex flex-wrap gap-3">
-            <div className="flex items-center gap-2 bg-pitch-black text-light-linen rounded-full px-5 py-2.5 text-sm font-mono">
-              <span className="opacity-50">$</span><span>npm i svg-scroll-draw</span>
-            </div>
-            <Link href="/react-scroll-animation" className="px-5 py-2.5 rounded-full border border-pitch-black text-sm font-medium hover:bg-pitch-black hover:text-light-linen transition-colors">React guide →</Link>
-          </div>
-          <div className="max-w-2xl mt-6">
-            <CodeBlock file="components/FadeUp.tsx">{HERO_SNIPPET}</CodeBlock>
-          </div>
-        </div>
-      </header>
-
-      <section className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-14">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="font-display font-extrabold text-3xl sm:text-4xl tracking-[-0.03em] mb-10">The patterns.</h2>
-
-          <h3 className="font-display font-extrabold text-xl tracking-[-0.02em] mb-2">Pattern 1 — Client Component (recommended)</h3>
-          <p className="text-graphite-border text-sm mb-3">Add <code className="font-mono bg-marketplace-gray px-1 rounded">&apos;use client&apos;</code> to any component that uses scroll APIs. Everything else can be a Server Component.</p>
-          <CodeBlock file="components/AnimatedCards.tsx">{`'use client';
+const PATTERNS: { file: string; title: string; lede?: ReactNode; code: string }[] = [
+  {
+    file: 'components/AnimatedCards.tsx',
+    title: 'Client Component (recommended)',
+    lede: <>Add <C>&apos;use client&apos;</C> to any component that uses scroll APIs. Everything else can be a Server Component.</>,
+    code: `'use client';
 import { useEffect } from 'react';
 import { scrollReveal } from 'svg-scroll-draw/reveal';
 import { scrollAnimate } from 'svg-scroll-draw';
@@ -149,11 +85,13 @@ export function AnimatedCards({ cards }: { cards: Card[] }) {
       {cards.map(c => <div key={c.id} className="card">{c.content}</div>)}
     </div>
   );
-}`}</CodeBlock>
-
-          <h3 className="font-display font-extrabold text-xl tracking-[-0.02em] mb-2 mt-8">Pattern 2 — Dynamic import (heavy animated sections)</h3>
-          <p className="text-graphite-border text-sm mb-3">For large animated sections, lazy-load them so they don&apos;t block the initial page render.</p>
-          <CodeBlock file="app/page.tsx">{`import dynamic from 'next/dynamic';
+}`,
+  },
+  {
+    file: 'app/page.tsx',
+    title: 'Dynamic import (heavy animated sections)',
+    lede: <>For large animated sections, lazy-load them so they don&apos;t block the initial page render.</>,
+    code: `import dynamic from 'next/dynamic';
 
 // This section and its scroll animations only load when needed
 const AnimatedShowcase = dynamic(
@@ -173,10 +111,12 @@ export default async function Page() {
       <AnimatedShowcase data={data} />  {/* Client, lazy */}
     </main>
   );
-}`}</CodeBlock>
-
-          <h3 className="font-display font-extrabold text-xl tracking-[-0.02em] mb-2 mt-8">Pattern 3 — useEffect cleanup (avoid memory leaks)</h3>
-          <CodeBlock file="components/PinnedSection.tsx">{`'use client';
+}`,
+  },
+  {
+    file: 'components/PinnedSection.tsx',
+    title: 'useEffect cleanup (avoid memory leaks)',
+    code: `'use client';
 import { useEffect, useRef } from 'react';
 import { scrollPin }      from 'svg-scroll-draw/pin';
 import { scrollHorizontal } from 'svg-scroll-draw/horizontal';
@@ -204,10 +144,12 @@ export function ProductWalkthrough() {
       <div className="feature-text">...</div>
     </div>
   );
-}`}</CodeBlock>
-
-          <h3 className="font-display font-extrabold text-xl tracking-[-0.02em] mb-2 mt-8">Pattern 4 — Route change cleanup</h3>
-          <CodeBlock file="components/AnimatedPage.tsx">{`'use client';
+}`,
+  },
+  {
+    file: 'components/AnimatedPage.tsx',
+    title: 'Route change cleanup',
+    code: `'use client';
 import { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { scrollReveal } from 'svg-scroll-draw/reveal';
@@ -228,59 +170,133 @@ export function AnimatedPage({ children }: { children: React.ReactNode }) {
   }, [pathname]); // re-initialize on route change
 
   return <div>{children}</div>;
-}`}</CodeBlock>
+}`,
+  },
+];
 
-          <Callout emoji="✅" title="SSR safety">
-            Every svg-scroll-draw engine starts with <code className="font-mono text-[0.85em]">if (typeof window === &apos;undefined&apos;) return NOOP;</code>.
-            All server-side renders return a no-op instance — no hydration mismatch, no crashes.
-          </Callout>
+const CMP = [
+  { key: 'gsapScroll', name: 'GSAP + ScrollTrigger', size: COMPETITORS.gsapScroll.gzipKb, ssr: '✓ client-side setup', typed: '✓', note: `Free since 2025, mature, and does far more — at ${ratioVsSelf('gsapScroll')}× the bytes.` },
+  { key: 'framerMotion', name: 'Framer Motion', size: COMPETITORS.framerMotion.gzipKb, ssr: '✓', typed: '✓', note: 'React-only. Draws SVG via pathLength; no pin/snap.' },
+  { key: 'self', name: 'svg-scroll-draw', size: SELF.gzipKb, ssr: '✓', typed: '✓', note: 'MIT. Works in React, Vue, Svelte and vanilla JS.', highlight: true },
+];
 
-          <Callout emoji="⚡" title="Native CSS fast path">
-            When the browser supports <code className="font-mono text-[0.85em]">animation-timeline: view()</code>,
-            svg-scroll-draw automatically uses it — zero JS scroll listeners, zero rAF calls,
-            pure compositor animation. Falls back to JS engine seamlessly.
-          </Callout>
-        </div>
-      </section>
+const TOC = [
+  { id: 'answer', label: 'The answer' },
+  { id: 'patterns', label: `The patterns · ${PATTERNS.length}` },
+  { id: 'alternatives', label: 'vs common alternatives' },
+  { id: 'built-for-next', label: 'Built for Next.js' },
+];
 
-      {/* Comparison */}
-      <section className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-14">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="font-display font-extrabold text-3xl sm:text-4xl tracking-[-0.03em] mb-10">vs common alternatives.</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {[
-              { name: 'GSAP + ScrollTrigger', size: `${COMPETITORS.gsapScroll.gzipKb} KB`, ssr: '✓ client-side setup', typed: '✓', note: `Free since 2025, mature, and does far more — at ${ratioVsSelf('gsapScroll')}× the bytes.` },
-              { name: 'Framer Motion', size: `${COMPETITORS.framerMotion.gzipKb} KB`, ssr: '✓', typed: '✓', note: 'React-only. Draws SVG via pathLength; no pin/snap.' },
-              { name: 'svg-scroll-draw', size: `${SELF.gzipKb} KB`, ssr: '✓', typed: '✓', note: 'MIT. Works in React, Vue, Svelte and vanilla JS.', highlight: true },
-            ].map(({ name, size, ssr, typed, note, highlight }) => (
-              <div key={name} className={`p-5 rounded-xl border ${highlight ? 'border-2 border-creator-pink bg-creator-pink/5' : 'border-subtle-ash bg-white'}`}>
-                <p className="font-display font-extrabold text-base mb-3">{name}</p>
-                <div className="space-y-1.5 text-[12px] font-mono">
-                  <div className="flex justify-between"><span className="text-graphite-border">Bundle</span><strong>{size}</strong></div>
-                  <div className="flex justify-between"><span className="text-graphite-border">SSR-safe</span><strong>{ssr}</strong></div>
-                  <div className="flex justify-between"><span className="text-graphite-border">TypeScript</span><strong>{typed}</strong></div>
-                </div>
-                <p className="text-[11px] text-graphite-border mt-3 leading-relaxed">{note}</p>
+export default function NextjsScrollAnimationPage() {
+  return (
+    <SiteShell kicker="next.js / your turn">
+      <div className="stk stk-next">
+
+        {/* ── Opening ────────────────────────────────────── */}
+        <header className="pg-head stk-head">
+          <div>
+            <p className="pg-kicker">
+              <span>next.js / ssr-safe</span>
+              <span>app router · pages router</span>
+            </p>
+            <h1 className="pg-title stk-title">Scroll animations for Next.js.</h1>
+            <p className="pg-lede">
+              svg-scroll-draw is built SSR-first. All scroll APIs guard against <C>window</C> being undefined.
+              Works in App Router Server Components, Client Components, and Pages Router — no hydration errors,
+              no <C>document is not defined</C>.
+            </p>
+            <div className="pg-actions">
+              <CopyCommand />
+              <Link href="/react-scroll-animation" className="btn" data-magnetic>React guide →</Link>
+            </div>
+            <dl className="pg-facts">
+              <div><dt>Gzipped</dt><dd>{SELF.gzipKb} KB</dd></div>
+              <div><dt>Server render</dt><dd>No-op</dd></div>
+              <div><dt>Patterns</dt><dd>{PATTERNS.length}</dd></div>
+              <div><dt>Licence</dt><dd>{SELF.license}</dd></div>
+            </dl>
+          </div>
+          <RenderPath />
+        </header>
+
+        <div className="stk-body">
+          <Toc label="on this page" items={TOC} />
+          <div className="stk-main">
+
+            {/* ── 01 The answer ─────────────────────────────── */}
+            <Sec n={1} k="the answer" id="answer" title="One client component. The page stays on the server.">
+              <p className="stk-p">
+                Mark the animated wrapper <C>&apos;use client&apos;</C> and use it from any Server Component —
+                the page itself needs no directive.
+              </p>
+              <CodeBox file="components/FadeUp.tsx">{HERO_SNIPPET}</CodeBox>
+            </Sec>
+
+            {/* ── 02 The patterns ───────────────────────────── */}
+            <Sec n={2} k={`${PATTERNS.length} patterns`} id="patterns" title="The patterns.">
+              <div className="stk-pats">
+                {PATTERNS.map((p, i) => (
+                  <div key={p.file} id={`pt-${i + 1}`} className="stk-pat">
+                    <p className="stk-step-k">pattern {pad(i + 1)} · <span>{p.file}</span></p>
+                    <h3 className="stk-h3">Pattern {i + 1} — {p.title}</h3>
+                    {p.lede && <p className="stk-p">{p.lede}</p>}
+                    <CodeBox file={p.file}>{p.code}</CodeBox>
+                  </div>
+                ))}
               </div>
-            ))}
+
+              <Note k="SSR safety">
+                Every svg-scroll-draw engine starts with <C long>if (typeof window === &apos;undefined&apos;) return NOOP;</C>.
+                All server-side renders return a no-op instance — no hydration mismatch, no crashes.
+              </Note>
+              <Note k="Native CSS">
+                When the browser supports <C>animation-timeline: view()</C>, svg-scroll-draw automatically uses it —
+                zero JS scroll listeners, zero rAF calls, pure compositor animation. Falls back to JS engine seamlessly.
+              </Note>
+            </Sec>
+
+            {/* ── 03 vs alternatives ────────────────────────── */}
+            <Sec n={3} k="measured" id="alternatives" title="vs common alternatives.">
+              <SizeBars
+                caption="fig. 2 — bundle, minified + gzipped, to one scale"
+                rows={CMP.map((c) => ({ label: c.name, kb: c.size, self: c.highlight }))}
+              />
+              <div className="stk-cmp">
+                {CMP.map(({ name, size, ssr, typed, note, highlight }) => (
+                  <div key={name} className={`stk-cmp-col${highlight ? ' is-self' : ''}`}>
+                    <p className="stk-cmp-name">{name}</p>
+                    <dl>
+                      <div><dt>Bundle</dt><dd>{size} KB</dd></div>
+                      <div><dt>SSR-safe</dt><dd>{ssr}</dd></div>
+                      <div><dt>TypeScript</dt><dd>{typed}</dd></div>
+                    </dl>
+                    <p className="stk-cmp-note">{note}</p>
+                  </div>
+                ))}
+              </div>
+              <p className="stk-src">
+                {provenance([`gsap ${COMPETITORS.gsapScroll.version}`, `framer-motion ${COMPETITORS.framerMotion.version}`, `svg-scroll-draw ${SELF.version}`])}
+              </p>
+            </Sec>
+
+            {/* ── 04 Built for Next.js ──────────────────────── */}
+            <Sec n={4} k="drop it in" id="built-for-next" title="Built for Next.js.">
+              <dl className="stk-close-specs">
+                <div><dt>SSR</dt><dd>Safe by default</dd></div>
+                <div><dt>Router</dt><dd>App Router ready</dd></div>
+                <div><dt>Licence</dt><dd>MIT</dd></div>
+                <div><dt>Gzipped</dt><dd>{SELF.gzipKb} KB</dd></div>
+                <div><dt>Types</dt><dd>TypeScript</dd></div>
+              </dl>
+              <div className="pg-actions">
+                <CopyCommand />
+                <Link href="/docs" className="btn btn-solid" data-magnetic>Full docs →</Link>
+                <Link href="/react-scroll-animation" className="btn" data-magnetic>React guide →</Link>
+              </div>
+            </Sec>
           </div>
         </div>
-      </section>
-
-      <section className="bg-pitch-black text-light-linen px-4 sm:px-6 md:px-12 py-16 sm:py-20 text-center">
-        <div className="max-w-2xl mx-auto">
-          <h2 className="font-display font-extrabold text-[clamp(28px,6vw,56px)] leading-[0.92] tracking-[-0.04em] mb-4">Built for Next.js.</h2>
-          <p className="text-graphite-border text-sm sm:text-base mb-8">SSR-safe by default. App Router ready. MIT. ~10 KB.</p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <div className="flex items-center gap-2 bg-white/10 rounded-full px-5 py-3 text-sm font-mono"><span className="opacity-50">$</span><span>npm i svg-scroll-draw</span></div>
-            <Link href="/docs" className="px-5 py-3 rounded-full border-2 border-white text-sm font-semibold hover:bg-white hover:text-pitch-black transition-colors text-center">Full docs →</Link>
-          </div>
-        </div>
-      </section>
-
-      <footer className="px-6 md:px-12 py-6 border-t border-subtle-ash text-center text-[11px] font-mono text-graphite-border">
-        svg-scroll-draw · MIT · ~10 KB ·{' '}<a href="https://github.com/DhruvilChauahan0210/ink-scroll" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-pitch-black transition-colors">GitHub</a>
-      </footer>
-    </div>
+      </div>
+    </SiteShell>
   );
 }

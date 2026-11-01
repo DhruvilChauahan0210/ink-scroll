@@ -24,3 +24,18 @@
 .bw .bw-link { flex: none; padding: 6px 11px; border-radius: 999px; background: #ece8e0; color: #121110; font-weight: 600; text-decoration: none; }
 .bw .bw-link:hover { background: #fff; }
 @media (max-width: 560px) { .bw-text i { display: none; } }
+
+/* "Show where": a toggle in the tab, and an outline over every live instance. */
+.bw .bw-where { flex: none; display: inline-flex; align-items: center; gap: 7px; padding: 6px 11px; border: 0; border-radius: 999px; background: rgba(255, 255, 255, 0.1); color: #ece8e0; font: inherit; font-weight: 600; cursor: pointer; white-space: nowrap; }
+.bw .bw-where:hover { background: rgba(255, 255, 255, 0.18); }
+.bw .bw-where.is-on { background: #ff5a36; color: #fff; }
+.bw-dot { width: 7px; height: 7px; border-radius: 50%; border: 1.5px solid currentColor; }
+.bw-where.is-on .bw-dot { background: currentColor; }
+.bw-layer { position: fixed; inset: 0; z-index: 49; pointer-events: none; overflow: hidden; }
+.bw-box { position: absolute; left: 0; top: 0; border: 1.5px dashed #ff5a36; border-radius: 6px; background: rgba(255, 90, 54, 0.06); box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.35); }
+.bw-tag { position: absolute; left: -1.5px; bottom: 100%; display: inline-flex; align-items: center; gap: 6px; margin-bottom: 3px; padding: 3px 7px; border-radius: 5px; background: #ff5a36; color: #fff; font: 600 11px/1 var(--font-geist-mono), ui-monospace, monospace; white-space: nowrap; box-shadow: 0 4px 12px -4px rgba(0, 0, 0, 0.4); }
+.bw-tag.is-in { bottom: auto; top: 3px; left: 3px; margin: 0; }
+.bw-tag b { font-weight: 700; }
+.bw-tag i { position: relative; width: 34px; height: 4px; border-radius: 2px; background: rgba(255, 255, 255, 0.35); overflow: hidden; }
+.bw-tag i::after { content: ''; position: absolute; inset: 0; background: #fff; transform-origin: left; transform: scaleX(var(--p)); }
+@media (max-width: 560px) { .bw .bw-where { padding: 6px 9px; } }

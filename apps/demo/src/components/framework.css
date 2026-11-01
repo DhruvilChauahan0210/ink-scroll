@@ -1,0 +1,40 @@
+/* The framework landings (/vue-scroll-animation, /svelte-scroll-animation, …)
+   in the homepage's design. Scoped `.site .fw`; the shared opening, sections,
+   figures and questions are in compare/compare.css. `--fw` is the framework's
+   own brand colour, used only for its swatch. */
+
+.site .fw .fw-title { max-width: 17ch; font-size: clamp(38px, 4.6vw, 74px); line-height: 1; }
+
+.site .fw .fw-code {
+  padding: 1px 6px;
+  border: 1px solid var(--line-2);
+  font: 500 0.88em/1.4 var(--mono);
+  color: var(--fg);
+  overflow-wrap: anywhere;
+}
+
+/* 01 — samples, each a numbered listing */
+.site .fw-samples { margin: 28px 0 0; padding: 0; list-style: none; border-top: 1px solid var(--fg-3); }
+.site .fw-sample { padding: 24px 0 18px; border-bottom: 1px solid var(--line); scroll-margin-top: calc(var(--nav-h) + 40px); }
+.site .fw-sample:target .fw-h3 { color: var(--accent); }
+.site .fw-sample-k {
+  margin: 0 0 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  font: 500 11px/1.4 var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+.site .fw-sample-k span:first-child { color: var(--accent); }
+.site .fw-sample-k span:last-child { text-transform: none; letter-spacing: 0.02em; color: var(--fg-2); }
+.site .fw-h3 { margin: 0 0 4px; font-size: clamp(22px, 2vw, 28px); font-weight: 500; line-height: 1.15; letter-spacing: -0.03em; color: var(--fg); transition: color 0.3s; }
+
+/* 02 — size */
+.site .fw-fig { margin: 30px 0 0; }
+
+/* 04 — other frameworks */
+.site .fw-sw { display: inline-block; width: 9px; height: 9px; margin: 0 12px 0 2px; vertical-align: 0.18em; }
+
+.site .fw-toc-h { margin-top: 28px; }

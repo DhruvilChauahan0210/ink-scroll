@@ -1,0 +1,83 @@
+/* /blog/vue-svelte-solid-v2 — fig. 1, what each wrapper does. Scoped under .site .ba; classes carry wf-. */
+
+.site .ba .wf { display: grid; gap: 14px; }
+.site .ba .wf-hd {
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 9px;
+  border-bottom: 1px solid var(--fg-3);
+  font: 500 10.5px/1.4 var(--mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+.site .ba .wf-list { margin: 0; padding: 0; list-style: none; }
+.site .ba .wf-row {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  gap: 12px;
+  padding: 12px 0 13px;
+  border-bottom: 1px solid var(--line);
+}
+.site .ba .wf-n { font: 500 10.5px/20px var(--mono); color: var(--fg-3); }
+.site .ba .wf-main { min-width: 0; display: grid; gap: 6px; }
+.site .ba .wf-rh { margin: 0; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 2px 12px; }
+.site .ba .wf-fw { font-size: 14px; font-weight: 500; letter-spacing: -0.01em; color: var(--fg); }
+.site .ba .wf-from { font: 400 11px/1.3 var(--mono); color: var(--fg-3); }
+.site .ba .wf-write { margin: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; }
+.site .ba .wf-write code { font: 500 12.5px/1.4 var(--mono); color: var(--accent); overflow-wrap: anywhere; }
+.site .ba .wf-write span { font: 400 11.5px/1.4 var(--mono); color: var(--fg-3); }
+
+/* the engine's lifetime: mount hook, the bar, the cleanup */
+.site .ba .wf-life {
+  display: grid;
+  /* fixed end columns, so every bar starts and stops at the same x */
+  grid-template-columns: 9.5ch minmax(0, 1fr) 11.5ch;
+  align-items: center;
+  gap: 10px;
+  font: 500 11px/1.3 var(--mono);
+}
+.site .ba .wf-start { color: var(--fg); }
+.site .ba .wf-stop { color: var(--fg-3); text-align: right; }
+.site .ba .wf-bar {
+  position: relative;
+  display: block;
+  padding: 4px 0;
+  border-left: 1px solid var(--fg-2);
+  border-right: 1px solid var(--fg-3);
+}
+.site .ba .wf-bar svg { display: block; width: 100%; height: 12px; overflow: visible; color: var(--fg-2); }
+.site .ba .wf-base { fill: none; stroke: var(--line-2); stroke-width: 1; stroke-dasharray: 2 3; }
+.site .ba .wf-ink { fill: none; }
+.site .ba .wf-run { stroke-width: 8; stroke-linecap: butt; }
+.site .ba .wf-row.is-upd .wf-bar { padding-top: 18px; }
+.site .ba .wf-row.is-upd .wf-bar svg { color: var(--accent); }
+.site .ba .wf-upd {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  font: 500 10.5px/1.3 var(--mono);
+  color: var(--accent);
+  white-space: nowrap;
+}
+.site .ba .wf-upd::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 1px);
+  height: 16px;
+  border-left: 1px solid var(--accent);
+}
+
+.site .ba .wf-foot { margin: 0; font: 400 11.5px/1.7 var(--mono); color: var(--fg-3); }
+.site .ba .wf-foot > span { margin-right: 2px; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-2); }
+.site .ba .wf-foot code { color: var(--fg); overflow-wrap: anywhere; }
+
+@media (max-width: 479px) {
+  .site .ba .wf-row { grid-template-columns: 18px minmax(0, 1fr); gap: 10px; }
+  .site .ba .wf-life { gap: 8px; font-size: 10.5px; }
+  .site .ba .wf-write code { font-size: 12px; }
+}

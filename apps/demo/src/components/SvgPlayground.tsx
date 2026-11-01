@@ -1,10 +1,9 @@
 'use client';
-import { useState, useRef, useEffect, useCallback } from 'react';
-import Link from 'next/link';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { createBounce, createElastic } from 'svg-scroll-draw';
-import { MobileMenu } from './MobileMenu';
-import { CopyButton } from './CopyButton';
-import { PlaygroundV2Content } from './PlaygroundV2Content';
+import { CodeBox } from './site/CodeBox';
+import { PlaygroundV2Content, V2_EXAMPLE_COUNT } from './PlaygroundV2Content';
+import { CropMarks, GroundSwitch, PlayIcon, ResetIcon, fill, pad, type Ground } from './PlaygroundParts';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -53,6 +52,11 @@ type ExamplePreset = {
 // Rules for every SVG: every animated element must have a visible stroke.
 // Fill-only elements (dots, labels) must be excluded or given a matching stroke.
 // No decorative lines (grid, rules) — they eat stagger slots before the hero shapes.
+// Ink is `currentColor`, so it follows the specimen's ground (paper or slate);
+// the one accent is the site's red, the pencil its warm grey.
+
+/** The Signature preset's stroke — also the opening figure's specimen. */
+export const SIGNATURE_D = 'M 20 160 C 38 70 68 55 88 95 C 103 125 108 55 128 78 C 146 98 138 148 160 118 C 178 93 172 48 196 68 C 214 84 216 128 224 112';
 
 const EXAMPLES: ExamplePreset[] = [
   {
@@ -60,11 +64,11 @@ const EXAMPLES: ExamplePreset[] = [
     label: 'Scope',
     tag: 'basics',
     svg: `<svg width="240" height="240" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="120" cy="120" r="100" stroke="#000" stroke-width="2.5"/>
-  <circle cx="120" cy="120" r="66"  stroke="#ff90e8" stroke-width="2"/>
-  <circle cx="120" cy="120" r="32"  stroke="#ffc900" stroke-width="2"/>
-  <line x1="20"  y1="120" x2="220" y2="120" stroke="#000" stroke-width="1.5" stroke-dasharray="6 4" opacity="0.4"/>
-  <line x1="120" y1="20"  x2="120" y2="220" stroke="#000" stroke-width="1.5" stroke-dasharray="6 4" opacity="0.4"/>
+  <circle cx="120" cy="120" r="100" stroke="currentColor" stroke-width="2.5"/>
+  <circle cx="120" cy="120" r="66"  stroke="#d9381e" stroke-width="2"/>
+  <circle cx="120" cy="120" r="32"  stroke="#8c877e" stroke-width="2"/>
+  <line x1="20"  y1="120" x2="220" y2="120" stroke="currentColor" stroke-width="1.5" stroke-dasharray="6 4" opacity="0.4"/>
+  <line x1="120" y1="20"  x2="120" y2="220" stroke="currentColor" stroke-width="1.5" stroke-dasharray="6 4" opacity="0.4"/>
 </svg>`,
     defaults: { stagger: 0.12, easing: 'ease-out' },
   },
@@ -73,8 +77,8 @@ const EXAMPLES: ExamplePreset[] = [
     label: 'Signature',
     tag: 'easing',
     svg: `<svg width="240" height="240" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <path d="M 20 160 C 38 70 68 55 88 95 C 103 125 108 55 128 78 C 146 98 138 148 160 118 C 178 93 172 48 196 68 C 214 84 216 128 224 112" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-  <line x1="20" y1="175" x2="224" y2="175" stroke="#d1d5dc" stroke-width="1.5"/>
+  <path d="${SIGNATURE_D}" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <line x1="20" y1="175" x2="224" y2="175" stroke="#8c877e" stroke-width="1.5"/>
 </svg>`,
     defaults: { easing: 'ease-in-out', speed: 0.75 },
   },
@@ -83,13 +87,13 @@ const EXAMPLES: ExamplePreset[] = [
     label: 'Bar Chart',
     tag: 'stagger',
     svg: `<svg width="240" height="240" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <line x1="28" y1="16" x2="28"  y2="200" stroke="#000" stroke-width="2"/>
-  <line x1="28" y1="200" x2="224" y2="200" stroke="#000" stroke-width="2"/>
-  <rect x="40"  y="120" width="28" height="80"  stroke="#ff90e8" stroke-width="2.5" fill="#ff90e8" fill-opacity="0.1"/>
-  <rect x="82"  y="76"  width="28" height="124" stroke="#ffc900" stroke-width="2.5" fill="#ffc900" fill-opacity="0.1"/>
-  <rect x="124" y="148" width="28" height="52"  stroke="#f1f333" stroke-width="2.5" fill="#f1f333" fill-opacity="0.1"/>
-  <rect x="166" y="56"  width="28" height="144" stroke="#000"    stroke-width="2.5" fill="#000"    fill-opacity="0.07"/>
-  <rect x="208" y="100" width="16" height="100" stroke="#ff90e8" stroke-width="2"   fill="#ff90e8" fill-opacity="0.1"/>
+  <line x1="28" y1="16" x2="28"  y2="200" stroke="currentColor" stroke-width="2"/>
+  <line x1="28" y1="200" x2="224" y2="200" stroke="currentColor" stroke-width="2"/>
+  <rect x="40"  y="120" width="28" height="80"  stroke="#8c877e" stroke-width="2.5" fill="#8c877e" fill-opacity="0.1"/>
+  <rect x="82"  y="76"  width="28" height="124" stroke="currentColor" stroke-width="2.5" fill="currentColor" fill-opacity="0.07"/>
+  <rect x="124" y="148" width="28" height="52"  stroke="#8c877e" stroke-width="2.5" fill="#8c877e" fill-opacity="0.1"/>
+  <rect x="166" y="56"  width="28" height="144" stroke="#d9381e" stroke-width="2.5" fill="#d9381e" fill-opacity="0.1"/>
+  <rect x="208" y="100" width="16" height="100" stroke="currentColor" stroke-width="2"   fill="currentColor" fill-opacity="0.07"/>
 </svg>`,
     defaults: { stagger: 0.12, easing: 'ease-out', speed: 1 },
   },
@@ -98,12 +102,12 @@ const EXAMPLES: ExamplePreset[] = [
     label: 'Route',
     tag: 'path',
     svg: `<svg width="240" height="240" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <path d="M 28 210 C 28 168 52 148 72 128 C 92 108 76 76 108 60 C 132 48 158 70 178 60 C 198 50 208 30 218 18" stroke="#ff90e8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-  <circle cx="28"  cy="210" r="7" stroke="#000" stroke-width="2" fill="#ff90e8"/>
-  <circle cx="218" cy="18"  r="7" stroke="#000" stroke-width="2" fill="#ffc900"/>
-  <circle cx="72"  cy="128" r="4" stroke="#000" stroke-width="1.5" fill="none"/>
-  <circle cx="108" cy="60"  r="4" stroke="#000" stroke-width="1.5" fill="none"/>
-  <circle cx="178" cy="60"  r="4" stroke="#000" stroke-width="1.5" fill="none"/>
+  <path d="M 28 210 C 28 168 52 148 72 128 C 92 108 76 76 108 60 C 132 48 158 70 178 60 C 198 50 208 30 218 18" stroke="#d9381e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="28"  cy="210" r="7" stroke="currentColor" stroke-width="2" fill="#d9381e"/>
+  <circle cx="218" cy="18"  r="7" stroke="currentColor" stroke-width="2" fill="currentColor"/>
+  <circle cx="72"  cy="128" r="4" stroke="currentColor" stroke-width="1.5" fill="none"/>
+  <circle cx="108" cy="60"  r="4" stroke="currentColor" stroke-width="1.5" fill="none"/>
+  <circle cx="178" cy="60"  r="4" stroke="currentColor" stroke-width="1.5" fill="none"/>
 </svg>`,
     defaults: { easing: 'ease-in-out', speed: 0.8, stagger: 0.04 },
   },
@@ -112,10 +116,10 @@ const EXAMPLES: ExamplePreset[] = [
     label: 'Orbit',
     tag: 'stagger',
     svg: `<svg width="240" height="240" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <ellipse cx="120" cy="120" rx="100" ry="36" stroke="#000"    stroke-width="2.5"/>
-  <ellipse cx="120" cy="120" rx="100" ry="36" stroke="#ff90e8" stroke-width="2"   transform="rotate(60 120 120)"/>
-  <ellipse cx="120" cy="120" rx="100" ry="36" stroke="#ffc900" stroke-width="2"   transform="rotate(-60 120 120)"/>
-  <circle  cx="120" cy="120" r="14"            stroke="#000"    stroke-width="2.5" fill="none"/>
+  <ellipse cx="120" cy="120" rx="100" ry="36" stroke="currentColor" stroke-width="2.5"/>
+  <ellipse cx="120" cy="120" rx="100" ry="36" stroke="#d9381e" stroke-width="2"   transform="rotate(60 120 120)"/>
+  <ellipse cx="120" cy="120" rx="100" ry="36" stroke="#8c877e" stroke-width="2"   transform="rotate(-60 120 120)"/>
+  <circle  cx="120" cy="120" r="14"            stroke="currentColor" stroke-width="2.5" fill="none"/>
 </svg>`,
     defaults: { stagger: 0.18, easing: 'ease-out', speed: 0.85 },
   },
@@ -126,8 +130,8 @@ const EXAMPLES: ExamplePreset[] = [
     tag: 'fillOpacity',
     svg: `<svg width="240" height="240" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
   <path d="M 120 18 L 144 90 L 222 90 L 159 136 L 182 210 L 120 163 L 58 210 L 81 136 L 18 90 L 96 90 Z"
-        stroke="#ff90e8" stroke-width="2.5" fill="#ff90e8" fill-opacity="0"/>
-  <circle cx="120" cy="120" r="32" stroke="#ffc900" stroke-width="2" fill="#ffc900" fill-opacity="0"/>
+        stroke="#d9381e" stroke-width="2.5" fill="#d9381e" fill-opacity="0"/>
+  <circle cx="120" cy="120" r="32" stroke="currentColor" stroke-width="2" fill="#8c877e" fill-opacity="0"/>
 </svg>`,
     defaults: { useFillOpacity: true, fillOpacityFrom: 0, fillOpacityTo: 1, stagger: 0.35, easing: 'ease-out' },
   },
@@ -138,7 +142,7 @@ const EXAMPLES: ExamplePreset[] = [
     tag: 'morphTo',
     svg: `<svg width="240" height="240" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
   <path d="M 120 22 C 172 22 218 68 218 120 C 218 172 172 218 120 218 C 68 218 22 172 22 120 C 22 68 68 22 120 22 Z"
-        stroke="#000" stroke-width="2.5"/>
+        stroke="currentColor" stroke-width="2.5"/>
 </svg>`,
     defaults: {
       useMorphTo: true,
@@ -152,13 +156,13 @@ const EXAMPLES: ExamplePreset[] = [
     label: 'Flowchart',
     tag: 'multi-path',
     svg: `<svg width="240" height="240" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect x="14"  y="14"  width="72" height="44" rx="6" stroke="#000"    stroke-width="2"/>
-  <rect x="84"  y="98"  width="72" height="44" rx="6" stroke="#ff90e8" stroke-width="2"/>
-  <rect x="154" y="182" width="72" height="44" rx="6" stroke="#ffc900" stroke-width="2"/>
-  <path d="M 50 58 L 50 78 L 120 78 L 120 98"   stroke="#000"    stroke-width="1.5" stroke-linecap="round"/>
-  <path d="M 120 142 L 120 162 L 190 162 L 190 182" stroke="#ff90e8" stroke-width="1.5" stroke-linecap="round"/>
-  <path d="M 113 94 L 120 98 L 127 94"  stroke="#000"    stroke-width="1.5" stroke-linecap="round" fill="none"/>
-  <path d="M 183 178 L 190 182 L 197 178" stroke="#ffc900" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+  <rect x="14"  y="14"  width="72" height="44" rx="6" stroke="currentColor" stroke-width="2"/>
+  <rect x="84"  y="98"  width="72" height="44" rx="6" stroke="#d9381e" stroke-width="2"/>
+  <rect x="154" y="182" width="72" height="44" rx="6" stroke="#8c877e" stroke-width="2"/>
+  <path d="M 50 58 L 50 78 L 120 78 L 120 98"   stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M 120 142 L 120 162 L 190 162 L 190 182" stroke="#d9381e" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M 113 94 L 120 98 L 127 94"  stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+  <path d="M 183 178 L 190 182 L 197 178" stroke="#8c877e" stroke-width="1.5" stroke-linecap="round" fill="none"/>
 </svg>`,
     defaults: { stagger: 0.1, easing: 'ease-out', speed: 0.9 },
   },
@@ -175,8 +179,8 @@ const DEFAULT_STATE: PlayState = {
   stagger: 0,
   direction: 'forward',
   once: false,
-  colorFrom: '#ff6b9d',
-  colorTo: '#ffc900',
+  colorFrom: '#8c877e',
+  colorTo: '#d9381e',
   useColor: false,
   widthFrom: 1,
   widthTo: 4,
@@ -198,7 +202,7 @@ const DEFAULT_STATE: PlayState = {
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
-const EASINGS: Record<EasingName, (t: number) => number> = {
+export const EASINGS: Record<EasingName, (t: number) => number> = {
   linear:        t => t,
   'ease-in':     t => t * t,
   'ease-out':    t => t * (2 - t),
@@ -207,6 +211,7 @@ const EASINGS: Record<EasingName, (t: number) => number> = {
   bounce:        createBounce(),
   elastic:       createElastic(),
 };
+const EASING_NAMES = Object.keys(EASINGS) as EasingName[];
 
 const SELECTOR = 'path, polyline, line, polygon, rect, circle, ellipse';
 
@@ -287,18 +292,11 @@ function initElements(container: HTMLDivElement, ps: PlayState) {
 // ── Sub-components ─────────────────────────────────────────────────────────────
 
 function ControlLabel({ children }: { children: React.ReactNode }) {
-  return <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-graphite-border font-mono">{children}</span>;
+  return <span className="pl-lab-k">{children}</span>;
 }
 
-function Toggle({ on, onToggle, colorOn = 'bg-creator-pink border-creator-pink' }: { on: boolean; onToggle: () => void; colorOn?: string }) {
-  return (
-    <button
-      onClick={onToggle}
-      className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border-2 transition-colors ${on ? colorOn : 'bg-subtle-ash border-subtle-ash'}`}
-    >
-      <span className={`inline-block h-3 w-3 rounded-full bg-pitch-black transition-transform ${on ? 'translate-x-4' : 'translate-x-0.5'}`} />
-    </button>
-  );
+function Toggle({ on, onToggle, label }: { on: boolean; onToggle: () => void; label: string }) {
+  return <button type="button" role="switch" aria-checked={on} aria-label={label} className="pl-switch" onClick={onToggle} />;
 }
 
 function SliderRow({ label, value, min, max, step, onChange, display }: {
@@ -306,16 +304,28 @@ function SliderRow({ label, value, min, max, step, onChange, display }: {
   onChange: (v: number) => void; display?: string;
 }) {
   return (
-    <div className="space-y-1.5">
-      <div className="flex items-center justify-between">
+    <div className="pl-field">
+      <div className="pl-lab">
         <ControlLabel>{label}</ControlLabel>
-        <span className="text-[11px] font-mono text-pitch-black font-semibold">{display ?? value}</span>
+        <span className="pl-lab-v">{display ?? value}</span>
       </div>
       <input type="range" min={min} max={max} step={step} value={value}
         aria-label={label}
         onChange={e => onChange(parseFloat(e.target.value))}
-        className="w-full accent-pitch-black" />
+        className="pl-range" style={fill(value, min, max)} />
     </div>
+  );
+}
+
+/** The opening's fact cells, counted from the playground's own preset lists. */
+export function PlaygroundFacts({ gzipKb }: { gzipKb: number }) {
+  return (
+    <dl className="pg-facts">
+      <div><dt>Draw presets</dt><dd>{EXAMPLES.length}</dd></div>
+      <div><dt>v2 presets</dt><dd>{V2_EXAMPLE_COUNT}</dd></div>
+      <div><dt>Easings</dt><dd>{EASING_NAMES.length}</dd></div>
+      <div><dt>Gzipped</dt><dd>{gzipKb} KB</dd></div>
+    </dl>
   );
 }
 
@@ -332,13 +342,14 @@ export function SvgPlayground() {
   const [rawSvg, setRawSvg]         = useState(ps.svg);
   const [progress, setProgress]     = useState(0);
   const [isPlaying, setIsPlaying]   = useState(false);
-  const [error, setError]           = useState<string | null>(null);
   const [shareMsg, setShareMsg]     = useState('');
   const [activeExample, setActiveExample] = useState(0);
   const [activeTab, setActiveTab]   = useState<Tab>('motion');
   const [mode, setMode]             = useState<Mode>('v1');
+  const [ground, setGround]         = useState<Ground>('paper');
 
   const previewRef   = useRef<HTMLDivElement>(null);
+  const gutterRef    = useRef<HTMLPreElement>(null);
   const psRef        = useRef(ps);
   const progressRef  = useRef(0);
   const playingRef   = useRef(false);
@@ -380,17 +391,55 @@ export function SvgPlayground() {
     });
   }, []);
 
+  // Parse once per markup change; invalid markup keeps the last good drawing
+  // mounted and shows the parser's complaint under the source.
+  const parsed = useMemo<{ html: string | null; error: string | null }>(() => {
+    if (typeof window === 'undefined') return { html: null, error: null };
+    try { return { html: sanitizeSvg(ps.svg), error: null }; }
+    catch (e) { return { html: null, error: (e as Error).message }; }
+  }, [ps.svg]);
+  const error = parsed.error;
+
   useEffect(() => {
     const container = previewRef.current;
-    if (!container) return;
-    try {
-      container.innerHTML = sanitizeSvg(ps.svg);
-      origPathsRef.current = Array.from(container.querySelectorAll<SVGPathElement>('path')).map(p => p.getAttribute('d') ?? '');
-      initElements(container, ps);
-      applyProgress(progressRef.current, ps);
-      setError(null);
-    } catch (e) { setError((e as Error).message); }
-  }, [ps, applyProgress]);
+    if (!container || parsed.html === null) return;
+    container.innerHTML = parsed.html;
+    origPathsRef.current = Array.from(container.querySelectorAll<SVGPathElement>('path')).map(p => p.getAttribute('d') ?? '');
+    initElements(container, ps);
+    applyProgress(progressRef.current, ps);
+  }, [ps, parsed, applyProgress, mode]);
+
+  /** One pass from 0 to 100% — when the bench first comes into view and when a
+      preset loads — so the specimen never sits blank. Any scrub, play or reset
+      takes over: the pass stops the moment progress is not what it last wrote. */
+  const sweepRef = useRef(0);
+  const sweep = useCallback(() => {
+    cancelAnimationFrame(sweepRef.current);
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const dur = reduce ? 0 : 1600;
+    const t0 = performance.now();
+    let last = progressRef.current;
+    const step = (now: number) => {
+      if (playingRef.current || progressRef.current !== last) return;
+      const p = dur ? Math.min(1, (now - t0) / dur) : 1;
+      last = p; progressRef.current = p; setProgress(p); applyProgress(p, psRef.current);
+      if (p < 1) sweepRef.current = requestAnimationFrame(step);
+    };
+    sweepRef.current = requestAnimationFrame(step);
+  }, [applyProgress]);
+
+  const toolRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = toolRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return;
+      io.disconnect();
+      if (!playingRef.current && progressRef.current === 0) sweep();
+    }, { threshold: 0.2 });
+    io.observe(el);
+    return () => { io.disconnect(); cancelAnimationFrame(sweepRef.current); };
+  }, [sweep]);
 
   useEffect(() => {
     playingRef.current = isPlaying;
@@ -446,9 +495,12 @@ export function SvgPlayground() {
     };
     setRawSvg(ex.svg);
     setPs(nextState);
+    psRef.current = nextState;
     setIsPlaying(false);
+    playingRef.current = false;
     progressRef.current = 0;
     setProgress(0);
+    sweep();
   }
 
   function update<K extends keyof PlayState>(key: K, value: PlayState[K]) {
@@ -460,6 +512,7 @@ export function SvgPlayground() {
   }
 
   const pct = Math.round(progress * 100);
+  const lineCount = rawSvg.split('\n').length;
 
   const activeFeatureTags = [
     ps.fade && 'fade',
@@ -503,236 +556,184 @@ export function SvgPlayground() {
   ].filter(Boolean).join('\n');
 
   return (
-    <div className="flex flex-col h-screen max-h-screen bg-light-linen text-pitch-black overflow-hidden">
+    <div className="pl-tool" ref={toolRef}>
 
-      {/* ── Nav ─────────────────────────────────────────────────────────── */}
-      <nav className="shrink-0 border-b border-pitch-black flex items-center justify-between px-4 sm:px-6 h-12 bg-light-linen/95 backdrop-blur-sm z-40">
-        <div className="flex items-center gap-3 min-w-0">
-          <Link href="/" className="flex items-center gap-2 shrink-0 group">
-            <span className="text-graphite-border group-hover:text-pitch-black transition-colors text-sm">←</span>
-            <span className="font-display font-bold text-sm tracking-tight">svg-scroll-draw</span>
-          </Link>
-          <span className="text-subtle-ash text-sm hidden sm:inline">/</span>
-          <h1 className="text-sm hidden sm:inline text-graphite-border font-medium m-0 p-0">Playground</h1>
-          {mode === 'v1' && activeFeatureTags.length > 0 && (
-            <div className="hidden md:flex items-center gap-1.5 ml-2">
-              {activeFeatureTags.map(t => (
-                <span key={t} className="text-[9px] font-mono font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-creator-pink/20 border border-creator-pink/40 text-pitch-black">
-                  {t}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
-        <div className="flex items-center gap-2">
-          {/* v1 / v2 mode toggle */}
-          <div className="flex items-center rounded-full border border-pitch-black overflow-hidden shadow-[1px_1px_0px_#000]">
-            <button
-              onClick={() => setMode('v1')}
-              className={`px-3 py-1 text-[11px] font-bold font-mono transition-all ${
-                mode === 'v1' ? 'bg-pitch-black text-light-linen' : 'text-graphite-border hover:text-pitch-black'
-              }`}
-            >
-              v1
-            </button>
-            <button
-              onClick={() => setMode('v2')}
-              className={`px-3 py-1 text-[11px] font-bold font-mono transition-all ${
-                mode === 'v2' ? 'bg-creator-pink text-pitch-black' : 'text-graphite-border hover:text-pitch-black'
-              }`}
-            >
-              v2
-            </button>
-          </div>
-          {mode === 'v1' && <span className="hidden sm:inline text-[11px] font-mono text-graphite-border">{pct}%</span>}
-          {mode === 'v1' && (
-            <button
-              onClick={handleShare}
-              className={`text-[12px] font-mono px-3 py-1.5 rounded-full border font-medium transition-all ${
-                shareMsg ? 'bg-lime-glow border-lime-glow' : 'border-pitch-black hover:bg-pitch-black hover:text-light-linen'
-              }`}
-            >
-              {shareMsg || 'Share ↗'}
-            </button>
-          )}
-          <div className="lg:hidden"><MobileMenu /></div>
-        </div>
-      </nav>
+      {/* ── The bench's title strip: figure, mode, live options, share ─── */}
+      <div className="pl-bar">
+        <span className="pl-bar-n">fig. 2</span>
+        <span className="pl-bar-mode" role="group" aria-label="Playground mode">
+          <button type="button" className="pl-mode" aria-pressed={mode === 'v1'} onClick={() => setMode('v1')}>
+            v1 <span>scrollDraw</span>
+          </button>
+          <button type="button" className="pl-mode" aria-pressed={mode === 'v2'} onClick={() => setMode('v2')}>
+            v2 <span>animate · text · counter</span>
+          </button>
+        </span>
+        <span className="pl-bar-tags">
+          {mode === 'v1' && activeFeatureTags.map(t => <span key={t} className="tag">{t}</span>)}
+          {mode === 'v1' && activeFeatureTags.length === 0 && <span className="pl-bar-empty">core options only — easing, speed</span>}
+          {mode === 'v2' && <span className="pl-bar-empty">driven by instance.seek(p)</span>}
+        </span>
+        {mode === 'v1' && <span className="pl-bar-pct" aria-label="Progress">{String(pct).padStart(3, '0')}%</span>}
+        {mode === 'v1' && (
+          <button type="button" onClick={handleShare} className={`pl-share${shareMsg ? ' is-done' : ''}`}>
+            {shareMsg || 'Share ↗'}
+          </button>
+        )}
+      </div>
 
       {/* ── v2 mode ─────────────────────────────────────────────────────── */}
-      {mode === 'v2' && <PlaygroundV2Content />}
+      {mode === 'v2' && <PlaygroundV2Content ground={ground} onGround={setGround} />}
 
-      {/* ── v1 Three-panel layout ───────────────────────────────────────── */}
-      {mode === 'v1' && <div className="flex flex-col lg:flex-row flex-1 min-h-0 overflow-hidden">
+      {/* ── v1: A source · B specimen · C options ───────────────────────── */}
+      {mode === 'v1' && <div className="pl-bench">
 
-        {/* ── Panel 1: Editor ─────────────────────────────────────────── */}
-        <div className="flex flex-col lg:w-[38%] xl:w-[36%] border-b lg:border-b-0 lg:border-r border-pitch-black min-h-0 max-h-[35vh] lg:max-h-none">
-          {/* Editor header */}
-          <div className="shrink-0 flex items-center justify-between px-4 py-2 bg-[#111] border-b border-[#2a2a2a]">
-            <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
-              <span className="w-2.5 h-2.5 rounded-full bg-[#febc2e]" />
-              <span className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
-            </div>
-            <span className="text-[10px] text-[#888] font-mono tracking-widest uppercase">SVG Editor</span>
-            <span className="text-[10px] font-mono text-[#555]">{rawSvg.length.toLocaleString()} ch</span>
+        {/* ── A: the source ───────────────────────────────────────────── */}
+        <div className="pl-panel pl-panel-a">
+          <div className="pl-ph">
+            <span className="pl-ph-z">A</span>
+            <span className="pl-ph-t">source · svg</span>
+            <span className="pl-ph-m">{lineCount} ln · {rawSvg.length.toLocaleString()} ch</span>
           </div>
-
-          {/* Textarea */}
-          <textarea
-            value={rawSvg}
-            onChange={e => handleSvgChange(e.target.value)}
-            spellCheck={false}
-            className="flex-1 resize-none bg-[#141412] text-[#e8e8e3] font-mono text-[12px] leading-[1.8] p-4 outline-none min-h-0"
-            placeholder="Paste your SVG markup here…"
-          />
-
-          {/* Error bar */}
+          <div className="pl-ed">
+            <pre ref={gutterRef} className="pl-ed-gutter" aria-hidden="true">
+              {Array.from({ length: lineCount }, (_, i) => i + 1).join('\n')}
+              {'\n\n'}
+            </pre>
+            <textarea
+              value={rawSvg}
+              onChange={e => handleSvgChange(e.target.value)}
+              onScroll={e => { if (gutterRef.current) gutterRef.current.scrollTop = e.currentTarget.scrollTop; }}
+              spellCheck={false}
+              wrap="off"
+              aria-label="SVG markup"
+              className="pl-ed-ta"
+              placeholder="Paste your SVG markup here…"
+            />
+          </div>
           {error && (
-            <div className="shrink-0 flex items-center gap-2 px-4 py-2 bg-firecracker-orange/10 border-t border-firecracker-orange/30 text-[11px] font-mono text-firecracker-orange">
-              <span>⚠</span>
+            <div className="pl-err" role="alert">
+              <span>error</span>
               <span>{error}</span>
             </div>
           )}
         </div>
 
-        {/* ── Panel 2: Preview ────────────────────────────────────────── */}
-        <div className="flex flex-col lg:w-[30%] xl:w-[32%] border-b lg:border-b-0 lg:border-r border-pitch-black min-h-0">
-          {/* Preview area */}
-          <div className="flex-1 flex items-center justify-center relative bg-[radial-gradient(circle_at_center,_#f0f0ea_0%,_#f4f4f0_100%)] min-h-[200px]">
-            {/* Dot grid */}
-            <div className="absolute inset-0 opacity-40" style={{ backgroundImage: 'radial-gradient(circle, #c8c8c0 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
-            <div ref={previewRef}
-              className="relative z-10 w-full h-full max-w-[320px] max-h-[320px] flex items-center justify-center p-6 [&>svg]:max-w-full [&>svg]:max-h-full"
-            />
+        {/* ── B: the specimen ─────────────────────────────────────────── */}
+        <div className="pl-panel pl-panel-b">
+          <div className="pl-ph">
+            <span className="pl-ph-z">B</span>
+            <span className="pl-ph-t">specimen</span>
+            <GroundSwitch ground={ground} onChange={setGround} />
           </div>
-
-          {/* Scrubber + play controls */}
-          <div className="shrink-0 border-t border-subtle-ash bg-light-linen px-4 py-3 space-y-2">
-            {/* Progress track */}
-            <div className="flex items-center gap-3">
-              <button onClick={() => setIsPlaying(v => !v)}
-                className="shrink-0 w-8 h-8 rounded-full bg-pitch-black text-light-linen flex items-center justify-center hover:bg-graphite-border transition-colors text-[13px] shadow-[1px_1px_0px_#000]"
-                aria-label={isPlaying ? 'Pause' : 'Play'}
-              >
-                {isPlaying ? '⏸' : '▶'}
+          <div className="pl-spec" data-ground={ground}>
+            <CropMarks />
+            <div ref={previewRef} className="pl-specimen" />
+          </div>
+          <div className="pl-scrub">
+            <div className="pl-scrub-row">
+              <button type="button" onClick={() => setIsPlaying(v => !v)} className="pl-play" aria-label={isPlaying ? 'Pause' : 'Play'}>
+                <PlayIcon playing={isPlaying} />
               </button>
-              <div className="flex-1">
-                <input type="range" min="0" max="1" step="0.001" value={progress}
-                  aria-label="Animation progress"
-                  onChange={handleSlider} className="w-full accent-pitch-black" />
-              </div>
-              <button onClick={handleReset}
-                className="shrink-0 w-8 h-8 rounded-full border border-subtle-ash flex items-center justify-center hover:border-pitch-black transition-colors text-[13px]"
-                aria-label="Reset"
-              >↺</button>
+              <input type="range" min="0" max="1" step="0.001" value={progress}
+                aria-label="Animation progress"
+                onChange={handleSlider} className="pl-range" style={fill(progress, 0, 1)} />
+              <button type="button" onClick={handleReset} className="pl-reset" aria-label="Reset">
+                <ResetIcon />
+              </button>
             </div>
-            {/* Progress pill */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5">
-                <div className="h-1.5 rounded-full bg-subtle-ash flex-1 w-24 overflow-hidden">
-                  <div className="h-full bg-pitch-black rounded-full transition-none" style={{ width: `${pct}%` }} />
-                </div>
-                <span className="text-[11px] font-mono font-semibold text-pitch-black w-8 text-right">{pct}%</span>
-              </div>
-              <span className="text-[10px] font-mono text-graphite-border">{ps.easing} · {ps.speed.toFixed(1)}×</span>
+            <div className="pl-read">
+              <span>progress <b>{pct}%</b></span>
+              <span><b>{ps.easing}</b> · {ps.speed.toFixed(1)}×</span>
             </div>
           </div>
         </div>
 
-        {/* ── Panel 3: Options ────────────────────────────────────────── */}
-        <div className="flex flex-col lg:w-[32%] xl:w-[32%] min-h-0 overflow-hidden bg-marketplace-gray">
+        {/* ── C: the options ──────────────────────────────────────────── */}
+        <div className="pl-panel pl-panel-c">
+          <div className="pl-ph">
+            <span className="pl-ph-z">C</span>
+            <span className="pl-ph-t">options</span>
+            <span className="pl-ph-m">{activeFeatureTags.length} on</span>
+          </div>
 
-          {/* Examples grid */}
-          <div className="shrink-0 border-b border-pitch-black px-4 pt-3 pb-3">
-            <p className="text-[9px] font-bold uppercase tracking-[0.22em] text-graphite-border mb-2.5 font-mono">Examples</p>
-            <div className="grid grid-cols-4 gap-1.5">
+          {/* Presets, as a parts list */}
+          <div className="pl-ex">
+            <p className="pl-k"><span>Examples</span><span>{EXAMPLES.length} presets</span></p>
+            <div className="pl-ex-grid">
               {EXAMPLES.map((ex, i) => (
-                <button
-                  key={ex.label}
-                  onClick={() => loadExample(i)}
-                  className={`flex flex-col items-center gap-1 py-2 px-1 rounded-xl border transition-all text-center ${
-                    activeExample === i
-                      ? 'bg-pitch-black border-pitch-black text-light-linen shadow-[2px_2px_0px_#000]'
-                      : 'border-subtle-ash bg-light-linen hover:border-pitch-black hover:shadow-[1px_1px_0px_#000] text-graphite-border hover:text-pitch-black'
-                  }`}
-                >
-                  <div
-                    className={`w-full rounded-lg overflow-hidden flex items-center justify-center h-9 ${activeExample === i ? 'opacity-60' : 'opacity-100'}`}
+                <button key={ex.label} type="button" onClick={() => loadExample(i)} className="pl-exb" aria-pressed={activeExample === i}>
+                  <span className="pl-exb-n">{pad(i + 1)}</span>
+                  <span
+                    className="pl-exb-art"
+                    aria-hidden="true"
                     dangerouslySetInnerHTML={{
-                      __html: ex.svg.replace(/width="[^"]*"/, 'width="100%"').replace(/height="[^"]*"/, 'height="36"'),
+                      __html: ex.svg.replace(/width="[^"]*"/, 'width="100%"').replace(/height="[^"]*"/, 'height="34"'),
                     }}
                   />
-                  <span className="text-[9px] font-mono leading-tight font-semibold">{ex.label}</span>
-                  <span className={`text-[8px] uppercase tracking-wide font-bold leading-none px-1 py-0.5 rounded-full ${
-                    activeExample === i ? 'bg-creator-pink/30 text-creator-pink' : 'text-graphite-border/60'
-                  }`}>{ex.tag}</span>
+                  <span className="pl-exb-l">{ex.label}</span>
+                  <span className="pl-exb-t">{ex.tag}</span>
                 </button>
               ))}
             </div>
           </div>
 
           {/* Tabs */}
-          <div className="shrink-0 flex border-b border-pitch-black">
+          <div className="pl-tabs" role="tablist" aria-label="Options">
             {(['motion', 'visual', 'effects', 'code'] as Tab[]).map(tab => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`flex-1 py-2 text-[10px] font-bold uppercase tracking-[0.16em] transition-all border-r last:border-r-0 border-subtle-ash ${
-                  activeTab === tab
-                    ? 'bg-pitch-black text-light-linen border-pitch-black'
-                    : 'text-graphite-border hover:text-pitch-black hover:bg-light-linen/60'
-                }`}
-              >
+              <button key={tab} type="button" role="tab" aria-selected={activeTab === tab} onClick={() => setActiveTab(tab)} className="pl-tab">
                 {tab}
               </button>
             ))}
           </div>
 
           {/* Tab content — scrollable */}
-          <div className="flex-1 overflow-y-auto">
+          <div className="pl-tab-body" role="tabpanel" aria-label={activeTab}>
 
             {/* ── Motion tab ─────────────────────────────────────────── */}
             {activeTab === 'motion' && (
-              <div className="p-4 space-y-4">
+              <div className="pl-stack">
                 {/* Preset shortcut */}
-                <div className="space-y-1.5">
+                <div className="pl-field">
                   <ControlLabel>Preset</ControlLabel>
-                  <select defaultValue="" onChange={e => {
-                    const presets: Record<string, Partial<typeof ps>> = {
-                      sketch:     { easing: 'ease-in',     stagger: 0.10, speed: 0.90, fade: false, once: false },
-                      reveal:     { easing: 'ease-out',    stagger: 0,    speed: 1.20, fade: true,  once: true  },
-                      typewriter: { easing: 'linear',      stagger: 0.05, speed: 1.50, fade: false, once: false },
-                      cinematic:  { easing: 'ease-in-out', stagger: 0,    speed: 0.75, fade: true,  once: false },
-                      spring:     { easing: 'spring',      stagger: 0,    speed: 1.10, fade: false, once: false },
-                    };
-                    const p = presets[e.target.value];
-                    if (p) setPs(prev => ({ ...prev, ...p }));
-                    e.target.value = '';
-                  }}
-                    className="w-full font-mono text-[12px] border border-pitch-black rounded-lg px-3 py-2 bg-light-linen appearance-none cursor-pointer focus:outline-none hover:bg-pitch-black hover:text-light-linen transition-colors shadow-[1px_1px_0px_#000]">
-                    <option value="">— apply preset —</option>
-                    <option value="sketch">sketch</option>
-                    <option value="reveal">reveal</option>
-                    <option value="typewriter">typewriter</option>
-                    <option value="cinematic">cinematic</option>
-                    <option value="spring">spring</option>
-                  </select>
+                  <div className="pl-sel">
+                    <select defaultValue="" aria-label="Preset" onChange={e => {
+                      const presets: Record<string, Partial<typeof ps>> = {
+                        sketch:     { easing: 'ease-in',     stagger: 0.10, speed: 0.90, fade: false, once: false },
+                        reveal:     { easing: 'ease-out',    stagger: 0,    speed: 1.20, fade: true,  once: true  },
+                        typewriter: { easing: 'linear',      stagger: 0.05, speed: 1.50, fade: false, once: false },
+                        cinematic:  { easing: 'ease-in-out', stagger: 0,    speed: 0.75, fade: true,  once: false },
+                        spring:     { easing: 'spring',      stagger: 0,    speed: 1.10, fade: false, once: false },
+                      };
+                      const p = presets[e.target.value];
+                      if (p) setPs(prev => ({ ...prev, ...p }));
+                      e.target.value = '';
+                    }}
+                      className="pl-select">
+                      <option value="">— apply preset —</option>
+                      <option value="sketch">sketch</option>
+                      <option value="reveal">reveal</option>
+                      <option value="typewriter">typewriter</option>
+                      <option value="cinematic">cinematic</option>
+                      <option value="spring">spring</option>
+                    </select>
+                  </div>
                 </div>
 
                 {/* Easing */}
-                <div className="space-y-1.5">
+                <div className="pl-field">
                   <ControlLabel>Easing</ControlLabel>
-                  <select value={ps.easing} onChange={e => update('easing', e.target.value as EasingName)}
-                    className="w-full font-mono text-[12px] border border-pitch-black rounded-lg px-3 py-2 bg-light-linen appearance-none cursor-pointer focus:outline-none hover:bg-pitch-black hover:text-light-linen transition-colors shadow-[1px_1px_0px_#000]">
-                    {(['linear', 'ease-in', 'ease-out', 'ease-in-out', 'spring', 'bounce', 'elastic'] as EasingName[]).map(e => (
-                      <option key={e} value={e}>{e}</option>
-                    ))}
-                  </select>
+                  <div className="pl-sel">
+                    <select value={ps.easing} aria-label="Easing" onChange={e => update('easing', e.target.value as EasingName)} className="pl-select">
+                      {EASING_NAMES.map(e => (
+                        <option key={e} value={e}>{e}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
 
                 {ps.easing === 'spring' && (
-                  <div className="p-3 rounded-xl border border-creator-pink/30 bg-creator-pink/5 space-y-3">
+                  <div className="pl-sub">
                     <ControlLabel>Spring params</ControlLabel>
                     <SliderRow label="Tension" value={ps.springTension} min={0.5} max={6} step={0.1}
                       onChange={v => update('springTension', v)} display={ps.springTension.toFixed(1)} />
@@ -742,7 +743,7 @@ export function SvgPlayground() {
                 )}
 
                 {ps.easing === 'bounce' && (
-                  <div className="p-3 rounded-xl border border-[#ffc900]/40 bg-[#ffc900]/5 space-y-3">
+                  <div className="pl-sub">
                     <ControlLabel>Bounce params</ControlLabel>
                     <SliderRow label="Bounces" value={ps.bounceBounces} min={1} max={6} step={1}
                       onChange={v => update('bounceBounces', v)} display={String(Math.round(ps.bounceBounces))} />
@@ -752,7 +753,7 @@ export function SvgPlayground() {
                 )}
 
                 {ps.easing === 'elastic' && (
-                  <div className="p-3 rounded-xl border border-[#5865F2]/30 bg-[#5865F2]/5 space-y-3">
+                  <div className="pl-sub">
                     <ControlLabel>Elastic params</ControlLabel>
                     <SliderRow label="Amplitude" value={ps.elasticAmplitude} min={1} max={2.5} step={0.05}
                       onChange={v => update('elasticAmplitude', v)} display={ps.elasticAmplitude.toFixed(2)} />
@@ -768,16 +769,11 @@ export function SvgPlayground() {
                   onChange={v => update('stagger', v)} display={ps.stagger.toFixed(2)} />
 
                 {/* Direction */}
-                <div className="space-y-1.5">
+                <div className="pl-field">
                   <ControlLabel>Direction</ControlLabel>
-                  <div className="flex gap-2">
+                  <div className="pl-seg" role="group" aria-label="Direction">
                     {(['forward', 'reverse'] as const).map(d => (
-                      <button key={d} onClick={() => update('direction', d)}
-                        className={`flex-1 py-1.5 text-[11px] font-mono rounded-lg border transition-all font-semibold ${
-                          ps.direction === d
-                            ? 'bg-pitch-black text-light-linen border-pitch-black shadow-[1px_1px_0px_#000]'
-                            : 'border-subtle-ash text-graphite-border hover:border-pitch-black'
-                        }`}>
+                      <button key={d} type="button" aria-pressed={ps.direction === d} onClick={() => update('direction', d)}>
                         {d === 'forward' ? '→ forward' : '← reverse'}
                       </button>
                     ))}
@@ -785,20 +781,24 @@ export function SvgPlayground() {
                 </div>
 
                 {/* Fade + Once */}
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="flex items-center justify-between p-3 rounded-xl border border-subtle-ash bg-light-linen">
-                    <div>
-                      <ControlLabel>Fade</ControlLabel>
-                      <p className="text-[9px] text-graphite-border mt-0.5">opacity 0→1</p>
+                <div className="pl-pair">
+                  <div className="pl-card">
+                    <div className="pl-card-h">
+                      <div>
+                        <ControlLabel>Fade</ControlLabel>
+                        <p>opacity 0→1</p>
+                      </div>
+                      <Toggle label="Fade" on={ps.fade} onToggle={() => update('fade', !ps.fade)} />
                     </div>
-                    <Toggle on={ps.fade} onToggle={() => update('fade', !ps.fade)} colorOn="bg-creator-pink border-creator-pink" />
                   </div>
-                  <div className="flex items-center justify-between p-3 rounded-xl border border-subtle-ash bg-light-linen">
-                    <div>
-                      <ControlLabel>Once</ControlLabel>
-                      <p className="text-[9px] text-graphite-border mt-0.5">lock at 100%</p>
+                  <div className="pl-card">
+                    <div className="pl-card-h">
+                      <div>
+                        <ControlLabel>Once</ControlLabel>
+                        <p>lock at 100%</p>
+                      </div>
+                      <Toggle label="Once" on={ps.once} onToggle={() => update('once', !ps.once)} />
                     </div>
-                    <Toggle on={ps.once} onToggle={() => update('once', !ps.once)} colorOn="bg-lime-glow border-lime-glow" />
                   </div>
                 </div>
               </div>
@@ -806,79 +806,72 @@ export function SvgPlayground() {
 
             {/* ── Visual tab ─────────────────────────────────────────── */}
             {activeTab === 'visual' && (
-              <div className="p-4 space-y-4">
+              <div className="pl-stack">
                 {/* Stroke Color */}
-                <div className="p-3 rounded-xl border border-subtle-ash bg-light-linen space-y-3">
-                  <div className="flex items-center justify-between">
+                <div className="pl-card">
+                  <div className="pl-card-h">
                     <div>
                       <ControlLabel>Stroke Color</ControlLabel>
-                      <p className="text-[9px] text-graphite-border mt-0.5">interpolate from → to</p>
+                      <p>interpolate from → to</p>
                     </div>
-                    <Toggle on={ps.useColor} onToggle={() => update('useColor', !ps.useColor)} colorOn="bg-creator-pink border-creator-pink" />
+                    <Toggle label="Stroke color" on={ps.useColor} onToggle={() => update('useColor', !ps.useColor)} />
                   </div>
-                  <div className={`flex items-center gap-3 transition-opacity ${ps.useColor ? 'opacity-100' : 'opacity-40 pointer-events-none'}`}>
-                    <div className="flex flex-col items-center gap-1">
-                      <input type="color" value={ps.colorFrom} onChange={e => update('colorFrom', e.target.value)}
-                        className="w-10 h-10 rounded-lg cursor-pointer border-2 border-pitch-black p-0.5 bg-transparent" />
-                      <span className="text-[9px] font-mono text-graphite-border">from</span>
-                    </div>
-                    <div className="flex-1 h-3 rounded-full border border-subtle-ash overflow-hidden" style={{ background: `linear-gradient(to right, ${ps.colorFrom}, ${ps.colorTo})` }} />
-                    <div className="flex flex-col items-center gap-1">
-                      <input type="color" value={ps.colorTo} onChange={e => update('colorTo', e.target.value)}
-                        className="w-10 h-10 rounded-lg cursor-pointer border-2 border-pitch-black p-0.5 bg-transparent" />
-                      <span className="text-[9px] font-mono text-graphite-border">to</span>
-                    </div>
+                  <div className={`pl-colors${ps.useColor ? '' : ' is-off'}`}>
+                    <label className="pl-swatch">
+                      <input type="color" value={ps.colorFrom} onChange={e => update('colorFrom', e.target.value)} className="pl-color" aria-label="Stroke color from" />
+                      from
+                    </label>
+                    <div className="pl-grad" style={{ background: `linear-gradient(to right, ${ps.colorFrom}, ${ps.colorTo})` }} />
+                    <label className="pl-swatch">
+                      <input type="color" value={ps.colorTo} onChange={e => update('colorTo', e.target.value)} className="pl-color" aria-label="Stroke color to" />
+                      to
+                    </label>
                   </div>
                 </div>
 
                 {/* Stroke Width */}
-                <div className="p-3 rounded-xl border border-subtle-ash bg-light-linen space-y-3">
-                  <div className="flex items-center justify-between">
+                <div className="pl-card">
+                  <div className="pl-card-h">
                     <div>
                       <ControlLabel>Stroke Width</ControlLabel>
-                      <p className="text-[9px] text-graphite-border mt-0.5">thin → thick</p>
+                      <p>thin → thick</p>
                     </div>
-                    <Toggle on={ps.useWidth} onToggle={() => update('useWidth', !ps.useWidth)} colorOn="bg-sunshine-yellow border-sunshine-yellow" />
+                    <Toggle label="Stroke width" on={ps.useWidth} onToggle={() => update('useWidth', !ps.useWidth)} />
                   </div>
-                  <div className={`flex items-center gap-2 transition-opacity ${ps.useWidth ? 'opacity-100' : 'opacity-40 pointer-events-none'}`}>
-                    <div className="flex flex-col items-center gap-1">
+                  <div className={`pl-nums${ps.useWidth ? '' : ' is-off'}`}>
+                    <label className="pl-num-w">
                       <input type="number" value={ps.widthFrom} min={0.5} max={10} step={0.5}
-                        onChange={e => update('widthFrom', parseFloat(e.target.value))}
-                        className="w-14 text-center font-mono text-[12px] border border-pitch-black rounded-lg px-2 py-1.5 focus:outline-none bg-light-linen" />
-                      <span className="text-[9px] font-mono text-graphite-border">from</span>
-                    </div>
-                    <div className="flex-1 flex items-center justify-center">
-                      <span className="text-graphite-border text-sm">→</span>
-                    </div>
-                    <div className="flex flex-col items-center gap-1">
+                        onChange={e => update('widthFrom', parseFloat(e.target.value))} className="pl-num" aria-label="Stroke width from" />
+                      from
+                    </label>
+                    <span className="pl-to" aria-hidden="true">→</span>
+                    <label className="pl-num-w">
                       <input type="number" value={ps.widthTo} min={0.5} max={20} step={0.5}
-                        onChange={e => update('widthTo', parseFloat(e.target.value))}
-                        className="w-14 text-center font-mono text-[12px] border border-pitch-black rounded-lg px-2 py-1.5 focus:outline-none bg-light-linen" />
-                      <span className="text-[9px] font-mono text-graphite-border">to</span>
-                    </div>
+                        onChange={e => update('widthTo', parseFloat(e.target.value))} className="pl-num" aria-label="Stroke width to" />
+                      to
+                    </label>
                   </div>
                 </div>
 
                 {/* Fill Opacity */}
-                <div className="p-3 rounded-xl border border-subtle-ash bg-light-linen space-y-3">
-                  <div className="flex items-center justify-between">
+                <div className="pl-card">
+                  <div className="pl-card-h">
                     <div>
                       <ControlLabel>Fill Opacity</ControlLabel>
-                      <p className="text-[9px] text-graphite-border mt-0.5">flood fill as stroke draws</p>
+                      <p>flood fill as stroke draws</p>
                     </div>
-                    <Toggle on={ps.useFillOpacity} onToggle={() => update('useFillOpacity', !ps.useFillOpacity)} colorOn="bg-sunshine-yellow border-sunshine-yellow" />
+                    <Toggle label="Fill opacity" on={ps.useFillOpacity} onToggle={() => update('useFillOpacity', !ps.useFillOpacity)} />
                   </div>
-                  <div className={`flex items-center gap-2 transition-opacity ${ps.useFillOpacity ? 'opacity-100' : 'opacity-40 pointer-events-none'}`}>
+                  <div className={`pl-nums${ps.useFillOpacity ? '' : ' is-off'}`}>
                     {[
                       { key: 'fillOpacityFrom' as const, label: 'from' },
                       { key: 'fillOpacityTo' as const, label: 'to' },
                     ].map(({ key, label }) => (
-                      <div key={key} className="flex flex-col items-center gap-1 flex-1">
+                      <label key={key} className="pl-num-w">
                         <input type="number" value={ps[key]} min={0} max={1} step={0.1}
-                          onChange={e => update(key, parseFloat(e.target.value))}
-                          className="w-full text-center font-mono text-[12px] border border-pitch-black rounded-lg px-2 py-1.5 focus:outline-none bg-light-linen" />
-                        <span className="text-[9px] font-mono text-graphite-border">{label}</span>
-                      </div>
+                          onChange={e => update(key, parseFloat(e.target.value))} className="pl-num" aria-label={`Fill opacity ${label}`} />
+                        {label}
+                      </label>
                     ))}
                   </div>
                 </div>
@@ -887,56 +880,50 @@ export function SvgPlayground() {
 
             {/* ── Effects tab ────────────────────────────────────────── */}
             {activeTab === 'effects' && (
-              <div className="p-4 space-y-4">
+              <div className="pl-stack">
                 {/* Clip */}
-                <div className="p-3 rounded-xl border border-subtle-ash bg-light-linen space-y-3">
-                  <div className="flex items-center justify-between">
+                <div className="pl-card">
+                  <div className="pl-card-h">
                     <div>
                       <ControlLabel>Clip Reveal</ControlLabel>
-                      <p className="text-[9px] text-graphite-border mt-0.5">clip-path instead of dashoffset</p>
+                      <p>clip-path instead of dashoffset</p>
                     </div>
-                    <Toggle on={ps.useClip} onToggle={() => update('useClip', !ps.useClip)} colorOn="bg-creator-pink border-creator-pink" />
+                    <Toggle label="Clip reveal" on={ps.useClip} onToggle={() => update('useClip', !ps.useClip)} />
                   </div>
-                  <div className={`space-y-2 transition-opacity ${ps.useClip ? 'opacity-100' : 'opacity-40 pointer-events-none'}`}>
+                  <div className={`pl-field${ps.useClip ? '' : ' is-off'}`}>
                     <ControlLabel>Direction</ControlLabel>
-                    <div className="grid grid-cols-5 gap-1">
+                    <div className="pl-seg pl-seg-sm" role="group" aria-label="Clip direction">
                       {(['left', 'right', 'top', 'bottom', 'center'] as ClipDir[]).map(d => (
-                        <button key={d} onClick={() => update('clipDir', d)}
-                          className={`py-1.5 text-[9px] font-mono rounded-lg border transition-all font-bold uppercase tracking-wide ${
-                            ps.clipDir === d
-                              ? 'bg-pitch-black text-light-linen border-pitch-black'
-                              : 'border-subtle-ash text-graphite-border hover:border-pitch-black'
-                          }`}>
-                          {d === 'center' ? '◎' : d === 'left' ? '←' : d === 'right' ? '→' : d === 'top' ? '↑' : '↓'}
+                        <button key={d} type="button" aria-pressed={ps.clipDir === d} onClick={() => update('clipDir', d)}>
+                          <span className="pl-seg-arrow" aria-hidden="true">{d === 'center' ? '◎' : d === 'left' ? '←' : d === 'right' ? '→' : d === 'top' ? '↑' : '↓'}</span>
+                          {d === 'bottom' ? 'btm' : d === 'center' ? 'ctr' : d}
                         </button>
                       ))}
-                    </div>
-                    <div className="flex gap-2 text-[9px] font-mono text-graphite-border justify-between px-0.5">
-                      <span>left</span><span>right</span><span>top</span><span>btm</span><span>ctr</span>
                     </div>
                   </div>
                 </div>
 
                 {/* MorphTo */}
-                <div className="p-3 rounded-xl border border-subtle-ash bg-light-linen space-y-3">
-                  <div className="flex items-center justify-between">
+                <div className="pl-card">
+                  <div className="pl-card-h">
                     <div>
                       <ControlLabel>Path Morph</ControlLabel>
-                      <p className="text-[9px] text-graphite-border mt-0.5">interpolate shape on scroll</p>
+                      <p>interpolate shape on scroll</p>
                     </div>
-                    <Toggle on={ps.useMorphTo} onToggle={() => update('useMorphTo', !ps.useMorphTo)} colorOn="bg-lime-glow border-lime-glow" />
+                    <Toggle label="Path morph" on={ps.useMorphTo} onToggle={() => update('useMorphTo', !ps.useMorphTo)} />
                   </div>
-                  <div className={`space-y-1.5 transition-opacity ${ps.useMorphTo ? 'opacity-100' : 'opacity-40 pointer-events-none'}`}>
+                  <div className={`pl-field${ps.useMorphTo ? '' : ' is-off'}`}>
                     <ControlLabel>Target path d</ControlLabel>
                     <textarea
                       rows={3}
                       value={ps.morphTo}
                       onChange={e => update('morphTo', e.target.value)}
+                      aria-label="Target path d"
                       placeholder="M ... target path d attribute (must have same command count)"
-                      className="w-full resize-none font-mono text-[10px] border border-pitch-black rounded-lg px-2.5 py-2 bg-[#f8f8f5] focus:outline-none focus:bg-light-linen transition-colors leading-relaxed"
+                      className="pl-morph"
                     />
-                    <p className="text-[9px] text-graphite-border leading-relaxed">
-                      Source and target must have the same number of numeric tokens. Try the <button className="underline hover:text-pitch-black transition-colors" onClick={() => loadExample(6)}>Morph example</button>.
+                    <p className="pl-hint">
+                      Source and target must have the same number of numeric tokens. Try the <button type="button" className="pl-inline" onClick={() => loadExample(6)}>Morph example</button>.
                     </p>
                   </div>
                 </div>
@@ -945,39 +932,28 @@ export function SvgPlayground() {
 
             {/* ── Code tab ───────────────────────────────────────────── */}
             {activeTab === 'code' && (
-              <div className="p-4 space-y-4">
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <ControlLabel>Generated snippet</ControlLabel>
-                    <CopyButton text={codeLines} />
-                  </div>
-                  <pre className="text-[11px] font-mono bg-[#141412] text-[#e8e8e3] rounded-xl p-4 overflow-x-auto leading-[1.8] whitespace-pre border border-pitch-black shadow-[2px_2px_0px_#000]">
-                    {codeLines}
-                  </pre>
+              <div className="pl-stack">
+                <div className="pl-field">
+                  <ControlLabel>Generated snippet</ControlLabel>
+                  <CodeBox file="Drawing.tsx">{codeLines}</CodeBox>
                 </div>
 
-                <div className="space-y-2">
+                <div className="pl-field">
                   <ControlLabel>Active options</ControlLabel>
                   {activeFeatureTags.length === 0 ? (
-                    <p className="text-[11px] text-graphite-border font-mono">Only core options active (easing, speed).</p>
+                    <p className="pl-muted">Only core options active (easing, speed).</p>
                   ) : (
-                    <div className="flex flex-wrap gap-1.5">
-                      {activeFeatureTags.map(t => (
-                        <span key={t} className="text-[10px] font-mono font-bold uppercase tracking-wide px-2 py-1 rounded-full bg-creator-pink/20 border border-creator-pink/40 text-pitch-black">
-                          {t}
-                        </span>
-                      ))}
+                    <div className="pl-tags">
+                      {activeFeatureTags.map(t => <span key={t} className="tag">{t}</span>)}
                     </div>
                   )}
                 </div>
 
-                <div className="p-3 rounded-xl border border-sunshine-yellow/40 bg-sunshine-yellow/5 space-y-2">
-                  <ControlLabel>Usage</ControlLabel>
-                  <p className="text-[11px] text-graphite-border leading-relaxed">
-                    This playground simulates scroll progress via a scrubber. In production, wrap your SVG with{' '}
-                    <code className="font-mono bg-marketplace-gray px-1 rounded text-pitch-black">{'<ScrollDraw>'}</code>{' '}
-                    and the animation follows the scroll position automatically.
-                  </p>
+                <div className="pl-note">
+                  <span className="pl-note-k">Usage</span>
+                  This playground simulates scroll progress via a scrubber. In production, wrap your SVG with{' '}
+                  <code>{'<ScrollDraw>'}</code>{' '}
+                  and the animation follows the scroll position automatically.
                 </div>
               </div>
             )}

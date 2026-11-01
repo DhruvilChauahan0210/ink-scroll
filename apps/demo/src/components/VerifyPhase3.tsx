@@ -16,43 +16,9 @@ import { useEffect, useRef, useState } from 'react';
 import { scrollDraw } from 'svg-scroll-draw';
 import { scrollDrawSequence } from 'svg-scroll-draw/group';
 import { scrollText } from 'svg-scroll-draw/text';
+import { Stat, Stats, Verdict } from './VerifyKit';
 
 const PATH_D = 'M10 50 C 40 10, 80 10, 100 50 S 160 90, 190 50';
-
-function Verdict({ ok, children }: { ok: boolean | null; children: React.ReactNode }) {
-  const tone =
-    ok === null
-      ? { bg: 'rgba(0,0,0,0.04)', border: '#d1d5dc', fg: '#6b6b6b', label: 'WAIT' }
-      : ok
-        ? { bg: 'rgba(241,243,51,0.18)', border: '#c9cb1e', fg: '#5c5e00', label: 'PASS' }
-        : { bg: 'rgba(220,52,0,0.10)', border: '#dc3400', fg: '#dc3400', label: 'BUG' };
-
-  return (
-    <div
-      className="flex items-start gap-2.5 rounded-xl px-4 py-3 text-[13px] leading-relaxed"
-      style={{ background: tone.bg, border: `1px solid ${tone.border}` }}
-    >
-      <span className="font-mono font-bold shrink-0" style={{ color: tone.fg }}>
-        {tone.label}
-      </span>
-      <span className="text-pitch-black">{children}</span>
-    </div>
-  );
-}
-
-function Stat({ label, value, tone }: { label: string; value: string; tone?: 'bad' | 'good' }) {
-  return (
-    <div>
-      <p className="text-[10px] uppercase tracking-[0.15em] text-graphite-border font-mono mb-0.5">{label}</p>
-      <p
-        className="font-mono text-xl font-bold tabular-nums"
-        style={{ color: tone === 'bad' ? '#dc3400' : tone === 'good' ? '#5c5e00' : undefined }}
-      >
-        {value}
-      </p>
-    </div>
-  );
-}
 
 function drawnFraction(el: SVGPathElement | null): number {
   if (!el) return 0;
@@ -150,44 +116,40 @@ export function EasingParityProof() {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-2 gap-3">
+    <div>
+      <div className="vf-pair is-fixed">
         {[
           { ref: nativeBox, label: live.supported ? 'native CSS · ease-out' : 'JS fallback · ease-out', value: live.native },
           { ref: jsBox, label: 'JS forced · ease-out', value: live.js },
         ].map(({ ref, label, value }) => (
-          <div key={label}>
-            <div className="flex items-baseline justify-between mb-1.5">
-              <span className="text-[10px] uppercase tracking-[0.15em] text-graphite-border font-mono">{label}</span>
-              <span className="font-mono text-[13px] font-bold tabular-nums">{value.toFixed(4)}</span>
+          <div key={label} className="vf-cell">
+            <div className="vf-cell-head">
+              <span className="vf-cell-k">{label}</span>
+              <span className="vf-cell-v">{value.toFixed(4)}</span>
             </div>
-            <div ref={ref} className="rounded-xl border border-pitch-black bg-white px-4 py-8">
-              <svg viewBox="0 0 200 100" preserveAspectRatio="none" className="w-full block" style={{ overflow: 'visible', height: 64 }}>
-                <path d={PATH_D} stroke="#111" strokeWidth="3" fill="none" strokeLinecap="round" />
+            <div ref={ref} className="vf-spec vf-spec-mid">
+              <svg viewBox="0 0 200 100" preserveAspectRatio="none" style={{ display: 'block', width: '100%', overflow: 'visible', height: 64 }}>
+                <path d={PATH_D} stroke="currentColor" strokeWidth="3" fill="none" strokeLinecap="round" />
               </svg>
             </div>
           </div>
         ))}
       </div>
 
-      <div className="flex flex-wrap items-center gap-3">
-        <button
-          onClick={runSweep}
-          disabled={busy}
-          className="px-4 py-2 rounded-full bg-pitch-black text-light-linen text-sm font-semibold disabled:opacity-50"
-        >
+      <div className="vf-actions">
+        <button type="button" onClick={runSweep} disabled={busy} className="btn btn-sm btn-solid vf-btn">
           {busy ? 'Sweeping…' : 'Run the sweep'}
         </button>
-        <span className="text-[12px] text-graphite-border">
+        <span className="vf-actions-note">
           Steps through 10 offsets, waits for both engines to settle at each, then compares.
         </span>
       </div>
 
       {sweep && (
-        <div className="grid grid-cols-2 gap-4 rounded-xl border border-subtle-ash bg-marketplace-gray/40 px-4 py-3">
+        <Stats cols={2}>
           <Stat label="worst Δ" value={sweep.worst.toFixed(4)} tone={sweep.worst > 0.02 ? 'bad' : 'good'} />
           <Stat label="samples mid-draw" value={String(sweep.samples)} />
-        </div>
+        </Stats>
       )}
 
       <Verdict ok={sweep ? sweep.samples > 0 && sweep.worst <= 0.02 : null}>
@@ -197,9 +159,9 @@ export function EasingParityProof() {
           ) : (
             <>
               Worst Δ across {sweep.samples} mid-draw samples:{' '}
-              <strong className="font-mono">{sweep.worst.toFixed(4)}</strong>. Before 2.10.0 this reached{' '}
-              <strong className="font-mono">0.069</strong> on this configuration, because the native path
-              emitted the CSS <code className="font-mono">ease-out</code> keyword while the JS engine ran this
+              <strong className="vf-num">{sweep.worst.toFixed(4)}</strong>. Before 2.10.0 this reached{' '}
+              <strong className="vf-num">0.069</strong> on this configuration, because the native path
+              emitted the CSS <code>ease-out</code> keyword while the JS engine ran this
               library&apos;s own curve — same name, different function.
               {!live.supported && ' Your browser has no native scroll timeline, so both sides here are the JS engine; the parity that matters is measured where the fast path exists.'}
             </>
@@ -256,34 +218,34 @@ export function SequenceCompletionProof() {
   const finished = completed || peak > 0.99;
 
   return (
-    <div className="space-y-4">
-      <div ref={wrap} className="grid grid-cols-3 gap-3">
-        {['Code', 'Build', 'Ship'].map((label) => (
-          <div key={label} data-step className="rounded-xl border border-pitch-black bg-white p-3">
-            <p className="text-[10px] uppercase tracking-[0.15em] text-graphite-border font-mono mb-1.5">{label}</p>
-            <svg viewBox="0 0 200 100" className="w-full">
-              <path d={PATH_D} stroke="#111" strokeWidth="3" fill="none" strokeLinecap="round" />
+    <div>
+      <div ref={wrap} className="vf-steps">
+        {['Code', 'Build', 'Ship'].map((label, i) => (
+          <div key={label} data-step className="vf-spec vf-step">
+            <p className="vf-step-k"><span>{String(i + 1).padStart(2, '0')}</span>{label}</p>
+            <svg viewBox="0 0 200 100" style={{ display: 'block', width: '100%' }}>
+              <path d={PATH_D} stroke="currentColor" strokeWidth="3" fill="none" strokeLinecap="round" />
             </svg>
           </div>
         ))}
       </div>
 
-      <div className="grid grid-cols-3 gap-4 rounded-xl border border-subtle-ash bg-marketplace-gray/40 px-4 py-3">
+      <Stats cols={3}>
         <Stat label="getProgress()" value={progress.toFixed(3)} />
         <Stat label="peak seen" value={peak.toFixed(3)} tone={finished ? 'good' : undefined} />
         <Stat label="onComplete" value={completed ? 'fired' : '—'} />
-      </div>
+      </Stats>
 
       <Verdict ok={finished ? peak > 0.99 : null}>
         {finished ? (
           <>
-            The sequence finished and <code className="font-mono">getProgress()</code> reports{' '}
-            <strong className="font-mono">{peak.toFixed(3)}</strong>. Before 2.10.0 it reported{' '}
-            <strong className="font-mono">0.000</strong> here: the active index advanced past the last step
+            The sequence finished and <code>getProgress()</code> reports{' '}
+            <strong className="vf-num">{peak.toFixed(3)}</strong>. Before 2.10.0 it reported{' '}
+            <strong className="vf-num">0.000</strong> here: the active index advanced past the last step
             on completion, so the getter read from an undefined instance and fell back to zero.
           </>
         ) : (
-          <>Scroll until all three have drawn. The number to watch is what <code className="font-mono">getProgress()</code> reports <em>after</em> the last one finishes.</>
+          <>Scroll until all three have drawn. The number to watch is what <code>getProgress()</code> reports <em>after</em> the last one finishes.</>
         )}
       </Verdict>
     </div>
@@ -325,26 +287,26 @@ export function SplitLinesSpacingProof() {
   const ok = result ? result.spaces >= result.expected - 1 : null;
 
   return (
-    <div className="space-y-4">
-      <div className="rounded-xl border border-pitch-black bg-white p-5">
-        <p ref={target} className="text-[17px] sm:text-xl font-display font-extrabold tracking-[-0.02em] leading-snug">
+    <div>
+      <div className="vf-spec vf-spec-pad vf-specimen-text">
+        <p ref={target} className="vf-split-text">
           Every word here should still be separated by a space after splitting.
         </p>
       </div>
 
-      <div className="grid grid-cols-3 gap-4 rounded-xl border border-subtle-ash bg-marketplace-gray/40 px-4 py-3">
+      <Stats cols={3}>
         <Stat label="spaces before" value={result ? String(result.expected) : '—'} />
         <Stat label="spaces after" value={result ? String(result.spaces) : '—'} tone={ok === false ? 'bad' : ok ? 'good' : undefined} />
         <Stat label="split" value="lines" />
-      </div>
+      </Stats>
 
       <Verdict ok={ok}>
         {result ? (
           ok ? (
             <>
-              The text still reads as words after <code className="font-mono">split: &apos;lines&apos;</code> —{' '}
-              <strong className="font-mono">{result.spaces}</strong> spaces preserved. Before 2.10.0 the
-              whitespace between words was dropped when grouping by <code className="font-mono">offsetTop</code>,
+              The text still reads as words after <code>split: &apos;lines&apos;</code> —{' '}
+              <strong className="vf-num">{result.spaces}</strong> spaces preserved. Before 2.10.0 the
+              whitespace between words was dropped when grouping by <code>offsetTop</code>,
               so the headline rendered jammed together. Read the sentence above: that is the test.
             </>
           ) : (

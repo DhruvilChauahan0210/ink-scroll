@@ -1,8 +1,12 @@
 import type { Metadata } from 'next';
-import { RelatedResources } from '@/components/RelatedResources';
 import Link from 'next/link';
-import { MobileMenu } from '@/components/MobileMenu';
-import { CopyButton } from '@/components/CopyButton';
+import { COMPETITORS, SELF, SELF_ENTRIES } from '@/data/competitors';
+import { BlogArticle, Section, Code, Table, Figure, Closing } from '@/components/blog/BlogArticle';
+import { LandingFigure } from '@/components/blog/LandingFigure';
+
+// Every size on this page comes from data/competitors.ts.
+const APPROX = `~${Math.round(SELF.gzipKb)} KB`;
+const kb = (n: number) => `${n.toFixed(1)} KB`;
 
 export const metadata: Metadata = {
   title: 'Scroll Animations: The Complete 2026 Guide',
@@ -42,96 +46,67 @@ const articleJsonLd = {
   mainEntityOfPage: { '@type': 'WebPage', '@id': 'https://svg-scroll-draw.vercel.app/blog/complete-guide-scroll-animations-2026' },
 };
 
-function CodeBlock({ file, children }: { file: string; children: string }) {
-  return (
-    <div className="rounded-2xl overflow-hidden border border-pitch-black my-5">
-      <div className="bg-[#111] flex items-center justify-between px-4 py-2.5">
-        <div className="flex gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[#444]"/><span className="w-2.5 h-2.5 rounded-full bg-[#444]"/><span className="w-2.5 h-2.5 rounded-full bg-[#444]"/></div>
-        <span className="text-[11px] text-[#888] font-mono">{file}</span>
-        <CopyButton text={children} />
-      </div>
-      <pre className="bg-[#1c1c1c] text-[#e8e8e3] px-4 sm:px-6 py-4 text-[12px] sm:text-[13px] font-mono leading-[1.75] overflow-x-auto">{children}</pre>
-    </div>
-  );
-}
+/**
+ * The twelve patterns, in section order: the figure's key, the section ids and
+ * the closing parts list all read from here, so they cannot disagree.
+ */
+const PATTERNS = [
+  { id: 'fade-reveal', name: 'Fade reveal', api: 'scrollReveal', from: 'svg-scroll-draw/reveal' },
+  { id: 'parallax', name: 'Parallax', api: 'scrollParallax', from: 'svg-scroll-draw' },
+  { id: 'any-css-property', name: 'Any CSS property', api: 'scrollAnimate', from: 'svg-scroll-draw' },
+  { id: 'pin', name: 'Sticky / pin', api: 'scrollPin', from: 'svg-scroll-draw/pin' },
+  { id: 'snap', name: 'Section snapping', api: 'scrollSnap', from: 'svg-scroll-draw/snap' },
+  { id: 'text-split', name: 'Text split + reveal', api: 'scrollText', from: 'svg-scroll-draw/text' },
+  { id: 'counters', name: 'Animated counters', api: 'scrollCounter', from: 'svg-scroll-draw' },
+  { id: 'video-scrub', name: 'Video scrubbing', api: 'scrollVideo', from: 'svg-scroll-draw/video' },
+  { id: 'horizontal', name: 'Horizontal sections', api: 'scrollHorizontal', from: 'svg-scroll-draw/horizontal' },
+  { id: 'css-variable', name: 'CSS variable binding', api: 'scrollProgress', from: 'svg-scroll-draw/progress' },
+  { id: 'callbacks', name: 'Scroll callbacks', api: 'onEnter / onLeave', from: 'svg-scroll-draw' },
+  { id: 'native-css', name: 'Native CSS timelines', api: 'scrollDraw · scrollAnimate', from: 'svg-scroll-draw' },
+];
 
-function Section({ num, title, children }: { num: string; title: string; children: React.ReactNode }) {
-  return (
-    <div className="mt-16 pt-10 border-t border-subtle-ash">
-      <p className="text-[11px] font-mono text-graphite-border mb-2 uppercase tracking-[0.18em]">{num}</p>
-      <h2 className="font-display font-extrabold text-2xl sm:text-3xl tracking-[-0.02em] mb-6">{title}</h2>
-      {children}
-    </div>
-  );
-}
+const id = (n: number) => PATTERNS[n - 1].id;
+
+/** "2026-10-30" → "October 2026". */
+const UPDATED = new Date(`${articleJsonLd.dateModified}T00:00:00Z`).toLocaleDateString('en-GB', {
+  month: 'long',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
 
 export default function CompletGuidePage() {
   return (
-    <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }} />
-    <div className="bg-light-linen text-pitch-black min-h-screen">
-
-      <nav className="sticky top-0 z-50 bg-light-linen/95 backdrop-blur-sm border-b border-pitch-black flex items-center justify-between px-4 md:px-12 h-14">
-        <Link href="/" className="font-display font-bold text-sm tracking-tight hover:opacity-70 transition-opacity shrink-0">svg-scroll-draw</Link>
-        <div className="hidden lg:flex items-center gap-2">
-          {['Home','Docs','Examples','Changelog','Blog'].map(l => (
-            <Link key={l} href={l==='Home'?'/':`/${l.toLowerCase()}`} className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium">{l}</Link>
-          ))}
-          <Link href="/playground" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium">⚡ Playground</Link>
-        </div>
-        <div className="flex lg:hidden"><MobileMenu /></div>
-      </nav>
-
-      <header className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-12 sm:py-16">
-        <div className="max-w-3xl mx-auto">
-          <div className="flex items-center gap-3 mb-5">
-            <span className="inline-block text-[10px] font-mono font-semibold px-2.5 py-1 rounded-full bg-pitch-black text-light-linen">Guide</span>
-            <span className="text-[11px] font-mono text-graphite-border">Updated October 2026 · 15 min read · Cornerstone</span>
-          </div>
-          <h1 className="font-display font-extrabold text-[clamp(28px,6vw,60px)] leading-[0.92] tracking-[-0.04em] mb-5">
-            The complete guide to scroll animations in 2026.
-          </h1>
-          <p className="text-base sm:text-lg text-graphite-border leading-relaxed max-w-2xl">
-            Every scroll animation pattern — fade reveal, parallax, sticky pin, section snap, text split,
-            video scrub, horizontal sections, and CSS variable binding — explained with copy-paste code.
-            All examples use svg-scroll-draw, a single ~10 KB library that covers all of them.
-          </p>
-        </div>
-      </header>
-
-      <article className="px-4 sm:px-6 md:px-12 py-12 sm:py-16">
-        <div className="max-w-3xl mx-auto">
-
-          {/* TOC */}
-          <div className="border border-subtle-ash rounded-xl p-6 mb-10 bg-white">
-            <p className="text-[11px] font-mono uppercase tracking-[0.16em] text-graphite-border mb-4">Table of contents</p>
-            <ol className="space-y-2 text-sm">
-              {[
-                '01 — Fade reveal (the universal pattern)',
-                '02 — Parallax',
-                '03 — Animate any CSS property on scroll',
-                '04 — Sticky / pin sections',
-                '05 — Section snapping',
-                '06 — Text split + reveal',
-                '07 — Animated counters',
-                '08 — Video scrubbing',
-                '09 — Horizontal scroll sections',
-                '10 — CSS variable binding',
-                '11 — Scroll callbacks (onEnter / onLeave)',
-                '12 — Native CSS scroll-driven animations',
-              ].map(item => (
-                <li key={item} className="font-mono text-[12px] text-graphite-border">{item}</li>
-              ))}
-            </ol>
-          </div>
-
-          <Section num="01" title="Fade reveal — the universal pattern">
-            <p className="text-graphite-border leading-relaxed mb-4">
-              The most common scroll animation: elements fade up into view as the user scrolls past them.
-              Every major website uses this. AOS and ScrollReveal.js popularised it. svg-scroll-draw
-              does it in one call with <code className="font-mono text-sm bg-marketplace-gray px-1 rounded">scrollReveal</code>.
-            </p>
-            <CodeBlock file="app.js">{`import { scrollReveal } from 'svg-scroll-draw/reveal';
+    <BlogArticle
+      slug="complete-guide-scroll-animations-2026"
+      jsonLd={articleJsonLd}
+      tags={['Cornerstone', 'every pattern', 'copy-paste code']}
+      title={<>The complete guide to scroll animations in 2026.</>}
+      lede={
+        <>
+          Every scroll animation pattern — fade reveal, parallax, sticky pin, section snap, text split,
+          video scrub, horizontal sections, and CSS variable binding — explained with copy-paste code.
+          All examples use svg-scroll-draw, a single {APPROX} library that covers all of them.
+        </>
+      }
+      facts={[
+        { k: 'Patterns', v: PATTERNS.length },
+        { k: 'Main entry', v: kb(SELF.gzipKb) },
+        { k: 'Dependencies', v: 'zero' },
+        { k: 'Updated', v: UPDATED },
+      ]}
+      figure={
+        <Figure n={1} caption="one product landing page, every pattern in this guide marked where it is used — the key links to each section">
+          <LandingFigure zones={PATTERNS} />
+        </Figure>
+      }
+    >
+      <Section id={id(1)} k="scrollReveal" title="Fade reveal — the universal pattern" toc="Fade reveal">
+        <p>
+          The most common scroll animation: elements fade up into view as the user scrolls past them.
+          Every major website uses this. AOS and ScrollReveal.js popularised it. svg-scroll-draw
+          does it in one call with <code>scrollReveal</code>.
+        </p>
+        <Code file="app.js">{`import { scrollReveal } from 'svg-scroll-draw/reveal';
 
 // Default: fade up (opacity 0→1, translateY 32→0)
 scrollReveal('.card');
@@ -145,27 +120,27 @@ scrollReveal('.feature', {
 });
 
 // Named presets: fadeUp|fadeDown|fadeLeft|fadeRight|scale|flip|flipX
-scrollReveal('.badge', { preset: 'scale' });`}</CodeBlock>
-          </Section>
+scrollReveal('.badge', { preset: 'scale' });`}</Code>
+      </Section>
 
-          <Section num="02" title="Parallax">
-            <p className="text-graphite-border leading-relaxed mb-4">
-              Move elements at a different rate than scroll. Background images, floating badges, decorative shapes.
-              Negative speed = opposite direction.
-            </p>
-            <CodeBlock file="app.js">{`import { scrollParallax } from 'svg-scroll-draw';
+      <Section id={id(2)} k="scrollParallax" title="Parallax">
+        <p>
+          Move elements at a different rate than scroll. Background images, floating badges, decorative shapes.
+          Negative speed = opposite direction.
+        </p>
+        <Code file="app.js">{`import { scrollParallax } from 'svg-scroll-draw';
 
 scrollParallax('#hero-bg',       { speed: 0.4 });   // slower than scroll
 scrollParallax('#floating-badge',{ speed: -0.2 });  // opposite direction
-scrollParallax('#side-element',  { speed: 0.3, axis: 'x' }); // horizontal`}</CodeBlock>
-          </Section>
+scrollParallax('#side-element',  { speed: 0.3, axis: 'x' }); // horizontal`}</Code>
+      </Section>
 
-          <Section num="03" title="Animate any CSS property on scroll">
-            <p className="text-graphite-border leading-relaxed mb-4">
-              Not just opacity and transform — any CSS property can be driven by scroll position.
-              Colors, backgrounds, borders, clip-paths, filter, font-size, anything.
-            </p>
-            <CodeBlock file="app.js">{`import { scrollAnimate } from 'svg-scroll-draw';
+      <Section id={id(3)} k="scrollAnimate" title="Animate any CSS property on scroll" toc="Any CSS property">
+        <p>
+          Not just opacity and transform — any CSS property can be driven by scroll position.
+          Colors, backgrounds, borders, clip-paths, filter, font-size, anything.
+        </p>
+        <Code file="app.js">{`import { scrollAnimate } from 'svg-scroll-draw';
 
 // Color transition (section background shifts as you scroll through)
 scrollAnimate('#section', {
@@ -185,15 +160,15 @@ scrollAnimate('#image', {
   props: { filter: ['blur(20px)', 'blur(0px)'], opacity: [0.3, 1] },
   easing: 'ease-out',
   once:   true,
-});`}</CodeBlock>
-          </Section>
+});`}</Code>
+      </Section>
 
-          <Section num="04" title="Sticky / pin sections">
-            <p className="text-graphite-border leading-relaxed mb-4">
-              The Apple product page pattern. An element stays fixed while content scrolls past it.
-              Use <code className="font-mono text-sm bg-marketplace-gray px-1 rounded">scrollPin</code> — it wraps the target in a spacer so the page layout doesn&apos;t jump.
-            </p>
-            <CodeBlock file="app.js">{`import { scrollPin } from 'svg-scroll-draw/pin';
+      <Section id={id(4)} k="scrollPin" title="Sticky / pin sections">
+        <p>
+          The Apple product page pattern. An element stays fixed while content scrolls past it.
+          Use <code>scrollPin</code> — it wraps the target in a spacer so the page layout doesn&apos;t jump.
+        </p>
+        <Code file="app.js">{`import { scrollPin } from 'svg-scroll-draw/pin';
 
 // Pin product image while feature text scrolls
 scrollPin('#product-image', {
@@ -203,15 +178,15 @@ scrollPin('#product-image', {
   onLeave:     () => image.classList.remove('active'),
   onEnterBack: () => image.classList.add('active'),
   onLeaveBack: () => image.classList.remove('active'),
-});`}</CodeBlock>
-          </Section>
+});`}</Code>
+      </Section>
 
-          <Section num="05" title="Section snapping">
-            <p className="text-graphite-border leading-relaxed mb-4">
-              Snap the viewport to the nearest section when the user stops scrolling.
-              Custom easing, configurable threshold, programmatic control.
-            </p>
-            <CodeBlock file="app.js">{`import { scrollSnap } from 'svg-scroll-draw/snap';
+      <Section id={id(5)} k="scrollSnap" title="Section snapping">
+        <p>
+          Snap the viewport to the nearest section when the user stops scrolling.
+          Custom easing, configurable threshold, programmatic control.
+        </p>
+        <Code file="app.js">{`import { scrollSnap } from 'svg-scroll-draw/snap';
 
 const snap = scrollSnap('.section', {
   duration:  600,
@@ -223,15 +198,17 @@ const snap = scrollSnap('.section', {
 // Programmatic
 snap.snapTo(2);              // smooth scroll to section 2
 snap.getCurrentIndex();      // → active section index
-snap.destroy();`}</CodeBlock>
-          </Section>
+snap.destroy();`}</Code>
+      </Section>
 
-          <Section num="06" title="Text split + reveal">
-            <p className="text-graphite-border leading-relaxed mb-4">
-              Split text into chars, words, or lines and stagger-animate each piece.
-              A 2.5 KB alternative to GSAP SplitText. SplitText is free and 3.6 KB, but it only splits — animating the pieces needs GSAP core (27.7 KB) too.
-            </p>
-            <CodeBlock file="app.js">{`import { scrollText } from 'svg-scroll-draw/text';
+      <Section id={id(6)} k="scrollText" title="Text split + reveal">
+        <p>
+          Split text into chars, words, or lines and stagger-animate each piece.
+          A {kb(SELF_ENTRIES.text)} alternative to GSAP SplitText. SplitText is free and{' '}
+          {kb(COMPETITORS.gsapSplitText.gzipKb)}, but it only splits — animating the pieces needs GSAP core (
+          {kb(COMPETITORS.gsapCore.gzipKb)}) too.
+        </p>
+        <Code file="app.js">{`import { scrollText } from 'svg-scroll-draw/text';
 
 // Word-by-word headline reveal
 scrollText('#headline', {
@@ -249,38 +226,38 @@ scrollText('#subtitle', {
   from:    { opacity: 0 },
   easing:  'linear',
   once:    true,
-});`}</CodeBlock>
-          </Section>
+});`}</Code>
+      </Section>
 
-          <Section num="07" title="Animated counters">
-            <p className="text-graphite-border leading-relaxed mb-4">
-              Numbers that count up as they scroll into view. Stats sections, pricing, social proof.
-            </p>
-            <CodeBlock file="app.js">{`import { scrollCounter } from 'svg-scroll-draw';
+      <Section id={id(7)} k="scrollCounter" title="Animated counters">
+        <p>
+          Numbers that count up as they scroll into view. Stats sections, pricing, social proof.
+        </p>
+        <Code file="app.js">{`import { scrollCounter } from 'svg-scroll-draw';
 
 scrollCounter('#users',      { to: 50000, format: n => Math.round(n).toLocaleString() + '+' });
 scrollCounter('#revenue',    { to: 1250000, format: n => '$' + Math.round(n).toLocaleString() });
 scrollCounter('#nps',        { to: 94.7, decimals: 1, format: n => n.toFixed(1) + '%' });
-scrollCounter('#bundle',     { to: 10, format: n => '~' + Math.round(n) + ' KB' });`}</CodeBlock>
-          </Section>
+scrollCounter('#bundle',     { to: ${Math.round(SELF.gzipKb)}, format: n => '~' + Math.round(n) + ' KB' });`}</Code>
+      </Section>
 
-          <Section num="08" title="Video scrubbing">
-            <p className="text-graphite-border leading-relaxed mb-4">
-              Tie <code className="font-mono text-sm bg-marketplace-gray px-1 rounded">&lt;video&gt;.currentTime</code> to scroll position.
-              The Apple / Stripe product video pattern — free, no GSAP needed.
-            </p>
-            <CodeBlock file="app.js">{`import { scrollVideo } from 'svg-scroll-draw/video';
+      <Section id={id(8)} k="scrollVideo" title="Video scrubbing">
+        <p>
+          Tie <code>&lt;video&gt;.currentTime</code> to scroll position.
+          The Apple / Stripe product video pattern — free, no GSAP needed.
+        </p>
+        <Code file="app.js">{`import { scrollVideo } from 'svg-scroll-draw/video';
 
 scrollVideo('#hero-video', {
   trigger: { start: 'top top', end: 'bottom top' },
-});`}</CodeBlock>
-          </Section>
+});`}</Code>
+      </Section>
 
-          <Section num="09" title="Horizontal scroll sections">
-            <p className="text-graphite-border leading-relaxed mb-4">
-              Vertical scroll drives horizontal movement. Set up sticky CSS, one call drives the transform.
-            </p>
-            <CodeBlock file="app.js">{`import { scrollHorizontal } from 'svg-scroll-draw/horizontal';
+      <Section id={id(9)} k="scrollHorizontal" title="Horizontal scroll sections">
+        <p>
+          Vertical scroll drives horizontal movement. Set up sticky CSS, one call drives the transform.
+        </p>
+        <Code file="app.js">{`import { scrollHorizontal } from 'svg-scroll-draw/horizontal';
 
 // CSS: .outer{height:400vh} .sticky{position:sticky;top:0;height:100vh;overflow:hidden}
 // .track{display:flex;width:max-content}
@@ -288,17 +265,22 @@ scrollVideo('#hero-video', {
 scrollHorizontal('.track', {
   distance: document.querySelector('.track').scrollWidth - window.innerWidth,
   easing:   'linear',
-});`}</CodeBlock>
-          </Section>
+});`}</Code>
+        <p>
+          The full layout, the React version and the progress dots are in{' '}
+          <Link href="/blog/horizontal-scroll-sections">Horizontal scroll sections without GSAP</Link>.
+        </p>
+      </Section>
 
-          <Section num="10" title="CSS variable binding">
-            <p className="text-graphite-border leading-relaxed mb-4">
-              Expose scroll progress as a CSS custom property. Then CSS <code className="font-mono text-sm bg-marketplace-gray px-1 rounded">calc()</code> drives everything — color, size, position, filter — with zero extra JS.
-            </p>
-            <CodeBlock file="app.js">{`import { scrollProgress } from 'svg-scroll-draw/progress';
+      <Section id={id(10)} k="scrollProgress" title="CSS variable binding">
+        <p>
+          Expose scroll progress as a CSS custom property. Then CSS <code>calc()</code> drives everything — color, size,
+          position, filter — with zero extra JS.
+        </p>
+        <Code file="app.js">{`import { scrollProgress } from 'svg-scroll-draw/progress';
 
-scrollProgress('#section', { easing: 'ease-in-out' });`}</CodeBlock>
-            <CodeBlock file="styles.css">{`#section {
+scrollProgress('#section', { easing: 'ease-in-out' });`}</Code>
+        <Code file="styles.css">{`#section {
   /* Drive any CSS property from the variable */
   opacity: calc(var(--scroll-progress-eased));
   transform: translateY(calc((1 - var(--scroll-progress-eased)) * 40px));
@@ -306,15 +288,15 @@ scrollProgress('#section', { easing: 'ease-in-out' });`}</CodeBlock>
     calc(240 + var(--scroll-progress) * 120),
     60%, 10%
   );
-}`}</CodeBlock>
-          </Section>
+}`}</Code>
+      </Section>
 
-          <Section num="11" title="Scroll callbacks (onEnter / onLeave)">
-            <p className="text-graphite-border leading-relaxed mb-4">
-              Fire code when scroll crosses the trigger zone — in either direction.
-              Nav highlighting, lazy loading, analytics events, state updates.
-            </p>
-            <CodeBlock file="app.js">{`import { scrollAnimate } from 'svg-scroll-draw';
+      <Section id={id(11)} k="onEnter · onLeave" title="Scroll callbacks (onEnter / onLeave)" toc="Scroll callbacks">
+        <p>
+          Fire code when scroll crosses the trigger zone — in either direction.
+          Nav highlighting, lazy loading, analytics events, state updates.
+        </p>
+        <Code file="app.js">{`import { scrollAnimate } from 'svg-scroll-draw';
 
 scrollAnimate('#section', {
   props: { opacity: [0.4, 1] },
@@ -323,14 +305,16 @@ scrollAnimate('#section', {
   onLeave:     () => nav.clearActive('section'),
   onEnterBack: () => nav.setActive('section'),
   onLeaveBack: () => nav.clearActive('section'),
-});`}</CodeBlock>
-          </Section>
+});`}</Code>
+      </Section>
 
-          <Section num="12" title="Native CSS scroll-driven animations">
-            <p className="text-graphite-border leading-relaxed mb-4">
-              When <code className="font-mono text-sm bg-marketplace-gray px-1 rounded">animation-timeline: view()</code> is supported (Chrome and Edge 115+, Safari 26+, Firefox 159+), svg-scroll-draw automatically uses it — zero JS scroll listeners, zero rAF, pure compositor animation. Falls back silently in older browsers.
-            </p>
-            <CodeBlock file="app.js">{`import { scrollAnimate } from 'svg-scroll-draw';
+      <Section id={id(12)} k="animation-timeline" title="Native CSS scroll-driven animations" toc="Native CSS timelines">
+        <p>
+          When <code>animation-timeline: view()</code> is supported (Chrome and Edge 115+, Safari 26+, Firefox 159+),
+          svg-scroll-draw automatically uses it — zero JS scroll listeners, zero rAF, pure compositor animation. Falls
+          back silently in older browsers.
+        </p>
+        <Code file="app.js">{`import { scrollAnimate } from 'svg-scroll-draw';
 
 // native: true is the default — uses CSS fast path when eligible
 scrollAnimate('#hero', {
@@ -343,30 +327,36 @@ scrollAnimate('#section', {
   props: { opacity: [0, 1] },
   native: false,
   onEnter: () => activate(),
-});`}</CodeBlock>
-          </Section>
+});`}</Code>
+        <p>
+          What makes a config eligible, and what the compositor buys you, is in{' '}
+          <Link href="/blog/native-css-svg-scroll-animations">Zero-JS SVG scroll animations with native CSS</Link>.
+        </p>
+      </Section>
 
-          <div className="mt-16 pt-10 border-t border-subtle-ash">
-            <p className="font-display font-extrabold text-xl tracking-[-0.02em] mb-6">One library, all patterns.</p>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-8">
-              {['scrollReveal','scrollAnimate','scrollParallax','scrollPin','scrollSnap','scrollText','scrollCounter','scrollVideo','scrollHorizontal','scrollProgress','scrollDraw','devtools'].map(api => (
-                <code key={api} className="text-[11px] font-mono bg-marketplace-gray border border-subtle-ash px-2 py-1 rounded text-center text-graphite-border">{api}</code>
-              ))}
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <Link href="/" className="text-sm px-4 py-2 rounded-full bg-pitch-black text-light-linen font-medium">Get started →</Link>
-              <Link href="/vs-gsap" className="text-sm px-4 py-2 rounded-full border border-pitch-black hover:bg-pitch-black hover:text-light-linen transition-colors font-medium">vs GSAP →</Link>
-              <Link href="/docs" className="text-sm px-4 py-2 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium">API Reference →</Link>
-            </div>
-          </div>
-        </div>
-      </article>
+      <Section id="all-apis" k="parts list" title="One library, all patterns." toc="All patterns, one table">
+        <Table
+          head={['API', 'Import from', 'Pattern']}
+          rows={PATTERNS.map((p, i) => [
+            p.api,
+            <code key="f">{p.from}</code>,
+            <a key="a" href={`#${p.id}`}>{String(i + 1).padStart(2, '0')} · {p.name}</a>,
+          ]).concat([
+            ['scrollDraw', <code key="f">svg-scroll-draw</code>, 'SVG path drawing — the library’s namesake'],
+            ['devtools', <code key="f">svg-scroll-draw/devtools</code>, 'A development overlay of each instance’s trigger window'],
+          ])}
+        />
+      </Section>
 
-      <RelatedResources post="complete-guide-scroll-animations-2026" />
-      <footer className="px-6 md:px-12 py-6 border-t border-subtle-ash text-center text-[11px] font-mono text-graphite-border">
-        svg-scroll-draw · MIT · ~10 KB ·{' '}<a href="https://github.com/DhruvilChauahan0210/ink-scroll" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-pitch-black transition-colors">GitHub</a>
-      </footer>
-    </div>
-    </>
+      <Closing
+        title="One library, all patterns."
+        lede={`Each pattern is its own entry point, so you ship only what you import — scrollPin alone is ${kb(SELF_ENTRIES.pin)}, scrollReveal ${kb(SELF_ENTRIES.reveal)}, the main entry ${kb(SELF.gzipKb)}. ${SELF.license}, zero dependencies.`}
+        links={[
+          { href: '/', label: 'Get started →' },
+          { href: '/vs-gsap', label: 'vs GSAP →' },
+          { href: '/docs', label: 'API Reference →' },
+        ]}
+      />
+    </BlogArticle>
   );
 }

@@ -1,9 +1,8 @@
 import type { Metadata } from 'next';
 import { seoTitle } from '../../_lib/seo';
-import { RelatedResources } from '@/components/RelatedResources';
-import Link from 'next/link';
-import { MobileMenu } from '@/components/MobileMenu';
-import { CopyButton } from '@/components/CopyButton';
+import { SELF, SELF_ENTRIES } from '@/data/competitors';
+import { BlogArticle, Section, Code, Callout, Defs, Table, Figure } from '@/components/blog/BlogArticle';
+import { PinFigure } from '@/components/blog/PinFigure';
 
 export const metadata: Metadata = {
   title: seoTitle('Pin Sections on Scroll Without GSAP — scrollPin'),
@@ -48,166 +47,118 @@ const articleJsonLd = {
   mainEntityOfPage: { '@type': 'WebPage', '@id': 'https://svg-scroll-draw.vercel.app/blog/scroll-pin-without-gsap' },
 };
 
-function CodeBlock({ file, children }: { file: string; children: string }) {
-  return (
-    <div className="rounded-2xl overflow-hidden border border-pitch-black my-5">
-      <div className="bg-[#111] flex items-center justify-between px-4 py-2.5">
-        <div className="flex gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-[#444]" />
-          <span className="w-2.5 h-2.5 rounded-full bg-[#444]" />
-          <span className="w-2.5 h-2.5 rounded-full bg-[#444]" />
-        </div>
-        <span className="text-[11px] text-[#888] font-mono">{file}</span>
-        <CopyButton text={children} />
-      </div>
-      <pre className="bg-[#1c1c1c] text-[#e8e8e3] px-4 sm:px-6 py-4 text-[12px] sm:text-[13px] font-mono leading-[1.75] overflow-x-auto">
-        {children}
-      </pre>
-    </div>
-  );
-}
-
-function Callout({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="border-l-4 border-creator-pink bg-creator-pink/5 px-5 py-4 rounded-r-xl my-5 text-sm leading-relaxed">
-      {children}
-    </div>
-  );
-}
+const API: [string, string, string][] = [
+  ['pinDistance', 'number', 'Pixels of scroll to stay pinned. Default: window.innerHeight'],
+  ['top', 'number', 'Viewport Y (px) to pin at. Default: 0 (viewport top)'],
+  ['scrollContainer', 'string | Element', 'Custom scroll container. Default: window'],
+  ['onEnter', '() => void', 'Fires when pin zone is entered (scrolling down)'],
+  ['onLeave', '() => void', 'Fires when pin zone is exited at end (scrolling down)'],
+  ['onEnterBack', '() => void', 'Fires when pin zone is re-entered (scrolling up)'],
+  ['onLeaveBack', '() => void', 'Fires when pin zone is exited at start (scrolling up)'],
+  ['onProgress', '(p: number) => void', 'Progress 0–1 through the pin zone, every frame'],
+];
 
 export default function Page() {
+  const total = `~${Math.round(SELF.gzipKb)} KB`;
   return (
-    <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }} />
-    <div className="bg-light-linen text-pitch-black min-h-screen">
+    <BlogArticle
+      slug="scroll-pin-without-gsap"
+      jsonLd={articleJsonLd}
+      tags={['scrollPin', 'svg-scroll-draw/pin', 'no GSAP']}
+      title={<>Pin sections on scroll without GSAP.</>}
+      lede={
+        <>
+          The Apple product page. The Stripe feature walkthrough. The sticky image with scrolling text.
+          These all use the same pattern: pin an element in place while the page scrolls past it.
+          Here&apos;s how to do it without GSAP — in <code>{total}</code> total.
+        </>
+      }
+      facts={[
+        { k: 'scrollPin alone', v: `${SELF_ENTRIES.pin.toFixed(1)} KB` },
+        { k: 'Every API', v: `${SELF.gzipKb.toFixed(1)} KB` },
+        { k: 'Callbacks', v: `${API.filter(([o]) => /^on(Enter|Leave)/.test(o)).length} + progress` },
+        { k: 'Licence', v: SELF.license },
+      ]}
+      figure={
+        <Figure n={1} caption="what scrollPin does: the viewport mid-pin, and where on the scroll each callback fires">
+          <PinFigure />
+        </Figure>
+      }
+      further={[
+        { href: '/blog/replace-gsap-scrolltrigger', label: 'Replace GSAP ScrollTrigger', blurb: 'The full migration guide: fade, parallax, counters, text and video, side by side.' },
+        { href: '/vs-gsap', label: 'Full GSAP comparison', blurb: 'Measured sizes, and where GSAP is still the better call.' },
+        { href: '/docs', label: 'API Reference', blurb: 'Every option of every API.' },
+      ]}
+    >
+      <Section id="what-pin-means" k="the idea" toc="What “pin” means" title={<>What &ldquo;pin&rdquo; means</>}>
+        <p>
+          A pinned element is fixed to a viewport position while the page scrolls a defined distance past it.
+          When the scroll reaches the end of the &ldquo;pin zone&rdquo;, the element is released and continues with the page.
+        </p>
+        <p>
+          GSAP ScrollTrigger built the mental model: <code>pin: true</code> + a scroll distance. svg-scroll-draw ships
+          the same pattern as <code>scrollPin</code> in the <code>svg-scroll-draw/pin</code> sub-path.
+        </p>
+      </Section>
 
-      {/* Nav */}
-      <nav className="sticky top-0 z-50 bg-light-linen/95 backdrop-blur-sm border-b border-pitch-black flex items-center justify-between px-4 md:px-12 h-14">
-        <Link href="/" className="font-display font-bold text-sm tracking-tight hover:opacity-70 transition-opacity shrink-0">
-          svg-scroll-draw
-        </Link>
-        <div className="hidden lg:flex items-center gap-2">
-          {['Home', 'Docs', 'Examples', 'Changelog', 'Blog'].map((label) => (
-            <Link key={label} href={label === 'Home' ? '/' : `/${label.toLowerCase()}`}
-              className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium">
-              {label}
-            </Link>
-          ))}
-          <Link href="/playground" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium">
-            ⚡ Playground
-          </Link>
-        </div>
-        <div className="flex lg:hidden"><MobileMenu /></div>
-      </nav>
+      <Section id="install" k="install" title="Install">
+        <Code file="terminal">{`npm install svg-scroll-draw`}</Code>
+      </Section>
 
-      {/* Hero */}
-      <header className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-12 sm:py-16">
-        <div className="max-w-3xl mx-auto">
-          <div className="flex items-center gap-3 mb-5">
-            <span className="inline-block text-[10px] font-mono font-semibold px-2.5 py-1 rounded-full bg-sunshine-yellow/30 text-pitch-black border border-sunshine-yellow/60">
-              How-To
-            </span>
-            <span className="text-[11px] font-mono text-graphite-border">June 2026 · 7 min read</span>
-          </div>
-          <h1 className="font-display font-extrabold text-[clamp(28px,6vw,60px)] leading-[0.92] tracking-[-0.04em] mb-5">
-            Pin sections on scroll<br />without GSAP.
-          </h1>
-          <p className="text-base sm:text-lg text-graphite-border leading-relaxed max-w-2xl">
-            The Apple product page. The Stripe feature walkthrough. The sticky image with scrolling text.
-            These all use the same pattern: pin an element in place while the page scrolls past it.
-            Here&apos;s how to do it without GSAP — in{' '}
-            <code className="font-mono text-[0.9em] bg-marketplace-gray px-1.5 py-0.5 rounded">~10 KB</code> total.
-          </p>
-        </div>
-      </header>
-
-      {/* Article */}
-      <article className="px-4 sm:px-6 md:px-12 py-12 sm:py-16">
-        <div className="max-w-3xl mx-auto">
-
-          <h2 className="font-display font-extrabold text-2xl sm:text-3xl tracking-[-0.02em] mb-4 mt-10">
-            What &ldquo;pin&rdquo; means
-          </h2>
-          <p className="text-graphite-border leading-relaxed mb-4">
-            A pinned element is fixed to a viewport position while the page scrolls a defined distance past it.
-            When the scroll reaches the end of the &ldquo;pin zone&rdquo;, the element is released and continues with the page.
-          </p>
-          <p className="text-graphite-border leading-relaxed mb-4">
-            GSAP ScrollTrigger built the mental model: <code className="font-mono text-sm bg-marketplace-gray px-1 rounded">pin: true</code> +
-            a scroll distance. svg-scroll-draw ships the same pattern as{' '}
-            <code className="font-mono text-sm bg-marketplace-gray px-1 rounded">scrollPin</code> in the{' '}
-            <code className="font-mono text-sm bg-marketplace-gray px-1 rounded">svg-scroll-draw/pin</code> sub-path.
-          </p>
-
-          <h2 className="font-display font-extrabold text-2xl sm:text-3xl tracking-[-0.02em] mb-4 mt-12">
-            Install
-          </h2>
-          <CodeBlock file="terminal">{`npm install svg-scroll-draw`}</CodeBlock>
-
-          <h2 className="font-display font-extrabold text-2xl sm:text-3xl tracking-[-0.02em] mb-4 mt-12">
-            The simplest pin
-          </h2>
-          <p className="text-graphite-border leading-relaxed mb-2">
-            Pin <code className="font-mono text-sm bg-marketplace-gray px-1 rounded">#panel</code> at the top of the viewport
-            for one full viewport-height of scroll:
-          </p>
-          <CodeBlock file="app.js">{`import { scrollPin } from 'svg-scroll-draw/pin';
+      <Section id="simplest-pin" k="minimum" title="The simplest pin">
+        <p>
+          Pin <code>#panel</code> at the top of the viewport for one full viewport-height of scroll:
+        </p>
+        <Code file="app.js">{`import { scrollPin } from 'svg-scroll-draw/pin';
 
 const instance = scrollPin('#panel', {
   pinDistance: window.innerHeight, // default
 });
 
 // Later: remove pin and restore the DOM
-// instance.destroy();`}</CodeBlock>
+// instance.destroy();`}</Code>
+        <p>
+          That&apos;s it. <code>scrollPin</code> wraps the target in a spacer div (so the page layout doesn&apos;t jump),
+          applies <code>position: fixed</code> when the element hits the viewport top, and releases it when the pin zone ends.
+        </p>
+      </Section>
 
-          <p className="text-graphite-border leading-relaxed mb-4">
-            That&apos;s it. <code className="font-mono text-sm bg-marketplace-gray px-1 rounded">scrollPin</code> wraps the
-            target in a spacer div (so the page layout doesn&apos;t jump), applies{' '}
-            <code className="font-mono text-sm bg-marketplace-gray px-1 rounded">position: fixed</code> when the element
-            hits the viewport top, and releases it when the pin zone ends.
-          </p>
-
-          <h2 className="font-display font-extrabold text-2xl sm:text-3xl tracking-[-0.02em] mb-4 mt-12">
-            Pin at a custom viewport position
-          </h2>
-          <p className="text-graphite-border leading-relaxed mb-2">
-            Use the <code className="font-mono text-sm bg-marketplace-gray px-1 rounded">top</code> option to pin at
-            a different viewport Y offset — e.g. 80px below the top (for a fixed navbar):
-          </p>
-          <CodeBlock file="app.js">{`scrollPin('#sticky-image', {
+      <Section id="custom-position" k="top" title="Pin at a custom viewport position">
+        <p>
+          Use the <code>top</code> option to pin at a different viewport Y offset — e.g. 80px below the top (for a fixed navbar):
+        </p>
+        <Code file="app.js">{`scrollPin('#sticky-image', {
   top:         80,           // pin 80px from viewport top
   pinDistance: 600,          // hold for 600px of scroll
-});`}</CodeBlock>
+});`}</Code>
+      </Section>
 
-          <h2 className="font-display font-extrabold text-2xl sm:text-3xl tracking-[-0.02em] mb-4 mt-12">
-            Lifecycle callbacks
-          </h2>
-          <p className="text-graphite-border leading-relaxed mb-2">
-            Four callbacks mirror GSAP&apos;s ScrollTrigger API exactly:
-          </p>
-          <CodeBlock file="app.js">{`scrollPin('#feature-panel', {
+      <Section id="lifecycle" k="callbacks" title="Lifecycle callbacks">
+        <p>Four callbacks mirror GSAP&apos;s ScrollTrigger API exactly:</p>
+        <Code file="app.js">{`scrollPin('#feature-panel', {
   pinDistance: 800,
   onEnter:     () => panel.classList.add('active'),
   onLeave:     () => panel.classList.remove('active'),
   onEnterBack: () => panel.classList.add('active'),
   onLeaveBack: () => panel.classList.remove('active'),
-});`}</CodeBlock>
+});`}</Code>
+        <Callout k="when">
+          <Defs
+            items={[
+              ['onEnter', 'fires when scroll first reaches the pin zone (scrolling down).'],
+              ['onLeave', 'fires when scroll exits the pin zone at the end (scrolling down).'],
+              ['onEnterBack', 'fires when scroll re-enters the pin zone (scrolling back up).'],
+              ['onLeaveBack', 'fires when scroll exits the pin zone at the start (scrolling back up).'],
+            ]}
+          />
+        </Callout>
+      </Section>
 
-          <Callout>
-            <strong>onEnter</strong> fires when scroll first reaches the pin zone (scrolling down).<br />
-            <strong>onLeave</strong> fires when scroll exits the pin zone at the end (scrolling down).<br />
-            <strong>onEnterBack</strong> fires when scroll re-enters the pin zone (scrolling back up).<br />
-            <strong>onLeaveBack</strong> fires when scroll exits the pin zone at the start (scrolling back up).
-          </Callout>
-
-          <h2 className="font-display font-extrabold text-2xl sm:text-3xl tracking-[-0.02em] mb-4 mt-12">
-            Progress callback
-          </h2>
-          <p className="text-graphite-border leading-relaxed mb-2">
-            Use <code className="font-mono text-sm bg-marketplace-gray px-1 rounded">onProgress</code> to drive
-            another animation while the element is pinned:
-          </p>
-          <CodeBlock file="app.js">{`import { scrollPin }    from 'svg-scroll-draw/pin';
+      <Section id="progress" k="onProgress" title="Progress callback">
+        <p>
+          Use <code>onProgress</code> to drive another animation while the element is pinned:
+        </p>
+        <Code file="app.js">{`import { scrollPin }    from 'svg-scroll-draw/pin';
 import { scrollAnimate } from 'svg-scroll-draw';
 
 // Fade in a caption as the user scrolls through the pin zone
@@ -217,15 +168,12 @@ scrollPin('#hero-image', {
     // p is 0 → 1 through the pin zone
     caption.style.opacity = p.toFixed(3);
   },
-});`}</CodeBlock>
+});`}</Code>
+      </Section>
 
-          <h2 className="font-display font-extrabold text-2xl sm:text-3xl tracking-[-0.02em] mb-4 mt-12">
-            Apple-style: pin image, scroll text
-          </h2>
-          <p className="text-graphite-border leading-relaxed mb-2">
-            The classic pattern: image stays fixed while feature copy scrolls past it.
-          </p>
-          <CodeBlock file="feature-section.js">{`import { scrollPin }    from 'svg-scroll-draw/pin';
+      <Section id="apple-style" k="pattern" title="Apple-style: pin image, scroll text">
+        <p>The classic pattern: image stays fixed while feature copy scrolls past it.</p>
+        <Code file="feature-section.js">{`import { scrollPin }    from 'svg-scroll-draw/pin';
 import { scrollAnimate } from 'svg-scroll-draw';
 
 // Pin the product image
@@ -246,12 +194,11 @@ document.querySelectorAll('.feature-block')
       easing: 'ease-out',
       once:   true,
     });
-  });`}</CodeBlock>
+  });`}</Code>
+      </Section>
 
-          <h2 className="font-display font-extrabold text-2xl sm:text-3xl tracking-[-0.02em] mb-4 mt-12">
-            React usage
-          </h2>
-          <CodeBlock file="FeatureSection.tsx">{`'use client';
+      <Section id="react" k="react" title="React usage">
+        <Code file="FeatureSection.tsx">{`'use client';
 import { useEffect, useRef } from 'react';
 import { scrollPin } from 'svg-scroll-draw/pin';
 
@@ -281,15 +228,12 @@ export function FeatureSection() {
       </div>
     </section>
   );
-}`}</CodeBlock>
+}`}</Code>
+      </Section>
 
-          <h2 className="font-display font-extrabold text-2xl sm:text-3xl tracking-[-0.02em] mb-4 mt-12">
-            Section snapping
-          </h2>
-          <p className="text-graphite-border leading-relaxed mb-4">
-            Often pin sections are combined with scroll snap. svg-scroll-draw ships both:
-          </p>
-          <CodeBlock file="app.js">{`import { scrollPin }  from 'svg-scroll-draw/pin';
+      <Section id="snapping" k="scrollSnap" title="Section snapping">
+        <p>Often pin sections are combined with scroll snap. svg-scroll-draw ships both:</p>
+        <Code file="app.js">{`import { scrollPin }  from 'svg-scroll-draw/pin';
 import { scrollSnap } from 'svg-scroll-draw/snap';
 
 // Snap between fullscreen sections
@@ -303,21 +247,16 @@ scrollSnap('.section', {
 scrollPin('#nav', {
   top:         0,
   pinDistance: document.body.scrollHeight,
-});`}</CodeBlock>
+});`}</Code>
+      </Section>
 
-          <h2 className="font-display font-extrabold text-2xl sm:text-3xl tracking-[-0.02em] mb-4 mt-12">
-            Cleanup
-          </h2>
-          <p className="text-graphite-border leading-relaxed mb-4">
-            Every <code className="font-mono text-sm bg-marketplace-gray px-1 rounded">scrollPin</code> call returns an
-            instance with <code className="font-mono text-sm bg-marketplace-gray px-1 rounded">destroy()</code> and{' '}
-            <code className="font-mono text-sm bg-marketplace-gray px-1 rounded">refresh()</code>.
-            Call <code className="font-mono text-sm bg-marketplace-gray px-1 rounded">destroy()</code> in component
-            cleanup / route change. Call{' '}
-            <code className="font-mono text-sm bg-marketplace-gray px-1 rounded">refresh()</code> if the page layout
-            changes dynamically (accordion opens, dynamic content loads).
-          </p>
-          <CodeBlock file="app.js">{`const pin = scrollPin('#panel', { pinDistance: 600 });
+      <Section id="cleanup" k="destroy · refresh" title="Cleanup">
+        <p>
+          Every <code>scrollPin</code> call returns an instance with <code>destroy()</code> and <code>refresh()</code>.
+          Call <code>destroy()</code> in component cleanup / route change. Call <code>refresh()</code> if the page layout
+          changes dynamically (accordion opens, dynamic content loads).
+        </p>
+        <Code file="app.js">{`const pin = scrollPin('#panel', { pinDistance: 600 });
 
 // Recalculate after layout change
 document.querySelector('#accordion').addEventListener('click', () => {
@@ -325,69 +264,12 @@ document.querySelector('#accordion').addEventListener('click', () => {
 });
 
 // Remove on page unload
-window.addEventListener('beforeunload', () => pin.destroy());`}</CodeBlock>
+window.addEventListener('beforeunload', () => pin.destroy());`}</Code>
+      </Section>
 
-          <h2 className="font-display font-extrabold text-2xl sm:text-3xl tracking-[-0.02em] mb-4 mt-12">
-            Full API
-          </h2>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="border-b border-pitch-black">
-                  <th className="text-left py-3 pr-4 font-mono font-bold">Option</th>
-                  <th className="text-left py-3 pr-4 font-mono font-bold">Type</th>
-                  <th className="text-left py-3 font-mono font-bold">Description</th>
-                </tr>
-              </thead>
-              <tbody className="font-mono text-[12px]">
-                {[
-                  ['pinDistance', 'number', 'Pixels of scroll to stay pinned. Default: window.innerHeight'],
-                  ['top', 'number', 'Viewport Y (px) to pin at. Default: 0 (viewport top)'],
-                  ['scrollContainer', 'string | Element', 'Custom scroll container. Default: window'],
-                  ['onEnter', '() => void', 'Fires when pin zone is entered (scrolling down)'],
-                  ['onLeave', '() => void', 'Fires when pin zone is exited at end (scrolling down)'],
-                  ['onEnterBack', '() => void', 'Fires when pin zone is re-entered (scrolling up)'],
-                  ['onLeaveBack', '() => void', 'Fires when pin zone is exited at start (scrolling up)'],
-                  ['onProgress', '(p: number) => void', 'Progress 0–1 through the pin zone, every frame'],
-                ].map(([opt, type, desc]) => (
-                  <tr key={opt} className="border-b border-subtle-ash">
-                    <td className="py-3 pr-4 text-creator-pink">{opt}</td>
-                    <td className="py-3 pr-4 text-graphite-border">{type}</td>
-                    <td className="py-3 text-graphite-border">{desc}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          <div className="mt-12 pt-8 border-t border-subtle-ash">
-            <p className="text-[12px] font-mono text-graphite-border mb-4">Continue reading</p>
-            <div className="flex flex-wrap gap-3">
-              <Link href="/blog/replace-gsap-scrolltrigger"
-                className="text-sm px-4 py-2 rounded-full border border-pitch-black hover:bg-pitch-black hover:text-light-linen transition-colors font-medium">
-                Replace GSAP ScrollTrigger →
-              </Link>
-              <Link href="/vs-gsap"
-                className="text-sm px-4 py-2 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium">
-                Full GSAP comparison →
-              </Link>
-              <Link href="/docs"
-                className="text-sm px-4 py-2 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium">
-                API Reference →
-              </Link>
-            </div>
-          </div>
-        </div>
-      </article>
-
-      <RelatedResources post="scroll-pin-without-gsap" />
-      <footer className="px-6 md:px-12 py-6 border-t border-subtle-ash text-center text-[11px] font-mono text-graphite-border">
-        svg-scroll-draw · MIT · ~10 KB gzipped ·{' '}
-        <a href="https://github.com/DhruvilChauahan0210/ink-scroll" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-pitch-black transition-colors">
-          GitHub
-        </a>
-      </footer>
-    </div>
-    </>
+      <Section id="api" k="reference" title="Full API">
+        <Table head={['Option', 'Type', 'Description']} rows={API.map(([o, t, d]) => [o, <code key="t">{t}</code>, d])} />
+      </Section>
+    </BlogArticle>
   );
 }

@@ -31,6 +31,32 @@ All notable changes to `svg-scroll-draw` are documented here.
   which still said v2.10.0, is gone. The homepage's test counts
   moved to `data/facts.ts` so every page's sign-off can quote them; check:claims
   reads it.
+- **Every remaining page moves to the homepage's design.** `/blog` and all
+  twelve posts (one article frame, figures of each post's real subject — the
+  index's topic key is drawn to scale and doubles as the filter),
+  `/changelog` (a release log of title-block strips), `/blocks` (each block a
+  plate with its install command), `/playground`, `/verify`, the seven `vs-*`
+  comparison pages (measured numbers drawn as comparisons), the six framework
+  landings and the React, Next.js and Lenis landings all move into
+  `SiteShell`. Their hand-rolled navs and footers are gone, figures are read
+  from `data/competitors.ts` and `data/facts.ts` instead of typed, and the
+  old ink-bottle mascot is off every page.
+- **"Show where" on every showcase site.** The demo tab gains a toggle that
+  outlines every element svg-scroll-draw is driving on the page — labelled
+  draw, animate, counter, text, pin, snap or video, with its live progress —
+  so a visitor can see exactly where the library does the work on a realistic
+  page. It reads the instance registry the library already shares through
+  `globalThis` for devtools, so no site marks anything up by hand, and the
+  choice carries from one showcase site to the next.
+- **Showcase sites rebuilt to industry level.** The fifteen sites built on the
+  shared frame were thin — a hero, a section and three text cards. Each is
+  rebuilt as a believable product site: dense product UI built in HTML and CSS
+  with real-looking data, more sections, each with a visual, and specific copy.
+  Aural, the scroll-video example, renders its own product film (a WebGL
+  scene rendered frame by frame in headless Chromium) and sets the bar; the
+  four oldest sites — Ferrow, Ledgerline, Quillmark and Hearth & Field — are
+  rebuilt to it too, Ferrow and Hearth & Field with photoreal product renders
+  made the same way.
 - **Examples link to real sites built with the library.** Each example is
   becoming a complete demo site for a fictional company under
   `/showcase/<name>`, so the examples show how the library is used in a real
@@ -54,8 +80,29 @@ All notable changes to `svg-scroll-draw` are documented here.
   example), a homeware shop's order confirmation — the check draws as the
   page opens, then the delivery journey draws station by station up to
   where the parcel is now, the rest left dashed, and the products ink in as
-  their cards arrive (an upright journey on phones). Showcase sites carry a "demo site" tab that
-  links back to the example, and are kept out of search results.
+  their cards arrive (an upright journey on phones). The other nineteen
+  follow, each its own brand built on a shared frame (`src/showcase/kit`):
+  **Parcelry** (map-route) traces a courier's route to your door;
+  **Northbeam** (network) draws an edge request box by box; **Fieldnotes**
+  (astro) inks a fern plate from one `data-scroll-draw` attribute;
+  **Halyard Capital** (timeline-api) builds a revenue chart quarter by
+  quarter with `scrollDrawTimeline`; **Relay** (group-api) inks three
+  feature illustrations in sync; **Tidewater** (vue), **Stride** (svelte)
+  and **Paygrid status** (solid) are a sailing school, a running app and an
+  API status page; **Linework** (presets) is a studio portfolio drawn with
+  five presets; **Shipyard** (sequence-api) draws pipeline stages one after
+  another; **Tessera** (scroll-animate) reveals a pricing page part by part;
+  **Greenline** (scroll-counter) counts an impact report up; **Mint & Co**
+  (scroll-text-lines) slides a bank's switching steps in; **Plugboard**
+  (scroll-animate-group) fans in an integrations directory; **Atelier
+  Nord** (scroll-text) raises a studio's statement word by word; **Folio**
+  (scroll-reveal) reveals a release page; **Lumen** (scroll-pin) pins a
+  camera through its feature tour; **Casa Verde** (scroll-snap) snaps a
+  rentals carousel; and **Aural** (scroll-video) scrubs a headphones film
+  with scroll. Card images carry a content hash in their filename so a new
+  capture is never served from the image cache. Showcase sites carry a
+  "demo site" tab that links back to the example, and are kept out of
+  search results.
 - **`/examples` rebuilt as a catalogue of drawings.** The 23 previews were
   the old site — Discord blurple, pink and yellow, emoji, the Syne display
   face, and figures that had gone stale ("9 KB", "423 tests"). Every one is
@@ -96,6 +143,26 @@ All notable changes to `svg-scroll-draw` are documented here.
   as a parts list — with a sticky contents list on wide screens.
 
 ---
+
+## [2.15.2] — 2026-11-01
+
+### Fixed
+
+- **`scrollVideo` keeps its end frame under reduced motion.** With
+  `prefers-reduced-motion: reduce` the clip shows its last frame once, at
+  metadata, and the trigger window is never measured. The scroll loop still
+  started when the video came into view, computed progress 0 from the empty
+  window and sought the clip back to frame 0, firing `onProgress(0)`. `update()`
+  now returns early under reduced motion. The existing test missed it because
+  its clip sits below the fold, so it never came into view. Found while
+  building the Aural showcase site, which had worked around it with
+  `film.pause()`; the workaround is gone.
+
+### Tests
+
+- `e2e/video.spec.ts`: reduced motion is on, the clip is scrolled into view at
+  three positions and must stay on its last frame each time, in Chromium,
+  Firefox and WebKit. It fails on 2.15.1 ("end frame lost at y=1200").
 
 ## [2.15.1] — 2026-10-31
 

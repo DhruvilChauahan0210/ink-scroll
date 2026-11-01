@@ -1,0 +1,226 @@
+/* /blocks in the homepage's design. Scoped `.site .blocks`; tokens from
+   home.css, shared pieces (tb, tag, plate, code-box, ex-rel) from site/site.css. */
+
+.site .blocks { --bk-x: max(var(--gutter), calc((100% - 1560px) / 2)); }
+.site .blocks .bk-mono { font-family: var(--mono); font-size: 0.92em; letter-spacing: 0; }
+.site .blocks .bk-code {
+  padding: 1px 6px;
+  border: 1px solid var(--line-2);
+  background: var(--bg-2);
+  font: 500 0.86em/1.4 var(--mono);
+  color: var(--fg);
+  white-space: nowrap;
+}
+html:has(.site .blocks) { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html:has(.site .blocks) { scroll-behavior: auto; } }
+
+/* ── Opening: title and facts, then the project the CLI writes into ──── */
+
+.site .bk-head { display: grid; gap: clamp(36px, 4vw, 64px); align-items: center; }
+@media (min-width: 1100px) { .site .bk-head { grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); } }
+.site .bk-head-l { min-width: 0; }
+.site .bk-title { max-width: 12ch; font-size: clamp(40px, 5.8vw, 96px); }
+.site .bk-dim { color: var(--fg-3); }
+
+/* fig. 1 — the project tree */
+.site .pt { margin: 0; min-width: 0; }
+.site .pt-tb { margin-bottom: 14px; }
+.site .pt-grid { border-top: 1px solid var(--fg-3); }
+.site .pt-list { margin: 0; padding: 0; list-style: none; }
+.site .pt-a {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto 44px;
+  align-items: center;
+  gap: 12px;
+  height: 34px;
+  border-bottom: 1px solid var(--line);
+  transition: background-color 0.2s;
+}
+.site .pt-hd {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto 44px;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line-2);
+  font: 500 10px/1.4 var(--mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+.site .pt-hd > :nth-child(2), .site .pt-meta { text-align: right; }
+.site .pt-hd > :last-child, .site .pt-ref { text-align: center; }
+.site .pt-path { display: flex; align-items: center; min-width: 0; height: 100%; }
+.site .pt-svg { flex: none; display: block; overflow: visible; color: var(--fg-3); }
+.site .pt-ink { fill: none; stroke-width: 1; stroke-linecap: square; }
+.site .pt-name {
+  min-width: 0;
+  padding-left: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font: 400 13px/1 var(--mono);
+  color: var(--fg-2);
+}
+.site .pt-row.is-dir .pt-name { color: var(--fg-3); }
+.site .pt-row:first-child .pt-name { padding-left: 0; color: var(--fg); font-weight: 500; }
+.site .pt-row.is-file .pt-name { color: var(--fg); }
+.site .pt-meta { font: 500 12px/1 var(--mono); color: var(--accent); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.site .pt-meta-long { color: var(--fg-3); }
+.site .pt-ref { font: 500 10.5px/1 var(--mono); letter-spacing: 0.04em; color: var(--fg-3); }
+.site .pt-row.is-file .pt-ref { color: var(--accent); }
+.site a.pt-a:hover { background: var(--bg-2); }
+.site a.pt-a:hover .pt-name { color: var(--accent); }
+.site .pt-cap { margin-top: 14px; font: 500 11px/1.5 var(--mono); letter-spacing: 0.04em; color: var(--fg-3); }
+.site .pt-cap span { color: var(--fg-2); }
+@media (max-width: 559px) {
+  .site .pt-meta-long { display: none; }
+  .site .pt-a, .site .pt-hd { grid-template-columns: minmax(0, 1fr) auto 32px; gap: 8px; }
+  .site .pt-name { font-size: 12px; }
+}
+
+/* ── A block: strip, name and description; the command and its parts list;
+      then the live plate and the source ──────────────────────────────── */
+
+.site .bk-list { padding: 0 var(--bk-x); }
+.site .bk {
+  padding: clamp(56px, 6.5vw, 96px) 0 clamp(36px, 4vw, 56px);
+  border-bottom: 1px solid var(--line);
+  scroll-margin-top: calc(var(--nav-h) + 8px);
+}
+.site .bk-top { display: grid; gap: clamp(22px, 3vw, 56px); align-items: end; margin-bottom: clamp(24px, 3vw, 40px); }
+@media (min-width: 1000px) { .site .bk-top { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); } }
+.site .bk-copy, .site .bk-install { min-width: 0; }
+.site .bk-tb-name { text-transform: none; letter-spacing: 0.02em; color: var(--fg-2); }
+.site .bk-h2 {
+  margin: 20px 0 14px;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: clamp(32px, 3.6vw, 56px);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  color: var(--fg);
+  text-wrap: balance;
+}
+.site .bk-desc { margin: 0; max-width: 54ch; font-size: 15px; line-height: 1.65; color: var(--fg-2); }
+
+/* The install command, as a title block: what it is and copy, then the line. */
+.site .bk-cmd {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  border: 1px solid var(--line-2);
+  background: var(--panel);
+}
+.site .bk-cmd > * { display: flex; align-items: center; min-width: 0; }
+.site .bk-cmd-k {
+  padding: 7px 12px;
+  border-bottom: 1px solid var(--line-2);
+  background: var(--bg-2);
+  font: 500 10px/1.4 var(--mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+  white-space: nowrap;
+}
+.site .bk-cmd-copy { padding: 0 6px; border-left: 1px solid var(--line-2); border-bottom: 1px solid var(--line-2); background: var(--bg-2); }
+.site .bk-cmd-line { grid-column: 1 / -1; grid-row: 2; gap: 10px; padding: 14px 14px 15px; overflow-x: auto; scrollbar-width: thin; }
+.site .bk-cmd-line code { font: 400 12.5px/1.4 var(--mono); color: var(--fg); white-space: nowrap; }
+.site .bk-cmd-p { font: 500 12.5px/1.4 var(--mono); color: var(--accent); }
+.site .blocks .bk-cmd-copy button, .site .blocks .code-copy button { color: var(--fg-3); border-radius: 0; }
+.site .blocks .bk-cmd-copy button:hover, .site .blocks .code-copy button:hover { color: var(--fg); border-color: var(--line-2); }
+@media (max-width: 559px) {
+  /* On a phone the whole command wraps rather than hiding behind a scroll. */
+  .site .bk-cmd-line { align-items: flex-start; overflow: visible; }
+  .site .bk-cmd-line code { font-size: 11.5px; line-height: 1.6; white-space: normal; overflow-wrap: anywhere; }
+  .site .bk-cmd-p { line-height: 1.6; font-size: 11.5px; }
+}
+
+/* What the command does to a project: a small parts list under it. */
+.site .bk-parts {
+  margin: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 0.6fr) minmax(0, 1.3fr) minmax(0, 1.3fr);
+  border-left: 1px solid var(--line);
+}
+.site .bk-parts > div { padding: 10px 12px 12px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); min-width: 0; }
+.site .bk-parts > div:first-child { grid-column: 1 / -1; }
+.site .bk-parts dt { font: 500 9.5px/1.4 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-3); }
+.site .bk-parts dd { margin: 6px 0 0; font-size: 13px; line-height: 1.4; color: var(--fg); overflow-wrap: anywhere; }
+.site .bk-parts > div:first-child { display: flex; align-items: baseline; gap: 14px; }
+.site .bk-parts > div:first-child dd { margin: 0; }
+.site .bk-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.site .blocks .bk-parts dd.bk-mono { font-size: 13px; }
+@media (max-width: 559px) {
+  /* A phone reads the parts list as label / value rows. */
+  .site .bk-parts { grid-template-columns: minmax(0, 1fr); }
+  .site .bk-parts > div { display: grid !important; grid-template-columns: 64px minmax(0, 1fr); align-items: baseline; gap: 10px; padding: 9px 12px; }
+  .site .bk-parts dd { margin: 0; }
+  .site .blocks .bk-parts dd.bk-mono { font-size: 12px; }
+  /* The path gets the full width, under its label, so it stays on one line. */
+  .site .bk-parts > div:first-child { display: block !important; }
+  .site .bk-parts > div:first-child dd { margin-top: 5px; }
+}
+.site .bk-tags .tag { padding: 1px 7px; font-size: 10px; }
+
+/* The plate. The stage is clipped with `overflow: clip`, which, unlike
+   hidden, makes no scroll container, so sticky-feature's panel still sticks. */
+.site .blocks .bk-plate .plate-body {
+  display: block;
+  overflow: clip;
+  min-height: 0;
+  padding: clamp(40px, 5vw, 72px) clamp(16px, 3vw, 48px);
+}
+.site .blocks .bk-plate.is-tall .plate-body { padding-block: clamp(88px, 10vw, 136px); }
+
+/* The source, folded under the plate. */
+.site .bk-src { margin-top: 14px; border-top: 1px solid var(--line); }
+.site .bk-src > summary {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 0 4px;
+  list-style: none;
+  cursor: pointer;
+  font: 500 10.5px/1.4 var(--mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-2);
+  min-width: 0;
+}
+.site .bk-src > summary::-webkit-details-marker { display: none; }
+.site .bk-src > summary::before {
+  content: '+';
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--line-2);
+  border-radius: 50%;
+  font-size: 12px;
+  letter-spacing: 0;
+  color: var(--fg);
+}
+.site .bk-src[open] > summary::before { content: '–'; }
+.site .bk-src > summary:hover { color: var(--fg); }
+.site .bk-src > summary:hover::before { border-color: var(--accent); color: var(--accent); }
+.site .bk-src-file { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-transform: none; letter-spacing: 0.02em; color: var(--fg-3); }
+.site .bk-src-n { flex: none; margin-left: auto; color: var(--fg-3); }
+.site .bk-src .code-body { max-height: min(70vh, 720px); overflow: auto; }
+@media (max-width: 559px) {
+  .site .bk-src-file { display: none; }
+  .site .bk-src .code-body { font-size: 11px; }
+}
+
+/* ── Manual install, and where to go next ────────────────────────────── */
+
+.site .bk-manual {
+  display: grid;
+  gap: clamp(36px, 5vw, 96px);
+  align-items: start;
+  padding: clamp(56px, 6.5vw, 104px) var(--bk-x) clamp(64px, 7vw, 112px);
+}
+@media (min-width: 1000px) { .site .bk-manual { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+.site .bk-manual-l, .site .bk-manual-r { min-width: 0; }
+.site .bk-manual .code-box { margin-top: 24px; max-width: 520px; }
+.site .bk-more-h { margin: 0 0 14px; font: 500 10.5px/1.4 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-3); }
+@media (min-width: 1000px) { .site .bk-more-h { margin-top: 6px; } }

@@ -2,52 +2,9 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { scrollDraw } from 'svg-scroll-draw';
-
-/* ────────────────────────────────────────────────────────────────────────────
-   Shared bits
-   ──────────────────────────────────────────────────────────────────────────── */
+import { Meter, Stat, Stats, Tag, Verdict } from './VerifyKit';
 
 const PATH_D = 'M10 50 C 40 10, 80 10, 100 50 S 160 90, 190 50';
-
-/**
- * `ok: null` means "not measured yet" and renders as WAIT, not BUG.
- *
- * This distinction matters more than it looks. An earlier version of this page
- * had two proofs whose verdict was simply "have I observed the good thing yet",
- * so scrolling straight past them rendered a red BUG badge for working code —
- * and elsewhere, a guard that recorded nothing rendered identically to a genuine
- * pass. On a page whose whole purpose is honest verification, conflating
- * "unmeasured" with a result is the worst available failure mode.
- */
-function Verdict({ ok, children }: { ok: boolean | null; children: React.ReactNode }) {
-  const tone =
-    ok === null
-      ? { bg: 'rgba(0,0,0,0.04)', border: '#d1d5dc', fg: '#6b6b6b', label: 'WAIT' }
-      : ok
-        ? { bg: 'rgba(241,243,51,0.18)', border: '#c9cb1e', fg: '#5c5e00', label: 'PASS' }
-        : { bg: 'rgba(220,52,0,0.10)', border: '#dc3400', fg: '#dc3400', label: 'BUG' };
-
-  return (
-    <div
-      className="flex items-start gap-2.5 rounded-xl px-4 py-3 text-[13px] leading-relaxed"
-      style={{ background: tone.bg, border: `1px solid ${tone.border}` }}
-    >
-      <span className="font-mono font-bold shrink-0" style={{ color: tone.fg }}>
-        {tone.label}
-      </span>
-      <span className="text-pitch-black">{children}</span>
-    </div>
-  );
-}
-
-function Readout({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex items-baseline gap-2 font-mono">
-      <span className="text-[11px] uppercase tracking-[0.15em] text-graphite-border">{label}</span>
-      <span className="text-2xl font-bold tabular-nums">{value}</span>
-    </div>
-  );
-}
 
 /* ────────────────────────────────────────────────────────────────────────────
    01 — The SVG attribute bug in `npx svg-scroll-draw init`
@@ -61,13 +18,15 @@ function Readout({ label, value }: { label: string; value: string }) {
  * review. Vue and Svelte templates are parsed as HTML, where `strokeWidth` is
  * an unknown attribute and gets dropped, so the path falls back to a 1px
  * butt-capped stroke. Injecting raw HTML reproduces what those users actually got.
+ * Colour comes from the container (`currentColor`), which adds no attribute, so
+ * the parsed-attribute readout below is exactly what those users' paths carried.
  */
 const BROKEN_SVG = `<svg viewBox="0 0 200 100" width="100%" style="overflow:visible">
-  <path d="${PATH_D}" stroke="#dc3400" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+  <path d="${PATH_D}" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" fill="none" />
 </svg>`;
 
 const FIXED_SVG = `<svg viewBox="0 0 200 100" width="100%" style="overflow:visible">
-  <path d="${PATH_D}" stroke="#0a0a0a" stroke-width="2.5" stroke-linecap="round" fill="none" />
+  <path d="${PATH_D}" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" fill="none" />
 </svg>`;
 
 export function AttributeProof() {
@@ -92,57 +51,41 @@ export function AttributeProof() {
     attrs: string[] | undefined,
     bad: boolean,
   ) => (
-    <div className="flex-1 min-w-0">
-      <div className="flex items-center gap-2 mb-1">
-        <span className="font-display font-bold text-sm">{title}</span>
-        {bad && (
-          <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full bg-firecracker-orange text-white">
-            before
-          </span>
-        )}
-        {!bad && (
-          <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full bg-lime-glow text-pitch-black">
-            after
-          </span>
-        )}
+    <div className="vf-cell">
+      <div className="vf-cell-head">
+        <code className="vf-cell-t">{title}</code>
+        <Tag tone={bad ? 'old' : 'new'}>{bad ? 'before' : 'after'}</Tag>
       </div>
-      <p className="text-[12px] text-graphite-border font-mono mb-3">{sub}</p>
+      <p className="vf-cell-sub">{sub}</p>
       <div
         ref={ref}
-        className="rounded-xl border border-subtle-ash bg-white p-4 mb-3"
+        className={`vf-spec vf-spec-pad${bad ? ' is-bad' : ''}`}
         dangerouslySetInnerHTML={{ __html: html }}
       />
-      <p className="text-[11px] font-mono text-graphite-border break-words">
-        parsed attributes:{' '}
+      <p className="vf-attrs">
+        <span className="vf-attrs-k">parsed attributes</span>
         {attrs?.length
           ? attrs.map((a) => (
-              <span
-                key={a}
-                className={
-                  a === 'strokewidth' || a === 'strokelinecap'
-                    ? 'text-firecracker-orange font-bold'
-                    : ''
-                }
-              >
-                {a}{' '}
+              <span key={a} className={a === 'strokewidth' || a === 'strokelinecap' ? 'is-dropped' : undefined}>
+                {a}
               </span>
             ))
-          : '…'}
+          : <span>…</span>}
       </p>
     </div>
   );
 
   // Proven when the parser demonstrably dropped the camelCase attribute AND
-  // kept the hyphenated one.
+  // kept the hyphenated one. Before the read-back it is unmeasured, not failed.
   const proven = read
     ? read.broken.includes('strokewidth') &&
       !read.broken.includes('stroke-width') &&
       read.fixed.includes('stroke-width')
-    : false;
+    : null;
 
   return (
     <div>
-      <div className="flex flex-col sm:flex-row gap-8 mb-6">
+      <div className="vf-pair">
         {cell(
           'strokeWidth="2.5"',
           'what Vue / Svelte users generated',
@@ -163,10 +106,10 @@ export function AttributeProof() {
       <Verdict ok={proven}>
         The left path asked for a <strong>2.5px round</strong> stroke and rendered a{' '}
         <strong>1px butt-capped hairline</strong>. The HTML parser lowercased{' '}
-        <code className="font-mono">strokeWidth</code> to{' '}
-        <code className="font-mono text-firecracker-orange">strokewidth</code>, which is not an SVG
+        <code>strokeWidth</code> to{' '}
+        <code className="is-bad">strokewidth</code>, which is not an SVG
         attribute, so it was discarded. Every Vue and Svelte starter file from{' '}
-        <code className="font-mono">npx svg-scroll-draw init</code> shipped this.
+        <code>npx svg-scroll-draw init</code> shipped this.
       </Verdict>
     </div>
   );
@@ -212,40 +155,29 @@ export function GetProgressProof() {
 
   return (
     <div>
-      <div className="flex flex-col sm:flex-row gap-6 items-center mb-6">
-        <div
-          ref={boxRef}
-          className="rounded-xl border border-subtle-ash bg-white p-4 flex-1 w-full min-w-0"
-        >
+      <div className="vf-split">
+        <div ref={boxRef} className="vf-spec vf-spec-pad is-accent">
           <svg viewBox="0 0 200 100" width="100%" style={{ overflow: 'visible' }}>
-            <path
-              d={PATH_D}
-              stroke="#ff90e8"
-              strokeWidth="3"
-              strokeLinecap="round"
-              fill="none"
-            />
+            <path d={PATH_D} stroke="currentColor" strokeWidth="3" strokeLinecap="round" fill="none" />
           </svg>
         </div>
 
-        <div className="shrink-0 space-y-3 w-full sm:w-56">
-          <Readout label="getProgress()" value={progress.toFixed(3)} />
-          <Readout label="peak seen" value={peak.toFixed(3)} />
-          <div className="h-2 rounded-full bg-subtle-ash overflow-hidden">
-            <div
-              className="h-full bg-creator-pink transition-none"
-              style={{ width: `${progress * 100}%` }}
-            />
-          </div>
+        <div className="vf-side">
+          <Stats cols={2}>
+            <Stat label="getProgress()" value={progress.toFixed(3)} />
+            <Stat label="peak seen" value={peak.toFixed(3)} />
+          </Stats>
+          <Meter value={progress} />
           <button
+            type="button"
             onClick={() => {
               instRef.current?.replay();
               setPeak(0);
               setRuns((r) => r + 1);
             }}
-            className="w-full px-4 py-2 rounded-full bg-pitch-black text-light-linen text-[13px] font-semibold hover:opacity-90 transition-opacity"
+            className="btn btn-sm btn-solid vf-btn"
           >
-            replay() {runs > 0 && <span className="opacity-60">· {runs}</span>}
+            replay() {runs > 0 && <span className="vf-btn-n">· {runs}</span>}
           </button>
         </div>
       </div>
@@ -253,11 +185,11 @@ export function GetProgressProof() {
       <Verdict ok={peak > 0.01 ? true : null}>
         {peak > 0.01 ? (
           <>
-            <code className="font-mono">getProgress()</code> is tracking the autoplay run — peak{' '}
+            <code>getProgress()</code> is tracking the autoplay run — peak{' '}
             <strong>{peak.toFixed(3)}</strong>. Before the fix this readout sat at{' '}
             <strong>0.000</strong> for the entire life of every autoplay stroke animation, because{' '}
-            <code className="font-mono">currentAlpha</code> was only ever assigned on the clip-path
-            branch. Press <code className="font-mono">replay()</code> and watch it snap back to 0 —
+            <code>currentAlpha</code> was only ever assigned on the clip-path
+            branch. Press <code>replay()</code> and watch it snap back to 0 —
             that reset was also missing.
           </>
         ) : (
@@ -324,30 +256,18 @@ export function OffScreenProof() {
 
   return (
     <div>
-      <div className="flex flex-col sm:flex-row gap-6 mb-6">
-        <div
-          ref={boxRef}
-          className="rounded-xl border border-subtle-ash bg-white p-4 flex-1 min-w-0"
-        >
+      <div className="vf-split is-wide-side">
+        <div ref={boxRef} className="vf-spec vf-spec-pad">
           <svg viewBox="0 0 200 100" width="100%" style={{ overflow: 'visible' }}>
-            <path
-              d={PATH_D}
-              stroke="#0a0a0a"
-              strokeWidth="3"
-              strokeLinecap="round"
-              fill="none"
-            />
+            <path d={PATH_D} stroke="currentColor" strokeWidth="3" strokeLinecap="round" fill="none" />
           </svg>
         </div>
 
-        <div className="shrink-0 w-full sm:w-72">
-          <button
-            onClick={run}
-            className="w-full px-4 py-2 mb-3 rounded-full bg-pitch-black text-light-linen text-[13px] font-semibold hover:opacity-90 transition-opacity"
-          >
+        <div className="vf-side">
+          <button type="button" onClick={run} className="btn btn-sm btn-solid vf-btn">
             Run the off-screen sequence
           </button>
-          <pre className="text-[11px] font-mono leading-relaxed bg-marketplace-gray rounded-xl border border-subtle-ash p-3 h-40 overflow-auto whitespace-pre-wrap">
+          <pre className="vf-log" aria-live="polite">
             {log.length ? log.join('\n') : 'idle — press the button'}
           </pre>
         </div>
@@ -362,9 +282,9 @@ export function OffScreenProof() {
           ) : (
             <>
               The run did <strong>not</strong> complete. Previously,{' '}
-              <code className="font-mono">startTime = null</code> coerced to <code className="font-mono">0</code>, so{' '}
-              <code className="font-mono">pause()</code> recorded the whole timestamp since page load
-              as elapsed time and <code className="font-mono">resume()</code> began a run already past
+              <code>startTime = null</code> coerced to <code>0</code>, so{' '}
+              <code>pause()</code> recorded the whole timestamp since page load
+              as elapsed time and <code>resume()</code> began a run already past
               its own duration — the SVG finished drawing invisibly and the visitor scrolled down to a
               static, already-complete graphic.
             </>

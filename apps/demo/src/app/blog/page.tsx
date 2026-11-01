@@ -1,8 +1,9 @@
 import type { Metadata } from 'next';
+import '@/components/blog.css';
 import { seoTitle } from '../_lib/seo';
-import Link from 'next/link';
-import { MobileMenu } from '@/components/MobileMenu';
 import { POSTS } from '@/data/blog-posts';
+import { SiteShell } from '@/components/site/SiteShell';
+import { BlogIndex, type Topic } from '@/components/blog/BlogIndex';
 
 export const metadata: Metadata = {
   title: seoTitle('Scroll Animation Guides & Comparisons'),
@@ -21,86 +22,46 @@ export const metadata: Metadata = {
   },
 };
 
+const minutes = (readTime: string) => parseInt(readTime, 10) || 0;
 
 export default function BlogPage() {
+  // Every figure on this page is counted from data/blog-posts.ts.
+  const topics: Topic[] = [];
+  for (const p of POSTS) {
+    const t = topics.find((x) => x.tag === p.tag);
+    if (t) { t.posts += 1; t.minutes += minutes(p.readTime); }
+    else topics.push({ tag: p.tag, posts: 1, minutes: minutes(p.readTime) });
+  }
+  topics.sort((a, b) => b.minutes - a.minutes || a.tag.localeCompare(b.tag));
+  const total = POSTS.reduce((s, p) => s + minutes(p.readTime), 0);
+  const issued = [...new Set(POSTS.map((p) => p.date))];
+
   return (
-    <div className="bg-light-linen text-pitch-black min-h-screen">
-
-      {/* Nav */}
-      <nav className="sticky top-0 z-50 bg-light-linen/95 backdrop-blur-sm border-b border-pitch-black flex items-center justify-between px-4 md:px-12 h-14">
-        <Link href="/" className="font-display font-bold text-sm tracking-tight hover:opacity-70 transition-opacity shrink-0">
-          svg-scroll-draw
-        </Link>
-        <div className="hidden lg:flex items-center gap-2">
-          <Link href="/" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Home</Link>
-          <Link href="/docs" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Docs</Link>
-          <Link href="/examples" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Examples</Link>
-          <Link href="/changelog" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">Changelog</Link>
-          <Link href="/playground" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium whitespace-nowrap">⚡ Playground</Link>
-        </div>
-        <div className="flex lg:hidden">
-          <MobileMenu />
-        </div>
-      </nav>
-
-      {/* Header */}
-      <section className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-12 sm:py-16">
-        <div className="max-w-3xl mx-auto">
-          <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-4 font-medium">
-            Blog
-          </p>
-          <h1 className="font-display font-extrabold text-[clamp(32px,6vw,64px)] leading-[0.92] tracking-[-0.04em]">
-            Guides &amp; comparisons.
-          </h1>
-        </div>
-      </section>
-
-      {/* Posts */}
-      <section className="px-4 sm:px-6 md:px-12 py-12 sm:py-16">
-        <div className="max-w-3xl mx-auto space-y-4">
-          {POSTS.map(post => (
-            <Link
-              key={post.slug}
-              href={`/blog/${post.slug}`}
-              className="group flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-8 p-6 sm:p-8 rounded-2xl border border-pitch-black bg-white hover:shadow-[4px_4px_0px_#000] transition-shadow"
-            >
-              {/* Tag + date */}
-              <div className="shrink-0 sm:w-32 sm:text-right space-y-1.5">
-                <div
-                  className="inline-block text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full"
-                  style={{ background: post.tagColor + '30', color: '#111', border: `1px solid ${post.tagColor}` }}
-                >
-                  {post.tag}
-                </div>
-                <p className="text-[11px] font-mono text-graphite-border block">{post.date}</p>
-                <p className="text-[11px] font-mono text-graphite-border">{post.readTime}</p>
-              </div>
-
-              {/* Content */}
-              <div className="flex-1 min-w-0">
-                <h2 className="font-display font-extrabold text-xl sm:text-2xl leading-tight tracking-[-0.02em] mb-2 group-hover:underline underline-offset-4">
-                  {post.title}
-                </h2>
-                <p className="text-[14px] text-graphite-border leading-relaxed">
-                  {post.description}
-                </p>
-                <p className="mt-3 text-[12px] font-mono text-pitch-black font-semibold group-hover:underline underline-offset-2">
-                  Read →
-                </p>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="px-6 md:px-12 py-6 border-t border-subtle-ash text-center text-[11px] font-mono text-graphite-border">
-        svg-scroll-draw · MIT · ~10 KB gzipped ·{' '}
-        <a href="https://github.com/DhruvilChauahan0210/ink-scroll" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-pitch-black transition-colors">
-          GitHub
-        </a>
-      </footer>
-
-    </div>
+    <SiteShell active="/blog" kicker="blog / your turn">
+      <div className="bl">
+        <BlogIndex
+          posts={POSTS}
+          topics={topics}
+          total={total}
+          head={
+            <>
+              <p className="pg-kicker"><span>blog / {POSTS.length} posts</span><span>guides · comparisons · deep-dives</span></p>
+              <h1 className="pg-title bl-title">Guides &amp; comparisons.</h1>
+              <p className="pg-lede">
+                Guides, comparisons, and deep-dives on scroll-driven SVG animation — svg-scroll-draw vs GSAP,
+                migration guides, and more.
+              </p>
+              <dl className="pg-facts bl-facts">
+                <div><dt>Posts</dt><dd>{POSTS.length}</dd></div>
+                <div><dt>Topics</dt><dd>{topics.length}</dd></div>
+                <div><dt>Reading</dt><dd>{total} min</dd></div>
+                <div><dt>Feed</dt><dd><a href="/blog/rss.xml" className="bl-rss">RSS ↗</a></dd></div>
+              </dl>
+              <p className="bl-issued">issued {issued.join(' · ')}</p>
+            </>
+          }
+        />
+      </div>
+    </SiteShell>
   );
 }

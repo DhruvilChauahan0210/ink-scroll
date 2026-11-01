@@ -1,0 +1,95 @@
+/* /blog/scroll-animation-groups — fig. 1, the timing chart. Scoped under .site .ba .gf. */
+
+.site .ba .gf { display: grid; gap: 20px; }
+.site .ba .gf-row {
+  display: grid;
+  grid-template-columns: 104px minmax(0, 1fr) 132px;
+  gap: 14px;
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+}
+.site .ba .gf-l { font: 500 12px/1.3 var(--mono); color: var(--fg); }
+.site .ba .gf-note { font: 400 11px/1.35 var(--mono); color: var(--fg-3); }
+.site .ba .gf-track {
+  position: relative;
+  display: block;
+  padding: 13px 0;
+  /* quarter marks of the scroll through the section */
+  background-image: linear-gradient(to right, var(--line) 1px, transparent 1px);
+  background-size: 25% 100%;
+  box-shadow: 1px 0 0 var(--line);
+}
+.site .ba .gf-track svg { display: block; width: 100%; height: 12px; overflow: visible; color: var(--fg-2); }
+.site .ba .gf-base { fill: none; stroke: var(--line-2); stroke-width: 1; stroke-dasharray: 2 3; }
+.site .ba .gf-ink { fill: none; }
+.site .ba .gf-bar { stroke-width: 10; stroke-linecap: butt; }
+.site .ba .gf-grp.is-seq .gf-track svg { color: var(--accent); }
+/* the hand-off: a tick where the previous step reached 100% */
+.site .ba .gf-hand {
+  position: absolute;
+  top: 0;
+  bottom: 50%;
+  width: 0;
+  border-left: 1px solid var(--accent);
+}
+.site .ba .gf-hand::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -3px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.site .ba .gf-axis { border-bottom: 1px solid var(--fg-3); }
+.site .ba .gf-axis .gf-l { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-3); }
+.site .ba .gf-ticks {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0 8px;
+  background: none;
+  box-shadow: none;
+  font: 500 10.5px/1.3 var(--mono);
+  color: var(--fg-3);
+}
+
+.site .ba .gf-grp { display: grid; }
+.site .ba .gf-hd {
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 9px;
+  border-bottom: 1px solid var(--line-2);
+  font: 500 10.5px/1.4 var(--mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+.site .ba .gf-hd code { font: 500 12.5px/1.3 var(--mono); letter-spacing: 0; text-transform: none; color: var(--fg); }
+.site .ba .gf-grp.is-seq .gf-hd code { color: var(--accent); }
+
+.site .ba .gf-inst { margin: 0; font: 400 11.5px/1.7 var(--mono); color: var(--fg-3); }
+.site .ba .gf-inst span { color: var(--fg-2); text-transform: uppercase; letter-spacing: 0.12em; font-size: 10px; margin-right: 4px; }
+.site .ba .gf-inst code { margin-right: 6px; color: var(--fg); white-space: nowrap; }
+
+@media (max-width: 559px) {
+  .site .ba .gf-row { grid-template-columns: 84px minmax(0, 1fr); gap: 0 12px; }
+  .site .ba .gf-note { grid-column: 2; padding-bottom: 8px; margin-top: -6px; }
+  .site .ba .gf-axis .gf-note { display: none; }
+  .site .ba .gf-l { font-size: 11.5px; }
+}
+
+/* API names in section headings: set in mono, without the inline-code pill */
+.site .ba .ba-h2 .gp-code,
+.site .ba .ba-toc .gp-code {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: 500 0.82em/1.1 var(--mono);
+  letter-spacing: -0.03em;
+  color: var(--fg);
+  overflow-wrap: anywhere;
+}

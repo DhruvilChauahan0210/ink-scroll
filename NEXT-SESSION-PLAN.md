@@ -1,6 +1,6 @@
 # Next Session Plan — svg-scroll-draw
 
-> Updated: 2026-10-31 — **2.15.1 published** (the "no stroke" dev warning reads CSS).
+> Updated: 2026-11-01 — **2.15.2 ready to tag** (scrollVideo keeps its end frame under reduced motion; not published — the owner pushes tags). Every page is on the homepage design and all 23 showcase sites are built, all on `feat/homepage-redesign`, uncommitted and not deployed (the owner said: no deploy until they say).
 
 ---
 
@@ -18,19 +18,21 @@ Numbers that set the priorities (Search Console and npm, 2026-10-30): 4,020
 lifetime downloads, ~170 a month; 5 GitHub stars; 147 Google clicks in five
 months, 81% to the homepage; `/vs-gsap` at position 11 with 425 impressions.
 
-### Showcase sites (one per example, in progress)
-- Each example gets a complete demo site for a fictional company, linked from its card
-  and its page. The owner wants real products, not this site's ink style. Done: Ferrow
-  (`/showcase/ferrow` → logo-reveal), Ledgerline (`/showcase/ledgerline` → line-chart), Quillmark (`/showcase/quillmark` →
-  signature), Hearth & Field (`/showcase/hearth` → flowchart). Next: map-route, network,
-  then the rest one by one.
-  Capture the image where the example's effect is drawn (capture.mjs scrolls to a
-  selector), not always the hero.
-- To add one: build it in `src/showcase/<slug>/` with its own CSS and the `BuiltWith`
-  tab; add `app/showcase/<slug>/page.tsx` (robots noindex); capture its first screen
-  (Playwright at 1440×900, demo tab hidden) to `public/showcase/<slug>.webp`; add it to
-  `SHOWCASE` in `src/showcase/index.ts`; update the card's label, tag, description and
-  code in `components/examples/scenes/data.ts`.
+### Showcase sites (all 23 built, not yet deployed)
+- Each example has a complete demo site for a fictional company under `/showcase/<slug>`,
+  linked from its card and its page. The owner wants real products, not this site's ink
+  style. Sites 5–23 are built on the shared frame in `src/showcase/kit` (`Site`, `Hero`,
+  `Sec`, `Pricing`, `Quote`; brand variables on each site's root class, defaults in
+  `:where(.sk)` so the site always wins).
+- To change one: edit `src/showcase/<slug>/`; recapture its card image with Playwright
+  at 1280×800 ×1.5, demo tab hidden and the nav made opaque, framed where the effect is
+  drawn (not always the hero). Save it as `public/showcase/<slug>-<sha8>.webp` — the hash
+  busts Next's image cache, a same-name file keeps serving the old picture — and point
+  `SHOWCASE` in `src/showcase/index.ts` at it. Card copy and code live in
+  `components/examples/scenes/data.ts`.
+- `components/examples/ink/*.codes.ts` and the ink previews are only used now for the
+  `preview` field, which no card shows while a site exists; they can be deleted once
+  nobody wants the ink plates back.
 - Fictional brands only, no real logos; realistic copy; check desktop and 390px.
 
 ### Gotcha: intermittent Vercel production failures

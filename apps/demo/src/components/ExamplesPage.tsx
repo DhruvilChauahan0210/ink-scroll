@@ -7,7 +7,6 @@ import {
   SignatureInk, CheckoutInk, RouteInk, DiagramInk, AstroInk, TimelineInk,
   GroupInk, VueInk, SvelteInk, SolidInk, PresetsInk, SequenceInk,
 } from './examples/ink/drawings';
-import { CODES_D, DESCRIPTIONS_D, TAGS_D } from './examples/ink/drawings.codes';
 import { PricingCardReveal as PricingInk } from './examples/ink/PricingCardReveal';
 import { SocialProofStats as CounterInk } from './examples/ink/SocialProofStats';
 import { HeadlineReveal as HeadlineInk } from './examples/ink/HeadlineReveal';
@@ -17,8 +16,6 @@ import { ScrollRevealDemo as RevealInk } from './examples/ink/ScrollRevealDemo';
 import { StickyFeaturePanel as PinInk } from './examples/ink/StickyFeaturePanel';
 import { HorizontalSnapCarousel as SnapInk } from './examples/ink/HorizontalSnapCarousel';
 import { VideoScrubDemo as VideoInk } from './examples/ink/VideoScrubDemo';
-import { CODES_A, DESCRIPTIONS_A } from './examples/ink/ui-a.codes';
-import { CODES_B, DESCRIPTIONS_B } from './examples/ink/ui-b.codes';
 import { SCENES } from './examples/scenes/data';
 import { SHOWCASE } from '@/showcase';
 import { ShowcaseMedia, LiveButton } from '@/showcase/ShowcaseShot';
@@ -54,367 +51,179 @@ export const EXAMPLES = [
   },
   {
     id: 'signature',
-    label: 'Contract Signature',
-    tag: TAGS_D['signature'],
-    description: DESCRIPTIONS_D['signature'],
+    label: SCENES['signature'].label,
+    tag: SCENES['signature'].tag,
+    description: SCENES['signature'].description,
     preview: <SignatureInk />,
-    code: CODES_D['signature'],
+    code: SCENES['signature'].code,
   },
   {
     id: 'flowchart',
-    label: 'Checkout Flow',
-    tag: 'selector · stagger',
-    description: DESCRIPTIONS_D['flowchart'],
+    label: SCENES['flowchart'].label,
+    tag: SCENES['flowchart'].tag,
+    description: SCENES['flowchart'].description,
     preview: <CheckoutInk />,
-    code: CODES_D['flowchart'],
+    code: SCENES['flowchart'].code,
   },
   {
     id: 'map-route',
-    label: 'Delivery Route',
-    tag: TAGS_D['map-route'],
-    description: DESCRIPTIONS_D['map-route'],
+    label: SCENES['map-route'].label,
+    tag: SCENES['map-route'].tag,
+    description: SCENES['map-route'].description,
     preview: <RouteInk />,
-    code: CODES_D['map-route'],
+    code: SCENES['map-route'].code,
   },
   {
     id: 'network',
-    label: 'API Architecture',
-    tag: 'selector · ease-out',
-    description: DESCRIPTIONS_D['network'],
+    label: SCENES['network'].label,
+    tag: SCENES['network'].tag,
+    description: SCENES['network'].description,
     preview: <DiagramInk />,
-    code: CODES_D['network'],
+    code: SCENES['network'].code,
   },
   {
     id: 'astro',
-    label: 'Astro Integration',
-    tag: 'data-scroll-draw · initScrollDraw()',
-    description: DESCRIPTIONS_D['astro'],
+    label: SCENES['astro'].label,
+    tag: SCENES['astro'].tag,
+    description: SCENES['astro'].description,
     preview: <AstroInk />,
-    code: `// src/pages/index.astro
----
-// No server-side imports needed
----
-
-<div
-  data-scroll-draw
-  data-scroll-draw-options='{"easing":"ease-out","fade":true,"once":true}'
->
-  <svg viewBox="0 0 200 80" fill="none">
-    <path d="M10 40 Q100 5 190 40"
-      stroke="currentColor" strokeWidth="2" />
-  </svg>
-</div>
-
-<script>
-  import { initScrollDraw } from 'svg-scroll-draw/astro';
-
-  // Finds all [data-scroll-draw] on the page and
-  // initialises each one — no React, no Vue needed.
-  initScrollDraw();
-</script>`,
+    code: SCENES['astro'].code,
   },
   {
     id: 'timeline-api',
-    label: 'Timeline API',
-    tag: 'scrollDrawTimeline · independent tracks',
-    description: DESCRIPTIONS_D['timeline-api'],
+    label: SCENES['timeline-api'].label,
+    tag: SCENES['timeline-api'].tag,
+    description: SCENES['timeline-api'].description,
     preview: <TimelineInk />,
-    code: `import { scrollDrawTimeline } from 'svg-scroll-draw/timeline';
-
-// Each track owns its own from/to slice of the scroll range.
-// Unlike stagger (time offset), windows can overlap freely.
-scrollDrawTimeline('#chart', {
-  trigger: { start: 'top 88%', end: 'top 25%' },
-  tracks: [
-    { selector: '.axis',  from: 0,    to: 0.28, easing: 'ease-out' },
-    { selector: '.bar-1', from: 0.1,  to: 0.42, easing: 'ease-out' },
-    { selector: '.bar-2', from: 0.26, to: 0.56, easing: 'ease-out' },
-    { selector: '.bar-3', from: 0.42, to: 0.72, easing: 'ease-out' },
-    { selector: '.bar-4', from: 0.58, to: 0.88, easing: 'ease-out' },
-    // Trend line draws only after all bars are visible
-    { selector: '.trend', from: 0.75, to: 1.0,  easing: 'spring'   },
-  ],
-});`,
+    code: SCENES['timeline-api'].code,
   },
   {
     id: 'group-api',
-    label: 'Group API',
-    tag: 'scrollDrawGroup · synchronized',
-    description: DESCRIPTIONS_D['group-api'],
+    label: SCENES['group-api'].label,
+    tag: SCENES['group-api'].tag,
+    description: SCENES['group-api'].description,
     preview: <GroupInk />,
-    code: `import { scrollDrawGroup } from 'svg-scroll-draw/group';
-
-// All three containers share the same options and
-// start drawing at exactly the same scroll position.
-const group = scrollDrawGroup(
-  [speedRef.current, sizeRef.current, frameworkRef.current],
-  {
-    easing: 'ease-out',
-    speed:  1.1,
-    fade:   true,
-    once:   true,
-    trigger: { start: 'top 88%', end: 'top 25%' },
-  }
-);
-
-// One call controls all instances
-group.replay();
-group.pause();
-group.destroy(); // cleanup on unmount`,
+    code: SCENES['group-api'].code,
   },
   {
     id: 'vue',
-    label: 'Vue 3',
-    tag: 'ScrollDraw component · useScrollDraw composable',
-    description: DESCRIPTIONS_D['vue'],
+    label: SCENES['vue'].label,
+    tag: SCENES['vue'].tag,
+    description: SCENES['vue'].description,
     preview: <VueInk />,
-    code: `<!-- Option 1: <ScrollDraw> component -->
-<script setup>
-import { ScrollDraw } from 'svg-scroll-draw/vue';
-</script>
-
-<template>
-  <ScrollDraw easing="ease-out" :speed="0.9" fade once>
-    <svg viewBox="0 0 200 100" fill="none">
-      <path d="M10 50 Q100 10 190 50"
-        stroke="currentColor" stroke-width="2.5" />
-    </svg>
-  </ScrollDraw>
-</template>
-
-<!-- Option 2: useScrollDraw composable -->
-<script setup>
-import { useScrollDraw } from 'svg-scroll-draw/vue';
-
-const containerRef = useScrollDraw({
-  easing: 'spring',
-  once:   true,
-  trigger: { start: 'top 80%', end: 'center 20%' },
-});
-</script>
-
-<template>
-  <div :ref="containerRef">
-    <svg viewBox="0 0 200 100" fill="none">
-      <path d="M10 50 Q100 10 190 50"
-        stroke="currentColor" stroke-width="2.5" />
-    </svg>
-  </div>
-</template>`,
+    code: SCENES['vue'].code,
   },
   {
     id: 'svelte',
-    label: 'Svelte',
-    tag: 'use:scrollDraw action · createScrollDraw',
-    description: DESCRIPTIONS_D['svelte'],
+    label: SCENES['svelte'].label,
+    tag: SCENES['svelte'].tag,
+    description: SCENES['svelte'].description,
     preview: <SvelteInk />,
-    code: `<!-- Option 1: use:scrollDraw action (simplest) -->
-<script>
-  import { scrollDraw } from 'svg-scroll-draw/svelte';
-</script>
-
-<div use:scrollDraw={{ easing: 'spring', fade: true, once: true }}>
-  <svg viewBox="0 0 200 100" fill="none">
-    <path d="M10 50 Q100 10 190 50"
-      stroke="currentColor" stroke-width="2.5" />
-  </svg>
-</div>
-
-<!-- Option 2: createScrollDraw for instance control -->
-<script>
-  import { createScrollDraw } from 'svg-scroll-draw/svelte';
-
-  const { action, getInstance } = createScrollDraw({
-    easing: 'spring',
-    once:   true,
-    speed:  1.2,
-  });
-</script>
-
-<div use:action>
-  <svg viewBox="0 0 200 100" fill="none">
-    <path d="M10 50 Q100 10 190 50"
-      stroke="currentColor" stroke-width="2.5" />
-  </svg>
-</div>
-<button on:click={() => getInstance()?.replay()}>
-  Replay
-</button>`,
+    code: SCENES['svelte'].code,
   },
   {
     id: 'solid',
-    label: 'Solid.js',
-    tag: 'useScrollDraw hook · createScrollDraw',
-    description: DESCRIPTIONS_D['solid'],
+    label: SCENES['solid'].label,
+    tag: SCENES['solid'].tag,
+    description: SCENES['solid'].description,
     preview: <SolidInk />,
-    code: `// Option 1: useScrollDraw hook (simplest)
-import { useScrollDraw } from 'svg-scroll-draw/solid';
-
-function Hero() {
-  const ref = useScrollDraw({
-    easing: 'ease-out',
-    fade:   true,
-    once:   true,
-  });
-  return (
-    <div ref={ref}>
-      <svg viewBox="0 0 200 80" fill="none">
-        <path d="M10 40 Q100 5 190 40"
-          stroke="currentColor" stroke-width="2.5" />
-      </svg>
-    </div>
-  );
-}
-
-// Option 2: createScrollDraw — instance control
-import { createScrollDraw } from 'svg-scroll-draw/solid';
-
-function HeroWithReplay() {
-  const { ref, getInstance } = createScrollDraw({
-    easing: 'spring',
-    once:   true,
-  });
-  return (
-    <>
-      <div ref={ref}>
-        <svg viewBox="0 0 200 80" fill="none">
-          <path d="M10 40 Q100 5 190 40"
-            stroke="currentColor" stroke-width="2.5" />
-        </svg>
-      </div>
-      <button onClick={() => getInstance()?.replay()}>
-        Replay
-      </button>
-    </>
-  );
-}`,
+    code: SCENES['solid'].code,
   },
   {
     id: 'presets',
-    label: 'Presets',
-    tag: 'preset option · one-liner setup',
-    description: DESCRIPTIONS_D['presets'],
+    label: SCENES['presets'].label,
+    tag: SCENES['presets'].tag,
+    description: SCENES['presets'].description,
     preview: <PresetsInk />,
-    code: `import { scrollDraw } from 'svg-scroll-draw';
-
-// One-liner for each common pattern
-scrollDraw('#logo',    { preset: 'reveal'     }); // fade + ease-out, once
-scrollDraw('#diagram', { preset: 'sketch'     }); // staggered ease-in
-scrollDraw('#text',    { preset: 'typewriter' }); // fast linear stagger
-scrollDraw('#hero',    { preset: 'cinematic'  }); // slow fade ease-in-out
-scrollDraw('#icon',    { preset: 'spring'     }); // spring easing
-
-// Override any preset value
-scrollDraw('#logo', { preset: 'reveal', easing: 'spring' });
-
-// Inspect presets
-import { PRESETS } from 'svg-scroll-draw';
-console.log(PRESETS.reveal);
-// { easing: 'ease-out', fade: true, speed: 1.2, once: true }`,
+    code: SCENES['presets'].code,
   },
   {
     id: 'sequence-api',
-    label: 'Sequence API',
-    tag: 'scrollDrawSequence · one after another',
-    description: DESCRIPTIONS_D['sequence-api'],
+    label: SCENES['sequence-api'].label,
+    tag: SCENES['sequence-api'].tag,
+    description: SCENES['sequence-api'].description,
     preview: <SequenceInk />,
-    code: `import { scrollDrawSequence } from 'svg-scroll-draw/group';
-
-// Each container starts drawing only after
-// the previous one fully completes.
-const seq = scrollDrawSequence(
-  [codeRef.current, buildRef.current, shipRef.current],
-  {
-    easing:     'ease-out',
-    speed:      1.4,
-    fade:       true,
-    trigger:    { start: 'top 88%', end: 'top 25%' },
-    onComplete: () => setStep((s) => s + 1),
-  }
-);
-
-seq.replay();   // restart from step 1
-seq.destroy();  // cleanup on unmount`,
+    code: SCENES['sequence-api'].code,
   },
 
   // ── v2 examples ────────────────────────────────────────────────────────────
 
   {
     id: 'scroll-animate',
-    label: 'Pricing Card Reveal',
-    tag: 'v2 · scrollAnimate · staggered',
-    description: DESCRIPTIONS_A['scroll-animate'],
+    label: SCENES['scroll-animate'].label,
+    tag: SCENES['scroll-animate'].tag,
+    description: SCENES['scroll-animate'].description,
     preview: <PricingInk />,
-    code: CODES_A['scroll-animate'],
+    code: SCENES['scroll-animate'].code,
   },
 
   {
     id: 'scroll-counter',
-    label: 'Social Proof Strip',
-    tag: 'v2 · scrollCounter · formatted',
-    description: DESCRIPTIONS_A['scroll-counter'],
+    label: SCENES['scroll-counter'].label,
+    tag: SCENES['scroll-counter'].tag,
+    description: SCENES['scroll-counter'].description,
     preview: <CounterInk />,
-    code: CODES_A['scroll-counter'],
+    code: SCENES['scroll-counter'].code,
   },
 
   {
     id: 'scroll-video',
-    label: 'Product Video Scrub',
-    tag: 'v2 · scrollVideo · currentTime',
-    description: DESCRIPTIONS_B['scroll-video'],
+    label: SCENES['scroll-video'].label,
+    tag: SCENES['scroll-video'].tag,
+    description: SCENES['scroll-video'].description,
     preview: <VideoInk />,
-    code: CODES_B['scroll-video'],
+    code: SCENES['scroll-video'].code,
   },
 
   {
     id: 'scroll-text-lines',
-    label: 'Feature List Reveal',
-    tag: 'v2 · scrollAnimate · staggered list',
-    description: DESCRIPTIONS_A['scroll-text-lines'],
+    label: SCENES['scroll-text-lines'].label,
+    tag: SCENES['scroll-text-lines'].tag,
+    description: SCENES['scroll-text-lines'].description,
     preview: <FeatureLinesInk />,
-    code: CODES_A['scroll-text-lines'],
+    code: SCENES['scroll-text-lines'].code,
   },
 
   {
     id: 'scroll-animate-group',
-    label: 'Animate Group',
-    tag: 'v2 · scrollAnimateGroup · fan-out',
-    description: DESCRIPTIONS_A['scroll-animate-group'],
+    label: SCENES['scroll-animate-group'].label,
+    tag: SCENES['scroll-animate-group'].tag,
+    description: SCENES['scroll-animate-group'].description,
     preview: <AnimateGroupInk />,
-    code: CODES_A['scroll-animate-group'],
+    code: SCENES['scroll-animate-group'].code,
   },
 
   {
     id: 'scroll-text',
-    label: 'Hero Headline Reveal',
-    tag: 'v2 · scrollText · words + chars',
-    description: DESCRIPTIONS_A['scroll-text'],
+    label: SCENES['scroll-text'].label,
+    tag: SCENES['scroll-text'].tag,
+    description: SCENES['scroll-text'].description,
     preview: <HeadlineInk />,
-    code: CODES_A['scroll-text'],
+    code: SCENES['scroll-text'].code,
   },
   {
     id: 'scroll-reveal',
-    label: 'Card Cascade Reveal',
-    tag: 'v2.8 · scrollReveal · stagger',
-    description: DESCRIPTIONS_B['scroll-reveal'],
+    label: SCENES['scroll-reveal'].label,
+    tag: SCENES['scroll-reveal'].tag,
+    description: SCENES['scroll-reveal'].description,
     preview: <RevealInk />,
-    code: CODES_B['scroll-reveal'],
+    code: SCENES['scroll-reveal'].code,
   },
   {
     id: 'scroll-pin',
-    label: 'Sticky Feature Panel',
-    tag: 'v2.7 · scrollPin · onEnter / onLeave',
-    description: DESCRIPTIONS_B['scroll-pin'],
+    label: SCENES['scroll-pin'].label,
+    tag: SCENES['scroll-pin'].tag,
+    description: SCENES['scroll-pin'].description,
     preview: <PinInk />,
-    code: CODES_B['scroll-pin'],
+    code: SCENES['scroll-pin'].code,
   },
   {
     id: 'scroll-snap',
-    label: 'Horizontal Snap Carousel',
-    tag: 'v2.7 · scrollSnap · horizontal',
-    description: DESCRIPTIONS_B['scroll-snap'],
+    label: SCENES['scroll-snap'].label,
+    tag: SCENES['scroll-snap'].tag,
+    description: SCENES['scroll-snap'].description,
     preview: <SnapInk />,
-    code: CODES_B['scroll-snap'],
+    code: SCENES['scroll-snap'].code,
   },
 ];
 

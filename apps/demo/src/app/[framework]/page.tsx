@@ -1,14 +1,21 @@
 import type { Metadata } from 'next';
+import '@/components/compare/compare.css';
+import '@/components/framework.css';
 import { seoTitle } from '../_lib/seo';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { MobileMenu } from '@/components/MobileMenu';
-import { CopyButton } from '@/components/CopyButton';
 import { FRAMEWORK_LANDINGS, FRAMEWORK_SLUGS } from '@/data/framework-landings';
-import { COMPETITORS, SELF, MEASURED_ON } from '@/data/competitors';
+import { COMPETITORS, SELF, SELF_ENTRIES, MEASURED_ON } from '@/data/competitors';
+import { EXAMPLE_COUNT } from '@/data/examples-index';
 import { jsonLd as serialiseJsonLd } from '@/lib/json-ld';
+import { SiteShell } from '@/components/site/SiteShell';
+import { CodeBox } from '@/components/site/CodeBox';
+import { CopyCommand } from '@/components/home/CopyCommand';
+import { SizeScale } from '@/components/compare/SizeScale';
+import { ImportMap, type ImportRow } from '@/components/compare/ImportMap';
 
 const SITE_URL = 'https://svg-scroll-draw.vercel.app';
+const pad = (n: number) => String(n).padStart(2, '0');
 
 export function generateStaticParams() {
   return FRAMEWORK_SLUGS.map((framework) => ({ framework }));
@@ -39,44 +46,24 @@ export async function generateMetadata({
   };
 }
 
-function Nav() {
-  return (
-    <nav className="sticky top-0 z-50 bg-light-linen/95 backdrop-blur-sm border-b border-pitch-black flex items-center justify-between px-4 md:px-12 h-14">
-      <Link href="/" className="font-display font-bold text-sm tracking-tight hover:opacity-70 transition-opacity shrink-0">
-        svg-scroll-draw
-      </Link>
-      <div className="hidden lg:flex items-center gap-2">
-        {['Docs', 'Examples', 'Blog', 'Changelog'].map((l) => (
-          <Link key={l} href={`/${l.toLowerCase()}`} className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium">
-            {l}
-          </Link>
-        ))}
-        <Link href="/playground" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium">
-          ⚡ Playground
-        </Link>
-      </div>
-      <div className="flex lg:hidden"><MobileMenu /></div>
-    </nav>
-  );
-}
-
-function CodeBlock({ file, children }: { file: string; children: string }) {
-  return (
-    <div className="rounded-2xl overflow-hidden border border-pitch-black my-4">
-      <div className="bg-[#111] flex items-center justify-between px-4 py-2.5">
-        <div className="flex gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-[#444]" />
-          <span className="w-2.5 h-2.5 rounded-full bg-[#444]" />
-          <span className="w-2.5 h-2.5 rounded-full bg-[#444]" />
-        </div>
-        <span className="text-[11px] text-[#888] font-mono">{file}</span>
-        <CopyButton text={children} />
-      </div>
-      <pre className="bg-[#1c1c1c] text-[#e8e8e3] px-4 sm:px-6 py-4 text-[12px] sm:text-[13px] font-mono leading-[1.75] overflow-x-auto">
-        {children}
-      </pre>
-    </div>
-  );
+/**
+ * What a sample takes from the package, read from its own code: the named
+ * imports from any svg-scroll-draw entry, or — for a sample with no import —
+ * the data-scroll-* attributes it sets (Astro) or the Scroll* components it
+ * uses through a global plugin (Nuxt).
+ */
+function usedApis(code: string): string[] {
+  const names = new Set<string>();
+  for (const m of code.matchAll(/import\s*\{([^}]*)\}\s*from\s*['"]svg-scroll-draw[^'"]*['"]/g)) {
+    m[1].split(',').map((s) => s.trim()).filter(Boolean).forEach((n) => names.add(n));
+  }
+  if (names.size === 0) {
+    for (const m of code.matchAll(/\b(data-scroll-[a-z-]+?)(?=[\s>=])/g)) {
+      if (!m[1].endsWith('-options')) names.add(m[1]);
+    }
+    for (const m of code.matchAll(/<(Scroll[A-Z]\w*)/g)) names.add(`<${m[1]}>`);
+  }
+  return [...names];
 }
 
 export default async function Page({ params }: { params: Promise<{ framework: string }> }) {
@@ -112,141 +99,170 @@ export default async function Page({ params }: { params: Promise<{ framework: st
     ],
   };
 
-  return (
-    <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serialiseJsonLd(jsonLd) }} />
-      <div className="bg-light-linen text-pitch-black min-h-screen">
-        <Nav />
+  const rows: ImportRow[] = f.samples.map((s, i) => ({
+    n: pad(i + 1),
+    file: s.file,
+    heading: s.heading,
+    href: `#fw-s${i + 1}`,
+    names: usedApis(s.code),
+  }));
 
-        <header className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-14 sm:py-20">
-          <div className="max-w-4xl mx-auto">
-            <div className="flex flex-wrap items-center gap-3 mb-5">
-              <span
-                className="text-[10px] font-mono font-semibold px-2.5 py-1 rounded-full text-pitch-black border"
-                style={{ background: `${f.accent}22`, borderColor: `${f.accent}66` }}
-              >
-                {f.name}
-              </span>
-              <span className="text-[10px] font-mono text-graphite-border">{f.worksWith}</span>
-            </div>
-            <h1 className="font-display font-extrabold text-[clamp(32px,7vw,76px)] leading-[0.9] tracking-[-0.04em] mb-6">
-              {f.name} scroll animations.
-              <br />
-              <span className="text-graphite-border">{f.headline}</span>
-            </h1>
-            <p className="text-base sm:text-lg text-graphite-border leading-relaxed max-w-2xl mb-8">
-              {f.intro}
+  // Its own related pages first, then the rest, then the two with their own routes.
+  const order = [...f.related, ...FRAMEWORK_SLUGS.filter((s) => !f.related.includes(s))];
+  const others = [
+    ...order
+      .filter((s) => s !== f.slug)
+      .map((s) => FRAMEWORK_LANDINGS.find((o) => o.slug === s)!)
+      .filter(Boolean)
+      .map((o) => ({ href: `/${o.slug}`, t: o.name, d: `${o.worksWith} — ${o.primitive.toLowerCase()} from ${o.entry}`, swatch: o.accent })),
+    { href: '/react-scroll-animation', t: 'React', d: 'Components and hooks from svg-scroll-draw/react', swatch: '#61dafb' },
+    { href: '/nextjs-scroll-animation', t: 'Next.js', d: 'The React wrappers in the App Router', swatch: 'currentColor' },
+  ];
+
+  const toc: [string, string][] = [
+    ['fw-start', `Quick start · ${f.samples.length}`],
+    ['fw-size', 'Size'],
+    ['fw-faq', `Questions · ${f.faq.length}`],
+    ['fw-more', 'Other frameworks'],
+  ];
+  const short = f.name.toLowerCase();
+
+  return (
+    <SiteShell kicker={`${short} / your turn`}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serialiseJsonLd(jsonLd) }} />
+      <div className="cmp fw" style={{ '--fw': f.accent } as React.CSSProperties}>
+
+        {/* ── Opening ────────────────────────────────────── */}
+        <header className="pg-head cmp-head">
+          <div>
+            <p className="pg-kicker">
+              <span>framework / <b>{short}</b></span>
+              <span>{f.worksWith}</span>
             </p>
-            <div className="flex flex-wrap gap-3">
-              <div className="flex items-center gap-2 bg-pitch-black text-light-linen rounded-full px-5 py-2.5 text-sm font-mono">
-                <span className="opacity-50">$</span>
-                <span>npm i svg-scroll-draw</span>
-              </div>
-              <Link href="/docs" className="px-5 py-2.5 rounded-full border border-pitch-black text-sm font-medium hover:bg-pitch-black hover:text-light-linen transition-colors">
-                API reference →
-              </Link>
-              <Link href="/examples" className="px-5 py-2.5 rounded-full border border-subtle-ash text-sm font-medium hover:border-pitch-black transition-colors text-graphite-border">
-                23 live examples →
-              </Link>
+            <h1 className="pg-title cmp-title fw-title">
+              {f.name} scroll animations. <span className="dim">{f.headline}</span>
+            </h1>
+            <p className="pg-lede">{f.intro}</p>
+            <div className="pg-actions">
+              <CopyCommand />
+              <Link href="/docs" className="btn" data-magnetic>API reference →</Link>
+              <Link href="/examples" className="btn" data-magnetic>{EXAMPLE_COUNT} live examples →</Link>
             </div>
+            <dl className="pg-facts">
+              <div><dt>Every API</dt><dd>{SELF.gzipKb} KB</dd></div>
+              <div><dt>Reveal only</dt><dd>{SELF_ENTRIES.reveal} KB</dd></div>
+              <div><dt>GSAP stack</dt><dd>{COMPETITORS.gsapStack.gzipKb} KB</dd></div>
+              <div><dt>Version</dt><dd>{SELF.version}</dd></div>
+            </dl>
           </div>
+          <aside aria-label={`What the samples use from ${f.entry}`}>
+            <ImportMap entry={f.entry} swatch={f.accent} name={f.name} rows={rows} />
+          </aside>
         </header>
 
-        <section className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-14">
-          <div className="max-w-4xl mx-auto">
-            <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-2 font-mono font-medium">
-              {f.primitive}
-            </p>
-            <h2 className="font-display font-extrabold text-3xl sm:text-4xl tracking-[-0.03em] mb-8">Quick start.</h2>
-            <div className="rounded-xl border border-subtle-ash bg-marketplace-gray/40 p-4 mb-8">
-              <p className="text-[13px] text-graphite-border leading-relaxed">
-                <code className="font-mono text-[0.9em] bg-white px-1.5 py-0.5 rounded border border-subtle-ash">
-                  {f.entry}
-                </code>{' '}
-                — every sample below is written against the wrappers this package actually exports.
-              </p>
-            </div>
-
-            {f.samples.map((s) => (
-              <div key={s.heading}>
-                <h3 className="font-display font-extrabold text-xl tracking-[-0.02em] mb-3 mt-10">{s.heading}</h3>
-                <CodeBlock file={s.file}>{s.code}</CodeBlock>
-              </div>
+        <div className="cmp-body">
+          <nav className="cmp-toc" aria-label="On this page">
+            <p className="cmp-toc-h">on this page</p>
+            {toc.map(([id, label], i) => (
+              <a key={id} href={`#${id}`} className="cmp-toc-a"><span>{pad(i + 1)}</span>{label}</a>
             ))}
+            <p className="cmp-toc-h fw-toc-h">samples</p>
+            {f.samples.map((s, i) => (
+              <a key={s.file} href={`#fw-s${i + 1}`} className="cmp-toc-a"><span>{pad(i + 1)}</span>{s.file}</a>
+            ))}
+          </nav>
+          <div className="cmp-main">
 
-            <div className="mt-8 border-l-4 border-creator-pink bg-creator-pink/5 px-5 py-4 rounded-r-xl">
-              <p className="text-sm leading-relaxed text-graphite-border">
-                <strong className="text-pitch-black">Worth knowing:</strong> {f.note}
+            {/* ── 01 Quick start ─────────────────────────────── */}
+            <section className="cmp-sec" aria-labelledby="fw-start">
+              <div className="tb"><span className="tb-n">01</span><span>{f.primitive}</span></div>
+              <h2 id="fw-start" className="cmp-h2">Quick start</h2>
+              <p className="cmp-p">
+                Import from <code className="fw-code">{f.entry}</code> — every sample below is written against the
+                wrappers this package actually exports.
               </p>
-            </div>
-          </div>
-        </section>
 
-        <section className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-14">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="font-display font-extrabold text-3xl sm:text-4xl tracking-[-0.03em] mb-6">Size.</h2>
-            <p className="text-graphite-border leading-relaxed mb-6 max-w-2xl">
-              {SELF.gzipKb} KB gzipped for every API at once, and each one is a separate entry point — so a page that
-              only reveals elements ships 4.5 KB, not the lot. The equivalent GSAP stack for the same work is{' '}
-              {COMPETITORS.gsapStack.gzipKb} KB, which makes this {ratio}× smaller. GSAP is free and considerably
-              broader; if you need timelines, Draggable or Flip, use GSAP.
-            </p>
-            <p className="text-[12px] text-graphite-border font-mono">
-              Measured {MEASURED_ON} at gzip level 9 against gsap {COMPETITORS.gsapStack.version} and svg-scroll-draw{' '}
-              {SELF.version}.{' '}
-              <Link href="/vs-gsap" className="underline underline-offset-2 hover:text-pitch-black transition-colors">
-                Full comparison →
-              </Link>
-            </p>
-          </div>
-        </section>
+              <ol className="fw-samples">
+                {f.samples.map((s, i) => (
+                  <li key={s.heading} id={`fw-s${i + 1}`} className="fw-sample">
+                    <p className="fw-sample-k"><span>sample {pad(i + 1)}</span><span>{s.file}</span></p>
+                    <h3 className="fw-h3">{s.heading}</h3>
+                    <CodeBox file={s.file}>{s.code}</CodeBox>
+                  </li>
+                ))}
+              </ol>
 
-        <section className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-14">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="font-display font-extrabold text-3xl sm:text-4xl tracking-[-0.03em] mb-8">
-              {f.name} questions.
-            </h2>
-            <div className="space-y-6">
-              {f.faq.map((item) => (
-                <div key={item.q}>
-                  <h3 className="font-display font-extrabold text-lg tracking-[-0.02em] mb-2">{item.q}</h3>
-                  <p className="text-graphite-border leading-relaxed text-[15px]">{item.a}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+              <div className="cmp-note">
+                <div className="tb"><span className="tb-n">!</span><span>worth knowing</span></div>
+                <p className="cmp-note-body">{f.note}</p>
+              </div>
+            </section>
 
-        <section className="px-4 sm:px-6 md:px-12 py-12 bg-marketplace-gray border-b border-pitch-black">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="font-display font-extrabold text-2xl tracking-[-0.02em] mb-6">Other frameworks</h2>
-            <div className="flex flex-wrap gap-3">
-              {FRAMEWORK_LANDINGS.filter((o) => o.slug !== f.slug).map((o) => (
-                <Link
-                  key={o.slug}
-                  href={`/${o.slug}`}
-                  className="px-4 py-2 rounded-full border border-pitch-black bg-light-linen text-sm font-medium hover:shadow-[3px_3px_0px_#000] transition-shadow"
-                >
-                  {o.name}
-                </Link>
-              ))}
-              <Link href="/react-scroll-animation" className="px-4 py-2 rounded-full border border-pitch-black bg-light-linen text-sm font-medium hover:shadow-[3px_3px_0px_#000] transition-shadow">
-                React
-              </Link>
-              <Link href="/nextjs-scroll-animation" className="px-4 py-2 rounded-full border border-pitch-black bg-light-linen text-sm font-medium hover:shadow-[3px_3px_0px_#000] transition-shadow">
-                Next.js
-              </Link>
-            </div>
-          </div>
-        </section>
+            {/* ── 02 Size ────────────────────────────────────── */}
+            <section className="cmp-sec" aria-labelledby="fw-size">
+              <div className="tb"><span className="tb-n">02</span><span>size</span></div>
+              <h2 id="fw-size" className="cmp-h2">Size</h2>
+              <p className="cmp-p">
+                {SELF.gzipKb} KB gzipped for every API at once, and each one is a separate entry point — so a page that
+                only reveals elements ships {SELF_ENTRIES.reveal} KB, not the lot. The equivalent GSAP stack for the same
+                work is {COMPETITORS.gsapStack.gzipKb} KB, which makes this {ratio}× smaller. GSAP is free and considerably
+                broader; if you need timelines, Draggable or Flip, use GSAP.
+              </p>
+              <div className="fw-fig">
+                <SizeScale
+                  n={2}
+                  caption="the same work, to one scale"
+                  bars={[
+                    { label: `svg-scroll-draw ${SELF.version}`, sub: 'every API, main entry', kb: SELF.gzipKb, ours: true },
+                    { label: 'scrollReveal', sub: 'its own entry point, for a reveal-only page', kb: SELF_ENTRIES.reveal, ours: true },
+                    { label: `gsap ${COMPETITORS.gsapStack.version}`, sub: COMPETITORS.gsapStack.label, kb: COMPETITORS.gsapStack.gzipKb },
+                  ]}
+                />
+              </div>
+              <p className="cmp-small">
+                Measured {MEASURED_ON} at gzip level 9 against gsap {COMPETITORS.gsapStack.version} and svg-scroll-draw{' '}
+                {SELF.version}.{' '}
+                <Link href="/vs-gsap">Full comparison →</Link>
+              </p>
+            </section>
 
-        <footer className="px-6 md:px-12 py-6 border-t border-subtle-ash text-center text-[11px] font-mono text-graphite-border">
-          svg-scroll-draw · MIT · {SELF.gzipKb} KB gzipped ·{' '}
-          <a href="https://github.com/DhruvilChauahan0210/ink-scroll" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-pitch-black transition-colors">
-            GitHub
-          </a>
-        </footer>
+            {/* ── 03 Questions ───────────────────────────────── */}
+            <section className="cmp-sec" aria-labelledby="fw-faq">
+              <div className="tb"><span className="tb-n">03</span><span>questions</span></div>
+              <h2 id="fw-faq" className="cmp-h2">{f.name} questions</h2>
+              <div className="cmp-faq">
+                {f.faq.map((item, i) => (
+                  <div key={item.q} className="cmp-q">
+                    <span className="cmp-q-n">Q{i + 1}</span>
+                    <div>
+                      <h3 className="cmp-q-t">{item.q}</h3>
+                      <p className="cmp-p">{item.a}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* ── 04 Other frameworks ────────────────────────── */}
+            <section className="cmp-sec" aria-labelledby="fw-more">
+              <div className="tb"><span className="tb-n">04</span><span>other frameworks</span></div>
+              <h2 id="fw-more" className="cmp-h2">Other frameworks</h2>
+              <div className="ex-rel-list">
+                {others.map((o, i) => (
+                  <Link key={o.href} href={o.href} className="ex-rel-row">
+                    <span className="ex-rel-n">{pad(i + 1)}</span>
+                    <span>
+                      <span className="ex-rel-t"><i className="fw-sw" style={{ background: o.swatch }} aria-hidden="true" />{o.t}</span>
+                      <span className="ex-rel-d">{o.d}</span>
+                    </span>
+                    <span className="ex-rel-go" aria-hidden="true">open →</span>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          </div>
+        </div>
       </div>
-    </>
+    </SiteShell>
   );
 }

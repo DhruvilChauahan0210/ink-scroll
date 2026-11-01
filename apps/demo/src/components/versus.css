@@ -1,0 +1,88 @@
+/* The comparison pages (/vs-vivus, /vs-scrollmagic, /vs-motion,
+   /vs-locomotive-scroll) in the homepage's design. Scoped `.site .vs`; the
+   shared opening, sections, figures and questions are in compare/compare.css. */
+
+.site .vs .cmp-head aside .cmp-note { margin-top: 32px; }
+
+/* 01 — the parts list of what was measured */
+.site .vs-parts { margin-top: 26px; border-top: 1px solid var(--fg-3); }
+.site .vs-parts-row {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1.3fr) minmax(0, 0.7fr) minmax(0, 1fr) minmax(0, 0.9fr) 76px;
+  gap: 12px;
+  align-items: baseline;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+  font: 400 13px/1.45 var(--mono);
+  color: var(--fg-2);
+}
+.site .vs-parts-row > span { min-width: 0; overflow-wrap: anywhere; }
+.site .vs-parts-row i { display: none; font-style: normal; }
+.site .vs-parts-hd { padding: 10px 0; border-bottom-color: var(--line-2); font: 500 10px/1.4 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-3); }
+.site .vs-parts-hd span:last-child, .site .vs-parts-kb { text-align: right; }
+.site .vs-parts-n { color: var(--accent); font-size: 11px; }
+.site .vs-parts-name { color: var(--fg); font-weight: 500; }
+.site .vs-parts-kb { color: var(--fg); font-weight: 500; font-variant-numeric: tabular-nums; }
+.site .vs-parts-row.is-ours .vs-parts-kb { color: var(--accent); }
+.site .vs-cmd { font: inherit; color: var(--fg-2); overflow-wrap: anywhere; }
+@media (max-width: 759px) {
+  .site .vs-parts-hd { display: none; }
+  .site .vs-parts-row { grid-template-columns: 34px minmax(0, 1fr) auto; gap: 4px 12px; }
+  .site .vs-parts-row > span:nth-child(3),
+  .site .vs-parts-row > span:nth-child(4),
+  .site .vs-parts-row > span:nth-child(5) { grid-column: 2 / -1; font-size: 12px; }
+  .site .vs-parts-kb { grid-column: 3; grid-row: 1; }
+  .site .vs-parts-row i { display: inline-block; width: 82px; color: var(--fg-3); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; }
+}
+
+/* 02 — the matrix */
+.site .vs-tally { margin: -4px 0 22px; }
+.site .vs-matrix { border-top: 1px solid var(--fg-3); }
+.site .vs-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.site .vs-table th, .site .vs-table td { padding: 14px 0; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; font-weight: 400; }
+.site .vs-table thead th {
+  padding: 10px 0;
+  border-bottom-color: var(--line-2);
+  font: 500 10px/1.35 var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+  vertical-align: bottom;
+}
+.site .vs-table thead th.is-ours { color: var(--accent); }
+.site .vs-c-n { width: 44px; font: 500 11px/1.9 var(--mono); color: var(--fg-3); }
+.site .vs-c-m { width: 150px; text-align: center !important; }
+.site .vs-table thead .vs-c-m { padding-left: 6px; padding-right: 6px; overflow-wrap: anywhere; }
+.site .vs-feat { display: block; font-size: 15px; line-height: 1.5; color: var(--fg); }
+.site .vs-note { display: block; margin-top: 4px; font-size: 13px; line-height: 1.55; color: var(--fg-3); }
+.site .vs-table tbody tr { transition: background-color 0.2s; }
+.site .vs-table tbody tr:hover { background: var(--bg-2); }
+.site .vs-table tbody tr.is-ours .vs-c-n { color: var(--accent); }
+
+.site .vs-m { display: inline-flex; align-items: center; justify-content: center; min-height: 22px; vertical-align: middle; }
+.site .vs-m svg { width: 18px; height: 18px; overflow: visible; }
+.site .vs-m .cmp-ink { fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.site .vs-m.is-yes { color: var(--accent); }
+/* Their column inks in plain ink; the accent stays on ours, as in the header. */
+.site .vs-table td:last-child .vs-m.is-yes { color: var(--fg); }
+.site .vs-m.is-no { color: var(--fg-3); }
+.site .vs-m.is-no .cmp-ink { stroke-width: 1.4; }
+.site .vs-m.is-part { color: var(--fg-2); }
+.site .vs-m.is-val { font: 500 12.5px/1.4 var(--mono); color: var(--fg); font-variant-numeric: tabular-nums; }
+.site .vs-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 22px; }
+.site .vs-legend > span { display: inline-flex; align-items: center; gap: 6px; }
+.site .vs-legend .vs-m svg { width: 14px; height: 14px; }
+@media (max-width: 639px) {
+  .site .vs-c-n { width: 30px; }
+  .site .vs-c-m { width: 74px; }
+  .site .vs-table thead th { font-size: 9px; letter-spacing: 0.08em; }
+  .site .vs-feat { font-size: 14px; }
+  .site .vs-note { font-size: 12.5px; }
+  .site .vs-m.is-val { font-size: 11.5px; }
+}
+
+/* 03 — where they win */
+.site .vs-wins { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--fg-3); }
+.site .vs-wins li { display: grid; grid-template-columns: 52px minmax(0, 1fr); padding: 20px 0 6px; border-bottom: 1px solid var(--line); }
+.site .vs-wins-n { font: 500 12px/1.9 var(--mono); color: var(--accent); }
+.site .vs-wins-t { margin: 0 0 8px; font-size: clamp(18px, 1.6vw, 22px); font-weight: 500; line-height: 1.3; letter-spacing: -0.02em; color: var(--fg); }

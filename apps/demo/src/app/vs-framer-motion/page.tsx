@@ -1,9 +1,17 @@
 import type { Metadata } from 'next';
-import { seoTitle } from '../_lib/seo';
 import Link from 'next/link';
-import { MobileMenu } from '@/components/MobileMenu';
-import { CopyButton } from '@/components/CopyButton';
-import { COMPETITORS, SELF, MEASURED_ON } from '@/data/competitors';
+import { seoTitle } from '../_lib/seo';
+import { COMPETITORS, SELF, SELF_ENTRIES, MEASURED_ON, provenance, ratioVsSelf } from '@/data/competitors';
+import { jsonLd } from '@/lib/json-ld';
+import { SiteShell } from '@/components/site/SiteShell';
+import { CodeBox } from '@/components/site/CodeBox';
+import { SpecSheet } from '@/components/h2h/SpecSheet';
+import { WeighIn } from '@/components/h2h/WeighIn';
+import { Calls, Closing, CodeSet, Head, Legend, Matrix, OtherSheets, Toc, type MatrixRow } from '@/components/h2h/parts';
+
+const FM = COMPETITORS.framerMotion;
+/** "3.36" → "3.4": one decimal is all the precision a headline ratio deserves. */
+const RATIO = (Math.round(ratioVsSelf('framerMotion') * 10) / 10).toFixed(1);
 
 export const metadata: Metadata = {
   title: seoTitle('Framer Motion Alternative for Scroll Animations'),
@@ -54,128 +62,39 @@ const pageJsonLd = {
       name: 'How much smaller is svg-scroll-draw compared to Framer Motion?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'svg-scroll-draw 2.15.1 is 10.2 KB gzipped. framer-motion 13.1.0 is 34.3 KB at its CJS entry and 61.6 KB as a single bundle, measured 2026-08-14 at gzip level 9 — so roughly 3.4x larger on the fairer of the two figures. A tree-shaken modern ESM import can be considerably less than that, because Framer Motion ships a re-export shell and real usage varies with how much of it you touch.',
+        text: `svg-scroll-draw ${SELF.version} is ${SELF.gzipKb} KB gzipped. framer-motion ${FM.version} is ${FM.gzipKb} KB at its CJS entry and 61.6 KB as a single bundle, measured ${MEASURED_ON} at gzip level 9 — so roughly ${RATIO}x larger on the fairer of the two figures. A tree-shaken modern ESM import can be considerably less than that, because Framer Motion ships a re-export shell and real usage varies with how much of it you touch.`,
       },
     },
   ],
 };
 
-function Nav() {
-  return (
-    <nav className="sticky top-0 z-50 bg-light-linen/95 backdrop-blur-sm border-b border-pitch-black flex items-center justify-between px-4 md:px-12 h-14">
-      <Link href="/" className="font-display font-bold text-sm tracking-tight hover:opacity-70 transition-opacity shrink-0">svg-scroll-draw</Link>
-      <div className="hidden lg:flex items-center gap-2">
-        {['Home','Docs','Examples','Blog','Changelog'].map(l => (
-          <Link key={l} href={l==='Home'?'/':`/${l.toLowerCase()}`} className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium">{l}</Link>
-        ))}
-        <Link href="/playground" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium">⚡ Playground</Link>
-      </div>
-      <div className="flex lg:hidden"><MobileMenu /></div>
-    </nav>
-  );
-}
-
-function CodeBlock({ file, children }: { file: string; children: string }) {
-  return (
-    <div className="rounded-2xl overflow-hidden border border-pitch-black">
-      <div className="bg-[#111] flex items-center justify-between px-4 py-2.5">
-        <div className="flex gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[#444]"/><span className="w-2.5 h-2.5 rounded-full bg-[#444]"/><span className="w-2.5 h-2.5 rounded-full bg-[#444]"/></div>
-        <span className="text-[11px] text-[#888] font-mono">{file}</span>
-        <CopyButton text={children} />
-      </div>
-      <pre className="bg-[#1c1c1c] text-[#e8e8e3] px-4 sm:px-6 py-4 text-[11px] sm:text-[13px] font-mono leading-[1.75] overflow-x-auto">{children}</pre>
-    </div>
-  );
-}
-
-function Check() { return <span className="text-[#22c55e] font-bold text-base">✓</span>; }
-function Cross() { return <span className="text-[#ef4444] font-bold text-base">✗</span>; }
-function Partial() { return <span className="text-[#f59e0b] font-bold text-base">~</span>; }
-
-const FEATURES = [
-  { f: 'Scroll-driven animations',       us: true,  fm: true,   note: '' },
-  { f: 'Animate any CSS property',       us: true,  fm: true,   note: '' },
-  { f: 'SVG path draw animation',        us: true,  fm: true,   note: 'Framer Motion does do this — its pathLength / pathOffset / pathSpacing props map onto stroke-dasharray and stroke-dashoffset, normalised 0–1. Paired with useScroll it covers the basic draw. What it has no equivalent for is multi-path stagger orchestration and the native CSS fast path.' },
-  { f: 'Pin / sticky sections',          us: true,  fm: false,  note: '' },
-  { f: 'Section snapping',               us: true,  fm: false,  note: '' },
-  { f: 'Text split + stagger',           us: true,  fm: false,  note: 'Framer Motion needs SplitText manually' },
-  { f: 'Animated counters',              us: true,  fm: 'partial', note: 'Framer Motion useTransform can do this but requires boilerplate' },
-  { f: 'Video scrub',                    us: true,  fm: false,  note: '' },
-  { f: 'scrollReveal (one-line preset)', us: true,  fm: false,  note: '' },
-  { f: 'scrollProgress (CSS variable)',  us: true,  fm: false,  note: '' },
-  { f: 'Horizontal scroll sections',     us: true,  fm: 'partial', note: '' },
-  { f: 'Honours prefers-reduced-motion by default', us: 'partial', fm: 'partial', note: 'Ours is default-on for scrollDraw, scrollAnimate, scrollReveal, scrollCounter, scrollText, scrollVideo, scrollSnap and Cinematic — but scrollHorizontal opts out by design, and scrollPin/scrollProgress have no reduced-motion path. Framer Motion has useReducedMotion() and MotionConfig reducedMotion="user" — good tooling, but opt-in rather than default.' },
-  { f: 'Native CSS fast path',           us: true,  fm: false,  note: 'svg-scroll-draw uses animation-timeline: view() when eligible' },
-  { f: 'Works outside React',            us: true,  fm: false,  note: 'Framer Motion is React-only' },
-  { f: 'Vue / Svelte / Solid wrappers',  us: true,  fm: false,  note: '' },
-  { f: 'Velocity-scaled animation',      us: true,  fm: false,  note: '' },
-  { f: 'Lenis smooth scroll adapter',    us: true,  fm: 'partial', note: '' },
-  { f: 'MIT license',                    us: true,  fm: true,   note: '' },
-  { f: 'Bundle size (gzipped)',          us: `${SELF.gzipKb} KB`, fm: `${COMPETITORS.framerMotion.gzipKb} KB`, note: `framer-motion ${COMPETITORS.framerMotion.version} CJS entry, measured ${MEASURED_ON}. Its single bundle is 61.6 KB; a tree-shaken ESM import can be well under both — Framer Motion\u2019s real cost depends heavily on how much of it you use.` },
+const FEATURES: MatrixRow[] = [
+  { f: 'Scroll-driven animations', cells: [true, true] },
+  { f: 'Animate any CSS property', cells: [true, true] },
+  { f: 'SVG path draw animation', cells: [true, true], note: 'Framer Motion does do this — its pathLength / pathOffset / pathSpacing props map onto stroke-dasharray and stroke-dashoffset, normalised 0–1. Paired with useScroll it covers the basic draw. What it has no equivalent for is multi-path stagger orchestration and the native CSS fast path.' },
+  { f: 'Pin / sticky sections', cells: [true, false] },
+  { f: 'Section snapping', cells: [true, false] },
+  { f: 'Text split + stagger', cells: [true, false], note: 'Framer Motion needs SplitText manually' },
+  { f: 'Animated counters', cells: [true, 'partial'], note: 'Framer Motion useTransform can do this but requires boilerplate' },
+  { f: 'Video scrub', cells: [true, false] },
+  { f: 'scrollReveal (one-line preset)', cells: [true, false] },
+  { f: 'scrollProgress (CSS variable)', cells: [true, false] },
+  { f: 'Horizontal scroll sections', cells: [true, 'partial'] },
+  { f: 'Honours prefers-reduced-motion by default', cells: ['partial', 'partial'], note: 'Ours is default-on for scrollDraw, scrollAnimate, scrollReveal, scrollCounter, scrollText, scrollVideo, scrollSnap and Cinematic — but scrollHorizontal opts out by design, and scrollPin/scrollProgress have no reduced-motion path. Framer Motion has useReducedMotion() and MotionConfig reducedMotion="user" — good tooling, but opt-in rather than default.' },
+  { f: 'Native CSS fast path', cells: [true, false], note: 'svg-scroll-draw uses animation-timeline: view() when eligible' },
+  { f: 'Works outside React', cells: [true, false], note: 'Framer Motion is React-only' },
+  { f: 'Vue / Svelte / Solid wrappers', cells: [true, false] },
+  { f: 'Velocity-scaled animation', cells: [true, false] },
+  { f: 'Lenis smooth scroll adapter', cells: [true, 'partial'] },
+  { f: 'MIT license', cells: [true, true] },
+  { f: 'Bundle size (gzipped)', cells: [`${SELF.gzipKb} KB`, `${FM.gzipKb} KB`], note: `framer-motion ${FM.version} CJS entry, measured ${MEASURED_ON}. Its single bundle is 61.6 KB; a tree-shaken ESM import can be well under both — Framer Motion’s real cost depends heavily on how much of it you use.` },
 ];
 
-export default function VsFramerMotionPage() {
-  return (
-    <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(pageJsonLd) }} />
-    <div className="bg-light-linen text-pitch-black min-h-screen">
-      <Nav />
-
-      <header className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-14 sm:py-20">
-        <div className="max-w-4xl mx-auto">
-          <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-4 font-mono font-medium">Comparison</p>
-          <h1 className="font-display font-extrabold text-[clamp(32px,7vw,76px)] leading-[0.9] tracking-[-0.04em] mb-6">
-            svg-scroll-draw<br /><span className="text-graphite-border">vs Framer Motion.</span>
-          </h1>
-          <p className="text-base sm:text-lg text-graphite-border leading-relaxed max-w-2xl mb-8">
-            Framer Motion is excellent for React component animations. For scroll-driven effects specifically,
-            svg-scroll-draw does more — at roughly a third of the bytes — and works in any framework.
-          </p>
-          <div className="flex flex-wrap gap-3">
-            <Link href="/" className="px-5 py-2.5 rounded-full bg-pitch-black text-light-linen text-sm font-semibold hover:opacity-90 transition-opacity">Get started free →</Link>
-            <Link href="/vs-gsap" className="px-5 py-2.5 rounded-full border border-pitch-black text-sm font-medium hover:bg-pitch-black hover:text-light-linen transition-colors">vs GSAP →</Link>
-          </div>
-        </div>
-      </header>
-
-      {/* Bundle */}
-      <section className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-14">
-        <div className="max-w-4xl mx-auto">
-          <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-2 font-mono font-medium">01</p>
-          <h2 className="font-display font-extrabold text-3xl sm:text-4xl tracking-[-0.03em] mb-8">Bundle size.</h2>
-          <div className="space-y-4 mb-6">
-            {[
-              { label: 'svg-scroll-draw', size: '~10 KB', pct: 29, color: '#ff90e8', badge: 'yours' },
-              { label: 'Framer Motion',   size: `${COMPETITORS.framerMotion.gzipKb} KB`, pct: 100, color: '#e0e0e0', badge: 'cjs entry' },
-            ].map(({ label, size, pct, color, badge }) => (
-              <div key={label} className="flex items-center gap-4">
-                <div className="w-40 shrink-0 text-right"><span className="text-[12px] font-mono text-graphite-border">{label}</span></div>
-                <div className="flex-1 flex items-center gap-3">
-                  <div className="h-8 rounded-lg flex items-center px-3" style={{ width: `${pct}%`, background: color, minWidth: 60 }}>
-                    <span className="text-[11px] font-mono font-bold text-pitch-black whitespace-nowrap">{size}</span>
-                  </div>
-                  {badge && <span className="text-[10px] font-mono text-graphite-border border border-subtle-ash px-2 py-0.5 rounded-full">{badge}</span>}
-                </div>
-              </div>
-            ))}
-          </div>
-          <p className="text-[12px] text-graphite-border font-mono">Minified + gzipped. Framer Motion tree-shaking helps but scroll-specific APIs pull in most of the core.</p>
-        </div>
-      </section>
-
-      {/* Side by side */}
-      <section className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-14">
-        <div className="max-w-4xl mx-auto">
-          <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-2 font-mono font-medium">02</p>
-          <h2 className="font-display font-extrabold text-3xl sm:text-4xl tracking-[-0.03em] mb-10">Side-by-side API.</h2>
-          <div className="space-y-10">
-
-            <div>
-              <h3 className="font-display font-extrabold text-xl tracking-[-0.02em] mb-4">Fade + slide in on scroll</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <p className="text-[11px] font-mono text-graphite-border mb-2 uppercase tracking-[0.1em]">Framer Motion</p>
-                  <CodeBlock file="Card.tsx">{`import { motion, useInView } from 'framer-motion';
+const PAIRS = [
+  {
+    title: 'Fade + slide in on scroll',
+    fmFile: 'Card.tsx',
+    fm: `import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 
 function Card() {
@@ -194,11 +113,8 @@ function Card() {
       Content
     </motion.div>
   );
-}`}</CodeBlock>
-                </div>
-                <div>
-                  <p className="text-[11px] font-mono text-graphite-border mb-2 uppercase tracking-[0.1em]">svg-scroll-draw</p>
-                  <CodeBlock file="app.js">{`import { scrollReveal }
+}`,
+    ours: `import { scrollReveal }
   from 'svg-scroll-draw/reveal';
 
 // Works in React, Vue, Svelte,
@@ -207,17 +123,12 @@ scrollReveal('.card', {
   from:   { opacity: 0, y: 32 },
   easing: 'ease-out',
   once:   true,
-});`}</CodeBlock>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h3 className="font-display font-extrabold text-xl tracking-[-0.02em] mb-4">Scrub animation tied to scroll position</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <p className="text-[11px] font-mono text-graphite-border mb-2 uppercase tracking-[0.1em]">Framer Motion</p>
-                  <CodeBlock file="Section.tsx">{`import { useScroll, useTransform,
+});`,
+  },
+  {
+    title: 'Scrub animation tied to scroll position',
+    fmFile: 'Section.tsx',
+    fm: `import { useScroll, useTransform,
   motion } from 'framer-motion';
 
 function Section() {
@@ -233,11 +144,8 @@ function Section() {
       Content
     </motion.div>
   );
-}`}</CodeBlock>
-                </div>
-                <div>
-                  <p className="text-[11px] font-mono text-graphite-border mb-2 uppercase tracking-[0.1em]">svg-scroll-draw</p>
-                  <CodeBlock file="app.js">{`import { scrollAnimate }
+}`,
+    ours: `import { scrollAnimate }
   from 'svg-scroll-draw';
 
 scrollAnimate('#section', {
@@ -246,18 +154,132 @@ scrollAnimate('#section', {
     start: 'top bottom',
     end:   'bottom top',
   },
-});`}</CodeBlock>
-                </div>
-              </div>
-            </div>
+});`,
+  },
+];
 
-            <div>
-              <h3 className="font-display font-extrabold text-xl tracking-[-0.02em] mb-4">CSS variable binding <span className="text-[13px] font-normal font-mono text-[#22c55e] ml-2 border border-[#22c55e]/30 bg-[#22c55e]/10 px-2 py-0.5 rounded-full">svg-scroll-draw only</span></h3>
-              <CodeBlock file="app.js">{`import { scrollProgress } from 'svg-scroll-draw/progress';
+const WHEN_FM = [
+  { title: 'Rich React component animations', desc: 'Hover states, enter/exit transitions, layout animations, drag — Framer Motion\'s component model shines for interactive UI beyond scroll.' },
+  { title: 'AnimatePresence', desc: 'Exit animations when components unmount. Genuinely hard to do without Framer Motion\'s lifecycle integration.' },
+  { title: 'Gesture animations', desc: 'Drag, pan, tap, hover — Framer Motion\'s gesture system is unmatched.' },
+  { title: 'Spring physics', desc: 'Framer Motion\'s spring/inertia model is more physics-accurate for complex gesture responses.' },
+];
+
+const TOC: [string, string][] = [
+  ['vs-size', 'Bundle size'],
+  ['vs-api', `Side-by-side API · ${PAIRS.length + 1}`],
+  ['vs-features', `Feature matrix · ${FEATURES.length}`],
+  ['vs-when', 'When Framer Motion is right'],
+  ['vs-more', 'More comparisons'],
+];
+
+export default function VsFramerMotionPage() {
+  return (
+    <SiteShell kicker="vs framer motion / your turn">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(pageJsonLd) }} />
+      <div className="h2h">
+
+        {/* ── Opening ──────────────────────────────────────────────────────── */}
+        <header className="pg-head h2h-head">
+          <div>
+            <p className="pg-kicker">
+              <span>comparison / svg-scroll-draw vs framer motion</span>
+              <span>measured {MEASURED_ON}</span>
+            </p>
+            <h1 className="pg-title h2h-title is-name">
+              <span className="nb">svg-scroll-draw</span> <span className="dim">vs Framer Motion.</span>
+            </h1>
+            <p className="pg-lede">
+              Framer Motion is excellent for React component animations. For scroll-driven effects specifically,
+              svg-scroll-draw does more — at roughly a third of the bytes — and works in any framework.
+            </p>
+            <div className="pg-actions">
+              <Link href="/" className="btn btn-solid" data-magnetic>Get started free →</Link>
+              <Link href="/vs-gsap" className="btn" data-magnetic>vs GSAP →</Link>
+            </div>
+            <dl className="pg-facts">
+              <div><dt>svg-scroll-draw</dt><dd>{SELF.gzipKb} KB</dd></div>
+              <div><dt>Framer Motion</dt><dd>{FM.gzipKb} KB</dd></div>
+              <div><dt>Smaller by</dt><dd>{RATIO}×</dd></div>
+              <div><dt>Licence</dt><dd>{SELF.license} · {FM.license}</dd></div>
+            </dl>
+          </div>
+          <SpecSheet
+            cols={[
+              { name: 'svg-scroll-draw', sub: SELF.version, ours: true },
+              { name: 'Framer Motion', sub: FM.version },
+            ]}
+            rows={[
+              { k: 'Size, min + gzip', cells: [`${SELF.gzipKb} KB, every API`, `${FM.gzipKb} KB, cjs entry`], win: 0 },
+              { k: 'Runs in', cells: ['React, Vue, Svelte, Solid, Angular, Astro, Nuxt, vanilla', 'React'], win: 0 },
+              { k: 'Native CSS path', cells: ['animation-timeline: view(), when eligible', 'No'], win: 0 },
+              { k: 'Pin, snap, text, video', cells: ['Built in', 'No'], win: 0 },
+              { k: 'Gestures, exit, layout', cells: ['No', 'AnimatePresence, drag, layout'], win: 1 },
+              { k: 'License', cells: [SELF.license, FM.license] },
+            ]}
+            caption="fig. 1 — at a glance · ✓ where one side is clearly ahead"
+          />
+        </header>
+
+        <div className="h2h-body">
+          <div className="h2h-main">
+
+            {/* ── 01 Bundle ──────────────────────────────────── */}
+            <section className="h2h-sec" aria-labelledby="vs-size">
+              <Head n={1} k="weigh-in" id="vs-size">Bundle size.</Head>
+              <p className="h2h-p">
+                Framer Motion&apos;s entry beside ours, with the one piece the fade-in below actually imports. The dashed
+                rule is svg-scroll-draw with every API loaded.
+              </p>
+              <WeighIn
+                max={40}
+                step={5}
+                self={SELF.gzipKb}
+                rows={[
+                  { name: 'svg-scroll-draw/reveal', note: 'what the fade-in below imports', kb: SELF_ENTRIES.reveal, ours: true, badge: 'one entry' },
+                  { name: 'svg-scroll-draw', note: `${SELF.version} · every API`, kb: SELF.gzipKb, ours: true, badge: 'yours' },
+                  { name: 'Framer Motion', note: `framer-motion ${FM.version}`, kb: FM.gzipKb, badge: 'cjs entry' },
+                ]}
+                dim={{ from: SELF.gzipKb, to: FM.gzipKb, title: 'Difference', label: `Δ ${(FM.gzipKb - SELF.gzipKb).toFixed(1)} KB` }}
+                caption={`fig. 2 — the weigh-in, to scale · ${RATIO}× the bytes at the CJS entry`}
+              />
+              <p className="h2h-src">
+                {provenance([`framer-motion ${FM.version}`, `svg-scroll-draw ${SELF.version}`])}{' '}
+                Framer Motion tree-shaking helps but scroll-specific APIs pull in most of the core.
+              </p>
+            </section>
+
+            {/* ── 02 Side by side ────────────────────────────── */}
+            <section className="h2h-sec" aria-labelledby="vs-api">
+              <Head n={2} k={`${PAIRS.length + 1} tasks`} id="vs-api">Side-by-side API.</Head>
+              {PAIRS.map((p, i) => (
+                <CodeSet
+                  key={p.title}
+                  n={`2.${i + 1}`}
+                  title={p.title}
+                  items={[
+                    { who: 'Framer Motion', file: p.fmFile, code: p.fm },
+                    { who: 'svg-scroll-draw', file: 'app.js', code: p.ours, ours: true },
+                  ]}
+                />
+              ))}
+              <div className="cs">
+                <div className="cs-head">
+                  <span className="cs-n">2.{PAIRS.length + 1}</span>
+                  <h3 className="cs-t">CSS variable binding</h3>
+                  <span className="tag cs-tag">svg-scroll-draw only</span>
+                </div>
+                <div className="cs-grid cs-2">
+                  <div className="cs-col is-ours">
+                    <p className="cs-who"><span>svg-scroll-draw</span><span className="cs-lines">the call</span></p>
+                    <CodeBox file="app.js">{`import { scrollProgress } from 'svg-scroll-draw/progress';
 
 // Set --scroll-progress (0→1) and --scroll-progress-eased on the element
-scrollProgress('#hero', { easing: 'ease-in-out' });`}</CodeBlock>
-              <CodeBlock file="styles.css">{`#hero {
+scrollProgress('#hero', { easing: 'ease-in-out' });`}</CodeBox>
+                  </div>
+                  <div className="cs-col is-ours">
+                    <p className="cs-who"><span>styles.css</span><span className="cs-lines">the binding</span></p>
+                    <CodeBox file="styles.css">{`#hero {
   /* Drive CSS animations directly from the scroll variable */
   opacity: calc(var(--scroll-progress-eased));
   transform: translateY(
@@ -266,81 +288,48 @@ scrollProgress('#hero', { easing: 'ease-in-out' });`}</CodeBlock>
   background-size:
     calc(100% + var(--scroll-progress) * 20%)
     auto;
-}`}</CodeBlock>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* Feature matrix */}
-      <section className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-14">
-        <div className="max-w-4xl mx-auto">
-          <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-2 font-mono font-medium">03</p>
-          <h2 className="font-display font-extrabold text-3xl sm:text-4xl tracking-[-0.03em] mb-10">Feature matrix.</h2>
-          <div className="rounded-2xl border border-pitch-black overflow-hidden">
-            <div className="grid grid-cols-[1fr_auto_auto] bg-[#111] text-light-linen">
-              {['Feature','svg-scroll-draw','Framer Motion'].map(h => (
-                <div key={h} className="px-5 py-3 text-[11px] font-mono font-semibold uppercase tracking-[0.1em] text-center first:text-left">{h}</div>
-              ))}
-            </div>
-            {FEATURES.map(({ f, us, fm, note }, i) => (
-              <div key={f} className={`grid grid-cols-[1fr_auto_auto] items-center border-t border-subtle-ash ${i%2===0?'bg-white':'bg-light-linen'}`}>
-                <div className="px-5 py-3.5">
-                  <span className="text-[13px] font-medium">{f}</span>
-                  {note && <p className="text-[11px] text-graphite-border font-mono mt-0.5">{note}</p>}
-                </div>
-                <div className="px-5 py-3.5 text-center">
-                  {us === true ? <Check/> : us === false ? <Cross/> : typeof us === 'string' ? <span className="text-[11px] font-mono font-bold">{us}</span> : null}
-                </div>
-                <div className="px-5 py-3.5 text-center">
-                  {fm === true ? <Check/> : fm === false ? <Cross/> : fm === 'partial' ? <Partial/> : typeof fm === 'string' ? <span className="text-[11px] font-mono font-bold">{fm}</span> : null}
+}`}</CodeBox>
+                  </div>
                 </div>
               </div>
-            ))}
-          </div>
-          <p className="text-[11px] text-graphite-border font-mono mt-3">✓ supported · ✗ not supported · ~ partial</p>
-        </div>
-      </section>
+            </section>
 
-      {/* When Framer Motion wins */}
-      <section className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-14">
-        <div className="max-w-4xl mx-auto">
-          <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-2 font-mono font-medium">04</p>
-          <h2 className="font-display font-extrabold text-3xl sm:text-4xl tracking-[-0.03em] mb-6">When Framer Motion is the right call.</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {[
-              { title: 'Rich React component animations', desc: 'Hover states, enter/exit transitions, layout animations, drag — Framer Motion\'s component model shines for interactive UI beyond scroll.' },
-              { title: 'AnimatePresence', desc: 'Exit animations when components unmount. Genuinely hard to do without Framer Motion\'s lifecycle integration.' },
-              { title: 'Gesture animations', desc: 'Drag, pan, tap, hover — Framer Motion\'s gesture system is unmatched.' },
-              { title: 'Spring physics', desc: 'Framer Motion\'s spring/inertia model is more physics-accurate for complex gesture responses.' },
-            ].map(({ title, desc }) => (
-              <div key={title} className="p-5 rounded-xl border border-subtle-ash bg-marketplace-gray/30">
-                <p className="font-semibold text-sm mb-1">{title}</p>
-                <p className="text-[13px] text-graphite-border">{desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+            {/* ── 03 Feature matrix ──────────────────────────── */}
+            <section className="h2h-sec" aria-labelledby="vs-features">
+              <Head n={3} k={`${FEATURES.length} rows`} id="vs-features">Feature matrix.</Head>
+              <Matrix cols={[{ name: 'svg-scroll-draw', ours: true }, { name: 'Framer Motion' }]} rows={FEATURES} />
+              <Legend />
+            </section>
 
-      {/* CTA */}
-      <section className="bg-pitch-black text-light-linen px-4 sm:px-6 md:px-12 py-16 sm:py-20 text-center">
-        <div className="max-w-2xl mx-auto">
-          <h2 className="font-display font-extrabold text-[clamp(28px,6vw,56px)] leading-[0.92] tracking-[-0.04em] mb-4">Scroll animations, solved.</h2>
-          <p className="text-graphite-border text-sm sm:text-base mb-8">~10 KB. Framework-agnostic. MIT. Works everywhere Framer Motion doesn&apos;t.</p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <div className="flex items-center gap-2 bg-white/10 rounded-full px-5 py-3 text-sm font-mono"><span className="opacity-50">$</span><span>npm i svg-scroll-draw</span></div>
-            <Link href="/" className="px-5 py-3 rounded-full border-2 border-white text-sm font-semibold hover:bg-white hover:text-pitch-black transition-colors text-center">Read the docs →</Link>
-            <Link href="/vs-gsap" className="px-5 py-3 rounded-full border-2 border-white/30 text-sm font-medium hover:border-white transition-colors text-center text-graphite-border hover:text-white">vs GSAP →</Link>
-          </div>
-        </div>
-      </section>
+            {/* ── 04 When Framer Motion wins ─────────────────── */}
+            <section className="h2h-sec" aria-labelledby="vs-when">
+              <Head n={4} k="their side" id="vs-when">When Framer Motion is the right call.</Head>
+              <Calls items={WHEN_FM} />
+            </section>
 
-      <footer className="px-6 md:px-12 py-6 border-t border-subtle-ash text-center text-[11px] font-mono text-graphite-border">
-        svg-scroll-draw · MIT · ~10 KB ·{' '}<a href="https://github.com/DhruvilChauahan0210/ink-scroll" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-pitch-black transition-colors">GitHub</a>
-      </footer>
-    </div>
-    </>
+            {/* ── 05 More comparisons ────────────────────────── */}
+            <section className="h2h-sec" aria-labelledby="vs-more">
+              <Head n={5} k="the set" id="vs-more">More comparisons.</Head>
+              <OtherSheets current="/vs-framer-motion" />
+            </section>
+          </div>
+          <Toc items={TOC} />
+        </div>
+
+        {/* ── The last word ──────────────────────────────────────────────── */}
+        <Closing
+          n={6}
+          title="Scroll animations, solved."
+          actions={
+            <>
+              <Link href="/docs" className="btn btn-solid" data-magnetic>Read the docs →</Link>
+              <Link href="/vs-gsap" className="btn" data-magnetic>vs GSAP →</Link>
+            </>
+          }
+        >
+          {SELF.gzipKb} KB. Framework-agnostic. MIT. Works everywhere Framer Motion doesn&apos;t.
+        </Closing>
+      </div>
+    </SiteShell>
   );
 }

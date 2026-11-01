@@ -1,9 +1,8 @@
 import type { Metadata } from 'next';
 import { seoTitle } from '../../_lib/seo';
-import { RelatedResources } from '@/components/RelatedResources';
-import Link from 'next/link';
-import { MobileMenu } from '@/components/MobileMenu';
-import { CopyButton } from '@/components/CopyButton';
+import { SELF } from '@/data/competitors';
+import { BlogArticle, Section, Code, Callout, Table, Figure, Closing } from '@/components/blog/BlogArticle';
+import { GroupFigure } from './GroupFigure';
 
 export const metadata: Metadata = {
   title: seoTitle('Animate Multiple Elements on Scroll — Group APIs'),
@@ -52,129 +51,67 @@ const articleJsonLd = {
   mainEntityOfPage: { '@type': 'WebPage', '@id': 'https://svg-scroll-draw.vercel.app/blog/scroll-animation-groups' },
 };
 
-const GH  = 'https://github.com/DhruvilChauahan0210/ink-scroll';
-const NPM = 'https://www.npmjs.com/package/svg-scroll-draw';
+/** [function, behaviour, options type] — the API summary table. */
+const API: [string, string, string][] = [
+  ['scrollAnimateGroup', 'All elements animate simultaneously', 'ScrollAnimateOptions'],
+  ['scrollAnimateSequence', 'Each starts only after the previous completes', 'ScrollAnimateOptions'],
+  ['scrollParallaxGroup', 'All elements parallax at the same speed', 'ScrollParallaxOptions'],
+  ['scrollDrawGroup', 'All SVG containers draw simultaneously', 'ScrollDrawOptions'],
+  ['scrollDrawSequence', 'SVG containers draw in strict sequence', 'ScrollDrawOptions'],
+];
 
-function CodeBlock({ file, children }: { file: string; children: string }) {
-  return (
-    <div className="rounded-2xl overflow-hidden border border-pitch-black my-5">
-      <div className="bg-[#111] flex items-center justify-between px-4 py-2.5">
-        <div className="flex gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-[#444]" />
-          <span className="w-2.5 h-2.5 rounded-full bg-[#444]" />
-          <span className="w-2.5 h-2.5 rounded-full bg-[#444]" />
-        </div>
-        <span className="text-[11px] text-[#888] font-mono">{file}</span>
-        <CopyButton text={children} />
-      </div>
-      <pre className="bg-[#1c1c1c] text-[#e8e8e3] px-4 sm:px-6 py-4 text-[12px] sm:text-[13px] font-mono leading-[1.75] overflow-x-auto">
-        {children}
-      </pre>
-    </div>
-  );
-}
-
-function Callout({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="border-l-4 border-creator-pink bg-creator-pink/5 px-5 py-4 rounded-r-xl my-5 text-sm leading-relaxed">
-      {children}
-    </div>
-  );
-}
-
-function H2({ id, children }: { id: string; children: React.ReactNode }) {
-  return (
-    <h2 id={id} className="font-display font-extrabold text-[clamp(20px,3vw,28px)] tracking-[-0.03em] leading-tight mt-14 mb-4 scroll-mt-20">
-      {children}
-    </h2>
-  );
-}
-
-function H3({ children }: { children: React.ReactNode }) {
-  return (
-    <h3 className="font-display font-bold text-[clamp(16px,2vw,20px)] tracking-[-0.02em] mt-8 mb-3">
-      {children}
-    </h3>
-  );
-}
+/** The methods every group call's combined instance carries. */
+const METHODS = ['destroy', 'replay', 'pause', 'resume', 'seek', 'getProgress'];
 
 export default function BlogScrollAnimationGroups() {
   return (
-    <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }} />
-    <div className="bg-light-linen text-pitch-black min-h-screen">
-
-      {/* Nav */}
-      <nav className="sticky top-0 z-50 bg-light-linen/95 backdrop-blur-sm border-b border-pitch-black flex items-center justify-between px-4 md:px-12 h-14">
-        <Link href="/" className="font-display font-bold text-sm tracking-tight shrink-0">svg-scroll-draw</Link>
-        <div className="hidden lg:flex items-center gap-2">
-          <Link href="/docs"      className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium">Docs</Link>
-          <Link href="/examples"  className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium">Examples</Link>
-          <Link href="/blog"      className="text-xs px-3.5 py-1.5 rounded-full border border-pitch-black bg-pitch-black text-light-linen font-medium">Blog</Link>
-          <Link href="/changelog" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium">Changelog</Link>
-          <a href={NPM} target="_blank" rel="noopener noreferrer" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-mono">v2.6.0</a>
-          <a href={GH}  target="_blank" rel="noopener noreferrer" className="text-sm px-4 py-1.5 rounded-full bg-pitch-black text-light-linen hover:bg-graphite-border transition-colors font-medium">GitHub →</a>
-        </div>
-        <div className="flex lg:hidden">
-          <MobileMenu />
-        </div>
-      </nav>
-
-      <article className="max-w-2xl mx-auto px-4 sm:px-6 md:px-8 py-12 sm:py-16">
-
-        {/* Header */}
-        <div className="mb-10">
-          <div className="flex flex-wrap gap-2 mb-6">
-            <span className="text-[10px] font-bold uppercase tracking-[0.14em] px-2.5 py-1 rounded-full bg-creator-pink/20 text-pitch-black border border-creator-pink/30">Group APIs</span>
-            <span className="text-[10px] font-mono text-graphite-border">June 2026 · 7 min read</span>
-          </div>
-          <h1 className="font-display font-extrabold text-[clamp(28px,5vw,52px)] leading-[0.95] tracking-[-0.04em] mb-5">
-            Animate multiple elements<br />on scroll — one call.
-          </h1>
-          <p className="text-base sm:text-lg text-graphite-border leading-relaxed">
-            Every real landing page needs more than one animated element. svg-scroll-draw ships four group APIs for fan-out, cascade, and parallax — all in <code className="font-mono text-[0.87em] bg-marketplace-gray px-1.5 py-0.5 rounded-md">svg-scroll-draw/group</code>.
-          </p>
-        </div>
-
-        {/* TOC */}
-        <nav className="rounded-2xl border border-subtle-ash bg-marketplace-gray px-5 py-4 mb-10 text-sm">
-          <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-graphite-border mb-3">In this post</p>
-          <ol className="space-y-1.5 text-[13px]">
-            <li><a href="#the-problem" className="hover:text-pitch-black transition-colors text-graphite-border">1. The problem with animating many elements</a></li>
-            <li><a href="#scrollAnimateGroup" className="hover:text-pitch-black transition-colors text-graphite-border">2. scrollAnimateGroup — fan-out simultaneously</a></li>
-            <li><a href="#scrollAnimateSequence" className="hover:text-pitch-black transition-colors text-graphite-border">3. scrollAnimateSequence — cascade one by one</a></li>
-            <li><a href="#scrollParallaxGroup" className="hover:text-pitch-black transition-colors text-graphite-border">4. scrollParallaxGroup — multi-layer parallax</a></li>
-            <li><a href="#scrollDrawGroup" className="hover:text-pitch-black transition-colors text-graphite-border">5. scrollDrawGroup — SVG paths in sync</a></li>
-            <li><a href="#patterns" className="hover:text-pitch-black transition-colors text-graphite-border">6. Real-world patterns</a></li>
-            <li><a href="#api" className="hover:text-pitch-black transition-colors text-graphite-border">7. API summary</a></li>
-          </ol>
-        </nav>
-
-        {/* 1 */}
-        <H2 id="the-problem">1. The problem with animating many elements</H2>
-        <p className="text-[15px] text-graphite-border leading-relaxed mb-4">
-          When you have a feature grid, testimonials row, or pricing table, you end up writing the same <code className="font-mono text-[0.87em] bg-marketplace-gray px-1.5 py-0.5 rounded-md">scrollAnimate</code> call for every element:
+    <BlogArticle
+      slug="scroll-animation-groups"
+      jsonLd={articleJsonLd}
+      tags={['svg-scroll-draw/group', 'stagger', 'parallax']}
+      title={<>Animate multiple elements on scroll — one call.</>}
+      lede={
+        <>
+          Every real landing page needs more than one animated element. svg-scroll-draw ships four group APIs for
+          fan-out, cascade, and parallax — all in <code>svg-scroll-draw/group</code>.
+        </>
+      }
+      facts={[
+        { k: 'Group functions', v: String(API.length) },
+        { k: 'Instances returned', v: 'one per call' },
+        { k: 'Instance methods', v: String(METHODS.length) },
+        { k: 'Licence', v: SELF.license },
+      ]}
+      figure={
+        <Figure n={1} caption="the two ways to animate a set, over the section's scroll — together from each element's own position, or one after another">
+          <GroupFigure />
+        </Figure>
+      }
+    >
+      <Section id="the-problem" k="before" title="The problem with animating many elements">
+        <p>
+          When you have a feature grid, testimonials row, or pricing table, you end up writing the same{' '}
+          <code>scrollAnimate</code> call for every element:
         </p>
-        <CodeBlock file="before.js">
-{`// Before group APIs — repetitive and brittle
+        <Code file="before.js">{`// Before group APIs — repetitive and brittle
 scrollAnimate(card1, { props: { opacity: [0, 1] }, easing: 'ease-out', once: true });
 scrollAnimate(card2, { props: { opacity: [0, 1] }, easing: 'ease-out', once: true });
 scrollAnimate(card3, { props: { opacity: [0, 1] }, easing: 'ease-out', once: true });
 
 // And you have to track all three instances for cleanup:
-// inst1.destroy(); inst2.destroy(); inst3.destroy();`}
-        </CodeBlock>
-        <p className="text-[15px] text-graphite-border leading-relaxed">
-          The group APIs collapse this to one call that returns a single combined instance — <code className="font-mono text-[0.87em] bg-marketplace-gray px-1.5 py-0.5 rounded-md">destroy()</code> cleans up everything at once.
+// inst1.destroy(); inst2.destroy(); inst3.destroy();`}</Code>
+        <p>
+          The group APIs collapse this to one call that returns a single combined instance — <code>destroy()</code> cleans
+          up everything at once.
         </p>
+      </Section>
 
-        {/* 2 */}
-        <H2 id="scrollAnimateGroup">2. scrollAnimateGroup — fan-out simultaneously</H2>
-        <p className="text-[15px] text-graphite-border leading-relaxed mb-4">
-          All elements animate at the same time as the section scrolls into view. Each tracks its own scroll position independently, so elements higher on the page reveal slightly before lower ones — natural cascade for free.
+      <Section id="scrollAnimateGroup" k="fan-out" toc="scrollAnimateGroup" title={<><code className="gp-code">scrollAnimateGroup</code> — fan-out simultaneously</>}>
+        <p>
+          All elements animate at the same time as the section scrolls into view. Each tracks its own scroll position
+          independently, so elements higher on the page reveal slightly before lower ones — natural cascade for free.
         </p>
-        <CodeBlock file="feature-grid.js">
-{`import { scrollAnimateGroup } from 'svg-scroll-draw/group';
+        <Code file="feature-grid.js">{`import { scrollAnimateGroup } from 'svg-scroll-draw/group';
 
 // All cards animate simultaneously — same options, one call
 const group = scrollAnimateGroup(
@@ -192,12 +129,10 @@ const group = scrollAnimateGroup(
 // Full instance API on the whole group
 group.replay();   // replay all
 group.pause();    // pause all
-group.destroy();  // cleanup on unmount`}
-        </CodeBlock>
+group.destroy();  // cleanup on unmount`}</Code>
 
-        <H3>React</H3>
-        <CodeBlock file="FeatureGrid.tsx">
-{`import { useEffect, useRef } from 'react';
+        <h3 className="ba-h3">React</h3>
+        <Code file="FeatureGrid.tsx">{`import { useEffect, useRef } from 'react';
 import { scrollAnimateGroup } from 'svg-scroll-draw/group';
 
 export function FeatureGrid({ features }) {
@@ -224,20 +159,21 @@ export function FeatureGrid({ features }) {
       ))}
     </div>
   );
-}`}
-        </CodeBlock>
+}`}</Code>
 
-        <Callout>
-          <strong>Trigger offsets for free:</strong> Because each element computes its own scroll position, a card near the top of the grid will reveal before a card at the bottom — even with identical trigger settings. No manual offset needed.
+        <Callout k="trigger offsets">
+          <strong>Trigger offsets for free:</strong> Because each element computes its own scroll position, a card near the
+          top of the grid will reveal before a card at the bottom — even with identical trigger settings. No manual offset
+          needed.
         </Callout>
+      </Section>
 
-        {/* 3 */}
-        <H2 id="scrollAnimateSequence">3. scrollAnimateSequence — cascade one by one</H2>
-        <p className="text-[15px] text-graphite-border leading-relaxed mb-4">
-          Each element starts only after the previous one reaches 100%. Perfect for step-by-step reveals, numbered lists, or onboarding flows.
+      <Section id="scrollAnimateSequence" k="cascade" toc="scrollAnimateSequence" title={<><code className="gp-code">scrollAnimateSequence</code> — cascade one by one</>}>
+        <p>
+          Each element starts only after the previous one reaches 100%. Perfect for step-by-step reveals, numbered lists, or
+          onboarding flows.
         </p>
-        <CodeBlock file="steps.js">
-{`import { scrollAnimateSequence } from 'svg-scroll-draw/group';
+        <Code file="steps.js">{`import { scrollAnimateSequence } from 'svg-scroll-draw/group';
 
 // Step 1 animates fully, then step 2 starts, then step 3
 scrollAnimateSequence(
@@ -250,19 +186,19 @@ scrollAnimateSequence(
     easing:     'ease-out',
     onComplete: () => console.log('a step finished'),
   }
-);`}
-        </CodeBlock>
-        <p className="text-[14px] text-graphite-border leading-relaxed">
-          Internally each step is forced to <code className="font-mono text-[0.87em] bg-marketplace-gray px-1.5 py-0.5 rounded-md">once: true</code> so completing a step and scrolling back doesn&apos;t reset it and break the chain.
+);`}</Code>
+        <p>
+          Internally each step is forced to <code>once: true</code> so completing a step and scrolling back doesn&apos;t
+          reset it and break the chain.
         </p>
+      </Section>
 
-        {/* 4 */}
-        <H2 id="scrollParallaxGroup">4. scrollParallaxGroup — multi-layer parallax</H2>
-        <p className="text-[15px] text-graphite-border leading-relaxed mb-4">
-          Apply the same parallax speed to multiple elements at once. Typical use: floating UI badges, background texture elements, or decorative shapes that all move at the same rate.
+      <Section id="scrollParallaxGroup" k="parallax" toc="scrollParallaxGroup" title={<><code className="gp-code">scrollParallaxGroup</code> — multi-layer parallax</>}>
+        <p>
+          Apply the same parallax speed to multiple elements at once. Typical use: floating UI badges, background texture
+          elements, or decorative shapes that all move at the same rate.
         </p>
-        <CodeBlock file="hero.js">
-{`import { scrollParallaxGroup } from 'svg-scroll-draw/group';
+        <Code file="hero.js">{`import { scrollParallaxGroup } from 'svg-scroll-draw/group';
 
 // All three decorative shapes float upward at 30% of scroll speed
 scrollParallaxGroup(
@@ -274,15 +210,13 @@ scrollParallaxGroup(
 scrollParallaxGroup(
   ['#bg-gradient', '#noise-overlay'],
   { speed: -0.15 }
-);`}
-        </CodeBlock>
+);`}</Code>
 
-        <H3>Multi-layer depth effect</H3>
-        <p className="text-[14px] text-graphite-border leading-relaxed mb-3">
-          Call <code className="font-mono text-[0.87em] bg-marketplace-gray px-1.5 py-0.5 rounded-md">scrollParallaxGroup</code> multiple times with different speeds for a classic depth illusion:
+        <h3 className="ba-h3">Multi-layer depth effect</h3>
+        <p>
+          Call <code>scrollParallaxGroup</code> multiple times with different speeds for a classic depth illusion:
         </p>
-        <CodeBlock file="parallax-layers.js">
-{`import { scrollParallaxGroup } from 'svg-scroll-draw/group';
+        <Code file="parallax-layers.js">{`import { scrollParallaxGroup } from 'svg-scroll-draw/group';
 
 // Far background — moves slowest
 scrollParallaxGroup(['.layer-far'],  { speed: 0.1 });
@@ -294,16 +228,15 @@ scrollParallaxGroup(['.layer-mid'],  { speed: 0.25 });
 scrollParallaxGroup(['.layer-near'], { speed: 0.5 });
 
 // Floating UI elements — drift opposite direction
-scrollParallaxGroup(['.badge', '.tag', '.pill'], { speed: -0.2 });`}
-        </CodeBlock>
+scrollParallaxGroup(['.badge', '.tag', '.pill'], { speed: -0.2 });`}</Code>
+      </Section>
 
-        {/* 5 */}
-        <H2 id="scrollDrawGroup">5. scrollDrawGroup — SVG paths in sync</H2>
-        <p className="text-[15px] text-graphite-border leading-relaxed mb-4">
-          The original group API — animate multiple SVG containers simultaneously with <code className="font-mono text-[0.87em] bg-marketplace-gray px-1.5 py-0.5 rounded-md">scrollDraw</code>. Same pattern: one call, combined instance.
+      <Section id="scrollDrawGroup" k="SVG" toc="scrollDrawGroup" title={<><code className="gp-code">scrollDrawGroup</code> — SVG paths in sync</>}>
+        <p>
+          The original group API — animate multiple SVG containers simultaneously with <code>scrollDraw</code>. Same
+          pattern: one call, combined instance.
         </p>
-        <CodeBlock file="icons.js">
-{`import { scrollDrawGroup, scrollDrawSequence } from 'svg-scroll-draw/group';
+        <Code file="icons.js">{`import { scrollDrawGroup, scrollDrawSequence } from 'svg-scroll-draw/group';
 
 // Three SVG icons draw at the same time
 const group = scrollDrawGroup(
@@ -315,15 +248,12 @@ const group = scrollDrawGroup(
 const seq = scrollDrawSequence(
   ['#icon-speed', '#icon-size', '#icon-framework'],
   { easing: 'spring', fade: true }
-);`}
-        </CodeBlock>
+);`}</Code>
+      </Section>
 
-        {/* 6 */}
-        <H2 id="patterns">6. Real-world patterns</H2>
-
-        <H3>Pricing section — staggered cards + counters</H3>
-        <CodeBlock file="pricing.js">
-{`import { scrollAnimateGroup } from 'svg-scroll-draw/group';
+      <Section id="patterns" k="real-world" title="Real-world patterns">
+        <h3 className="ba-h3">Pricing section — staggered cards + counters</h3>
+        <Code file="pricing.js">{`import { scrollAnimateGroup } from 'svg-scroll-draw/group';
 import { scrollCounter } from 'svg-scroll-draw';
 
 // Pricing cards fan in
@@ -343,12 +273,10 @@ document.querySelectorAll('.price-number').forEach((el, i) => {
     once:   true,
     trigger: { start: \`top \${85 - i * 5}%\`, end: \`top \${50 - i * 5}%\` },
   });
-});`}
-        </CodeBlock>
+});`}</Code>
 
-        <H3>Hero with parallax depth + text reveal</H3>
-        <CodeBlock file="hero-section.js">
-{`import { scrollParallaxGroup } from 'svg-scroll-draw/group';
+        <h3 className="ba-h3">Hero with parallax depth + text reveal</h3>
+        <Code file="hero-section.js">{`import { scrollParallaxGroup } from 'svg-scroll-draw/group';
 import { scrollText } from 'svg-scroll-draw/text';
 
 // Background layers drift at different depths
@@ -361,12 +289,10 @@ scrollText('#hero-headline', {
   stagger: 0.06,
   from:    { opacity: 0, y: 32 },
   once:    true,
-});`}
-        </CodeBlock>
+});`}</Code>
 
-        <H3>Feature list — sequential entrance</H3>
-        <CodeBlock file="feature-list.js">
-{`import { scrollAnimateSequence } from 'svg-scroll-draw/group';
+        <h3 className="ba-h3">Feature list — sequential entrance</h3>
+        <Code file="feature-list.js">{`import { scrollAnimateSequence } from 'svg-scroll-draw/group';
 
 // Each feature row slides in after the previous one
 scrollAnimateSequence(
@@ -378,68 +304,34 @@ scrollAnimateSequence(
     },
     easing: 'ease-out',
   }
-);`}
-        </CodeBlock>
+);`}</Code>
+      </Section>
 
-        {/* 7 */}
-        <H2 id="api">7. API summary</H2>
-        <div className="overflow-x-auto my-5">
-          <table className="w-full text-[13px] border-collapse">
-            <thead>
-              <tr className="bg-pitch-black text-light-linen">
-                <th className="text-left px-4 py-2.5 font-mono text-[11px] font-medium">Function</th>
-                <th className="text-left px-4 py-2.5 font-mono text-[11px] font-medium">Behaviour</th>
-                <th className="text-left px-4 py-2.5 font-mono text-[11px] font-medium">Options type</th>
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                ['scrollAnimateGroup', 'All elements animate simultaneously', 'ScrollAnimateOptions'],
-                ['scrollAnimateSequence', 'Each starts only after the previous completes', 'ScrollAnimateOptions'],
-                ['scrollParallaxGroup', 'All elements parallax at the same speed', 'ScrollParallaxOptions'],
-                ['scrollDrawGroup', 'All SVG containers draw simultaneously', 'ScrollDrawOptions'],
-                ['scrollDrawSequence', 'SVG containers draw in strict sequence', 'ScrollDrawOptions'],
-              ].map(([fn, desc, type]) => (
-                <tr key={fn} className="border-b border-subtle-ash">
-                  <td className="px-4 py-2.5 font-mono text-[12px] font-semibold text-pitch-black">{fn}</td>
-                  <td className="px-4 py-2.5 text-graphite-border">{desc}</td>
-                  <td className="px-4 py-2.5 font-mono text-[11px] text-graphite-border">{type}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <p className="text-[14px] text-graphite-border leading-relaxed">
-          All functions return a combined <code className="font-mono text-[0.87em] bg-marketplace-gray px-1.5 py-0.5 rounded-md">ScrollDrawInstance</code> with{' '}
-          <code className="font-mono text-[0.87em] bg-marketplace-gray px-1.5 py-0.5 rounded-md">destroy</code>,{' '}
-          <code className="font-mono text-[0.87em] bg-marketplace-gray px-1.5 py-0.5 rounded-md">replay</code>,{' '}
-          <code className="font-mono text-[0.87em] bg-marketplace-gray px-1.5 py-0.5 rounded-md">pause</code>,{' '}
-          <code className="font-mono text-[0.87em] bg-marketplace-gray px-1.5 py-0.5 rounded-md">resume</code>,{' '}
-          <code className="font-mono text-[0.87em] bg-marketplace-gray px-1.5 py-0.5 rounded-md">seek</code>, and{' '}
-          <code className="font-mono text-[0.87em] bg-marketplace-gray px-1.5 py-0.5 rounded-md">getProgress</code>.
-          All are available in <code className="font-mono text-[0.87em] bg-marketplace-gray px-1.5 py-0.5 rounded-md">svg-scroll-draw/group</code>.
+      <Section id="api" k="reference" title="API summary">
+        <Table
+          head={['Function', 'Behaviour', 'Options type']}
+          rows={API.map(([fn, desc, type]) => [fn, desc, <code key="t">{type}</code>])}
+        />
+        <p>
+          All functions return a combined <code>ScrollDrawInstance</code> with{' '}
+          {METHODS.map((m, i) => (
+            <span key={m}>
+              <code>{m}</code>
+              {i < METHODS.length - 2 ? ', ' : i === METHODS.length - 2 ? ', and ' : ''}
+            </span>
+          ))}
+          . All are available in <code>svg-scroll-draw/group</code>.
         </p>
+      </Section>
 
-        {/* CTA */}
-        <div className="mt-14 flex flex-wrap gap-3">
-          <Link href="/examples#scroll-animate-group" className="text-sm px-5 py-2.5 rounded-full bg-pitch-black text-light-linen hover:bg-graphite-border transition-colors font-medium shadow-[2px_2px_0px_#000]">
-            See live example →
-          </Link>
-          <Link href="/docs#scroll-animate" className="text-sm px-5 py-2.5 rounded-full border-2 border-pitch-black hover:bg-pitch-black hover:text-light-linen transition-colors font-medium">
-            Full API docs →
-          </Link>
-        </div>
-
-        {/* Footer */}
-        <div className="mt-16 pt-6 border-t border-subtle-ash flex flex-wrap items-center justify-between gap-4">
-          <Link href="/blog" className="text-[13px] text-graphite-border hover:text-pitch-black transition-colors">← Back to blog</Link>
-          <span className="text-[11px] font-mono text-graphite-border">svg-scroll-draw · MIT · ~10 KB</span>
-        </div>
-
-      </article>
-      <RelatedResources post="scroll-animation-groups" />
-
-    </div>
-    </>
+      <Closing
+        title="See a group run."
+        lede="The live example animates a whole grid from one call; the docs list every option it takes."
+        links={[
+          { href: '/examples#scroll-animate-group', label: 'See live example →' },
+          { href: '/docs#scroll-animate', label: 'Full API docs →' },
+        ]}
+      />
+    </BlogArticle>
   );
 }

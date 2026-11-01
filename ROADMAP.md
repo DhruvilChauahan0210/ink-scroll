@@ -175,8 +175,9 @@ of examining a single API in a real browser.
 - [x] On-site migration guides (`/guides`): AOS in Next.js / React, ScrollReveal in React, vivus in React
 - [ ] Check Search Console in ~2 weeks for /guides/* and /vs-* impressions and clicks
 - [x] Homepage redesign — every chapter a blueprint-grade drawing of a real use case (fountain-pen hero, gallery, watch, proof sheet, balance, API plates, gauges, circuit board, before/after windows, live GitHub + npm stats, drawing-sheet footer), scoped under `.home`
-- [ ] Showcase sites — one real demo site per example, linked from the examples pages (done: Ferrow, Ledgerline, Quillmark, Hearth & Field)
-- [ ] Carry the homepage's look to every page through `SiteShell` — done: /docs, /examples (+ detail pages), /guides (+ each guide); next: /blocks, /blog, the vs-* pages, /changelog, /playground
+- [x] Showcase sites — one real demo site per example (all 23), linked from the examples pages; 19 rebuilt to industry level, Aural (scroll-video) sets the bar with a rendered product film
+- [x] Carry the homepage's look to every page through `SiteShell` — /docs, /examples (+ detail pages), /guides (+ each guide), /blog (+ all 12 posts on one article frame), /blocks, /changelog, /playground, /verify, all seven vs-* pages, the six framework landings and the React / Next.js / Lenis landings; the old ink-bottle mascot is off every page
+- [ ] Delete the dead ink-preview code once nobody wants it back: `components/examples/ink/*.codes.ts` (unused since every example card shows its showcase site) and `PlaygroundV2Tab.tsx` (nothing imports it)
 - [x] StackBlitz "already migrated" starters for each drop-in, linked from the comparison pages and READMEs
 - [ ] More blocks (the registry pattern grows by count), and a Vue/Svelte flavour of each
 - [ ] Desktop nav links are hand-typed per page — only the homepage and mobile menu link `/blocks`; move the nav into one component

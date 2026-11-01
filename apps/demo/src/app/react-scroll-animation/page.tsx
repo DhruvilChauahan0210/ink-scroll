@@ -1,8 +1,15 @@
 import type { Metadata } from 'next';
+import '@/components/stack/stack.css';
 import Link from 'next/link';
-import { MobileMenu } from '@/components/MobileMenu';
-import { CopyButton } from '@/components/CopyButton';
 import { seoTitle } from '../_lib/seo';
+import { SELF } from '@/data/competitors';
+import { UNIT_TESTS } from '@/data/facts';
+import { SiteShell } from '@/components/site/SiteShell';
+import { CodeBox } from '@/components/site/CodeBox';
+import { StepRail } from '@/components/site/StepRail';
+import { CopyCommand } from '@/components/home/CopyCommand';
+import { PageMap } from '@/components/stack/PageMap';
+import { C, Sec, Toc, pad } from '@/components/stack/parts';
 
 const TITLE = 'React Scroll Animation: Components & Hooks, 10 KB';
 const DESCRIPTION =
@@ -47,34 +54,6 @@ export function FadeUp({ children }: { children: React.ReactNode }) {
   );
 }`;
 
-function Nav() {
-  return (
-    <nav className="sticky top-0 z-50 bg-light-linen/95 backdrop-blur-sm border-b border-pitch-black flex items-center justify-between px-4 md:px-12 h-14">
-      <Link href="/" className="font-display font-bold text-sm tracking-tight hover:opacity-70 transition-opacity shrink-0">svg-scroll-draw</Link>
-      <div className="hidden lg:flex items-center gap-2">
-        {['Home','Docs','Examples','Blog'].map(l => (
-          <Link key={l} href={l==='Home'?'/':`/${l.toLowerCase()}`} className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium">{l}</Link>
-        ))}
-        <Link href="/playground" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium">⚡ Playground</Link>
-      </div>
-      <div className="flex lg:hidden"><MobileMenu /></div>
-    </nav>
-  );
-}
-
-function CodeBlock({ file, children }: { file: string; children: string }) {
-  return (
-    <div className="rounded-2xl overflow-hidden border border-pitch-black my-4">
-      <div className="bg-[#111] flex items-center justify-between px-4 py-2.5">
-        <div className="flex gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[#444]"/><span className="w-2.5 h-2.5 rounded-full bg-[#444]"/><span className="w-2.5 h-2.5 rounded-full bg-[#444]"/></div>
-        <span className="text-[11px] text-[#888] font-mono">{file}</span>
-        <CopyButton text={children} />
-      </div>
-      <pre className="bg-[#1c1c1c] text-[#e8e8e3] px-4 sm:px-6 py-4 text-[12px] sm:text-[13px] font-mono leading-[1.75] overflow-x-auto">{children}</pre>
-    </div>
-  );
-}
-
 const APIS = [
   { name: 'scrollReveal', sub: 'svg-scroll-draw/reveal', desc: 'Reveal elements on scroll. 7 presets, stagger, custom from state. Replaces AOS.', hook: false },
   { name: 'ScrollAnimate', sub: 'svg-scroll-draw/react', desc: 'Animate any CSS property driven by scroll. Component wrapper around scrollAnimate.', hook: false },
@@ -88,44 +67,8 @@ const APIS = [
   { name: 'scrollHorizontal', sub: 'svg-scroll-draw/horizontal', desc: 'Apple-style horizontal scroll sections driven by vertical scroll.', hook: false },
 ];
 
-export default function ReactScrollAnimationPage() {
-  return (
-    <div className="bg-light-linen text-pitch-black min-h-screen">
-      <Nav />
-
-      <header className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-10 sm:py-14">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-center gap-3 mb-5">
-            <span className="text-[10px] font-mono font-semibold px-2.5 py-1 rounded-full bg-[#61dafb]/20 border border-[#61dafb]/40 text-pitch-black">React</span>
-            <span className="text-[10px] font-mono text-graphite-border">Works with Next.js App Router, Remix, Vite</span>
-          </div>
-          <h1 className="font-display font-extrabold text-[clamp(32px,7vw,76px)] leading-[0.9] tracking-[-0.04em] mb-6">
-            React scroll animations.<br /><span className="text-graphite-border">10 KB. Zero deps.</span>
-          </h1>
-          <p className="text-base sm:text-lg text-graphite-border leading-relaxed max-w-2xl mb-8">
-            Typed React components and hooks for every scroll animation pattern — fade, slide, pin, snap, counter, text reveal, video scrub, horizontal sections.
-            No GSAP. No Framer Motion. No config files.
-          </p>
-          <div className="flex flex-wrap gap-3">
-            <div className="flex items-center gap-2 bg-pitch-black text-light-linen rounded-full px-5 py-2.5 text-sm font-mono">
-              <span className="opacity-50">$</span><span>npm i svg-scroll-draw</span>
-            </div>
-            <Link href="/docs" className="px-5 py-2.5 rounded-full border border-pitch-black text-sm font-medium hover:bg-pitch-black hover:text-light-linen transition-colors">API Reference →</Link>
-            <Link href="/vs-gsap" className="px-5 py-2.5 rounded-full border border-subtle-ash text-sm font-medium hover:border-pitch-black transition-colors text-graphite-border">vs GSAP →</Link>
-          </div>
-          <div className="max-w-2xl mt-6">
-            <CodeBlock file="FadeUp.tsx">{HERO_SNIPPET}</CodeBlock>
-          </div>
-        </div>
-      </header>
-
-      {/* Quick start */}
-      <section className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-14">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="font-display font-extrabold text-3xl sm:text-4xl tracking-[-0.03em] mb-10">Quick start.</h2>
-
-          <h3 className="font-display font-extrabold text-xl tracking-[-0.02em] mb-3">1. Reveal on scroll (the common case)</h3>
-          <CodeBlock file="FeaturesSection.tsx">{`'use client';
+const QUICK_START = [
+  { file: 'FeaturesSection.tsx', title: 'Reveal on scroll (the common case)', code: `'use client';
 import { useEffect } from 'react';
 import { scrollReveal } from 'svg-scroll-draw/reveal';
 
@@ -146,10 +89,8 @@ export function FeaturesSection() {
       ))}
     </section>
   );
-}`}</CodeBlock>
-
-          <h3 className="font-display font-extrabold text-xl tracking-[-0.02em] mb-3 mt-8">2. Animate any CSS property</h3>
-          <CodeBlock file="HeroSection.tsx">{`'use client';
+}` },
+  { file: 'HeroSection.tsx', title: 'Animate any CSS property', code: `'use client';
 import { useEffect, useRef } from 'react';
 import { scrollAnimate } from 'svg-scroll-draw';
 // Or use the component wrapper:
@@ -186,10 +127,8 @@ export function HeroDeclarative() {
       <div>Hero content</div>
     </ScrollAnimate>
   );
-}`}</CodeBlock>
-
-          <h3 className="font-display font-extrabold text-xl tracking-[-0.02em] mb-3 mt-8">3. Sticky pin section</h3>
-          <CodeBlock file="ProductSection.tsx">{`'use client';
+}` },
+  { file: 'ProductSection.tsx', title: 'Sticky pin section', code: `'use client';
 import { useEffect, useRef } from 'react';
 import { scrollPin } from 'svg-scroll-draw/pin';
 
@@ -217,10 +156,8 @@ export function ProductSection() {
       </div>
     </div>
   );
-}`}</CodeBlock>
-
-          <h3 className="font-display font-extrabold text-xl tracking-[-0.02em] mb-3 mt-8">4. Animated counter</h3>
-          <CodeBlock file="StatsSection.tsx">{`import { ScrollCounter } from 'svg-scroll-draw/react';
+}` },
+  { file: 'StatsSection.tsx', title: 'Animated counter', code: `import { ScrollCounter } from 'svg-scroll-draw/react';
 
 export function StatsSection() {
   return (
@@ -234,10 +171,8 @@ export function StatsSection() {
       <ScrollCounter to={9} format={n => '~' + Math.round(n) + ' KB'} once />
     </div>
   );
-}`}</CodeBlock>
-
-          <h3 className="font-display font-extrabold text-xl tracking-[-0.02em] mb-3 mt-8">5. Text reveal (replaces GSAP SplitText)</h3>
-          <CodeBlock file="Headline.tsx">{`import { ScrollText } from 'svg-scroll-draw/react';
+}` },
+  { file: 'Headline.tsx', title: 'Text reveal (replaces GSAP SplitText)', code: `import { ScrollText } from 'svg-scroll-draw/react';
 
 export function Headline() {
   return (
@@ -251,39 +186,10 @@ export function Headline() {
       <h1>Animate everything on scroll.</h1>
     </ScrollText>
   );
-}`}</CodeBlock>
-        </div>
-      </section>
+}` },
+];
 
-      {/* API overview */}
-      <section className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-14">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="font-display font-extrabold text-3xl sm:text-4xl tracking-[-0.03em] mb-10">Every React API.</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {APIS.map(({ name, sub, desc, hook }) => (
-              <div key={name} className="p-4 rounded-xl border border-subtle-ash bg-white space-y-2">
-                <div className="flex items-start justify-between gap-2">
-                  <code className="font-mono font-bold text-[13px]">{name}</code>
-                  {hook && <span className="text-[9px] font-mono bg-marketplace-gray border border-subtle-ash px-1.5 py-0.5 rounded text-graphite-border shrink-0">hook</span>}
-                </div>
-                <code className="text-[10px] font-mono text-graphite-border block">{sub}</code>
-                <p className="text-[12px] text-graphite-border leading-relaxed">{desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Next.js note */}
-      <section className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-14">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="font-display font-extrabold text-3xl sm:text-4xl tracking-[-0.03em] mb-6">Next.js App Router.</h2>
-          <p className="text-graphite-border leading-relaxed mb-6">
-            svg-scroll-draw is fully SSR-safe. All engines guard against <code className="font-mono text-sm bg-marketplace-gray px-1 rounded">window</code> being undefined.
-            In Next.js App Router, add <code className="font-mono text-sm bg-marketplace-gray px-1 rounded">&apos;use client&apos;</code> to any component that calls scroll APIs — or use{' '}
-            <code className="font-mono text-sm bg-marketplace-gray px-1 rounded">dynamic(() =&gt; import(...), {'{'} ssr: false {'}'} )</code> to lazy-load entire animated sections.
-          </p>
-          <CodeBlock file="app/page.tsx">{`import dynamic from 'next/dynamic';
+const APP_PAGE = `import dynamic from 'next/dynamic';
 
 // Option A: 'use client' component
 // AnimatedHero.tsx starts with 'use client'
@@ -302,28 +208,128 @@ export default function Page() {
       <AnimatedSection />
     </>
   );
-}`}</CodeBlock>
-        </div>
-      </section>
+}`;
 
-      {/* CTA */}
-      <section className="bg-pitch-black text-light-linen px-4 sm:px-6 md:px-12 py-16 sm:py-20 text-center">
-        <div className="max-w-2xl mx-auto">
-          <h2 className="font-display font-extrabold text-[clamp(28px,6vw,56px)] leading-[0.92] tracking-[-0.04em] mb-4">
-            Drop-in for React + Next.js.
-          </h2>
-          <p className="text-graphite-border text-sm sm:text-base mb-8">MIT. Zero deps. TypeScript. 626 tests. Works everywhere React works.</p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <div className="flex items-center gap-2 bg-white/10 rounded-full px-5 py-3 text-sm font-mono"><span className="opacity-50">$</span><span>npm i svg-scroll-draw</span></div>
-            <Link href="/docs" className="px-5 py-3 rounded-full border-2 border-white text-sm font-semibold hover:bg-white hover:text-pitch-black transition-colors text-center">Full API docs →</Link>
-            <Link href="/examples" className="px-5 py-3 rounded-full border-2 border-white/30 text-sm font-medium hover:border-white transition-colors text-center text-graphite-border hover:text-white">Live examples →</Link>
+const TOC = [
+  { id: 'answer', label: 'The answer' },
+  { id: 'quick-start', label: `Quick start · ${QUICK_START.length}` },
+  { id: 'every-api', label: `Every React API · ${APIS.length}` },
+  { id: 'app-router', label: 'Next.js App Router' },
+  { id: 'drop-in', label: 'Drop it in' },
+];
+
+export default function ReactScrollAnimationPage() {
+  return (
+    <SiteShell kicker="react / your turn">
+      <div className="stk stk-react">
+
+        {/* ── Opening ────────────────────────────────────── */}
+        <header className="pg-head stk-head">
+          <div>
+            <p className="pg-kicker">
+              <span>react / components &amp; hooks</span>
+              <span>works with next.js app router, remix, vite</span>
+            </p>
+            <h1 className="pg-title stk-title">
+              React scroll animations. <span className="dim">{SELF.gzipKb}&nbsp;KB. Zero&nbsp;deps.</span>
+            </h1>
+            <p className="pg-lede">
+              Typed React components and hooks for every scroll animation pattern — fade, slide, pin, snap, counter,
+              text reveal, video scrub, horizontal sections. No GSAP. No Framer Motion. No config files.
+            </p>
+            <div className="pg-actions">
+              <CopyCommand />
+              <Link href="/docs" className="btn" data-magnetic>API Reference →</Link>
+              <Link href="/vs-gsap" className="btn" data-magnetic>vs GSAP →</Link>
+            </div>
+            <dl className="pg-facts">
+              <div><dt>Gzipped</dt><dd>{SELF.gzipKb} KB</dd></div>
+              <div><dt>React APIs</dt><dd>{APIS.length}</dd></div>
+              <div><dt>Unit tests</dt><dd>{UNIT_TESTS}</dd></div>
+              <div><dt>Dependencies</dt><dd>0</dd></div>
+            </dl>
+          </div>
+          <PageMap />
+        </header>
+
+        <div className="stk-body">
+          <Toc label="on this page" items={TOC} />
+          <div className="stk-main">
+
+            {/* ── 01 The answer ─────────────────────────────── */}
+            <Sec n={1} k="the answer" id="answer" title="Fade anything up, in one component">
+              <p className="stk-p">
+                The copy-paste answer: a client component that wraps its children in <C>ScrollAnimate</C> and
+                plays once. Use it anywhere, including inside a Server Component page.
+              </p>
+              <CodeBox file="FadeUp.tsx">{HERO_SNIPPET}</CodeBox>
+            </Sec>
+
+            {/* ── 02 Quick start ────────────────────────────── */}
+            <Sec n={2} k={`quick start · ${QUICK_START.length} steps`} id="quick-start" title="Quick start.">
+              <p className="stk-p">
+                Five patterns that cover most of a landing page — the same five numbered on the drawing above.
+              </p>
+              <StepRail>
+                <ol className="stk-steps">
+                  {QUICK_START.map((s, i) => (
+                    <li key={s.file} id={`qs-${i + 1}`} className="stk-step">
+                      <span className="stk-node" aria-hidden="true">{i + 1}</span>
+                      <p className="stk-step-k">step {pad(i + 1)} · <span>{s.file}</span></p>
+                      <h3 className="stk-h3">{i + 1}. {s.title}</h3>
+                      <CodeBox file={s.file}>{s.code}</CodeBox>
+                    </li>
+                  ))}
+                </ol>
+              </StepRail>
+            </Sec>
+
+            {/* ── 03 Every API ──────────────────────────────── */}
+            <Sec n={3} k={`parts list · ${APIS.length} apis`} id="every-api" title="Every React API.">
+              <ol className="stk-parts">
+                <li className="stk-part stk-part-h" aria-hidden="true"><span>no.</span><span>api · entry</span><span>what it does</span></li>
+                {APIS.map(({ name, sub, desc, hook }, i) => (
+                  <li key={name} className="stk-part">
+                    <span className="stk-part-n">{pad(i + 1)}</span>
+                    <span className="stk-part-api"><code>{name}</code><span>{sub}</span></span>
+                    <p className="stk-part-d">{desc}{hook && <span className="tag">hook</span>}</p>
+                  </li>
+                ))}
+              </ol>
+            </Sec>
+
+            {/* ── 04 Next.js App Router ─────────────────────── */}
+            <Sec n={4} k="next.js" id="app-router" title="Next.js App Router.">
+              <p className="stk-p">
+                svg-scroll-draw is fully SSR-safe. All engines guard against <C>window</C> being undefined.
+                In Next.js App Router, add <C>&apos;use client&apos;</C> to any component that calls scroll APIs — or use{' '}
+                <C long>dynamic(() =&gt; import(...), {'{'} ssr: false {'}'} )</C> to lazy-load entire animated sections.
+              </p>
+              <CodeBox file="app/page.tsx">{APP_PAGE}</CodeBox>
+              <p className="stk-p stk-more">
+                Server and client boundaries, route changes and cleanup are on the{' '}
+                <Link href="/nextjs-scroll-animation">Next.js page</Link>.
+              </p>
+            </Sec>
+
+            {/* ── 05 Drop it in ─────────────────────────────── */}
+            <Sec n={5} k="drop it in" id="drop-in" title="Drop-in for React + Next.js.">
+              <dl className="stk-close-specs">
+                <div><dt>Licence</dt><dd>MIT</dd></div>
+                <div><dt>Dependencies</dt><dd>Zero</dd></div>
+                <div><dt>Types</dt><dd>TypeScript</dd></div>
+                <div><dt>Unit tests</dt><dd>{UNIT_TESTS} tests</dd></div>
+                <div><dt>Runs</dt><dd>Everywhere React works</dd></div>
+              </dl>
+              <div className="pg-actions">
+                <CopyCommand />
+                <Link href="/docs" className="btn btn-solid" data-magnetic>Full API docs →</Link>
+                <Link href="/examples" className="btn" data-magnetic>Live examples →</Link>
+              </div>
+            </Sec>
           </div>
         </div>
-      </section>
-
-      <footer className="px-6 md:px-12 py-6 border-t border-subtle-ash text-center text-[11px] font-mono text-graphite-border">
-        svg-scroll-draw · MIT · ~10 KB ·{' '}<a href="https://github.com/DhruvilChauahan0210/ink-scroll" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-pitch-black transition-colors">GitHub</a>
-      </footer>
-    </div>
+      </div>
+    </SiteShell>
   );
 }

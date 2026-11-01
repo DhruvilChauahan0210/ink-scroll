@@ -1,7 +1,7 @@
 # Project Status — svg-scroll-draw
 
 > Current version: **2.15.1** — published on npm with provenance through `release.yml` (2026-10-31)
-> Tests: **626 unit** across 31 suites · **196 browser tests** per engine (588 runs
+> Tests: **626 unit** across 31 suites · **197 browser tests** per engine (591 runs
 > across Chromium/Firefox/WebKit) · **56 mutations**, each caught by the one test
 > named for it · **91.3% line coverage** (gate 90/90/82/82)
 > Bundle: **10.2 KB gzipped** (main entry; per-API entries from 0.2 KB) · zero runtime dependencies
@@ -53,7 +53,7 @@
 - [x] Initial state fix — `createAnimateEngine` and `scrollCounter` now apply correct alpha immediately on init (no flash before IO fires)
 
 ### Browser tests (Phase 2, `packages/svg-scroll-draw/e2e`)
-196 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
+197 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
 `helpers.ts` (deterministic sweep — scroll to a fixed offset, wait two frames,
 read) and `fixtures/_probe.mjs` (parsing stays in the page, so specs assert on
 numbers).
@@ -92,7 +92,10 @@ at all.
 - [x] `/docs` — in the homepage's design via `SiteShell`: glass nav with the section marked, an opening with the version / weight / test cells beside fig. 1 (a real `scrollDraw()` call with a leader from each part to its section), zone references and title-block strips per section, a parts-list sidebar in page order that follows the reader one row at a time, gliding in-page links, a parts-list install table, spec-sheet options under inked dimension lines, numbered code listings, the sign-off sheet as footer
 - [x] `/examples` + each example's page — same frame: split opening with filter pills and figure cells, a title-block strip per example (number, APIs, frameworks), numbered listings beside live previews mounted as captioned, pinned plates; related examples as a parts list
 - [x] `/examples` previews redrawn — all 23 in the homepage's ink (pencil underdrawing, one accent, real values); the page is a catalogue grid of plates with a code drawer per example
-- [ ] Showcase sites, one per example, linked from its card and page — done: Ferrow (`/showcase/ferrow`, logo-reveal), Ledgerline (`/showcase/ledgerline`, line-chart), Quillmark (`/showcase/quillmark`, signature), Hearth & Field order confirmation (`/showcase/hearth`, flowchart); 19 to go
+- [x] Showcase sites, one per example (all 23), linked from its card and page — `/showcase/<slug>` for Ferrow, Ledgerline, Quillmark, Hearth & Field, Parcelry, Northbeam, Fieldnotes, Halyard, Relay, Tidewater, Stride, Paygrid status (`statusline`), Linework, Shipyard, Tessera, Greenline, Mint & Co (`mintco`), Plugboard, Atelier Nord (`ateliernord`), Folio, Lumen, Casa Verde (`casaverde`), Aural; registry in `src/showcase/index.ts`, card copy in `components/examples/scenes/data.ts`
+- [x] `/blog` + all 12 posts — in the homepage's design: an index with a topic key drawn to scale that doubles as the filter and a numbered register of posts; every post on one article frame (`components/blog/BlogArticle.tsx`, `blog.css`) with figures that depict the post's real subject
+- [x] `/changelog`, `/blocks`, `/playground`, `/verify` — moved into `SiteShell` with their own openings in the drawing-sheet language (release log as title-block strips, blocks as plates with install commands, playground controls kept working, verify's proofs as records)
+- [x] `/vs-*` (7), the six framework landings and the React / Next.js / Lenis landings — moved into `SiteShell`; measured numbers drawn as comparisons, every figure read from `data/competitors.ts` / `data/facts.ts`
 - [x] `/guides` + each guide — index as a parts list with measured before/after weights; each guide opens beside fig. 1 (the swap: import, version, licence, gzip, React hook, arrows inked on load), then notes, steps on an inked rail, a checked unchanged list, numbered questions, more guides, sticky contents
 - [x] `/examples` — 23 examples with framework filter
 - [x] `/docs` — full API reference including v2.0–2.2 nav group with all 6 new APIs documented

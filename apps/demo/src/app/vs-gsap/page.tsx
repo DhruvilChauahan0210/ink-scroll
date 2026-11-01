@@ -1,14 +1,24 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { MobileMenu } from '@/components/MobileMenu';
-import { CopyButton } from '@/components/CopyButton';
-import { COMPETITORS, SELF, MEASURED_ON, provenance, ratioVsSelf } from '@/data/competitors';
+import { COMPETITORS, SELF, SELF_ENTRIES, MEASURED_ON, provenance, ratioVsSelf } from '@/data/competitors';
+import { jsonLd } from '@/lib/json-ld';
+import { SiteShell } from '@/components/site/SiteShell';
+import { SpecSheet, type SpecRow } from '@/components/h2h/SpecSheet';
+import { WeighIn } from '@/components/h2h/WeighIn';
+import { Calls, Closing, CodeSet, Head, Ledger, Legend, Matrix, Nb, OtherSheets, Toc, type MatrixRow } from '@/components/h2h/parts';
 import { seoTitle } from '../_lib/seo';
 
 /** "4.66" → "4.7": one decimal is all the precision a headline ratio deserves. */
 const RATIO_STACK = (Math.round(ratioVsSelf('gsapStack') * 10) / 10).toFixed(1);
 const RATIO_SCROLL = (Math.round(ratioVsSelf('gsapScroll') * 10) / 10).toFixed(1);
 const GSAP_FULL_SUITE_KB = (COMPETITORS.gsapStack.gzipKb + COMPETITORS.gsapSplitText.gzipKb).toFixed(1);
+
+/* The stack, itemised: each plugin is the difference between two measured totals. */
+const CORE_KB = COMPETITORS.gsapCore.gzipKb;
+const SCROLLTRIGGER_KB = (COMPETITORS.gsapScroll.gzipKb - COMPETITORS.gsapCore.gzipKb).toFixed(1);
+const DRAWSVG_KB = (COMPETITORS.gsapStack.gzipKb - COMPETITORS.gsapScroll.gzipKb).toFixed(1);
+const SPLITTEXT_KB = COMPETITORS.gsapSplitText.gzipKb.toFixed(1);
+const DELTA_KB = (COMPETITORS.gsapStack.gzipKb - SELF.gzipKb).toFixed(1);
 
 const TITLE = `GSAP ScrollTrigger Alternative: ${Math.round(SELF.gzipKb)} KB, MIT, Native CSS`;
 const DESCRIPTION = `Measured: ${SELF.gzipKb} KB vs ${COMPETITORS.gsapStack.gzipKb} KB for GSAP + ScrollTrigger + DrawSVG. MIT, native CSS fast path. GSAP is free and does more — when to pick each.`;
@@ -42,36 +52,31 @@ export const metadata: Metadata = {
 };
 
 /**
- * The at-a-glance table that sits in the hero, above the fold. Every size and
- * license string comes from competitors.ts; the rows a reader would weigh
- * against us (GSAP's extra features) are in it on purpose.
+ * The at-a-glance table that sits in the opening, above the fold. Every size
+ * and license string comes from competitors.ts; the rows a reader would weigh
+ * against us (GSAP's extra features) are in it on purpose, and marked as GSAP's.
  */
-const AT_A_GLANCE: { label: string; us: string; gsap: string; usWins?: boolean; gsapWins?: boolean }[] = [
+const AT_A_GLANCE: SpecRow[] = [
   {
-    label: 'Size, min + gzip',
-    us: `${SELF.gzipKb} KB, every API`,
-    gsap: `${COMPETITORS.gsapStack.gzipKb} KB with DrawSVG · ${COMPETITORS.gsapScroll.gzipKb} KB core + ScrollTrigger`,
-    usWins: true,
+    k: 'Size, min + gzip',
+    cells: [
+      `${SELF.gzipKb} KB, every API`,
+      `${COMPETITORS.gsapStack.gzipKb} KB with DrawSVG · ${COMPETITORS.gsapScroll.gzipKb} KB core + ScrollTrigger`,
+    ],
+    win: 0,
   },
-  { label: 'License', us: SELF.license, gsap: COMPETITORS.gsapStack.license },
+  { k: 'License', cells: [SELF.license, COMPETITORS.gsapStack.license] },
   {
-    label: 'Native CSS scroll-timeline',
-    us: 'Yes, when eligible — Chrome/Edge 115+, Safari 26+, Firefox 159+',
-    gsap: 'No — runs in JavaScript',
-    usWins: true,
+    k: 'Native CSS scroll-timeline',
+    cells: ['Yes, when eligible — Chrome/Edge 115+, Safari 26+, Firefox 159+', 'No — runs in JavaScript'],
+    win: 0,
   },
-  { label: 'Runtime dependencies', us: '0', gsap: '0' },
+  { k: 'Runtime dependencies', cells: ['0', '0'] },
   {
-    label: 'SSR (Next.js, Nuxt)',
-    us: 'Safe to import; no-op on the server',
-    gsap: 'Safe to import; create triggers client-side',
+    k: 'SSR (Next.js, Nuxt)',
+    cells: ['Safe to import; no-op on the server', 'Safe to import; create triggers client-side'],
   },
-  {
-    label: 'Timelines, MorphSVG, Flip',
-    us: 'No',
-    gsap: 'Yes — all free since 2025',
-    gsapWins: true,
-  },
+  { k: 'Timelines, MorphSVG, Flip', cells: ['No', 'Yes — all free since 2025'], win: 1 },
 ];
 
 const pageJsonLd = {
@@ -99,7 +104,7 @@ const pageJsonLd = {
       name: 'How does svg-scroll-draw compare to GSAP in bundle size?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: `svg-scroll-draw is ${SELF.gzipKb} KB gzipped. The equivalent GSAP stack for the same job — core 27.7 KB + ScrollTrigger 17.6 KB + DrawSVGPlugin 2.2 KB — is ${COMPETITORS.gsapStack.gzipKb} KB, making svg-scroll-draw ${ratioVsSelf('gsapStack')}× smaller. Measured ${MEASURED_ON} against gsap ${COMPETITORS.gsapStack.version} and svg-scroll-draw ${SELF.version} with gzip level 9.`,
+        text: `svg-scroll-draw is ${SELF.gzipKb} KB gzipped. The equivalent GSAP stack for the same job — core ${CORE_KB} KB + ScrollTrigger ${SCROLLTRIGGER_KB} KB + DrawSVGPlugin ${DRAWSVG_KB} KB — is ${COMPETITORS.gsapStack.gzipKb} KB, making svg-scroll-draw ${ratioVsSelf('gsapStack')}× smaller. Measured ${MEASURED_ON} against gsap ${COMPETITORS.gsapStack.version} and svg-scroll-draw ${SELF.version} with gzip level 9.`,
       },
     },
     {
@@ -121,302 +126,37 @@ const pageJsonLd = {
   ],
 };
 
-function Nav() {
-  return (
-    <nav className="sticky top-0 z-50 bg-light-linen/95 backdrop-blur-sm border-b border-pitch-black flex items-center justify-between px-4 md:px-12 h-14">
-      <Link href="/" className="font-display font-bold text-sm tracking-tight hover:opacity-70 transition-opacity shrink-0">
-        svg-scroll-draw
-      </Link>
-      <div className="hidden lg:flex items-center gap-2">
-        {['Home', 'Docs', 'Examples', 'Blog', 'Changelog'].map((l) => (
-          <Link key={l} href={l === 'Home' ? '/' : `/${l.toLowerCase()}`}
-            className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium">
-            {l}
-          </Link>
-        ))}
-        <Link href="/playground" className="text-xs px-3.5 py-1.5 rounded-full border border-subtle-ash hover:border-pitch-black transition-colors font-medium">
-          ⚡ Playground
-        </Link>
-      </div>
-      <div className="flex lg:hidden"><MobileMenu /></div>
-    </nav>
-  );
-}
-
-function CodeBlock({ file, children }: { file: string; children: string }) {
-  return (
-    <div className="rounded-2xl overflow-hidden border border-pitch-black">
-      <div className="bg-[#111] flex items-center justify-between px-4 py-2.5">
-        <div className="flex gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-[#444]" />
-          <span className="w-2.5 h-2.5 rounded-full bg-[#444]" />
-          <span className="w-2.5 h-2.5 rounded-full bg-[#444]" />
-        </div>
-        <span className="text-[11px] text-[#888] font-mono">{file}</span>
-        <CopyButton text={children} />
-      </div>
-      <pre className="bg-[#1c1c1c] text-[#e8e8e3] px-4 sm:px-6 py-4 text-[11px] sm:text-[13px] font-mono leading-[1.75] overflow-x-auto">
-        {children}
-      </pre>
-    </div>
-  );
-}
-
-function Check() {
-  return <span className="text-[#22c55e] font-bold text-base">✓</span>;
-}
-function Cross() {
-  return <span className="text-[#ef4444] font-bold text-base">✗</span>;
-}
-function Partial() {
-  return <span className="text-[#f59e0b] font-bold text-base">~</span>;
-}
-
-const FEATURES = [
-  { feature: 'Animate any CSS property on scroll',  us: true,  gsap: true,  note: '' },
-  { feature: 'SVG path draw (stroke-dashoffset)',    us: true,  gsap: true,  note: '' },
-  { feature: 'Animated number counters',             us: true,  gsap: true,  note: '' },
-  { feature: 'Text split + stagger',                 us: true,  gsap: true, note: 'GSAP SplitText — free since 2025, 3.6 KB, and needs GSAP core to animate' },
-  { feature: 'Video scrub on scroll',                us: true,  gsap: true,  note: '' },
-  { feature: 'Pin / sticky sections',                us: true,  gsap: true,  note: '' },
-  { feature: 'Section snapping',                     us: true,  gsap: true,  note: '' },
-  { feature: 'onEnter / onLeave / onEnterBack / onLeaveBack', us: true, gsap: true, note: '' },
-  { feature: 'Honours prefers-reduced-motion by default', us: 'partial', gsap: 'partial', note: 'Default-on for scrollDraw, scrollAnimate, scrollReveal, scrollCounter, scrollText, scrollVideo, scrollSnap and Cinematic — but scrollHorizontal opts out by design and scrollPin/scrollProgress have no path. GSAP ships gsap.matchMedia(), but you write the reduced-motion variant of each animation yourself.' },
-  { feature: 'Native CSS scroll-driven animation',   us: true,  gsap: false, note: 'GSAP always runs JS' },
-  { feature: 'Parallax',                             us: true,  gsap: true,  note: '' },
-  { feature: 'Path morphing on scroll',              us: true,  gsap: true,  note: '' },
-  { feature: 'Waypoints (fire at progress %)',       us: true,  gsap: true,  note: '' },
-  { feature: 'Spring / bounce / elastic easings',    us: true,  gsap: true,  note: '' },
-  { feature: 'React / Vue / Svelte / Solid wrappers', us: true, gsap: 'partial', note: 'GSAP has basic React helpers, not full wrappers' },
-  { feature: 'Angular / Astro / Nuxt wrappers',      us: true, gsap: false, note: '' },
-  { feature: 'Zero runtime dependencies',            us: true,  gsap: true,  note: 'GSAP also declares no runtime dependencies — verified from its package.json. The difference is total weight, not dependency count.' },
-  { feature: 'MIT license (fork / redistribute freely)', us: true, gsap: 'partial', note: 'GSAP is free to use, but its standard license restricts redistribution inside a competing product or SDK' },
-  { feature: 'Visual DevTools overlay',              us: true,  gsap: true,  note: 'GSAP ships GSDevTools.js in the public tarball (free since 2025). Ours is scroll-specific and dev-only; theirs is a timeline scrubber.' },
-  { feature: 'Lenis smooth-scroll adapter',         us: true,  gsap: 'partial', note: 'GSAP works with Lenis but no dedicated adapter' },
-  { feature: 'Bundle size (minified + gzipped)',     us: `${SELF.gzipKb} KB`, gsap: `${COMPETITORS.gsapStack.gzipKb} KB`, note: `gsap ${COMPETITORS.gsapStack.version}: core 27.7 + ScrollTrigger 17.6 + DrawSVG 2.2 — the equivalent stack, measured ${MEASURED_ON}` },
+const FEATURES: MatrixRow[] = [
+  { f: 'Animate any CSS property on scroll', cells: [true, true] },
+  { f: 'SVG path draw (stroke-dashoffset)', cells: [true, true] },
+  { f: 'Animated number counters', cells: [true, true] },
+  { f: 'Text split + stagger', cells: [true, true], note: `GSAP SplitText — free since 2025, ${SPLITTEXT_KB} KB, and needs GSAP core to animate` },
+  { f: 'Video scrub on scroll', cells: [true, true] },
+  { f: 'Pin / sticky sections', cells: [true, true] },
+  { f: 'Section snapping', cells: [true, true] },
+  { f: 'onEnter / onLeave / onEnterBack / onLeaveBack', cells: [true, true] },
+  { f: 'Honours prefers-reduced-motion by default', cells: ['partial', 'partial'], note: 'Default-on for scrollDraw, scrollAnimate, scrollReveal, scrollCounter, scrollText, scrollVideo, scrollSnap and Cinematic — but scrollHorizontal opts out by design and scrollPin/scrollProgress have no path. GSAP ships gsap.matchMedia(), but you write the reduced-motion variant of each animation yourself.' },
+  { f: 'Native CSS scroll-driven animation', cells: [true, false], note: 'GSAP always runs JS' },
+  { f: 'Parallax', cells: [true, true] },
+  { f: 'Path morphing on scroll', cells: [true, true] },
+  { f: 'Waypoints (fire at progress %)', cells: [true, true] },
+  { f: 'Spring / bounce / elastic easings', cells: [true, true] },
+  { f: 'React / Vue / Svelte / Solid wrappers', cells: [true, 'partial'], note: 'GSAP has basic React helpers, not full wrappers' },
+  { f: 'Angular / Astro / Nuxt wrappers', cells: [true, false] },
+  { f: 'Zero runtime dependencies', cells: [true, true], note: 'GSAP also declares no runtime dependencies — verified from its package.json. The difference is total weight, not dependency count.' },
+  { f: 'MIT license (fork / redistribute freely)', cells: [true, 'partial'], note: 'GSAP is free to use, but its standard license restricts redistribution inside a competing product or SDK' },
+  { f: 'Visual DevTools overlay', cells: [true, true], note: 'GSAP ships GSDevTools.js in the public tarball (free since 2025). Ours is scroll-specific and dev-only; theirs is a timeline scrubber.' },
+  { f: 'Lenis smooth-scroll adapter', cells: [true, 'partial'], note: 'GSAP works with Lenis but no dedicated adapter' },
+  { f: 'Bundle size (minified + gzipped)', cells: [`${SELF.gzipKb} KB`, `${COMPETITORS.gsapStack.gzipKb} KB`], note: `gsap ${COMPETITORS.gsapStack.version}: core ${CORE_KB} + ScrollTrigger ${SCROLLTRIGGER_KB} + DrawSVG ${DRAWSVG_KB} — the equivalent stack, measured ${MEASURED_ON}` },
 ];
 
-export default function VsGsapPage() {
-  return (
-    <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(pageJsonLd) }} />
-    <div className="bg-light-linen text-pitch-black min-h-screen">
-      <Nav />
+const OURS = 'svg-scroll-draw';
+const THEIRS = 'GSAP + ScrollTrigger';
 
-      {/* ── Hero + at-a-glance table (above the fold) ────────────────────── */}
-      <header className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-10 sm:py-14">
-        <div className="max-w-4xl mx-auto">
-          <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-3 font-mono font-medium">
-            Comparison · svg-scroll-draw vs GSAP
-          </p>
-          <h1 className="font-display font-extrabold text-[clamp(30px,5.5vw,56px)] leading-[0.92] tracking-[-0.04em] mb-4">
-            GSAP ScrollTrigger alternative.{' '}
-            <span className="text-graphite-border">{RATIO_STACK}× smaller, MIT.</span>
-          </h1>
-          <p className="text-base sm:text-lg text-graphite-border leading-relaxed max-w-2xl mb-6">
-            GSAP is free since 2025 — every plugin — and it does more than we do. This page isn&#39;t about price.
-            It&#39;s that for scroll work alone you ship {COMPETITORS.gsapStack.gzipKb} KB and an API surface you&#39;ll
-            use a fraction of.
-          </p>
-
-          <div className="rounded-2xl border border-pitch-black overflow-hidden bg-white mb-3">
-            <table className="w-full text-left text-[12px] sm:text-[13px]">
-              <thead className="bg-[#111] text-light-linen">
-                <tr>
-                  <th scope="col" className="px-3 sm:px-4 py-2.5 font-mono font-semibold text-[10px] sm:text-[11px] uppercase tracking-[0.1em]"><span className="sr-only">Measure</span></th>
-                  <th scope="col" className="px-3 sm:px-4 py-2.5 font-mono font-semibold text-[10px] sm:text-[11px] uppercase tracking-[0.1em]">svg-scroll-draw {SELF.version}</th>
-                  <th scope="col" className="px-3 sm:px-4 py-2.5 font-mono font-semibold text-[10px] sm:text-[11px] uppercase tracking-[0.1em]">GSAP {COMPETITORS.gsapStack.version}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {AT_A_GLANCE.map(({ label, us, gsap, usWins, gsapWins }) => (
-                  <tr key={label} className="border-t border-subtle-ash align-top">
-                    <th scope="row" className="px-3 sm:px-4 py-2 font-medium text-graphite-border w-[28%]">{label}</th>
-                    <td className={`px-3 sm:px-4 py-2 font-mono ${usWins ? 'font-bold text-pitch-black' : ''}`}>{us}</td>
-                    <td className={`px-3 sm:px-4 py-2 font-mono ${gsapWins ? 'font-bold text-pitch-black' : ''}`}>{gsap}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <p className="text-[11px] text-graphite-border font-mono mb-6">
-            Sizes measured {MEASURED_ON}, gzip -9. {RATIO_STACK}× vs GSAP + ScrollTrigger + DrawSVG; {RATIO_SCROLL}× vs core + ScrollTrigger alone.
-          </p>
-
-          <div className="flex flex-wrap gap-3">
-            <Link href="/" className="px-5 py-2.5 rounded-full bg-pitch-black text-light-linen text-sm font-semibold hover:opacity-90 transition-opacity">
-              Get started free →
-            </Link>
-            <Link href="/blog/replace-gsap-scrolltrigger" className="px-5 py-2.5 rounded-full border border-pitch-black text-sm font-medium hover:bg-pitch-black hover:text-light-linen transition-colors">
-              Migration guide →
-            </Link>
-            <a href="#when-gsap" className="px-5 py-2.5 rounded-full border border-subtle-ash text-sm font-medium hover:border-pitch-black transition-colors text-graphite-border">
-              When GSAP is the better call ↓
-            </a>
-          </div>
-        </div>
-      </header>
-
-      {/* ── Bundle size ───────────────────────────────────────────────────── */}
-      <section className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-14 sm:py-16">
-        <div className="max-w-4xl mx-auto">
-          <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-2 font-mono font-medium">01</p>
-          <h2 className="font-display font-extrabold text-3xl sm:text-4xl tracking-[-0.03em] mb-10">Bundle size.</h2>
-
-          <div className="space-y-4 mb-8">
-            {[
-              { label: 'svg-scroll-draw', size: `${SELF.gzipKb} KB`, pct: 20, color: '#ff90e8', badge: 'yours' },
-              { label: 'GSAP core',       size: `${COMPETITORS.gsapCore.gzipKb} KB`, pct: 54, color: '#e0e0e0', badge: null },
-              { label: 'GSAP + ScrollTrigger', size: `${COMPETITORS.gsapScroll.gzipKb} KB`, pct: 89, color: '#d0d0d0', badge: 'common setup' },
-              { label: '+ DrawSVGPlugin', size: `${COMPETITORS.gsapStack.gzipKb} KB`, pct: 93, color: '#c4c4c4', badge: 'same job as us' },
-              { label: '+ SplitText',     size: `${GSAP_FULL_SUITE_KB} KB`, pct: 100, color: '#bbb', badge: 'full suite' },
-            ].map(({ label, size, pct, color, badge }) => (
-              <div key={label} className="flex items-center gap-4">
-                <div className="w-52 shrink-0 text-right">
-                  <span className="text-[12px] font-mono text-graphite-border">{label}</span>
-                </div>
-                <div className="flex-1 flex items-center gap-3">
-                  <div
-                    className="h-8 rounded-lg transition-all duration-500 flex items-center px-3"
-                    style={{ width: `${pct}%`, background: color, minWidth: 64 }}
-                  >
-                    <span className="text-[11px] font-mono font-bold text-pitch-black whitespace-nowrap">{size}</span>
-                  </div>
-                  {badge && (
-                    <span className="text-[10px] font-mono text-graphite-border border border-subtle-ash px-2 py-0.5 rounded-full whitespace-nowrap">
-                      {badge}
-                    </span>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <p className="text-[12px] text-graphite-border font-mono">
-            {provenance([`gsap ${COMPETITORS.gsapStack.version}`, `svg-scroll-draw ${SELF.version}`])}{' '}
-            SplitText is free to use as of 2025; it still costs you the bytes.
-          </p>
-        </div>
-      </section>
-
-      {/* ── License ──────────────────────────────────────────────────────── */}
-      <section className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-14 sm:py-16">
-        <div className="max-w-4xl mx-auto">
-          <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-2 font-mono font-medium">02</p>
-          <h2 className="font-display font-extrabold text-3xl sm:text-4xl tracking-[-0.03em] mb-4">License.</h2>
-
-          <div className="rounded-xl border border-subtle-ash bg-marketplace-gray/40 p-5 mb-8">
-            <p className="text-[13px] text-graphite-border leading-relaxed">
-              <strong className="text-pitch-black">Worth saying plainly:</strong> GSAP is free. Webflow acquired
-              GreenSock and in 2025 released the entire toolset — including SplitText, DrawSVG, MorphSVG and every
-              other former Club GreenSock plugin — at no charge. If you read an older comparison claiming you need a
-              ~$150/yr subscription, that is out of date, and this page used to be one of them.
-              {' '}<strong className="text-pitch-black">Cost is not a reason to choose svg-scroll-draw.</strong>{' '}
-              The remaining license difference is narrow but real, and it only matters if you redistribute.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="rounded-2xl border-2 border-creator-pink p-6 space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="font-display font-extrabold text-lg">svg-scroll-draw</span>
-                <span className="text-[10px] font-mono bg-creator-pink/20 border border-creator-pink/50 text-pitch-black px-2 py-0.5 rounded-full">MIT</span>
-              </div>
-              <ul className="space-y-2 text-sm text-graphite-border">
-                {[
-                  'Free for personal use',
-                  'Free for commercial use',
-                  'Free forever — no subscription',
-                  'All features included',
-                  'No attribution required',
-                  'Fork, modify, redistribute freely',
-                ].map(item => (
-                  <li key={item} className="flex items-center gap-2"><Check />{item}</li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="rounded-2xl border border-subtle-ash p-6 space-y-3 bg-marketplace-gray/30">
-              <div className="flex items-center justify-between">
-                <span className="font-display font-extrabold text-lg">GSAP</span>
-                <span className="text-[10px] font-mono bg-marketplace-gray border border-subtle-ash text-graphite-border px-2 py-0.5 rounded-full">GreenSock Standard — free</span>
-              </div>
-              <ul className="space-y-2 text-sm text-graphite-border">
-                {[
-                  { text: 'Free for personal use', ok: true },
-                  { text: 'Free for commercial use', ok: true },
-                  { text: 'All plugins free since 2025 — no subscription', ok: true },
-                  { text: 'SplitText, DrawSVG, MorphSVG all included', ok: true },
-                  { text: 'Cannot be redistributed inside a competing tool or SDK', ok: false },
-                  { text: 'Not OSI open source — terms set by the vendor', ok: false },
-                ].map(({ text, ok }) => (
-                  <li key={text} className="flex items-center gap-2">
-                    {ok ? <Check /> : <Cross />}{text}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Feature matrix ───────────────────────────────────────────────── */}
-      <section className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-14 sm:py-16">
-        <div className="max-w-4xl mx-auto">
-          <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-2 font-mono font-medium">03</p>
-          <h2 className="font-display font-extrabold text-3xl sm:text-4xl tracking-[-0.03em] mb-10">Feature matrix.</h2>
-
-          <div className="rounded-2xl border border-pitch-black overflow-hidden">
-            <div className="grid grid-cols-[1fr_auto_auto] bg-[#111] text-light-linen">
-              <div className="px-5 py-3 text-[11px] font-mono font-semibold uppercase tracking-[0.12em]">Feature</div>
-              <div className="px-5 py-3 text-[11px] font-mono font-semibold uppercase tracking-[0.12em] text-center whitespace-nowrap">svg-scroll-draw</div>
-              <div className="px-5 py-3 text-[11px] font-mono font-semibold uppercase tracking-[0.12em] text-center">GSAP</div>
-            </div>
-            {FEATURES.map(({ feature, us, gsap, note }, i) => (
-              <div
-                key={feature}
-                className={`grid grid-cols-[1fr_auto_auto] items-center border-t border-subtle-ash ${i % 2 === 0 ? 'bg-white' : 'bg-light-linen'}`}
-              >
-                <div className="px-5 py-3.5">
-                  <span className="text-[13px] font-medium">{feature}</span>
-                  {note && <p className="text-[11px] text-graphite-border mt-0.5 font-mono">{note}</p>}
-                </div>
-                <div className="px-5 py-3.5 text-center">
-                  {us === true ? <Check /> : us === false ? <Cross /> : typeof us === 'string' ? (
-                    <span className="text-[11px] font-mono font-bold text-pitch-black bg-creator-pink/20 border border-creator-pink/40 px-2 py-0.5 rounded-full">{us}</span>
-                  ) : null}
-                </div>
-                <div className="px-5 py-3.5 text-center">
-                  {gsap === true ? <Check /> : gsap === false ? <Cross /> : gsap === 'partial' ? <Partial /> : typeof gsap === 'string' ? (
-                    <span className="text-[11px] font-mono font-bold text-graphite-border">{gsap}</span>
-                  ) : null}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <p className="text-[11px] text-graphite-border font-mono mt-4">
-            ✓ = supported · ✗ = not supported · ~ = partial or requires extra setup. GSAP figures reflect the
-            free-for-everyone toolset Webflow shipped in 2025 — all former Club GreenSock plugins included.
-          </p>
-        </div>
-      </section>
-
-      {/* ── Side-by-side code ─────────────────────────────────────────────── */}
-      <section className="border-b border-pitch-black px-4 sm:px-6 md:px-12 py-14 sm:py-16">
-        <div className="max-w-4xl mx-auto">
-          <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-2 font-mono font-medium">04</p>
-          <h2 className="font-display font-extrabold text-3xl sm:text-4xl tracking-[-0.03em] mb-10">Side-by-side API.</h2>
-
-          <div className="space-y-12">
-
-            {/* Fade + slide */}
-            <div>
-              <h3 className="font-display font-extrabold text-xl tracking-[-0.02em] mb-5">Fade + slide in on scroll</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <p className="text-[11px] font-mono text-graphite-border mb-2 uppercase tracking-[0.1em]">GSAP + ScrollTrigger</p>
-                  <CodeBlock file="gsap.js">{`gsap.from('#card', {
+const PAIRS: { title: string; extra?: string; gsap: string; gsapWho?: string; ours: string; oursWho?: string }[] = [
+  {
+    title: 'Fade + slide in on scroll',
+    gsap: `gsap.from('#card', {
   opacity:  0,
   y:        40,
   ease:     'power2.out',
@@ -426,11 +166,8 @@ export default function VsGsapPage() {
     end:     'top 40%',
     scrub:   true,
   },
-});`}</CodeBlock>
-                </div>
-                <div>
-                  <p className="text-[11px] font-mono text-graphite-border mb-2 uppercase tracking-[0.1em]">svg-scroll-draw</p>
-                  <CodeBlock file="app.js">{`import { scrollAnimate }
+});`,
+    ours: `import { scrollAnimate }
   from 'svg-scroll-draw';
 
 scrollAnimate('#card', {
@@ -447,18 +184,11 @@ scrollAnimate('#card', {
     end:   'top 40%',
   },
   once: true,
-});`}</CodeBlock>
-                </div>
-              </div>
-            </div>
-
-            {/* Pin */}
-            <div>
-              <h3 className="font-display font-extrabold text-xl tracking-[-0.02em] mb-5">Pin / sticky section</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <p className="text-[11px] font-mono text-graphite-border mb-2 uppercase tracking-[0.1em]">GSAP + ScrollTrigger</p>
-                  <CodeBlock file="gsap.js">{`ScrollTrigger.create({
+});`,
+  },
+  {
+    title: 'Pin / sticky section',
+    gsap: `ScrollTrigger.create({
   trigger:     '#panel',
   start:       'top top',
   end:         '+=800',
@@ -466,11 +196,8 @@ scrollAnimate('#card', {
   pinSpacing:  true,
   onEnter:     () => console.log('enter'),
   onLeave:     () => console.log('leave'),
-});`}</CodeBlock>
-                </div>
-                <div>
-                  <p className="text-[11px] font-mono text-graphite-border mb-2 uppercase tracking-[0.1em]">svg-scroll-draw</p>
-                  <CodeBlock file="app.js">{`import { scrollPin }
+});`,
+    ours: `import { scrollPin }
   from 'svg-scroll-draw/pin';
 
 scrollPin('#panel', {
@@ -479,18 +206,11 @@ scrollPin('#panel', {
   onLeave:  () => console.log('leave'),
   onEnterBack: () =>
     console.log('enter back'),
-});`}</CodeBlock>
-                </div>
-              </div>
-            </div>
-
-            {/* Callbacks */}
-            <div>
-              <h3 className="font-display font-extrabold text-xl tracking-[-0.02em] mb-5">onEnter / onLeave callbacks</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <p className="text-[11px] font-mono text-graphite-border mb-2 uppercase tracking-[0.1em]">GSAP + ScrollTrigger</p>
-                  <CodeBlock file="gsap.js">{`ScrollTrigger.create({
+});`,
+  },
+  {
+    title: 'onEnter / onLeave callbacks',
+    gsap: `ScrollTrigger.create({
   trigger: '#section',
   start:   'top center',
   end:     'bottom center',
@@ -498,11 +218,8 @@ scrollPin('#panel', {
   onLeave:     () => deactivate(),
   onEnterBack: () => activate(),
   onLeaveBack: () => deactivate(),
-});`}</CodeBlock>
-                </div>
-                <div>
-                  <p className="text-[11px] font-mono text-graphite-border mb-2 uppercase tracking-[0.1em]">svg-scroll-draw</p>
-                  <CodeBlock file="app.js">{`import { scrollAnimate }
+});`,
+    ours: `import { scrollAnimate }
   from 'svg-scroll-draw';
 
 scrollAnimate('#section', {
@@ -515,29 +232,19 @@ scrollAnimate('#section', {
   onLeave:     () => deactivate(),
   onEnterBack: () => activate(),
   onLeaveBack: () => deactivate(),
-});`}</CodeBlock>
-                </div>
-              </div>
-            </div>
-
-            {/* Section snap */}
-            <div>
-              <h3 className="font-display font-extrabold text-xl tracking-[-0.02em] mb-5">Section snapping</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <p className="text-[11px] font-mono text-graphite-border mb-2 uppercase tracking-[0.1em]">GSAP + ScrollTrigger</p>
-                  <CodeBlock file="gsap.js">{`ScrollTrigger.create({
+});`,
+  },
+  {
+    title: 'Section snapping',
+    gsap: `ScrollTrigger.create({
   snap: {
     snapTo:   'labels',
     duration: { min: 0.2, max: 0.8 },
     delay:    0.1,
     ease:     'power1.inOut',
   },
-});`}</CodeBlock>
-                </div>
-                <div>
-                  <p className="text-[11px] font-mono text-graphite-border mb-2 uppercase tracking-[0.1em]">svg-scroll-draw</p>
-                  <CodeBlock file="app.js">{`import { scrollSnap }
+});`,
+    ours: `import { scrollSnap }
   from 'svg-scroll-draw/snap';
 
 scrollSnap('.section', {
@@ -546,18 +253,14 @@ scrollSnap('.section', {
   threshold: 0.3,
   onSnap: (index) =>
     console.log('snapped to', index),
-});`}</CodeBlock>
-                </div>
-              </div>
-            </div>
-
-            {/* Text split */}
-            <div>
-              <h3 className="font-display font-extrabold text-xl tracking-[-0.02em] mb-5">Text split + stagger <span className="text-[13px] font-normal font-mono text-graphite-border ml-2 border border-subtle-ash px-2 py-0.5 rounded-full">GSAP = +3.6 KB, needs core</span></h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <p className="text-[11px] font-mono text-graphite-border mb-2 uppercase tracking-[0.1em]">GSAP SplitText (free, 3.6 KB + core)</p>
-                  <CodeBlock file="gsap.js">{`// core + ScrollTrigger + SplitText
+});`,
+  },
+  {
+    title: 'Text split + stagger',
+    extra: `GSAP = +${SPLITTEXT_KB} KB, needs core`,
+    gsapWho: `GSAP SplitText (free, ${SPLITTEXT_KB} KB + core)`,
+    oursWho: `svg-scroll-draw (${SELF_ENTRIES.text} KB entry)`,
+    gsap: `// core + ScrollTrigger + SplitText
 const split = new SplitText('#h1',
   { type: 'words' });
 
@@ -566,11 +269,8 @@ gsap.from(split.words, {
   y: 20,
   stagger: 0.05,
   scrollTrigger: '#h1',
-});`}</CodeBlock>
-                </div>
-                <div>
-                  <p className="text-[11px] font-mono text-graphite-border mb-2 uppercase tracking-[0.1em]">svg-scroll-draw (2.5 KB entry)</p>
-                  <CodeBlock file="app.js">{`import { scrollText }
+});`,
+    ours: `import { scrollText }
   from 'svg-scroll-draw/text';
 
 scrollText('#h1', {
@@ -578,73 +278,203 @@ scrollText('#h1', {
   stagger: 0.05,
   from: { opacity: 0, y: 20 },
   once: true,
-});`}</CodeBlock>
-                </div>
-              </div>
+});`,
+  },
+];
+
+const WHEN_GSAP = [
+  { title: 'Complex timeline sequencing', desc: 'GSAP\'s timeline API is unmatched for orchestrating multi-element animations across a precise time axis.' },
+  { title: 'Draggable + physics', desc: 'GSAP Draggable, Inertia, and physics plugins have no equivalent in scroll-focused libraries.' },
+  { title: 'The full plugin suite — now free', desc: 'MorphSVG, Flip, MotionPath, Observer and SplitText have no equivalent here, and since 2025 they cost nothing. If you need any of them, use GSAP.' },
+  { title: 'Community & tutorials', desc: 'GSAP has 15 years of CodePens, tutorials, and community support, plus Webflow behind it now. Our ecosystem is newer.' },
+];
+
+const TOC: [string, string][] = [
+  ['vs-size', 'Bundle size'],
+  ['vs-license', 'License'],
+  ['vs-features', `Feature matrix · ${FEATURES.length}`],
+  ['vs-api', `Side-by-side API · ${PAIRS.length}`],
+  ['when-gsap', 'When GSAP is right'],
+  ['vs-more', 'More comparisons'],
+];
+
+export default function VsGsapPage() {
+  return (
+    <SiteShell kicker="vs gsap / your turn">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(pageJsonLd) }} />
+      <div className="h2h">
+
+        {/* ── Opening + at-a-glance sheet (above the fold) ─────────────────── */}
+        <header className="pg-head h2h-head">
+          <div>
+            <p className="pg-kicker">
+              <span>comparison / svg-scroll-draw vs gsap</span>
+              <span>measured {MEASURED_ON}</span>
+            </p>
+            <h1 className="pg-title h2h-title">
+              GSAP ScrollTrigger alternative.{' '}
+              <span className="dim">{RATIO_STACK}× smaller, MIT.</span>
+            </h1>
+            <p className="pg-lede">
+              GSAP is free since 2025 — every plugin — and it does more than we do. This page isn&#39;t about price.
+              It&#39;s that for scroll work alone you ship {COMPETITORS.gsapStack.gzipKb} KB and an API surface you&#39;ll
+              use a fraction of.
+            </p>
+            <div className="pg-actions">
+              <Link href="/" className="btn btn-solid" data-magnetic>Get started free →</Link>
+              <Link href="/blog/replace-gsap-scrolltrigger" className="btn" data-magnetic>Migration guide →</Link>
+              <a href="#when-gsap" className="btn" data-magnetic>When GSAP is the better call ↓</a>
             </div>
-
+            <dl className="pg-facts">
+              <div><dt>svg-scroll-draw</dt><dd>{SELF.gzipKb} KB</dd></div>
+              <div><dt>GSAP stack</dt><dd>{COMPETITORS.gsapStack.gzipKb} KB</dd></div>
+              <div><dt>Smaller by</dt><dd>{RATIO_STACK}×</dd></div>
+              <div><dt>Core + ST alone</dt><dd>{RATIO_SCROLL}×</dd></div>
+            </dl>
+            <p className="h2h-facts-note">
+              Sizes measured {MEASURED_ON}, gzip -9. {RATIO_STACK}× vs GSAP + ScrollTrigger + DrawSVG; {RATIO_SCROLL}× vs core + ScrollTrigger alone.
+            </p>
           </div>
-        </div>
-      </section>
+          <SpecSheet
+            cols={[
+              { name: OURS, sub: SELF.version, ours: true },
+              { name: 'GSAP', sub: COMPETITORS.gsapStack.version },
+            ]}
+            rows={AT_A_GLANCE}
+            caption="fig. 1 — at a glance · ✓ where one side is clearly ahead"
+          />
+        </header>
 
-      {/* ── Why GSAP wins (honest) ────────────────────────────────────────── */}
-      <section id="when-gsap" className="scroll-mt-16 border-b border-pitch-black px-4 sm:px-6 md:px-12 py-14 sm:py-16">
-        <div className="max-w-4xl mx-auto">
-          <p className="text-[11px] uppercase tracking-[0.22em] text-graphite-border mb-2 font-mono font-medium">05</p>
-          <h2 className="font-display font-extrabold text-3xl sm:text-4xl tracking-[-0.03em] mb-6">When GSAP is still the right call.</h2>
-          <p className="text-graphite-border leading-relaxed mb-6">
-            We&#39;re being honest here. GSAP has 15 years of production hardening and some features we don&#39;t have yet:
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {[
-              { title: 'Complex timeline sequencing', desc: 'GSAP\'s timeline API is unmatched for orchestrating multi-element animations across a precise time axis.' },
-              { title: 'Draggable + physics', desc: 'GSAP Draggable, Inertia, and physics plugins have no equivalent in scroll-focused libraries.' },
-              { title: 'The full plugin suite — now free', desc: 'MorphSVG, Flip, MotionPath, Observer and SplitText have no equivalent here, and since 2025 they cost nothing. If you need any of them, use GSAP.' },
-              { title: 'Community & tutorials', desc: 'GSAP has 15 years of CodePens, tutorials, and community support, plus Webflow behind it now. Our ecosystem is newer.' },
-            ].map(({ title, desc }) => (
-              <div key={title} className="p-5 rounded-xl border border-subtle-ash bg-marketplace-gray/30">
-                <p className="font-semibold text-sm mb-1">{title}</p>
-                <p className="text-[13px] text-graphite-border">{desc}</p>
+        <div className="h2h-body">
+          <div className="h2h-main">
+
+            {/* ── 01 Bundle size ─────────────────────────────── */}
+            <section className="h2h-sec" aria-labelledby="vs-size">
+              <Head n={1} k="weigh-in" id="vs-size">Bundle size.</Head>
+              <p className="h2h-p">
+                The same scroll job, weighed. GSAP&#39;s stack is built up one plugin at a time — each row inks only
+                what that plugin adds, on top of the pencil it already carries. The dashed rule is
+                svg-scroll-draw with every API loaded.
+              </p>
+              <WeighIn
+                max={60}
+                step={10}
+                self={SELF.gzipKb}
+                rows={[
+                  { name: OURS, note: `${SELF.version} · every API`, kb: SELF.gzipKb, ours: true, badge: 'yours' },
+                  { name: 'GSAP core', note: `gsap ${COMPETITORS.gsapCore.version}`, kb: CORE_KB },
+                  { name: '+ ScrollTrigger', note: `GSAP + ScrollTrigger · +${SCROLLTRIGGER_KB} KB`, kb: COMPETITORS.gsapScroll.gzipKb, from: CORE_KB, badge: 'common setup' },
+                  { name: '+ DrawSVGPlugin', note: `+${DRAWSVG_KB} KB`, kb: COMPETITORS.gsapStack.gzipKb, from: COMPETITORS.gsapScroll.gzipKb, badge: 'same job as us' },
+                  { name: '+ SplitText', note: `+${SPLITTEXT_KB} KB`, kb: Number(GSAP_FULL_SUITE_KB), from: COMPETITORS.gsapStack.gzipKb, badge: 'full suite' },
+                ]}
+                dim={{ from: SELF.gzipKb, to: COMPETITORS.gsapStack.gzipKb, title: 'Same job, difference', label: `Δ ${DELTA_KB} KB` }}
+                caption={`fig. 2 — the weigh-in, to scale · ${RATIO_STACK}× the bytes for the same job`}
+              />
+              <p className="h2h-src">
+                {provenance([`gsap ${COMPETITORS.gsapStack.version}`, `svg-scroll-draw ${SELF.version}`])}{' '}
+                SplitText is free to use as of 2025; it still costs you the bytes.
+              </p>
+            </section>
+
+            {/* ── 02 License ─────────────────────────────────── */}
+            <section className="h2h-sec" aria-labelledby="vs-license">
+              <Head n={2} k="license" id="vs-license">License.</Head>
+              <Nb>
+                <strong>Worth saying plainly:</strong> GSAP is free. Webflow acquired
+                GreenSock and in 2025 released the entire toolset — including SplitText, DrawSVG, MorphSVG and every
+                other former Club GreenSock plugin — at no charge. If you read an older comparison claiming you need a
+                ~$150/yr subscription, that is out of date, and this page used to be one of them.
+                {' '}<strong>Cost is not a reason to choose svg-scroll-draw.</strong>{' '}
+                The remaining license difference is narrow but real, and it only matters if you redistribute.
+              </Nb>
+              <div className="lgs">
+                <Ledger
+                  name={OURS}
+                  badge={SELF.license}
+                  ours
+                  items={[
+                    'Free for personal use',
+                    'Free for commercial use',
+                    'Free forever — no subscription',
+                    'All features included',
+                    'No attribution required',
+                    'Fork, modify, redistribute freely',
+                  ].map((text) => ({ text, ok: true }))}
+                />
+                <Ledger
+                  name="GSAP"
+                  badge="GreenSock Standard — free"
+                  items={[
+                    { text: 'Free for personal use', ok: true },
+                    { text: 'Free for commercial use', ok: true },
+                    { text: 'All plugins free since 2025 — no subscription', ok: true },
+                    { text: 'SplitText, DrawSVG, MorphSVG all included', ok: true },
+                    { text: 'Cannot be redistributed inside a competing tool or SDK', ok: false },
+                    { text: 'Not OSI open source — terms set by the vendor', ok: false },
+                  ]}
+                />
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
+            </section>
 
-      {/* ── CTA ──────────────────────────────────────────────────────────── */}
-      <section className="bg-pitch-black text-light-linen px-4 sm:px-6 md:px-12 py-16 sm:py-20 text-center">
-        <div className="max-w-2xl mx-auto">
-          <h2 className="font-display font-extrabold text-[clamp(28px,6vw,56px)] leading-[0.92] tracking-[-0.04em] mb-4">
-            Try it in 30 seconds.
-          </h2>
-          <p className="text-graphite-border text-sm sm:text-base mb-8">
-            One <code className="font-mono text-light-linen bg-white/10 px-1.5 py-0.5 rounded">npm install</code>.
-            No account. No license key. No config.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <div className="flex items-center gap-2 bg-white/10 rounded-full px-5 py-3 text-sm font-mono">
-              <span className="opacity-50">$</span>
-              <span>npm i svg-scroll-draw</span>
-            </div>
-            <Link href="/"
-              className="px-5 py-3 rounded-full border-2 border-white text-sm font-semibold hover:bg-white hover:text-pitch-black transition-colors text-center">
-              Read the docs →
-            </Link>
-            <Link href="/blog/replace-gsap-scrolltrigger"
-              className="px-5 py-3 rounded-full border-2 border-white/30 text-sm font-medium hover:border-white transition-colors text-center text-graphite-border hover:text-white">
-              Migration guide →
-            </Link>
-          </div>
-        </div>
-      </section>
+            {/* ── 03 Feature matrix ──────────────────────────── */}
+            <section className="h2h-sec" aria-labelledby="vs-features">
+              <Head n={3} k={`${FEATURES.length} rows`} id="vs-features">Feature matrix.</Head>
+              <Matrix cols={[{ name: OURS, ours: true }, { name: 'GSAP' }]} rows={FEATURES} />
+              <Legend>
+                GSAP figures reflect the free-for-everyone toolset Webflow shipped in 2025 — all former Club
+                GreenSock plugins included.
+              </Legend>
+            </section>
 
-      <footer className="px-6 md:px-12 py-6 border-t border-subtle-ash text-center text-[11px] font-mono text-graphite-border">
-        svg-scroll-draw · MIT · ~10 KB gzipped ·{' '}
-        <a href="https://github.com/DhruvilChauahan0210/ink-scroll" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-pitch-black transition-colors">
-          GitHub
-        </a>
-      </footer>
-    </div>
-    </>
+            {/* ── 04 Side-by-side code ───────────────────────── */}
+            <section className="h2h-sec" aria-labelledby="vs-api">
+              <Head n={4} k={`${PAIRS.length} tasks`} id="vs-api">Side-by-side API.</Head>
+              {PAIRS.map((p, i) => (
+                <CodeSet
+                  key={p.title}
+                  n={`4.${i + 1}`}
+                  title={p.title}
+                  extra={p.extra}
+                  items={[
+                    { who: p.gsapWho ?? THEIRS, file: 'gsap.js', code: p.gsap },
+                    { who: p.oursWho ?? OURS, file: 'app.js', code: p.ours, ours: true },
+                  ]}
+                />
+              ))}
+            </section>
+
+            {/* ── 05 Why GSAP wins (honest) ──────────────────── */}
+            <section id="when-gsap" className="h2h-sec" aria-labelledby="when-gsap-h">
+              <Head n={5} k="their side" id="when-gsap-h">When GSAP is still the right call.</Head>
+              <p className="h2h-p">
+                We&#39;re being honest here. GSAP has 15 years of production hardening and some features we don&#39;t have yet:
+              </p>
+              <Calls items={WHEN_GSAP} />
+            </section>
+
+            {/* ── 06 More comparisons ────────────────────────── */}
+            <section className="h2h-sec" aria-labelledby="vs-more">
+              <Head n={6} k="the set" id="vs-more">More comparisons.</Head>
+              <OtherSheets current="/vs-gsap" />
+            </section>
+          </div>
+          <Toc items={TOC} />
+        </div>
+
+        {/* ── The last word ──────────────────────────────────────────────── */}
+        <Closing
+          n={7}
+          title="Try it in 30 seconds."
+          actions={
+            <>
+              <Link href="/docs" className="btn btn-solid" data-magnetic>Read the docs →</Link>
+              <Link href="/blog/replace-gsap-scrolltrigger" className="btn" data-magnetic>Migration guide →</Link>
+            </>
+          }
+        >
+          One <code>npm install</code>. No account. No license key. No config.
+        </Closing>
+      </div>
+    </SiteShell>
   );
 }
