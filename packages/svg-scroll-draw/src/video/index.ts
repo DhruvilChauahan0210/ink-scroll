@@ -110,7 +110,9 @@ export function scrollVideo(
   }
 
   function update(): void {
-    if (!isVisible || paused || !ready) return;
+    // Reduced motion shows the last frame once, at metadata. The triggers are
+    // never measured then, so a scroll-driven update would seek back to frame 0.
+    if (!isVisible || paused || !ready || prefersReduced) return;
     let alpha = easeFn(computeProgress(scrollPos(), tStart, tEnd, 1));
     if (once) {
       frozenAlpha = Math.max(frozenAlpha, alpha);

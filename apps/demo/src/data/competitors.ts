@@ -47,7 +47,7 @@ export const MEASURED_ON = '2026-08-14';
 export const SELF: Competitor = {
   name: 'svg-scroll-draw',
   label: 'svg-scroll-draw (all APIs)',
-  version: '2.15.1',
+  version: '2.15.2',
   license: 'MIT',
   gzipKb: 10.2,
   lastPublish: '2026-08-14',

@@ -162,6 +162,22 @@ test.describe('scrollVideo', () => {
     expect(row.paused).toBe(true);
   });
 
+  test('reduced motion keeps the end frame once the clip is in view', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await openFixture(page, 'video.html');
+    await requireDecoder(page);
+    await expect.poll(async () => (await read<Row>(page)).duration, { timeout: 5000 }).not.toBeNull();
+
+    // The clip starts below the fold; scrolling it into view must not start the
+    // scroll loop, which has no trigger window under reduced motion and would
+    // seek back to frame 0.
+    for (const y of [T_START, 1400, T_END]) {
+      await scrollToY(page, y);
+      const row = await read<Row>(page);
+      expect(row.currentTime, `end frame lost at y=${y}`).toBeCloseTo(DURATION, 1);
+    }
+  });
+
   test('destroy() stops scrubbing', async ({ page }) => {
     await openFixture(page, 'video.html');
     await requireDecoder(page);
