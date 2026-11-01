@@ -55,6 +55,16 @@ const KINDS: { k: Kind; label: string }[] = [
  */
 const RELEASES: Release[] = [
   {
+    version: '2.16.0',
+    title: 'Entries share one engine',
+    date: '2026-11-01',
+    items: [
+      { type: 'new', text: 'ES module entries share code through chunks instead of each bundling its own copy of the engine. Main + /react drops from 18.1 to 13.2 KB as shipped files; an app on five entries drops from 16.3 to 9.4 KB under Vite and from 22.8 to 10.2 KB under webpack. Published paths, exports and the CommonJS, CDN and CLI builds are unchanged.' },
+      { type: 'fix', text: 'The drop-ins and their React hooks share one instance under ESM: AOS.refresh() from svg-scroll-draw/aos now reaches the instance useAOS started, and the same holds for the ScrollReveal and vivus hooks.' },
+      { type: 'site', text: 'Entry sizes now count every chunk an entry imports, as shipped files — the way the compared libraries are measured. With no bundler each entry pays 0.1–0.5 KB for the lines that join it to its chunks (main 10.7 KB); through a bundler none grew, and scrollPin went from 1.6 to 1.4 KB. Both READMEs’ size tables are generated and checked.' },
+    ],
+  },
+  {
     version: '2.15.3',
     title: 'scrollReveal’s stagger cascades',
     date: '2026-11-01',

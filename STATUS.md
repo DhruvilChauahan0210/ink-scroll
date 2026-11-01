@@ -4,8 +4,8 @@
 > Tests: **632 unit** across 32 suites · **198 browser tests** per engine (594 runs
 > across Chromium/Firefox/WebKit) · **56 mutations**, each caught by the one test
 > named for it · **91.3% line coverage** (gate 90/90/82/82)
-> Bundle: **10.2 KB gzipped** (main entry; per-API entries from 0.2 KB) · zero runtime dependencies
-> Last updated: 2026-10-31
+> Bundle: **10.7 KB gzipped** (main entry as shipped files, chunks included; per-API entries from 0.2 KB) · zero runtime dependencies
+> Last updated: 2026-11-01
 
 ---
 
@@ -145,6 +145,15 @@ at all.
 - [x] 32 dead files removed (~4,900 lines), mascot and its CSS included; 404 page in `SiteShell`
 - [x] Demo lint 52 → 0, enforced with `--max-warnings=0`
 - [x] `/docs`: jump-scroll asymmetry documented; Note boxes fixed
+
+### 2.16.0 — shared ESM chunks (2026-11-01; committed, tag not pushed)
+
+- [x] One ESM build with code splitting; CJS, CDN and CLI builds unchanged; published paths and `exports` unchanged
+- [x] Drop-ins and their React hooks share one instance under ESM (`AOS.refresh()` reaches `useAOS`'s instance)
+- [x] `size.mjs` counts each entry's file plus the chunks it imports (`scripts/bundle-size.mjs`, shared with check-claims); main + react budgeted
+- [x] README size tables generated (`npm run size -- --write`) and checked; root `npm run size` forwards its arguments
+- [x] 632 unit · 609 browser runs (198 per engine + 15 firefox-native) · every export loads through `require()` and `import()`
+- [ ] Released — waiting on the owner to push the `v2.16.0` tag
 
 ### 2.15.3 — scrollReveal's stagger (2026-11-01)
 

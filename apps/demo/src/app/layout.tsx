@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Syne } from "next/font/google";
 import "./globals.css";
 import { TITLE_TEMPLATE } from "./_lib/seo";
+import { SELF } from '@/data/competitors';
 
 const THEME_SCRIPT = `(function(){
   var s = localStorage.getItem('theme');
@@ -28,7 +29,7 @@ const syne = Syne({
 
 const SITE_URL = "https://svg-scroll-draw.vercel.app";
 
-const HOME_TITLE = "SVG Scroll Animation Library — 10 KB, MIT, No GSAP";
+const HOME_TITLE = `SVG Scroll Animation Library — ${Math.round(SELF.gzipKb)} KB, MIT, No GSAP`;
 const HOME_DESCRIPTION =
   "Draw SVG paths, reveal content, split text and scrub video on scroll. 10.7 KB gzipped, zero dependencies, MIT. React, Next.js, Vue, Svelte or vanilla JS.";
 

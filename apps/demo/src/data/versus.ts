@@ -111,7 +111,7 @@ export const VERSUS: Versus[] = [
     competitorKey: 'scrollmagic',
     title: 'ScrollMagic Alternative — One Library, No GSAP Plugin',
     description:
-      'svg-scroll-draw vs ScrollMagic: ScrollMagic detects scroll but has no animation engine, so it needs GSAP. This does both in one 10 KB package.',
+      `svg-scroll-draw vs ScrollMagic: ScrollMagic detects scroll but has no animation engine, so it needs GSAP. This does both in one ${Math.round(SELF.gzipKb)} KB package.`,
     keywords: [
       'scrollmagic alternative',
       'scrollmagic replacement',
@@ -167,9 +167,9 @@ export const VERSUS: Versus[] = [
   {
     slug: 'vs-motion',
     competitorKey: 'motionOne',
-    title: 'Motion Alternative for Scroll — 10 KB vs 45 KB',
+    title: `Motion Alternative for Scroll — ${Math.round(SELF.gzipKb)} KB vs 45 KB`,
     description:
-      'svg-scroll-draw vs Motion (motion.dev): a scroll-specialised 10 KB library against a general animation engine. Feature matrix and measured sizes.',
+      `svg-scroll-draw vs Motion (motion.dev): a scroll-specialised ${Math.round(SELF.gzipKb)} KB library against a general animation engine. Feature matrix and measured sizes.`,
     keywords: [
       'motion one alternative',
       'motion.dev alternative',

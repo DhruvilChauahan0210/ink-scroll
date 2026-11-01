@@ -11,7 +11,7 @@ import { CopyCommand } from '@/components/home/CopyCommand';
 import { PageMap } from '@/components/stack/PageMap';
 import { C, Sec, Toc, pad } from '@/components/stack/parts';
 
-const TITLE = 'React Scroll Animation: Components & Hooks, 10 KB';
+const TITLE = `React Scroll Animation: Components & Hooks, ${Math.round(SELF.gzipKb)} KB`;
 const DESCRIPTION =
   'Scroll animations in React with typed components and hooks: fade, pin, snap, text split, SVG draw. 10.7 KB gzip, MIT, works in the Next.js App Router.';
 

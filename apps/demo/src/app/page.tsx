@@ -29,7 +29,7 @@ const jsonLd = {
   '@type': 'SoftwareApplication',
   name: 'svg-scroll-draw',
   description:
-    'A lightweight scroll-animation toolkit with best-in-class SVG path drawing. Draw SVG paths, reveal content, animate text, scrub video, and drive CSS from scroll. 10 KB gzipped, zero dependencies, MIT.',
+    `A lightweight scroll-animation toolkit with best-in-class SVG path drawing. Draw SVG paths, reveal content, animate text, scrub video, and drive CSS from scroll. ${SELF.gzipKb} KB gzipped, zero dependencies, MIT.`,
   applicationCategory: 'DeveloperApplication',
   operatingSystem: 'Web',
   url: 'https://svg-scroll-draw.vercel.app',

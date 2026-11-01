@@ -10,6 +10,11 @@
  * wrapper's API changes, these samples are wrong and must change with it.
  */
 
+import { SELF } from './competitors';
+
+/** The main entry, rounded — the figure every description quotes. */
+const KB = Math.round(SELF.gzipKb);
+
 export type FrameworkLanding = {
   slug: string;
   /** Display name, e.g. "Vue 3". */
@@ -45,7 +50,7 @@ export const FRAMEWORK_LANDINGS: FrameworkLanding[] = [
     worksWith: 'Vue 3 · Vite · Nuxt 3',
     title: 'Vue Scroll Animation Library — Composables & Components',
     description:
-      'Scroll animations for Vue 3: a <ScrollDraw> component and a useScrollDraw composable. Typed, SSR-safe, 10 KB for every API, zero dependencies.',
+      `Scroll animations for Vue 3: a <ScrollDraw> component and a useScrollDraw composable. Typed, SSR-safe, ${KB} KB for every API, zero dependencies.`,
     keywords: [
       'vue scroll animation',
       'vue 3 scroll animation library',
@@ -141,7 +146,7 @@ const heading = useScrollText({ split: 'words', stagger: 0.05 });
     worksWith: 'Svelte 4 · 5 · SvelteKit',
     title: 'Svelte Scroll Animation — Native Actions, No Wrapper',
     description:
-      'Scroll animations for Svelte using native actions. use:scrollDraw adds no wrapper element and no extra component. 10 KB for every API, zero dependencies.',
+      `Scroll animations for Svelte using native actions. use:scrollDraw adds no wrapper element and no extra component. ${KB} KB for every API, zero dependencies.`,
     keywords: [
       'svelte scroll animation',
       'svelte animate on scroll',
@@ -231,7 +236,7 @@ const heading = useScrollText({ split: 'words', stagger: 0.05 });
     worksWith: 'Solid 1.x · SolidStart',
     title: 'Solid.js Scroll Animation — No Re-Renders',
     description:
-      'Scroll animations for Solid.js that stay outside the reactive graph — no signals updated per frame, no re-renders. 10 KB for every API, zero dependencies.',
+      `Scroll animations for Solid.js that stay outside the reactive graph — no signals updated per frame, no re-renders. ${KB} KB for every API, zero dependencies.`,
     keywords: [
       'solid js scroll animation',
       'solidjs animate on scroll',
@@ -331,7 +336,7 @@ export function Stats() {
     worksWith: 'Angular 16+ · standalone components',
     title: 'Angular Scroll Animation — No @angular/core Dependency',
     description:
-      'Scroll animations for Angular via plain classes you drive from ngAfterViewInit. No Angular peer dependency, no NgModule, 10 KB for every API.',
+      `Scroll animations for Angular via plain classes you drive from ngAfterViewInit. No Angular peer dependency, no NgModule, ${KB} KB for every API.`,
     keywords: [
       'angular scroll animation',
       'angular animate on scroll',
@@ -517,7 +522,7 @@ export class StatsComponent implements AfterViewInit, OnDestroy {
     worksWith: 'Nuxt 3 · SSR · static',
     title: 'Nuxt 3 Scroll Animation — SSR-Safe Composables',
     description:
-      'Scroll animations for Nuxt 3: import composables per component, or register every component globally with one plugin. SSR-safe, 10 KB for every API.',
+      `Scroll animations for Nuxt 3: import composables per component, or register every component globally with one plugin. SSR-safe, ${KB} KB for every API.`,
     keywords: [
       'nuxt scroll animation',
       'nuxt 3 animate on scroll',
