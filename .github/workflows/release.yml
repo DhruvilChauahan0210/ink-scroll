@@ -22,6 +22,16 @@ on:
         type: boolean
         default: true
 
+# One release per tag at a time. Re-pushing a tag while its run was still going
+# started a second run on the same commit; both reached `npm publish` within
+# seconds and v2.15.3's watched run lost with E409. A second run now waits for
+# the first and stops at "Confirm this version is not already published".
+# Never cancel in progress: a run stopped mid-publish can leave npm and the
+# GitHub release out of step.
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   release:
     name: Verify & publish

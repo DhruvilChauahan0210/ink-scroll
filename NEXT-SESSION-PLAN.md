@@ -1,6 +1,6 @@
 # Next Session Plan — svg-scroll-draw
 
-> Updated: 2026-11-01 — **2.15.2 published** (`v2.15.2` on `32f3409`: scrollVideo keeps its end frame under reduced motion). **2.15.3 ready to tag** (scrollReveal's `stagger` fixed — a fraction of the reveal window, per row, on top of a custom trigger; committed, not published — the owner pushes tags). The native CSS path is no longer described as compositor work anywhere, and `/vs-aos` quotes the reveal entry and the real presets. Every page is on the homepage design and all 23 showcase sites are built — in `32f3409`, on `main`.
+> Updated: 2026-11-01 — **2.15.3 published** (`v2.15.3` on `acc9acc`: scrollReveal's `stagger` is a fraction of the reveal window, per row, on top of a custom trigger; 2.15.2 before it kept scrollVideo's end frame under reduced motion). The native CSS path is no longer described as compositor work anywhere, and `/vs-aos` quotes the reveal entry and the real presets. Every page is on the homepage design and all 23 showcase sites are built — in `32f3409`, on `main`.
 
 ---
 
@@ -143,19 +143,13 @@ Unit coverage was ratcheted alongside: `group` 50→96%, `snap` 81→95%, `text`
 
 ## What is left
 
-### 1. Release follow-ups
-- [x] Published 2.10.0 to npm, merged to `main`, tagged `v2.10.0`
-- [ ] **`NPM_TOKEN` in repo secrets** (or npm trusted publishing — no token at all). Without it the release workflow cannot
-      publish, which is why this one went out by hand and unattested. Adding it
-      is what makes the *next* release a tag push rather than a manual step.
-- [ ] **Check the `v2.10.0` workflow run.** Pushing the tag triggered
-      `release.yml`, which fails at "Confirm this version is not already
-      published" when the version is already on npm — expected here, cosmetic.
-      What is worth reading in that run is everything *before* that step: it is
-      the first time CI has ever run the browser suite remotely, and the new
-      `globalSetup` bundling step is untested outside this laptop.
-- [ ] Confirm the Vercel deploy from `main` shows v2.10.0 and the new docs
-      sections render.
+### 1. Release follow-ups — done
+- [x] `NPM_TOKEN` is in repo secrets: every release since 2.10.1 is a tag push,
+      published by `release.yml` with signed provenance (latest: 2.15.3).
+- [x] The workflow runs the browser suite remotely before publishing, on every
+      release tag.
+- [x] `release.yml` has a concurrency group per tag (2026-11-01): re-pushing a
+      tag queues a second run instead of racing the first to `npm publish`.
 
 ### 2. Accuracy pass on the comparison pages — done
 - [x] `CLAIMS-AUDIT.md` items: GSAP is described as free since 2025 everywhere

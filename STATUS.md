@@ -1,6 +1,6 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **2.15.2** — published on npm with provenance through `release.yml` (2026-11-01)
+> Current version: **2.15.3** — published on npm with provenance through `release.yml` (2026-11-01)
 > Tests: **632 unit** across 32 suites · **198 browser tests** per engine (594 runs
 > across Chromium/Firefox/WebKit) · **56 mutations**, each caught by the one test
 > named for it · **91.3% line coverage** (gate 90/90/82/82)
@@ -138,12 +138,12 @@ at all.
 ### Unreleased — migration guides (branch `feat/migration-guides`, 2026-10-31; site-only)
 - [x] `/guides` + 4 guides (AOS Next.js, AOS React, ScrollReveal React, vivus React), sitemap, nav, vs-page and README links
 
-### 2.15.3 — scrollReveal's stagger (2026-11-01; committed, tag not pushed)
+### 2.15.3 — scrollReveal's stagger (2026-11-01)
 
 - [x] `scrollReveal` `stagger` is a fraction of the reveal window, counted per row from the layout, capped at one window, and applied on top of a custom `trigger` (default 0.15); `reveal` entry 4.7 KB
 - [x] Six unit tests on the per-element trigger windows; e2e cascade at the default stagger with a visible step, plus a custom-trigger row (both fail on 2.15.2)
 - [x] `native` option JSDoc no longer claims the compositor
-- [ ] Released — waiting on the owner to push the `v2.15.3` tag
+- [x] Released — tag `v2.15.3` on `acc9acc`, published by `release.yml` with provenance
 
 ### 2.15.2 — scrollVideo keeps its end frame under reduced motion (2026-11-01)
 

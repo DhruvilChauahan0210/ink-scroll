@@ -162,6 +162,16 @@ All notable changes to `svg-scroll-draw` are documented here.
   post's support table sets its version marks with the stylesheet every post
   uses, so the post's own override sheet is gone.
 
+### CI
+
+- **One release run per tag at a time.** Re-pushing `v2.15.3` while its first
+  run was going started a second run on the same commit; both reached
+  `npm publish` seconds apart and one ended in E409. `release.yml` now has a
+  concurrency group per tag that queues a second run instead of racing it
+  (it then stops at "Confirm this version is not already published"), and
+  never cancels a run in progress, since stopping mid-publish could leave npm
+  and the GitHub release out of step.
+
 ---
 
 ## [2.15.3] — 2026-11-01
