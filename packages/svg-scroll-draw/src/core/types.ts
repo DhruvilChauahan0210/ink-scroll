@@ -104,8 +104,10 @@ export interface ScrollDrawOptions {
   /**
    * Use the browser's native CSS scroll-driven animation
    * (`animation-timeline: view()`) when the configuration is simple enough and
-   * the browser supports it. This runs the draw entirely on the compositor —
-   * zero per-frame JavaScript, zero scroll/resize listeners.
+   * the browser supports it. The browser drives the draw from the scroll
+   * position — zero per-frame JavaScript, zero scroll/resize listeners. (It
+   * still repaints on the main thread: browsers don't composite
+   * `stroke-dashoffset`.)
    *
    * Falls back to the JS engine automatically when unsupported or when the
    * config uses a feature native CSS can't express (callbacks, stagger, morph,

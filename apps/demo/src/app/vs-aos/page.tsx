@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { seoTitle } from '../_lib/seo';
 import { COMPETITORS, SELF, SELF_ENTRIES, MEASURED_ON, provenance } from '@/data/competitors';
+import { REVEAL_PRESETS } from '@/data/facts';
 import { jsonLd } from '@/lib/json-ld';
 import { SiteShell } from '@/components/site/SiteShell';
 import { SpecSheet } from '@/components/h2h/SpecSheet';
@@ -48,7 +49,7 @@ const pageJsonLd = {
       name: 'Is there a better alternative to AOS (Animate On Scroll)?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Yes. svg-scroll-draw\'s scrollReveal function replaces AOS with a typed JavaScript API — no data-aos HTML attributes required, no config files, 7 built-in presets, stagger support, and custom easing. All in ~10 KB total.',
+        text: `Yes. svg-scroll-draw's scrollReveal function replaces AOS with a typed JavaScript API — no data-aos HTML attributes required, no config files, ${REVEAL_PRESETS.length} built-in presets, stagger support, and custom easing. scrollReveal alone is ${SELF_ENTRIES.reveal} KB gzipped; every API at once is ${SELF.gzipKb} KB.`,
       },
     },
     {
@@ -80,7 +81,7 @@ const pageJsonLd = {
       name: 'Can I migrate from AOS to svg-scroll-draw?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Yes. Remove data-aos attributes and replace the AOS.init() call with scrollReveal() targeting the same elements. The 7 built-in presets (fadeUp, fadeDown, fadeLeft, fadeRight, zoomIn, slideIn, flipIn) cover all common AOS animations.',
+        text: `Yes. Remove data-aos attributes and replace the AOS.init() call with scrollReveal() targeting the same elements. The ${REVEAL_PRESETS.length} built-in presets (${REVEAL_PRESETS.join(', ')}) cover the common AOS fades, zooms and flips; the AOS drop-in (svg-scroll-draw/aos) keeps the data-aos markup as it is.`,
       },
     },
   ],
@@ -313,7 +314,7 @@ ScrollReveal({ distance: '40px' }).reveal('.card', { interval: 80 });` },
               />
               <p className="h2h-src">
                 {provenance([`aos ${AOS.version}`, `scrollreveal ${SR.version}`, `svg-scroll-draw ${SELF.version}`])}{' '}
-                AOS includes its stylesheet (2.1 KB), which you need.
+                AOS includes its stylesheet ({AOS.cssKb} KB), which you need.
               </p>
             </section>
 

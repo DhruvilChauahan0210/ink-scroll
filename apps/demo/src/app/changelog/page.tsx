@@ -55,6 +55,16 @@ const KINDS: { k: Kind; label: string }[] = [
  */
 const RELEASES: Release[] = [
   {
+    version: '2.15.3',
+    title: 'scrollReveal’s stagger cascades',
+    date: '2026-11-01',
+    items: [
+      { type: 'fix', text: 'scrollReveal’s stagger works. It was documented in seconds but moved each trigger by a few pixels (about 2.5px at the default), and a custom trigger switched it off. It is now a fraction of the reveal window: each element in a row starts that far into its neighbour’s reveal (default 0.15), rows are read from the layout so long lists are not pushed down the page, and the offset applies on top of a custom trigger. The reveal entry is 4.7 KB gzipped.' },
+      { type: 'test', text: 'Six unit tests pin the trigger window each element gets; the browser cascade test now runs at the default stagger and requires a visible step, and a row with a custom trigger must cascade too.' },
+      { type: 'site', text: 'The native option’s documentation no longer says the draw runs on the compositor: browsers repaint stroke-dashoffset on the main thread. What the native path removes is the per-frame JavaScript.' },
+    ],
+  },
+  {
     version: '2.15.2',
     title: 'scrollVideo keeps its end frame under reduced motion',
     date: '2026-11-01',

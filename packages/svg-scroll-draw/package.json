@@ -1,6 +1,6 @@
 {
   "name": "svg-scroll-draw",
-  "version": "2.15.2",
+  "version": "2.15.3",
   "description": "Scroll-driven animation for the web — draw SVG paths, reveal elements, pin sections, scrub video. Zero dependencies, native CSS fast path, works with React, Vue, Svelte, Solid, Angular, Astro and vanilla JS",
   "keywords": [
     "svg",

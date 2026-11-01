@@ -1265,12 +1265,14 @@ export function ParallaxSection() {
               For the common case, <code className="font-mono text-pitch-black">svg-scroll-draw</code> hands
               the animation to the browser&apos;s native{' '}
               <code className="font-mono text-pitch-black">animation-timeline: view()</code>.
-              The draw runs on the compositor with{' '}
+              The browser drives the draw from the scroll position, with{' '}
               <strong>zero per-frame JavaScript and no scroll or resize listeners.</strong>{' '}
+              (The stroke still repaints on the main thread — browsers don&apos;t composite{' '}
+              <code className="font-mono text-pitch-black">stroke-dashoffset</code> — but no script runs per frame.){' '}
               It falls back to the JS engine automatically when the browser lacks support, or when the config
               uses a feature CSS can&apos;t express declaratively.
             </p>
-            <Sub>Eligible for native CSS (compositor path)</Sub>
+            <Sub>Eligible for native CSS</Sub>
             <p className="text-sm text-graphite-border leading-relaxed mb-4">
               Default trigger, optional{' '}
               <code className="font-mono text-pitch-black">fade</code>, forward or reverse direction,
@@ -2091,10 +2093,10 @@ instance.destroy();`}
                   {[
                     ['preset',   'ScrollRevealPreset', '"fadeUp"',    'Named start state. fadeUp | fadeDown | fadeLeft | fadeRight | scale | flip | flipX'],
                     ['from',     'ScrollRevealFrom',   '—',           'Custom start state: { opacity, x, y, scale, rotate, rotateX, rotateY }. Merges with preset.'],
-                    ['stagger',  'number',             '0.08',        'Viewport-% offset per element — creates cascade for lists.'],
+                    ['stagger',  'number',             '0.15',        'How far behind its neighbour each element in the same row starts, as a fraction of the reveal window (0–1). Rows are read from the layout, so a grid cascades within each row; applies on top of a custom trigger too.'],
                     ['easing',   'EasingName | fn',    '"ease-out"',  'Animation easing.'],
                     ['once',     'boolean',            'true',        'Freeze at max progress — don\'t reverse on scroll back.'],
-                    ['trigger',  'TriggerConfig',      'auto',        'Override trigger window. Default computed per element.'],
+                    ['trigger',  'TriggerConfig',      '"top 88%" → "top 53%"', 'Override the reveal window. The stagger offset is added on top of it, per element.'],
                     ['onEnter',  '() => void',         '—',           'Fires when the first element enters its trigger zone.'],
                     ['onLeave',  '() => void',         '—',           'Fires when the last element leaves its trigger zone.'],
                   ].map(([opt, type, def, desc]) => (

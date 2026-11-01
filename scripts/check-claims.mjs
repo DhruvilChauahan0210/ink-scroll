@@ -329,6 +329,23 @@ if (entries) {
 }
 
 /*
+ * scrollReveal's preset names. /vs-aos listed "zoomIn, slideIn, flipIn" — names
+ * the library never had — so the site reads them from facts.ts, and this keeps
+ * facts.ts in step with the library's own REVEAL_PRESETS table.
+ */
+{
+  const lib = readFileSync(join(ROOT, 'packages/svg-scroll-draw/src/reveal/index.ts'), 'utf8')
+    .match(/REVEAL_PRESETS[^=]*=\s*\{([\s\S]*?)\n\};/);
+  const site = readFileSync(join(ROOT, 'apps/demo/src/data/facts.ts'), 'utf8')
+    .match(/REVEAL_PRESETS\s*=\s*\[([^\]]*)\]/);
+  const libNames = lib ? [...lib[1].matchAll(/^\s*(\w+):/gm)].map((m) => m[1]) : [];
+  const siteNames = site ? [...site[1].matchAll(/'(\w+)'/g)].map((m) => m[1]) : [];
+  if (!libNames.length || libNames.join() !== siteNames.join()) {
+    failures.push(`apps/demo/src/data/facts.ts: REVEAL_PRESETS is [${siteNames.join(', ')}] but the library defines [${libNames.join(', ')}]`);
+  }
+}
+
+/*
  * Claims that are wrong whatever the build says. Each one shipped: "9× smaller"
  * (measured 4.5–4.75×), "covers 95% of use cases" (never measured), SplitText
  * "+18 KB" (it is 3.6 KB in gsap 3.15.0), the paid-plugin claim (free since

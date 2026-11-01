@@ -424,7 +424,7 @@ export function createEngine(
   }
 
   // ── Native CSS fast path ──────────────────────────────────────────────────
-  // Hand the draw to the compositor when the config is simple enough that CSS
+  // Hand the draw to CSS scroll timelines when the config is simple enough that CSS
   // reproduces it exactly. Anything CSS can't express keeps the JS engine below.
   //
   // The timeline is a NAMED `view-timeline` declared on the container, which the

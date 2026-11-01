@@ -251,7 +251,7 @@ export default function NextjsScrollAnimationPage() {
               </Note>
               <Note k="Native CSS">
                 When the browser supports <C>animation-timeline: view()</C>, svg-scroll-draw automatically uses it —
-                zero JS scroll listeners, zero rAF calls, pure compositor animation. Falls back to JS engine seamlessly.
+                zero JS scroll listeners, zero rAF calls, no JavaScript per frame. Falls back to JS engine seamlessly.
               </Note>
             </Sec>
 

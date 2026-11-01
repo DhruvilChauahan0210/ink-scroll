@@ -1,6 +1,6 @@
 # Next Session Plan — svg-scroll-draw
 
-> Updated: 2026-11-01 — **2.15.2 ready to tag** (scrollVideo keeps its end frame under reduced motion; not published — the owner pushes tags). Every page is on the homepage design and all 23 showcase sites are built, all on `feat/homepage-redesign`, uncommitted and not deployed (the owner said: no deploy until they say).
+> Updated: 2026-11-01 — **2.15.2 published** (`v2.15.2` on `32f3409`: scrollVideo keeps its end frame under reduced motion). **2.15.3 ready to tag** (scrollReveal's `stagger` fixed — a fraction of the reveal window, per row, on top of a custom trigger; committed, not published — the owner pushes tags). The native CSS path is no longer described as compositor work anywhere, and `/vs-aos` quotes the reveal entry and the real presets. Every page is on the homepage design and all 23 showcase sites are built — in `32f3409`, on `main`.
 
 ---
 
@@ -157,21 +157,20 @@ Unit coverage was ratcheted alongside: `group` 50→96%, `snap` 81→95%, `text`
 - [ ] Confirm the Vercel deploy from `main` shows v2.10.0 and the new docs
       sections render.
 
-### 2. Accuracy pass on the comparison pages — see `CLAIMS-AUDIT.md`
-The highest-priority item in the repo right now, and the only one that involves
-somebody else's project. The comparison pages state that GSAP's DrawSVG and
-SplitText require a paid Club GreenSock subscription. That stopped being true in
-2025 — the plugins ship in the public npm tarball under a no-charge licence — and
-the claim is repeated in six places including the whole `/vs-gsap` pitch.
-
-Measured in the same pass: AOS is 6.7 KB and ScrollReveal 5.6 KB against our 10.0
-KB, so both are *smaller* than us, not larger as the pages claim; ScrollReveal is
-GPL-3.0, not MIT; and our own "honours prefers-reduced-motion by default" is a
-blanket claim with three exceptions.
-
-`CLAIMS-AUDIT.md` has every finding with the command that produced it, the
-proposed replacement, and the order to do them in. Nothing there has been
-actioned.
+### 2. Accuracy pass on the comparison pages — done
+- [x] `CLAIMS-AUDIT.md` items: GSAP is described as free since 2025 everywhere
+      (`/vs-gsap`, `data/competitors.ts`); AOS 6.7 KB and ScrollReveal 5.6 KB
+      (GPL-3.0) are quoted as smaller than us.
+- [x] 2026-11-01: the native CSS path is no longer called compositor work —
+      `stroke-dashoffset` repaints on the main thread; what goes away is the
+      per-frame script. Fixed on the native, performance and GSAP DrawSVG
+      posts, the 2026 guide, `/docs`, the homepage, the Next.js landing,
+      `llms.txt`, the root README and the `native` option's JSDoc. The native
+      post's figure and scenario table are redrawn to match.
+- [x] 2026-11-01: `/vs-aos` quotes the reveal entry (not the full bundle) and
+      the seven real presets (`REVEAL_PRESETS` in `data/facts.ts`, held to the
+      library by check:claims); AOS's stylesheet and Framer Motion's bundle
+      come from `data/competitors.ts` (`cssKb`, `bundleKb`).
 
 ### 3. Site catch-up — `/verify` stops three fixes short
 `/verify` is the page that shows each claim being true in a real browser, and it

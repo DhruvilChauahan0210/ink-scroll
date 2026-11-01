@@ -20,7 +20,7 @@ const SERVER: Stop[] = [
 const BROWSER: Stop[] = [
   { code: 'hydrate', note: 'The markup matches what the server sent. No hydration error.' },
   { code: 'useEffect', note: 'Runs in the browser only. The engine attaches to the element.' },
-  { code: 'animation-timeline: view()', note: 'Supported: compositor, no JS per frame. Not yet: the JS engine.', fork: ['native CSS', 'JS engine'] },
+  { code: 'animation-timeline: view()', note: 'Supported: the browser’s scroll timeline, no JS per frame. Not yet: the JS engine.', fork: ['native CSS', 'JS engine'] },
 ];
 
 function Lane({ label, sub, stops, start, delay }: { label: string; sub: string; stops: Stop[]; start: number; delay: number }) {

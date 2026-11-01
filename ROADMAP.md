@@ -26,7 +26,7 @@
 - [x] `velocityScale` — draw speed scales with scroll velocity
 - [x] `repeat` / `repeatDelay` — loop or replay N times
 - [x] `autoplay` + `duration` — viewport-enter trigger mode
-- [x] `native` — compositor-level CSS `animation-timeline: view()` fast path
+- [x] `native` — CSS `animation-timeline: view()` fast path (no JavaScript per frame)
 - [x] `pause` / `resume` / `seek` / `replay` / `getProgress` / `destroy` instance API
 - [x] `rect` + `circle` support — perimeter-based length calculation
 - [x] `Cinematic` class — reads `story.json` from Cinematic Studio, builds sticky-stage timeline

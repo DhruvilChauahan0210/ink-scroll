@@ -1,4 +1,5 @@
 import { ImageResponse } from 'next/og';
+import { COMPETITORS, SELF } from '@/data/competitors';
 
 export const runtime     = 'edge';
 export const alt         = 'svg-scroll-draw vs GSAP DrawSVG — Free Alternative';
@@ -54,10 +55,10 @@ export default function OgImage() {
         {/* Comparison pills */}
         <div style={{ display: 'flex', gap: 12, marginBottom: 48 }}>
           {[
-            { label: '~10 KB',    sub: 'vs 47.5 KB',       bg: '#ff90e8', text: '#111' },
+            { label: `${SELF.gzipKb} KB`, sub: `vs ${COMPETITORS.gsapStack.gzipKb} KB`, bg: '#ff90e8', text: '#111' },
             { label: 'MIT',        sub: 'fork it freely',   bg: '#22c55e', text: '#111' },
             { label: 'Zero deps',  sub: 'vs 3 packages',    bg: '#fff',    text: '#111' },
-            { label: 'Native CSS', sub: 'compositor-driven', bg: '#5865F2', text: '#fff' },
+            { label: 'Native CSS', sub: '0 JS per frame', bg: '#5865F2', text: '#fff' },
           ].map(({ label, sub, bg, text }) => (
             <div key={label} style={{ background: bg, borderRadius: 10, padding: '10px 18px', display: 'flex', flexDirection: 'column', gap: 2 }}>
               <span style={{ fontSize: 18, fontWeight: 800, color: text }}>{label}</span>

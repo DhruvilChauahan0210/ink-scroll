@@ -47,7 +47,7 @@ const STEPS = [
   'Every path measured once',
   'Staggered in the order you wrote them',
   'Eased stroke by stroke',
-  'On the compositor where the browser can',
+  'No JavaScript per frame where the browser can',
 ];
 
 /* Each label reads out a real number: the three options in the code line, and

@@ -16,7 +16,7 @@
      stacked cards would differ simply by being at different heights, which would
      pass whether stagger worked or not. Same trick as parity.html. */
   .row { display: flex; gap: 20px; padding: 0 20px; }
-  .card, .rev { flex: 1; height: 120px; background: #cde; }
+  .card, .rev, .cust { flex: 1; height: 120px; background: #cde; }
 </style>
 </head>
 <body>
@@ -39,6 +39,15 @@
   <div class="rev"></div>
 </div>
 
+<div class="spacer"></div>
+
+<!-- rowC: document top 3840 — a custom trigger, which used to switch stagger off -->
+<div class="row" id="rowC">
+  <div class="cust"></div>
+  <div class="cust"></div>
+  <div class="cust"></div>
+</div>
+
 <div class="tail"></div>
 
 <script type="module">
@@ -47,12 +56,15 @@ import { transformOf, opacityOf, docTop, publish } from './_probe.mjs';
 
 const cards = [...document.querySelectorAll('.card')];
 const revs  = [...document.querySelectorAll('.rev')];
+const custs = [...document.querySelectorAll('.cust')];
 
-// stagger: 1 pins the engine at its maximum 4%-of-viewport step per element.
-// The default 0.08 works out to a 2.5px trigger offset at this viewport, which
-// is below the noise floor — a cascade test using the default would pass on a
-// build where stagger did nothing at all.
-const staggered = scrollReveal(cards, { stagger: 1, once: true });
+// The default stagger (0.15 of the reveal window per card in a row). Up to
+// 2.15.2 the default was a 2.5px offset at this viewport — below the noise
+// floor — so the spec also checks the size of each step, not just its order.
+const staggered = scrollReveal(cards, { once: true });
+
+// A custom trigger must keep its stagger (it used to drop it entirely).
+const custom = scrollReveal(custs, { stagger: 0.2, once: true, trigger: { start: 'top 80%', end: 'top 40%' } });
 
 // once:false — must genuinely reverse on the way back up.
 const reversing = scrollReveal(revs, { preset: 'scale', once: false });
@@ -69,14 +81,17 @@ publish({
     scrollY: window.scrollY,
     cards: cards.map(state),
     revs:  revs.map(state),
+    custs: custs.map(state),
   }),
   geometry: () => ({
     rowATop: docTop(document.querySelector('#rowA')),
     rowBTop: docTop(document.querySelector('#rowB')),
+    rowCTop: docTop(document.querySelector('#rowC')),
     viewport: window.innerHeight,
   }),
   destroyStaggered: () => staggered.destroy(),
   destroyReversing: () => reversing.destroy(),
+  destroyCustom: () => custom.destroy(),
 });
 </script>
 </body>

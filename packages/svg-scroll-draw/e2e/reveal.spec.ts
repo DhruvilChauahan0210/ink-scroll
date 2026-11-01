@@ -11,14 +11,18 @@ import { openFixture, collectErrors, scrollToY, read, call, sweep, table } from 
  * reduced-motion branch was only ever tested against a fake.
  *
  * Fixture geometry (viewport 900x800, from playwright.config.ts):
- *   rowA top = 1200, rowB top = 2520, both 120px tall
+ *   rowA top = 1200, rowB top = 2520, rowC top = 3840, all 120px tall
  *
- * The engine maps element i to the window `top (88 - 4i)%` → `top (53 - 4i)%`
- * at stagger 1 (its capped maximum). In scroll offsets, for rowA:
- *   card 0: 496 → 776    card 1: 528 → 808
- *   card 2: 560 → 840    card 3: 592 → 872
+ * Stagger shifts card i of a row later by i × stagger × the reveal window. rowA
+ * uses the default (0.15 of the 35% window `top 88%` → `top 53%`, so 5.25% =
+ * 42px a card). In scroll offsets:
+ *   card 0: 496 → 776    card 1: 538 → 818
+ *   card 2: 580 → 860    card 3: 622 → 902
  * so y=700 is mid-window for all four with strictly decreasing progress, which
  * is what makes the cascade measurable rather than incidental.
+ *
+ * rowC has a custom trigger `top 80%` → `top 40%` and stagger 0.2 (8% = 64px):
+ *   card 0: 3200 → 3520  card 1: 3264 → 3584  card 2: 3328 → 3648
  */
 
 type CardState = {
@@ -31,7 +35,7 @@ type CardState = {
   inlineTransform: string;
 };
 
-type Row = { scrollY: number; cards: CardState[]; revs: CardState[] };
+type Row = { scrollY: number; cards: CardState[]; revs: CardState[]; custs: CardState[] };
 
 /** rowB (once:false) window: 1816 → 2096. */
 const REV_MID = 1900;
@@ -44,14 +48,14 @@ test.describe('scrollReveal', () => {
 
     expect(errors).toEqual([]);
 
-    const geo = await call<{ rowATop: number; rowBTop: number; viewport: number }>(
+    const geo = await call<{ rowATop: number; rowBTop: number; rowCTop: number; viewport: number }>(
       page,
       'geometry',
     );
     // Guard the arithmetic this whole file depends on. If the fixture's layout
     // drifts, every offset below becomes meaningless — fail here, loudly, rather
     // than pass vacuously at the wrong scroll positions.
-    expect(geo).toEqual({ rowATop: 1200, rowBTop: 2520, viewport: 800 });
+    expect(geo).toEqual({ rowATop: 1200, rowBTop: 2520, rowCTop: 3840, viewport: 800 });
 
     const row = await read<Row>(page);
     // Default preset fadeUp: opacity 0, translateY 32px.
@@ -99,6 +103,26 @@ test.describe('scrollReveal', () => {
     // Guard against a vacuous pass where every card sits at 0 or 1.
     expect(cards[0].opacity, shown).toBeGreaterThan(0.05);
     expect(cards[cards.length - 1].opacity, shown).toBeLessThan(0.95);
+    // The default must be a visible cascade, not a few pixels: up to 2.15.2 the
+    // default step was 2.5px and neighbouring cards differed by about 0.01.
+    for (let i = 1; i < cards.length; i++) {
+      expect(cards[i - 1].opacity - cards[i].opacity, `step ${i} too small\n${shown}`).toBeGreaterThan(0.05);
+    }
+  });
+
+  test('stagger applies on top of a custom trigger', async ({ page }) => {
+    await openFixture(page, 'reveal.html');
+    await scrollToY(page, 3400);
+
+    const { custs } = await read<Row>(page);
+    const shown = table(custs.map((c, i) => ({ card: i, opacity: c.opacity, y: c.y })));
+    // Up to 2.15.2 a custom trigger replaced every card's window, so all three
+    // moved together.
+    for (let i = 1; i < custs.length; i++) {
+      expect(custs[i - 1].opacity - custs[i].opacity, `card ${i} should trail card ${i - 1}\n${shown}`).toBeGreaterThan(0.05);
+    }
+    expect(custs[0].opacity, shown).toBeGreaterThan(0.05);
+    expect(custs[custs.length - 1].opacity, shown).toBeLessThan(0.95);
   });
 
   test('reaches the final state and holds it (once: true)', async ({ page }) => {

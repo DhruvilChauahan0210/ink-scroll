@@ -1,7 +1,7 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **2.15.1** — published on npm with provenance through `release.yml` (2026-10-31)
-> Tests: **626 unit** across 31 suites · **197 browser tests** per engine (591 runs
+> Current version: **2.15.2** — published on npm with provenance through `release.yml` (2026-11-01)
+> Tests: **632 unit** across 32 suites · **198 browser tests** per engine (594 runs
 > across Chromium/Firefox/WebKit) · **56 mutations**, each caught by the one test
 > named for it · **91.3% line coverage** (gate 90/90/82/82)
 > Bundle: **10.2 KB gzipped** (main entry; per-API entries from 0.2 KB) · zero runtime dependencies
@@ -49,11 +49,11 @@
 - [x] `scrollAnimateGroup` + `scrollAnimateSequence` + `scrollParallaxGroup` in `svg-scroll-draw/group`
 
 ### Testing
-- [x] 626 tests across 31 suites — `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollText` (23)
+- [x] 632 tests across 32 suites — `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollText` (23)
 - [x] Initial state fix — `createAnimateEngine` and `scrollCounter` now apply correct alpha immediately on init (no flash before IO fires)
 
 ### Browser tests (Phase 2, `packages/svg-scroll-draw/e2e`)
-197 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
+198 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
 `helpers.ts` (deterministic sweep — scroll to a fixed offset, wait two frames,
 read) and `fixtures/_probe.mjs` (parsing stays in the page, so specs assert on
 numbers).
@@ -137,6 +137,18 @@ at all.
 
 ### Unreleased — migration guides (branch `feat/migration-guides`, 2026-10-31; site-only)
 - [x] `/guides` + 4 guides (AOS Next.js, AOS React, ScrollReveal React, vivus React), sitemap, nav, vs-page and README links
+
+### 2.15.3 — scrollReveal's stagger (2026-11-01; committed, tag not pushed)
+
+- [x] `scrollReveal` `stagger` is a fraction of the reveal window, counted per row from the layout, capped at one window, and applied on top of a custom `trigger` (default 0.15); `reveal` entry 4.7 KB
+- [x] Six unit tests on the per-element trigger windows; e2e cascade at the default stagger with a visible step, plus a custom-trigger row (both fail on 2.15.2)
+- [x] `native` option JSDoc no longer claims the compositor
+- [ ] Released — waiting on the owner to push the `v2.15.3` tag
+
+### 2.15.2 — scrollVideo keeps its end frame under reduced motion (2026-11-01)
+
+- [x] `scrollVideo` keeps its last frame under reduced motion once the clip scrolls into view (e2e case fails on 2.15.1)
+- [x] Released — tag `v2.15.2` on `32f3409`, published by `release.yml` with provenance
 
 ### 2.15.1 — the "no stroke" warning reads CSS (2026-10-31)
 

@@ -334,7 +334,12 @@ html:has(.site .ba), html:has(.site .bl) { scroll-behavior: smooth; }
 .site .ba-table tbody tr { transition: background-color 0.2s; }
 .site .ba-table tbody tr:hover { background: var(--bg-2); }
 @media (max-width: 559px) { .site .ba-table table { font-size: 13px; } .site .ba-table td:first-child { white-space: normal; } }
-.site .ba-cell { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 8px; align-items: start; }
+.site .ba-cell { display: grid; grid-template-columns: 18px auto; gap: 8px; align-items: start; }
+/* An auto text track keeps a mark cell at least as wide as its longest word: with
+   minmax(0, 1fr) a four-column table on a phone squeezed it to nothing and the text
+   ran into the next column. Tables scroll inside .ba-table-scroll, so a long word
+   widens the table, never the page. */
+.site .ba-table td code { white-space: nowrap; }
 
 /* Marks: ✓ ✗ — drawn, not typed */
 .site .ba-mark { width: 16px; height: 16px; margin-top: 3px; flex: none; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }

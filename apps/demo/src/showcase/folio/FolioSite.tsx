@@ -180,9 +180,9 @@ const FIXES: { k: 'New' | 'Improved' | 'Fixed'; t: string; on: string }[] = [
 export function FolioSite() {
   useEffect(() => {
     // The six cards fade up one after another, and stay.
-    const features = scrollReveal('.fo-feature', { preset: 'fadeUp', stagger: 1, once: true });
+    const features = scrollReveal('.fo-feature', { preset: 'fadeUp', stagger: 0.2, once: true });
     // The sync story slides in from the right, a step at a time.
-    const sync = scrollReveal('.fo-step', { preset: 'fadeLeft', stagger: 1, once: true });
+    const sync = scrollReveal('.fo-step', { preset: 'fadeLeft', stagger: 0.2, once: true });
     // Each release-note row reveals on the same window as it reaches the reader.
     const fixes = scrollReveal('.fo-fix', { preset: 'fadeUp', once: true, trigger: { start: 'top 96%', end: 'top 78%' } });
     return () => { features.destroy(); sync.destroy(); fixes.destroy(); };

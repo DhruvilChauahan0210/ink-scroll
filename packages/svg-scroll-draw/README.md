@@ -622,7 +622,7 @@ devtools.highlight('#my-element'); // outline for 2 seconds
 |---|---|
 | `svg-scroll-draw` (main, every core API) | 10.2 KB |
 | `svg-scroll-draw/react` (includes the engine) | 11.2 KB |
-| `svg-scroll-draw/reveal` | 4.5 KB |
+| `svg-scroll-draw/reveal` | 4.7 KB |
 | `svg-scroll-draw/text` | 2.5 KB |
 | `svg-scroll-draw/video` | 2.0 KB |
 | `svg-scroll-draw/scrollreveal` | 4.5 KB |

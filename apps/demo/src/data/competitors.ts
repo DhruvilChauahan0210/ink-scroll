@@ -39,6 +39,10 @@ export type Competitor = {
   measuredOn?: string;
   /** Anything a reader needs to weigh the number fairly. */
   caveat?: string;
+  /** The stylesheet share of gzipKb, when the package needs one (measured by the same command). */
+  cssKb?: number;
+  /** The package's single-file bundle, when it differs from the entry gzipKb measures. */
+  bundleKb?: number;
 };
 
 /** ISO date every figure below was measured. Drives the staleness check. */
@@ -47,19 +51,19 @@ export const MEASURED_ON = '2026-08-14';
 export const SELF: Competitor = {
   name: 'svg-scroll-draw',
   label: 'svg-scroll-draw (all APIs)',
-  version: '2.15.2',
+  version: '2.15.3',
   license: 'MIT',
   gzipKb: 10.2,
   lastPublish: '2026-08-14',
   command: 'npm run size',
   measured: true,
   caveat:
-    'Main entry, every API at once. Each API is a separate entry point — scrollReveal alone is 4.5 KB, scrollPin 1.6 KB, scrollSnap 1.7 KB.',
+    'Main entry, every API at once. Each API is a separate entry point — scrollReveal alone is 4.7 KB, scrollPin 1.6 KB, scrollSnap 1.7 KB.',
 };
 
 /** Per-entry-point sizes, for like-for-like comparisons against single-purpose libraries. */
 export const SELF_ENTRIES: Record<string, number> = {
-  reveal: 4.5,
+  reveal: 4.7,
   pin: 1.6,
   snap: 1.7,
   // The AOS drop-in, its stylesheet included (`svg-scroll-draw/aos`).
@@ -125,6 +129,7 @@ export const COMPETITORS: Record<string, Competitor> = {
     lastPublish: null,
     command: 'npm pack framer-motion@13.1.0 && gzip -9 the cjs entry',
     measured: true,
+    bundleKb: 61.6,
     caveat:
       'CJS entry. The single bundle is 61.6 KB; a tree-shaken modern ESM import can be well under both, because the ESM entry is a re-export shell and real cost depends on how much you touch. Framer Motion does draw SVG paths via pathLength / pathOffset / pathSpacing.',
   },
@@ -138,6 +143,7 @@ export const COMPETITORS: Record<string, Competitor> = {
     command:
       'npm pack aos@2.3.4 && gzip -9 package/dist/aos.js (4.6) + package/dist/aos.css (2.1)',
     measured: true,
+    cssKb: 2.1,
     caveat:
       'Smaller than us. Includes its required stylesheet. Reveal-on-scroll only, configured through HTML data attributes. Ships 8 named CSS easings.',
   },

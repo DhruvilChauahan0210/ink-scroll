@@ -34,7 +34,7 @@ const BUDGETS_KB = {
   group:             9.0,
   // 6.57 after the shared devtools registry (2.10.1) taught scrollDraw to register.
   'web-component':   6.8,
-  reveal:            4.6,
+  reveal:            4.8,
   // The AOS drop-in, stylesheet included (AOS itself is 6.7 KB with aos.css).
   aos:               3.2,
   'cdn-aos':         3.4,

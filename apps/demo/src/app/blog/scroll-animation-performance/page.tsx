@@ -6,7 +6,7 @@ import { ThreadFigure } from './ThreadFigure';
 export const metadata: Metadata = {
   title: seoTitle('Scroll Animation Performance — Native CSS vs JavaScript'),
   description:
-    'Native CSS animation-timeline: view() vs JavaScript scroll animation: when the compositor path wins, when JS wins, and how to keep scrolling smooth.',
+    'Native CSS animation-timeline: view() vs JavaScript scroll animation: when the native path wins, when JS wins, and how to keep scrolling smooth.',
   keywords: [
     'scroll animation performance',
     'animation-timeline view()',
@@ -14,14 +14,14 @@ export const metadata: Metadata = {
     'javascript scroll animation performance',
     'intersection observer performance',
     'css scroll animation 60fps',
-    'compositor scroll animation',
+    'native css scroll animation',
     'scroll animation jank',
     'scroll animation optimization',
   ],
   alternates: { canonical: 'https://svg-scroll-draw.vercel.app/blog/scroll-animation-performance' },
   openGraph: {
     title: 'Scroll Animation Performance — Native CSS vs JavaScript',
-    description: 'Zero-JS scroll animations on the compositor. How animation-timeline: view() works and when to use it.',
+    description: 'Zero-JS scroll animations with CSS scroll timelines. How animation-timeline: view() works and when to use it.',
     url: 'https://svg-scroll-draw.vercel.app/blog/scroll-animation-performance',
   },
 };
@@ -30,7 +30,7 @@ const articleJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'TechArticle',
   headline: 'Scroll Animation Performance — Native CSS vs JavaScript',
-  description: 'How svg-scroll-draw uses animation-timeline: view() for zero-JS scroll animations on the compositor. When native CSS wins, when JS wins, and how to get 60fps scroll animations every time.',
+  description: 'How svg-scroll-draw uses animation-timeline: view() for scroll animations with no per-frame JavaScript. When native CSS wins, when JS wins, and how to keep scroll animations smooth.',
   url: 'https://svg-scroll-draw.vercel.app/blog/scroll-animation-performance',
   datePublished: '2026-06-06',
   dateModified: '2026-06-06',
@@ -54,7 +54,7 @@ const CONDITIONS: [string, string, string][] = [
 ];
 
 const TIPS = [
-  { t: 'Stick to native-eligible configs', d: 'opacity + transform are compositor-only properties. Adding them to native CSS path = zero main thread work. Avoid animating layout-triggering properties (width, height, top, left) even in the JS engine.' },
+  { t: 'Stick to native-eligible configs', d: 'opacity and transform are the properties browsers can composite: on the native CSS path they can run off the main thread entirely. Colours and SVG strokes still restyle and repaint on the main thread each frame — just without any JavaScript. Avoid animating layout-triggering properties (width, height, top, left) even in the JS engine.' },
   { t: 'Use once: true for reveal animations', d: 'Reveal animations that reverse on scroll back keep the rAF loop running. once: true freezes the final value and stops the loop after completion.' },
   { t: 'prefers-reduced-motion is respected automatically', d: 'svg-scroll-draw checks window.matchMedia("(prefers-reduced-motion: reduce)") and applies the final state immediately — no animation, full accessibility.' },
   { t: 'Trigger windows matter', d: 'A trigger from top-bottom to bottom-top means the animation is active the entire time the element is in view. Narrow triggers (e.g. top 80% to top 40%) run the rAF loop for less time.' },
@@ -68,12 +68,12 @@ export default function ScrollPerformancePage() {
     <BlogArticle
       slug="scroll-animation-performance"
       jsonLd={articleJsonLd}
-      tags={['animation-timeline', 'compositor', 'rAF']}
+      tags={['animation-timeline', 'scroll timeline', 'rAF']}
       title={<>Scroll animation performance. Native CSS vs JavaScript.</>}
       lede={
         <>
           Most scroll animation libraries run JavaScript on every scroll event. svg-scroll-draw takes a different approach:
-          use the browser&apos;s native <code>animation-timeline: view()</code> when possible — zero JS, pure compositor —
+          use the browser&apos;s native <code>animation-timeline: view()</code> when possible — no per-frame JavaScript —
           and fall back to a lean JS engine when it&apos;s not.
         </>
       }
@@ -84,7 +84,7 @@ export default function ScrollPerformancePage() {
         { k: 'Frame budget', v: `${(1000 / 60).toFixed(1)} ms` },
       ]}
       figure={
-        <Figure n={1} caption="where the per-frame work runs, as a Performance-panel trace — three frames at 60 fps; block widths schematic">
+        <Figure n={1} caption="where the per-frame work runs for an opacity / transform animation, as a Performance-panel trace — three frames at 60 fps; block widths schematic. SVG strokes skip the script but still restyle and paint on the main thread.">
           <ThreadFigure />
         </Figure>
       }
@@ -107,9 +107,11 @@ export default function ScrollPerformancePage() {
 
       <Section id="native-css" k="animation-timeline" title="The native CSS fast path">
         <p>
-          CSS Scroll-Driven Animations (<code>animation-timeline: view()</code>) run entirely on the compositor thread. The
-          browser handles the scroll → animation mapping with <strong>zero JavaScript involvement</strong>. No main thread.
-          No GC pauses. Just the GPU.
+          CSS Scroll-Driven Animations (<code>animation-timeline: view()</code>) map scroll to the animation inside the
+          browser, with <strong>zero JavaScript involvement</strong>: no scroll listeners, no rAF, no per-frame objects for
+          the garbage collector. For <code>opacity</code> and <code>transform</code> the browser can also run the animation on
+          the compositor, off the main thread. Other properties — colours, an SVG stroke&apos;s <code>stroke-dashoffset</code>
+          — still restyle and repaint on the main thread each frame, only without a script.
         </p>
         <p>Supported in Chrome and Edge 115+, Safari 26+, and Firefox 159+ (on by default since October 2026).</p>
         <Code file="native-css.css">{`/* What the browser generates under the hood */

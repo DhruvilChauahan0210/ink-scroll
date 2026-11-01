@@ -48,11 +48,11 @@ export function RevealCards({
     if (!grid) return;
 
     const items = Array.from(grid.querySelectorAll<HTMLElement>('[data-reveal-card]'));
-    // `stagger` offsets each card's trigger a little further down the viewport,
-    // so cards in the same row still arrive in reading order.
+    // `stagger` starts each card in a row a fifth of the way into its
+    // neighbour's reveal, so cards in the same row still arrive in reading order.
     const reveal = scrollReveal(items, {
       from: { opacity: 0, y: 40, scale: 0.97 },
-      stagger: 0.75,
+      stagger: 0.2,
       once: true,
     });
 

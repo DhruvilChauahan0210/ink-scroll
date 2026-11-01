@@ -311,7 +311,7 @@ scrollAnimate('#section', {
       <Section id={id(12)} k="animation-timeline" title="Native CSS scroll-driven animations" toc="Native CSS timelines">
         <p>
           When <code>animation-timeline: view()</code> is supported (Chrome and Edge 115+, Safari 26+, Firefox 159+),
-          svg-scroll-draw automatically uses it — zero JS scroll listeners, zero rAF, pure compositor animation. Falls
+          svg-scroll-draw automatically uses it — zero JS scroll listeners, zero rAF; for opacity and transform the browser can run it on the compositor. Falls
           back silently in older browsers.
         </p>
         <Code file="app.js">{`import { scrollAnimate } from 'svg-scroll-draw';
@@ -319,7 +319,7 @@ scrollAnimate('#section', {
 // native: true is the default — uses CSS fast path when eligible
 scrollAnimate('#hero', {
   props: { opacity: [0, 1], transform: ['translateY(32px)', 'translateY(0)'] },
-  // native: true (default) — runs on compositor when supported
+  // native: true (default) — CSS scroll timeline when supported; opacity and transform can run on the compositor
 });
 
 // Force JS engine (needed for callbacks, velocity, custom easing fns)
@@ -329,7 +329,7 @@ scrollAnimate('#section', {
   onEnter: () => activate(),
 });`}</Code>
         <p>
-          What makes a config eligible, and what the compositor buys you, is in{' '}
+          What makes a config eligible, and what the native path saves, is in{' '}
           <Link href="/blog/native-css-svg-scroll-animations">Zero-JS SVG scroll animations with native CSS</Link>.
         </p>
       </Section>

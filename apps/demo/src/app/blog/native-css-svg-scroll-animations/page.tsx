@@ -4,12 +4,11 @@ import {
   BlogArticle, Section, Code, Callout, Table, Mark, Checks, Cols, Figure, Closing,
 } from '@/components/blog/BlogArticle';
 import { NativePathFigure } from '@/components/blog/NativePathFigure';
-import './native.css';
 
 export const metadata: Metadata = {
   title: seoTitle('Zero-JS SVG Scroll Animations with Native CSS'),
   description:
-    'How animation-timeline: view() runs SVG path animations on the compositor with no per-frame JavaScript. Chrome/Edge 115+, Safari 26+, Firefox 159+.',
+    'How animation-timeline: view() drives SVG path animations from the scroll position with no per-frame JavaScript. Chrome/Edge 115+, Safari 26+, Firefox 159+.',
   keywords: [
     'css animation-timeline view',
     'scroll driven animations css',
@@ -18,20 +17,20 @@ export const metadata: Metadata = {
     'scroll-driven animations without javascript',
     'css scroll animation path',
     'svg-scroll-draw native css',
-    'compositor animation svg',
+    'css scroll timeline svg',
     'zero js animation scroll',
   ],
   alternates: { canonical: '/blog/native-css-svg-scroll-animations' },
   openGraph: {
     title: 'Zero-JS SVG Scroll Animations with Native CSS',
     description:
-      'How svg-scroll-draw offloads SVG path animations to the browser compositor using animation-timeline: view() — zero JS, 60fps, instant.',
+      'How svg-scroll-draw hands SVG path animations to the browser’s scroll timeline with animation-timeline: view() — no per-frame JavaScript, no scroll listeners.',
     url: 'https://svg-scroll-draw.vercel.app/blog/native-css-svg-scroll-animations',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Zero-JS SVG Scroll Animations with Native CSS',
-    description: 'Zero per-frame JS. SVG path animations driven entirely by CSS on the compositor thread.',
+    description: 'Zero per-frame JS. SVG path animations driven by CSS scroll timelines.',
   },
 };
 
@@ -40,7 +39,7 @@ const jsonLd = {
   '@type': 'Article',
   headline: 'Zero-JS SVG Scroll Animations with Native CSS',
   description:
-    'How svg-scroll-draw uses animation-timeline: view() to run SVG path animations entirely on the browser compositor.',
+    'How svg-scroll-draw uses animation-timeline: view() to run SVG path animations from the browser’s scroll timeline, with no per-frame JavaScript.',
   author: { '@type': 'Person', name: 'Dhruvil Chauhan' },
   datePublished: '2026-06-04',
   url: 'https://svg-scroll-draw.vercel.app/blog/native-css-svg-scroll-animations',
@@ -103,9 +102,9 @@ const ELIGIBLE: { condition: string; detail: string }[] = [
 ];
 
 const SCENARIOS: [string, string, string][] = [
-  ['Heavy page load', 'Main thread busy parsing JS → rAF fires late → visible stutter', 'Compositor thread independent → animation still smooth'],
-  ['React re-renders', 'setState cascade → main thread blocked → animation stutters', 'Compositor unaffected by React work'],
-  ['Low-power mode', 'rAF throttled → animation choppy at 30fps', 'Compositor-native → matches display refresh rate'],
+  ['Heavy page load', 'The scroll handler and rAF callback queue behind other scripts, so frames run late', 'No script of ours runs per frame; a long task still delays the next paint'],
+  ['React re-renders', 'Re-renders and the animation callback compete for the same main thread', 'Nothing of ours competes per frame; only the browser’s own restyle and repaint remain'],
+  ['Many animated paths', 'One rAF loop recomputes every path in JavaScript each frame', 'The browser animates each path from its keyframes; no JavaScript per path per frame'],
 ];
 
 export default function Page() {
@@ -113,13 +112,13 @@ export default function Page() {
     <BlogArticle
       slug="native-css-svg-scroll-animations"
       jsonLd={jsonLd}
-      tags={['animation-timeline', 'view()', 'compositor']}
+      tags={['animation-timeline', 'view()', 'scroll timeline']}
       title={<>Zero-JS SVG scroll animations.</>}
       lede={
         <>
-          Since v1.1.0, svg-scroll-draw automatically hands off eligible animations to the browser&apos;s native CSS
-          compositor using <code>animation-timeline: view()</code>. Zero per-frame JavaScript. No scroll listeners.
-          60fps even under heavy CPU load.
+          Since v1.1.0, svg-scroll-draw automatically hands eligible animations to the browser&apos;s own scroll-driven
+          animation engine using <code>animation-timeline: view()</code>. Zero per-frame JavaScript. No scroll listeners.
+          No <code>requestAnimationFrame</code> loop.
         </>
       }
       facts={[
@@ -129,7 +128,7 @@ export default function Page() {
         { k: 'Opt-out', v: 'native: false' },
       ]}
       figure={
-        <Figure n={1} caption="the engine's real code path: one eligibility check at setup, then a generated stylesheet the compositor runs, or the rAF loop on the main thread">
+        <Figure n={1} caption="the engine's real code path: one eligibility check at setup, then a generated stylesheet the browser runs from the scroll timeline, or a rAF loop that runs JavaScript before every frame">
           <NativePathFigure />
         </Figure>
       }
@@ -144,7 +143,7 @@ export default function Page() {
             Scroll-Driven Animations
           </a>{' '}
           is a CSS spec that lets you tie a CSS <code>@keyframes</code> animation to the scroll position of an element in
-          the viewport — without any JavaScript. The browser handles it entirely on the compositor thread.
+          the viewport — without any JavaScript. The browser drives it from the scroll position itself; no script runs per frame.
         </p>
         <p>
           The key property is <code>animation-timeline: view()</code>. Combined with <code>animation-range</code>, you
@@ -191,11 +190,10 @@ path {
           <Checks
             title="Native CSS path"
             items={[
-              'Runs on compositor thread',
+              'Driven by the browser’s scroll timeline',
               'Zero per-frame JavaScript',
               'No scroll event listeners',
               'No requestAnimationFrame',
-              '60fps even under heavy CPU load',
               'Instant response to scroll direction changes',
             ].map((text) => ({ ok: true, text }))}
           />
@@ -258,7 +256,7 @@ path {
         <h3 className="ba-h3">Native path activated</h3>
         <Code file="logo.js">{`import { scrollDraw } from 'svg-scroll-draw';
 
-// Simple logo reveal — compositor-driven wherever view() is supported
+// Simple logo reveal — native CSS wherever view() is supported
 scrollDraw('#logo', {
   easing: 'ease-out',
   fade: true,
@@ -308,18 +306,16 @@ scrollDraw('#path', {
       </Section>
 
       <Section id="browser-support" k="browser support" title="Where native runs today">
-        <div className="nc-support">
-          <Table
-            head={['Browser', 'Version', 'Path', 'Notes']}
-            first="plain"
-            rows={BROWSER_SUPPORT.map((r) => [
-              r.browser,
-              <code key="v">{r.version}</code>,
-              <span key="s" className="ba-cell"><Mark ok={r.native} /><span>{r.native ? 'native CSS' : 'JS fallback'}</span></span>,
-              r.note,
-            ])}
-          />
-        </div>
+        <Table
+          head={['Browser', 'Version', 'Path', 'Notes']}
+          first="plain"
+          rows={BROWSER_SUPPORT.map((r) => [
+            r.browser,
+            <code key="v">{r.version}</code>,
+            <span key="s" className="ba-cell"><Mark ok={r.native} /><span>{r.native ? 'native CSS' : 'JS fallback'}</span></span>,
+            r.note,
+          ])}
+        />
         <Callout k="older browsers">
           Safari before 26 and Firefox before 159 do not support <code>animation-timeline: view()</code>. svg-scroll-draw
           detects this at runtime and activates the JS engine automatically — the animation looks and behaves
@@ -327,7 +323,7 @@ scrollDraw('#path', {
         </Callout>
       </Section>
 
-      <Section id="compositor" k="performance impact" title="Why the compositor matters">
+      <Section id="compositor" k="performance impact" title="What the native path saves">
         <p>
           JavaScript animations run on the main thread. When your main thread is busy — parsing JS, running React
           reconciliation, handling events — the scroll animation stutters. The scroll event fires, the rAF fires, but the
@@ -335,10 +331,13 @@ scrollDraw('#path', {
           heavy interaction.
         </p>
         <p>
-          CSS animations using <code>animation-timeline: view()</code> run on the compositor thread — a separate thread
-          that handles transforms and opacity. It doesn&apos;t wait for the main thread. Scroll input goes directly to the
-          compositor, the animation updates, the frame is painted. Main thread can be fully occupied and it doesn&apos;t
-          matter.
+          On the native path there is no JavaScript of ours in the frame at all: the browser maps the scroll position to
+          the keyframes itself and redraws the stroke. That is less work than the JS path, and none of it competes with your
+          own scripts. It is not free, though. Browsers composite <code>transform</code> and <code>opacity</code> off the
+          main thread, but <code>stroke-dashoffset</code> is not one of those properties, so each frame still restyles and
+          repaints the path on the main thread — a long task can still delay a frame, with no script of ours adding to it.
+          <code>scrollAnimate</code>&apos;s native path for <code>opacity</code> and <code>transform</code> is the one that can
+          run fully on the compositor.
         </p>
         <Table first="plain" head={['Scenario', 'JS', 'Native CSS']} rows={SCENARIOS} />
       </Section>
@@ -369,7 +368,7 @@ instance.getProgress();        // → 0–1`}</Code>
 
       <Section id="tldr" k="summary" title="TL;DR">
         <ol>
-          <li>svg-scroll-draw automatically uses the native CSS compositor path on Chrome and Edge 115+, Safari 26+ and Firefox 159+.</li>
+          <li>svg-scroll-draw automatically uses the native CSS path on Chrome and Edge 115+, Safari 26+ and Firefox 159+.</li>
           <li>The native path runs zero JavaScript per frame — no scroll listeners, no rAF.</li>
           <li>The JS fallback activates automatically on older browsers — same visual result.</li>
           <li>Any config that needs JS (callbacks, stagger, spring easing, repeat, velocityScale, a custom trigger window) stays on the JS engine.</li>

@@ -67,7 +67,7 @@ const FEATURES: { feature: string; ours: string; theirs: string; ourWin: boolean
   { feature: 'License',               ours: 'MIT — fork and redistribute freely', theirs: 'Free to use; own terms restrict redistribution', ourWin: true },
   { feature: 'Bundle size (gzipped)', ours: APPROX,                             theirs: `${kb(GSAP)} (gsap + ScrollTrigger + DrawSVG)`,       ourWin: true },
   { feature: 'Dependencies',          ours: 'Zero',                              theirs: '3 packages to install and register',                   ourWin: true },
-  { feature: 'Native CSS fast path',  ours: 'Yes — compositor-driven on Chrome/FF 115+', theirs: 'No — JS only',                                ourWin: true },
+  { feature: 'Native CSS fast path',  ours: 'Yes — 0 JS per frame in Chrome/Edge 115+, Safari 26+, Firefox 159+', theirs: 'No — JS only',                                ourWin: true },
   { feature: 'React component',       ours: '<ScrollDraw> + useScrollDraw hook', theirs: 'useEffect/useRef boilerplate every time',              ourWin: true },
   { feature: 'Vue 3',                 ours: '<ScrollDraw> + useScrollDraw composable', theirs: 'Manual setup, no official wrapper',            ourWin: true },
   { feature: 'Svelte',                ours: 'use:scrollDraw action',             theirs: 'Manual setup',                                        ourWin: true },
@@ -189,8 +189,9 @@ export default function Page() {
         </Figure>
         <p>
           GSAP stack includes gsap core ({kb(CORE)}) + ScrollTrigger ({kb(TRIGGER)}) + DrawSVG plugin ({kb(DRAWSVG)}).
-          On Chrome/Edge/Firefox 115+ svg-scroll-draw also offloads the simple draw case to the browser&apos;s native CSS
-          compositor — zero per-frame JavaScript.
+          Where the browser supports <code>animation-timeline: view()</code> (Chrome and Edge 115+, Safari 26+, Firefox
+          159+), svg-scroll-draw also hands the simple draw case to the browser&apos;s native CSS scroll timeline — zero
+          per-frame JavaScript.
         </p>
       </Section>
 

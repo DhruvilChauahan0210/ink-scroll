@@ -62,7 +62,7 @@ const pageJsonLd = {
       name: 'How much smaller is svg-scroll-draw compared to Framer Motion?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: `svg-scroll-draw ${SELF.version} is ${SELF.gzipKb} KB gzipped. framer-motion ${FM.version} is ${FM.gzipKb} KB at its CJS entry and 61.6 KB as a single bundle, measured ${MEASURED_ON} at gzip level 9 — so roughly ${RATIO}x larger on the fairer of the two figures. A tree-shaken modern ESM import can be considerably less than that, because Framer Motion ships a re-export shell and real usage varies with how much of it you touch.`,
+        text: `svg-scroll-draw ${SELF.version} is ${SELF.gzipKb} KB gzipped. framer-motion ${FM.version} is ${FM.gzipKb} KB at its CJS entry and ${FM.bundleKb} KB as a single bundle, measured ${MEASURED_ON} at gzip level 9 — so roughly ${RATIO}x larger on the fairer of the two figures. A tree-shaken modern ESM import can be considerably less than that, because Framer Motion ships a re-export shell and real usage varies with how much of it you touch.`,
       },
     },
   ],
@@ -87,7 +87,7 @@ const FEATURES: MatrixRow[] = [
   { f: 'Velocity-scaled animation', cells: [true, false] },
   { f: 'Lenis smooth scroll adapter', cells: [true, 'partial'] },
   { f: 'MIT license', cells: [true, true] },
-  { f: 'Bundle size (gzipped)', cells: [`${SELF.gzipKb} KB`, `${FM.gzipKb} KB`], note: `framer-motion ${FM.version} CJS entry, measured ${MEASURED_ON}. Its single bundle is 61.6 KB; a tree-shaken ESM import can be well under both — Framer Motion’s real cost depends heavily on how much of it you use.` },
+  { f: 'Bundle size (gzipped)', cells: [`${SELF.gzipKb} KB`, `${FM.gzipKb} KB`], note: `framer-motion ${FM.version} CJS entry, measured ${MEASURED_ON}. Its single bundle is ${FM.bundleKb} KB; a tree-shaken ESM import can be well under both — Framer Motion’s real cost depends heavily on how much of it you use.` },
 ];
 
 const PAIRS = [

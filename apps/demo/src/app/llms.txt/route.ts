@@ -5,8 +5,8 @@ const BODY = `# svg-scroll-draw
 > Scroll-driven animation for the web. Draw SVG paths, reveal elements, pin
 > sections, scrub video, split text, and count numbers — all tied to scroll
 > position. ~10 KB gzipped for the whole main entry, zero runtime dependencies,
-> and a native CSS fast path that runs on the compositor with no per-frame
-> JavaScript where the browser supports \`animation-timeline: view()\`.
+> and a native CSS fast path, driven by the browser's scroll timeline with no
+> per-frame JavaScript, where the browser supports \`animation-timeline: view()\`.
 
 Native CSS support: Chrome and Edge 115+, Safari 26+, and Firefox 159+ (Firefox
 turned scroll-driven animations on by default on 27 Oct 2026). Our CI measures
@@ -24,7 +24,7 @@ Agent skill (Claude Code and other coding agents): https://github.com/DhruvilCha
 Every API is a separate entry point, so you only pay for what you import:
 
 - \`scrollDraw\` — animate an SVG path's \`stroke-dashoffset\` on scroll (the core case)
-- \`scrollReveal\` (4.5 KB) — fade/slide elements in as they enter the viewport
+- \`scrollReveal\` (4.7 KB) — fade/slide elements in as they enter the viewport
 - \`scrollAnimate\` — animate any CSS property: opacity, transform, color, any unit value
 - \`scrollPin\` (1.6 KB) — pin an element while the page scrolls past it
 - \`scrollSnap\` (1.7 KB) — snap between sections

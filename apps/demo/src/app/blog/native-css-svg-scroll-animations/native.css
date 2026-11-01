@@ -1,7 +1,0 @@
-/* /blog/native-css-svg-scroll-animations — the browser-support table. Scoped under .site .ba .nc-support. */
-
-/* The frame's mark cell lets its text track shrink to nothing, so in a four-column
-   table on a phone "native CSS" ran into the Notes column. An auto track keeps the
-   column at least as wide as its longest word; the text wraps instead of colliding. */
-.site .ba .nc-support .ba-cell { grid-template-columns: 18px auto; }
-.site .ba .nc-support td:nth-child(2) code { white-space: nowrap; }

@@ -48,9 +48,15 @@ export interface ScrollRevealOptions {
   /** Custom start state. Keys: opacity, x, y, scale, rotate, rotateX, rotateY. */
   from?: ScrollRevealFrom;
   /**
-   * Delay between each element's animation start (seconds).
-   * Elements are staggered by offsetting their trigger window.
-   * Default: 0.08.
+   * How far behind its neighbour each element in the same row starts, as a
+   * fraction of the reveal window (0–1). At `0.15` each card begins 15% of the
+   * way into the previous card's reveal; `0` reveals a row all at once.
+   *
+   * Rows are read from the layout: elements whose tops line up (a grid row, a
+   * line of badges) cascade one after another, and each new row starts its own
+   * count — its place further down the page already staggers it. A row's last
+   * element never starts more than one full window after its first. The offset
+   * applies on top of a custom `trigger` as well. Default: 0.15.
    */
   stagger?: number;
   /** Animation easing. Default: `'ease-out'`. */
@@ -118,6 +124,38 @@ function resolveElements(input: string | NodeList | Element[]): Element[] {
   return input;
 }
 
+// ── Stagger ───────────────────────────────────────────────────────────────────
+
+/** A trigger split into [element anchor, viewport anchor as % of the viewport]. */
+function anchors(trigger: string): [string, number] {
+  const p = trigger.trim().split(/\s+/);
+  const [el, vp] = p.length > 1 ? p : /%$/.test(p[0]) ? ['top', p[0]] : [p[0], 'bottom'];
+  return [el, /%$/.test(vp) ? parseFloat(vp) : vp === 'top' ? 0 : vp === 'center' ? 50 : 100];
+}
+
+/** The same trigger with its viewport line moved up by `by` percent, so it fires later. */
+function shift(trigger: string, by: number): string {
+  const [el, vp] = anchors(trigger);
+  return `${el} ${+Math.max(0, vp - by).toFixed(3)}%`;
+}
+
+/**
+ * Each element's place within its row: elements whose tops line up count 0, 1, 2…
+ * in DOM order, and one further down starts a new row at 0. Counting per row is
+ * what keeps a long list from being pushed ever further down the viewport, which
+ * a plain DOM index did.
+ */
+function rowIndices(els: Element[]): number[] {
+  let top = NaN, height = 0, n = 0;
+  return els.map((el) => {
+    const r = el.getBoundingClientRect();
+    if (!(Math.abs(r.top - top) <= Math.max(8, Math.min(r.height, height || r.height) / 2))) {
+      top = r.top; height = r.height; n = 0;
+    } else n++;
+    return n;
+  });
+}
+
 // ── Public API ────────────────────────────────────────────────────────────────
 
 const NOOP: ScrollRevealInstance = { destroy: () => {} };
@@ -153,7 +191,7 @@ export function scrollReveal(
   const {
     preset  = 'fadeUp',
     from,
-    stagger = 0.08,
+    stagger = 0.15,
     easing  = 'ease-out',
     once    = true,
     trigger,
@@ -164,25 +202,27 @@ export function scrollReveal(
   const fromState = { ...REVEAL_PRESETS[preset], ...from };
   const props     = fromToProps(fromState);
 
-  // Stagger: offset each element's trigger start slightly later in the viewport.
-  // This creates a cascade effect for lists and grids — element 0 starts at
-  // "top 88%", element 1 at "top 84%", etc. (up to a 40% max offset so
-  // late-page elements still animate).
-  const staggerStep = Math.min(stagger * 4, 4); // viewport-% per element, capped at 4%
+  // Stagger shifts each element's window later by a fraction of the window
+  // itself, counted within its row and capped at one window. It used to be a
+  // flat step of `stagger × 4`% of the viewport per DOM index (0.32% at the
+  // default — no visible cascade), and a custom trigger dropped it entirely.
+  const start  = trigger?.start ?? 'top 88%';
+  const end    = trigger?.end ?? 'top 53%';
+  const span   = Math.abs(anchors(start)[1] - anchors(end)[1]);
+  const step   = Math.min(Math.max(stagger, 0), 1) * span;
+  const index  = step > 0 ? rowIndices(els) : els.map(() => 0);
 
   const instances = els.map((el, i) => {
-    const startPct = Math.max(50, 88 - i * staggerStep);
-    const endPct   = Math.max(20, startPct - 35);
+    const by = Math.min(index[i] * step, span);
 
     return createAnimateEngine(el, {
       props,
       easing,
       once,
       native: false,
-      trigger: trigger ?? {
-        start: `top ${startPct}%`,
-        end:   `top ${endPct}%`,
-      },
+      trigger: by > 0
+        ? { start: shift(start, by), end: shift(end, by) }
+        : { start, end },
       onEnter:  i === 0             ? onEnter  : undefined,
       onLeave:  i === els.length - 1 ? onLeave  : undefined,
     });

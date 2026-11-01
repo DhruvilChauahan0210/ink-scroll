@@ -32,7 +32,7 @@ export const POSTS: BlogPost[] = [
     slug: 'scroll-animation-performance',
     title: 'Scroll animation performance — native CSS vs JavaScript',
     description:
-      'How svg-scroll-draw uses animation-timeline: view() for zero-JS scroll animations on the compositor. When native CSS wins, when JS wins, and how the eligibility check works.',
+      'How svg-scroll-draw uses animation-timeline: view() for scroll animations with no per-frame JavaScript. When native CSS wins, when JS wins, and how the eligibility check works.',
     tag: 'Performance',
     tagColor: '#22c55e',
     readTime: '8 min read',
@@ -122,7 +122,7 @@ export const POSTS: BlogPost[] = [
     slug: 'native-css-svg-scroll-animations',
     title: 'Zero-JS SVG scroll animations with native CSS',
     description:
-      'How svg-scroll-draw uses animation-timeline: view() to run SVG path animations on the browser compositor — zero per-frame JavaScript, no scroll listeners, 60fps guaranteed.',
+      'How svg-scroll-draw uses animation-timeline: view() to run SVG path animations from the browser’s scroll timeline — zero per-frame JavaScript, no scroll listeners.',
     tag: 'Performance',
     tagColor: '#22c55e',
     readTime: '7 min read',

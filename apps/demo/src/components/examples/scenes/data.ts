@@ -443,12 +443,12 @@ document.querySelectorAll('.project h3').forEach((h) =>
 // Six feature cards fade up one after another, then stay
 scrollReveal('.feature-card', {
   preset:  'fadeUp',
-  stagger: 1,      // each card starts 4% of the viewport later
+  stagger: 0.2,    // each card starts a fifth of the way into the last one's reveal
   once:    true,
 });
 
 // The sync timeline slides in from the right
-scrollReveal('.sync-step', { preset: 'fadeLeft', stagger: 1, once: true });
+scrollReveal('.sync-step', { preset: 'fadeLeft', stagger: 0.2, once: true });
 
 // Each changelog row reveals on the same window as it scrolls in
 scrollReveal('.release-note', {

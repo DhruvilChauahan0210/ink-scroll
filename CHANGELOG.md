@@ -141,6 +141,63 @@ All notable changes to `svg-scroll-draw` are documented here.
   along a rail the library inks as you read down the procedure, what stays
   the same as a checked list, the questions numbered, and the other guides
   as a parts list — with a sticky contents list on wide screens.
+- **Accuracy pass on the comparison pages and posts.** The site said the
+  native CSS path draws "on the compositor"; browsers don't composite
+  `stroke-dashoffset`, so the drawing still restyles and repaints on the main
+  thread — what the native path removes is the per-frame script. Every page
+  that made the claim now says that (the native CSS post, the performance and
+  GSAP DrawSVG posts, the 2026 guide, `/docs`, the homepage, the Next.js
+  landing, `llms.txt` and the root README), and only opacity and transform are
+  described as compositor work. The native post's figure is redrawn as two
+  main-thread lanes — one with no script per frame, one with a callback
+  before each paint — and its scenario table compares a heavy page load,
+  React re-renders and many paths instead of promising frames under a long
+  task. `/vs-aos` quoted the full bundle as the scrollReveal weight and named
+  presets the library doesn't have; it now quotes the reveal entry and every
+  API separately, lists the seven real presets from `data/facts.ts` (which
+  check:claims holds to the library's own list) and takes the AOS stylesheet
+  weight from `data/competitors.ts`, as `/vs-framer-motion` now does for the
+  Framer Motion bundle. The GSAP DrawSVG post's social card reads its weights
+  from the same file and its browser versions were corrected. The native
+  post's support table sets its version marks with the stylesheet every post
+  uses, so the post's own override sheet is gone.
+
+---
+
+## [2.15.3] — 2026-11-01
+
+### Fixed
+
+- **`scrollReveal`'s `stagger` does what it says.** It was documented as a
+  delay in seconds but moved each element's trigger down the viewport by
+  `stagger × 4`% per DOM index, capped at 4% — at the default 0.08 that was
+  about 2.5px, so no cascade was visible — and a custom `trigger` replaced
+  every element's window, switching the stagger off entirely. `stagger` is
+  now a fraction of the reveal window (0–1): each element in a row starts that
+  far into its neighbour's reveal, with a new default of 0.15. Rows are read
+  from the layout, so a grid cascades within each row and a long list is no
+  longer pushed further down the viewport the longer it gets; a row's last
+  element never starts more than one window after its first; and the offset
+  is added on top of a custom `trigger`. The `reveal` entry is 4.7 KB gzipped
+  (was 4.5 KB). The reveal-cards block and the Folio showcase site drop the
+  oversized values they had used to get a cascade at all (0.75 and 1).
+
+### Tests
+
+- `src/__tests__/scrollRevealStagger.test.ts`, six cases on the trigger
+  window each element gets: the default cascade, a custom trigger, rows
+  restarting the count, the one-window cap and clamping, `stagger: 0`, and
+  keyword anchors.
+- `e2e/reveal.spec.ts`: the cascade test now runs at the default stagger and
+  requires each step to be visible (over 0.05 opacity between neighbours), and
+  a new row with a custom trigger must cascade too. Both fail on 2.15.2.
+
+### Docs
+
+- The `native` option's JSDoc said the draw runs "entirely on the compositor".
+  Browsers don't composite `stroke-dashoffset`, so the drawing still repaints
+  on the main thread; the comment now says what the native path removes — the
+  per-frame JavaScript and the scroll and resize listeners.
 
 ---
 
