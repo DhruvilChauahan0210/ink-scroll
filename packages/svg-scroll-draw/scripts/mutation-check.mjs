@@ -588,6 +588,15 @@ const MUTATIONS = [
     grep: 'vue wrapper.*equal options keeps the running engine',
   },
   {
+    id: 'video/trigger-element',
+    what: 'scrollVideo ignores triggerElement, so a film in a sticky stage scrubs over the wrong window',
+    file: 'src/video/index.ts',
+    from: '  const measured: Element = triggerElement ?? video;',
+    to: '  const measured: Element = video;',
+    spec: 'video',
+    grep: 'triggerElement.*scrubs across the whole track',
+  },
+  {
     id: 'astro/attribute-options',
     what: 'the Astro scanner ignores the options attribute, so the animation has no props',
     file: 'src/astro/index.ts',

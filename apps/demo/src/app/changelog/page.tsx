@@ -55,6 +55,15 @@ const KINDS: { k: Kind; label: string }[] = [
  */
 const RELEASES: Release[] = [
   {
+    version: '2.18.0',
+    title: 'A film in a sticky stage',
+    date: '2026-11-05',
+    items: [
+      { type: 'new', text: 'scrollVideo takes triggerElement: point it at the tall track behind a sticky stage and the film scrubs exactly while the stage is stuck, even across a resize mid-pin. The same option scrollAnimate has had.' },
+      { type: 'site', text: 'Four examples are now full recipes: the logo, the pinned feature tour, the stat row and the pinned film, each with steps, the complete files run in a browser in CI, and the ways it goes wrong. /examples marks them and can filter to them.' },
+    ],
+  },
+  {
     version: '2.17.1',
     title: 'once keeps the stagger',
     date: '2026-11-04',

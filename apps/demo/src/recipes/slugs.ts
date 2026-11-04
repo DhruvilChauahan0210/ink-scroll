@@ -4,7 +4,7 @@
  * `read.ts` (the files) and `components/recipes/recipes.tsx` (the steps) are
  * typed by it, so a slug added here without both does not compile.
  */
-export const RECIPE_SLUGS = ['logo-reveal', 'scroll-pin'] as const;
+export const RECIPE_SLUGS = ['logo-reveal', 'scroll-pin', 'scroll-counter', 'scroll-video'] as const;
 
 export type RecipeSlug = (typeof RECIPE_SLUGS)[number];
 

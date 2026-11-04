@@ -16,6 +16,8 @@ export type RecipeFiles = { react: RecipeFile[]; html: RecipeFile };
 const FILES: Record<RecipeSlug, { react: string[]; html: string }> = {
   'logo-reveal': { react: ['LogoReveal.tsx', 'logo-reveal.css'], html: 'index.html' },
   'scroll-pin': { react: ['FeatureTour.tsx', 'feature-tour.css'], html: 'index.html' },
+  'scroll-counter': { react: ['StatRow.tsx', 'stat-row.css'], html: 'index.html' },
+  'scroll-video': { react: ['FilmScrub.tsx', 'film-scrub.css'], html: 'index.html' },
 };
 
 export function readRecipeFiles(slug: string): RecipeFiles | null {

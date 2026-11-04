@@ -2548,12 +2548,24 @@ scrollVideo('#product-reveal', {
   easing:  'ease-in-out',
 });
 
+// A pinned film: the video sits in a sticky stage inside a tall track,
+// so measure the track — the video's own box moves while it is stuck (2.18.0)
+scrollVideo('#film', {
+  triggerElement: document.querySelector('#film-track'),
+  trigger: { start: 'top top', end: 'bottom bottom' },
+});
+
 // React
 import { ScrollVideo } from 'svg-scroll-draw/react';
 <ScrollVideo src="/hero.mp4" trigger={{ start: 'top top', end: 'bottom top' }} />`}
             </CodeBlock>
             <p className="text-[12px] text-graphite-border mt-3">
-              <strong>Video encoding tip:</strong> Use H.264 for broadest support. Add <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">muted playsinline preload=&quot;auto&quot;</code> attributes for smooth scrubbing.
+              <strong>Encoding:</strong> put a keyframe every few frames (<code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">-g 3</code>):
+              measured in Chromium, that kept every seek under 7.3 ms, where one keyframe for the whole clip took up to
+              53.6 ms. Serve the file from a server that answers Range requests, or it will not seek at all, and add{' '}
+              <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">muted playsinline preload=&quot;auto&quot;</code>.
+              The whole pinned-film build is the{' '}
+              <Link href="/examples/scroll-video" className="underline underline-offset-2">scroll-video recipe</Link>.
             </p>
           </DocSection>
 

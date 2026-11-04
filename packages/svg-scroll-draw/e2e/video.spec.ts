@@ -197,3 +197,51 @@ test.describe('scrollVideo', () => {
     );
   });
 });
+
+/**
+ * The pinned-film pattern: the video sits in a `position: sticky` stage inside
+ * a tall track, and `triggerElement` measures the track. The video's own box
+ * cannot describe that scrub — it moves with the scroll while the stage is
+ * stuck — so before 2.18.0 the window was wrong, and a resize mid-pin (a
+ * phone's address bar) re-measured it wrong again.
+ *
+ * Fixture geometry (viewport 900x800): #track at document top 1200, 2400 tall,
+ * so `top top` → `bottom bottom` runs from 1200 to 2800.
+ */
+test.describe('scrollVideo triggerElement — a film in a sticky stage', () => {
+  const START = 1200;
+  const END = 2800;
+  const want = (y: number) => DURATION * Math.min(1, Math.max(0, (y - START) / (END - START)));
+
+  test('scrubs across the whole track while the stage is stuck', async ({ page }) => {
+    const errors = collectErrors(page);
+    await openFixture(page, 'video-sticky.html');
+    expect(errors).toEqual([]);
+    expect(await call(page, 'geometry')).toEqual({ trackTop: START, trackHeight: 2400, viewport: 800 });
+    await requireDecoder(page);
+    await expect.poll(async () => (await read<{ duration: number | null }>(page)).duration, { timeout: 5000 }).not.toBeNull();
+
+    const rows = await sweep<{ scrollY: number; currentTime: number; clipTop: number }>(page, [START, 1600, 2000, 2400, END]);
+    const shown = table(rows.map((r) => ({ y: r.scrollY, currentTime: r.currentTime, want: want(r.scrollY), clipTop: r.clipTop })));
+    for (const r of rows) {
+      expect(r.currentTime, `currentTime wrong at y=${r.scrollY}\n${shown}`).toBeCloseTo(want(r.scrollY), 1);
+    }
+    // The stage really is stuck through the middle of the run: the clip does not move.
+    expect(Math.abs(rows[1].clipTop - rows[3].clipTop), `the stage is not stuck\n${shown}`).toBeLessThan(1);
+  });
+
+  test('a resize mid-pin re-measures the track, not the stuck video', async ({ page }) => {
+    await openFixture(page, 'video-sticky.html');
+    await requireDecoder(page);
+    await expect.poll(async () => (await read<{ duration: number | null }>(page)).duration, { timeout: 5000 }).not.toBeNull();
+
+    await scrollToY(page, 2000);
+    // A width change keeps the geometry the same, so only the re-measure is under test.
+    await page.setViewportSize({ width: 880, height: 800 });
+    await page.waitForTimeout(400); // the engine re-measures 150 ms after a resize
+
+    await scrollToY(page, 2400);
+    const row = await read<{ currentTime: number }>(page);
+    expect(row.currentTime, 'the window moved: the resize measured the stuck video').toBeCloseTo(want(2400), 1);
+  });
+});

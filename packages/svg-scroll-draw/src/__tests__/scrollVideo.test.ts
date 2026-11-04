@@ -189,6 +189,37 @@ describe('scrollVideo', () => {
     expect(onComplete).toHaveBeenCalled();
   });
 
+  // A video in a sticky stage: its own box is one screen and moves with the
+  // scroll, so the window has to come from the track around it.
+  it('measures the window from triggerElement, not the video', () => {
+    const video = makeVideo();
+    const track = document.createElement('div');
+    document.body.appendChild(track);
+    // The track: top 0, 2400 tall. `top top` → `bottom bottom` = 0 → 1600.
+    vi.spyOn(track, 'getBoundingClientRect').mockReturnValue({
+      top: 0, height: 2400, left: 0, width: 800, right: 800, bottom: 2400, x: 0, y: 0, toJSON: () => ({}),
+    });
+    scrollVideo(video, { to: 4, triggerElement: track, trigger: { start: 'top top', end: 'bottom bottom' } });
+
+    vi.stubGlobal('scrollY', 400);
+    FakeIO.instances[0].trigger(true);
+    raf.tick();
+    // 400 of 1600 → a quarter of the film. Measured from the 600px video, the
+    // same scroll would be past the end of its window.
+    expect(video.currentTime).toBeCloseTo(1, 5);
+  });
+
+  it('warns when the window has no length, naming triggerElement', () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const video = makeVideo();
+    // One viewport tall, measured `top top` → `bottom bottom`: start and end coincide.
+    vi.spyOn(video, 'getBoundingClientRect').mockReturnValue({
+      top: 0, height: 800, left: 0, width: 800, right: 800, bottom: 800, x: 0, y: 0, toJSON: () => ({}),
+    });
+    scrollVideo(video, { trigger: { start: 'top top', end: 'bottom bottom' } });
+    expect(warnSpy.mock.calls.some((c) => String(c[0]).includes('triggerElement'))).toBe(true);
+  });
+
   it('pause stops rAF', () => {
     const video = makeVideo();
     const inst = scrollVideo(video, { from: 0, to: 5 });

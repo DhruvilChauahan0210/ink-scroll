@@ -14,6 +14,17 @@ export interface ScrollVideoOptions {
   once?: boolean;
   axis?: 'x' | 'y';
   preload?: 'auto' | 'metadata';
+  /**
+   * Measure the trigger window from this element instead of the video.
+   *
+   * Needed for the pinned-film pattern: a video in a `position: sticky` stage
+   * moves with the scroll while the stage is stuck, so its own box cannot
+   * describe a scrub that runs the length of the pin — and re-measuring it on
+   * a resize (a phone's address bar) lands on the wrong window. Point this at
+   * the tall track that holds the scroll room, with `start: 'top top'` and
+   * `end: 'bottom bottom'`, and the film runs exactly while the stage is stuck.
+   */
+  triggerElement?: Element;
   onReady?: () => void;
   onComplete?: () => void;
   onProgress?: (alpha: number) => void;
@@ -49,10 +60,13 @@ export function scrollVideo(
     once      = false,
     axis      = 'y',
     preload   = 'auto',
+    triggerElement,
     onReady,
     onComplete,
     onProgress,
   } = options;
+
+  const measured: Element = triggerElement ?? video;
 
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const easeFn         = typeof easing === 'function' ? easing : (EASINGS[easing] ?? EASINGS.linear);
@@ -81,12 +95,17 @@ export function scrollVideo(
   const vpSize    = (): number => (axis === 'x' ? window.innerWidth : window.innerHeight);
 
   function cacheTriggers(): void {
-    const rect = video.getBoundingClientRect();
+    const rect = measured.getBoundingClientRect();
     const pos  = axis === 'x' ? rect.left : rect.top;
     const size = axis === 'x' ? rect.width : rect.height;
     const result = computeTriggers({ top: pos, height: size }, scrollPos(), vpSize(), startConfig, endConfig);
     tStart = result.tStart;
     tEnd   = result.tEnd;
+    // A window of no length never scrubs. The usual cause is measuring a video
+    // that sits in a sticky stage one viewport tall; name the fix.
+    if (ready && tEnd === tStart) {
+      warn('scrollVideo: zero-length trigger window, so it never scrubs. In a sticky stage, set triggerElement.', video);
+    }
   }
 
   /** The time last written, so an unchanged frame does not start a new seek. */

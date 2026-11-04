@@ -17,6 +17,7 @@
  * build check that they compile.
  */
 import { readFileSync, existsSync } from 'node:fs';
+import http from 'node:http';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
@@ -44,7 +45,7 @@ const drawn = (page) =>
     }),
   );
 
-async function open(browser, html, { reducedMotion = 'no-preference', width = 1280, height = 800 } = {}) {
+async function open(browser, html, { reducedMotion = 'no-preference', width = 1280, height = 800, url = null } = {}) {
   const page = await browser.newPage({ viewport: { width, height }, reducedMotion });
   const errors = [];
   page.on('pageerror', (e) => errors.push(String(e)));
@@ -53,11 +54,41 @@ async function open(browser, html, { reducedMotion = 'no-preference', width = 12
     const file = resolve(dist, new URL(r.request().url()).pathname.split('/dist/')[1]);
     return r.fulfill({ contentType: 'text/javascript', body: readFileSync(file, 'utf8') });
   });
-  await page.route('http://recipe.test/', (r) => r.fulfill({ contentType: 'text/html', body: html }));
-  await page.goto('http://recipe.test/');
+  if (url) {
+    await page.goto(url);
+  } else {
+    await page.route('http://recipe.test/', (r) => r.fulfill({ contentType: 'text/html', body: html }));
+    await page.goto('http://recipe.test/');
+  }
   await page.waitForTimeout(150);
   return { page, errors };
 }
+
+/**
+ * A local server for recipes that load media. Browsers seek a <video> only
+ * when the server answers Range requests, so a route that hands back the whole
+ * file would make a scrubbing recipe look broken when it is not.
+ */
+const MEDIA = { 'film.webm': resolve(here, '../public/showcase/aural-fdc4222c.webm') };
+const server = http.createServer((req, res) => {
+  const [, slug, file] = new URL(req.url, 'http://x').pathname.split('/');
+  if (file in MEDIA) {
+    const buf = readFileSync(MEDIA[file]);
+    const m = /bytes=(\d+)-(\d*)/.exec(req.headers.range || '');
+    if (!m) {
+      res.writeHead(200, { 'content-type': 'video/webm', 'content-length': buf.length, 'accept-ranges': 'bytes' });
+      return res.end(buf);
+    }
+    const a = Number(m[1]);
+    const b = m[2] ? Number(m[2]) : buf.length - 1;
+    res.writeHead(206, { 'content-type': 'video/webm', 'content-range': `bytes ${a}-${b}/${buf.length}`, 'content-length': b - a + 1, 'accept-ranges': 'bytes' });
+    return res.end(buf.subarray(a, b + 1));
+  }
+  res.writeHead(200, { 'content-type': 'text/html' });
+  res.end(readFileSync(resolve(recipes, slug, 'index.html')));
+});
+await new Promise((ok) => server.listen(0, ok));
+const origin = `http://localhost:${server.address().port}`;
 
 const browser = await chromium.launch();
 
@@ -185,10 +216,140 @@ const browser = await chromium.launch();
   await rm.page.close();
 }
 
+// ── scroll-counter (the stat row) ────────────────────────────────────────────
+{
+  const html = readFileSync(resolve(recipes, 'scroll-counter/index.html'), 'utf8');
+  const name = 'scroll-counter/index.html';
+  const FINAL = ['1,284,500', '3,410', '41.2', '86'];
+
+  const read = (page) =>
+    page.evaluate(() => ({
+      run: [...document.querySelectorAll('.stat-run')].map((el) => el.textContent),
+      sr: [...document.querySelectorAll('.stat-sr')].map((el) => el.textContent.replace(/\u00a0/g, ' ')),
+      widths: [...document.querySelectorAll('.stat-num')].map((el) => el.getBoundingClientRect().width),
+    }));
+  /** Scroll so the row's bottom sits at `pct` of the viewport height. */
+  const rowBottomAt = async (page, pct) => {
+    await page.evaluate((pct) => {
+      const r = document.querySelector('.stats').getBoundingClientRect();
+      scrollTo(0, r.bottom + scrollY - innerHeight * pct);
+    }, pct);
+    await page.waitForTimeout(400);
+  };
+
+  check(FINAL.every((v) => html.includes(`>${v}</span>`)), `${name}: the HTML does not carry the real numbers`);
+
+  const { page, errors } = await open(browser, html);
+  const start = await read(page);
+  check(start.run.join() === '0,0,0.0,0', `${name}: not counting from zero before the row arrives (${start.run})`);
+  check(start.sr.join() === '1,284,500,3,410 ha,41.2k t,86%', `${name}: screen-reader text is not the final values (${start.sr})`);
+
+  await rowBottomAt(page, 1.0); // top entered, bottom not yet in: part-way
+  const mid = await read(page);
+  const n = (t) => Number(t.replace(/,/g, ''));
+  check(mid.run.every((t, i) => n(t) > 0 && n(t) < n(FINAL[i])), `${name}: not mid-count part-way in (${mid.run})`);
+
+  await rowBottomAt(page, 0.88); // just fully in view
+  const done = await read(page);
+  check(done.run.join() === FINAL.join(), `${name}: not finished once the row is fully in view (${done.run})`);
+  check(done.widths.every((w, i) => Math.abs(w - start.widths[i]) < 0.5), `${name}: the numbers changed width while counting (${start.widths} → ${done.widths})`);
+  check(errors.length === 0, `${name}: page errors: ${errors.join(' | ')}`);
+  await page.close();
+
+  const rm = await open(browser, html, { reducedMotion: 'reduce' });
+  check((await read(rm.page)).run.join() === FINAL.join(), `${name}: reduced motion did not show the final values at once`);
+  await rm.page.close();
+
+  const phone = await open(browser, html, { width: 390, height: 844 });
+  const cols = await phone.page.evaluate(() => getComputedStyle(document.querySelector('.stats')).gridTemplateColumns.split(' ').length);
+  const over = await phone.page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+  check(cols === 2 && over === 0, `${name}: phone layout off (${cols} columns, ${over}px overflow)`);
+  await phone.page.close();
+}
+
+// ── scroll-video (the pinned film) ───────────────────────────────────────────
+{
+  const name = 'scroll-video/index.html';
+  const url = `${origin}/scroll-video/index.html`;
+
+  const read = (page) =>
+    page.evaluate(() => {
+      const v = document.getElementById('film');
+      const items = [...document.querySelectorAll('.film-copy li')];
+      return {
+        t: v.currentTime,
+        d: Number.isFinite(v.duration) ? v.duration : null,
+        top: Math.round(v.getBoundingClientRect().top),
+        current: items.findIndex((li) => li.getAttribute('aria-current') === 'step'),
+        shown: items.filter((li) => getComputedStyle(li).display !== 'none' && getComputedStyle(li).opacity === '1').length,
+      };
+    });
+  /** Scroll to film progress p: the track's top at the viewport's top is 0, its bottom at the viewport's bottom is 1. */
+  const toProgress = async (page, p) => {
+    await page.evaluate((p) => {
+      const t = document.getElementById('track');
+      const top = t.getBoundingClientRect().top + scrollY;
+      scrollTo(0, top + p * (t.offsetHeight - innerHeight));
+    }, p);
+    await page.waitForTimeout(450);
+  };
+  const ready = (page) => page.waitForFunction(() => document.getElementById('film').readyState >= 1, null, { timeout: 8000 });
+  const near = (a, b) => Math.abs(a - b) <= 0.12;
+
+  const { page, errors } = await open(browser, null, { url });
+  await ready(page);
+  await toProgress(page, 0);
+  let s = await read(page);
+  check(near(s.t, 0) && s.current === 0, `${name}: not at the start of the film (${s.t.toFixed(2)}s, chapter ${s.current})`);
+
+  await toProgress(page, 0.3);
+  const top30 = (await read(page)).top;
+  await toProgress(page, 0.6);
+  s = await read(page);
+  check(near(s.t, 0.6 * s.d), `${name}: at 0.6 of the track the film is at ${s.t.toFixed(2)}s, not ${(0.6 * s.d).toFixed(2)}s`);
+  check(s.current === 1, `${name}: chapter 2 not shown at 0.6 (${s.current})`);
+  check(Math.abs(s.top - top30) <= 1, `${name}: the stage is not stuck (${top30}px → ${s.top}px)`);
+
+  // A resize mid-pin must re-measure the track, not the stuck video.
+  await page.setViewportSize({ width: 1240, height: 800 });
+  await page.waitForTimeout(400);
+  await toProgress(page, 0.8);
+  s = await read(page);
+  check(near(s.t, 0.8 * s.d) && s.current === 2, `${name}: after a resize, 0.8 of the track is ${s.t.toFixed(2)}s / chapter ${s.current}`);
+
+  await toProgress(page, 1);
+  s = await read(page);
+  check(near(s.t, s.d), `${name}: not at the end of the film at the end of the track (${s.t.toFixed(2)}s of ${s.d.toFixed(2)}s)`);
+  check(errors.length === 0, `${name}: page errors: ${errors.join(' | ')}`);
+  await page.close();
+
+  // Reduced motion: the last frame, and every chapter readable.
+  const rm = await open(browser, null, { url, reducedMotion: 'reduce' });
+  await ready(rm.page);
+  await toProgress(rm.page, 0.2);
+  s = await read(rm.page);
+  check(near(s.t, s.d), `${name}: reduced motion did not show the last frame (${s.t.toFixed(2)}s)`);
+  check(s.shown === 3, `${name}: under reduced motion ${s.shown} of 3 chapters are readable`);
+  await rm.page.close();
+
+  // A phone: one screen, one chapter, nothing wider than the screen.
+  const phone = await open(browser, null, { url, width: 390, height: 844 });
+  await ready(phone.page);
+  await toProgress(phone.page, 0.5);
+  const fit = await phone.page.evaluate(() => {
+    const stage = document.querySelector('.film-stage').getBoundingClientRect();
+    const shown = [...document.querySelectorAll('.film-copy li')].filter((li) => getComputedStyle(li).display !== 'none').length;
+    return { h: stage.height, vh: innerHeight, shown, over: document.documentElement.scrollWidth - innerWidth };
+  });
+  check(fit.h <= fit.vh + 1 && fit.shown === 1 && fit.over === 0, `${name}: phone layout off (${JSON.stringify(fit)})`);
+  await phone.page.close();
+}
+
 await browser.close();
+server.close();
 
 if (failures.length) {
   console.error(`✗ ${failures.length} recipe check(s) failed:\n` + failures.map((f) => `  ${f}`).join('\n'));
   process.exit(1);
 }
-console.log('✓ every recipe file works in a browser (logo-reveal, scroll-pin)');
+console.log('✓ every recipe file works in a browser (logo-reveal, scroll-pin, scroll-counter, scroll-video)');

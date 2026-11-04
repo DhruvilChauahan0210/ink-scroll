@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>scrollVideo — a film in a sticky stage, measured from its track</title>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+  .spacer { height: 1200px; }
+  .tail   { height: 1200px; }
+  /* The scroll room: 2400px, so the stage (one viewport tall) stays stuck for
+     2400 − 800 = 1600px. `top top` → `bottom bottom` on the track is exactly
+     that stretch. */
+  #track { position: relative; height: 2400px; }
+  #stage { position: sticky; top: 0; height: 100vh; display: grid; place-items: center; }
+  #clip  { display: block; width: 320px; height: 400px; background: #000; }
+</style>
+</head>
+<body>
+
+<div class="spacer"></div>
+<div id="track">
+  <div id="stage"><video id="clip" src="./clip.webm" muted playsinline preload="auto"></video></div>
+</div>
+<div class="tail"></div>
+
+<script type="module">
+import { scrollVideo } from '/dist/video/index.mjs';
+import { docTop, publish } from './_probe.mjs';
+
+const clip  = document.querySelector('#clip');
+const track = document.querySelector('#track');
+
+scrollVideo(clip, { triggerElement: track, trigger: { start: 'top top', end: 'bottom bottom' } });
+
+publish({
+  read: () => ({
+    scrollY: window.scrollY,
+    currentTime: clip.currentTime,
+    duration: Number.isFinite(clip.duration) ? clip.duration : null,
+    clipTop: clip.getBoundingClientRect().top,
+  }),
+  geometry: () => ({ trackTop: docTop(track), trackHeight: track.offsetHeight, viewport: window.innerHeight }),
+  canDecode: () => clip.canPlayType('video/webm; codecs="vp8"') !== '',
+});
+</script>
+</body>
+</html>

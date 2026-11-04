@@ -4,6 +4,10 @@ import { LogoReveal } from '@/recipes/logo-reveal/LogoReveal';
 import { FeatureTour } from '@/recipes/scroll-pin/FeatureTour';
 import { FigFlood, FigLayers, FigSelector, FigStagger } from './logo-figures';
 import { FigPinStates, FigStage, FigThirds, FigThirdsDrawn } from './pin-figures';
+import { StatRow } from '@/recipes/scroll-counter/StatRow';
+import { FigFormat, FigReach, FigThreeCopies, FigWidth } from './counter-figures';
+import { FilmScrub } from '@/recipes/scroll-video/FilmScrub';
+import { FigChapters, FigKeyframes, FigMeasure, FigTrack } from './video-figures';
 
 /*
  * A recipe turns an example page into a build: numbered steps with a figure
@@ -352,6 +356,322 @@ drawings.forEach((d, j) =>
             <C>pinDistance: window.innerHeight * 2</C> is measured once. Leave <C>pinDistance</C> out and the
             default, one viewport height, is measured again on every resize; a number you pass stays as it
             was.
+          </>
+        ),
+      },
+    ],
+  },
+  'scroll-counter': {
+    updated: '2026-11-05',
+    steps: [
+      {
+        title: 'Write each number three times',
+        file: 'StatRow.tsx',
+        body: (
+          <>
+            One copy for screen readers, read once and in full. One invisible copy that holds the width. And
+            the copy that counts, which also starts as the real number, so search engines and anyone without
+            JavaScript see the figures; the counter overwrites it when it starts. The unit sits outside the
+            counting span, because <C>scrollCounter</C> replaces everything inside it.
+          </>
+        ),
+        code: `<dd>
+  <span className="stat-sr">{final}{unit}</span>
+  <span className="stat-num" aria-hidden="true">
+    <span className="stat-hold">{final}</span>
+    <span className="stat-run">{final}</span>
+    {unit}
+  </span>
+</dd>`,
+        caption: 'three copies',
+        figure: <FigThreeCopies />,
+      },
+      {
+        title: 'Keep the row still while it counts',
+        file: 'stat-row.css',
+        body: (
+          <>
+            In most fonts digits have different widths, and a number growing from 0 to 1,284,500 gets wider
+            every frame, pushing its unit along. <C>tabular-nums</C> gives every digit the same width, and the
+            hidden final value, sharing a grid cell with the counting one, holds the full width from the first
+            frame.
+          </>
+        ),
+        code: `.stat-num {
+  display: inline-grid;
+  grid-auto-flow: column;
+  font-variant-numeric: tabular-nums;
+}
+.stat-hold, .stat-run { grid-row: 1; grid-column: 1; }
+.stat-hold { visibility: hidden; }
+.stat-run { justify-self: end; }`,
+        caption: 'held width',
+        figure: <FigWidth />,
+      },
+      {
+        title: 'Count it, formatted like the final value',
+        file: 'StatRow.tsx',
+        body: (
+          <>
+            <C>scrollCounter</C> calls <C>format</C> on every frame with the raw value. Give it the formatter
+            that wrote the final value, so the separators and decimals hold still all the way. Use{' '}
+            <C>format</C> or <C>decimals</C>, not both: <C>decimals</C> replaces <C>format</C> entirely.
+          </>
+        ),
+        code: `const nf = new Intl.NumberFormat('en-US', {
+  minimumFractionDigits: decimals,
+  maximumFractionDigits: decimals,
+});
+
+scrollCounter(el, { to: value, format: (n) => nf.format(n) });`,
+        caption: 'raw in, formatted out',
+        figure: <FigFormat />,
+      },
+      {
+        title: 'End where the row can reach',
+        file: 'StatRow.tsx',
+        body: (
+          <>
+            The default window runs from <C>top 80%</C> to <C>top 20%</C>, and near the end of a page the
+            row’s top may never get that high. In a test with 200px of footer below it, the top stopped at 69%
+            of the screen and the count stopped at 419,046 of 1,284,500. End on the row’s bottom instead:{' '}
+            <C>bottom 90%</C> is reached once the row is fully in view, and needs only a tenth of a screen
+            below it.
+          </>
+        ),
+        code: `scrollCounter(el, {
+  to: value,
+  format,
+  trigger: { start: 'top bottom', end: 'bottom 90%' },
+});`,
+        note: (
+          <>
+            <C>once</C> is already on for counters, so the number stays at its final value when the reader
+            scrolls back. Under reduced motion the final value is written at once.
+          </>
+        ),
+        caption: 'a reachable end',
+        figure: <FigReach />,
+      },
+    ],
+    live: <StatRow />,
+    liveLayout: 'full',
+    filesIntro: (
+      <>
+        Two files, ready to paste into a React or Next.js project with <C>svg-scroll-draw</C> installed. The row
+        below them is this exact component, running.
+      </>
+    ),
+    htmlIntro: (
+      <>
+        The same row as one HTML file, with the library from a CDN. Each number’s value and decimals are data
+        attributes, so adding a stat is markup only.
+      </>
+    ),
+    pitfalls: [
+      {
+        problem: 'The count stops short and stays there',
+        body: (
+          <>
+            The window’s end is a point the row never reaches. Near the bottom of a page, a row’s top can
+            only rise as far as the page lets it; measured with 200px below the row, the default window
+            stopped at 419,046 of 1,284,500, and <C>top 45%</C> at 1,141,778. End on the row’s bottom:{' '}
+            <C>bottom 90%</C>.
+          </>
+        ),
+      },
+      {
+        problem: 'The unit or icon inside the number disappears',
+        body: (
+          <>
+            <C>scrollCounter</C> writes <C>textContent</C>, which replaces everything inside the element. Put
+            the unit beside the counting span, or inside <C>format</C>.
+          </>
+        ),
+      },
+      {
+        problem: 'The format function is ignored',
+        body: (
+          <>
+            <C>decimals</C> is set as well. When it is, it replaces <C>format</C> entirely. Do the decimals in
+            the formatter, as <C>Intl.NumberFormat</C> does here.
+          </>
+        ),
+      },
+      {
+        problem: 'The separators change between the server and the browser',
+        body: (
+          <>
+            <C>toLocaleString()</C> with no locale uses the machine’s, so the server writes 1,284,500 and a
+            browser in Germany counts to 1.284.500, and React reports a hydration mismatch on the copies it
+            rendered. Name the locale.
+          </>
+        ),
+      },
+      {
+        problem: 'A screen reader reads “0”',
+        body: (
+          <>
+            It reached the counting span mid-count. Give screen readers their own copy with the final value
+            and hide the counting one with <C>aria-hidden</C>, as step 1 does.
+          </>
+        ),
+      },
+    ],
+  },
+  'scroll-video': {
+    updated: '2026-11-05',
+    steps: [
+      {
+        title: 'Encode the film for scrubbing',
+        file: 'terminal',
+        body: (
+          <>
+            Every scroll frame is a seek, and a seek decodes from the last keyframe. Exports usually put one
+            every few seconds; for scrubbing, put one every few frames. Measured in Chromium on the same
+            5-second film: with a keyframe every 3 frames no seek took longer than 7.3 ms, with one keyframe
+            for the whole clip seeks took up to 53.6 ms, three frames late. <C>-an</C> drops the audio, and{' '}
+            <C>-auto-alt-ref 0</C> turns off alternate reference frames, which tripled seek times when the
+            Aural film was encoded.
+          </>
+        ),
+        code: `ffmpeg -i film.mov -an -c:v libvpx -cpu-used 1 -pix_fmt yuv420p \\
+  -g 3 -auto-alt-ref 0 -b:v 2400k -crf 4 -qmin 0 -qmax 26 film.webm`,
+        caption: 'what a seek costs',
+        figure: <FigKeyframes />,
+      },
+      {
+        title: 'Give the scroll room to a track',
+        file: 'film-scrub.css',
+        body: (
+          <>
+            The stage is <C>position: sticky</C> inside a track four screens tall, so it stays stuck for three
+            screens of scroll, and that stretch is the film. Keep the stage to exactly one screen, so nothing
+            in it is ever out of reach.
+          </>
+        ),
+        code: `.film-track { position: relative; height: 400vh; }
+
+.film-stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+}`,
+        caption: 'track and stage',
+        figure: <FigTrack />,
+      },
+      {
+        title: 'Measure the track, not the video',
+        file: 'FilmScrub.tsx',
+        body: (
+          <>
+            <C>scrollVideo</C> measures the video unless told otherwise, and a video in a sticky stage moves
+            with the scroll, so its window comes out wrong, and a resize mid-pin measures it wrong again.{' '}
+            <C>triggerElement</C> (from 2.18.0) measures the track instead: <C>top top</C> to{' '}
+            <C>bottom bottom</C> is exactly the stretch the stage is stuck.
+          </>
+        ),
+        code: `const film = scrollVideo(video.current, {
+  triggerElement: track.current,
+  trigger: { start: 'top top', end: 'bottom bottom' },
+  onProgress: (p) => setChapter(chapterAt(p)),
+});
+
+return () => film.destroy();`,
+        caption: 'which box sets the window',
+        figure: <FigMeasure />,
+      },
+      {
+        title: 'Let the film pick the words',
+        file: 'FilmScrub.tsx',
+        body: (
+          <>
+            <C>onProgress</C> reports how far through the film the reader is, 0 to 1. Give each chapter the
+            point it takes over from, and show the last one that has started. The copy follows the film, so
+            moving a chapter is one number.
+          </>
+        ),
+        code: `const CHAPTERS = [
+  { from: 0,    title: 'Built to be worn all day', … },
+  { from: 0.45, title: 'Taken apart', … },
+  { from: 0.75, title: 'The part you hear', … },
+];
+
+const chapterAt = (p) =>
+  CHAPTERS.reduce((at, c, i) => (p >= c.from ? i : at), 0);`,
+        note: (
+          <>
+            Reduced motion shows the film’s last frame, so the chapters cannot be scrolled through; the CSS
+            shows all of them instead.
+          </>
+        ),
+        caption: 'chapters on the film',
+        figure: <FigChapters />,
+      },
+    ],
+    live: <FilmScrub src="/showcase/aural-fdc4222c.webm" to={4.98} />,
+    liveLayout: 'full',
+    filesIntro: (
+      <>
+        Two files, ready to paste into a React or Next.js project with <C>svg-scroll-draw</C> installed. The
+        film below them is this exact component, running on the Aural product film, which has colourway stills
+        after the film in the same file, so this page passes <C>to={'{4.98}'}</C>.
+      </>
+    ),
+    htmlIntro: (
+      <>
+        The same film as one HTML file. <C>scrollVideo</C> is not in the script-tag build, so this imports
+        the ES module from a CDN. Serve it with <C>film.webm</C> beside it, from a server that answers Range
+        requests.
+      </>
+    ),
+    pitfalls: [
+      {
+        problem: 'It stutters, and worse further into the film',
+        body: (
+          <>
+            The film has few keyframes, so each seek decodes from far back. Re-encode with a keyframe every
+            few frames (<C>-g 3</C>); measured, that kept every seek under 7.3 ms against up to 53.6 ms.
+          </>
+        ),
+      },
+      {
+        problem: 'It does not scrub at all once deployed',
+        body: (
+          <>
+            The server ignores Range requests. Measured in Chromium against such a server: asked for 3 s, the
+            film stayed at 0 s with nothing seekable, though the whole file had arrived. Check that the video
+            comes back as <C>206 Partial Content</C> with <C>Accept-Ranges: bytes</C>.
+          </>
+        ),
+      },
+      {
+        problem: 'The film runs in the wrong stretch, or jumps after a resize',
+        body: (
+          <>
+            It is measuring the video, which moves while the stage is stuck, and a phone’s address bar
+            showing or hiding is a resize. Measure the track with <C>triggerElement</C>.
+          </>
+        ),
+      },
+      {
+        problem: 'A phone shows an empty box',
+        body: (
+          <>
+            That browser cannot play the file. Check <C>{'video.canPlayType(\'video/webm; codecs="vp8"\')'}</C>{' '}
+            on the oldest phone you support; if it comes back empty, add an MP4 <C>{'<source>'}</C> encoded
+            with the same short keyframe interval, and a <C>poster</C> so there is a picture either way.
+          </>
+        ),
+      },
+      {
+        problem: 'The stage scrolls away instead of sticking',
+        body: (
+          <>
+            An ancestor has <C>overflow: hidden</C>, <C>auto</C> or <C>scroll</C>, and a sticky element sticks
+            inside the nearest one of those, not the page. Remove it, or use <C>overflow: clip</C>, which does
+            not create one.
           </>
         ),
       },

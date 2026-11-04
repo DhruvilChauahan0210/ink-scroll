@@ -1,8 +1,8 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **2.17.1** — published on npm with provenance through `release.yml` (2026-11-04)
-> Tests: **660 unit** across 34 suites · **206 browser tests** per engine (618 runs
-> across Chromium/Firefox/WebKit) · **60 mutations**, each caught by the one test
+> Current version: **2.18.0** — in the working tree, not yet committed or tagged (2.17.1 is the latest on npm)
+> Tests: **662 unit** across 34 suites · **208 browser tests** per engine (624 runs
+> across Chromium/Firefox/WebKit) · **61 mutations**, each caught by the one test
 > named for it · **91.3% line coverage** (gate 90/90/82/82)
 > Bundle: **10.7 KB gzipped** (main entry as shipped files, chunks included; per-API entries from 0.2 KB) · zero runtime dependencies
 > Last updated: 2026-11-04
@@ -49,11 +49,11 @@
 - [x] `scrollAnimateGroup` + `scrollAnimateSequence` + `scrollParallaxGroup` in `svg-scroll-draw/group`
 
 ### Testing
-- [x] 660 tests across 34 suites — `reactive` (the wrappers' option fingerprint and live callbacks), `directives` (the built files' "use client"), `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollText` (23)
+- [x] 662 tests across 34 suites — `reactive` (the wrappers' option fingerprint and live callbacks), `directives` (the built files' "use client"), `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollText` (23)
 - [x] Initial state fix — `createAnimateEngine` and `scrollCounter` now apply correct alpha immediately on init (no flash before IO fires)
 
 ### Browser tests (Phase 2, `packages/svg-scroll-draw/e2e`)
-206 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
+208 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
 `helpers.ts` (deterministic sweep — scroll to a fixed offset, wait two frames,
 read) and `fixtures/_probe.mjs` (parsing stays in the page, so specs assert on
 numbers).
@@ -157,7 +157,17 @@ at all.
 
 - [x] `/examples/scroll-pin` is a full recipe — pinned feature tour (`scrollPin` + `onProgress` + `seek()`), 4 steps with figures, the live tour pinning on the page, ES-module HTML file, 5 pitfalls (React root and ancestor `transform` measured first); files in `apps/demo/src/recipes/scroll-pin/`, checked by `test-recipes`
 - [x] `/examples`: recipe cards link as “recipe →”, and a Recipes filter shows just those (`src/recipes/slugs.ts`)
-- [ ] Next: `/examples/scroll-counter` (stat row), `/examples/scroll-video` (explainer), `/blog/horizontal-scroll-sections` (horizontal strip)
+- [x] `/examples/scroll-counter` is a full recipe — stat row, three copies per number, held width, shared formatter, a reachable end (`bottom 90%`, measured against the default and `top 45%`); files in `apps/demo/src/recipes/scroll-counter/`
+- [x] `stat-counter-row` block ends its count on `bottom 90%` (was `top 45%`, unreachable near a page's end)
+- [x] `/examples/scroll-video` is a full recipe — pinned film in a sticky stage measured with `triggerElement` (2.18.0); keyframe interval and Range requests measured; files in `apps/demo/src/recipes/scroll-video/`
+- [ ] Next: `/blog/horizontal-scroll-sections` (horizontal strip)
+
+### 2.18.0 — scrollVideo `triggerElement` (2026-11-05; not yet released)
+
+- [x] `scrollVideo({ triggerElement })` measures the window from another element; zero-length window warns
+- [x] Two browser tests (`video-sticky.html`), two unit tests, mutation `video/trigger-element` (61 in all)
+- [x] Docs: npm README table, skill API, `/docs` scrollVideo section (pinned film + encoding), CHANGELOG, `/changelog`
+- [ ] Released — waiting on the owner to push the `v2.18.0` tag
 
 ### 2.17.1 — once keeps the stagger, and the first recipe (2026-11-04)
 

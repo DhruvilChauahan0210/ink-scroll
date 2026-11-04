@@ -43,7 +43,7 @@ const BUDGETS_KB = {
   nuxt:             12.3,
   svelte:           11.6,
   solid:            11.6,
-  angular:          11.6,
+  angular:          11.7,
   astro:            11.1,
   group:             9.6,
   'web-component':   7.2,

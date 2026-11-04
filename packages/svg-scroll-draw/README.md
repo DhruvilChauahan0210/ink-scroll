@@ -219,6 +219,7 @@ import { ScrollVideo } from 'svg-scroll-draw/react';
 | `easing` | `string \| fn` | `"linear"` | — |
 | `once` | `boolean` | `false` | — |
 | `preload` | `"auto" \| "metadata"` | `"auto"` | Sets `preload` attribute if not already present |
+| `triggerElement` | `Element` | the video | Measure the trigger window from this element — the tall track behind a `position: sticky` stage, so a pinned film scrubs the length of the pin (2.18.0) |
 | `onReady` | `() => void` | — | Fires when video metadata is loaded |
 | `onProgress` | `(n: number) => void` | — | — |
 | `onComplete` | `() => void` | — | — |
@@ -629,8 +630,8 @@ devtools.highlight('#my-element'); // outline for 2 seconds
 | Entry | Gzipped |
 |---|---|
 | `svg-scroll-draw` (main, every core API) | 10.7 KB |
-| `svg-scroll-draw/react` (includes the engine) | 12.0 KB |
-| `svg-scroll-draw` + `svg-scroll-draw/react` (together; the engine ships once) | 13.4 KB |
+| `svg-scroll-draw/react` (includes the engine) | 12.1 KB |
+| `svg-scroll-draw` + `svg-scroll-draw/react` (together; the engine ships once) | 13.5 KB |
 | `svg-scroll-draw/reveal` | 5.0 KB |
 | `svg-scroll-draw/text` | 2.8 KB |
 | `svg-scroll-draw/video` | 2.3 KB |

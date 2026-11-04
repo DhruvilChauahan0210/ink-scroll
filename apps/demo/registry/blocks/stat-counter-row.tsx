@@ -77,7 +77,9 @@ export function StatCounterRow({
                       format={(n) => formatNumber(n, decimals)}
                       easing="ease-out"
                       once
-                      trigger={{ start: 'top 90%', end: 'top 45%' }}
+                      // Ends on the number's bottom, a point it reaches even at the
+                      // very end of a page; `top 45%` can be out of reach there.
+                      trigger={{ start: 'top bottom', end: 'bottom 90%' }}
                       className="col-start-1 row-start-1 text-left"
                     />
                   </span>

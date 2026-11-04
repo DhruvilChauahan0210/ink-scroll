@@ -288,6 +288,33 @@ All notable changes to `svg-scroll-draw` are documented here.
   which asks GitHub at most once an hour for everyone (ISR), so no
   visitor's browser calls GitHub.
 
+- **The video example is a full recipe.** `/examples/scroll-video` builds a
+  pinned product film: encode it with a keyframe every few frames, give the
+  scroll room to a tall track behind a sticky stage, measure the track with
+  the new `triggerElement`, and let `onProgress` pick the chapter. Two of its
+  claims were measured for it: on the same 5-second film, a keyframe every 3
+  frames kept every seek under 7.3 ms where one keyframe took up to 53.6 ms;
+  and against a server that ignores Range requests, asking for 3 s left the
+  film at 0 s with nothing seekable. The live film runs on the Aural product
+  film. `test-recipes` serves the file with Range support and checks the film
+  scrubs exactly across the track, stays stuck, survives a resize mid-pin,
+  shows the last frame with every chapter under reduced motion, and fits a
+  phone.
+- **The counter example is a full recipe.** `/examples/scroll-counter`
+  builds a stat row: each number written three times (read once by screen
+  readers, an invisible copy holding the width, and the counting copy, which
+  starts as the real figure so the HTML has it), `tabular-nums` and the held
+  width so the row never shifts, `format` from the same `Intl.NumberFormat`
+  that wrote the final value, and a window that ends on the row's bottom.
+  That last one was measured first: near the end of a page, with 200px of
+  footer below the row, the default window stopped the count at 419,046 of
+  1,284,500 and `top 45%` at 1,141,778; `top bottom` → `bottom 90%` finished
+  once the row was fully in view. `test-recipes` checks the file counts from
+  zero, holds its width to the pixel, finishes in view, and shows the final
+  values at once under reduced motion.
+- **The `stat-counter-row` block finishes its count near the end of a page.**
+  It ended at `top 45%`, which a row close to the footer may never reach; it
+  now ends on the number's bottom (`bottom 90%`). Registry JSON regenerated.
 - **`/examples` points at the recipes.** A card whose page has a full recipe
   links to it as “recipe →” instead of “guide →”, and a Recipes filter beside
   the framework filters shows just those. The list of recipe slugs
@@ -328,6 +355,36 @@ All notable changes to `svg-scroll-draw` are documented here.
   and the GitHub release out of step.
 - **The demo is linted in CI and in `npm run verify`**, with no warnings
   allowed, followed by `check-jsx-text` and `check-nav`.
+
+---
+
+## [2.18.0] — 2026-11-05
+
+### Added
+
+- **`scrollVideo` takes `triggerElement`.** The pinned-film pattern puts the
+  video in a `position: sticky` stage inside a tall track, and the video's own
+  box moves with the scroll while the stage is stuck, so it could not describe
+  a scrub the length of the pin, and a resize mid-pin (a phone's address bar)
+  re-measured it wrong again. The Aural showcase needed around 40 lines of
+  measuring workarounds for it. Now `triggerElement: track` with `top top` →
+  `bottom bottom` runs the film exactly while the stage is stuck, the same
+  option `scrollAnimate` has had. A window of zero length warns in
+  development and names the fix.
+
+### Size
+
+- The video entry stays at 2.3 KB. The wrappers carry the option too; the
+  Angular entry measured 11.61 KB against an 11.6 KB budget, raised to 11.7.
+
+### Tests
+
+- Two browser tests on a sticky-stage fixture: the film scrubs across the
+  whole track while the stage is stuck, and a resize mid-pin re-measures the
+  track, not the stuck video. Both failed on 2.17.1, on all three engines.
+  Two unit tests (the window comes from `triggerElement`; a zero-length window
+  warns). A new mutation, `video/trigger-element`, is caught by the first
+  browser test: 61 in all.
 
 ---
 

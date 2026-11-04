@@ -230,6 +230,7 @@ Keeps the original text in `aria-label`, hides split spans from assistive tech;
 | `once` | `boolean` | `false` |
 | `axis` | `'x' \| 'y'` | `'y'` |
 | `preload` | `'auto' \| 'metadata'` | `'auto'` |
+| `triggerElement` | `Element` | the video — set it to the track behind a sticky stage (2.18.0) |
 | `onReady`, `onComplete` | `() => void` | — |
 | `onProgress` | `(alpha) => void` | — |
 

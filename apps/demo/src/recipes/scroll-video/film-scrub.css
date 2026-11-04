@@ -1,0 +1,45 @@
+/* The track holds the scroll room: the stage stays stuck for its height minus
+   one screen, and the film runs exactly that long. */
+.film-track {
+  --ink: #ece8e1;
+  --paper: #121212;
+  --accent: #d0a15c;
+  position: relative;
+  height: 400vh;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.film-stage {
+  position: sticky;
+  top: 0;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 48px;
+  height: 100vh;
+  height: 100svh;
+  padding: 0 6vw;
+}
+.film-stage video { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; }
+
+.film-copy { display: grid; gap: 28px; margin: 0; padding: 0; list-style: none; }
+.film-copy li { opacity: 0.32; transition: opacity 0.3s ease; }
+.film-copy li[aria-current] { opacity: 1; }
+.film-n { font: 600 12px/1 ui-monospace, monospace; color: var(--accent); }
+.film-copy h3 { margin: 8px 0 6px; font: 600 24px/1.2 system-ui, sans-serif; }
+.film-copy p { max-width: 34ch; margin: 0; font: 400 16px/1.6 system-ui, sans-serif; }
+
+/* On a phone the stage still has to fit one screen: one chapter at a time. */
+@media (max-width: 720px) {
+  .film-stage { grid-template-columns: minmax(0, 1fr); align-content: center; gap: 20px; }
+  .film-copy li:not([aria-current]) { display: none; }
+}
+
+/* Reduced motion shows the film's last frame, so the chapters cannot be
+   scrolled through: show them all. */
+@media (prefers-reduced-motion: reduce) {
+  .film-copy li { opacity: 1; transition: none; }
+  .film-copy li:not([aria-current]) { display: block; }
+}

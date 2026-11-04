@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Stat row that counts up on scroll</title>
+  <style>
+    body { margin: 0; background: #f3f1e8; }
+    .spacer { height: 100vh; }
+
+    .stats {
+      --ink: #1f2a1f;
+      --paper: #f3f1e8;
+      --line: rgba(31, 42, 31, 0.16);
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1px;
+      margin: 0;
+      border: 1px solid var(--line);
+      background: var(--line);
+    }
+    .stat {
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 10px;
+      padding: 28px 24px;
+      background: var(--paper);
+      color: var(--ink);
+    }
+    .stat dt { font: 400 14px/1.4 system-ui, sans-serif; opacity: 0.72; }
+    .stat dd { margin: 0; font: 600 clamp(28px, 3.6vw, 44px)/1 system-ui, sans-serif; letter-spacing: -0.02em; }
+
+    /* Every digit the same width, and the final value holding the space, so the
+       row never shifts while it counts. The unit follows the number. */
+    .stat-num {
+      display: inline-grid;
+      grid-auto-flow: column;
+      align-items: baseline;
+      font-variant-numeric: tabular-nums;
+    }
+    .stat-hold, .stat-run { grid-row: 1; grid-column: 1; }
+    .stat-hold { visibility: hidden; }
+    .stat-run { justify-self: end; }
+
+    /* Visually hidden, still read. */
+    .stat-sr {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      padding: 0;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 720px) {
+      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .stat { padding: 22px 18px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="spacer"></div>
+
+  <dl class="stats">
+    <div class="stat">
+      <dt>Trees planted</dt>
+      <dd>
+        <span class="stat-sr">1,284,500</span>
+        <span class="stat-num" aria-hidden="true"><span class="stat-hold">1,284,500</span><span class="stat-run" data-to="1284500" data-decimals="0">1,284,500</span></span>
+      </dd>
+    </div>
+    <div class="stat">
+      <dt>Hectares restored</dt>
+      <dd>
+        <span class="stat-sr">3,410 ha</span>
+        <span class="stat-num" aria-hidden="true"><span class="stat-hold">3,410</span><span class="stat-run" data-to="3410" data-decimals="0">3,410</span>&nbsp;ha</span>
+      </dd>
+    </div>
+    <div class="stat">
+      <dt>Carbon captured</dt>
+      <dd>
+        <span class="stat-sr">41.2k t</span>
+        <span class="stat-num" aria-hidden="true"><span class="stat-hold">41.2</span><span class="stat-run" data-to="41.2" data-decimals="1">41.2</span>k t</span>
+      </dd>
+    </div>
+    <div class="stat">
+      <dt>Still growing after three years</dt>
+      <dd>
+        <span class="stat-sr">86%</span>
+        <span class="stat-num" aria-hidden="true"><span class="stat-hold">86</span><span class="stat-run" data-to="86" data-decimals="0">86</span>%</span>
+      </dd>
+    </div>
+  </dl>
+
+  <div class="spacer"></div>
+
+  <script src="https://unpkg.com/svg-scroll-draw@2.18.0/dist/cdn/svg-scroll-draw.global.js"></script>
+  <script>
+    document.querySelectorAll('.stat-run').forEach((el) => {
+      const decimals = Number(el.dataset.decimals);
+      const nf = new Intl.NumberFormat('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+
+      SvgScrollDraw.scrollCounter(el, {
+        to: Number(el.dataset.to),
+        format: (n) => nf.format(n),
+        // Finish as the row comes fully into view — a point it reaches even
+        // at the very end of the page.
+        trigger: { start: 'top bottom', end: 'bottom 90%' },
+      });
+    });
+  </script>
+</body>
+</html>
