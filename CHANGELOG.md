@@ -288,6 +288,17 @@ All notable changes to `svg-scroll-draw` are documented here.
   which asks GitHub at most once an hour for everyone (ISR), so no
   visitor's browser calls GitHub.
 
+- **The logo example is a full recipe.** `/examples/logo-reveal` now builds
+  the effect in four steps — split the logo into outline and colour, draw only
+  the outline, set when and in what order, flood the colour at 100% — each
+  with its code and a figure the library draws at that stage. Then the
+  complete component beside the same file running, the same logo as one HTML
+  file with no build step, and five ways it goes wrong. The files are read
+  from `src/recipes/logo-reveal/` at build time, so the page lists exactly
+  what `scripts/test-recipes.mjs` runs in a browser (in CI): nothing drawn
+  before the scroll, staggered mid-way, drawn and coloured at the end, held on
+  the way back, and finished on load under reduced motion.
+
 ### CI
 
 - **One release run per tag at a time.** Re-pushing `v2.15.3` while its first
@@ -299,6 +310,26 @@ All notable changes to `svg-scroll-draw` are documented here.
   and the GitHub release out of step.
 - **The demo is linted in CI and in `npm run verify`**, with no warnings
   allowed, followed by `check-jsx-text` and `check-nav`.
+
+---
+
+## [2.17.1] — 2026-11-04
+
+### Fixed
+
+- **`once` no longer cancels `stagger`.** With both, every path drew as one:
+  a single held value was shared by all of them, so the first path's progress
+  was handed to the rest, and `onComplete` fired when the first path finished
+  rather than the last. Each path now holds its own progress. Found building
+  the logo recipe, where an outline drew all four strokes together; measured
+  in Chromium at 0.91 / 0.91 / 0.91 / 0.91 mid-scroll, and 0.91 / 0.82 / 0.71
+  / 0.56 with the fix — the same as without `once`. Autoplay was not affected.
+
+### Tests
+
+- Two unit tests (each path keeps its own window; `onComplete` waits for the
+  last path), both watched failing on 2.17.0. The recipe's browser check fails
+  on 2.17.0 too, on exactly this.
 
 ---
 

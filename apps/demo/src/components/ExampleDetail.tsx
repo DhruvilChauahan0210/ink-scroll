@@ -9,8 +9,16 @@ import { CopyCommand } from './home/CopyCommand';
 import { EXAMPLE_SEO } from '@/data/examples-seo';
 import { SHOWCASE } from '@/showcase';
 import { ShowcaseMedia, LiveButton } from '@/showcase/ShowcaseShot';
+import { Recipe } from './recipes/Recipe';
+import { RECIPES } from './recipes/recipes';
+import type { RecipeFiles } from '@/recipes/read';
 
-export function ExampleDetail({ slug }: { slug: string }) {
+/**
+ * `files` is set for an example that has a recipe (read from disk by the
+ * server page); the page then leads with the build and keeps the live site
+ * as "in a real site".
+ */
+export function ExampleDetail({ slug, files = null }: { slug: string; files?: RecipeFiles | null }) {
   const example = EXAMPLES.find((e) => e.id === slug);
   const seo = EXAMPLE_SEO[slug];
   if (!example || !seo) return null;
@@ -23,6 +31,7 @@ export function ExampleDetail({ slug }: { slug: string }) {
   const site = SHOWCASE[slug];
   const n = EXAMPLES.indexOf(example) + 1;
   const pad = (x: number) => String(x).padStart(2, '0');
+  const recipe = files ? RECIPES[slug] : undefined;
 
   return (
     <div className="examples ex-detail">
@@ -46,16 +55,18 @@ export function ExampleDetail({ slug }: { slug: string }) {
         </div>
       </header>
 
-      <div className="ex-list">
+      {recipe && files && <Recipe recipe={recipe} files={files} />}
+
+      <div className={recipe ? 'ex-list rc-site' : 'ex-list'}>
         <section className="ex-row" aria-labelledby="ex-code">
           <div className="ex-copy">
             <div className="tb">
               <span className="tb-n">{pad(n)}</span>
               <span className="tb-wrap">{example.tag}</span>
             </div>
-            <h2 id="ex-code" className="ex-h2">The code</h2>
+            <h2 id="ex-code" className="ex-h2">{recipe ? 'In a real site' : 'The code'}</h2>
             <p className="ex-desc">{example.description}</p>
-            <CodeBox file="Hero.tsx">{example.code}</CodeBox>
+            {!recipe && <CodeBox file="Hero.tsx">{example.code}</CodeBox>}
           </div>
           <div className="ex-plate">
             {site ? (

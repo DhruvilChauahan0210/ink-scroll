@@ -1,7 +1,7 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **2.17.0** — in the working tree, not yet committed or tagged (2.16.1 is the latest on npm, 2026-11-04)
-> Tests: **658 unit** across 34 suites · **206 browser tests** per engine (618 runs
+> Current version: **2.17.1** — in the working tree, not yet committed or tagged (2.17.0 is the latest on npm, 2026-11-04)
+> Tests: **660 unit** across 34 suites · **206 browser tests** per engine (618 runs
 > across Chromium/Firefox/WebKit) · **60 mutations**, each caught by the one test
 > named for it · **91.3% line coverage** (gate 90/90/82/82)
 > Bundle: **10.7 KB gzipped** (main entry as shipped files, chunks included; per-API entries from 0.2 KB) · zero runtime dependencies
@@ -49,7 +49,7 @@
 - [x] `scrollAnimateGroup` + `scrollAnimateSequence` + `scrollParallaxGroup` in `svg-scroll-draw/group`
 
 ### Testing
-- [x] 658 tests across 34 suites — `reactive` (the wrappers' option fingerprint and live callbacks), `directives` (the built files' "use client"), `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollText` (23)
+- [x] 660 tests across 34 suites — `reactive` (the wrappers' option fingerprint and live callbacks), `directives` (the built files' "use client"), `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollText` (23)
 - [x] Initial state fix — `createAnimateEngine` and `scrollCounter` now apply correct alpha immediately on init (no flash before IO fires)
 
 ### Browser tests (Phase 2, `packages/svg-scroll-draw/e2e`)
@@ -153,14 +153,21 @@ at all.
 - [x] Search titles and descriptions rewritten for `/docs`, `/vs-locomotive-scroll`, `/lenis-scroll-animation`, `/blog/scroll-pin-without-gsap` (page-one rankings, near-zero clicks)
 - [x] Sitemap `lastModified` from git for all 64 URLs, generated groups included (`npm run sitemap:dates`)
 
-### 2.17.0 — wrappers follow option changes (2026-11-04; not yet released)
+### 2.17.1 — once keeps the stagger, and the first recipe (2026-11-04; not yet released)
+
+- [x] `once` + `stagger`: each path holds its own progress (`frozenPath` in `core/engine.ts`); `onComplete` waits for the last path; two unit tests watched failing on 2.17.0
+- [x] `/examples/logo-reveal` is a full recipe — 4 steps with figures, the complete component running, one-file HTML, 5 pitfalls; files in `apps/demo/src/recipes/logo-reveal/`
+- [x] `apps/demo/scripts/test-recipes.mjs` runs each recipe's HTML file in Chromium (CI e2e job)
+- [ ] Released — waiting on the owner to push the `v2.17.1` tag
+
+### 2.17.0 — wrappers follow option changes (2026-11-04)
 
 - [x] React, Vue (+ Nuxt), Solid and Svelte rebuild the engine when an option really changes; equal options keep it; callbacks read live (`src/core/reactive.ts`: `optionsKey`, `liveFns`)
 - [x] Angular: `update(options)` on every `Ref` class for `ngOnChanges`, on a shared exported `EngineRef`
 - [x] Browser suite: option changes reach the engine on all six; a new equal re-render test keeps the same engine (206 per engine); Astro and the web component still read options once, pinned
 - [x] Mutation harness: the four wrapper anchors re-pointed at the new code, four new mutations (Solid and Angular option changes, React and Vue equal options); all 60 caught
 - [x] Docs: README (both), `/docs` framework sections, `/verify` limit, CHANGELOG, `/changelog`
-- [ ] Released — waiting on the owner to push the `v2.17.0` tag
+- [x] Released — tag `v2.17.0` on `d7b03b2`, published by `release.yml` with provenance (the first push of the tag landed on `44d6f6b`; its run stopped at the version check, as designed, and the tag was moved)
 
 ### 2.16.1 — Server Components render the components (2026-11-04)
 

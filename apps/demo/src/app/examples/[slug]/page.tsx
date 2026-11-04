@@ -5,6 +5,8 @@ import { ExampleDetail } from '@/components/ExampleDetail';
 import { SiteShell } from '@/components/site/SiteShell';
 import { EXAMPLE_SEO, SEO_SLUGS } from '@/data/examples-seo';
 import { jsonLd as serialiseJsonLd } from '@/lib/json-ld';
+import { readRecipeFiles } from '@/recipes/read';
+import { RECIPES } from '@/components/recipes/recipes';
 
 const SITE_URL = 'https://svg-scroll-draw.vercel.app';
 
@@ -54,6 +56,8 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   if (!seo) notFound();
 
   const url = `${SITE_URL}/examples/${slug}`;
+  const files = readRecipeFiles(slug);
+  const updated = files ? RECIPES[slug]?.updated : undefined;
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -64,7 +68,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
         description: seo.description,
         url,
         datePublished: '2026-08-15',
-        dateModified: '2026-08-15',
+        dateModified: updated ?? '2026-08-15',
         author: { '@type': 'Person', name: 'Dhruvil Chauhan', url: 'https://github.com/DhruvilChauahan0210' },
         publisher: { '@type': 'Organization', name: 'svg-scroll-draw', url: SITE_URL },
         mainEntityOfPage: { '@type': 'WebPage', '@id': url },
@@ -84,7 +88,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serialiseJsonLd(jsonLd) }} />
       <SiteShell active="/examples" kicker="examples / your turn">
-        <ExampleDetail slug={slug} />
+        <ExampleDetail slug={slug} files={files} />
       </SiteShell>
     </>
   );

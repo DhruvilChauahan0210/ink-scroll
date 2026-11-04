@@ -548,6 +548,37 @@ describe('createEngine — once', () => {
 
     instance.destroy();
   });
+
+  // One held value was shared by every path, so the first path's progress was
+  // handed to the rest and `once` cancelled `stagger` (found building the logo
+  // recipe: a logo with both drew all its strokes together).
+  it('keeps the stagger: each path holds its own progress', () => {
+    const first = makePath();
+    const second = makePath();
+    createEngine(makeContainer([first, second]), { once: true, stagger: 0.2 });
+
+    // tStart -800, tEnd 500, range 1300; the second window starts 260 later.
+    vi.stubGlobal('scrollY', 0);
+    FakeIO.instances[0].trigger(true);
+    raf.tick();
+
+    expect(parseFloat(first.style.strokeDashoffset)).toBeCloseTo(100 * (1 - 800 / 1300), 1);
+    expect(parseFloat(second.style.strokeDashoffset)).toBeCloseTo(100 * (1 - 540 / 1300), 1);
+  });
+
+  it('fires onComplete when the last staggered path is done, not the first', () => {
+    const onComplete = vi.fn();
+    createEngine(makeContainer([makePath(), makePath()]), { once: true, stagger: 0.2, onComplete });
+
+    vi.stubGlobal('scrollY', 500); // the first path is done, the second at 0.8
+    FakeIO.instances[0].trigger(true);
+    raf.tick();
+    expect(onComplete).not.toHaveBeenCalled();
+
+    vi.stubGlobal('scrollY', 800); // both done
+    raf.tick();
+    expect(onComplete).toHaveBeenCalledTimes(1);
+  });
 });
 
 // ── repeat ───────────────────────────────────────────────────────────────────

@@ -55,6 +55,15 @@ const KINDS: { k: Kind; label: string }[] = [
  */
 const RELEASES: Release[] = [
   {
+    version: '2.17.1',
+    title: 'once keeps the stagger',
+    date: '2026-11-04',
+    items: [
+      { type: 'fix', text: 'With once and stagger together, every path drew as one and onComplete fired after the first: a single held value was shared by all paths. Each path now holds its own progress.' },
+      { type: 'site', text: 'The logo example is a full recipe: four steps with a figure each, the complete component beside it running, the same logo as one HTML file, and five ways it goes wrong. The HTML file is run in a browser in CI.' },
+    ],
+  },
+  {
     version: '2.17.0',
     title: 'Wrappers follow option changes',
     date: '2026-11-04',

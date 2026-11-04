@@ -96,6 +96,11 @@ jobs:
         run: npm run test:e2e
         working-directory: packages/svg-scroll-draw
 
+      # Each site recipe's paste-able HTML file, run against the same dist/:
+      # a listing nobody ran is the easiest thing on the site to get wrong.
+      - name: Recipe files work in a browser
+        run: node apps/demo/scripts/test-recipes.mjs
+
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

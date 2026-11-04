@@ -1,0 +1,29 @@
+.logo {
+  --ink: #2a1b12;
+  --paper: #f4ede3;
+  --accent: #c4572b;
+  max-width: 240px;
+  margin: 0 auto;
+}
+.logo svg { display: block; width: 100%; height: auto; overflow: visible; }
+
+/* The outline: stroked and never filled — a stroke is what gets drawn. */
+.logo-line {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: stroke 0.5s ease;
+}
+.logo-inner { stroke-width: 1; }
+
+/* The colour: present from the start, invisible until the outline finishes. */
+.logo-fill { stroke: none; opacity: 0; transition: opacity 0.7s ease; }
+.logo-disc { fill: var(--ink); }
+.logo-bean-fill { fill: var(--accent); transition-delay: 0.15s; }
+
+.is-inked .logo-fill { opacity: 1; }
+.is-inked .logo-inner,
+.is-inked .logo-crease { stroke: var(--paper); }
+.is-inked .logo-bean { stroke: var(--accent); }

@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Logo reveal on scroll</title>
+  <style>
+    body { margin: 0; background: #f4ede3; }
+    .spacer { height: 100vh; }
+
+    .logo {
+      --ink: #2a1b12;
+      --paper: #f4ede3;
+      --accent: #c4572b;
+      max-width: 240px;
+      margin: 0 auto;
+    }
+    .logo svg { display: block; width: 100%; height: auto; overflow: visible; }
+
+    /* The outline: stroked and never filled — a stroke is what gets drawn. */
+    .logo-line {
+      fill: none;
+      stroke: var(--ink);
+      stroke-width: 2.4;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: stroke 0.5s ease;
+    }
+    .logo-inner { stroke-width: 1; }
+
+    /* The colour: present from the start, invisible until the outline finishes. */
+    .logo-fill { stroke: none; opacity: 0; transition: opacity 0.7s ease; }
+    .logo-disc { fill: var(--ink); }
+    .logo-bean-fill { fill: var(--accent); transition-delay: 0.15s; }
+
+    .is-inked .logo-fill { opacity: 1; }
+    .is-inked .logo-inner,
+    .is-inked .logo-crease { stroke: var(--paper); }
+    .is-inked .logo-bean { stroke: var(--accent); }
+  </style>
+</head>
+<body>
+  <div class="spacer"></div>
+
+  <div class="logo" id="logo">
+    <svg viewBox="0 0 200 200" role="img" aria-label="Ferrow Coffee Roasters">
+      <!-- The colour: in place from the start, hidden until the outline is done. -->
+      <path class="logo-fill logo-disc" d="M 100 30 A 70 70 0 1 1 100 170 A 70 70 0 1 1 100 30" />
+      <path class="logo-fill logo-bean-fill" d="M 100 58 C 124 58 132 84 130 104 C 128 126 114 142 100 142 C 76 142 68 116 70 96 C 72 74 86 58 100 58 Z" />
+
+      <!-- The outline: what the library draws, in this order. -->
+      <path class="logo-line logo-outer" d="M 100 14 A 86 86 0 1 1 100 186 A 86 86 0 1 1 100 14" />
+      <path class="logo-line logo-inner" d="M 100 30 A 70 70 0 1 1 100 170 A 70 70 0 1 1 100 30" />
+      <path class="logo-line logo-bean" d="M 100 58 C 124 58 132 84 130 104 C 128 126 114 142 100 142 C 76 142 68 116 70 96 C 72 74 86 58 100 58 Z" />
+      <path class="logo-line logo-crease" d="M 101 60 C 86 84 116 114 99 140" />
+    </svg>
+  </div>
+
+  <div class="spacer"></div>
+
+  <script src="https://unpkg.com/svg-scroll-draw@2.17.1/dist/cdn/svg-scroll-draw.global.js"></script>
+  <script>
+    const logo = document.getElementById('logo');
+
+    SvgScrollDraw.scrollDraw(logo, {
+      selector: '.logo-line',
+      trigger: { start: 'top 85%', end: 'top 35%' },
+      easing: 'ease-out',
+      stagger: 0.12,
+      once: true,
+      onComplete: () => logo.classList.add('is-inked'),
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,112 @@
+/* A recipe on an example's page: steps with a figure each, the complete files,
+   where it goes wrong. Steps, rail and questions reuse the guides' classes
+   (guides.css) so a recipe reads like a guide. Scoped `.site .rc`. */
+
+.site .rc-sec {
+  padding: clamp(48px, 6vw, 96px) max(var(--gutter), calc((100% - 1560px) / 2));
+  border-top: 1px solid var(--line);
+}
+.site .rc-sec > .ex-h2 { margin-bottom: clamp(28px, 3vw, 44px); }
+
+/* ── Steps: copy and code, with the stage's figure beside them ── */
+.site .rc-step { display: grid; gap: 24px; }
+@media (min-width: 1100px) {
+  .site .rc-step { grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); gap: clamp(32px, 3.4vw, 56px); align-items: start; }
+}
+.site .rc-step-copy { min-width: 0; }
+.site .rc-step-copy .code-box { margin-top: 4px; }
+.site .rc-note {
+  margin: 16px 0 0;
+  padding: 12px 14px;
+  border-left: 2px solid var(--accent);
+  background: var(--panel);
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--fg-2);
+}
+.site .rc-c { font: 400 0.88em/1 var(--mono); color: var(--fg); overflow-wrap: anywhere; }
+
+.site .rc-fig { margin: 0; min-width: 0; border: 1px solid var(--line-2); }
+.site .rc-fig-cap {
+  display: flex;
+  gap: 14px;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--line-2);
+  font: 500 10.5px/1 var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+.site .rc-fig-n { color: var(--fg); }
+.site .rc-fig-body { padding: clamp(18px, 2.4vw, 28px); background: var(--panel); }
+
+/* ── The figures' own drawing: pencil is planned, ink is drawn ── */
+.site .rf-svg { display: block; width: 100%; height: auto; overflow: visible; }
+.site .rf-ink { fill: none; stroke: var(--fg); stroke-linecap: round; stroke-linejoin: round; }
+.site .rf-hatched { fill: url(#rf-hatch); stroke: none; }
+.site .rf-hatch-line { stroke: var(--fg-3); stroke-width: 1; }
+.site .rf-disc { fill: var(--fg); }
+.site .rf-beanfill { fill: var(--accent); }
+.site .rf-k { margin: 12px 0 0; font: 500 10.5px/1.5 var(--mono); letter-spacing: 0.04em; color: var(--fg-3); text-align: center; }
+.site .rf-wide { text-align: left; grid-column: 1 / -1; }
+
+.site .rf-pair { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 12px; }
+.site .rf-cell { min-width: 0; max-width: 170px; justify-self: center; width: 100%; }
+.site .rf-plus { font: 300 22px/1 var(--mono); color: var(--fg-3); }
+
+.site .rf-solo { display: grid; justify-items: center; gap: 14px; }
+.site .rf-solo > div:first-child { width: 100%; max-width: 200px; }
+.site .rf-legend { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; font: 500 11px/1.5 var(--mono); color: var(--fg-2); }
+.site .rf-legend li { display: flex; align-items: center; gap: 10px; }
+.site .rf-legend code { color: var(--fg); }
+.site .rf-sw { width: 22px; height: 0; border-top: 2px solid var(--fg); flex: none; }
+.site .rf-sw-hatch {
+  height: 12px;
+  border: 0;
+  background: repeating-linear-gradient(-45deg, var(--fg-3) 0 1px, transparent 1px 5px);
+}
+
+/* Step 3 — the emblem and the window chart share the trigger and the top. */
+.site .rf-timing { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: 18px; align-items: start; }
+/* On a phone the chart needs the width; the emblem is in every other figure. */
+@media (max-width: 559px) {
+  .site .rf-timing { grid-template-columns: minmax(0, 1fr); }
+  .site .rf-timing > :first-child { display: none; }
+}
+.site .rf-chart { display: block; width: 100%; height: auto; overflow: visible; }
+.site .rf-axis { stroke: var(--fg-3); stroke-width: 1; }
+.site .rf-tick { stroke: var(--line-2); stroke-width: 1; stroke-dasharray: 2 3; }
+.site .rf-slot { stroke: var(--fg-3); stroke-width: 1; stroke-dasharray: 3 4; }
+.site .rf-bar { fill: none; stroke: var(--fg); stroke-width: 6; stroke-linecap: butt; }
+.site .rf-t { font: 500 9px var(--mono); letter-spacing: 0.06em; fill: var(--fg-3); }
+
+/* Step 4 — the colour waits for onComplete, as in the recipe's own CSS. */
+.site .rf-flood { width: 100%; max-width: 200px; }
+.site .rf-fills path { opacity: 0; transition: opacity 0.7s ease; }
+.site .rf-fills .rf-beanfill { transition-delay: 0.15s; }
+.site .rf-flood .rf-ink { transition: stroke 0.5s ease; }
+.site .rf-flood.is-inked .rf-fills path { opacity: 1; }
+.site .rf-flood.is-inked .rf-inner-ring,
+.site .rf-flood.is-inked .rf-crease { stroke: var(--panel); }
+.site .rf-flood.is-inked .rf-bean { stroke: var(--accent); }
+.site .rf-state { margin: 0; min-height: 1.5em; font: 500 11px/1.5 var(--mono); color: var(--fg-2); }
+.site .rf-state code { color: var(--accent); }
+
+/* ── The complete files beside the file running ── */
+.site .rc-files { display: grid; gap: clamp(24px, 3vw, 44px); }
+@media (min-width: 1100px) {
+  .site .rc-files { grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr); align-items: start; }
+  .site .rc-files-plate { position: sticky; top: calc(var(--nav-h) + 32px); }
+}
+.site .rc-files-code { min-width: 0; display: grid; gap: 16px; }
+.site .rc-files-code > .gd-p { margin: 0; }
+.site .rc-files-plate { min-width: 0; }
+.site .rc-files-plate .plate-body { background: #f4ede3; min-height: 360px; }
+.site .rc-h3 { margin-top: clamp(40px, 5vw, 64px); }
+
+@media (prefers-reduced-motion: reduce) {
+  .site .rf-fills path, .site .rf-flood .rf-ink { transition: none; }
+}
+
+/* The live site card after a recipe gets its own rule above it. */
+.site .rc-site { border-top: 1px solid var(--line); }

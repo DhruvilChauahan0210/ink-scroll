@@ -253,6 +253,13 @@ export function createEngine(
   let rafId         = 0;
   let isVisible     = false;
   let frozenAlpha   = -1;
+  /**
+   * With `once`, how far each path has got. Per path because `stagger` gives
+   * each its own window: a single shared value handed the first path's progress
+   * to every later one, so `once` quietly cancelled the stagger. `frozenAlpha`
+   * is the floor under them — what `seek()` sets — and clip mode's own value.
+   */
+  let frozenPath: number[] = [];
   let prevScroll    = -1;
   let paused        = false;
   let currentAlpha  = 0;
@@ -882,8 +889,7 @@ export function createEngine(
       let alpha = easeFn(computeProgress(currentScroll, tStart + offset, tEnd + offset, effectiveSpeed));
 
       if (once && !autoReverse) {
-        frozenAlpha = Math.max(frozenAlpha, alpha);
-        alpha = frozenAlpha;
+        alpha = frozenPath[i] = Math.max(frozenPath[i] ?? frozenAlpha, alpha);
       }
 
       currentAlpha = alpha;
@@ -944,6 +950,7 @@ export function createEngine(
         repeatCount++;
         repeatTimer = setTimeout(() => {
           frozenAlpha = -1;
+          frozenPath  = [];
           started     = false;
           completed   = false;
           firedWaypoints.clear();
@@ -1064,6 +1071,7 @@ export function createEngine(
 
     replay() {
       frozenAlpha  = -1;
+      frozenPath   = [];
       prevScroll   = -1;
       prevVelScroll = -1;
       started      = false;
@@ -1095,6 +1103,7 @@ export function createEngine(
       const p = Math.min(1, Math.max(0, progress));
       currentAlpha = p;
       frozenAlpha  = p;
+      frozenPath   = [];
       paused       = true;
       stopLoop();
       applyAlpha(p, direction);
