@@ -5,8 +5,9 @@
  * what is under test is the wrapper's effect lifecycle, not the syntax.
  *
  * Options are deliberately passed as props on the components, which is the only
- * way a React user can pass them — and `useEffect(..., [])` means they are read
- * once. `reactiveOptions: false` states that; the spec checks it.
+ * way a React user can pass them. A changed option rebuilds the engine
+ * (`useEngine`, keyed on the options), so `reactiveOptions: true`; the spec
+ * checks that a new speed reaches the running draw.
  */
 import React from 'react';
 import { createRoot } from 'react-dom/client';
@@ -28,17 +29,23 @@ const svg = () =>
 
 let root = null;
 let applySpeed = null;
+let applyTick = null;
 
 function App() {
   const [speed, setSpeed] = React.useState(1);
+  // Bumped by rerender(): App renders again, so both components get fresh props.
+  const [, setTick] = React.useState(0);
   applySpeed = setSpeed;
+  applyTick = setTick;
 
   return h(
     React.Fragment,
     null,
     h(
       ScrollDraw,
-      { className: 'fw-draw', easing: 'linear', native: false, speed },
+      // A fresh arrow every render, as most React code passes one: it must not
+      // count as a changed option.
+      { className: 'fw-draw', easing: 'linear', native: false, speed, onProgress: () => {} },
       svg(),
     ),
     h(
@@ -50,7 +57,7 @@ function App() {
 }
 
 export const api = {
-  reactiveOptions: false,
+  reactiveOptions: true,
 
   mount() {
     root = createRoot(document.querySelector('#root'));
@@ -61,10 +68,15 @@ export const api = {
   unmount() {
     root?.unmount();
     root = null;
-    applySpeed = null;
+    applySpeed = applyTick = null;
   },
 
   setSpeed(v) {
     applySpeed?.(v);
+  },
+
+  rerender() {
+    const bump = () => applyTick?.((t) => t + 1);
+    React.act ? React.act(bump) : bump();
   },
 };

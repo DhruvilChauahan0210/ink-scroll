@@ -302,6 +302,56 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ---
 
+## [2.17.0] — 2026-11-04
+
+### Changed
+
+- **Framework wrappers follow option changes.** The React and Vue components
+  (and so Nuxt's), Vue composables given a getter or a ref, Solid hooks given
+  an accessor or a component's props, and the Svelte actions now rebuild the
+  animation when an option changes: a new `speed`, `easing` or `trigger`
+  reaches the running engine. Before, React, Vue and Solid read their options
+  once on mount, so a changed prop did nothing. The rebuild happens only when
+  an option really changed: options are compared by value, so an inline
+  `trigger={{ start: 'top 80%' }}` recreated on every render, or an object
+  Svelte passes again with the same values, keeps the running animation.
+  Callbacks and custom easings are read live, so a new `onProgress` arrow
+  each render takes effect without a rebuild. Svelte's `update()` used to
+  rebuild on every call; it now skips equal options too. A plain object
+  passed to a Vue composable or Solid hook is still read once.
+
+### Added
+
+- **`update(options)` on every Angular `Ref` class**, for `ngOnChanges`: it
+  rebuilds the engine when an option changed and does nothing for equal
+  options or before `init()`. The classes share an exported `EngineRef` base.
+- Types for live options: `MaybeRefOrGetter` from `svg-scroll-draw/vue`,
+  `MaybeAccessor` from `svg-scroll-draw/solid`.
+
+### Size
+
+- Each framework entry grows by about 0.2 KB gzipped for the comparison
+  (React 12.0, Vue 12.1, Nuxt 12.2, Svelte, Solid and Angular 11.5). The main
+  entry (10.7 KB) and the per-API entries are unchanged.
+
+### Tests
+
+- **The browser suite checks both halves on every engine.** A changed `speed`
+  reaches the running draw in React, Vue, Nuxt, Solid, Svelte and Angular
+  (Astro and the web component still read their options once, and the suite
+  pins that too). A new test re-renders each live wrapper through its own
+  framework with equal options and requires the same engine, counted by
+  `observe()` calls; a real option change is its positive control.
+- `reactive.test.ts` covers the option fingerprint and the live callbacks;
+  the framework unit suite covers Solid's effect re-runs, Angular's `update()`
+  and Svelte's equal-options `update()`.
+- **The mutation harness has 60 behaviours.** The four wrapper anchors point
+  at the new code, and four new mutations break the new behaviour — Solid and
+  Angular ignoring an option change, React rebuilding on every render, Vue
+  comparing options by identity. Each was watched failing its test.
+
+---
+
 ## [2.16.1] — 2026-11-04
 
 ### Fixed

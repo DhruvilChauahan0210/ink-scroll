@@ -94,9 +94,9 @@ months, 81% to the homepage; `/vs-gsap` at position 11 with 425 impressions.
    CTR on `/docs`, `/vs-locomotive-scroll`, `/lenis-scroll-animation` and the
    scroll-pin post, whose titles changed on 2026-11-04.
    Watch GitHub stars after the homepage finale (shipped 2026-11-04).
-3. More blocks; one shared nav component so every page links `/blocks`.
-4. Shared ESM chunks between entries (see ROADMAP) — 8.6 KB vs 6.4 KB when an app
-   imports main + `/react`.
+3. Release 2.17.0 (wrappers follow option changes): the owner pushes the
+   `v2.17.0` tag once it is committed and pushed.
+4. Site content: real-world recipes, more distinct framework pages, more blocks.
 5. Fold `firefox-native` into `firefox` once Playwright bundles Firefox 159+.
 
 ---
@@ -231,18 +231,13 @@ native-CSS section now names the four easings the fast path accepts and says the
 are emitted as this library's curves rather than the CSS keywords. What is
 missing is the *demonstration*, which is what `/verify` is for.
 
-### 4. Option reactivity across the wrappers — a decision, not a bug
-The framework spec pins today's behaviour: only the **Svelte** actions re-create
-the engine when their options change, because Svelte calls `update()` for you.
-React, Vue, Solid and Angular all read their options once on mount
-(`useEffect(…, [])`, `onMounted`, `onMount`, `init()`), so changing a prop
-afterwards does nothing at all.
-
-That is defensible — re-creating on every render would thrash, since an inline
-options object is a new identity each time — but it is undocumented and
-surprising. Either document it per wrapper, or give the components a deliberate
-`key`-style opt-in. Worth deciding before the migration guides are written, since
-they will show prop-driven examples.
+### 4. Option reactivity across the wrappers — done (2.17.0)
+Decided "re-create on change". React, Vue (+ Nuxt), Solid and Svelte rebuild the
+engine when an option really changes and keep it for equal options; Angular has
+`update()` for `ngOnChanges`. The comparison is `optionsKey` in
+`src/core/reactive.ts` (values compared, functions present/absent, elements by
+identity) and callbacks are read live (`liveFns`). The browser suite checks both
+halves. Left: Astro and `<scroll-draw>` still read their options once.
 
 ### Known browser differences, pinned rather than fixed
 - Past the end of a `view()` range, Chromium and WebKit hold the animation's end

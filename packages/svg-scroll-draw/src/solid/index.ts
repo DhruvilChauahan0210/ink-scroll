@@ -1,5 +1,6 @@
-import { onMount, onCleanup } from 'solid-js';
+import { createEffect, onCleanup, untrack } from 'solid-js';
 import { createEngine } from '../core/engine';
+import { liveFns, optionsKey } from '../core/reactive';
 import { createAnimateEngine } from '../animate/engine';
 import { scrollCounter } from '../counter';
 import { scrollVideo } from '../video';
@@ -12,10 +13,56 @@ import type { ScrollTextOptions } from '../text';
 
 export type { ScrollDrawOptions, ScrollAnimateOptions, ScrollCounterOptions, ScrollVideoOptions, ScrollTextOptions };
 
+/** Options as a plain object, or an accessor that keeps them live. */
+export type MaybeAccessor<T> = T | (() => T);
+
+// ── The engine behind each hook ──────────────────────────────────────────────
+
+/**
+ * Creates the engine once the ref is set and rebuilds it when an option
+ * changes. The effect reads every option — through an accessor, or through
+ * Solid props' getters — so it subscribes to them; the fingerprint
+ * (`optionsKey`) decides whether a change is real. The engine is built
+ * untracked, so nothing it reads while starting becomes a dependency.
+ */
+function bind<E extends Element, O extends object>(
+  options: MaybeAccessor<O>,
+  create: (el: E, options: O) => ScrollDrawInstance,
+) {
+  let el: E | undefined;
+  let instance: ScrollDrawInstance | undefined;
+  let key: string | undefined;
+  let latest: O;
+
+  createEffect(() => {
+    latest = typeof options === 'function' ? (options as () => O)() : options;
+    const next = optionsKey(latest);
+    if (!el || next === key) return;
+    key = next;
+    untrack(() => {
+      instance?.destroy();
+      instance = create(el!, liveFns(latest, () => latest));
+    });
+  });
+
+  onCleanup(() => {
+    instance?.destroy();
+    instance = key = undefined;
+  });
+
+  return {
+    ref: (node: E) => { el = node; },
+    getInstance: () => instance,
+  };
+}
+
 // ── useScrollDraw ─────────────────────────────────────────────────────────────
 
 /**
  * SolidJS hook — returns a ref setter to attach to any container element.
+ * Options can be an accessor (or a component's props) to keep them live:
+ * `useScrollDraw(() => ({ speed: speed() }))` rebuilds the draw when the
+ * signal changes. A plain object is read once.
  *
  * @example
  * import { useScrollDraw } from 'svg-scroll-draw/solid';
@@ -25,20 +72,8 @@ export type { ScrollDrawOptions, ScrollAnimateOptions, ScrollCounterOptions, Scr
  *   return <div ref={ref}><svg>...</svg></div>;
  * }
  */
-export function useScrollDraw(options: ScrollDrawOptions = {}) {
-  let el: HTMLElement | undefined;
-  let instance: ScrollDrawInstance | undefined;
-
-  onMount(() => {
-    if (!el) return;
-    instance = createEngine(el, options);
-  });
-
-  onCleanup(() => {
-    instance?.destroy();
-  });
-
-  return (node: HTMLElement) => { el = node; };
+export function useScrollDraw(options: MaybeAccessor<ScrollDrawOptions> = {}) {
+  return bind<HTMLElement, ScrollDrawOptions>(options, createEngine).ref;
 }
 
 /**
@@ -50,24 +85,8 @@ export function useScrollDraw(options: ScrollDrawOptions = {}) {
  * <div ref={ref}><svg>...</svg></div>
  * <button onClick={() => getInstance()?.replay()}>Replay</button>
  */
-export function createScrollDraw(options: ScrollDrawOptions = {}) {
-  let el: HTMLElement | undefined;
-  let instance: ScrollDrawInstance | undefined;
-
-  onMount(() => {
-    if (!el) return;
-    instance = createEngine(el, options);
-  });
-
-  onCleanup(() => {
-    instance?.destroy();
-    instance = undefined;
-  });
-
-  return {
-    ref: (node: HTMLElement) => { el = node; },
-    getInstance: () => instance,
-  };
+export function createScrollDraw(options: MaybeAccessor<ScrollDrawOptions> = {}) {
+  return bind<HTMLElement, ScrollDrawOptions>(options, createEngine);
 }
 
 // ── useScrollAnimate ──────────────────────────────────────────────────────────
@@ -87,20 +106,8 @@ export function createScrollDraw(options: ScrollDrawOptions = {}) {
  *   return <div ref={ref}>...</div>;
  * }
  */
-export function useScrollAnimate(options: ScrollAnimateOptions) {
-  let el: HTMLElement | undefined;
-  let instance: ScrollDrawInstance | undefined;
-
-  onMount(() => {
-    if (!el) return;
-    instance = createAnimateEngine(el, options);
-  });
-
-  onCleanup(() => {
-    instance?.destroy();
-  });
-
-  return (node: HTMLElement) => { el = node; };
+export function useScrollAnimate(options: MaybeAccessor<ScrollAnimateOptions>) {
+  return bind<HTMLElement, ScrollAnimateOptions>(options, createAnimateEngine).ref;
 }
 
 /**
@@ -113,24 +120,8 @@ export function useScrollAnimate(options: ScrollAnimateOptions) {
  * <div ref={ref}>...</div>
  * <button onClick={() => getInstance()?.replay()}>Replay</button>
  */
-export function createScrollAnimate(options: ScrollAnimateOptions) {
-  let el: HTMLElement | undefined;
-  let instance: ScrollDrawInstance | undefined;
-
-  onMount(() => {
-    if (!el) return;
-    instance = createAnimateEngine(el, options);
-  });
-
-  onCleanup(() => {
-    instance?.destroy();
-    instance = undefined;
-  });
-
-  return {
-    ref: (node: HTMLElement) => { el = node; },
-    getInstance: () => instance,
-  };
+export function createScrollAnimate(options: MaybeAccessor<ScrollAnimateOptions>) {
+  return bind<HTMLElement, ScrollAnimateOptions>(options, createAnimateEngine);
 }
 
 // ── useScrollCounter ──────────────────────────────────────────────────────────
@@ -146,20 +137,8 @@ export function createScrollAnimate(options: ScrollAnimateOptions) {
  *   return <span ref={ref} />;
  * }
  */
-export function useScrollCounter(options: ScrollCounterOptions) {
-  let el: HTMLElement | undefined;
-  let instance: ScrollDrawInstance | undefined;
-
-  onMount(() => {
-    if (!el) return;
-    instance = scrollCounter(el, options);
-  });
-
-  onCleanup(() => {
-    instance?.destroy();
-  });
-
-  return (node: HTMLElement) => { el = node; };
+export function useScrollCounter(options: MaybeAccessor<ScrollCounterOptions>) {
+  return bind<HTMLElement, ScrollCounterOptions>(options, scrollCounter).ref;
 }
 
 /**
@@ -170,24 +149,8 @@ export function useScrollCounter(options: ScrollCounterOptions) {
  * <span ref={ref} />
  * <button onClick={() => getInstance()?.replay()}>Replay</button>
  */
-export function createScrollCounter(options: ScrollCounterOptions) {
-  let el: HTMLElement | undefined;
-  let instance: ScrollDrawInstance | undefined;
-
-  onMount(() => {
-    if (!el) return;
-    instance = scrollCounter(el, options);
-  });
-
-  onCleanup(() => {
-    instance?.destroy();
-    instance = undefined;
-  });
-
-  return {
-    ref: (node: HTMLElement) => { el = node; },
-    getInstance: () => instance,
-  };
+export function createScrollCounter(options: MaybeAccessor<ScrollCounterOptions>) {
+  return bind<HTMLElement, ScrollCounterOptions>(options, scrollCounter);
 }
 
 // ── useScrollVideo ────────────────────────────────────────────────────────────
@@ -203,20 +166,8 @@ export function createScrollCounter(options: ScrollCounterOptions) {
  *   return <video ref={ref} src="/hero.mp4" muted playsinline preload="auto" />;
  * }
  */
-export function useScrollVideo(options: ScrollVideoOptions = {}) {
-  let el: HTMLVideoElement | undefined;
-  let instance: ScrollDrawInstance | undefined;
-
-  onMount(() => {
-    if (!el) return;
-    instance = scrollVideo(el, options);
-  });
-
-  onCleanup(() => {
-    instance?.destroy();
-  });
-
-  return (node: HTMLVideoElement) => { el = node; };
+export function useScrollVideo(options: MaybeAccessor<ScrollVideoOptions> = {}) {
+  return bind<HTMLVideoElement, ScrollVideoOptions>(options, scrollVideo).ref;
 }
 
 /**
@@ -226,24 +177,8 @@ export function useScrollVideo(options: ScrollVideoOptions = {}) {
  * const { ref, getInstance } = createScrollVideo({ once: false });
  * <video ref={ref} src="/hero.mp4" muted playsinline preload="auto" />
  */
-export function createScrollVideo(options: ScrollVideoOptions = {}) {
-  let el: HTMLVideoElement | undefined;
-  let instance: ScrollDrawInstance | undefined;
-
-  onMount(() => {
-    if (!el) return;
-    instance = scrollVideo(el, options);
-  });
-
-  onCleanup(() => {
-    instance?.destroy();
-    instance = undefined;
-  });
-
-  return {
-    ref: (node: HTMLVideoElement) => { el = node; },
-    getInstance: () => instance,
-  };
+export function createScrollVideo(options: MaybeAccessor<ScrollVideoOptions> = {}) {
+  return bind<HTMLVideoElement, ScrollVideoOptions>(options, scrollVideo);
 }
 
 // ── useScrollText ─────────────────────────────────────────────────────────────
@@ -259,20 +194,8 @@ export function createScrollVideo(options: ScrollVideoOptions = {}) {
  *   return <h2 ref={ref}>Animate on scroll.</h2>;
  * }
  */
-export function useScrollText(options: ScrollTextOptions = {}) {
-  let el: HTMLElement | undefined;
-  let instance: ScrollDrawInstance | undefined;
-
-  onMount(() => {
-    if (!el) return;
-    instance = scrollText(el, options);
-  });
-
-  onCleanup(() => {
-    instance?.destroy();
-  });
-
-  return (node: HTMLElement) => { el = node; };
+export function useScrollText(options: MaybeAccessor<ScrollTextOptions> = {}) {
+  return bind<HTMLElement, ScrollTextOptions>(options, scrollText).ref;
 }
 
 /**
@@ -283,22 +206,6 @@ export function useScrollText(options: ScrollTextOptions = {}) {
  * <p ref={ref}>Hello world.</p>
  * <button onClick={() => getInstance()?.replay()}>Replay</button>
  */
-export function createScrollText(options: ScrollTextOptions = {}) {
-  let el: HTMLElement | undefined;
-  let instance: ScrollDrawInstance | undefined;
-
-  onMount(() => {
-    if (!el) return;
-    instance = scrollText(el, options);
-  });
-
-  onCleanup(() => {
-    instance?.destroy();
-    instance = undefined;
-  });
-
-  return {
-    ref: (node: HTMLElement) => { el = node; },
-    getInstance: () => instance,
-  };
+export function createScrollText(options: MaybeAccessor<ScrollTextOptions> = {}) {
+  return bind<HTMLElement, ScrollTextOptions>(options, scrollText);
 }

@@ -31,8 +31,8 @@
  * `use:scrollDraw={options}`, including `update()` when the parameters change
  * and `destroy()` when the element is removed.
  *
- * That also makes this the one wrapper where changing an option reaches the
- * running engine, because `update()` tears the engine down and builds a new one.
+ * Changing an option reaches the running engine, because `update()` tears the
+ * engine down and builds a new one.
  */
 import { scrollDraw, scrollAnimate } from '/dist/svelte/index.mjs';
 import { setupFramework, DRAW_SVG, DRAW_OPTIONS, ANIM_OPTIONS } from './_fw.mjs';
@@ -68,6 +68,13 @@ setupFramework({
   setSpeed(v) {
     speed = v;
     drawAction?.update({ ...DRAW_OPTIONS, speed });
+  },
+
+  // What Svelte does with an inline `use:scrollDraw={{ … }}` when anything in
+  // the expression changes: a new object with the same values.
+  rerender() {
+    drawAction?.update({ ...DRAW_OPTIONS, speed });
+    animAction?.update({ ...ANIM_OPTIONS });
   },
 });
 </script>

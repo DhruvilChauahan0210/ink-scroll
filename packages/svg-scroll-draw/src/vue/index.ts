@@ -1,5 +1,6 @@
-import { ref, onMounted, onUnmounted, defineComponent, h } from 'vue';
+import { ref, unref, watch, onMounted, onUnmounted, defineComponent, h, type Ref } from 'vue';
 import { createEngine } from '../core/engine';
+import { liveFns, optionsKey } from '../core/reactive';
 import { createAnimateEngine } from '../animate/engine';
 import { scrollCounter } from '../counter';
 import { scrollVideo } from '../video';
@@ -12,18 +13,49 @@ import type { ScrollTextOptions } from '../text';
 
 export type { ScrollDrawOptions, ScrollAnimateOptions, ScrollCounterOptions, ScrollVideoOptions, ScrollTextOptions };
 
+/** Options as a plain object, a ref, or a getter — the getter or ref keeps them live. */
+export type MaybeRefOrGetter<T> = T | Ref<T> | (() => T);
+
+const read = <T>(o: MaybeRefOrGetter<T>): T =>
+  typeof o === 'function' ? (o as () => T)() : unref(o);
+
+// ── The engine behind each composable and component ──────────────────────────
+
+/**
+ * Creates the engine on mount and rebuilds it when an option changes. Reading
+ * every option in the watcher subscribes to it; the fingerprint (`optionsKey`)
+ * decides whether the change is real, so an equal inline object passed again
+ * does not rebuild, and callbacks are read live (`liveFns`).
+ */
+function useEngine<E extends Element, O extends object>(
+  el: Ref<E | null>,
+  options: () => O,
+  create: (el: E, options: O) => { destroy(): void },
+): void {
+  let instance: { destroy(): void } | null = null;
+  let latest = options();
+  const start = () => {
+    instance?.destroy();
+    instance = el.value ? create(el.value, liveFns(latest, () => latest)) : null;
+  };
+  onMounted(start);
+  watch(() => optionsKey((latest = options())), start);
+  onUnmounted(() => {
+    instance?.destroy();
+    instance = null;
+  });
+}
+
 // ── ScrollDraw ────────────────────────────────────────────────────────────────
 
-/** Composable — attach to any container ref. */
-export function useScrollDraw(options: ScrollDrawOptions = {}) {
+/**
+ * Composable — attach the returned ref to any container. Pass a getter or a ref
+ * to keep options live: `useScrollDraw(() => ({ speed: speed.value }))` rebuilds
+ * the draw when `speed` changes. A plain object is read once.
+ */
+export function useScrollDraw(options: MaybeRefOrGetter<ScrollDrawOptions> = {}) {
   const containerRef = ref<HTMLElement | null>(null);
-
-  onMounted(() => {
-    if (!containerRef.value) return;
-    const instance = createEngine(containerRef.value, options);
-    onUnmounted(() => instance.destroy());
-  });
-
+  useEngine(containerRef, () => read(options), createEngine);
   return containerRef;
 }
 
@@ -47,8 +79,7 @@ export const ScrollDraw = defineComponent({
   setup(props, { slots }) {
     const containerRef = ref<HTMLElement | null>(null);
 
-    onMounted(() => {
-      if (!containerRef.value) return;
+    useEngine(containerRef, () => {
       const opts: ScrollDrawOptions = {};
       if (props.selector   != null) opts.selector   = props.selector;
       if (props.speed      != null) opts.speed      = props.speed;
@@ -62,9 +93,8 @@ export const ScrollDraw = defineComponent({
       if (props.onProgress != null) opts.onProgress = props.onProgress as ScrollDrawOptions['onProgress'];
       if (props.onStart    != null) opts.onStart    = props.onStart    as ScrollDrawOptions['onStart'];
       if (props.onComplete != null) opts.onComplete = props.onComplete as ScrollDrawOptions['onComplete'];
-      const instance = createEngine(containerRef.value, opts);
-      onUnmounted(() => instance.destroy());
-    });
+      return opts;
+    }, createEngine);
 
     return () => h('div', { ref: containerRef }, slots.default?.());
   },
@@ -83,15 +113,9 @@ export const ScrollDraw = defineComponent({
  * </script>
  * <div :ref="el">...</div>
  */
-export function useScrollAnimate(options: ScrollAnimateOptions) {
+export function useScrollAnimate(options: MaybeRefOrGetter<ScrollAnimateOptions>) {
   const containerRef = ref<HTMLElement | null>(null);
-
-  onMounted(() => {
-    if (!containerRef.value) return;
-    const instance = createAnimateEngine(containerRef.value, options);
-    onUnmounted(() => instance.destroy());
-  });
-
+  useEngine(containerRef, () => read(options), createAnimateEngine);
   return containerRef;
 }
 
@@ -110,12 +134,7 @@ export const ScrollAnimate = defineComponent({
   },
   setup(props, { slots }) {
     const containerRef = ref<HTMLElement | null>(null);
-
-    onMounted(() => {
-      if (!containerRef.value) return;
-      const instance = createAnimateEngine(containerRef.value, props.options);
-      onUnmounted(() => instance.destroy());
-    });
+    useEngine(containerRef, () => props.options, createAnimateEngine);
 
     return () => h('div', { ref: containerRef }, slots.default?.());
   },
@@ -133,15 +152,9 @@ export const ScrollAnimate = defineComponent({
  * </script>
  * <span :ref="el" />
  */
-export function useScrollCounter(options: ScrollCounterOptions) {
+export function useScrollCounter(options: MaybeRefOrGetter<ScrollCounterOptions>) {
   const counterRef = ref<HTMLElement | null>(null);
-
-  onMounted(() => {
-    if (!counterRef.value) return;
-    const instance = scrollCounter(counterRef.value, options);
-    onUnmounted(() => instance.destroy());
-  });
-
+  useEngine(counterRef, () => read(options), scrollCounter);
   return counterRef;
 }
 
@@ -166,8 +179,7 @@ export const ScrollCounter = defineComponent({
   setup(props) {
     const counterRef = ref<HTMLElement | null>(null);
 
-    onMounted(() => {
-      if (!counterRef.value) return;
+    useEngine(counterRef, () => {
       const opts: ScrollCounterOptions = { to: props.to };
       if (props.from       != null) opts.from       = props.from;
       if (props.format     != null) opts.format     = props.format as ScrollCounterOptions['format'];
@@ -176,9 +188,8 @@ export const ScrollCounter = defineComponent({
       if (props.once       != null) opts.once       = props.once;
       if (props.decimals   != null) opts.decimals   = props.decimals;
       if (props.onComplete != null) opts.onComplete = props.onComplete as ScrollCounterOptions['onComplete'];
-      const instance = scrollCounter(counterRef.value, opts);
-      onUnmounted(() => instance.destroy());
-    });
+      return opts;
+    }, scrollCounter);
 
     return () => h('span', { ref: counterRef });
   },
@@ -196,15 +207,9 @@ export const ScrollCounter = defineComponent({
  * </script>
  * <video :ref="vid" src="..." muted playsinline preload="auto" />
  */
-export function useScrollVideo(options: ScrollVideoOptions = {}) {
+export function useScrollVideo(options: MaybeRefOrGetter<ScrollVideoOptions> = {}) {
   const videoRef = ref<HTMLVideoElement | null>(null);
-
-  onMounted(() => {
-    if (!videoRef.value) return;
-    const instance = scrollVideo(videoRef.value, options);
-    onUnmounted(() => instance.destroy());
-  });
-
+  useEngine(videoRef, () => read(options), scrollVideo);
   return videoRef;
 }
 
@@ -225,12 +230,7 @@ export const ScrollVideo = defineComponent({
   },
   setup(props) {
     const videoRef = ref<HTMLVideoElement | null>(null);
-
-    onMounted(() => {
-      if (!videoRef.value) return;
-      const instance = scrollVideo(videoRef.value, props.options ?? {});
-      onUnmounted(() => instance.destroy());
-    });
+    useEngine(videoRef, () => props.options ?? {}, scrollVideo);
 
     return () => h('video', {
       ref: videoRef,
@@ -255,15 +255,9 @@ export const ScrollVideo = defineComponent({
  * </script>
  * <h2 :ref="el">Animate on scroll.</h2>
  */
-export function useScrollText(options: ScrollTextOptions = {}) {
+export function useScrollText(options: MaybeRefOrGetter<ScrollTextOptions> = {}) {
   const textRef = ref<HTMLElement | null>(null);
-
-  onMounted(() => {
-    if (!textRef.value) return;
-    const instance = scrollText(textRef.value, options);
-    onUnmounted(() => instance.destroy());
-  });
-
+  useEngine(textRef, () => read(options), scrollText);
   return textRef;
 }
 
@@ -283,12 +277,7 @@ export const ScrollText = defineComponent({
   },
   setup(props, { slots }) {
     const textRef = ref<HTMLElement | null>(null);
-
-    onMounted(() => {
-      if (!textRef.value) return;
-      const instance = scrollText(textRef.value, props.options ?? {});
-      onUnmounted(() => instance.destroy());
-    });
+    useEngine(textRef, () => props.options ?? {}, scrollText);
 
     return () => h(props.tag, { ref: textRef }, slots.default?.());
   },

@@ -34,8 +34,8 @@ Works in **React · Next.js · Vue 3 · Svelte · Solid · Angular · Nuxt · As
 - **30+ options** — easing, stagger, fade, stroke color/width lerp, fill opacity, clip reveal, morphTo, velocityScale, waypoints, callbacks, repeat, autoReverse, and more
 - **Group / Sequence / Timeline APIs** — animate multiple containers simultaneously, one-after-another, or on independent scroll windows with `loop` for auto-looping after scroll completion
 - **CSS custom property** — `--scroll-draw-progress` is set on every frame so you can drive any CSS animation without a callback
-- **642 tests across 33 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
-- **198 browser tests on top of those**, run against Chromium, Firefox and WebKit in CI. The unit suite runs in jsdom, where `getTotalLength` is stubbed and `IntersectionObserver` is faked — it can check the engine's arithmetic but nothing about real browser behaviour. Both counts are derived from the suites themselves and enforced in CI, so neither can quietly drift out of date
+- **658 tests across 34 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
+- **206 browser tests on top of those**, run against Chromium, Firefox and WebKit in CI. The unit suite runs in jsdom, where `getTotalLength` is stubbed and `IntersectionObserver` is faked — it can check the engine's arithmetic but nothing about real browser behaviour. Both counts are derived from the suites themselves and enforced in CI, so neither can quietly drift out of date
 
 ---
 
@@ -150,6 +150,10 @@ is marked `"use client"` (from 2.16.1). Options that are functions, such as `onP
 in a `'use client'` component of your own. A complete App Router project is in the
 [Next.js guide](https://svg-scroll-draw.vercel.app/nextjs-scroll-animation).
 
+Props are live: change `speed`, `easing` or a `trigger` and the component rebuilds its
+animation (from 2.17.0). A re-render with equal props — an inline `trigger={{ … }}`, a new
+`onProgress` arrow — keeps the running one.
+
 Need the progress value itself (to drive a label, a counter, your own styles)? Use
 [`useScrollDrawProgress`](#usescrolldrawprogress-react) — the React entry has no
 `useScrollDraw` hook; that name exists in the Vue and Solid entries.
@@ -176,6 +180,10 @@ import { useScrollDraw } from 'svg-scroll-draw/vue';
 const containerRef = useScrollDraw({ easing: 'ease-out', speed: 1.2 });
 ```
 
+Component props are live, and so are composable options passed as a getter or a ref —
+`useScrollDraw(() => ({ speed: speed.value }))` rebuilds the draw when `speed` changes. A
+plain object is read once. Equal options never rebuild.
+
 ### Svelte
 
 ```svelte
@@ -199,6 +207,9 @@ Or use `createScrollDraw` for instance access:
 <div use:action><svg>…</svg></div>
 <button on:click={() => getInstance()?.replay()}>Replay</button>
 ```
+
+Changing the parameters of `use:scrollDraw` rebuilds the draw; a new object with equal
+values (Svelte passes one whenever anything in the expression changes) does not.
 
 ### Solid.js
 
@@ -227,19 +238,28 @@ function HeroWithReplay() {
 }
 ```
 
+Pass an accessor, or a component's props, to keep options live:
+`useScrollDraw(() => ({ speed: speed() }))` rebuilds the draw when the signal changes. A
+plain object is read once.
+
 ### Angular
 
 ```ts
 import { ScrollDrawRef } from 'svg-scroll-draw/angular';
 
-export class HeroComponent implements AfterViewInit, OnDestroy {
+export class HeroComponent implements AfterViewInit, OnChanges, OnDestroy {
   @ViewChild('container') containerRef!: ElementRef<HTMLElement>;
+  @Input() speed = 1;
   private draw = new ScrollDrawRef();
 
   ngAfterViewInit() {
-    this.draw.init(this.containerRef.nativeElement, { easing: 'ease-out', once: true });
+    this.draw.init(this.containerRef.nativeElement, this.options());
   }
+  // Rebuilds only when an option really changed (from 2.17.0).
+  ngOnChanges() { this.draw.update(this.options()); }
   ngOnDestroy() { this.draw.destroy(); }
+
+  private options() { return { easing: 'ease-out', speed: this.speed, once: true }; }
 }
 ```
 
@@ -781,12 +801,12 @@ outgrows its budget.
 <!-- size-table:start -->
 | Entry point                          | Raw | Gzipped |
 |--------------------------------------|----:|--------:|
-| `svg-scroll-draw/nuxt`               | 37.9 KB | **12.0 KB** |
-| `svg-scroll-draw/vue`                | 37.7 KB | **11.9 KB** |
-| `svg-scroll-draw/react`              | 36.9 KB | **11.8 KB** |
-| `svg-scroll-draw/svelte`             | 35.3 KB | **11.3 KB** |
-| `svg-scroll-draw/solid`              | 35.4 KB | **11.3 KB** |
-| `svg-scroll-draw/angular`            | 36.1 KB | **11.3 KB** |
+| `svg-scroll-draw/nuxt`               | 37.9 KB | **12.2 KB** |
+| `svg-scroll-draw/vue`                | 37.7 KB | **12.1 KB** |
+| `svg-scroll-draw/react`              | 37.1 KB | **12.0 KB** |
+| `svg-scroll-draw/angular`            | 35.4 KB | **11.5 KB** |
+| `svg-scroll-draw/solid`              | 35.2 KB | **11.5 KB** |
+| `svg-scroll-draw/svelte`             | 35.6 KB | **11.5 KB** |
 | `svg-scroll-draw/astro`              | 33.0 KB | **10.8 KB** |
 | `svg-scroll-draw`                    | 32.0 KB | **10.7 KB** |
 | `dist/cdn/svg-scroll-draw.global.js` | 30.8 KB | **10.6 KB** |
@@ -813,7 +833,7 @@ outgrows its budget.
 | `svg-scroll-draw/pin`                | 3.2 KB | **1.4 KB** |
 | `svg-scroll-draw/lenis`              | 0.4 KB | **0.2 KB** |
 
-Entries share code through chunks instead of each carrying its own copy, so `svg-scroll-draw` + `svg-scroll-draw/react` together is **13.2 KB**, not 10.7 KB + 11.8 KB.
+Entries share code through chunks instead of each carrying its own copy, so `svg-scroll-draw` + `svg-scroll-draw/react` together is **13.4 KB**, not 10.7 KB + 12.0 KB.
 <!-- size-table:end -->
 
 The framework entries are larger because each re-exports the full API surface for that

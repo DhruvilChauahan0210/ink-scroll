@@ -41,7 +41,7 @@ type Geometry = {
   pathLength: number | null;
 };
 
-type Contract = { reactiveOptions: boolean; hasAnim: boolean };
+type Contract = { reactiveOptions: boolean; hasAnim: boolean; canRerender: boolean };
 
 const DRAW_START = 200;
 const DRAW_END = 1300;
@@ -159,11 +159,12 @@ for (const wrapper of WRAPPERS) {
      * Whether changing an option reaches the running engine, checked against
      * what the wrapper claims rather than against one framework's habits.
      *
-     * Only the Svelte actions re-create on a parameter change — Svelte calls
-     * `update()` for you. The component and hook wrappers read their options
-     * once on mount (`useEffect(…, [])`, `onMounted`, `onMount`), so changing a
-     * prop afterwards does nothing at all. That is a real limitation, and pinning
-     * it here means it cannot change by accident in either direction.
+     * React, Vue, Nuxt and Solid rebuild the engine when an option really
+     * changes (2.17.0; before that they read their options once on mount).
+     * Svelte's action and Angular's `update()` do the same when called — Svelte
+     * calls it for you, an Angular component from ngOnChanges. Astro and the web
+     * component still read their options once. Pinning each claim means none
+     * can change by accident in either direction.
      */
     test('option changes reach the engine only where the wrapper says they do', async ({
       page,
@@ -191,6 +192,39 @@ for (const wrapper of WRAPPERS) {
           'the wrapper claims options are read once, but the engine picked up a change',
         ).toBeCloseTo(0.5, 1);
       }
+    });
+
+    /**
+     * The other half of live options. A re-render that passes equal options —
+     * a fresh inline object, a new arrow function — must keep the running
+     * engine, or every unrelated state change restarts the animation. Counted
+     * by observe() calls, which go up each time an engine starts; the speed
+     * change at the end is the positive control that the count would move.
+     */
+    test('a re-render with equal options keeps the running engine', async ({ page }) => {
+      await openFixture(page, wrapper.fixture);
+      const contract = await call<Contract>(page, 'contract');
+      test.skip(
+        !contract.reactiveOptions || !contract.canRerender,
+        'options are read once here, or the fixture cannot re-render',
+      );
+
+      await scrollToY(page, 750);
+      const before = await call<number>(page, 'observeCalls');
+
+      await call(page, 'rerender');
+      await scrollToY(page, 750);
+      expect(await call<number>(page, 'observeCalls'), 'an equal re-render rebuilt the engine').toBe(
+        before,
+      );
+      expect((await read<Row>(page)).drawn).toBeCloseTo(0.5, 1);
+
+      await call(page, 'setSpeed', 2);
+      await scrollToY(page, 750);
+      expect(
+        await call<number>(page, 'observeCalls'),
+        'a real option change did not register as a new engine, so the count proves nothing',
+      ).toBeGreaterThan(before);
     });
   });
 }

@@ -5,16 +5,16 @@
  * components under test. `speed` is a declared prop on `<ScrollDraw>`, so this
  * exercises the framework's own prop path when the spec changes it.
  *
- * The component reads its options once in `onMounted`, so a prop change does not
- * reach the running engine — stated as `reactiveOptions: false` and checked by
- * the spec rather than assumed.
+ * The component watches its options and rebuilds the engine when one really
+ * changes, so a new `speed` reaches the running draw — stated as
+ * `reactiveOptions: true` and checked by the spec rather than assumed.
  *
  * `native` is not a declared prop of `<ScrollDraw>`, so the draw here may take
  * the native CSS fast path where the browser supports it. That is what a Vue
  * user gets, and it is why the fade below pins `native: false`: the leak
  * assertions need at least one engine that really runs a frame loop.
  */
-import { createApp, h, ref } from 'vue';
+import { createApp, h, nextTick, ref } from 'vue';
 import { ScrollDraw, ScrollAnimate } from '../../dist/vue/index.mjs';
 
 const svg = () =>
@@ -28,18 +28,21 @@ const svg = () =>
   ]);
 
 const speed = ref(1);
+const tick = ref(0);
 let app = null;
 
 const Root = {
   setup() {
     return () =>
-      h('div', null, [
+      h('div', { 'data-tick': tick.value }, [
         // `stagger` is set for one reason: it disqualifies the native CSS fast
         // path, so this component always runs the JS engine and the leak
         // assertion has a frame loop to detect. With a single path it changes
         // nothing about the drawing. `native` is not a declared prop of
         // <ScrollDraw>, so this is the only way to express it from a template.
-        h(ScrollDraw, { class: 'fw-draw', easing: 'linear', stagger: 0.01, speed: speed.value }, () => [svg()]),
+        // A fresh `onProgress` and a fresh slot function every render: neither
+        // may count as a changed option.
+        h(ScrollDraw, { class: 'fw-draw', easing: 'linear', stagger: 0.01, speed: speed.value, onProgress: () => {} }, () => [svg()]),
         h(ScrollAnimate, {
           class: 'fw-anim',
           options: { props: { opacity: [0, 1] }, easing: 'linear', native: false },
@@ -49,7 +52,7 @@ const Root = {
 };
 
 export const api = {
-  reactiveOptions: false,
+  reactiveOptions: true,
 
   mount() {
     speed.value = 1;
@@ -64,5 +67,10 @@ export const api = {
 
   setSpeed(v) {
     speed.value = v;
+  },
+
+  rerender() {
+    tick.value++;
+    return nextTick();
   },
 };

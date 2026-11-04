@@ -1,14 +1,17 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 // ── Solid mock — must be declared before the solid wrapper is imported ────────
-// Captures onMount / onCleanup callbacks so tests can fire them manually,
-// mirroring the real Solid component lifecycle.
+// Captures the hook's effect and cleanup so tests can fire them by hand. Solid
+// runs an effect after render, once refs are set — the moment onMount ran — and
+// again whenever something it read changes; calling mountCbs[0]() again stands
+// in for that re-run.
 const mountCbs:   (() => void)[] = [];
 const cleanupCbs: (() => void)[] = [];
 
 vi.mock('solid-js', () => ({
-  onMount:   vi.fn((fn: () => void) => { mountCbs.push(fn); }),
-  onCleanup: vi.fn((fn: () => void) => { cleanupCbs.push(fn); }),
+  createEffect: vi.fn((fn: () => void) => { mountCbs.push(fn); }),
+  onCleanup:    vi.fn((fn: () => void) => { cleanupCbs.push(fn); }),
+  untrack:      <T,>(fn: () => T): T => fn(),
 }));
 
 import { ScrollDrawRef } from '../angular/index';
@@ -156,6 +159,40 @@ describe('ScrollDrawRef (Angular)', () => {
 
 // ── Astro — initScrollDraw ───────────────────────────────────────────────────
 
+describe('ScrollDrawRef.update() (Angular ngOnChanges)', () => {
+  it('is a no-op before init()', () => {
+    const ref = new ScrollDrawRef();
+    expect(() => ref.update({ speed: 2 })).not.toThrow();
+    expect(FakeIO.instances).toHaveLength(0);
+  });
+
+  it('keeps the running engine when the options are equal', () => {
+    const ref = new ScrollDrawRef();
+    ref.init(makeContainer(), { speed: 1, trigger: { start: 'top 80%' } });
+    ref.update({ speed: 1, trigger: { start: 'top 80%' } });
+    expect(FakeIO.instances).toHaveLength(1);
+    expect(FakeIO.instances[0].disconnect).not.toHaveBeenCalled();
+  });
+
+  it('rebuilds the engine on the same element when an option changes', () => {
+    const ref = new ScrollDrawRef();
+    const container = makeContainer();
+    ref.init(container, { speed: 1 });
+    ref.update({ speed: 2 });
+    expect(FakeIO.instances).toHaveLength(2);
+    expect(FakeIO.instances[0].disconnect).toHaveBeenCalled();
+    expect(FakeIO.instances[1].observe).toHaveBeenCalledWith(container);
+  });
+
+  it('does nothing after destroy()', () => {
+    const ref = new ScrollDrawRef();
+    ref.init(makeContainer(), { speed: 1 });
+    ref.destroy();
+    ref.update({ speed: 2 });
+    expect(FakeIO.instances).toHaveLength(1);
+  });
+});
+
 describe('initScrollDraw (Astro)', () => {
   it('returns empty array when no [data-scroll-draw] elements exist', () => {
     const instances = initScrollDraw();
@@ -264,6 +301,15 @@ describe('svelte scrollDraw action', () => {
     expect(path.style.opacity).toBe('0'); // fade:true → hidden initially
   });
 
+  it('update() keeps the engine when Svelte passes an equal new object', () => {
+    // An inline `use:scrollDraw={{ … }}` is a new object on every change in
+    // the expression; tearing the draw down for each would restart it.
+    const action = svelteAction(makeContainer(), { speed: 1, trigger: { start: 'top 80%' } });
+    action.update({ speed: 1, trigger: { start: 'top 80%' } });
+    expect(FakeIO.instances).toHaveLength(1);
+    expect(FakeIO.instances[0].disconnect).not.toHaveBeenCalled();
+  });
+
   it('passes options to the engine', () => {
     const node = makeContainer();
     svelteAction(node, { fade: true });
@@ -362,5 +408,41 @@ describe('solid createScrollDraw', () => {
     mountCbs[0]();
     cleanupCbs[0]();
     expect(getInstance()).toBeUndefined();
+  });
+});
+
+describe('solid option changes', () => {
+  it('rebuilds the engine when an accessor returns a changed option', () => {
+    let speed = 1;
+    const ref = solidUse(() => ({ speed }));
+    ref(makeContainer());
+    mountCbs[0]();
+    speed = 2;
+    mountCbs[0](); // Solid re-runs the effect when the signal it read changes
+
+    expect(FakeIO.instances).toHaveLength(2);
+    expect(FakeIO.instances[0].disconnect).toHaveBeenCalled();
+  });
+
+  it('keeps the engine when the effect re-runs with equal options', () => {
+    const ref = solidUse(() => ({ speed: 1, trigger: { start: 'top 80%' } }));
+    ref(makeContainer());
+    mountCbs[0]();
+    mountCbs[0]();
+
+    expect(FakeIO.instances).toHaveLength(1);
+    expect(FakeIO.instances[0].disconnect).not.toHaveBeenCalled();
+  });
+
+  it('getInstance() follows the rebuilt engine', () => {
+    let speed = 1;
+    const { ref, getInstance } = solidCreate(() => ({ speed }));
+    ref(makeContainer());
+    mountCbs[0]();
+    const first = getInstance();
+    speed = 2;
+    mountCbs[0]();
+    expect(getInstance()).toBeDefined();
+    expect(getInstance()).not.toBe(first);
   });
 });

@@ -42,11 +42,16 @@ export const ANIM_OPTIONS = {
  * @param {(speed: number) => void} [api.setSpeed]
  *        Change the draw's `speed` option through the framework's own prop /
  *        parameter path. Omit when the wrapper has no way to express it.
+ * @param {() => void | Promise<void>} [api.rerender]
+ *        Re-render through the framework with equal options — fresh objects
+ *        and callbacks, the same values. A wrapper whose options are live must
+ *        not rebuild the engine for it. Omit when the fixture cannot express it.
  * @param {boolean} api.reactiveOptions
- *        Whether `setSpeed` is expected to reach the running engine. Only the
- *        Svelte actions re-create on an option change; the component and hook
- *        wrappers read their options once, on mount. Stated here so the spec can
- *        check the claim instead of encoding one framework's behaviour.
+ *        Whether `setSpeed` is expected to reach the running engine. React, Vue,
+ *        Nuxt and Solid rebuild on a changed option, Svelte's `update()` and
+ *        Angular's `update()` do the same; Astro and the web component read
+ *        their options once. Stated here so the spec can check the claim
+ *        instead of encoding one framework's behaviour.
  */
 export function setupFramework(api) {
   // Before the first mount, or a leaked loop from the first render is invisible.
@@ -85,11 +90,14 @@ export function setupFramework(api) {
       // The web component is the one wrapper with no scrollAnimate equivalent:
       // the package ships a single custom element.
       hasAnim: api.hasAnim !== false,
+      canRerender: !!api.rerender,
     }),
 
     mount: () => api.mount(),
     unmount: () => api.unmount(),
     setSpeed: (v) => api.setSpeed?.(v),
+    rerender: () => api.rerender?.(),
+    observeCalls: () => counters.observeCalls(),
 
     /** Frames of animation work over `n` frames — 0 once everything is torn down. */
     ticksOver: (n) => counters.ticksOver(n),

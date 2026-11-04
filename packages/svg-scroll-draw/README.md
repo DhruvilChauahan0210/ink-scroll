@@ -325,6 +325,11 @@ import { ScrollDraw } from 'svg-scroll-draw/vue';
 </template>
 ```
 
+> **Options are live** (from 2.17.0): React and Vue component props, Vue composable options passed as
+> a getter or ref, Solid options passed as an accessor, Svelte action parameters and Angular's
+> `update()` from `ngOnChanges` all rebuild the animation when an option really changes. Equal
+> options — an inline object recreated each render, a new callback — keep the running one.
+
 #### scrollDraw options
 
 | Option | Type | Default | Description |
@@ -624,8 +629,8 @@ devtools.highlight('#my-element'); // outline for 2 seconds
 | Entry | Gzipped |
 |---|---|
 | `svg-scroll-draw` (main, every core API) | 10.7 KB |
-| `svg-scroll-draw/react` (includes the engine) | 11.8 KB |
-| `svg-scroll-draw` + `svg-scroll-draw/react` (together; the engine ships once) | 13.2 KB |
+| `svg-scroll-draw/react` (includes the engine) | 12.0 KB |
+| `svg-scroll-draw` + `svg-scroll-draw/react` (together; the engine ships once) | 13.4 KB |
 | `svg-scroll-draw/reveal` | 5.0 KB |
 | `svg-scroll-draw/text` | 2.8 KB |
 | `svg-scroll-draw/video` | 2.3 KB |

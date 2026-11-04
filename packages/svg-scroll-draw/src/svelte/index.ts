@@ -1,4 +1,5 @@
 import { createEngine } from '../core/engine';
+import { liveFns, optionsKey } from '../core/reactive';
 import { createAnimateEngine } from '../animate/engine';
 import { scrollCounter } from '../counter';
 import { scrollVideo } from '../video';
@@ -11,6 +12,37 @@ import type { ScrollTextOptions } from '../text';
 
 export type { ScrollDrawOptions, ScrollAnimateOptions, ScrollCounterOptions, ScrollVideoOptions, ScrollTextOptions };
 
+// ── The engine behind each action ────────────────────────────────────────────
+
+/**
+ * Svelte calls `update()` whenever the parameter object is a new one — with an
+ * inline `use:scrollDraw={{ … }}` that is every time anything in the expression
+ * changes. The engine is rebuilt only when an option really changed, and
+ * callbacks are read live (`liveFns`), so a new arrow alone never rebuilds.
+ */
+function action<E extends Element, O extends object>(
+  node: E,
+  options: O,
+  create: (el: E, options: O) => ScrollDrawInstance,
+) {
+  let latest = options;
+  let key = optionsKey(options);
+  let instance = create(node, liveFns(options, () => latest));
+  return {
+    update(next: O) {
+      latest = next;
+      const nextKey = optionsKey(next);
+      if (nextKey === key) return;
+      key = nextKey;
+      instance.destroy();
+      instance = create(node, liveFns(next, () => latest));
+    },
+    destroy() {
+      instance.destroy();
+    },
+  };
+}
+
 // ── scrollDraw ────────────────────────────────────────────────────────────────
 
 /**
@@ -22,17 +54,7 @@ export type { ScrollDrawOptions, ScrollAnimateOptions, ScrollCounterOptions, Scr
  * </div>
  */
 export function scrollDraw(node: HTMLElement, options: ScrollDrawOptions = {}) {
-  let instance: ScrollDrawInstance = createEngine(node, options);
-
-  return {
-    update(newOptions: ScrollDrawOptions) {
-      instance.destroy();
-      instance = createEngine(node, newOptions);
-    },
-    destroy() {
-      instance.destroy();
-    },
-  };
+  return action(node, options, createEngine);
 }
 
 /**
@@ -73,17 +95,7 @@ export function createScrollDraw(options: ScrollDrawOptions = {}) {
  * </div>
  */
 export function scrollAnimate(node: HTMLElement, options: ScrollAnimateOptions) {
-  let instance: ScrollDrawInstance = createAnimateEngine(node, options);
-
-  return {
-    update(newOptions: ScrollAnimateOptions) {
-      instance.destroy();
-      instance = createAnimateEngine(node, newOptions);
-    },
-    destroy() {
-      instance.destroy();
-    },
-  };
+  return action(node, options, createAnimateEngine);
 }
 
 /**
@@ -124,17 +136,7 @@ export function createScrollAnimate(options: ScrollAnimateOptions) {
  * <span use:scrollCounterAction={{ to: 1250000, format: n => '$' + Math.round(n).toLocaleString(), once: true }} />
  */
 export function scrollCounterAction(node: HTMLElement, options: ScrollCounterOptions) {
-  let instance: ScrollDrawInstance = scrollCounter(node, options);
-
-  return {
-    update(newOptions: ScrollCounterOptions) {
-      instance.destroy();
-      instance = scrollCounter(node, newOptions);
-    },
-    destroy() {
-      instance.destroy();
-    },
-  };
+  return action(node, options, scrollCounter);
 }
 
 /**
@@ -173,17 +175,7 @@ export function createScrollCounter(options: ScrollCounterOptions) {
  *   src="/hero.mp4" muted playsinline preload="auto" />
  */
 export function scrollVideoAction(node: HTMLVideoElement, options: ScrollVideoOptions = {}) {
-  let instance: ScrollDrawInstance = scrollVideo(node, options);
-
-  return {
-    update(newOptions: ScrollVideoOptions) {
-      instance.destroy();
-      instance = scrollVideo(node, newOptions);
-    },
-    destroy() {
-      instance.destroy();
-    },
-  };
+  return action(node, options, scrollVideo);
 }
 
 /**
@@ -223,17 +215,7 @@ export function createScrollVideo(options: ScrollVideoOptions = {}) {
  * </h2>
  */
 export function scrollTextAction(node: HTMLElement, options: ScrollTextOptions = {}) {
-  let instance: ScrollDrawInstance = scrollText(node, options);
-
-  return {
-    update(newOptions: ScrollTextOptions) {
-      instance.destroy();
-      instance = scrollText(node, newOptions);
-    },
-    destroy() {
-      instance.destroy();
-    },
-  };
+  return action(node, options, scrollText);
 }
 
 /**

@@ -4,14 +4,18 @@
  * Solid's JSX needs a compile step this suite does not have, so the DOM is built
  * by hand — which is fine, because the wrapper's whole API is a ref setter:
  * `useScrollDraw(options)` returns a function you hand an element to, and does
- * its work in `onMount` / `onCleanup`.
+ * its work in an effect and `onCleanup`.
+ *
+ * The draw's options are an accessor over a real signal, which is how a Solid
+ * user keeps them live: the effect reads `speed()`, so setting the signal
+ * re-runs it and the engine is rebuilt — `reactiveOptions: true`.
  *
  * `createRoot` is the part that matters. `onCleanup` only runs when an owner
  * disposes, so a Solid wrapper that registered its cleanup wrongly would leak on
  * every unmount — and `dispose()` here is exactly what Solid calls when the
  * component's owner goes away.
  */
-import { createRoot } from 'solid-js';
+import { createRoot, createSignal } from 'solid-js';
 import { useScrollDraw, useScrollAnimate } from '../../dist/solid/index.mjs';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
@@ -34,16 +38,21 @@ function buildDraw() {
 }
 
 let dispose = null;
-let speed = 1;
+const [speed, setSpeedSignal] = createSignal(1);
+// Read by the accessor so bumping it re-runs the effect with equal options.
+const [tick, setTick] = createSignal(0);
 
 export const api = {
-  // The ref setter takes its options once, in the call that creates it.
-  reactiveOptions: false,
+  reactiveOptions: true,
 
   mount() {
+    setSpeedSignal(1);
     const root = document.querySelector('#root');
     dispose = createRoot((d) => {
-      const drawRef = useScrollDraw({ easing: 'linear', native: false, speed });
+      const drawRef = useScrollDraw(() => {
+        tick();
+        return { easing: 'linear', native: false, speed: speed() };
+      });
       const animRef = useScrollAnimate({
         props: { opacity: [0, 1] },
         easing: 'linear',
@@ -71,6 +80,10 @@ export const api = {
   },
 
   setSpeed(v) {
-    speed = v;
+    setSpeedSignal(v);
+  },
+
+  rerender() {
+    setTick((t) => t + 1);
   },
 };

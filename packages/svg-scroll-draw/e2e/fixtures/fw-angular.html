@@ -27,10 +27,10 @@
 <script type="module">
 /*
  * The Angular wrapper is deliberately framework-agnostic: `ScrollDrawRef` and
- * friends are plain classes with `init(element, options)` and `destroy()`, so a
- * component calls them from `ngAfterViewInit` / `ngOnDestroy`. That is the whole
- * public surface, and it needs no @angular/core to exercise honestly — which is
- * the point of shipping it this way.
+ * friends are plain classes with `init(element, options)`, `update(options)` and
+ * `destroy()`, so a component calls them from `ngAfterViewInit`, `ngOnChanges`
+ * and `ngOnDestroy`. That is the whole public surface, and it needs no
+ * @angular/core to exercise honestly — which is the point of shipping it this way.
  */
 import { ScrollDrawRef, ScrollAnimateRef } from '/dist/angular/index.mjs';
 import { setupFramework, DRAW_SVG, DRAW_OPTIONS, ANIM_OPTIONS } from './_fw.mjs';
@@ -41,10 +41,9 @@ const anim = new ScrollAnimateRef();
 let speed = 1;
 
 setupFramework({
-  // `init()` can be called again, but nothing calls it for you when an @Input
-  // changes — that is the component's job, so from the wrapper's side an option
-  // change does not reach the engine.
-  reactiveOptions: false,
+  // An @Input change reaches the engine through `update()`, which a component
+  // calls from ngOnChanges — exactly what setSpeed does below.
+  reactiveOptions: true,
 
   mount() {
     const drawEl = document.createElement('div');
@@ -64,7 +63,16 @@ setupFramework({
     root.replaceChildren();
   },
 
-  setSpeed(v) { speed = v; },
+  setSpeed(v) {
+    speed = v;
+    draw.update({ ...DRAW_OPTIONS, speed });
+  },
+
+  // ngOnChanges fires for any @Input, so update() often sees equal options.
+  rerender() {
+    draw.update({ ...DRAW_OPTIONS, speed });
+    anim.update({ ...ANIM_OPTIONS });
+  },
 });
 </script>
 </body>

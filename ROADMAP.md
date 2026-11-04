@@ -139,7 +139,7 @@ of examining a single API in a real browser.
 
 ### Correctness (Phase 2, Priorities 1–3)
 - [x] Browser coverage for `scrollReveal`, `scrollPin`, `scrollSnap`, `scrollText`, `scrollCounter`, `scrollProgress`, `scrollParallax`, `scrollVideo`
-- [x] Mutation harness proving each new test fails against a deliberately broken build (56 mutations)
+- [x] Mutation harness proving each new test fails against a deliberately broken build (60 mutations)
 - [x] `scrollHorizontal` — reduced-motion decision (keeps scrubbing), the zero-length-trigger fix, and browser tests
 - [x] Browser tests for Group / Sequence / Timeline and `Cinematic` — found and fixed the sequence cursor walking off the end (a finished sequence reported 0%)
 - [x] Parity test for `scrollAnimate`'s own native CSS fast path — found and fixed both fast paths running the CSS *keyword* instead of this library's easing curve, up to 0.069 apart. Priority 1 is complete: 118 browser tests per engine
@@ -182,7 +182,9 @@ of examining a single API in a real browser.
 - [ ] Bing Webmaster Tools + IndexNow on deploy
 - [x] `/nextjs-scroll-animation` (position 24, the most impressions after home): full App Router example, FAQ, more internal links
 - [x] Ship `"use client"` on `svg-scroll-draw/react` (as the drop-in hooks already do) so Server Components can render `<ScrollDraw>` directly (2.16.1)
-- [ ] Dev warning for unsupported trigger strings (`'top 100px'` runs as `'top bottom'` silently). Tried for 2.16.1: even one regex and one message cost ~0.1 KB in the main entry (10.7 → 10.8 KB), so it was dropped; a home in `svg-scroll-draw/devtools` would cost the main entry nothing
+- [x] Framework wrappers follow option changes — React, Vue, Nuxt, Solid, Svelte rebuild on a real change and keep the engine for equal options; Angular `update()` for `ngOnChanges` (2.17.0)
+- [ ] Astro and `<scroll-draw>` still read their options once: a `MutationObserver` on the data attributes / `observedAttributes` would close it
+- [x] ~~Dev warning for unsupported trigger strings~~ — decided against (2026-11-04). In the parser it moved the main entry 10.7 → 10.8 KB; noted for `/devtools` it still moved scrollReveal 5.0 → 5.1 KB. The docs list the supported forms (`top`/`center`/`bottom` + percentages) instead
 - [ ] Request indexing for the 35 unindexed pages, ~10 a day (sitemap resubmitted 2026-11-04: 64 discovered); re-check Page indexing in ~2 weeks
 - [x] Homepage redesign — every chapter a blueprint-grade drawing of a real use case (fountain-pen hero, gallery, watch, proof sheet, balance, API plates, gauges, circuit board, before/after windows, live GitHub + npm stats, drawing-sheet footer), scoped under `.home`
 - [x] Showcase sites — one real demo site per example (all 23), linked from the examples pages; 19 rebuilt to industry level, Aural (scroll-video) sets the bar with a rendered product film

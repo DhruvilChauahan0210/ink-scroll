@@ -40,7 +40,8 @@ const Root = {
 };
 
 export const api = {
-  reactiveOptions: false,
+  // The plugin registers the Vue components, which rebuild on a changed prop.
+  reactiveOptions: true,
 
   mount() {
     speed.value = 1;

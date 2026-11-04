@@ -55,6 +55,15 @@ const KINDS: { k: Kind; label: string }[] = [
  */
 const RELEASES: Release[] = [
   {
+    version: '2.17.0',
+    title: 'Wrappers follow option changes',
+    date: '2026-11-04',
+    items: [
+      { type: 'new', text: 'The React, Vue, Nuxt, Solid and Svelte wrappers rebuild the animation when an option changes, and Angular gets update() for ngOnChanges. Options are compared by value, so an inline object recreated each render keeps the running animation, and callbacks are read live without a rebuild.' },
+      { type: 'test', text: 'The browser suite checks both halves on every engine: a changed speed reaches the running draw, and a re-render with equal options keeps the same engine.' },
+    ],
+  },
+  {
     version: '2.16.1',
     title: 'Server Components render the components',
     date: '2026-11-04',

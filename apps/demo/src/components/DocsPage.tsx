@@ -745,7 +745,10 @@ window.addEventListener('unload', () => instance.destroy());`}
           <DocSection id="react" tag="Frameworks" heading="React">
             <p className="text-sm text-graphite-border leading-relaxed mb-2">
               The React wrapper is a drop-in component that handles lifecycle automatically.
-              All options are passed as props.
+              All options are passed as props, and props are live: change{' '}
+              <code className="font-mono text-pitch-black">speed</code> or a{' '}
+              <code className="font-mono text-pitch-black">trigger</code> and the animation is rebuilt. A re-render
+              with equal props — an inline object, a new arrow function — keeps the running one.
             </p>
             <CodeBlock file="Hero.tsx">
 {`import { ScrollDraw } from 'svg-scroll-draw/react';
@@ -803,8 +806,15 @@ import { ScrollDraw } from 'svg-scroll-draw/vue';
 {`import { useScrollDraw } from 'svg-scroll-draw/vue';
 
 // Returns a ref — attach it to your container element
-const containerRef = useScrollDraw({ easing: 'spring', speed: 0.9, once: true });`}
+const containerRef = useScrollDraw({ easing: 'spring', speed: 0.9, once: true });
+
+// Pass a getter (or a ref) to keep options live — rebuilds when speed changes
+const liveRef = useScrollDraw(() => ({ easing: 'spring', speed: speed.value }));`}
             </CodeBlock>
+            <Note>
+              Component props are live, and so are composable options passed as a getter or a ref. A plain
+              object is read once. Equal options never rebuild the animation.
+            </Note>
           </DocSection>
 
           {/* ── Svelte ───────────────────────────────────────── */}
@@ -812,7 +822,8 @@ const containerRef = useScrollDraw({ easing: 'spring', speed: 0.9, once: true })
             <p className="text-sm text-graphite-border leading-relaxed mb-2">
               A Svelte action — apply it to any container with{' '}
               <code className="font-mono text-pitch-black">use:scrollDraw</code>.
-              Options update reactively when props change.
+              Changing its options rebuilds the animation; a new object with equal values, which Svelte
+              passes whenever anything in the expression changes, keeps the running one.
             </p>
             <CodeBlock file="Hero.svelte">
 {`<script>
@@ -841,10 +852,12 @@ const containerRef = useScrollDraw({ easing: 'spring', speed: 0.9, once: true })
           <DocSection id="solid" tag="Frameworks" heading="Solid.js">
             <p className="text-sm text-graphite-border leading-relaxed mb-2">
               A ref-setter hook — pass it to any container element via the{' '}
-              <code className="font-mono text-pitch-black">ref</code> prop.
+              <code className="font-mono text-pitch-black">ref</code> prop. Pass an accessor, or a component’s
+              props, to keep options live: the animation is rebuilt when a signal it reads changes.
             </p>
             <CodeBlock file="Hero.tsx">
-{`import { useScrollDraw, createScrollDraw } from 'svg-scroll-draw/solid';
+{`import { createSignal } from 'solid-js';
+import { useScrollDraw, createScrollDraw } from 'svg-scroll-draw/solid';
 
 // Simple hook
 function Hero() {
@@ -856,6 +869,13 @@ function Hero() {
       </svg>
     </div>
   );
+}
+
+// Live options: an accessor, rebuilt when speed() changes
+function LiveHero() {
+  const [speed, setSpeed] = createSignal(1);
+  const ref = useScrollDraw(() => ({ easing: 'ease-out', speed: speed() }));
+  return <div ref={ref}><svg>...</svg></div>;
 }
 
 // With instance control
@@ -876,30 +896,39 @@ function HeroWithReplay() {
             <p className="text-sm text-graphite-border leading-relaxed mb-2">
               All v2 APIs are available as class-based <code className="font-mono text-pitch-black">Ref</code> objects
               that integrate with Angular’s component lifecycle. No peer dependency on{' '}
-              <code className="font-mono text-pitch-black">@angular/core</code> is required in the library.
+              <code className="font-mono text-pitch-black">@angular/core</code> is required in the library. Call{' '}
+              <code className="font-mono text-pitch-black">update(options)</code> from{' '}
+              <code className="font-mono text-pitch-black">ngOnChanges</code> to keep options live: it rebuilds
+              the animation only when an option really changed.
             </p>
 
             <Sub>ScrollDrawRef — SVG path drawing (v1)</Sub>
             <CodeBlock file="hero.component.ts">
-{`import { Component, ViewChild, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
+{`import { Component, Input, ViewChild, ElementRef, AfterViewInit, OnChanges, OnDestroy } from '@angular/core';
 import { ScrollDrawRef } from 'svg-scroll-draw/angular';
 
 @Component({
   selector: 'app-hero',
   template: \`<div #container><svg>...</svg></div>\`,
 })
-export class HeroComponent implements AfterViewInit, OnDestroy {
+export class HeroComponent implements AfterViewInit, OnChanges, OnDestroy {
   @ViewChild('container') containerRef!: ElementRef<HTMLElement>;
+  @Input() speed = 1.2;
   private draw = new ScrollDrawRef();
 
   ngAfterViewInit() {
-    this.draw.init(this.containerRef.nativeElement, {
-      easing: 'ease-out', speed: 1.2, fade: true, once: true,
-    });
+    this.draw.init(this.containerRef.nativeElement, this.options());
   }
+
+  // Rebuilds only when an option really changed; a no-op before init()
+  ngOnChanges() { this.draw.update(this.options()); }
 
   replay()      { this.draw.replay(); }
   ngOnDestroy() { this.draw.destroy(); }
+
+  private options() {
+    return { easing: 'ease-out', speed: this.speed, fade: true, once: true };
+  }
 }`}
             </CodeBlock>
 
@@ -979,7 +1008,7 @@ export class HeadlineComponent implements AfterViewInit, OnDestroy {
 }`}
             </CodeBlock>
             <Note>
-              All Ref classes expose the full instance API: <code className="font-mono">replay()</code>,{' '}
+              All Ref classes expose <code className="font-mono">update(options)</code> and the full instance API: <code className="font-mono">replay()</code>,{' '}
               <code className="font-mono">pause()</code>, <code className="font-mono">resume()</code>,{' '}
               <code className="font-mono">seek(p)</code>, <code className="font-mono">getProgress()</code>,{' '}
               <code className="font-mono">destroy()</code>. <code className="font-mono">ScrollVideoRef</code> follows the same pattern for{' '}

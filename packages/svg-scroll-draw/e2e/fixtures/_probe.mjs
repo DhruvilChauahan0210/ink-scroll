@@ -75,9 +75,10 @@ export function installLeakCounters() {
 
   const NativeIO = window.IntersectionObserver;
   let live = 0;
+  let observeCalls = 0;
   window.IntersectionObserver = class extends NativeIO {
     #observed = 0;
-    observe(el, opts) { this.#observed++; live++; return super.observe(el, opts); }
+    observe(el, opts) { this.#observed++; live++; observeCalls++; return super.observe(el, opts); }
     unobserve(el) {
       if (this.#observed > 0) { this.#observed--; live--; }
       return super.unobserve(el);
@@ -87,6 +88,8 @@ export function installLeakCounters() {
 
   return {
     liveObservers: () => live,
+    /** Every observe() ever made: it goes up each time an engine starts. */
+    observeCalls: () => observeCalls,
     /** Frames of animation work observed across `n` real frames. */
     async ticksOver(n) {
       const before = ticks;

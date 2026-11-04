@@ -1,4 +1,5 @@
 import { createEngine } from '../core/engine';
+import { liveFns, optionsKey } from '../core/reactive';
 import { createAnimateEngine } from '../animate/engine';
 import { scrollCounter } from '../counter';
 import { scrollVideo } from '../video';
@@ -11,33 +12,37 @@ import type { ScrollTextOptions } from '../text';
 
 export type { ScrollDrawOptions, ScrollAnimateOptions, ScrollCounterOptions, ScrollVideoOptions, ScrollTextOptions, ScrollDrawInstance };
 
-// ── ScrollDrawRef ─────────────────────────────────────────────────────────────
+// ── The engine behind each class ─────────────────────────────────────────────
 
 /**
- * Framework-agnostic class for use in Angular components.
- * No @angular/core dependency required.
- *
- * @example
- * @Component({ template: '<div #container><svg>...</svg></div>' })
- * export class HeroComponent implements AfterViewInit, OnDestroy {
- *   @ViewChild('container') containerRef!: ElementRef<HTMLElement>;
- *   private draw = new ScrollDrawRef();
- *
- *   ngAfterViewInit() {
- *     this.draw.init(this.containerRef.nativeElement, {
- *       easing: 'ease-out', speed: 1.2, fade: true,
- *     });
- *   }
- *
- *   ngOnDestroy() { this.draw.destroy(); }
- * }
+ * What every Ref class shares. `init()` starts the engine; `update()` is for
+ * `ngOnChanges`: it rebuilds the engine when an option really changed and does
+ * nothing for an equal object, so binding it to every change is safe. Callbacks
+ * are read live, so a new function alone never rebuilds. Exported for typing;
+ * use the five Ref classes below.
  */
-export class ScrollDrawRef {
+export class EngineRef<E extends Element, O extends object> {
   private instance: ScrollDrawInstance | null = null;
+  private el: E | null = null;
+  private key = '';
+  private latest!: O;
 
-  init(element: HTMLElement, options: ScrollDrawOptions = {}): this {
+  constructor(private readonly create: (el: E, options: O) => ScrollDrawInstance) {}
+
+  init(element: E, options: O): this {
     this.destroy();
-    this.instance = createEngine(element, options);
+    this.el = element;
+    this.latest = options;
+    this.key = optionsKey(options);
+    this.instance = this.create(element, liveFns(options, () => this.latest));
+    return this;
+  }
+
+  /** Call from `ngOnChanges` with the current options. A no-op before `init()`. */
+  update(options: O): this {
+    if (!this.el) return this;
+    if (optionsKey(options) !== this.key) return this.init(this.el, options);
+    this.latest = options;
     return this;
   }
 
@@ -49,9 +54,40 @@ export class ScrollDrawRef {
 
   destroy(): this {
     this.instance?.destroy();
-    this.instance = null;
+    this.instance = this.el = null;
     return this;
   }
+}
+
+// ── ScrollDrawRef ─────────────────────────────────────────────────────────────
+
+/**
+ * Framework-agnostic class for use in Angular components.
+ * No @angular/core dependency required.
+ *
+ * @example
+ * @Component({ template: '<div #container><svg>...</svg></div>' })
+ * export class HeroComponent implements AfterViewInit, OnChanges, OnDestroy {
+ *   @ViewChild('container') containerRef!: ElementRef<HTMLElement>;
+ *   private draw = new ScrollDrawRef();
+ *
+ *   @Input() speed = 1.2;
+ *
+ *   ngAfterViewInit() {
+ *     this.draw.init(this.containerRef.nativeElement, this.options());
+ *   }
+ *
+ *   // Rebuilds only when an option really changed.
+ *   ngOnChanges() { this.draw.update(this.options()); }
+ *
+ *   ngOnDestroy() { this.draw.destroy(); }
+ *
+ *   private options() { return { easing: 'ease-out', speed: this.speed, fade: true }; }
+ * }
+ */
+export class ScrollDrawRef extends EngineRef<HTMLElement, ScrollDrawOptions> {
+  constructor() { super(createEngine); }
+  init(element: HTMLElement, options: ScrollDrawOptions = {}): this { return super.init(element, options); }
 }
 
 // ── ScrollAnimateRef ──────────────────────────────────────────────────────────
@@ -76,26 +112,8 @@ export class ScrollDrawRef {
  *   ngOnDestroy() { this.animate.destroy(); }
  * }
  */
-export class ScrollAnimateRef {
-  private instance: ScrollDrawInstance | null = null;
-
-  init(element: HTMLElement, options: ScrollAnimateOptions): this {
-    this.destroy();
-    this.instance = createAnimateEngine(element, options);
-    return this;
-  }
-
-  replay(): this { this.instance?.replay(); return this; }
-  pause():  this { this.instance?.pause();  return this; }
-  resume(): this { this.instance?.resume(); return this; }
-  seek(p: number): this { this.instance?.seek(p); return this; }
-  getProgress(): number { return this.instance?.getProgress() ?? 0; }
-
-  destroy(): this {
-    this.instance?.destroy();
-    this.instance = null;
-    return this;
-  }
+export class ScrollAnimateRef extends EngineRef<HTMLElement, ScrollAnimateOptions> {
+  constructor() { super(createAnimateEngine); }
 }
 
 // ── ScrollCounterRef ──────────────────────────────────────────────────────────
@@ -120,26 +138,8 @@ export class ScrollAnimateRef {
  *   ngOnDestroy() { this.counter.destroy(); }
  * }
  */
-export class ScrollCounterRef {
-  private instance: ScrollDrawInstance | null = null;
-
-  init(element: HTMLElement, options: ScrollCounterOptions): this {
-    this.destroy();
-    this.instance = scrollCounter(element, options);
-    return this;
-  }
-
-  replay(): this { this.instance?.replay(); return this; }
-  pause():  this { this.instance?.pause();  return this; }
-  resume(): this { this.instance?.resume(); return this; }
-  seek(p: number): this { this.instance?.seek(p); return this; }
-  getProgress(): number { return this.instance?.getProgress() ?? 0; }
-
-  destroy(): this {
-    this.instance?.destroy();
-    this.instance = null;
-    return this;
-  }
+export class ScrollCounterRef extends EngineRef<HTMLElement, ScrollCounterOptions> {
+  constructor() { super(scrollCounter); }
 }
 
 // ── ScrollVideoRef ────────────────────────────────────────────────────────────
@@ -162,26 +162,9 @@ export class ScrollCounterRef {
  *   ngOnDestroy() { this.video.destroy(); }
  * }
  */
-export class ScrollVideoRef {
-  private instance: ScrollDrawInstance | null = null;
-
-  init(element: HTMLVideoElement, options: ScrollVideoOptions = {}): this {
-    this.destroy();
-    this.instance = scrollVideo(element, options);
-    return this;
-  }
-
-  replay(): this { this.instance?.replay(); return this; }
-  pause():  this { this.instance?.pause();  return this; }
-  resume(): this { this.instance?.resume(); return this; }
-  seek(p: number): this { this.instance?.seek(p); return this; }
-  getProgress(): number { return this.instance?.getProgress() ?? 0; }
-
-  destroy(): this {
-    this.instance?.destroy();
-    this.instance = null;
-    return this;
-  }
+export class ScrollVideoRef extends EngineRef<HTMLVideoElement, ScrollVideoOptions> {
+  constructor() { super(scrollVideo); }
+  init(element: HTMLVideoElement, options: ScrollVideoOptions = {}): this { return super.init(element, options); }
 }
 
 // ── ScrollTextRef ─────────────────────────────────────────────────────────────
@@ -207,24 +190,7 @@ export class ScrollVideoRef {
  *   ngOnDestroy() { this.text.destroy(); }
  * }
  */
-export class ScrollTextRef {
-  private instance: ScrollDrawInstance | null = null;
-
-  init(element: HTMLElement, options: ScrollTextOptions = {}): this {
-    this.destroy();
-    this.instance = scrollText(element, options);
-    return this;
-  }
-
-  replay(): this { this.instance?.replay(); return this; }
-  pause():  this { this.instance?.pause();  return this; }
-  resume(): this { this.instance?.resume(); return this; }
-  seek(p: number): this { this.instance?.seek(p); return this; }
-  getProgress(): number { return this.instance?.getProgress() ?? 0; }
-
-  destroy(): this {
-    this.instance?.destroy();
-    this.instance = null;
-    return this;
-  }
+export class ScrollTextRef extends EngineRef<HTMLElement, ScrollTextOptions> {
+  constructor() { super(scrollText); }
+  init(element: HTMLElement, options: ScrollTextOptions = {}): this { return super.init(element, options); }
 }
