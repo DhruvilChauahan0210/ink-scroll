@@ -146,6 +146,7 @@ at all.
 - [x] Demo lint 52 → 0, enforced with `--max-warnings=0`
 - [x] `/docs`: jump-scroll asymmetry documented; Note boxes fixed
 - [x] Navigation: nav "More" menu, phone-menu groups and a footer index from one list (`components/site/sitemap.ts`); no page more than two clicks from the homepage; `check-nav` in build, CI and `verify`
+- [x] Search titles and descriptions rewritten for `/docs`, `/vs-locomotive-scroll`, `/lenis-scroll-animation`, `/blog/scroll-pin-without-gsap` (page-one rankings, near-zero clicks)
 - [x] Sitemap `lastModified` from git for all 64 URLs, generated groups included (`npm run sitemap:dates`)
 
 ### 2.16.0 — shared ESM chunks (2026-11-01)

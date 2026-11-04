@@ -225,9 +225,9 @@ export const VERSUS: Versus[] = [
   {
     slug: 'vs-locomotive-scroll',
     competitorKey: 'locomotive',
-    title: 'Locomotive Scroll Alternative — Animation, Not Smooth Scroll',
+    title: 'Locomotive Scroll Alternative for Scroll Animations',
     description:
-      'svg-scroll-draw vs Locomotive Scroll: Locomotive smooths scrolling and reports progress; this animates. Measured sizes and an honest feature matrix.',
+      'Moving off Locomotive Scroll? Keep smooth scrolling with Lenis and animate with svg-scroll-draw. Measured bundle sizes, a feature matrix and when to stay.',
     keywords: [
       'locomotive scroll alternative',
       'locomotive scroll v5',

@@ -5,9 +5,9 @@ import { BlogArticle, Section, Code, Callout, Defs, Table, Figure } from '@/comp
 import { PinFigure } from '@/components/blog/PinFigure';
 
 export const metadata: Metadata = {
-  title: seoTitle('Pin Sections on Scroll Without GSAP — scrollPin'),
+  title: seoTitle('Scroll Pin Without GSAP — Pin Sections While You Scroll'),
   description:
-    'Pin any element while the page scrolls past it, without GSAP. scrollPin: wrapper-based, no layout shift, full lifecycle callbacks, a 1.6 KB entry point.',
+    'Pin an element as the page scrolls past it, without GSAP: custom pin point, progress callbacks, an Apple-style pinned image, React usage and snapping.',
   keywords: [
     'scroll pin without gsap',
     'gsap pin alternative',
@@ -22,14 +22,14 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: '/blog/scroll-pin-without-gsap' },
   openGraph: {
-    title: 'Pin sections on scroll without GSAP — scrollPin',
-    description: 'A wrapper-based pin implementation with full lifecycle callbacks. Zero GSAP. ~11 KB total.',
+    title: 'Scroll Pin Without GSAP — Pin Sections While You Scroll',
+    description: 'Pin an element as the page scrolls past it, without GSAP: custom pin point, progress callbacks, an Apple-style pinned image, React usage and snapping.',
     url: 'https://svg-scroll-draw.vercel.app/blog/scroll-pin-without-gsap',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Pin sections on scroll without GSAP — scrollPin',
-    description: 'Sticky scroll sections without GSAP. Full lifecycle callbacks. 1.6 KB for scrollPin alone.',
+    title: 'Scroll Pin Without GSAP — Pin Sections While You Scroll',
+    description: 'Pin an element as the page scrolls past it, without GSAP: custom pin point, progress callbacks, an Apple-style pinned image, React usage and snapping.',
   },
 };
 

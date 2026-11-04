@@ -15,9 +15,9 @@ const SITE_URL = 'https://svg-scroll-draw.vercel.app';
 const lenis = COMPETITORS.lenis;
 
 export const metadata: Metadata = {
-  title: seoTitle('Lenis + Scroll Animation — Smooth Scroll and Draw Together'),
+  title: seoTitle('Lenis Scroll Animation — Add Animations to Smooth Scroll'),
   description:
-    'Use Lenis smooth scrolling with scroll-driven SVG animation. Lenis v2 needs no adapter; v1 has one at svg-scroll-draw/lenis. Working setup for both.',
+    'Add scroll animations to Lenis smooth scrolling. Lenis v2 needs no adapter; v1 uses svg-scroll-draw/lenis. Working setup for both, plus the one trade-off.',
   keywords: [
     'lenis scroll animation',
     'lenis smooth scroll animation',
@@ -31,14 +31,14 @@ export const metadata: Metadata = {
   alternates: { canonical: '/lenis-scroll-animation' },
   openGraph: {
     type: 'article',
-    title: 'Lenis + svg-scroll-draw — Smooth Scroll and Animation Together',
-    description: 'Lenis smooths the scroll, svg-scroll-draw animates against it. Setup for Lenis v1 and v2.',
+    title: 'Lenis Scroll Animation — Add Animations to Smooth Scroll',
+    description: 'Add scroll animations to Lenis smooth scrolling. Lenis v2 needs no adapter; v1 uses svg-scroll-draw/lenis. Working setup for both, plus the one trade-off.',
     url: `${SITE_URL}/lenis-scroll-animation`,
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Lenis + svg-scroll-draw',
-    description: 'Smooth scroll and scroll-driven animation, together. No adapter needed on Lenis v2.',
+    title: 'Lenis Scroll Animation — Add Animations to Smooth Scroll',
+    description: 'Add scroll animations to Lenis smooth scrolling. Lenis v2 needs no adapter; v1 uses svg-scroll-draw/lenis. Working setup for both, plus the one trade-off.',
   },
 };
 

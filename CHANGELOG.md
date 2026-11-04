@@ -225,6 +225,16 @@ All notable changes to `svg-scroll-draw` are documented here.
   takes one date — the last commit to its template, component or data file —
   and the script refreshes those with the rest.
 
+- **Titles and descriptions for four pages that rank on page one but get no
+  clicks** (Search Console, 2 Aug – 1 Nov): `/docs` (97 impressions, position
+  7.5, 2 clicks), `/vs-locomotive-scroll` (64, 8.6, 2), `/lenis-scroll-animation`
+  (77, 14.5, 2) and `/blog/scroll-pin-without-gsap` (42, 9.7, 2). Each now
+  leads with the words people search ("svg scroll animation docs", "lenis
+  scroll", "scroll pin") and describes only what the page holds. `/docs` no
+  longer prints the brand twice: its title now goes through `seoTitle()`. The
+  Open Graph and Twitter cards carry the same text, which drops two hand-typed
+  sizes from the scroll-pin post's cards.
+
 ### CI
 
 - **One release run per tag at a time.** Re-pushing `v2.15.3` while its first

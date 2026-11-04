@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
 import { DocsPage } from '@/components/DocsPage';
 import { SiteShell } from '@/components/site/SiteShell';
+import { seoTitle } from '../_lib/seo';
 
 export const metadata: Metadata = {
-  title: 'SVG Scroll Draw — API Docs & Reference',
+  title: seoTitle('SVG Scroll Animation Docs — API, Options and Examples'),
   description:
-    'API reference for the SVG scroll draw library: animate paths on scroll in React, Vue, Svelte, Nuxt and Astro. Options, Group API, TypeScript types.',
+    'Animate SVG on scroll: install, quick start, every option, callbacks and instance methods, plus copy-paste React, Vue 3, Svelte, Solid and Angular code.',
   keywords: [
     'scroll draw',
     'svg scroll draw',
@@ -24,16 +25,16 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: '/docs' },
   openGraph: {
-    title: 'SVG Scroll Draw — API Docs & Reference | svg-scroll-draw',
+    title: 'SVG Scroll Animation Docs — API, Options and Examples',
     description:
-      'Full API reference for the SVG scroll draw library. Animate paths on scroll with React, Vue, Svelte, Nuxt, and Astro. stroke-dashoffset, Group API, TypeScript types.',
+      'Animate SVG on scroll: install, quick start, every option, callbacks and instance methods, plus copy-paste React, Vue 3, Svelte, Solid and Angular code.',
     url: 'https://svg-scroll-draw.vercel.app/docs',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'SVG Scroll Draw — API Docs & Reference | svg-scroll-draw',
+    title: 'SVG Scroll Animation Docs — API, Options and Examples',
     description:
-      'Full API reference for the SVG scroll draw library. React, Vue, Svelte, Nuxt, Astro guides, Group API, TypeScript types.',
+      'Animate SVG on scroll: install, quick start, every option, callbacks and instance methods, plus copy-paste React, Vue 3, Svelte, Solid and Angular code.',
   },
 };
 

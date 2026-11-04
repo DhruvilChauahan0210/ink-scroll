@@ -89,7 +89,10 @@ months, 81% to the homepage; `/vs-gsap` at position 11 with 425 impressions.
    `contents: write`). From 2.10.2 the workflow creates it.
 2. Re-check Search Console in ~2 weeks for the new titles (`/vs-gsap`, home,
    React, Next.js), and Page indexing for the 35 "Discovered – not indexed"
-   pages once the git-dated sitemap is deployed and resubmitted.
+   pages (sitemap resubmitted 2026-11-04, 64 discovered). Request indexing
+   for them ~10 a day; the 2026-11-04 attempt hit the daily quota. Also compare
+   CTR on `/docs`, `/vs-locomotive-scroll`, `/lenis-scroll-animation` and the
+   scroll-pin post, whose titles changed on 2026-11-04.
 3. More blocks; one shared nav component so every page links `/blocks`.
 4. Shared ESM chunks between entries (see ROADMAP) — 8.6 KB vs 6.4 KB when an app
    imports main + `/react`.
