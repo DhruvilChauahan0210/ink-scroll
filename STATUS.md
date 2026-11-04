@@ -1,6 +1,6 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **2.17.1** — in the working tree, not yet committed or tagged (2.17.0 is the latest on npm, 2026-11-04)
+> Current version: **2.17.1** — published on npm with provenance through `release.yml` (2026-11-04)
 > Tests: **660 unit** across 34 suites · **206 browser tests** per engine (618 runs
 > across Chromium/Firefox/WebKit) · **60 mutations**, each caught by the one test
 > named for it · **91.3% line coverage** (gate 90/90/82/82)
@@ -153,12 +153,18 @@ at all.
 - [x] Search titles and descriptions rewritten for `/docs`, `/vs-locomotive-scroll`, `/lenis-scroll-animation`, `/blog/scroll-pin-without-gsap` (page-one rankings, near-zero clicks)
 - [x] Sitemap `lastModified` from git for all 64 URLs, generated groups included (`npm run sitemap:dates`)
 
-### 2.17.1 — once keeps the stagger, and the first recipe (2026-11-04; not yet released)
+### Unreleased — recipes (site-only)
+
+- [x] `/examples/scroll-pin` is a full recipe — pinned feature tour (`scrollPin` + `onProgress` + `seek()`), 4 steps with figures, the live tour pinning on the page, ES-module HTML file, 5 pitfalls (React root and ancestor `transform` measured first); files in `apps/demo/src/recipes/scroll-pin/`, checked by `test-recipes`
+- [x] `/examples`: recipe cards link as “recipe →”, and a Recipes filter shows just those (`src/recipes/slugs.ts`)
+- [ ] Next: `/examples/scroll-counter` (stat row), `/examples/scroll-video` (explainer), `/blog/horizontal-scroll-sections` (horizontal strip)
+
+### 2.17.1 — once keeps the stagger, and the first recipe (2026-11-04)
 
 - [x] `once` + `stagger`: each path holds its own progress (`frozenPath` in `core/engine.ts`); `onComplete` waits for the last path; two unit tests watched failing on 2.17.0
 - [x] `/examples/logo-reveal` is a full recipe — 4 steps with figures, the complete component running, one-file HTML, 5 pitfalls; files in `apps/demo/src/recipes/logo-reveal/`
 - [x] `apps/demo/scripts/test-recipes.mjs` runs each recipe's HTML file in Chromium (CI e2e job)
-- [ ] Released — waiting on the owner to push the `v2.17.1` tag
+- [x] Released — tag `v2.17.1` on `ed77b58`, published by `release.yml` with provenance
 
 ### 2.17.0 — wrappers follow option changes (2026-11-04)
 

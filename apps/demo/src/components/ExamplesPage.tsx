@@ -24,6 +24,7 @@ import { LogoRevealScene } from './examples/scenes/LogoRevealScene';
 import { SELF } from '@/data/competitors';
 import './examples.css';
 import { EXAMPLE_SEO } from '@/data/examples-seo';
+import { RECIPE_SLUGS, hasRecipe } from '@/recipes/slugs';
 
 function CodeBlock({ filename, children }: { filename: string; children: string }) {
   return <CodeBox file={filename}>{children}</CodeBox>;
@@ -269,7 +270,9 @@ export function ExamplesPage() {
   const [activeFilter, setActiveFilter] = useState('all');
   const filtered = activeFilter === 'all'
     ? EXAMPLES
-    : EXAMPLES.filter(ex => (EXAMPLE_FRAMEWORKS[ex.id] ?? []).includes(activeFilter));
+    : activeFilter === 'recipes'
+      ? EXAMPLES.filter((ex) => hasRecipe(ex.id))
+      : EXAMPLES.filter((ex) => (EXAMPLE_FRAMEWORKS[ex.id] ?? []).includes(activeFilter));
 
   const frameworks = FILTERS.length - 1;
 
@@ -290,7 +293,7 @@ export function ExamplesPage() {
             pinned panels, snapping carousels, and the Timeline, Group and Sequence APIs — each with the
             code to paste, in React, Vue 3, Svelte, Solid or vanilla JS. Scroll and they draw.
           </p>
-          <div className="ex-filters" role="group" aria-label="Filter by framework">
+          <div className="ex-filters" role="group" aria-label="Filter examples">
             {FILTERS.map((f) => (
               <button
                 key={f.key}
@@ -305,6 +308,16 @@ export function ExamplesPage() {
                 </span>
               </button>
             ))}
+            {/* Not a framework, so not in FILTERS: the "Frameworks" count reads that list. */}
+            <button
+              type="button"
+              className="pill"
+              aria-pressed={activeFilter === 'recipes'}
+              onClick={() => setActiveFilter('recipes')}
+            >
+              Recipes
+              <span className="pill-n">{RECIPE_SLUGS.length}</span>
+            </button>
           </div>
           <dl className="pg-facts">
             <div><dt>Patterns</dt><dd>{EXAMPLES.length}</dd></div>
@@ -331,7 +344,9 @@ export function ExamplesPage() {
                   <span className="ex-card-fw">{fws.map((k) => FILTERS.find((f) => f.key === k)?.label ?? k).join(' · ')}</span>
                 )}
                 {EXAMPLE_SEO[ex.id] && (
-                  <Link href={`/examples/${ex.id}`} className="ex-card-go">guide <span aria-hidden="true">→</span></Link>
+                  <Link href={`/examples/${ex.id}`} className="ex-card-go">
+                    {hasRecipe(ex.id) ? 'recipe' : 'guide'} <span aria-hidden="true">→</span>
+                  </Link>
                 )}
               </header>
               {site ? <ShowcaseMedia site={site} /> : <div className="ex-card-plate">{ex.preview}</div>}

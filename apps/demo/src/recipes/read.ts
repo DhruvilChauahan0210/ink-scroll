@@ -7,18 +7,20 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { SELF } from '@/data/competitors';
+import { hasRecipe, type RecipeSlug } from './slugs';
 
 export type RecipeFile = { name: string; code: string };
 export type RecipeFiles = { react: RecipeFile[]; html: RecipeFile };
 
 /** Which files make up each recipe, in the order the page shows them. */
-const FILES: Record<string, { react: string[]; html: string }> = {
+const FILES: Record<RecipeSlug, { react: string[]; html: string }> = {
   'logo-reveal': { react: ['LogoReveal.tsx', 'logo-reveal.css'], html: 'index.html' },
+  'scroll-pin': { react: ['FeatureTour.tsx', 'feature-tour.css'], html: 'index.html' },
 };
 
 export function readRecipeFiles(slug: string): RecipeFiles | null {
+  if (!hasRecipe(slug)) return null;
   const spec = FILES[slug];
-  if (!spec) return null;
   const dir = join(process.cwd(), 'src', 'recipes', slug);
   const read = (name: string): RecipeFile => ({
     name,
@@ -27,5 +29,3 @@ export function readRecipeFiles(slug: string): RecipeFiles | null {
   });
   return { react: spec.react.map(read), html: read(spec.html) };
 }
-
-export const RECIPE_SLUGS = Object.keys(FILES);

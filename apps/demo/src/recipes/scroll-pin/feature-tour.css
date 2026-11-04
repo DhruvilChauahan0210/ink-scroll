@@ -1,0 +1,57 @@
+.tour {
+  --ink: #2a1b12;
+  --paper: #f4ede3;
+  --accent: #c4572b;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+/* The stage fills one screen below the header: while pinned, whatever does
+   not fit can never be scrolled to. */
+.tour-stage {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 48px;
+  height: calc(100vh - var(--header));
+  height: calc(100svh - var(--header));
+  padding: 0 6vw;
+}
+
+.tour-art-box { position: relative; aspect-ratio: 5 / 4; }
+.tour-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.tour-art[data-on] { opacity: 1; }
+.tour-art path {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.tour-copy { display: grid; gap: 28px; margin: 0; padding: 0; list-style: none; }
+.tour-copy li { opacity: 0.35; transition: opacity 0.3s ease; }
+.tour-copy li[aria-current] { opacity: 1; }
+.tour-n { font: 600 12px/1 ui-monospace, monospace; color: var(--accent); }
+.tour-copy h3 { margin: 8px 0 6px; font: 600 24px/1.2 system-ui, sans-serif; }
+.tour-copy p { max-width: 36ch; margin: 0; font: 400 16px/1.6 system-ui, sans-serif; }
+
+/* On a phone the stage still has to fit: show one feature at a time. */
+@media (max-width: 720px) {
+  .tour-stage { grid-template-columns: minmax(0, 1fr); align-content: center; gap: 24px; }
+  .tour-art-box { width: 100%; max-width: 280px; margin: 0 auto; }
+  .tour-copy li:not([aria-current]) { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tour-art, .tour-copy li { transition: none; }
+}

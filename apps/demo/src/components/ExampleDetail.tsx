@@ -12,6 +12,7 @@ import { ShowcaseMedia, LiveButton } from '@/showcase/ShowcaseShot';
 import { Recipe } from './recipes/Recipe';
 import { RECIPES } from './recipes/recipes';
 import type { RecipeFiles } from '@/recipes/read';
+import { hasRecipe } from '@/recipes/slugs';
 
 /**
  * `files` is set for an example that has a recipe (read from disk by the
@@ -31,7 +32,7 @@ export function ExampleDetail({ slug, files = null }: { slug: string; files?: Re
   const site = SHOWCASE[slug];
   const n = EXAMPLES.indexOf(example) + 1;
   const pad = (x: number) => String(x).padStart(2, '0');
-  const recipe = files ? RECIPES[slug] : undefined;
+  const recipe = files && hasRecipe(slug) ? RECIPES[slug] : undefined;
 
   return (
     <div className="examples ex-detail">

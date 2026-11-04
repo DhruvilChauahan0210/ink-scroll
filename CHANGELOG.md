@@ -288,6 +288,24 @@ All notable changes to `svg-scroll-draw` are documented here.
   which asks GitHub at most once an hour for everyone (ISR), so no
   visitor's browser calls GitHub.
 
+- **`/examples` points at the recipes.** A card whose page has a full recipe
+  links to it as “recipe →” instead of “guide →”, and a Recipes filter beside
+  the framework filters shows just those. The list of recipe slugs
+  (`src/recipes/slugs.ts`) types both the recipe files and the recipe steps,
+  so a slug added without either does not compile.
+- **The pinned-section example is a full recipe.** `/examples/scroll-pin`
+  builds a feature tour: a stage that fits one screen, pinned for two screens
+  with `scrollPin`, `onProgress` cut into thirds to pick the feature, and each
+  feature's line drawing moved with `seek()` through its third. The live tour
+  pins on the page itself, below its files; the no-build file imports the ES
+  modules from a CDN, since `scrollPin` is not in the script-tag build. Five
+  ways it goes wrong, two of them measured first: pinning a React component's
+  own root throws “The node to be removed is not a child of this node” on
+  unmount and blanks the app, and a `transform` on an ancestor unpins it.
+  `test-recipes` runs the file through the pin — not pinned before, fixed 64px
+  down mid-way with drawings at 1 / 0.5 / 0, released at the end, reset on
+  the way back, fitting a 390×844 screen, finished drawings under reduced
+  motion.
 - **The logo example is a full recipe.** `/examples/logo-reveal` now builds
   the effect in four steps — split the logo into outline and colour, draw only
   the outline, set when and in what order, flood the colour at 100% — each

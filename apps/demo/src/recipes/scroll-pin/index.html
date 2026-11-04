@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pinned feature tour</title>
+  <style>
+    body { margin: 0; }
+    .spacer { height: 100vh; }
+
+    .tour {
+      --ink: #2a1b12;
+      --paper: #f4ede3;
+      --accent: #c4572b;
+      --header: 64px;
+      background: var(--paper);
+      color: var(--ink);
+    }
+
+    /* The stage fills one screen below the header: while pinned, whatever does
+       not fit can never be scrolled to. */
+    .tour-stage {
+      box-sizing: border-box;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      align-items: center;
+      gap: 48px;
+      height: calc(100vh - var(--header));
+      height: calc(100svh - var(--header));
+      padding: 0 6vw;
+    }
+
+    .tour-art-box { position: relative; aspect-ratio: 5 / 4; }
+    .tour-art {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .tour-art[data-on] { opacity: 1; }
+    .tour-art path {
+      fill: none;
+      stroke: var(--ink);
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .tour-copy { display: grid; gap: 28px; margin: 0; padding: 0; list-style: none; }
+    .tour-copy li { opacity: 0.35; transition: opacity 0.3s ease; }
+    .tour-copy li[aria-current] { opacity: 1; }
+    .tour-n { font: 600 12px/1 ui-monospace, monospace; color: var(--accent); }
+    .tour-copy h3 { margin: 8px 0 6px; font: 600 24px/1.2 system-ui, sans-serif; }
+    .tour-copy p { max-width: 36ch; margin: 0; font: 400 16px/1.6 system-ui, sans-serif; }
+
+    /* On a phone the stage still has to fit: show one feature at a time. */
+    @media (max-width: 720px) {
+      .tour-stage { grid-template-columns: minmax(0, 1fr); align-content: center; gap: 24px; }
+      .tour-art-box { width: 100%; max-width: 280px; margin: 0 auto; }
+      .tour-copy li:not([aria-current]) { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .tour-art, .tour-copy li { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="spacer"></div>
+
+  <section class="tour">
+    <div class="tour-stage" id="stage">
+      <div class="tour-art-box">
+        <svg class="tour-art" data-on viewBox="0 0 200 160" aria-hidden="true">
+          <path d="M 8 112 C 44 84 78 88 104 98 S 160 80 192 92" />
+          <path d="M 8 138 C 58 116 122 132 192 120" />
+          <path d="M 30 104 q 7 -11 14 0 q 7 -11 14 0 q 7 -11 14 0 q 7 -11 14 0" />
+          <path d="M 150 26 A 16 16 0 1 1 150 58 A 16 16 0 1 1 150 26" />
+        </svg>
+        <svg class="tour-art" viewBox="0 0 200 160" aria-hidden="true">
+          <path d="M 64 46 H 136 A 32 32 0 0 1 136 110 H 64 A 32 32 0 0 1 64 46 Z" />
+          <path d="M 100 62 A 16 16 0 1 1 100 94 A 16 16 0 1 1 100 62" />
+          <path d="M 120 46 V 24 H 132 V 46" />
+          <path d="M 70 110 V 128 M 130 110 V 128" />
+          <path d="M 100 152 C 88 142 92 132 100 124 C 108 132 112 142 100 152 Z" />
+        </svg>
+        <svg class="tour-art" viewBox="0 0 200 160" aria-hidden="true">
+          <path d="M 50 62 L 100 42 L 150 62 L 150 118 L 100 138 L 50 118 Z" />
+          <path d="M 50 62 L 100 82 L 150 62 M 100 82 V 138" />
+          <path d="M 76 52 L 126 72" />
+          <path d="M 18 96 H 38 M 24 110 H 40" />
+        </svg>
+      </div>
+      <ol class="tour-copy">
+        <li aria-current="step">
+          <span class="tour-n">01</span>
+          <h3>From three farms</h3>
+          <p>A washed Yirgacheffe, a honey Tarrazú and a natural from Huila, bought direct from the people who grow them.</p>
+        </li>
+        <li>
+          <span class="tour-n">02</span>
+          <h3>Roasted on Tuesday</h3>
+          <p>Small batches in Lisbon every Tuesday, so the bag you open was roasted days ago, not months.</p>
+        </li>
+        <li>
+          <span class="tour-n">03</span>
+          <h3>At your door in two days</h3>
+          <p>Packed the morning after roasting and shipped free over €40, in bags you can compost.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <div class="spacer"></div>
+
+  <script type="module">
+    import { scrollDraw } from 'https://cdn.jsdelivr.net/npm/svg-scroll-draw@2.17.1/dist/index.mjs';
+    import { scrollPin } from 'https://cdn.jsdelivr.net/npm/svg-scroll-draw@2.17.1/dist/pin/index.mjs';
+
+    const HEADER = 64; // the height of your sticky header
+    const stage = document.getElementById('stage');
+    const arts = [...stage.querySelectorAll('.tour-art')];
+    const items = [...stage.querySelectorAll('.tour-copy li')];
+    const n = items.length;
+
+    // One drawing per feature, moved by the pin rather than by its own position.
+    const drawings = arts.map((svg) => scrollDraw(svg));
+    drawings.forEach((d) => d.seek(0));
+
+    let shown = 0;
+    scrollPin(stage, {
+      top: HEADER,
+      pinDistance: innerHeight * (n - 1), // three features, two screens of scroll
+      onProgress: (p) => {
+        const i = Math.min(n - 1, Math.floor(p * n));
+        if (i !== shown) {
+          arts[shown].removeAttribute('data-on');
+          items[shown].removeAttribute('aria-current');
+          arts[i].setAttribute('data-on', '');
+          items[i].setAttribute('aria-current', 'step');
+          shown = i;
+        }
+        drawings.forEach((d, j) => d.seek(j < i ? 1 : j > i ? 0 : p * n - i));
+      },
+    });
+  </script>
+</body>
+</html>

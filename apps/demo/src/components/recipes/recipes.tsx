@@ -1,6 +1,9 @@
 import type { ReactNode } from 'react';
+import type { RecipeSlug } from '@/recipes/slugs';
 import { LogoReveal } from '@/recipes/logo-reveal/LogoReveal';
+import { FeatureTour } from '@/recipes/scroll-pin/FeatureTour';
 import { FigFlood, FigLayers, FigSelector, FigStagger } from './logo-figures';
+import { FigPinStates, FigStage, FigThirds, FigThirdsDrawn } from './pin-figures';
 
 /*
  * A recipe turns an example page into a build: numbered steps with a figure
@@ -27,12 +30,21 @@ export type RecipeDef = {
   steps: RecipeStep[];
   /** The complete React component, running — the same file the page lists. */
   live: ReactNode;
+  /**
+   * `side`: a plate beside the files (an element that draws in place).
+   * `full`: across the page under them (a section that pins to the viewport).
+   */
+  liveLayout: 'side' | 'full';
+  /** One line above the complete files. */
+  filesIntro: ReactNode;
+  /** One line above the no-build HTML file. */
+  htmlIntro: ReactNode;
   pitfalls: Pitfall[];
 };
 
 const C = ({ children }: { children: ReactNode }) => <code className="rc-c">{children}</code>;
 
-export const RECIPES: Record<string, RecipeDef> = {
+export const RECIPES: Record<RecipeSlug, RecipeDef> = {
   'logo-reveal': {
     updated: '2026-11-04',
     steps: [
@@ -129,6 +141,14 @@ export const RECIPES: Record<string, RecipeDef> = {
       },
     ],
     live: <LogoReveal />,
+    liveLayout: 'side',
+    filesIntro: (
+      <>
+        Two files, ready to paste into a React or Next.js project with <C>svg-scroll-draw</C> installed. The
+        plate beside them is this exact component, running.
+      </>
+    ),
+    htmlIntro: <>The same logo as one HTML file, with the library from a CDN. Save it and open it in a browser.</>,
     pitfalls: [
       {
         problem: 'Nothing draws',
@@ -176,6 +196,162 @@ export const RECIPES: Record<string, RecipeDef> = {
           <>
             <C>stagger</C> follows the order of the paths in the SVG. Reorder the <C>{'<path>'}</C>{' '}
             elements, not the CSS.
+          </>
+        ),
+      },
+    ],
+  },
+  'scroll-pin': {
+    updated: '2026-11-05',
+    steps: [
+      {
+        title: 'Build a stage that fits one screen',
+        file: 'feature-tour.css · FeatureTour.tsx',
+        body: (
+          <>
+            The stage is what stays put: the drawings and the copy, side by side. While it is pinned it is
+            fixed below your header, so anything taller than the screen can never be scrolled to. Size it to
+            the viewport minus the header, and give CSS the header height from the same constant the script
+            uses.
+          </>
+        ),
+        code: `.tour-stage {
+  height: calc(100vh - var(--header));
+  height: calc(100svh - var(--header));
+}
+
+<div ref={stage} className="tour-stage"
+  style={{ '--header': \`\${HEADER}px\` }}>`,
+        caption: 'one screen',
+        figure: <FigStage />,
+      },
+      {
+        title: 'Pin it for two screens',
+        file: 'FeatureTour.tsx',
+        body: (
+          <>
+            <C>scrollPin</C> wraps the stage in a <C>div</C> as tall as the stage plus <C>pinDistance</C>. The
+            stage scrolls in as usual, stays fixed at <C>top</C> while the wrapper scrolls past, then comes to
+            rest at the wrapper’s bottom. Two screens of <C>pinDistance</C> give three features two-thirds of a
+            screen each.
+          </>
+        ),
+        code: `const pin = scrollPin(stage.current, {
+  top: HEADER,
+  pinDistance: window.innerHeight * (n - 1),
+  onProgress: (p) => { … },
+});
+
+return () => pin.destroy();`,
+        caption: 'before · pinned · after',
+        figure: <FigPinStates />,
+      },
+      {
+        title: 'Let the progress pick the feature',
+        file: 'FeatureTour.tsx',
+        body: (
+          <>
+            <C>onProgress</C> reports 0 where the pin starts and 1 where it ends, on every frame in between.
+            Cut it into thirds: <C>floor(p × 3)</C> is the feature to show. The copy and the drawing for that
+            feature come forward; the others step back.
+          </>
+        ),
+        code: `onProgress: (p) => {
+  const i = Math.min(n - 1, Math.floor(p * n));
+  setActive(i);
+}`,
+        caption: 'progress, in thirds',
+        figure: <FigThirds />,
+      },
+      {
+        title: 'Draw each feature in its third',
+        file: 'FeatureTour.tsx',
+        body: (
+          <>
+            Give each drawing its own <C>scrollDraw</C> and move it from the pin with <C>seek()</C> instead of
+            its own position on the page: earlier features finished, later ones empty, and the current one at{' '}
+            <C>p × 3 − i</C>, how far the reader is through its third.
+          </>
+        ),
+        code: `const drawings = Array.from(stage.current.querySelectorAll('.tour-art'),
+  (svg) => scrollDraw(svg));
+drawings.forEach((d) => d.seek(0));
+
+// inside onProgress
+drawings.forEach((d, j) =>
+  d.seek(j < i ? 1 : j > i ? 0 : p * n - i));`,
+        note: (
+          <>
+            Under reduced motion each drawing is shown finished and <C>seek()</C> does nothing. The pin and the
+            features keep working: pinning is not motion.
+          </>
+        ),
+        caption: 'a third each',
+        figure: <FigThirdsDrawn />,
+      },
+    ],
+    live: <FeatureTour />,
+    liveLayout: 'full',
+    filesIntro: (
+      <>
+        Two files, ready to paste into a React or Next.js project with <C>svg-scroll-draw</C> installed. The
+        section below them is this exact component, running: scroll through it.
+      </>
+    ),
+    htmlIntro: (
+      <>
+        The same tour as one HTML file. <C>scrollPin</C> is not in the script-tag build, so this imports the
+        ES modules from a CDN. Save it and open it in a browser.
+      </>
+    ),
+    pitfalls: [
+      {
+        problem: 'Part of the stage is cut off on a phone',
+        body: (
+          <>
+            A pinned stage taller than the screen keeps its bottom out of reach for as long as it is pinned.
+            Keep it to <C>100svh</C> minus the header, and on a narrow screen show one feature at a time, as the
+            CSS here does below 720px.
+          </>
+        ),
+      },
+      {
+        problem: 'It drifts or scrolls away while pinned',
+        body: (
+          <>
+            While pinned the stage is <C>position: fixed</C>, and an ancestor with a <C>transform</C>,{' '}
+            <C>filter</C>, <C>perspective</C> or <C>contain: paint</C> turns fixed into “fixed to me”. Move the
+            tour out of that ancestor, or drop the property from it.
+          </>
+        ),
+      },
+      {
+        problem: 'The layout changes the moment it pins',
+        body: (
+          <>
+            <C>scrollPin</C> moves the stage into a wrapper <C>div</C>. A selector like{' '}
+            <C>{'.page > .tour-stage'}</C> stops matching, and in a grid or flex parent the wrapper becomes the
+            item. Style the stage by its own class.
+          </>
+        ),
+      },
+      {
+        problem: 'React: “The node to be removed is not a child of this node”',
+        body: (
+          <>
+            The pinned element is the component’s root. React removes its root from where it put it, the
+            stage has moved into the wrapper, and the whole app goes blank on unmount. Pin an element inside
+            your root, as <C>{'<section className="tour">'}</C> does here.
+          </>
+        ),
+      },
+      {
+        problem: 'The tour is the wrong length after the phone rotates',
+        body: (
+          <>
+            <C>pinDistance: window.innerHeight * 2</C> is measured once. Leave <C>pinDistance</C> out and the
+            default, one viewport height, is measured again on every resize; a number you pass stays as it
+            was.
           </>
         ),
       },

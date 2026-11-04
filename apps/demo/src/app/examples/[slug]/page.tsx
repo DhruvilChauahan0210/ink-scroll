@@ -7,6 +7,7 @@ import { EXAMPLE_SEO, SEO_SLUGS } from '@/data/examples-seo';
 import { jsonLd as serialiseJsonLd } from '@/lib/json-ld';
 import { readRecipeFiles } from '@/recipes/read';
 import { RECIPES } from '@/components/recipes/recipes';
+import { hasRecipe } from '@/recipes/slugs';
 
 const SITE_URL = 'https://svg-scroll-draw.vercel.app';
 
@@ -57,7 +58,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 
   const url = `${SITE_URL}/examples/${slug}`;
   const files = readRecipeFiles(slug);
-  const updated = files ? RECIPES[slug]?.updated : undefined;
+  const updated = files && hasRecipe(slug) ? RECIPES[slug].updated : undefined;
 
   const jsonLd = {
     '@context': 'https://schema.org',

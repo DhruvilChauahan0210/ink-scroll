@@ -110,3 +110,19 @@
 
 /* The live site card after a recipe gets its own rule above it. */
 .site .rc-site { border-top: 1px solid var(--line); }
+
+/* A live section that pins to the viewport runs across the page, below its files. */
+.site .rc-files.is-full { grid-template-columns: minmax(0, 1fr); }
+.site .rc-files.is-full .rc-files-code { max-width: 980px; }
+.site .rc-live { margin: clamp(32px, 4vw, 56px) 0 0; border: 1px solid var(--line-2); }
+
+/* ── The pin recipe's diagrams ── */
+.site .rf-frame { fill: none; stroke: var(--fg-3); stroke-width: 1; }
+.site .rf-wrap { fill: none; stroke: var(--fg-3); stroke-width: 1; stroke-dasharray: 3 4; }
+.site .rf-view { fill: none; stroke: var(--fg-2); stroke-width: 1.2; }
+.site .rf-dim { fill: none; stroke: var(--fg-3); stroke-width: 1; }
+.site .rf-art { fill: none; stroke: var(--fg-2); stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
+.site .rf-art-ink { fill: none; stroke: var(--fg); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.site .rf-t-ink { fill: var(--fg); font-size: 10px; }
+.site .rf-row3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; align-items: start; }
+.site .rf-full { width: 100%; }

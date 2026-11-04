@@ -59,24 +59,30 @@ export function Recipe({ recipe, files }: { recipe: RecipeDef; files: RecipeFile
 
       <section className="rc-sec" aria-labelledby="rc-file">
         <Head n={2} k="the whole file" id="rc-file">The complete component</Head>
-        <div className="rc-files">
+        <div className={recipe.liveLayout === 'side' ? 'rc-files' : 'rc-files is-full'}>
           <div className="rc-files-code">
-            <p className="gd-p">
-              Two files, ready to paste into a React or Next.js project with <code className="rc-c">svg-scroll-draw</code>{' '}
-              installed. The plate beside them is this exact component, running.
-            </p>
+            <p className="gd-p">{recipe.filesIntro}</p>
             {files.react.map((f) => (
               <CodeBox key={f.name} file={f.name}>{f.code}</CodeBox>
             ))}
           </div>
-          <div className="rc-files-plate">
-            <Plate n="2.1" caption="this file, running — scroll">{recipe.live}</Plate>
-          </div>
+          {recipe.liveLayout === 'side' && (
+            <div className="rc-files-plate">
+              <Plate n="2.1" caption="this file, running — scroll">{recipe.live}</Plate>
+            </div>
+          )}
         </div>
+        {recipe.liveLayout === 'full' && (
+          <figure className="rc-live">
+            <figcaption className="rc-fig-cap">
+              <span className="rc-fig-n">fig. 2.1</span>
+              <span>this file, running — keep scrolling</span>
+            </figcaption>
+            {recipe.live}
+          </figure>
+        )}
         <h3 className="gd-h3 rc-h3">No build step</h3>
-        <p className="gd-p">
-          The same logo as one HTML file, with the library from a CDN. Save it and open it in a browser.
-        </p>
+        <p className="gd-p">{recipe.htmlIntro}</p>
         <CodeBox file={files.html.name}>{files.html.code}</CodeBox>
       </section>
 
