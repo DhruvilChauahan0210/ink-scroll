@@ -181,7 +181,8 @@ of examining a single API in a real browser.
 - [x] Structured data: `WebSite` + `SoftwareApplication` on home, breadcrumbs on every page, page data on the pages that had none (FAQ/HowTo rich results are limited by Google since 2023; existing ones kept)
 - [ ] Bing Webmaster Tools + IndexNow on deploy
 - [x] `/nextjs-scroll-animation` (position 24, the most impressions after home): full App Router example, FAQ, more internal links
-- [ ] Ship `"use client"` on `svg-scroll-draw/react` (as the drop-in hooks already do) so Server Components can render `<ScrollDraw>` directly
+- [x] Ship `"use client"` on `svg-scroll-draw/react` (as the drop-in hooks already do) so Server Components can render `<ScrollDraw>` directly (2.16.1)
+- [ ] Dev warning for unsupported trigger strings (`'top 100px'` runs as `'top bottom'` silently). Tried for 2.16.1: even one regex and one message cost ~0.1 KB in the main entry (10.7 → 10.8 KB), so it was dropped; a home in `svg-scroll-draw/devtools` would cost the main entry nothing
 - [ ] Request indexing for the 35 unindexed pages, ~10 a day (sitemap resubmitted 2026-11-04: 64 discovered); re-check Page indexing in ~2 weeks
 - [x] Homepage redesign — every chapter a blueprint-grade drawing of a real use case (fountain-pen hero, gallery, watch, proof sheet, balance, API plates, gauges, circuit board, before/after windows, live GitHub + npm stats, drawing-sheet footer), scoped under `.home`
 - [x] Showcase sites — one real demo site per example (all 23), linked from the examples pages; 19 rebuilt to industry level, Aural (scroll-video) sets the bar with a rendered product film

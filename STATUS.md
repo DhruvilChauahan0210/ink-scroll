@@ -1,7 +1,7 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **2.16.0** — published on npm with provenance through `release.yml` (2026-11-01)
-> Tests: **632 unit** across 32 suites · **198 browser tests** per engine (594 runs
+> Current version: **2.16.1** — committed, waiting for the `v2.16.1` tag (2.16.0 is on npm, published with provenance through `release.yml` on 2026-11-01)
+> Tests: **642 unit** across 33 suites · **198 browser tests** per engine (594 runs
 > across Chromium/Firefox/WebKit) · **56 mutations**, each caught by the one test
 > named for it · **91.3% line coverage** (gate 90/90/82/82)
 > Bundle: **10.7 KB gzipped** (main entry as shipped files, chunks included; per-API entries from 0.2 KB) · zero runtime dependencies
@@ -49,7 +49,7 @@
 - [x] `scrollAnimateGroup` + `scrollAnimateSequence` + `scrollParallaxGroup` in `svg-scroll-draw/group`
 
 ### Testing
-- [x] 632 tests across 32 suites — `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollText` (23)
+- [x] 642 tests across 33 suites — `directives` (the built files' "use client"), `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollText` (23)
 - [x] Initial state fix — `createAnimateEngine` and `scrollCounter` now apply correct alpha immediately on init (no flash before IO fires)
 
 ### Browser tests (Phase 2, `packages/svg-scroll-draw/e2e`)
@@ -152,6 +152,12 @@ at all.
 - [x] Share cards on all 64 indexable pages, one renderer (`app/_lib/og.tsx`) in the site's design; figures from `data/`
 - [x] Search titles and descriptions rewritten for `/docs`, `/vs-locomotive-scroll`, `/lenis-scroll-animation`, `/blog/scroll-pin-without-gsap` (page-one rankings, near-zero clicks)
 - [x] Sitemap `lastModified` from git for all 64 URLs, generated groups included (`npm run sitemap:dates`)
+
+### 2.16.1 — Server Components render the components (2026-11-04)
+
+- [x] `"use client"` on `svg-scroll-draw/react` (post-build, never on shared chunks); `directives.test.ts` reads dist; the demo renders `<ScrollDraw>` from a Server Component so `next build` guards it
+- [x] Mutation anchors `reveal/stagger`, `video/scrub`, `video/direction` re-pointed; all 56 run
+- [ ] Released — tag `v2.16.1`
 
 ### 2.16.0 — shared ESM chunks (2026-11-01)
 

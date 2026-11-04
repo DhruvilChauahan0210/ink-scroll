@@ -307,7 +307,9 @@ export default function Hero() {
 }
 ```
 
-> **Next.js App Router:** add `'use client'` to any component that uses these wrappers.
+> **Next.js App Router:** `svg-scroll-draw/react` is marked `"use client"` (from 2.16.1), so a Server
+> Component can render these components directly. Options that are functions, such as `onProgress`,
+> cannot cross from server to client: put those in a `'use client'` component of your own.
 
 #### Vue 3
 

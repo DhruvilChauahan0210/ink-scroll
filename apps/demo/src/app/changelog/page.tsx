@@ -55,6 +55,15 @@ const KINDS: { k: Kind; label: string }[] = [
  */
 const RELEASES: Release[] = [
   {
+    version: '2.16.1',
+    title: 'Server Components render the components',
+    date: '2026-11-04',
+    items: [
+      { type: 'fix', text: 'svg-scroll-draw/react ships with "use client", so a Next.js Server Component can render <ScrollDraw>, <ScrollAnimate> and the rest directly; only options that are functions, such as onProgress, still need a client component of your own. The drop-ins’ React hooks already carried it.' },
+      { type: 'test', text: 'A unit test reads the built files: every React entry starts with the directive and no shared chunk does. The demo renders <ScrollDraw> from a Server Component, so its build fails without the directive. Three mutations whose code had moved (reveal stagger, video scrub and direction) point at it again, so all 56 run.' },
+    ],
+  },
+  {
     version: '2.16.0',
     title: 'Entries share one engine',
     date: '2026-11-01',

@@ -11,29 +11,32 @@ import { CopyCommand } from '@/components/home/CopyCommand';
 import { RenderPath } from '@/components/stack/RenderPath';
 import { SizeBars } from '@/components/stack/SizeBars';
 import { C, Note, Sec, Toc, pad } from '@/components/stack/parts';
+// Rendered from this Server Component: the demo's build fails if the package
+// ever ships svg-scroll-draw/react without its "use client" directive.
+import { ScrollDraw } from 'svg-scroll-draw/react';
 
 const TITLE = 'Next.js Scroll Animation for the App Router, SSR-Safe';
 const DESCRIPTION =
   "Scroll animations for Next.js: one 'use client' component, SSR-safe, no hydration errors. Reveal, pin, text split, SVG draw. 10.7 KB gzip, MIT, TypeScript.";
 
-/** Shown in the hero so the copy-paste answer is above the fold. */
-const HERO_SNIPPET = `// components/FadeUp.tsx
-'use client';
-import { ScrollAnimate } from 'svg-scroll-draw/react';
+/** The copy-paste answer, right under the fold. */
+const HERO_SNIPPET = `// app/page.tsx — a Server Component, no directive
+import { ScrollAnimate, ScrollDraw } from 'svg-scroll-draw/react';
 
-export function FadeUp({ children }: { children: React.ReactNode }) {
+export default function Page() {
   return (
-    <ScrollAnimate
-      props={{ opacity: [0, 1], transform: ['translateY(32px)', 'translateY(0)'] }}
-      once
-    >
-      {children}
-    </ScrollAnimate>
+    <main>
+      <ScrollAnimate props={{ opacity: [0, 1], transform: ['translateY(32px)', 'translateY(0)'] }} once>
+        <h2>Fades up on scroll</h2>
+      </ScrollAnimate>
+      <ScrollDraw>
+        <svg viewBox="0 0 400 24">
+          <path d="M2 12 C 100 2, 300 22, 398 12" fill="none" stroke="currentColor" strokeWidth="2" />
+        </svg>
+      </ScrollDraw>
+    </main>
   );
-}
-
-// app/page.tsx stays a Server Component
-<FadeUp><h2>Fades up on scroll</h2></FadeUp>`;
+}`;
 
 export const metadata: Metadata = {
   title: seoTitle(TITLE),
@@ -190,7 +193,7 @@ components/
 const EXAMPLE: { file: string; lede: ReactNode; code: string }[] = [
   {
     file: 'components/motion.tsx',
-    lede: <>Every animated part lives in one client file. Each is a thin wrapper over a component from <C>svg-scroll-draw/react</C>, which sets up on mount and cleans up on unmount.</>,
+    lede: <>The components work from the page itself; a client file is where your own wrappers go — named, reusable, and the only place callbacks can live. Each sets up on mount and cleans up on unmount.</>,
     code: `'use client';
 
 import type { ReactNode } from 'react';
@@ -260,7 +263,7 @@ export default async function Page() {
 const FAQ: { q: string; a: string }[] = [
   {
     q: 'Does svg-scroll-draw work with React Server Components?',
-    a: "Yes. The page stays a Server Component; only the wrapper that animates needs 'use client', because it runs in the browser. On the server every svg-scroll-draw call returns a no-op instance, so rendering never touches window or document.",
+    a: "Yes. From v2.16.1 the components in svg-scroll-draw/react carry 'use client', so a Server Component renders <ScrollDraw>, <ScrollAnimate> and the rest directly. Only options that are functions, such as onProgress, need a 'use client' file of your own. On the server every svg-scroll-draw call returns a no-op instance, so rendering never touches window or document.",
   },
   {
     q: 'Do I need next/dynamic with ssr: false?',
@@ -359,12 +362,26 @@ export default function NextjsScrollAnimationPage() {
           <div className="stk-main">
 
             {/* ── 01 The answer ─────────────────────────────── */}
-            <Sec n={1} k="the answer" id="answer" title="One client component. The page stays on the server.">
+            <Sec n={1} k="the answer" id="answer" title="Render it from a Server Component.">
               <p className="stk-p">
-                Mark the animated wrapper <C>&apos;use client&apos;</C> and use it from any Server Component —
-                the page itself needs no directive.
+                The components in <C>svg-scroll-draw/react</C> carry <C>&apos;use client&apos;</C> (from v2.16.1), so
+                a Server Component renders them directly: your markup is server-rendered, and the animation starts in
+                the browser. The page needs no directive.
               </p>
-              <CodeBox file="components/FadeUp.tsx">{HERO_SNIPPET}</CodeBox>
+              <CodeBox file="app/page.tsx">{HERO_SNIPPET}</CodeBox>
+              <ScrollDraw className="stk-live">
+                <svg viewBox="0 0 400 24" width="100%" aria-hidden="true">
+                  <path d="M2 12 C 100 2, 300 22, 398 12" fill="none" stroke="currentColor" strokeWidth="2" />
+                </svg>
+              </ScrollDraw>
+              <p className="stk-src">
+                fig. 1 — the line above is that <C>&lt;ScrollDraw&gt;</C>, rendered by this page, a Server Component.
+              </p>
+              <Note k="Callbacks">
+                A function cannot cross from a Server Component to a client one, so options such as <C>onProgress</C> or{' '}
+                <C>onComplete</C> go in a <C>&apos;use client&apos;</C> file of your own, as in the complete example below.
+                On v2.16.0 and earlier, wrap every component that way.
+              </Note>
             </Sec>
 
             {/* ── 02 A complete App Router example ──────────── */}

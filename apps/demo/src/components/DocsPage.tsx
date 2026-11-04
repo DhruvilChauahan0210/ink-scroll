@@ -771,10 +771,10 @@ export function Hero() {
             </CodeBlock>
             <Note>
               The <code className="font-mono">ScrollDraw</code> component is SSR-safe: it renders your markup on the
-              server and starts in <code className="font-mono">useEffect</code>. In the Next.js App Router, render it from a
-              component marked <code className="font-mono">{"'use client'"}</code>; the page around it stays a Server
-              Component. A complete project is in the{' '}
-              <Link href="/nextjs-scroll-animation" className="underline">Next.js guide</Link>.
+              server and starts in <code className="font-mono">useEffect</code>. From v2.16.1 it carries{' '}
+              <code className="font-mono">{"'use client'"}</code>, so a Next.js Server Component can render it directly;
+              callbacks such as <code className="font-mono">onProgress</code> need a client component of your own. A
+              complete project is in the <Link href="/nextjs-scroll-animation" className="underline">Next.js guide</Link>.
             </Note>
           </DocSection>
 

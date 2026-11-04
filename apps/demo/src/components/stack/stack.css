@@ -228,6 +228,8 @@ html:has(.site .stk) { scroll-behavior: smooth; }
   .site .sb-kb { grid-row: 1; grid-column: 2; }
 }
 .site .stk-src { margin: 0; max-width: 72ch; font: 400 12px/1.7 var(--mono); color: var(--fg-3); }
+/* A live figure drawn by the page itself (Next.js: rendered from the Server Component). */
+.site .stk-live { display: block; margin: 22px 0 6px; color: var(--accent); }
 
 /* ── The close: a title-block of specs and the next moves ────────────── */
 

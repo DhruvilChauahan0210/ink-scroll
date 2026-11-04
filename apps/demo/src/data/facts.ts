@@ -1,10 +1,10 @@
 /**
  * Figures the site quotes outside `data/competitors.ts`: the homepage's
  * chapter 06 and the sign-off sheet that closes every page. check:claims reads
- * this comment, so it fails the build if they drift: 632 tests, 198 browser
+ * this comment, so it fails the build if they drift: 642 tests, 198 browser
  * tests per engine.
  */
-export const UNIT_TESTS = 632;
+export const UNIT_TESTS = 642;
 export const BROWSER_TESTS = 198;
 /** scrollReveal's named presets, in the order the library defines them
  * (packages/svg-scroll-draw/src/reveal/index.ts, REVEAL_PRESETS). check:claims

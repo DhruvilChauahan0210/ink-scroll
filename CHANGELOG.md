@@ -302,6 +302,35 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ---
 
+## [2.16.1] — 2026-11-04
+
+### Fixed
+
+- **Server Components can render the React components.** `svg-scroll-draw/react`
+  now ships with `"use client"`, as the drop-ins' hooks already did, so a
+  Next.js Server Component renders `<ScrollDraw>`, `<ScrollAnimate>` and the
+  rest directly. Before, importing one into a Server Component failed the build
+  on the hooks inside. Options that are functions (`onProgress`,
+  `onComplete`…) still need a client component of your own, since a function
+  cannot cross from server to client. The directive is written onto the
+  React entries after the build and reaches no shared chunk, so the plain
+  entries stay usable from server code.
+
+### Tests
+
+- **`directives.test.ts` reads the built files:** every React entry, ESM and
+  CommonJS, starts with the directive, and no other file does. Watched failing
+  with the directive stripped.
+- **The demo renders `<ScrollDraw>` from a Server Component**
+  (`/nextjs-scroll-animation`), so its `next build` — in CI on every push —
+  fails if the directive goes missing. Watched failing.
+- **The mutation harness runs all 56 again.** Three anchors pointed at code
+  that had moved (`reveal/stagger` since 2.15.3's stagger rewrite,
+  `video/scrub` and `video/direction` since the seek-on-change fix); each now
+  targets the current line and was watched failing its test.
+
+---
+
 ## [2.16.0] — 2026-11-01
 
 ### Changed

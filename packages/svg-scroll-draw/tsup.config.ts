@@ -36,8 +36,9 @@ const ENTRIES: Record<string, string> = {
 };
 
 /*
- * React hooks for the drop-ins. "use client" leads each built file so a Next.js
- * App Router layout can render <AOSInit /> without a wrapper of its own.
+ * The React entries: the components (`svg-scroll-draw/react`) and the drop-ins'
+ * hooks. "use client" leads each built file so a Next.js App Router Server
+ * Component can render <ScrollDraw> or <AOSInit /> without a wrapper of its own.
  *
  * It is written after the build rather than as a `banner`: a banner lands on
  * every output file, shared chunks included, and a chunk the plain
@@ -45,7 +46,7 @@ const ENTRIES: Record<string, string> = {
  * client module. Tsup's Rollup pass strips the directive from source anyway
  * ("use client" ... was ignored).
  */
-const USE_CLIENT = ['aos/react/index', 'scrollreveal/react/index', 'vivus/react/index'];
+const USE_CLIENT = ['react/index', 'aos/react/index', 'scrollreveal/react/index', 'vivus/react/index'];
 
 const addUseClient = (ext: '.mjs' | '.cjs') => async () => {
   for (const name of USE_CLIENT) {
