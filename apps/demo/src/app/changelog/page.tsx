@@ -55,6 +55,17 @@ const KINDS: { k: Kind; label: string }[] = [
  */
 const RELEASES: Release[] = [
   {
+    version: '2.18.1',
+    title: 'A strip that follows the page',
+    date: '2026-11-05',
+    items: [
+      { type: 'fix', text: 'scrollHorizontal re-measures when the window, the page, the track or its runway changes size, so a resize, a late image inside a panel or a hero loading above no longer leaves the strip short of its last panel, past it, or moving before the stage pins. A paused or seeked strip keeps its place.' },
+      { type: 'fix', text: 'The default distance is the track minus the sticky stage it is seen through, not minus the window: a strip in a page container narrower than the window reaches its last panel, and a classic scrollbar no longer hides its last 15 px.' },
+      { type: 'test', text: 'Four browser tests on all three engines, seven unit tests, and two new mutations: 63, each caught by the test named for it.' },
+      { type: 'site', text: 'The horizontal scroll post is a full recipe: a case-study strip in five steps, its React and HTML files run in a browser in CI, and five ways it goes wrong, measured on the file.' },
+    ],
+  },
+  {
     version: '2.18.0',
     title: 'A film in a sticky stage',
     date: '2026-11-05',

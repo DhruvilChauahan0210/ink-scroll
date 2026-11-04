@@ -42,10 +42,10 @@ export const POSTS: BlogPost[] = [
     slug: 'horizontal-scroll-sections',
     title: 'Horizontal scroll sections without GSAP — scrollHorizontal',
     description:
-      'The Apple / Stripe product page pattern: vertical scroll drives horizontal movement. Build it with scrollHorizontal from svg-scroll-draw — one call, CSS setup, zero GSAP. Includes React example and sticky layout guide.',
+      'The Apple / Stripe product page pattern: vertical scroll drives horizontal movement. Built as a real case-study strip in five steps with scrollHorizontal, zero GSAP: React and plain-HTML files run in a browser, and the ways it goes wrong, measured.',
     tag: 'How-To',
     tagColor: '#60a5fa',
-    readTime: '6 min read',
+    readTime: '12 min read',
     date: 'June 2026',
   },
   {

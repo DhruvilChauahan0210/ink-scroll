@@ -641,7 +641,7 @@ export default function VerifyPage() {
               </div>
               <p>
                 v2.10.0, merged to <code>main</code> · 531 unit tests + 175 browser tests per engine (525 runs
-                across Chromium, Firefox and WebKit) · 61 mutations, each caught by the one test named for it ·
+                across Chromium, Firefox and WebKit) · 63 mutations, each caught by the one test named for it ·
                 91% line coverage · <code>npm run verify</code> and <code>npm run test:e2e</code> both exit 0
               </p>
             </div>

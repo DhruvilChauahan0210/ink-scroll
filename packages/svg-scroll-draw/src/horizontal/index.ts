@@ -9,7 +9,10 @@ export interface ScrollHorizontalOptions {
    * Total horizontal travel distance in pixels.
    *
    * Default: `track.scrollWidth` minus the width it is seen through — the
-   * viewport, or the `scrollContainer`'s client width when one is given.
+   * content box of the sticky stage around the track; without one, the
+   * `scrollContainer`'s client width, or the viewport's with any scrollbar left
+   * out. Re-measured whenever the layout changes, so leave it out unless you
+   * want a fixed number: a number you pass is used as given.
    */
   distance?: number;
   /**
@@ -55,7 +58,11 @@ export interface ScrollHorizontalOptions {
 }
 
 export interface ScrollHorizontalInstance extends ScrollDrawInstance {
-  /** Recalculate travel distance after layout change. */
+  /**
+   * Re-measure now. The strip already re-measures 150 ms after the window, the
+   * page, the track or its runway changes size; call this when something else
+   * moved it.
+   */
   refresh: () => void;
 }
 
@@ -103,23 +110,41 @@ export function scrollHorizontal(
     onProgress,
   } = options;
 
+  const scrollEl: Element | null =
+    typeof scrollContainer === 'string'
+      ? document.querySelector(scrollContainer)
+      : (scrollContainer ?? null);
+
+  /** The track's nearest `position: sticky` ancestor: the stage it is seen through. */
+  function stickyStage(): HTMLElement | null {
+    for (let node = htmlEl.parentElement; node; node = node.parentElement) {
+      if (window.getComputedStyle(node).position === 'sticky') return node;
+    }
+    return null;
+  }
+
   /**
    * The width the track is seen through.
    *
-   * With a custom `scrollContainer` that is the container's own client width, not
-   * the window's. Measuring against `window.innerWidth` regardless made the
-   * default `distance` wrong by the difference for every nested-container caller:
-   * on a container narrower than the window it overshoots, dragging the last panel
-   * past the left edge and leaving empty space where content should be, and on a
-   * wider one it stops short. Callers had to pass `distance` by hand, which is not
-   * what the option's documented default says.
+   * The sticky stage's content box, when there is one. Measuring the window
+   * instead was only right for a stage exactly as wide as the window: a stage in
+   * a 1000px page container on a 1440px window never showed the last 440px of
+   * the last panel, and the same went for any custom `scrollContainer` narrower
+   * or wider than the window — every such caller had to pass `distance` by hand.
+   *
+   * Without a stage, the scroll container's client width, or the viewport's.
+   * That is `documentElement.clientWidth`, not `window.innerWidth`, which counts
+   * a classic scrollbar: on Windows, and on macOS set to always show them, the
+   * strip stopped with the last 15px of its last panel under the scrollbar.
    */
   function viewportWidth(): number {
-    const scrollEl =
-      typeof scrollContainer === 'string'
-        ? document.querySelector(scrollContainer)
-        : (scrollContainer ?? null);
-    return scrollEl ? scrollEl.clientWidth : window.innerWidth;
+    const stage = stickyStage();
+    if (stage) {
+      const cs = window.getComputedStyle(stage);
+      return stage.clientWidth - (parseFloat(cs.paddingLeft) || 0) - (parseFloat(cs.paddingRight) || 0);
+    }
+    if (scrollEl) return scrollEl.clientWidth;
+    return document.documentElement.clientWidth || window.innerWidth;
   }
 
   function resolveDistance(): number {
@@ -145,20 +170,20 @@ export function scrollHorizontal(
       warn('scrollHorizontal: triggerElement not found:', options.triggerElement);
     }
 
-    for (let node = htmlEl.parentElement; node; node = node.parentElement) {
-      if (window.getComputedStyle(node).position === 'sticky') {
-        return node.parentElement ?? node;
-      }
-    }
+    const stage = stickyStage();
+    if (stage) return stage.parentElement ?? stage;
 
     // No sticky stage — the caller is driving their own layout, so measure the
     // track itself, as this API always has.
     return htmlEl;
   }
 
-  let distance = resolveDistance();
+  let distance  = resolveDistance();
   let triggerEl = resolveTriggerElement();
-  let inner = createAnimateEngine(htmlEl, buildOptions(distance, triggerEl));
+  let inner     = createAnimateEngine(htmlEl, buildOptions(distance, triggerEl));
+  let layout    = layoutKey();
+  /** Progress set by `seek()` or held by `pause()`, carried across a rebuild. */
+  let held: number | null = null;
 
   function buildOptions(dist: number, triggerFrom: Element) {
     return {
@@ -173,18 +198,76 @@ export function scrollHorizontal(
     };
   }
 
+  /** What the scrub was built from: the travel, and where the runway sits and how tall it is. */
+  function layoutKey(): string {
+    const r = triggerEl.getBoundingClientRect();
+    const top = scrollEl
+      ? r.top - scrollEl.getBoundingClientRect().top + scrollEl.scrollTop
+      : r.top + window.scrollY;
+    return `${resolveDistance()} ${Math.round(top)} ${Math.round(r.height)}`;
+  }
+
+  function rebuild(): void {
+    inner.destroy();
+    const next = resolveTriggerElement();
+    const moved = next !== triggerEl;
+    distance  = resolveDistance();
+    triggerEl = next;
+    inner     = createAnimateEngine(htmlEl, buildOptions(distance, triggerEl));
+    layout    = layoutKey();
+    if (held !== null) inner.seek(held);
+    if (moved) watch();
+  }
+
+  /*
+   * Follow the layout. Everything above was measured once, and the page keeps
+   * changing after that: a window resized or a phone turned left the strip
+   * 1200px short of its last panel, or 1200px past it over empty stage; an
+   * image loading inside a panel widened the track and hid 559px of the last
+   * one; and a hero image loading above moved the runway 480px down, so the
+   * strip was a fifth of the way along before the stage had even pinned. No
+   * window resize event fires for either of the last two.
+   *
+   * So the window, the page, the track and the runway are all watched, and the
+   * scrub is rebuilt — debounced, and only when the travel or the runway really
+   * moved. Only `transform` is written here, which no ResizeObserver sees, so
+   * the rebuild cannot feed itself.
+   */
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  function relayout(): void {
+    if (resolveTriggerElement() !== triggerEl || layoutKey() !== layout) rebuild();
+  }
+  function onLayout(): void {
+    clearTimeout(timer);
+    timer = setTimeout(relayout, 150);
+  }
+  window.addEventListener('resize', onLayout);
+  window.addEventListener('orientationchange', onLayout);
+
+  const watcher = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(onLayout) : undefined;
+  function watch(): void {
+    if (!watcher) return;
+    watcher.disconnect();
+    // body, not just documentElement: the latter's box does not follow content
+    // growth in a scrolling document (see the drawing engine).
+    const targets = [document.body, document.documentElement, htmlEl, triggerEl];
+    targets.filter((t, i) => t && targets.indexOf(t) === i).forEach((t) => watcher.observe(t));
+  }
+  watch();
+
   return {
-    destroy()  { inner.destroy(); },
-    replay()   { inner.replay(); },
-    pause()    { inner.pause(); },
-    resume()   { inner.resume(); },
-    seek(p)    { inner.seek(p); },
-    getProgress() { return inner.getProgress(); },
-    refresh() {
+    destroy() {
+      clearTimeout(timer);
+      window.removeEventListener('resize', onLayout);
+      window.removeEventListener('orientationchange', onLayout);
+      watcher?.disconnect();
       inner.destroy();
-      distance  = resolveDistance();
-      triggerEl = resolveTriggerElement();
-      inner     = createAnimateEngine(htmlEl, buildOptions(distance, triggerEl));
     },
+    replay()   { held = null; inner.replay(); },
+    pause()    { inner.pause(); held = inner.getProgress(); },
+    resume()   { held = null; inner.resume(); },
+    seek(p)    { inner.seek(p); held = inner.getProgress(); },
+    getProgress() { return inner.getProgress(); },
+    refresh()  { rebuild(); },
   };
 }

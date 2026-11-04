@@ -87,7 +87,36 @@ publish({
   },
 
   destroyTrack: () => inst.destroy(),
+
+  /** Where the last panel ends against the stage's right edge, untouched by refresh(). */
+  edges: () => ({
+    lastRight: Math.round(panelsNow().at(-1).getBoundingClientRect().right),
+    stageRight: Math.round(document.querySelector('#sticky').getBoundingClientRect().right),
+  }),
+
+  /** A panel added after init, as late content does — no refresh() call. */
+  growTrack: () => {
+    const extra = document.createElement('div');
+    extra.className = 'panel';
+    extra.textContent = '4';
+    track.appendChild(extra);
+  },
+
+  /** Content arriving above the runway, as a late hero image does. */
+  insertAbove: (h) => {
+    const block = document.createElement('div');
+    block.style.height = `${h}px`;
+    outer.before(block);
+  },
+
+  /** Put the strip in a page container narrower than the window. */
+  containStage: (w) => {
+    outer.style.maxWidth = `${w}px`;
+    outer.style.margin = '0 auto';
+  },
 });
+
+function panelsNow() { return [...document.querySelectorAll('.panel')]; }
 </script>
 </body>
 </html>

@@ -186,13 +186,19 @@ You provide the CSS; it drives `translateX`:
 
 ```css
 .outer  { height: 400vh; }
-.sticky { position: sticky; top: 0; height: 100vh; overflow: hidden; }
+.sticky { position: sticky; top: 0; height: 100vh; overflow: clip; }
 .track  { display: flex; width: max-content; }
 ```
 
+`overflow: clip`, not `hidden`: a hidden stage can still be scrolled sideways by
+keyboard focus, which shifts the strip and leaves it shifted. Leave `distance`
+out: the default is measured against the stage and again whenever the window,
+the page, the track or the runway resizes (2.18.1); `refresh()` re-measures on
+demand.
+
 | Option | Type | Default |
 |---|---|---|
-| `distance` | `number` (px) | `track.scrollWidth` − visible width |
+| `distance` | `number` (px) | `track.scrollWidth` − the sticky stage's content width (else the scroll container's or viewport's, scrollbar excluded); re-measured on layout change |
 | `trigger` | `TriggerConfig` | `{ start: 'top top', end: 'bottom bottom' }` |
 | `easing` | `Easing` | `'linear'` |
 | `scrollContainer` | `string \| Element` | window |

@@ -1,8 +1,8 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **2.18.0** — in the working tree, not yet committed or tagged (2.17.1 is the latest on npm)
-> Tests: **662 unit** across 34 suites · **208 browser tests** per engine (624 runs
-> across Chromium/Firefox/WebKit) · **61 mutations**, each caught by the one test
+> Current version: **2.18.1** — committed, waiting on the owner to push the `v2.18.1` tag (2.18.0 is the latest on npm)
+> Tests: **669 unit** across 34 suites · **212 browser tests** per engine (636 runs
+> across Chromium/Firefox/WebKit) · **63 mutations**, each caught by the one test
 > named for it · **91.3% line coverage** (gate 90/90/82/82)
 > Bundle: **10.7 KB gzipped** (main entry as shipped files, chunks included; per-API entries from 0.2 KB) · zero runtime dependencies
 > Last updated: 2026-11-04
@@ -49,11 +49,11 @@
 - [x] `scrollAnimateGroup` + `scrollAnimateSequence` + `scrollParallaxGroup` in `svg-scroll-draw/group`
 
 ### Testing
-- [x] 662 tests across 34 suites — `reactive` (the wrappers' option fingerprint and live callbacks), `directives` (the built files' "use client"), `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollText` (23)
+- [x] 669 tests across 34 suites — `reactive` (the wrappers' option fingerprint and live callbacks), `directives` (the built files' "use client"), `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollText` (23)
 - [x] Initial state fix — `createAnimateEngine` and `scrollCounter` now apply correct alpha immediately on init (no flash before IO fires)
 
 ### Browser tests (Phase 2, `packages/svg-scroll-draw/e2e`)
-208 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
+212 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
 `helpers.ts` (deterministic sweep — scroll to a fixed offset, wait two frames,
 read) and `fixtures/_probe.mjs` (parsing stays in the page, so specs assert on
 numbers).
@@ -68,7 +68,7 @@ numbers).
 - [x] `progress` — accurate raw value across the window, **dependent CSS resolving the variables through `calc()`**, eased ≠ raw, `onProgress`, renamed variable, `easedVariable: null`, clamping, destroy removes the properties
 - [x] `parallax` — travel = speed x height, negative speed reverses, `axis: 'x'` uses width, reverses on the way back, reduced motion, destroy restores
 - [x] `video` — real metadata, `currentTime` tracks scroll, **painted frame verified against `currentTime`** by canvas readback, no write before `loadedmetadata`, reduced motion, destroy
-- [x] `horizontal` — translateX travel matches the sticky track width, every panel measurably reachable, `onProgress`, reverses, reduced motion keeps scrubbing, `refresh()` after a widened track, destroy; and inside a custom `scrollContainer`: distance measured against the container rather than the window, and a re-measure while scrolled that must not move the window
+- [x] `horizontal` — translateX travel matches the sticky track width, every panel measurably reachable, `onProgress`, reverses, reduced motion keeps scrubbing, `refresh()` after a widened track, destroy; following a narrower window, a growing track and content loading above the runway with no `refresh()`, a stage narrower than the window; and inside a custom `scrollContainer`: distance measured against the container rather than the window, and a re-measure while scrolled that must not move the window
 - [x] `animate-parity` — `scrollAnimate`'s own native fast path vs the JS engine across all four named easings, eligibility gate (10 declined configs + a control), `getProgress()` agreeing with what is rendered, reduced motion, destroy removes class/stylesheet/inline styles
 - [x] `group` — draw group members animating together, `seek`/`destroy` reaching every member, the sequence gate (a step held until its predecessor finishes), `once` latching across a scroll-back, chain completion reporting, `scrollAnimateGroup` cascade from per-member windows, `scrollParallaxGroup` travel = speed x **each member's own** height
 - [x] `timeline` — per-track `from`/`to` windows, a track driving every element it matches, per-track easing, `fade`, the `--scroll-draw-progress` custom property, `onComplete`, `seek`/`replay`, `refresh()`, time-driven `loop`, reduced motion (scrubbing continues, the loop does not), `debug` panel lifecycle, destroy restores the paths
@@ -160,14 +160,23 @@ at all.
 - [x] `/examples/scroll-counter` is a full recipe — stat row, three copies per number, held width, shared formatter, a reachable end (`bottom 90%`, measured against the default and `top 45%`); files in `apps/demo/src/recipes/scroll-counter/`
 - [x] `stat-counter-row` block ends its count on `bottom 90%` (was `top 45%`, unreachable near a page's end)
 - [x] `/examples/scroll-video` is a full recipe — pinned film in a sticky stage measured with `triggerElement` (2.18.0); keyframe interval and Range requests measured; files in `apps/demo/src/recipes/scroll-video/`
-- [ ] Next: `/blog/horizontal-scroll-sections` (horizontal strip)
+- [x] `/blog/horizontal-scroll-sections` is a full recipe — a case-study strip: runway matched to the travel, count and rail from `onProgress`, `overflow: clip` + a `focusin` scroll for the keyboard; five pitfalls measured on the file; files in `apps/demo/src/recipes/horizontal-scroll-sections/`; the recipe parts render inside a post's sections
+- [x] The five recipes planned are done (logo, sticky feature section, stat row, scrubbed film, horizontal strip)
 
-### 2.18.0 — scrollVideo `triggerElement` (2026-11-05; not yet released)
+### 2.18.1 — scrollHorizontal follows the layout (2026-11-05)
+
+- [x] Travel and runway re-measured 150 ms after the window, the page, the track or the runway resizes; rebuilt only when either moved; a held (`pause`/`seek`) position survives the rebuild and `refresh()`
+- [x] Default distance = track − the sticky stage's content box; without a stage, the scroll container or `documentElement.clientWidth` (classic scrollbar left out)
+- [x] Four browser tests × 3 engines, seven unit tests, mutations `horizontal/stage-width` and `horizontal/follow-layout` (63 in all); horizontal entry 5.0 KB, budget 5.1
+- [x] Docs: `/docs` scrollHorizontal section, skill API, the complete guide's snippet, the post's API table, CHANGELOG, `/changelog`
+- [ ] Released — waiting on the owner to push the `v2.18.1` tag
+
+### 2.18.0 — scrollVideo `triggerElement` (2026-11-05)
 
 - [x] `scrollVideo({ triggerElement })` measures the window from another element; zero-length window warns
 - [x] Two browser tests (`video-sticky.html`), two unit tests, mutation `video/trigger-element` (61 in all)
 - [x] Docs: npm README table, skill API, `/docs` scrollVideo section (pinned film + encoding), CHANGELOG, `/changelog`
-- [ ] Released — waiting on the owner to push the `v2.18.0` tag
+- [x] Released — `v2.18.0` on `1840983`; the release run passed and npm `latest` is 2.18.0
 
 ### 2.17.1 — once keeps the stagger, and the first recipe (2026-11-04)
 

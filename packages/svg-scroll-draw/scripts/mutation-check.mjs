@@ -234,12 +234,7 @@ const MUTATIONS = [
     id: 'horizontal/trigger-element',
     what: 'the trigger is measured from the sticky-pinned track, collapsing the window to zero',
     file: 'src/horizontal/index.ts',
-    from:
-      '    for (let node = htmlEl.parentElement; node; node = node.parentElement) {\n' +
-      "      if (window.getComputedStyle(node).position === 'sticky') {\n" +
-      '        return node.parentElement ?? node;\n' +
-      '      }\n' +
-      '    }\n',
+    from: '    if (stage) return stage.parentElement ?? stage;\n',
     to: '',
     spec: 'horizontal',
     grep: 'translateX distance matches',
@@ -266,10 +261,28 @@ const MUTATIONS = [
     id: 'horizontal/refresh',
     what: 'refresh() rebuilds with the stale travel distance',
     file: 'src/horizontal/index.ts',
-    from: '      distance  = resolveDistance();\n      triggerEl = resolveTriggerElement();',
-    to: '      triggerEl = resolveTriggerElement();',
+    from: '    distance  = resolveDistance();\n    triggerEl = next;',
+    to: '    triggerEl = next;',
     spec: 'horizontal',
     grep: 'refresh\\(\\) picks up a widened track',
+  },
+  {
+    id: 'horizontal/stage-width',
+    what: 'the travel is measured against the window, so a strip in a narrower page container never shows the end of its last panel',
+    file: 'src/horizontal/index.ts',
+    from: '    if (stage) {\n      const cs = window.getComputedStyle(stage);',
+    to: '    if (stage && stage.isConnected === false) {\n      const cs = window.getComputedStyle(stage);',
+    spec: 'horizontal',
+    grep: 'measured against the stage, not the window',
+  },
+  {
+    id: 'horizontal/follow-layout',
+    what: 'the strip is measured once, so a resize leaves it short of its last panel or past it',
+    file: 'src/horizontal/index.ts',
+    from: '    if (resolveTriggerElement() !== triggerEl || layoutKey() !== layout) rebuild();',
+    to: '    void layout;',
+    spec: 'horizontal',
+    grep: 'follows a narrower window',
   },
   {
     id: 'easing/animate-native-curve',
@@ -429,8 +442,8 @@ const MUTATIONS = [
     id: 'horizontal/container-viewport',
     what: 'the default distance measures against the window even inside a scroll container',
     file: 'src/horizontal/index.ts',
-    from: '    return scrollEl ? scrollEl.clientWidth : window.innerWidth;',
-    to: '    return window.innerWidth;',
+    from: '      return stage.clientWidth - (parseFloat(cs.paddingLeft) || 0) - (parseFloat(cs.paddingRight) || 0);',
+    to: '      return cs && window.innerWidth;',
     spec: 'horizontal',
     grep: 'default distance is measured against the container',
   },

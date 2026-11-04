@@ -16,7 +16,7 @@ const PANEL = 92;
 const PANELS = 4;
 const STAGE_X = 184; // where the sticky stage (the viewport) sits
 const P = 0.5;
-const DIST = (PANELS - 1) * PANEL; // track.scrollWidth − innerWidth
+const DIST = (PANELS - 1) * PANEL; // track width − stage width
 const TRACK_X = STAGE_X - P * DIST;
 const AX0 = 60;
 const AX1 = 380;
@@ -59,7 +59,7 @@ export function HorizontalFigure() {
         {/* distance: panel 1's left edge to panel 4's */}
         <path d={`M${TRACK_X} 166 V178 M${TRACK_X + DIST} 166 V178`} className="b2-ink b2-thin" stroke="currentColor" />
         <path d={`M${TRACK_X + 4} 172 H${TRACK_X + DIST - 4}`} className="b2-ink b2-dim" stroke="currentColor" markerStart="url(#b2-hz-arr)" markerEnd="url(#b2-hz-arr)" />
-        <text x={TRACK_X + DIST / 2} y="192" className="b2-v" textAnchor="middle">distance = track.scrollWidth − innerWidth</text>
+        <text x={TRACK_X + DIST / 2} y="192" className="b2-v" textAnchor="middle">distance = track width − stage width</text>
 
         {/* ── The outer container's runway ── */}
         <path d={`M${AX0 + P * (AX1 - AX0)} 204 V258`} className="b2-ink b2-lead" stroke="currentColor" />

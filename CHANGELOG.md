@@ -288,6 +288,28 @@ All notable changes to `svg-scroll-draw` are documented here.
   which asks GitHub at most once an hour for everyone (ISR), so no
   visitor's browser calls GitHub.
 
+- **The horizontal scroll post is a full recipe.** `/blog/horizontal-scroll-sections`
+  builds a strip of case studies in five steps: a runway, a stage and a track;
+  one `scrollHorizontal` call with no distance; a runway as long as the
+  strip's travel, so a pixel of scroll moves it a pixel (a fixed 400vh moved
+  it 32.8 px per 100 at 1440 wide and 31.6 on a phone); the count and rail
+  from `onProgress`; and the keyboard — `overflow: clip` with a `focusin`
+  handler, because with `hidden` tabbing to the fourth case scrolled the stage
+  615 px and left it there. Its five problems were measured on the file:
+  passing `scrollWidth - innerWidth` (77 px of the last case never shown, and
+  after a resize none of it); `html, body { overflow-x: hidden }` (the stage
+  513 px off the top halfway along); `respectReducedMotion: true` (the first
+  case never on screen); `scrollReveal` inside the strip (the fourth case came
+  on screen already revealed — the post's old "combine" section suggested
+  it); and 2.18.0's measure-once. The recipe parts (`RecipeSteps`,
+  `RecipeFiles`, `RecipePitfalls`) now render inside a post's own sections.
+  `test-recipes` runs the file at 1280 and 390 wide: runway equal to the
+  travel, first case at the start and last case flush at the end, 100 px of
+  strip per 100 px of scroll, a stuck stage, the header inside it, every case
+  reached by Tab with the stage never scrolled, a resize, reduced motion.
+  `/docs`, the skill reference and the complete guide drop the
+  `scrollWidth - innerWidth` distance.
+
 - **The video example is a full recipe.** `/examples/scroll-video` builds a
   pinned product film: encode it with a keyframe every few frames, give the
   scroll room to a tall track behind a sticky stage, measure the track with
@@ -355,6 +377,47 @@ All notable changes to `svg-scroll-draw` are documented here.
   and the GitHub release out of step.
 - **The demo is linted in CI and in `npm run verify`**, with no warnings
   allowed, followed by `check-jsx-text` and `check-nav`.
+
+---
+
+## [2.18.1] — 2026-11-05
+
+### Fixed
+
+- **`scrollHorizontal` follows the layout.** The travel and the runway were
+  measured once, at load, and pages keep changing after that. On 70vw panels,
+  a window resized from 1280 to 800 px ran the strip 1,200 px past its last
+  panel over empty stage, and from 800 to 1280 stopped it 1,200 px short; an
+  image loading inside a panel hid 559 px of the last one; a 480 px hero image
+  loading above the strip had it a fifth of the way along before the stage
+  pinned. The window, the page, the track and the runway are now watched, and
+  the scrub is rebuilt 150 ms after a change, only when the travel or the
+  runway really moved. A paused or `seek()`ed strip keeps its position across
+  the rebuild, and across `refresh()`.
+- **The default distance is measured against the sticky stage.** It
+  subtracted the window's width, which is only right for a stage exactly as
+  wide as the window: in a 1000 px page container on a 1440 px window the last
+  440 px of the last panel never came on screen. It is now the track's width
+  minus the stage's content box (padding left out). Without a sticky stage it
+  is the scroll container's width or the viewport's, now
+  `documentElement.clientWidth`, so a classic scrollbar no longer hides the
+  last 15 px. A `distance` you pass is used as given, as before.
+
+### Size
+
+- The horizontal entry goes from 4.7 to 5.0 KB; its budget from 4.8 to 5.1.
+
+### Tests
+
+- Four browser tests, each on all three engines: a narrower window, a track
+  that grows and content loading above the runway, all followed without
+  `refresh()`, and a stage narrower than the window. Seven unit tests (the
+  stage's content box, the scrollbar, a resize, a passed distance kept with no
+  rebuild, the observed elements, a held position across `refresh()`,
+  `destroy()` stops following). Mutations `horizontal/stage-width` and
+  `horizontal/follow-layout` are new, and `horizontal/trigger-element`,
+  `horizontal/refresh` and `horizontal/container-viewport` were re-anchored on
+  the new code: 63 in all, each caught.
 
 ---
 

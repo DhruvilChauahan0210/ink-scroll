@@ -345,6 +345,126 @@ const browser = await chromium.launch();
   await phone.page.close();
 }
 
+// ── horizontal-scroll-sections (the case-study strip) ────────────────────────
+{
+  const name = 'horizontal-scroll-sections/index.html';
+  const url = `${origin}/horizontal-scroll-sections/index.html`;
+
+  const read = (page) =>
+    page.evaluate(() => {
+      const work = document.getElementById('work');
+      const stage = work.querySelector('.work-stage');
+      const track = work.querySelector('.work-track');
+      const cs = getComputedStyle(stage);
+      const box = stage.getBoundingClientRect();
+      const left = box.left + parseFloat(cs.paddingLeft);
+      const right = box.right - parseFloat(cs.paddingRight);
+      const cases = [...track.children].map((li) => li.getBoundingClientRect());
+      return {
+        x: new DOMMatrix(getComputedStyle(track).transform).m41,
+        travel: track.scrollWidth - (right - left),
+        runway: work.offsetHeight - innerHeight,
+        firstL: cases[0].left - left,
+        lastR: cases[cases.length - 1].right - right,
+        stageTop: Math.round(box.top),
+        count: work.querySelector('.work-count b').textContent,
+        fill: new DOMMatrix(getComputedStyle(work.querySelector('.work-rail span')).transform).a,
+        over: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        // The count and the rail stay on screen while the track overflows the stage.
+        headIn: ['.work-count', '.work-rail'].every((sel) => work.querySelector(sel).getBoundingClientRect().right <= right + 0.5),
+      };
+    });
+  /** Scroll to strip progress p: the runway's top at the viewport's top is 0, its bottom at the viewport's bottom is 1. */
+  const toProgress = async (page, p) => {
+    await page.evaluate((p) => {
+      const w = document.getElementById('work');
+      const top = w.getBoundingClientRect().top + scrollY;
+      scrollTo(0, top + p * (w.offsetHeight - innerHeight));
+    }, p);
+    await page.waitForTimeout(300);
+  };
+  const px = (a, b) => Math.abs(a - b) <= 1.5;
+
+  for (const [width, height] of [[1280, 800], [390, 844]]) {
+    const at = `${name} at ${width}px`;
+    const { page, errors } = await open(browser, null, { url, width, height });
+    let s = await read(page);
+    check(s.travel > 0 && px(s.runway, s.travel), `${at}: the runway (${s.runway}px) is not the strip's travel (${s.travel}px)`);
+    check(s.over === 0, `${at}: the page scrolls sideways by ${s.over}px`);
+    check(s.headIn, `${at}: the count or the rail is past the stage's edge`);
+
+    await toProgress(page, 0);
+    s = await read(page);
+    check(px(s.x, 0) && px(s.firstL, 0) && s.count === '01', `${at}: not on the first case at the start (${JSON.stringify(s)})`);
+
+    // A pixel of scroll moves the strip a pixel, while the stage stays stuck.
+    await toProgress(page, 0.4);
+    const a = await read(page);
+    await page.evaluate(() => scrollBy(0, 100));
+    await page.waitForTimeout(300);
+    const b = await read(page);
+    check(px(a.x - b.x, 100), `${at}: 100px of scroll moved the strip ${(a.x - b.x).toFixed(1)}px`);
+    check(a.stageTop === 0 && b.stageTop === 0, `${at}: the stage is not stuck (${a.stageTop}, ${b.stageTop})`);
+
+    await toProgress(page, 1);
+    s = await read(page);
+    check(px(s.lastR, 0), `${at}: the last case ends ${s.lastR.toFixed(1)}px from the stage's edge`);
+    check(s.count === '04' && px(s.fill, 1), `${at}: at the end the count reads ${s.count} and the rail ${s.fill.toFixed(2)}`);
+    check(errors.length === 0, `${at}: page errors: ${errors.join(' | ')}`);
+    await page.close();
+  }
+
+  // Keyboard: Tab from the top through every case. Each link lands in view,
+  // and the stage itself never scrolls (it would, with overflow: hidden).
+  {
+    const { page } = await open(browser, null, { url });
+    for (let i = 0; i < 4; i++) {
+      for (let k = 0; k < 3; k++) {
+        await page.keyboard.press('Tab');
+        await page.waitForTimeout(350);
+        const at = await page.evaluate(() => [...document.querySelectorAll('.work-link')].indexOf(document.activeElement));
+        if (at === i) break;
+      }
+      const f = await page.evaluate(() => {
+        const a = document.activeElement;
+        const r = a.getBoundingClientRect();
+        return {
+          link: [...document.querySelectorAll('.work-link')].indexOf(a),
+          inView: r.left >= 0 && r.right <= innerWidth && r.top >= 0 && r.bottom <= innerHeight,
+          scrollLeft: document.querySelector('.work-stage').scrollLeft,
+        };
+      });
+      check(f.link === i && f.inView && f.scrollLeft === 0, `${name}: case ${i + 1}'s link, reached with Tab: ${JSON.stringify(f)}`);
+    }
+    await page.close();
+  }
+
+  // A narrower window part-way along: the runway and the travel are re-measured.
+  {
+    const { page } = await open(browser, null, { url });
+    await toProgress(page, 0.5);
+    await page.setViewportSize({ width: 820, height: 800 });
+    await page.waitForTimeout(450);
+    let s = await read(page);
+    check(px(s.runway, s.travel), `${name}: after a resize the runway (${s.runway}px) is not the travel (${s.travel}px)`);
+    await toProgress(page, 1);
+    s = await read(page);
+    check(px(s.lastR, 0), `${name}: after a resize the last case ends ${s.lastR.toFixed(1)}px from the stage's edge`);
+    await page.close();
+  }
+
+  // Reduced motion: it still scrubs, so every case can be reached.
+  {
+    const { page } = await open(browser, null, { url, reducedMotion: 'reduce' });
+    await toProgress(page, 0);
+    const first = await read(page);
+    await toProgress(page, 1);
+    const last = await read(page);
+    check(px(first.firstL, 0) && px(last.lastR, 0), `${name}: under reduced motion the strip does not run from the first case to the last`);
+    await page.close();
+  }
+}
+
 await browser.close();
 server.close();
 
@@ -352,4 +472,4 @@ if (failures.length) {
   console.error(`✗ ${failures.length} recipe check(s) failed:\n` + failures.map((f) => `  ${f}`).join('\n'));
   process.exit(1);
 }
-console.log('✓ every recipe file works in a browser (logo-reveal, scroll-pin, scroll-counter, scroll-video)');
+console.log('✓ every recipe file works in a browser (logo-reveal, scroll-pin, scroll-counter, scroll-video, horizontal-scroll-sections)');

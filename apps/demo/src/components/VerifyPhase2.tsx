@@ -277,8 +277,8 @@ export function HorizontalTriggerProof() {
     // mount reads a half-laid-out box, which produced both a wrong travel distance
     // and a misleading non-zero first reading on the "old" strip.
     const raf = requestAnimationFrame(() => {
-      // Explicit distance: the default subtracts window.innerWidth, which is the
-      // wrong measure inside a nested scroll container.
+      // Explicit distance, the same for both, so the two strips differ only in
+      // the element their trigger window is measured from.
       const distance = (track: HTMLDivElement) => track.scrollWidth - box.clientWidth;
 
       oldInst = scrollHorizontal(oldTrack, {

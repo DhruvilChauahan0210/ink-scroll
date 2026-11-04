@@ -162,6 +162,68 @@ test.describe('scrollHorizontal', () => {
 });
 
 /**
+ * The strip follows the layout without `refresh()`.
+ *
+ * Everything was measured once at init, and pages keep changing after that.
+ * Measured before the fix on 70vw panels: a window resized 1280 → 800 ran the
+ * strip 1200px past its last panel over empty stage, and 800 → 1280 stopped it
+ * 1200px short; a late image in a panel hid 559px of the last one; a 480px hero
+ * loading above had the strip a fifth of the way along before the stage pinned.
+ */
+const RELAYOUT = 300; // the re-measure is debounced by 150ms
+
+test.describe('scrollHorizontal follows the layout', () => {
+  test('follows a narrower window without refresh()', async ({ page }) => {
+    await openFixture(page, 'horizontal.html');
+    await page.setViewportSize({ width: 700, height: 800 });
+    await page.waitForTimeout(RELAYOUT);
+
+    await scrollToY(page, T_END);
+    const end = await call<{ lastRight: number; stageRight: number }>(page, 'edges');
+    expect(end.stageRight).toBe(700);
+    expect(end.lastRight, 'the last panel does not end at the stage edge').toBe(end.stageRight);
+    expect((await read<Row>(page)).x).toBeCloseTo(-(3600 - 700), 0);
+  });
+
+  test('follows a track that grows after init', async ({ page }) => {
+    await openFixture(page, 'horizontal.html');
+    await call(page, 'growTrack');
+    await page.waitForTimeout(RELAYOUT);
+
+    await scrollToY(page, T_END);
+    expect((await read<Row>(page)).x, 'the added panel is never reached').toBeCloseTo(-(DISTANCE + 900), 0);
+  });
+
+  test('content loading above the runway moves the scrub with it', async ({ page }) => {
+    await openFixture(page, 'horizontal.html');
+    await call(page, 'insertAbove', 480);
+    await page.waitForTimeout(RELAYOUT);
+
+    // Not yet moving when the stage pins, finished exactly when it lets go.
+    await scrollToY(page, T_START + 480);
+    expect((await read<Row>(page)).x, 'the strip started before the stage pinned').toBeCloseTo(0, 0);
+    await scrollToY(page, 2000 + 480);
+    expect((await read<Row>(page)).x).toBeCloseTo(-DISTANCE * alphaAt(2000), 0);
+    await scrollToY(page, T_END + 480);
+    expect((await read<Row>(page)).x).toBeCloseTo(-DISTANCE, 0);
+  });
+
+  test('the travel is measured against the stage, not the window', async ({ page }) => {
+    await openFixture(page, 'horizontal.html');
+    await call(page, 'containStage', 600);
+    await page.waitForTimeout(RELAYOUT);
+
+    await scrollToY(page, T_END);
+    const end = await call<{ lastRight: number; stageRight: number }>(page, 'edges');
+    expect(
+      end.lastRight,
+      `last panel ends at ${end.lastRight}, the stage at ${end.stageRight}`,
+    ).toBe(end.stageRight);
+    expect((await read<Row>(page)).x).toBeCloseTo(-(3600 - 600), 0);
+  });
+});
+
+/**
  * The same API driven by a custom `scrollContainer` rather than the window.
  *
  * Fixture: a 700x600 `overflow: auto` container — deliberately narrower than the

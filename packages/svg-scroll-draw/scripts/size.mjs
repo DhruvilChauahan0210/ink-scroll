@@ -62,7 +62,9 @@ const BUDGETS_KB = {
   // The vivus drop-in (vivus 0.4.6 itself is 4.1 KB).
   vivus:             4.2,
   'cdn-vivus':       4.2,
-  horizontal:        4.8,
+  // 4.7 -> 5.0 in 2.18.1: it follows the layout (ResizeObserver, a rebuild only
+  // when the travel or the runway moved) and measures against its sticky stage.
+  horizontal:        5.1,
   timeline:          3.9,
   text:              2.9,
   video:             2.4,

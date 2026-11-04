@@ -34,8 +34,8 @@ Works in **React · Next.js · Vue 3 · Svelte · Solid · Angular · Nuxt · As
 - **30+ options** — easing, stagger, fade, stroke color/width lerp, fill opacity, clip reveal, morphTo, velocityScale, waypoints, callbacks, repeat, autoReverse, and more
 - **Group / Sequence / Timeline APIs** — animate multiple containers simultaneously, one-after-another, or on independent scroll windows with `loop` for auto-looping after scroll completion
 - **CSS custom property** — `--scroll-draw-progress` is set on every frame so you can drive any CSS animation without a callback
-- **662 tests across 34 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
-- **208 browser tests on top of those**, run against Chromium, Firefox and WebKit in CI. The unit suite runs in jsdom, where `getTotalLength` is stubbed and `IntersectionObserver` is faked — it can check the engine's arithmetic but nothing about real browser behaviour. Both counts are derived from the suites themselves and enforced in CI, so neither can quietly drift out of date
+- **669 tests across 34 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
+- **212 browser tests on top of those**, run against Chromium, Firefox and WebKit in CI. The unit suite runs in jsdom, where `getTotalLength` is stubbed and `IntersectionObserver` is faked — it can check the engine's arithmetic but nothing about real browser behaviour. Both counts are derived from the suites themselves and enforced in CI, so neither can quietly drift out of date
 
 ---
 
@@ -813,7 +813,7 @@ outgrows its budget.
 | `svg-scroll-draw/group`              | 28.6 KB | **9.4 KB** |
 | `svg-scroll-draw/web-component`      | 19.7 KB | **7.0 KB** |
 | `svg-scroll-draw/reveal`             | 12.1 KB | **5.0 KB** |
-| `svg-scroll-draw/horizontal`         | 11.5 KB | **4.7 KB** |
+| `svg-scroll-draw/horizontal`         | 12.5 KB | **5.0 KB** |
 | `svg-scroll-draw/scrollreveal/react` | 11.7 KB | **4.7 KB** |
 | `svg-scroll-draw/scrollreveal`       | 11.4 KB | **4.5 KB** |
 | `dist/cdn/scrollreveal.global.js`    | 11.1 KB | **4.5 KB** |

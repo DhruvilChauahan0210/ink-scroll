@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Horizontal case-study strip</title>
+  <style>
+    body { margin: 0; background: #eceef1; }
+    .spacer { height: 100vh; }
+
+    /* The runway: the strip's travel (set from the script) plus the one screen the
+       stage stays stuck for, so a pixel of scroll moves the strip a pixel. */
+    .work {
+      --ink: #161b22;
+      --paper: #eceef1;
+      --accent: #3056d3;
+      --line: rgba(22, 27, 34, 0.16);
+      height: calc(var(--travel, 200vh) + 100vh);
+      height: calc(var(--travel, 200vh) + 100svh);
+      background: var(--paper);
+      color: var(--ink);
+    }
+
+    /* clip, not hidden: a hidden box can still be scrolled by focus, which shifts
+       the whole strip and leaves it shifted. */
+    .work-stage {
+      position: sticky;
+      top: 0;
+      box-sizing: border-box;
+      display: grid;
+      /* minmax(0, 1fr): an auto column would grow to the track's full width,
+         and take the header with it. */
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: auto minmax(0, 1fr);
+      gap: clamp(20px, 4vh, 40px);
+      height: 100vh;
+      height: 100svh;
+      padding: clamp(24px, 7vh, 72px) 6vw;
+      overflow: clip;
+      container-type: inline-size;
+    }
+
+    .work-head { display: flex; align-items: center; gap: 16px; }
+    .work-h { margin: 0; font: 600 clamp(24px, 3vw, 36px)/1.1 system-ui, sans-serif; letter-spacing: -0.01em; }
+    .work-count { flex: none; margin: 0 0 0 auto; font: 500 13px/1 ui-monospace, monospace; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .work-rail { position: relative; flex: 0 0 min(24vw, 200px); height: 2px; background: var(--line); }
+    .work-rail span { position: absolute; inset: 0; background: var(--ink); transform: scaleX(0); transform-origin: left; }
+
+    /* As wide as its cases, so it can be measured and moved. */
+    .work-track {
+      display: flex;
+      gap: 24px;
+      width: max-content;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    /* Narrower than the stage (cqw: its width, wherever it is placed), so the
+       next case shows at the edge. */
+    .work-case {
+      display: flex;
+      flex-direction: column;
+      width: min(78cqw, 520px);
+      min-height: 0;
+    }
+    .work-cover {
+      box-sizing: border-box;
+      flex: 1 1 auto;
+      min-height: 0;
+      width: 100%;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+    .work-cover path { fill: none; stroke: var(--ink); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .work-n { margin: 16px 0 0; font: 600 12px/1 ui-monospace, monospace; color: var(--accent); }
+    .work-title { margin: 8px 0 6px; font: 600 clamp(19px, 2vw, 24px)/1.2 system-ui, sans-serif; }
+    .work-text { max-width: 44ch; margin: 0; font: 400 15px/1.55 system-ui, sans-serif; opacity: 0.8; }
+    .work-meta { margin: 8px 0 0; font: 400 13px/1.4 system-ui, sans-serif; opacity: 0.6; }
+    .work-link {
+      align-self: flex-start;
+      margin-top: 10px;
+      font: 500 15px/1.4 system-ui, sans-serif;
+      color: var(--ink);
+      text-underline-offset: 3px;
+    }
+    .work-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+    /* html, body { overflow-x: hidden } would unstick the stage; if a reset needs
+       to stop sideways scrolling, use overflow-x: clip there too. */
+  </style>
+</head>
+<body>
+  <div class="spacer"></div>
+
+  <section class="work" id="work" aria-labelledby="work-h">
+    <div class="work-stage">
+      <header class="work-head">
+        <h2 id="work-h" class="work-h">Selected work</h2>
+        <p class="work-count" aria-hidden="true"><b>01</b> / 04</p>
+        <span class="work-rail" aria-hidden="true"><span></span></span>
+      </header>
+      <ol class="work-track">
+        <li class="work-case">
+          <svg class="work-cover" viewBox="0 0 200 150" aria-hidden="true">
+            <path d="M 40 92 L 160 92 L 148 108 L 52 108 Z" />
+            <path d="M 70 92 V 76 H 128 V 92" />
+            <path d="M 112 76 V 62 H 122 V 76" />
+            <path d="M 20 122 q 10 -8 20 0 t 20 0 t 20 0 t 20 0 t 20 0 t 20 0 t 20 0 t 20 0" />
+          </svg>
+          <p class="work-n">01 · Tidewater Ferries</p>
+          <h3 class="work-title">A timetable you can read from the pier</h3>
+          <p class="work-text">Signs and a printed timetable for six crossings, set large enough to read with a bag in each hand.</p>
+          <p class="work-meta">Wayfinding · 2025</p>
+          <a class="work-link" href="/work/tidewater-ferries">Read the case study</a>
+        </li>
+        <li class="work-case">
+          <svg class="work-cover" viewBox="0 0 200 150" aria-hidden="true">
+            <path d="M 60 62 L 100 46 L 140 62 L 140 108 L 100 124 L 60 108 Z" />
+            <path d="M 60 62 L 100 78 L 140 62 M 100 78 V 124" />
+            <path d="M 82 54 Q 100 34 118 54" />
+          </svg>
+          <p class="work-n">02 · Hollow Oak Bakery</p>
+          <h3 class="work-title">Boxes that survive the bike courier</h3>
+          <p class="work-text">A fold-flat box for loaves and tarts, tested on cobbles, that the bakery folds in eleven seconds.</p>
+          <p class="work-meta">Packaging · 2025</p>
+          <a class="work-link" href="/work/hollow-oak-bakery">Read the case study</a>
+        </li>
+        <li class="work-case">
+          <svg class="work-cover" viewBox="0 0 200 150" aria-hidden="true">
+            <path d="M 58 50 V 112 H 74 V 50 Z" />
+            <path d="M 78 42 V 112 H 92 V 42 Z" />
+            <path d="M 100 56 L 113 52 L 130 110 L 117 114 Z" />
+            <path d="M 44 112 H 156" />
+          </svg>
+          <p class="work-n">03 · Northfield Library</p>
+          <h3 class="work-title">Late returns, without the guilt</h3>
+          <p class="work-text">Reminder letters and a returns page rewritten so that people come back instead of staying away.</p>
+          <p class="work-meta">Service design · 2024</p>
+          <a class="work-link" href="/work/northfield-library">Read the case study</a>
+        </li>
+        <li class="work-case">
+          <svg class="work-cover" viewBox="0 0 200 150" aria-hidden="true">
+            <path d="M 40 52 L 80 42 L 120 52 L 160 42 V 108 L 120 118 L 80 108 L 40 118 Z" />
+            <path d="M 80 42 V 108 M 120 52 V 118" />
+            <path d="M 52 100 C 70 80 90 96 104 76 S 138 72 148 58" />
+          </svg>
+          <p class="work-n">04 · Meridian Cycling Club</p>
+          <h3 class="work-title">Route maps that fold into a jersey pocket</h3>
+          <p class="work-text">Twelve club routes on one sheet, with the climbs drawn to scale and the cafés where they matter.</p>
+          <p class="work-meta">Print · 2024</p>
+          <a class="work-link" href="/work/meridian-cycling-club">Read the case study</a>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <div class="spacer"></div>
+
+  <script type="module">
+    import { scrollHorizontal } from 'https://cdn.jsdelivr.net/npm/svg-scroll-draw@2.18.1/dist/horizontal/index.mjs';
+
+    const work = document.getElementById('work');
+    const stage = work.querySelector('.work-stage');
+    const track = work.querySelector('.work-track');
+    const count = work.querySelector('.work-count b');
+    const fill = work.querySelector('.work-rail span');
+    const n = track.children.length;
+
+    // How far the strip travels: its width minus the stage's content box.
+    const travel = () => {
+      const cs = getComputedStyle(stage);
+      const seen = stage.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+      return Math.max(0, track.scrollWidth - seen);
+    };
+
+    // A pixel of scroll moves the strip a pixel: the runway is the strip's
+    // travel plus the one screen the stage stays stuck for.
+    const fit = () => work.style.setProperty('--travel', `${travel()}px`);
+    fit();
+    const ro = new ResizeObserver(fit);
+    ro.observe(track);
+    ro.observe(stage);
+
+    let shown = 0;
+    scrollHorizontal(track, {
+      onProgress: (p) => {
+        fill.style.transform = `scaleX(${p})`;
+        const i = Math.round(p * (n - 1));
+        if (i !== shown) {
+          count.textContent = String(i + 1).padStart(2, '0');
+          shown = i;
+        }
+      },
+    });
+
+    // The stage cannot scroll (overflow: clip), so a case reached with Tab is
+    // brought into view by scrolling the page to it — on the next frame, after
+    // the browser's own scroll to the focused link.
+    track.addEventListener('focusin', (e) => {
+      const item = e.target.closest('li');
+      if (!item) return;
+      const t = travel();
+      // How far into the track the case starts. Both boxes carry the same
+      // translateX, so it cancels out.
+      const at = item.getBoundingClientRect().left - track.getBoundingClientRect().left;
+      const p = t > 0 ? Math.min(1, at / t) : 0;
+      const top = work.getBoundingClientRect().top + scrollY + p * (work.offsetHeight - innerHeight);
+      requestAnimationFrame(() => scrollTo({ top }));
+    });
+  </script>
+</body>
+</html>

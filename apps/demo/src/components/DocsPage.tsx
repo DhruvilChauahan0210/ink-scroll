@@ -2042,28 +2042,22 @@ scrollProgress('#section', {
 
 // Minimal CSS:
 // .outer  { height: 400vh; }
-// .sticky { position: sticky; top: 0; height: 100vh; overflow: hidden; }
+// .sticky { position: sticky; top: 0; height: 100vh; overflow: clip; }
 // .track  { display: flex; width: max-content; }
 
+// No distance: the track's width minus the sticky stage's, measured
+// again whenever the window, the page, the track or the runway resizes.
 const inst = scrollHorizontal('.track', {
-  distance: window.innerWidth * 3,  // total horizontal travel
-  easing:   'linear',               // scrub feel
-  trigger: {
-    start: 'top top',
-    end:   'bottom bottom',
-  },
   onProgress: (p) => dots.setActive(Math.round(p * 3)),
 });
 
 // React
 useEffect(() => {
-  const inst = scrollHorizontal(trackRef.current, {
-    distance: trackRef.current.scrollWidth - window.innerWidth,
-  });
+  const inst = scrollHorizontal(trackRef.current);
   return () => inst.destroy();
 }, []);
 
-inst.refresh();  // recalculate after layout change
+inst.refresh();  // re-measure now, after a change nothing resized
 inst.destroy();  // cleanup`}
             </CodeBlock>
             <div className="overflow-x-auto mt-4">
@@ -2078,7 +2072,7 @@ inst.destroy();  // cleanup`}
                 </thead>
                 <tbody>
                   {[
-                    ['distance',             'number',                    'scrollWidth − innerWidth', 'Total horizontal travel in px. Defaults to the full content width minus one viewport.'],
+                    ['distance',             'number',                    'track − stage', 'Total horizontal travel in px. Defaults to the track’s width minus the content box of its sticky stage (or, without one, the scroll container’s or the viewport’s width, scrollbar left out), and is measured again when the layout changes (2.18.1). A number you pass is used as given.'],
                     ['trigger',              'TriggerConfig',             '{ start: "top top", end: "bottom bottom" }', 'Scroll window the travel is mapped across.'],
                     ['easing',               'EasingName | fn',           '"linear"',      'Easing for the movement. Linear gives the scrub feel.'],
                     ['triggerElement',       'string | Element',          'sticky parent', 'Element whose height defines the scroll window. Defaults to the container of the track’s nearest position:sticky ancestor — the element that actually holds the scroll room. A sticky-pinned track is only one viewport tall, so measuring against it would give a zero-length window and no movement.'],

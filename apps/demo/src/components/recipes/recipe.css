@@ -144,3 +144,17 @@
 /* ── The scrubbed-film recipe's figures ── */
 .site .rf-key { fill: var(--fg); stroke: none; }
 .site .rf-frm { fill: none; stroke: var(--fg-3); stroke-width: 0.8; }
+
+/* ── A recipe inside a blog post: one column, in the post's own sections ── */
+.site .rc-in-post .rc-step { grid-template-columns: minmax(0, 1fr); }
+.site .rc-in-post .rc-fig { max-width: 560px; }
+.site .rc-in-post .rc-files.is-full .rc-files-code { max-width: none; }
+.site .rc-in-post .rc-h3 { margin-top: clamp(32px, 4vw, 48px); }
+
+/* ── The case-study strip, running on this site ──
+   The site's nav is fixed over the top of the screen, so the stuck stage keeps
+   its content below it; the padding is vertical only, so the travel the strip
+   measures is unchanged. And the site's own link reset would take the
+   underline off the case links. */
+.site .rc-live .work-stage { padding-top: calc(var(--nav-h) + 20px); }
+.site .rc-live .work-link { text-decoration: underline; }

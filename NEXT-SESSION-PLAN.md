@@ -1,6 +1,6 @@
 # Next Session Plan — svg-scroll-draw
 
-> Updated: 2026-11-05 — **2.18.0 ready to tag** (`scrollVideo` `triggerElement`; four recipes). **2.17.1 published** (`v2.17.1` on `ed77b58`: `once` keeps `stagger`; the logo example is a full recipe). Recipe 2, the pinned feature tour on `/examples/scroll-pin`, is done (site-only). **2.17.0 published** (`v2.17.0` on `d7b03b2`: the React, Vue, Nuxt, Solid and Svelte wrappers follow option changes, Angular gets `update()` for `ngOnChanges`). **2.16.1 published** (`v2.16.1` on `b3eb52a`) (`svg-scroll-draw/react` ships `"use client"` so Server Components render `<ScrollDraw>` directly; all 56 mutations run again). **2.16.0 published** (`v2.16.0` on `fde9f4c`: ES module entries share code through chunks — main + react 18.1 → 13.2 KB; the drop-ins share one instance with their React hooks; size tables generated; main entry 10.7 KB as shipped files). **2.15.3 published** (`v2.15.3` on `acc9acc`: scrollReveal's `stagger` is a fraction of the reveal window, per row, on top of a custom trigger; 2.15.2 before it kept scrollVideo's end frame under reduced motion). Every page is linked from every page (nav "More", phone menu, footer index — `components/site/sitemap.ts`, guarded by `check-nav`). Sitemap dates come from git for every URL, generated groups included — Search Console (2026-11-04) had 20 indexed, 35 "Discovered – not indexed" (never crawled), 2 "Crawled – not indexed". The native CSS path is no longer described as compositor work anywhere, and `/vs-aos` quotes the reveal entry and the real presets. Every page is on the homepage design and all 23 showcase sites are built — in `32f3409`, on `main`.
+> Updated: 2026-11-05 — **2.18.1 ready to tag** (`scrollHorizontal` follows the layout and measures against its sticky stage; the horizontal strip recipe, the fifth and last planned). **2.18.0 published** (`v2.18.0` on `1840983`: `scrollVideo` `triggerElement`; four recipes). **2.17.1 published** (`v2.17.1` on `ed77b58`: `once` keeps `stagger`; the logo example is a full recipe). Recipe 2, the pinned feature tour on `/examples/scroll-pin`, is done (site-only). **2.17.0 published** (`v2.17.0` on `d7b03b2`: the React, Vue, Nuxt, Solid and Svelte wrappers follow option changes, Angular gets `update()` for `ngOnChanges`). **2.16.1 published** (`v2.16.1` on `b3eb52a`) (`svg-scroll-draw/react` ships `"use client"` so Server Components render `<ScrollDraw>` directly; all 56 mutations run again). **2.16.0 published** (`v2.16.0` on `fde9f4c`: ES module entries share code through chunks — main + react 18.1 → 13.2 KB; the drop-ins share one instance with their React hooks; size tables generated; main entry 10.7 KB as shipped files). **2.15.3 published** (`v2.15.3` on `acc9acc`: scrollReveal's `stagger` is a fraction of the reveal window, per row, on top of a custom trigger; 2.15.2 before it kept scrollVideo's end frame under reduced motion). Every page is linked from every page (nav "More", phone menu, footer index — `components/site/sitemap.ts`, guarded by `check-nav`). Sitemap dates come from git for every URL, generated groups included — Search Console (2026-11-04) had 20 indexed, 35 "Discovered – not indexed" (never crawled), 2 "Crawled – not indexed". The native CSS path is no longer described as compositor work anywhere, and `/vs-aos` quotes the reveal entry and the real presets. Every page is on the homepage design and all 23 showcase sites are built — in `32f3409`, on `main`.
 
 ---
 
@@ -98,12 +98,22 @@ months, 81% to the homepage; `/vs-gsap` at position 11 with 425 impressions.
    other six wrappers live) — a `MutationObserver` / `observedAttributes` would close it.
 4. Recipes, one at a time, on the pages that already target each search
    (pattern: `src/recipes/<slug>/` files + `components/recipes/recipes.tsx`
-   steps and pitfalls + a check in `scripts/test-recipes.mjs`). Done: logo
-   (`/examples/logo-reveal`), pinned feature tour (`/examples/scroll-pin`),
-   stat row (`/examples/scroll-counter`), pinned film (`/examples/scroll-video`).
-   Next: horizontal strip (`/blog/horizontal-scroll-sections`).
-   Then more distinct framework pages and more blocks.
-5. Fold `firefox-native` into `firefox` once Playwright bundles Firefox 159+.
+   steps and pitfalls + a check in `scripts/test-recipes.mjs`; a blog post
+   uses `POST_RECIPE_SLUGS` and places `RecipeSteps` / `RecipeFiles` /
+   `RecipePitfalls` in its own sections, as `components/recipes/StripRecipe.tsx`
+   does). All five planned are done: logo (`/examples/logo-reveal`), pinned
+   feature tour (`/examples/scroll-pin`), stat row (`/examples/scroll-counter`),
+   pinned film (`/examples/scroll-video`), case-study strip
+   (`/blog/horizontal-scroll-sections`). Next: more distinct framework pages
+   and more blocks.
+5. The shared animate engine (`scrollAnimate`, `scrollReveal`, groups, the
+   wrappers) re-measures its trigger window only on a window resize, so content
+   loading above an element shifts it — the bug 2.18.1 fixed for
+   `scrollHorizontal` alone. The engine-wide fix needs care: an animation that
+   writes a size (`height`, `padding`) to its own trigger element would make a
+   ResizeObserver feed itself. Measure on the JS path (Firefox, older Safari)
+   before deciding.
+6. Fold `firefox-native` into `firefox` once Playwright bundles Firefox 159+.
 
 ---
 

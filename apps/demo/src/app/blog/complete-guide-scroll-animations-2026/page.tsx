@@ -265,15 +265,15 @@ scrollVideo('#hero-video', {
         </p>
         <Code file="app.js">{`import { scrollHorizontal } from 'svg-scroll-draw/horizontal';
 
-// CSS: .outer{height:400vh} .sticky{position:sticky;top:0;height:100vh;overflow:hidden}
+// CSS: .outer{height:400vh} .sticky{position:sticky;top:0;height:100vh;overflow:clip}
 // .track{display:flex;width:max-content}
 
-scrollHorizontal('.track', {
-  distance: document.querySelector('.track').scrollWidth - window.innerWidth,
-  easing:   'linear',
-});`}</Code>
+// The travel is measured from the track and its sticky stage, and again
+// whenever the layout changes.
+scrollHorizontal('.track');`}</Code>
         <p>
-          The full layout, the React version and the progress dots are in{' '}
+          The whole thing as a recipe, a case-study strip in five steps with its React and HTML files and
+          where it goes wrong, is in{' '}
           <Link href="/blog/horizontal-scroll-sections">Horizontal scroll sections without GSAP</Link>.
         </p>
       </Section>
