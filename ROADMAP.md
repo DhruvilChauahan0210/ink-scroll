@@ -176,6 +176,7 @@ of examining a single API in a real browser.
 - [ ] Check Search Console in ~2 weeks for /guides/* and /vs-* impressions and clicks
 - [x] Sitemap dates derived from git for generated pages too (35 pages were "Discovered – not indexed" with stale dates)
 - [x] Titles and descriptions for the page-one, no-click pages (`/docs`, `/vs-locomotive-scroll`, `/lenis-scroll-animation`, scroll-pin post)
+- [x] Share card (og:image) on every indexable page, in the current design — 57 of 64 had none
 - [ ] Structured data: `SoftwareApplication` on home, `FAQPage` on guides, `HowTo` on tutorials
 - [ ] Bing Webmaster Tools + IndexNow on deploy
 - [ ] `/nextjs-scroll-animation` (position 24, the most impressions after home): full App Router example and more internal links

@@ -235,6 +235,18 @@ All notable changes to `svg-scroll-draw` are documented here.
   Open Graph and Twitter cards carry the same text, which drops two hand-typed
   sizes from the scroll-pin post's cards.
 
+- **Every indexable page has a share card, in the site's design.** 57 of 64
+  pages shipped with no `og:image`: a page that sets its own `openGraph`
+  metadata replaces the inherited one, image included. The six cards that did
+  exist were the old pink-on-cream theme, and quoted figures that had gone
+  stale ("13 demos", "v1.0.0 APIs"). One renderer, `app/_lib/og.tsx`, now draws
+  every card: ink on near-black, the editor's red, Geist and Geist Mono (OFL,
+  in `_lib/fonts/`), a drafting grid and a half-inked stroke, with the page's
+  own title. Frameworks, comparisons, examples and guides take their titles
+  from the data that generates them; size, test count, example count and
+  version come from `data/`, never typed. The cards render on the Node runtime;
+  the old ones ran on Edge.
+
 ### CI
 
 - **One release run per tag at a time.** Re-pushing `v2.15.3` while its first
