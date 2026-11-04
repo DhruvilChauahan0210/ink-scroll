@@ -259,6 +259,14 @@ All notable changes to `svg-scroll-draw` are documented here.
   pre-drawn: one `ScrollDraw` whose stagger equals each stroke's duration,
   long lines split into equal slots and a held pause between steps; the
   tools read their position from the engine's own dash each frame.
+- **Structured data on every page.** A `WebSite` entry on the homepage gives
+  Google the site's name, so results can read "svg-scroll-draw" rather than
+  the vercel.app host; every other page now carries a `BreadcrumbList`
+  (before, only the example pages did), emitted by `SiteShell` from a
+  `crumbs` prop. `/react-scroll-animation` and `/nextjs-scroll-animation`
+  gain the `TechArticle` the other framework pages had, `/blog` a `Blog`
+  listing its posts and `/guides` a list of the guides. The homepage and the
+  example pages now escape their JSON-LD like the rest (`lib/json-ld.ts`).
 - **The sign-off's "Star on GitHub" button inks its star** when the sheet's
   last stroke lands, and shows the live count. Both read `/api/stars`,
   which asks GitHub at most once an hour for everyone (ISR), so no

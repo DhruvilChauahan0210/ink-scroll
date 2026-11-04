@@ -105,7 +105,7 @@ export function BlogArticle({
   }
 
   return (
-    <SiteShell active="/blog" kicker="blog / your turn">
+    <SiteShell active="/blog" kicker="blog / your turn" crumbs={[['Blog', '/blog'], [post.title, `/blog/${slug}`]]}>
       {jsonLd ? (
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serialiseJsonLd(jsonLd) }} />
       ) : null}

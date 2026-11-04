@@ -146,7 +146,7 @@ export default function BlocksPage() {
   const dep = DEPENDENCIES[0] ?? 'svg-scroll-draw';
 
   return (
-    <SiteShell active="/blocks" kicker="blocks / your turn">
+    <SiteShell active="/blocks" crumbs={[['Blocks', '/blocks']]} kicker="blocks / your turn">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serialiseJsonLd(jsonLd) }} />
       <div className="blocks">
 

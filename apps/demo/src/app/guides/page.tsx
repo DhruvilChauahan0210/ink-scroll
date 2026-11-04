@@ -5,6 +5,7 @@ import { seoTitle } from '../_lib/seo';
 import { GUIDES } from '@/data/guides';
 import { COMPETITORS, SELF, SELF_ENTRIES } from '@/data/competitors';
 import { SiteShell } from '@/components/site/SiteShell';
+import { jsonLd, SITE_URL } from '@/lib/json-ld';
 
 export const metadata: Metadata = {
   title: seoTitle('Migration Guides: GSAP, AOS, ScrollReveal and vivus'),
@@ -16,9 +17,27 @@ export const metadata: Metadata = {
 const pad = (n: number) => String(n).padStart(2, '0');
 const DROP_INS = ['aos', 'scrollreveal', 'vivus'];
 
+/** The guides as a list, for search engines. */
+const JSON_LD = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Migration guides',
+  url: `${SITE_URL}/guides`,
+  mainEntity: {
+    '@type': 'ItemList',
+    itemListElement: GUIDES.map((g, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: g.title,
+      url: `${SITE_URL}/guides/${g.slug}`,
+    })),
+  },
+};
+
 export default function GuidesIndex() {
   return (
-    <SiteShell active="/guides" kicker="guides / your turn">
+    <SiteShell active="/guides" crumbs={[['Guides', '/guides']]} kicker="guides / your turn">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(JSON_LD) }} />
       <div className="guide">
         <header className="pg-head">
           <p className="pg-kicker"><span>guides / {GUIDES.length} migrations</span><span>react · next.js</span></p>

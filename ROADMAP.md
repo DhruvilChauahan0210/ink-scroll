@@ -178,7 +178,7 @@ of examining a single API in a real browser.
 - [x] Titles and descriptions for the page-one, no-click pages (`/docs`, `/vs-locomotive-scroll`, `/lenis-scroll-animation`, scroll-pin post)
 - [x] A star ask at the moment of delight: the homepage finale constructs a star by compass and scroll, with the live count
 - [x] Share card (og:image) on every indexable page, in the current design — 57 of 64 had none
-- [ ] Structured data: `SoftwareApplication` on home, `FAQPage` on guides, `HowTo` on tutorials
+- [x] Structured data: `WebSite` + `SoftwareApplication` on home, breadcrumbs on every page, page data on the pages that had none (FAQ/HowTo rich results are limited by Google since 2023; existing ones kept)
 - [ ] Bing Webmaster Tools + IndexNow on deploy
 - [ ] `/nextjs-scroll-animation` (position 24, the most impressions after home): full App Router example and more internal links
 - [ ] Request indexing for the 35 unindexed pages, ~10 a day (sitemap resubmitted 2026-11-04: 64 discovered); re-check Page indexing in ~2 weeks

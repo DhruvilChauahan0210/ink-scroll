@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { COMPETITORS, SELF, ratioVsSelf, provenance } from '@/data/competitors';
 import { seoTitle } from '../_lib/seo';
 import { SiteShell } from '@/components/site/SiteShell';
+import { jsonLd, SITE_URL } from '@/lib/json-ld';
 import { CodeBox } from '@/components/site/CodeBox';
 import { CopyCommand } from '@/components/home/CopyCommand';
 import { RenderPath } from '@/components/stack/RenderPath';
@@ -187,9 +188,23 @@ const TOC = [
   { id: 'built-for-next', label: 'Built for Next.js' },
 ];
 
+/** What this page is, for search engines: a technical article about the library. */
+const JSON_LD = {
+  '@context': 'https://schema.org',
+  '@type': 'TechArticle',
+  headline: TITLE,
+  description: DESCRIPTION,
+  url: `${SITE_URL}/nextjs-scroll-animation`,
+  author: { '@type': 'Person', name: 'Dhruvil Chauhan', url: 'https://github.com/DhruvilChauahan0210' },
+  publisher: { '@type': 'Organization', name: 'svg-scroll-draw', url: SITE_URL },
+  about: { '@id': `${SITE_URL}/#software` },
+  mainEntityOfPage: { '@type': 'WebPage', '@id': `${SITE_URL}/nextjs-scroll-animation` },
+};
+
 export default function NextjsScrollAnimationPage() {
   return (
-    <SiteShell active="/nextjs-scroll-animation" kicker="next.js / your turn">
+    <SiteShell active="/nextjs-scroll-animation" crumbs={[['Next.js', '/nextjs-scroll-animation']]} kicker="next.js / your turn">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(JSON_LD) }} />
       <div className="stk stk-next">
 
         {/* ── Opening ────────────────────────────────────── */}

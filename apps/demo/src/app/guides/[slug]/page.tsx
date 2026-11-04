@@ -30,9 +30,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  if (!GUIDE_SLUGS.includes(slug)) notFound();
+  const g = GUIDES.find((x) => x.slug === slug);
+  if (!g || !GUIDE_SLUGS.includes(slug)) notFound();
   return (
-    <SiteShell active="/guides" kicker="guides / your turn">
+    <SiteShell active="/guides" crumbs={[['Guides', '/guides'], [g.title, `/guides/${slug}`]]} kicker="guides / your turn">
       <GuidePage slug={slug} />
     </SiteShell>
   );

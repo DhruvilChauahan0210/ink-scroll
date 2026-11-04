@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { ExampleDetail } from '@/components/ExampleDetail';
 import { SiteShell } from '@/components/site/SiteShell';
 import { EXAMPLE_SEO, SEO_SLUGS } from '@/data/examples-seo';
+import { jsonLd as serialiseJsonLd } from '@/lib/json-ld';
 
 const SITE_URL = 'https://svg-scroll-draw.vercel.app';
 
@@ -81,7 +82,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serialiseJsonLd(jsonLd) }} />
       <SiteShell active="/examples" kicker="examples / your turn">
         <ExampleDetail slug={slug} />
       </SiteShell>

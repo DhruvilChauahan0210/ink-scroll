@@ -19,6 +19,7 @@ import { SELF } from '@/data/competitors';
 import { UNIT_TESTS, BROWSER_TESTS, BUDGET_KB } from '@/data/facts';
 import { MORE } from '@/components/site/sitemap';
 import { SiteIndex } from '@/components/site/SiteIndex';
+import { jsonLd, SITE_URL } from '@/lib/json-ld';
 
 export const metadata: Metadata = {
   alternates: { canonical: 'https://svg-scroll-draw.vercel.app' },
@@ -27,15 +28,28 @@ export const metadata: Metadata = {
 const GH = 'https://github.com/DhruvilChauahan0210/ink-scroll';
 const NPM = 'https://www.npmjs.com/package/svg-scroll-draw';
 
-const jsonLd = {
-  '@context': 'https://schema.org',
+/**
+ * The site and the library. WebSite gives Google the site's name, so results
+ * read "svg-scroll-draw" rather than the vercel.app host they are served from.
+ */
+const WEBSITE = {
+  '@type': 'WebSite',
+  '@id': `${SITE_URL}/#website`,
+  name: 'svg-scroll-draw',
+  alternateName: ['SVG Scroll Draw', 'svg scroll draw'],
+  url: SITE_URL,
+  inLanguage: 'en',
+};
+
+const APP = {
   '@type': 'SoftwareApplication',
+  '@id': `${SITE_URL}/#software`,
   name: 'svg-scroll-draw',
   description:
     `A lightweight scroll-animation toolkit with best-in-class SVG path drawing. Draw SVG paths, reveal content, animate text, scrub video, and drive CSS from scroll. ${SELF.gzipKb} KB gzipped, zero dependencies, MIT.`,
   applicationCategory: 'DeveloperApplication',
   operatingSystem: 'Web',
-  url: 'https://svg-scroll-draw.vercel.app',
+  url: SITE_URL,
   downloadUrl: NPM,
   codeRepository: GH,
   license: 'https://opensource.org/licenses/MIT',
@@ -47,11 +61,13 @@ const jsonLd = {
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
 };
 
+const JSON_LD = { '@context': 'https://schema.org', '@graph': [WEBSITE, APP] };
+
 
 export default function HomePage() {
   return (
     <div className="home">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(JSON_LD) }} />
       <SmoothScroll />
       <Magnetic />
 

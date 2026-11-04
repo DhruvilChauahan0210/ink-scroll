@@ -5,6 +5,7 @@ import { seoTitle } from '../_lib/seo';
 import { SELF } from '@/data/competitors';
 import { UNIT_TESTS } from '@/data/facts';
 import { SiteShell } from '@/components/site/SiteShell';
+import { jsonLd, SITE_URL } from '@/lib/json-ld';
 import { CodeBox } from '@/components/site/CodeBox';
 import { StepRail } from '@/components/site/StepRail';
 import { CopyCommand } from '@/components/home/CopyCommand';
@@ -218,9 +219,23 @@ const TOC = [
   { id: 'drop-in', label: 'Drop it in' },
 ];
 
+/** What this page is, for search engines: a technical article about the library. */
+const JSON_LD = {
+  '@context': 'https://schema.org',
+  '@type': 'TechArticle',
+  headline: TITLE,
+  description: DESCRIPTION,
+  url: `${SITE_URL}/react-scroll-animation`,
+  author: { '@type': 'Person', name: 'Dhruvil Chauhan', url: 'https://github.com/DhruvilChauahan0210' },
+  publisher: { '@type': 'Organization', name: 'svg-scroll-draw', url: SITE_URL },
+  about: { '@id': `${SITE_URL}/#software` },
+  mainEntityOfPage: { '@type': 'WebPage', '@id': `${SITE_URL}/react-scroll-animation` },
+};
+
 export default function ReactScrollAnimationPage() {
   return (
-    <SiteShell active="/react-scroll-animation" kicker="react / your turn">
+    <SiteShell active="/react-scroll-animation" crumbs={[['React', '/react-scroll-animation']]} kicker="react / your turn">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(JSON_LD) }} />
       <div className="stk stk-react">
 
         {/* ── Opening ────────────────────────────────────── */}

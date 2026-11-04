@@ -633,7 +633,7 @@ export default function ChangelogPage() {
   const eras = ['2', '1', '0'].map((m) => ({ m, list: RELEASES.filter((r) => major(r.version) === m) }));
 
   return (
-    <SiteShell active="/changelog" kicker="changelog / your turn">
+    <SiteShell active="/changelog" crumbs={[['Changelog', '/changelog']]} kicker="changelog / your turn">
       <div className="cl">
 
         {/* ── Opening ────────────────────────────────────── */}

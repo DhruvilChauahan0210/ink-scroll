@@ -143,7 +143,7 @@ export default function Page() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serialiseJsonLd(jsonLdData) }} />
-      <SiteShell active="/lenis-scroll-animation" kicker="lenis / your turn">
+      <SiteShell active="/lenis-scroll-animation" crumbs={[['Lenis', '/lenis-scroll-animation']]} kicker="lenis / your turn">
         <div className="stk stk-lenis">
 
           {/* ── Opening ────────────────────────────────────── */}

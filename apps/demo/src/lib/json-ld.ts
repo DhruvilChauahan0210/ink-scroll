@@ -18,3 +18,25 @@ export function jsonLd(data: unknown): string {
     .replace(/>/g, '\\u003e')
     .replace(/&/g, '\\u0026');
 }
+
+export const SITE_URL = 'https://svg-scroll-draw.vercel.app';
+
+/** One step of a page's trail below Home: its name and path, e.g. ['Guides', '/guides']. */
+export type Crumb = [name: string, path: string];
+
+/**
+ * A BreadcrumbList for a page, Home first. Google shows the trail in place of
+ * the bare URL in results; SiteShell emits it from its `crumbs` prop.
+ */
+export function breadcrumbs(trail: Crumb[]) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [['Home', '/'] as Crumb, ...trail].map(([name, path], i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name,
+      item: path === '/' ? SITE_URL : `${SITE_URL}${path}`,
+    })),
+  };
+}

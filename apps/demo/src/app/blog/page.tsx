@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { jsonLd, SITE_URL } from '@/lib/json-ld';
 import '@/components/blog.css';
 import { seoTitle } from '../_lib/seo';
 import { POSTS } from '@/data/blog-posts';
@@ -24,6 +25,21 @@ export const metadata: Metadata = {
 
 const minutes = (readTime: string) => parseInt(readTime, 10) || 0;
 
+/** The blog and its posts, for search engines. */
+const JSON_LD = {
+  '@context': 'https://schema.org',
+  '@type': 'Blog',
+  name: 'svg-scroll-draw blog',
+  url: `${SITE_URL}/blog`,
+  blogPost: POSTS.map((p) => ({
+    '@type': 'BlogPosting',
+    headline: p.title,
+    description: p.description,
+    url: `${SITE_URL}/blog/${p.slug}`,
+    ...(p.published ? { datePublished: p.published } : {}),
+  })),
+};
+
 export default function BlogPage() {
   // Every figure on this page is counted from data/blog-posts.ts.
   const topics: Topic[] = [];
@@ -37,7 +53,8 @@ export default function BlogPage() {
   const issued = [...new Set(POSTS.map((p) => p.date))];
 
   return (
-    <SiteShell active="/blog" kicker="blog / your turn">
+    <SiteShell active="/blog" crumbs={[['Blog', '/blog']]} kicker="blog / your turn">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(JSON_LD) }} />
       <div className="bl">
         <BlogIndex
           posts={POSTS}

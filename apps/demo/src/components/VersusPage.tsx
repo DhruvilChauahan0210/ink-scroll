@@ -132,7 +132,7 @@ export function VersusPage({ slug }: { slug: string }) {
   ];
 
   return (
-    <SiteShell active={`/${v.slug}`} kicker={`vs ${short} / your turn`}>
+    <SiteShell active={`/${v.slug}`} crumbs={[[`vs ${them.label}`, `/${v.slug}`]]} kicker={`vs ${short} / your turn`}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serialiseJsonLd(jsonLd) }} />
       <div className="cmp vs">
 

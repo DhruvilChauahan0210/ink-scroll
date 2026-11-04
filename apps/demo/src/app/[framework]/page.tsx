@@ -128,7 +128,7 @@ export default async function Page({ params }: { params: Promise<{ framework: st
   const short = f.name.toLowerCase();
 
   return (
-    <SiteShell active={`/${f.slug}`} kicker={`${short} / your turn`}>
+    <SiteShell active={`/${f.slug}`} crumbs={[[f.name, `/${f.slug}`]]} kicker={`${short} / your turn`}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serialiseJsonLd(jsonLd) }} />
       <div className="cmp fw" style={{ '--fw': f.accent } as React.CSSProperties}>
 

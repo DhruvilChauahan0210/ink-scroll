@@ -126,7 +126,7 @@ const PART_START = PARTS.map((_, gi) => PARTS.slice(0, gi).reduce((a, g) => a + 
 
 export default function PlaygroundPage() {
   return (
-    <SiteShell active="/playground" kicker="playground / your turn">
+    <SiteShell active="/playground" crumbs={[['Playground', '/playground']]} kicker="playground / your turn">
       <div className="play">
 
         {/* ── Opening ──────────────────────────────────────── */}

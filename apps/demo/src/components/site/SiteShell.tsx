@@ -8,6 +8,7 @@ import { MORE } from './sitemap';
 import { SiteIndex } from './SiteIndex';
 import { SELF } from '@/data/competitors';
 import { UNIT_TESTS, BROWSER_TESTS } from '@/data/facts';
+import { breadcrumbs, jsonLd, type Crumb } from '@/lib/json-ld';
 
 /**
  * The homepage's frame for every other page: the same tokens, the glass nav
@@ -17,12 +18,15 @@ import { UNIT_TESTS, BROWSER_TESTS } from '@/data/facts';
 export function SiteShell({
   active,
   children,
+  crumbs,
   cta,
   kicker = '— / your turn',
 }: {
   /** The nav link this page belongs to, e.g. '/docs'. */
   active?: string;
   children: ReactNode;
+  /** The page's trail below Home, emitted as a BreadcrumbList for search results. */
+  crumbs?: Crumb[];
   /** The sign-off's first button, when "Read the docs" would point at this page. */
   cta?: { href: string; label: string };
   /** The sign-off's kicker, e.g. "docs / your turn". */
@@ -30,6 +34,9 @@ export function SiteShell({
 }) {
   return (
     <div className="home site">
+      {crumbs ? (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(breadcrumbs(crumbs)) }} />
+      ) : null}
       <Magnetic />
       <HomeNav version={SELF.version} active={active} solid more={MORE} />
       <div className="site-body">{children}</div>

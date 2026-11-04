@@ -59,7 +59,7 @@ export default function Page() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <SiteShell active="/examples" kicker="examples / your turn">
+      <SiteShell active="/examples" crumbs={[['Examples', '/examples']]} kicker="examples / your turn">
         <ExamplesPage />
       </SiteShell>
     </>
