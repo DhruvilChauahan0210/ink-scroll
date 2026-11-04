@@ -1,0 +1,154 @@
+/* ── Finale: one more plate — a star by compass and scroll ──────────────────
+   The sheet's rules (signoff.css), but no pencil underdrawing: here the tools
+   make every line, so nothing is on the paper before they reach it. Butt
+   caps, labels that appear once their line is inked, the accent on one line. .fin is the scroll track (ScrollDraw's wrapper);
+   .fin-pin holds the plate still while it passes. --fin-p is the track's
+   progress, written by Finale.tsx; with no script it stays 1, the finished
+   plate. */
+
+.home .fin { position: relative; height: 320svh; }
+
+.home .fin-pin {
+  --fin-p: 1;
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  display: grid;
+  grid-template-columns: minmax(260px, 380px) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(24px, 5vw, 96px);
+  padding: calc(var(--nav-h) + 24px) var(--gutter) 32px;
+  border-top: 1px solid var(--line);
+  overflow: hidden;
+}
+
+/* ── The plate ───────────────────────────────────────────────────────────── */
+
+.home .fin-plate {
+  justify-self: center;
+  width: min(100%, calc(100svh - var(--nav-h) - 72px));
+  height: auto;
+  overflow: visible;
+}
+
+.home .fin-ink { fill: none; stroke-linecap: butt; stroke-linejoin: round; }
+.home .fin-rest { visibility: hidden; }
+.home .fin-w-p { stroke-width: 2.6; }
+.home .fin-w-s { stroke-width: 1.5; }
+.home .fin-w-h { stroke-width: 1; }
+
+.home .fin-t-ink { stroke: var(--fg); }
+.home .fin-t-mute { stroke: var(--fg-2); }
+.home .fin-t-faint { stroke: var(--line-2); }
+.home .fin-t-accent { stroke: var(--accent); }
+
+.home .fin-fade { opacity: clamp(0, calc((var(--fin-p) - var(--fin-at, 1)) * 25), 1); }
+.home .fin-dot { fill: var(--fg); }
+.home .fin-label {
+  font: 500 24px/1 var(--mono);
+  letter-spacing: 0.06em;
+  fill: var(--fg);
+}
+.home .fin-note { font-size: 19px; fill: var(--fg-3); letter-spacing: 0.1em; }
+.home .fin-note-accent { fill: var(--accent); text-transform: uppercase; }
+
+/* ── The instruments ─────────────────────────────────────────────────────
+   Drawn like the sheet's set square and nib: cream line-art over a body of
+   the page's own colour, so they hide what they lie on. Only the tool the
+   current stroke needs is shown (data-tool, set by placeTools). */
+.home .fin-tool { display: none; }
+.home .fin-plate[data-tool='compass'] .fin-compass,
+.home .fin-plate[data-tool='rule'] .fin-rule,
+.home .fin-plate[data-tool='rule'] .fin-nib,
+.home .fin-plate[data-tool='nib'] .fin-nib { display: inline; }
+
+.home .fin-compass line { stroke: var(--fg-2); stroke-width: 2.2; stroke-linecap: round; }
+.home .fin-compass .fin-c-grip { stroke-width: 4; }
+.home .fin-c-hinge { fill: var(--bg); stroke: var(--fg-2); stroke-width: 2; }
+.home .fin-c-point { fill: var(--fg); }
+
+.home .fin-r-body { fill: var(--bg); fill-opacity: 0.88; stroke: var(--fg-3); stroke-width: 1.2; }
+.home .fin-r-ticks { fill: none; stroke: var(--fg-3); stroke-width: 1; }
+
+.home .fin-nib-body { fill: var(--fg); }
+.home .fin-nib-slit { stroke: var(--bg); stroke-width: 1.4; }
+.home .fin-nib-hole { fill: var(--bg); }
+
+/* ── The copy: kicker, title, the steps as they are drawn, the ask ───────── */
+
+.home .fin-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 18px; }
+
+.home .fin-k {
+  margin: 0;
+  font: 500 11px/1.4 var(--mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+
+.home .fin-title {
+  margin: 0;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: clamp(30px, 3.2vw, 50px);
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+  color: var(--fg);
+  text-wrap: balance;
+}
+
+.home .fin-steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 9px;
+  font: 500 11px/1.4 var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+/* A step is faint until its first stroke starts, bright while it draws, then settles. */
+.home .fin-step {
+  --on: clamp(0, calc((var(--fin-p) - var(--fin-at)) * 40), 1);
+  --off: clamp(0, calc((var(--fin-p) - var(--fin-end)) * 40), 1);
+  display: flex;
+  gap: 14px;
+  color: color-mix(in srgb, var(--fg) calc((var(--on) - var(--off) * 0.45) * 100%), var(--fg-3));
+}
+.home .fin-step-n { color: var(--fg-3); }
+.home .fin-step:last-child { color: color-mix(in srgb, var(--accent) calc(var(--on) * 100%), var(--fg-3)); }
+
+.home .fin-cta {
+  margin-top: 6px;
+  opacity: 0.35;
+  transition: opacity 0.3s, border-color 0.3s, background 0.25s, color 0.25s, transform 0.35s var(--ease);
+}
+.home .fin-cta-star { color: var(--fg-3); transition: color 0.3s; }
+.home .fin-cta-n {
+  padding-left: 10px;
+  border-left: 1px solid var(--line-2);
+  color: var(--fg-2);
+  font-variant-numeric: tabular-nums;
+}
+.home .fin-pin[data-ready] .fin-cta { opacity: 1; border-color: var(--accent); }
+.home .fin-pin[data-ready] .fin-cta-star { color: var(--accent); }
+
+@media (max-width: 860px) {
+  .home .fin { height: 280svh; }
+  .home .fin-pin {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    align-content: start;
+    gap: 8px;
+    padding-top: calc(var(--nav-h) + 12px);
+  }
+  .home .fin-copy { gap: 10px; }
+  .home .fin-steps { display: none; }
+  .home .fin-plate { width: min(100%, 62svh); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home .fin { height: auto; }
+  .home .fin-pin { position: relative; }
+  .home .fin-cta { transition: none; }
+}

@@ -14,6 +14,7 @@ import { Stack } from '@/components/home/Stack';
 import { Migrate } from '@/components/home/Migrate';
 import { LiveStats } from '@/components/home/LiveStats';
 import { SignOff } from '@/components/home/SignOff';
+import { Finale } from '@/components/home/Finale';
 import { SELF } from '@/data/competitors';
 import { UNIT_TESTS, BROWSER_TESTS, BUDGET_KB } from '@/data/facts';
 import { MORE } from '@/components/site/sitemap';
@@ -110,6 +111,9 @@ export default function HomePage() {
         <section className="sec-cal" aria-labelledby="lv-title">
           <LiveStats />
         </section>
+
+        {/* ── Finale: a star drawn out of straight lines, and the ask ─── */}
+        <Finale />
 
         {/* ── Sign-off: the page ends on a signed drawing sheet ────────── */}
         <SignOff version={SELF.version} gzipKb={SELF.gzipKb} unitTests={UNIT_TESTS} browserTests={BROWSER_TESTS} />

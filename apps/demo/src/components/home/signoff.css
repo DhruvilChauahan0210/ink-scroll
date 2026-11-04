@@ -222,6 +222,27 @@
   gap: 10px;
 }
 
+/* The GitHub button's star: pencil until the sheet's last stroke lands, then
+   it inks, fills with the accent, and the live count ticks up (StarButton). */
+.home .so-star-svg { width: 16px; height: 16px; flex: none; overflow: visible; }
+.home .so-star-svg path { fill: none; stroke-width: 1.6; stroke-linejoin: round; }
+.home .so-star-pencil { stroke: var(--line-2); }
+.home .so-star-ink { stroke: var(--accent); stroke-dasharray: 1; stroke-dashoffset: 1; }
+.home .so-star-n {
+  padding-left: 10px;
+  border-left: 1px solid var(--line-2);
+  color: var(--fg-2);
+  font-variant-numeric: tabular-nums;
+  opacity: 0;
+}
+.home .so-stage[data-done] .so-star { border-color: var(--accent); transition: border-color 0.3s ease; }
+.home .so-stage[data-done] .so-star-ink {
+  stroke-dashoffset: 0;
+  fill: var(--accent);
+  transition: stroke-dashoffset 0.6s var(--ease), fill 0.3s ease 0.5s;
+}
+.home .so-stage[data-done] .so-star-n { opacity: 1; transition: opacity 0.3s ease 0.4s; }
+
 /* ── The foot: parts list and title block, flush to the frame ───────────── */
 
 .home .so-foot-draw {
@@ -666,5 +687,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .home .so-pl-a,
-  .home .so-pl-ext { transition: none; }
+  .home .so-pl-ext,
+  .home .so-stage[data-done] .so-star,
+  .home .so-stage[data-done] .so-star-ink,
+  .home .so-stage[data-done] .so-star-n { transition: none; }
 }

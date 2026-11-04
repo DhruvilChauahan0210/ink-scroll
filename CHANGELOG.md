@@ -247,6 +247,23 @@ All notable changes to `svg-scroll-draw` are documented here.
   version come from `data/`, never typed. The cards render on the Node runtime;
   the old ones ran on Edge.
 
+- **The homepage ends on one more plate: a star, by compass and scroll.** A
+  pinned screen before the sign-off where the reader's scroll constructs a
+  five-pointed star the way it is done by hand: a circle about O, the
+  diameter, M bisecting OB, the arc about M down to N, the side AN stepped
+  round the circle, every second point joined. A compass swings each arc
+  with its needle on the centre, a graduated straightedge lies along each
+  ruled line with the nib at the ink's tip, and the nib alone inks the
+  outline, the plate's only red line, with a leader to "Star on GitHub"
+  and the repo's live star count. One stroke at a time and nothing
+  pre-drawn: one `ScrollDraw` whose stagger equals each stroke's duration,
+  long lines split into equal slots and a held pause between steps; the
+  tools read their position from the engine's own dash each frame.
+- **The sign-off's "Star on GitHub" button inks its star** when the sheet's
+  last stroke lands, and shows the live count. Both read `/api/stars`,
+  which asks GitHub at most once an hour for everyone (ISR), so no
+  visitor's browser calls GitHub.
+
 ### CI
 
 - **One release run per tag at a time.** Re-pushing `v2.15.3` while its first

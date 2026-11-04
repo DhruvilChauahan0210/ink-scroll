@@ -93,6 +93,7 @@ months, 81% to the homepage; `/vs-gsap` at position 11 with 425 impressions.
    for them ~10 a day; the 2026-11-04 attempt hit the daily quota. Also compare
    CTR on `/docs`, `/vs-locomotive-scroll`, `/lenis-scroll-animation` and the
    scroll-pin post, whose titles changed on 2026-11-04.
+   Watch GitHub stars after the homepage finale (shipped 2026-11-04).
 3. More blocks; one shared nav component so every page links `/blocks`.
 4. Shared ESM chunks between entries (see ROADMAP) — 8.6 KB vs 6.4 KB when an app
    imports main + `/react`.

@@ -6,6 +6,7 @@ import { useCallback, useEffect, useRef, useSyncExternalStore, type CSSPropertie
 import { ScrollDraw } from 'svg-scroll-draw/react';
 import { CopyCommand } from './CopyCommand';
 import { HeroScript } from './HeroScript';
+import { StarButton } from './StarButton';
 import { SCRIPT_DRAW } from './art/script';
 import {
   DELTA,
@@ -736,6 +737,8 @@ export function SignOff({ version, gzipKb, unitTests, browserTests, kicker = '10
     if (total !== c.shown && countRef.current) {
       c.shown = total;
       countRef.current.textContent = pad(total);
+      // The last stroke has landed: the star on the GitHub button inks.
+      stageRef.current?.toggleAttribute('data-done', total === TOTAL);
     }
   }, []);
 
@@ -771,7 +774,10 @@ export function SignOff({ version, gzipKb, unitTests, browserTests, kicker = '10
      is the only thing left to finish. */
   const reduced = useSyncExternalStore(subscribeReduced, getReduced, getReducedOnServer);
   useEffect(() => {
-    if (reduced && countRef.current) countRef.current.textContent = pad(TOTAL);
+    if (reduced && countRef.current) {
+      countRef.current.textContent = pad(TOTAL);
+      stageRef.current?.setAttribute('data-done', '');
+    }
   }, [reduced]);
 
   const values: Record<CellKey, ReactNode> = {
@@ -825,9 +831,7 @@ export function SignOff({ version, gzipKb, unitTests, browserTests, kicker = '10
             <Link href={cta.href} className="btn btn-solid" data-magnetic>
               {cta.label}
             </Link>
-            <a href={GH} target="_blank" rel="noopener noreferrer" className="btn" data-magnetic>
-              Star on GitHub
-            </a>
+            <StarButton href={GH} />
           </div>
         </div>
 

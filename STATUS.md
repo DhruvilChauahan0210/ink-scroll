@@ -146,6 +146,7 @@ at all.
 - [x] Demo lint 52 → 0, enforced with `--max-warnings=0`
 - [x] `/docs`: jump-scroll asymmetry documented; Note boxes fixed
 - [x] Navigation: nav "More" menu, phone-menu groups and a footer index from one list (`components/site/sitemap.ts`); no page more than two clicks from the homepage; `check-nav` in build, CI and `verify`
+- [x] Homepage finale: a star constructed by compass and scroll (`components/home/Finale.tsx`), one stroke at a time, live star count; sign-off star button; `/api/stars` (ISR, hourly)
 - [x] Share cards on all 64 indexable pages, one renderer (`app/_lib/og.tsx`) in the site's design; figures from `data/`
 - [x] Search titles and descriptions rewritten for `/docs`, `/vs-locomotive-scroll`, `/lenis-scroll-animation`, `/blog/scroll-pin-without-gsap` (page-one rankings, near-zero clicks)
 - [x] Sitemap `lastModified` from git for all 64 URLs, generated groups included (`npm run sitemap:dates`)
