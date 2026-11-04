@@ -146,6 +146,7 @@ at all.
 - [x] Demo lint 52 → 0, enforced with `--max-warnings=0`
 - [x] `/docs`: jump-scroll asymmetry documented; Note boxes fixed
 - [x] Navigation: nav "More" menu, phone-menu groups and a footer index from one list (`components/site/sitemap.ts`); no page more than two clicks from the homepage; `check-nav` in build, CI and `verify`
+- [x] `/nextjs-scroll-animation`: complete App Router example, Pages Router note, 6-question FAQ (+ FAQPage); linked from the homepage strip, docs and the 2026 guide
 - [x] Structured data: `WebSite` on home, `BreadcrumbList` on every other page (`SiteShell` `crumbs`), page data on React, Next.js, /blog, /guides
 - [x] Homepage finale: a star constructed by compass and scroll (`components/home/Finale.tsx`), one stroke at a time, live star count; sign-off star button; `/api/stars` (ISR, hourly)
 - [x] Share cards on all 64 indexable pages, one renderer (`app/_lib/og.tsx`) in the site's design; figures from `data/`

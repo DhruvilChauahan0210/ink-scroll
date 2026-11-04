@@ -69,6 +69,8 @@ import { useEffect } from 'react';
 import { scrollReveal } from 'svg-scroll-draw/reveal';
 import { scrollAnimate } from 'svg-scroll-draw';
 
+type Card = { id: string; content: React.ReactNode };
+
 export function AnimatedCards({ cards }: { cards: Card[] }) {
   useEffect(() => {
     const reveal = scrollReveal('.card', { preset: 'fadeUp', stagger: 0.1 });
@@ -119,9 +121,8 @@ export default async function Page() {
     title: 'useEffect cleanup (avoid memory leaks)',
     code: `'use client';
 import { useEffect, useRef } from 'react';
-import { scrollPin }      from 'svg-scroll-draw/pin';
-import { scrollHorizontal } from 'svg-scroll-draw/horizontal';
-import { scrollReveal }   from 'svg-scroll-draw/reveal';
+import { scrollPin }    from 'svg-scroll-draw/pin';
+import { scrollReveal } from 'svg-scroll-draw/reveal';
 
 export function ProductWalkthrough() {
   const imageRef = useRef<HTMLDivElement>(null);
@@ -175,6 +176,114 @@ export function AnimatedPage({ children }: { children: React.ReactNode }) {
   },
 ];
 
+/**
+ * A whole App Router project, smallest that shows the split: one client file
+ * holds every animated part, the page stays a Server Component that fetches.
+ * Typechecked as real files against the built package before it went here.
+ */
+const TREE = `app/
+  layout.tsx       Server Component, nothing to add
+  page.tsx         Server Component: fetches, renders the animated parts
+components/
+  motion.tsx       'use client': the only client file`;
+
+const EXAMPLE: { file: string; lede: ReactNode; code: string }[] = [
+  {
+    file: 'components/motion.tsx',
+    lede: <>Every animated part lives in one client file. Each is a thin wrapper over a component from <C>svg-scroll-draw/react</C>, which sets up on mount and cleans up on unmount.</>,
+    code: `'use client';
+
+import type { ReactNode } from 'react';
+import { ScrollAnimate, ScrollDraw, ScrollText } from 'svg-scroll-draw/react';
+
+/** Fades its children up the first time they scroll into view. */
+export function FadeUp({ children }: { children: ReactNode }) {
+  return (
+    <ScrollAnimate props={{ opacity: [0, 1], transform: ['translateY(32px)', 'translateY(0)'] }} once>
+      {children}
+    </ScrollAnimate>
+  );
+}
+
+/** A headline whose words rise in one after another. */
+export function Headline({ text }: { text: string }) {
+  return (
+    <ScrollText as="h2" split="words" stagger={0.06} once>
+      {text}
+    </ScrollText>
+  );
+}
+
+/** A rule that draws itself across the section as you scroll. */
+export function DrawnRule() {
+  return (
+    <ScrollDraw>
+      <svg viewBox="0 0 400 24" width="100%" aria-hidden="true">
+        <path d="M2 12 C 100 2, 300 22, 398 12" fill="none" stroke="currentColor" strokeWidth="2" />
+      </svg>
+    </ScrollDraw>
+  );
+}`,
+  },
+  {
+    file: 'app/page.tsx',
+    lede: <>The page has no directive. It fetches on the server, renders the markup in full, and the animated parts hydrate on their own.</>,
+    code: `import { DrawnRule, FadeUp, Headline } from '@/components/motion';
+
+type Feature = { id: string; title: string; body: string };
+
+async function getFeatures(): Promise<Feature[]> {
+  const res = await fetch('https://example.com/api/features', { next: { revalidate: 3600 } });
+  return res.json();
+}
+
+export default async function Page() {
+  const features = await getFeatures();
+  return (
+    <main>
+      <Headline text="Scroll animations, rendered on the server." />
+      <DrawnRule />
+      {features.map((f) => (
+        <FadeUp key={f.id}>
+          <article>
+            <h3>{f.title}</h3>
+            <p>{f.body}</p>
+          </article>
+        </FadeUp>
+      ))}
+    </main>
+  );
+}`,
+  },
+];
+
+const FAQ: { q: string; a: string }[] = [
+  {
+    q: 'Does svg-scroll-draw work with React Server Components?',
+    a: "Yes. The page stays a Server Component; only the wrapper that animates needs 'use client', because it runs in the browser. On the server every svg-scroll-draw call returns a no-op instance, so rendering never touches window or document.",
+  },
+  {
+    q: 'Do I need next/dynamic with ssr: false?',
+    a: 'No. The library is safe to render on the server as it is. Use next/dynamic only to lazy-load a heavy animated section so it does not hold up the first paint.',
+  },
+  {
+    q: 'Will scroll animations cause hydration errors in Next.js?',
+    a: 'No. The server renders your markup unchanged and the library only starts after the component mounts in the browser, so the HTML React hydrates matches what the server sent.',
+  },
+  {
+    q: 'Does it work with the Pages Router?',
+    a: "Yes. Pages Router components already run in the browser, so no directive is needed: use the same components, or call the functions inside useEffect and return their destroy().",
+  },
+  {
+    q: 'What happens on route changes?',
+    a: 'Components from svg-scroll-draw/react clean up when they unmount, so pages that change need nothing extra. Selector-based calls made in a layout that persists across routes should re-run when the pathname changes, as in pattern 4.',
+  },
+  {
+    q: 'Does it respect prefers-reduced-motion?',
+    a: 'Yes. With reduced motion requested, drawings, reveals and text show in their final state instead of animating.',
+  },
+];
+
 const CMP = [
   { key: 'gsapScroll', name: 'GSAP + ScrollTrigger', size: COMPETITORS.gsapScroll.gzipKb, ssr: '✓ client-side setup', typed: '✓', note: `Free since 2025, mature, and does far more — at ${ratioVsSelf('gsapScroll')}× the bytes.` },
   { key: 'framerMotion', name: 'Framer Motion', size: COMPETITORS.framerMotion.gzipKb, ssr: '✓', typed: '✓', note: 'React-only. Draws SVG via pathLength; no pin/snap.' },
@@ -183,14 +292,15 @@ const CMP = [
 
 const TOC = [
   { id: 'answer', label: 'The answer' },
+  { id: 'example', label: 'A complete App Router example' },
   { id: 'patterns', label: `The patterns · ${PATTERNS.length}` },
+  { id: 'faq', label: `Questions · ${FAQ.length}` },
   { id: 'alternatives', label: 'vs common alternatives' },
   { id: 'built-for-next', label: 'Built for Next.js' },
 ];
 
-/** What this page is, for search engines: a technical article about the library. */
-const JSON_LD = {
-  '@context': 'https://schema.org',
+/** What this page is, for search engines: a technical article, and its questions. */
+const ARTICLE = {
   '@type': 'TechArticle',
   headline: TITLE,
   description: DESCRIPTION,
@@ -199,6 +309,16 @@ const JSON_LD = {
   publisher: { '@type': 'Organization', name: 'svg-scroll-draw', url: SITE_URL },
   about: { '@id': `${SITE_URL}/#software` },
   mainEntityOfPage: { '@type': 'WebPage', '@id': `${SITE_URL}/nextjs-scroll-animation` },
+};
+const JSON_LD = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    ARTICLE,
+    {
+      '@type': 'FAQPage',
+      mainEntity: FAQ.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+    },
+  ],
 };
 
 export default function NextjsScrollAnimationPage() {
@@ -247,8 +367,28 @@ export default function NextjsScrollAnimationPage() {
               <CodeBox file="components/FadeUp.tsx">{HERO_SNIPPET}</CodeBox>
             </Sec>
 
-            {/* ── 02 The patterns ───────────────────────────── */}
-            <Sec n={2} k={`${PATTERNS.length} patterns`} id="patterns" title="The patterns.">
+            {/* ── 02 A complete App Router example ──────────── */}
+            <Sec n={2} k="copy the whole thing" id="example" title="A complete App Router example.">
+              <p className="stk-p">
+                The smallest project that shows the split: one client file holds every animated part, and the page
+                stays a Server Component that fetches its data. Install, add these files, run <C>next dev</C>.
+              </p>
+              <CodeBox file="project">{TREE}</CodeBox>
+              {EXAMPLE.map((f) => (
+                <div key={f.file} className="stk-pat">
+                  <p className="stk-step-k">file · <span>{f.file}</span></p>
+                  <p className="stk-p">{f.lede}</p>
+                  <CodeBox file={f.file}>{f.code}</CodeBox>
+                </div>
+              ))}
+              <Note k="Pages Router">
+                Pages Router components already run in the browser, so drop the <C>&apos;use client&apos;</C> line and
+                use <C>components/motion.tsx</C> from any page as it is.
+              </Note>
+            </Sec>
+
+            {/* ── 03 The patterns ───────────────────────────── */}
+            <Sec n={3} k={`${PATTERNS.length} patterns`} id="patterns" title="The patterns.">
               <div className="stk-pats">
                 {PATTERNS.map((p, i) => (
                   <div key={p.file} id={`pt-${i + 1}`} className="stk-pat">
@@ -270,8 +410,23 @@ export default function NextjsScrollAnimationPage() {
               </Note>
             </Sec>
 
-            {/* ── 03 vs alternatives ────────────────────────── */}
-            <Sec n={3} k="measured" id="alternatives" title="vs common alternatives.">
+            {/* ── 04 Questions ──────────────────────────────── */}
+            <Sec n={4} k={`${FAQ.length} questions`} id="faq" title="Questions Next.js developers ask.">
+              <div className="stk-faq">
+                {FAQ.map((f, i) => (
+                  <div key={f.q} className="stk-q">
+                    <span className="stk-q-n">Q{i + 1}</span>
+                    <div>
+                      <h3 className="stk-q-t">{f.q}</h3>
+                      <p className="stk-p">{f.a}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Sec>
+
+            {/* ── 05 vs alternatives ────────────────────────── */}
+            <Sec n={5} k="measured" id="alternatives" title="vs common alternatives.">
               <SizeBars
                 caption="fig. 2 — bundle, minified + gzipped, to one scale"
                 rows={CMP.map((c) => ({ label: c.name, kb: c.size, self: c.highlight }))}
@@ -294,8 +449,8 @@ export default function NextjsScrollAnimationPage() {
               </p>
             </Sec>
 
-            {/* ── 04 Built for Next.js ──────────────────────── */}
-            <Sec n={4} k="drop it in" id="built-for-next" title="Built for Next.js.">
+            {/* ── 06 Built for Next.js ──────────────────────── */}
+            <Sec n={6} k="drop it in" id="built-for-next" title="Built for Next.js.">
               <dl className="stk-close-specs">
                 <div><dt>SSR</dt><dd>Safe by default</dd></div>
                 <div><dt>Router</dt><dd>App Router ready</dd></div>

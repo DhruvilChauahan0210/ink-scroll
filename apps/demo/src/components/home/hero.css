@@ -171,6 +171,9 @@
   color: var(--fg-3);
 }
 .home .he-foot-k { color: var(--fg-2); }
+.home .he-foot-a { color: inherit; text-decoration: none; transition: color 0.2s; }
+.home .he-foot-a:hover,
+.home .he-foot-a:focus-visible { color: var(--fg); }
 
 /* ── Desktop: copy left, pen right ────────────────────────────────────── */
 

@@ -259,6 +259,22 @@ All notable changes to `svg-scroll-draw` are documented here.
   pre-drawn: one `ScrollDraw` whose stagger equals each stroke's duration,
   long lines split into equal slots and a held pause between steps; the
   tools read their position from the engine's own dash each frame.
+- **`/nextjs-scroll-animation` gets a complete App Router project and the
+  questions people ask.** Search Console had it at position 24 with the most
+  impressions after the homepage. It now opens with a whole project to copy
+  (a file tree, `components/motion.tsx` as the one client file, a Server
+  Component `app/page.tsx` that fetches), typechecked as real files against
+  the built package, plus a Pages Router note and six answered questions
+  (Server Components, `next/dynamic`, hydration, Pages Router, route
+  changes, reduced motion), also as `FAQPage` data. Two patterns were fixed:
+  one used an undeclared `Card` type, another imported `scrollHorizontal`
+  and never called it. Links to it now come from the homepage's frameworks
+  strip (every framework with a page is a link), the docs and the 2026
+  guide.
+- **The docs no longer say `ScrollDraw` needs no `'use client'` in the App
+  Router.** `svg-scroll-draw/react` ships without the directive, so a Server
+  Component cannot import it directly; the note now says to render it from
+  a client component and links the Next.js guide.
 - **Structured data on every page.** A `WebSite` entry on the homepage gives
   Google the site's name, so results can read "svg-scroll-draw" rather than
   the vercel.app host; every other page now carries a `BreadcrumbList`

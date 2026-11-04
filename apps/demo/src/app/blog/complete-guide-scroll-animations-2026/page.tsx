@@ -106,6 +106,12 @@ export default function CompletGuidePage() {
           Every major website uses this. AOS and ScrollReveal.js popularised it. svg-scroll-draw
           does it in one call with <code>scrollReveal</code>.
         </p>
+        <p>
+          Every snippet in this guide runs in the browser. In the Next.js App Router, put it in a client
+          component and keep the page on the server; the{' '}
+          <Link href="/nextjs-scroll-animation">Next.js scroll animation guide</Link> has a complete App
+          Router project to copy.
+        </p>
         <Code file="app.js">{`import { scrollReveal } from 'svg-scroll-draw/reveal';
 
 // Default: fade up (opacity 0→1, translateY 32→0)

@@ -10,6 +10,19 @@ type Props = { version: string; gzipKb: number; unitTests: number; browserTests:
  * pinned stage, copy on the left, and on the right an exploded fountain pen
  * that the library inks on load and assembles as you scroll.
  */
+/** The frameworks strip under the hero: each one with a page of its own links to it. */
+const STRIP: [name: string, href?: string][] = [
+  ['React', '/react-scroll-animation'],
+  ['Next.js', '/nextjs-scroll-animation'],
+  ['Vue', '/vue-scroll-animation'],
+  ['Nuxt', '/nuxt-scroll-animation'],
+  ['Svelte', '/svelte-scroll-animation'],
+  ['Solid', '/solid-scroll-animation'],
+  ['Angular', '/angular-scroll-animation'],
+  ['Astro', '/astro-scroll-animation'],
+  ['Web Components'],
+];
+
 export function Hero({ version, gzipKb, unitTests, browserTests }: Props) {
   return (
     <section className="he" aria-label="Introduction">
@@ -43,9 +56,15 @@ export function Hero({ version, gzipKb, unitTests, browserTests }: Props) {
         </div>
         <div className="he-foot" aria-label="Works with">
           <span className="he-foot-k">works with</span>
-          {['React', 'Next.js', 'Vue', 'Nuxt', 'Svelte', 'Solid', 'Angular', 'Astro', 'Web Components'].map((n) => (
-            <span key={n}>{n}</span>
-          ))}
+          {STRIP.map(([n, href]) =>
+            href ? (
+              <Link key={n} href={href} className="he-foot-a">
+                {n}
+              </Link>
+            ) : (
+              <span key={n}>{n}</span>
+            ),
+          )}
         </div>
       </div>
     </section>
