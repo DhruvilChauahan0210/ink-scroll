@@ -1,6 +1,6 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **2.16.1** — committed, waiting for the `v2.16.1` tag (2.16.0 is on npm, published with provenance through `release.yml` on 2026-11-01)
+> Current version: **2.16.1** — published on npm with provenance through `release.yml` (2026-11-04)
 > Tests: **642 unit** across 33 suites · **198 browser tests** per engine (594 runs
 > across Chromium/Firefox/WebKit) · **56 mutations**, each caught by the one test
 > named for it · **91.3% line coverage** (gate 90/90/82/82)
@@ -157,7 +157,7 @@ at all.
 
 - [x] `"use client"` on `svg-scroll-draw/react` (post-build, never on shared chunks); `directives.test.ts` reads dist; the demo renders `<ScrollDraw>` from a Server Component so `next build` guards it
 - [x] Mutation anchors `reveal/stagger`, `video/scrub`, `video/direction` re-pointed; all 56 run
-- [ ] Released — tag `v2.16.1`
+- [x] Released — tag `v2.16.1` on `b3eb52a`, published by `release.yml` with provenance
 
 ### 2.16.0 — shared ESM chunks (2026-11-01)
 
