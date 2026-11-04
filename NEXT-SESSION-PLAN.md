@@ -1,6 +1,6 @@
 # Next Session Plan — svg-scroll-draw
 
-> Updated: 2026-11-01 — **2.16.0 published** (`v2.16.0` on `fde9f4c`: ES module entries share code through chunks — main + react 18.1 → 13.2 KB; the drop-ins share one instance with their React hooks; size tables generated; main entry 10.7 KB as shipped files). **2.15.3 published** (`v2.15.3` on `acc9acc`: scrollReveal's `stagger` is a fraction of the reveal window, per row, on top of a custom trigger; 2.15.2 before it kept scrollVideo's end frame under reduced motion). Every page is linked from every page (nav "More", phone menu, footer index — `components/site/sitemap.ts`, guarded by `check-nav`). The native CSS path is no longer described as compositor work anywhere, and `/vs-aos` quotes the reveal entry and the real presets. Every page is on the homepage design and all 23 showcase sites are built — in `32f3409`, on `main`.
+> Updated: 2026-11-01 — **2.16.0 published** (`v2.16.0` on `fde9f4c`: ES module entries share code through chunks — main + react 18.1 → 13.2 KB; the drop-ins share one instance with their React hooks; size tables generated; main entry 10.7 KB as shipped files). **2.15.3 published** (`v2.15.3` on `acc9acc`: scrollReveal's `stagger` is a fraction of the reveal window, per row, on top of a custom trigger; 2.15.2 before it kept scrollVideo's end frame under reduced motion). Every page is linked from every page (nav "More", phone menu, footer index — `components/site/sitemap.ts`, guarded by `check-nav`). Sitemap dates come from git for every URL, generated groups included — Search Console (2026-11-04) had 20 indexed, 35 "Discovered – not indexed" (never crawled), 2 "Crawled – not indexed". The native CSS path is no longer described as compositor work anywhere, and `/vs-aos` quotes the reveal entry and the real presets. Every page is on the homepage design and all 23 showcase sites are built — in `32f3409`, on `main`.
 
 ---
 
@@ -88,7 +88,8 @@ months, 81% to the homepage; `/vs-gsap` at position 11 with 425 impressions.
 1. Create the `v2.10.1` GitHub release page by hand (its job lacked
    `contents: write`). From 2.10.2 the workflow creates it.
 2. Re-check Search Console in ~2 weeks for the new titles (`/vs-gsap`, home,
-   React, Next.js).
+   React, Next.js), and Page indexing for the 35 "Discovered – not indexed"
+   pages once the git-dated sitemap is deployed and resubmitted.
 3. More blocks; one shared nav component so every page links `/blocks`.
 4. Shared ESM chunks between entries (see ROADMAP) — 8.6 KB vs 6.4 KB when an app
    imports main + `/react`.

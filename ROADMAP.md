@@ -174,6 +174,8 @@ of examining a single API in a real browser.
 - [x] React / Next.js hooks for the drop-ins (`useAOS` + `<AOSInit />`, `useScrollReveal`, `useVivus`)
 - [x] On-site migration guides (`/guides`): AOS in Next.js / React, ScrollReveal in React, vivus in React, GSAP ScrollTrigger in React
 - [ ] Check Search Console in ~2 weeks for /guides/* and /vs-* impressions and clicks
+- [x] Sitemap dates derived from git for generated pages too (35 pages were "Discovered – not indexed" with stale dates)
+- [ ] After deploy: resubmit the sitemap and request indexing for the top unindexed pages; re-check Page indexing in ~2 weeks
 - [x] Homepage redesign — every chapter a blueprint-grade drawing of a real use case (fountain-pen hero, gallery, watch, proof sheet, balance, API plates, gauges, circuit board, before/after windows, live GitHub + npm stats, drawing-sheet footer), scoped under `.home`
 - [x] Showcase sites — one real demo site per example (all 23), linked from the examples pages; 19 rebuilt to industry level, Aural (scroll-video) sets the bar with a rendered product film
 - [x] Carry the homepage's look to every page through `SiteShell` — /docs, /examples (+ detail pages), /guides (+ each guide), /blog (+ all 12 posts on one article frame), /blocks, /changelog, /playground, /verify, all seven vs-* pages, the six framework landings and the React / Next.js / Lenis landings; the old ink-bottle mascot is off every page

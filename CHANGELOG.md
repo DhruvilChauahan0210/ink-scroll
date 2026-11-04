@@ -217,6 +217,14 @@ All notable changes to `svg-scroll-draw` are documented here.
   than two clicks deep (eight were three or four), and `check-nav` fails the
   build if a new top-level page is missing from the list.
 
+- **Sitemap dates come from git for every page.** Search Console listed 35
+  pages as "Discovered – currently not indexed", never crawled, and 34 of them
+  carried a hand-typed `lastModified` of 2026-08-15 that nothing refreshed: the
+  framework, comparison, example and guide pages are generated from data, and
+  `npm run sitemap:dates` only rewrote literal entries. Each generated group now
+  takes one date — the last commit to its template, component or data file —
+  and the script refreshes those with the rest.
+
 ### CI
 
 - **One release run per tag at a time.** Re-pushing `v2.15.3` while its first
