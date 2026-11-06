@@ -1,6 +1,6 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **2.19.1** — pushed to `main` (2026-11-06), not tagged. 2.19.0 (`f131f9c`) is not tagged either, so 2.18.1 is still the latest on npm
+> Current version: **2.19.1** — published (npm `latest`, GitHub's latest release; `v2.19.1` on `2f7b711`). 2.19.0 published just before it (`v2.19.0` on `f131f9c`)
 > Tests: **690 unit** across 36 suites · **227 browser tests** per engine (681 runs
 > across Chromium/Firefox/WebKit) · **80 mutations**, each caught by the one test
 > named for it · **91.3% line coverage** (gate 90/90/82/82)
@@ -168,10 +168,10 @@ at all.
 - [x] GitHub Actions v7 (`checkout`, `setup-node`, `upload-artifact`) and `action-gh-release` v3
 - [x] Next 16.4.5, React 19.3.1, esbuild 0.28.2 (tests only), Tailwind 4.3.4, Vue 3.5.45, Solid 1.9.18, type packages; `npm audit` 32 → 17 findings
 - [x] Declined with reasons in `.github/dependabot.yml`: TypeScript 7, ESLint 10, `@types/node` 26 (and `@vitest/coverage-v8` majors now follow vitest's)
-- [x] Dependabot PRs #1–#4 and #6–#9 closed after the push, each with a note on what landed or why it was declined
+- [x] Dependabot PRs #1–#4 and #6–#9 closed after the push (#6–#8 by Dependabot itself once the ignore rules landed). No notes on them: this laptop's network answers GitHub comment posts with its own page, so the reasons live in `660f363`'s message and `dependabot.yml`
 - [ ] CI's Node matrix is [20, 22]; Node 20 is out of support. Moving to [22, 24] moves `@types/node` to ^22 with it
 
-### 2.19.1 — a staggered drawing finishes (2026-11-06; pushed, not tagged)
+### 2.19.1 — a staggered drawing finishes (2026-11-06)
 
 - [x] Off screen, the engine follows the scroll until the last staggered window ends (with the default trigger the later paths froze at the exit — 1 / 0.8 / 0.55 / 0.3 — and `onComplete` never fired, on any page); a drawing without `stagger` stops where it always did
 - [x] Where the page ends before the last window, the stagger is tightened evenly so the last path finishes at the bottom (measured 0.75 / 0.5 on screen before); a page with room keeps it as written; an unreachable `trigger.end` is left alone
@@ -179,9 +179,9 @@ at all.
 - [x] Sizes: main 11.2 → 11.4 KB; draw-engine budgets moved with the reason in `scripts/size.mjs`
 - [x] Docs: `/docs`, both READMEs, the skill's API table, the `stagger` JSDoc, CHANGELOG, `/changelog`
 - [x] Playwright 1.62.1 → 1.65.0 (Chromium 158, Firefox 159, WebKit 27.2): `firefox-native` folded into `firefox`, which takes the fast path with no prefs; the parity suites require it in Chromium and Firefox (watched failing with the feature off)
-- [ ] Released — pushed; waiting on the owner to tag `v2.19.0` on `f131f9c`, then `v2.19.1` once that release run is done
+- [x] Released — `v2.19.1` on `2f7b711`; both release runs passed. The two tags raced: 2.19.0 published last and took npm `latest` and GitHub's latest release, both moved back to 2.19.1 by hand
 
-### 2.19.0 — every engine follows the page (2026-11-06; pushed, not tagged)
+### 2.19.0 — every engine follows the page (2026-11-06)
 
 - [x] One shared layout watcher (`core/layout-watch`) for the animate, counter, progress, text, timeline and video engines; the draw engine and scrollHorizontal moved onto it. A move under a pixel is dropped; a re-measure leaves out the engine's own transform
 - [x] `refresh()` on scrollAnimate instances (group `refresh()` did nothing before)
@@ -195,7 +195,7 @@ at all.
 - [x] scrollPin: a resize while pinned moves the element with its wrapper (it kept its old left and width — measured 220px past the screen's edge); browser test + mutation `pin/resize-pinned`
 - [x] The layout watcher also watches the boxes above each element (previous siblings of it and its ancestors): growth inside a custom scrollContainer or on an `html, body { height: 100% }` page is heard; browser tests for both + mutation `layout/boxes-above`
 - [x] Svelte 5 versions of all nine blocks (`registry/svelte/`, `/r/svelte/<name>.json` without `path`, on /blocks, `test-svelte-blocks` in CI); `test-blocks` in CI against a built, started site
-- [ ] Released — committed and pushed as `f131f9c` (2026-11-06); waiting on the owner to push the `v2.19.0` tag
+- [x] Released — `v2.19.0` on `f131f9c`; the release run passed and npm has it
 
 ### 2.18.1 — scrollHorizontal follows the layout (2026-11-05)
 

@@ -1,10 +1,10 @@
 # Next Session Plan — svg-scroll-draw
 
-> Updated: 2026-11-06 — **2.19.1 pushed** (a staggered drawing finishes; see below; not tagged). **2.19.0 committed and pushed** (`f131f9c`, on `main` and `feat/homepage-redesign`; npm `latest` stays 2.18.1 until the owner pushes the `v2.19.0` tag). **2.18.1 published** (`v2.18.1` on `70c91cd`: `scrollHorizontal` follows the layout and measures against its sticky stage; the horizontal strip recipe, the fifth and last planned). **2.18.0 published** (`v2.18.0` on `1840983`: `scrollVideo` `triggerElement`; four recipes). **2.17.1 published** (`v2.17.1` on `ed77b58`: `once` keeps `stagger`; the logo example is a full recipe). Recipe 2, the pinned feature tour on `/examples/scroll-pin`, is done (site-only). **2.17.0 published** (`v2.17.0` on `d7b03b2`: the React, Vue, Nuxt, Solid and Svelte wrappers follow option changes, Angular gets `update()` for `ngOnChanges`). **2.16.1 published** (`v2.16.1` on `b3eb52a`) (`svg-scroll-draw/react` ships `"use client"` so Server Components render `<ScrollDraw>` directly; all 56 mutations run again). **2.16.0 published** (`v2.16.0` on `fde9f4c`: ES module entries share code through chunks — main + react 18.1 → 13.2 KB; the drop-ins share one instance with their React hooks; size tables generated; main entry 10.7 KB as shipped files). **2.15.3 published** (`v2.15.3` on `acc9acc`: scrollReveal's `stagger` is a fraction of the reveal window, per row, on top of a custom trigger; 2.15.2 before it kept scrollVideo's end frame under reduced motion). Every page is linked from every page (nav "More", phone menu, footer index — `components/site/sitemap.ts`, guarded by `check-nav`). Sitemap dates come from git for every URL, generated groups included — Search Console (2026-11-04) had 20 indexed, 35 "Discovered – not indexed" (never crawled), 2 "Crawled – not indexed". The native CSS path is no longer described as compositor work anywhere, and `/vs-aos` quotes the reveal entry and the real presets. Every page is on the homepage design and all 23 showcase sites are live — in `32f3409`, on `main`.
+> Updated: 2026-11-06 — **2.19.1 published** (`v2.19.1` on `2f7b711`: a staggered drawing finishes; Playwright 1.65.0; npm `latest`). **2.19.0 published** (`v2.19.0` on `f131f9c`: every engine follows the page; live wrapper options; Vue and Svelte blocks). Dependencies updated in `660f363` (site and tooling only). **2.18.1 published** (`v2.18.1` on `70c91cd`: `scrollHorizontal` follows the layout and measures against its sticky stage; the horizontal strip recipe, the fifth and last planned). **2.18.0 published** (`v2.18.0` on `1840983`: `scrollVideo` `triggerElement`; four recipes). **2.17.1 published** (`v2.17.1` on `ed77b58`: `once` keeps `stagger`; the logo example is a full recipe). Recipe 2, the pinned feature tour on `/examples/scroll-pin`, is done (site-only). **2.17.0 published** (`v2.17.0` on `d7b03b2`: the React, Vue, Nuxt, Solid and Svelte wrappers follow option changes, Angular gets `update()` for `ngOnChanges`). **2.16.1 published** (`v2.16.1` on `b3eb52a`) (`svg-scroll-draw/react` ships `"use client"` so Server Components render `<ScrollDraw>` directly; all 56 mutations run again). **2.16.0 published** (`v2.16.0` on `fde9f4c`: ES module entries share code through chunks — main + react 18.1 → 13.2 KB; the drop-ins share one instance with their React hooks; size tables generated; main entry 10.7 KB as shipped files). **2.15.3 published** (`v2.15.3` on `acc9acc`: scrollReveal's `stagger` is a fraction of the reveal window, per row, on top of a custom trigger; 2.15.2 before it kept scrollVideo's end frame under reduced motion). Every page is linked from every page (nav "More", phone menu, footer index — `components/site/sitemap.ts`, guarded by `check-nav`). Sitemap dates come from git for every URL, generated groups included — Search Console (2026-11-04) had 20 indexed, 35 "Discovered – not indexed" (never crawled), 2 "Crawled – not indexed". The native CSS path is no longer described as compositor work anywhere, and `/vs-aos` quotes the reveal entry and the real presets. Every page is on the homepage design and all 23 showcase sites are live — in `32f3409`, on `main`.
 
 ---
 
-## Dependencies (2026-11-06) — pushed; the Dependabot PRs closed
+## Dependencies (2026-11-06) — `660f363`, pushed; the Dependabot PRs closed
 
 The eight open Dependabot PRs, worked locally rather than merged (main moves by
 pushing `feat/homepage-redesign:main`, so merging a PR would make the two
@@ -12,13 +12,14 @@ diverge). Actions v7 / gh-release v3; Next 16.4.5, React 19.3.1, esbuild
 0.28.2 and the other minor/patch updates; TypeScript 7, ESLint 10 and
 `@types/node` 26 declined with the reason in `.github/dependabot.yml`. Checked:
 `verify`, the browser suite, the demo checks and a sweep of all 64 sitemap
-pages on the built site. PRs #1–#4 and #6–#9 were closed after the push,
-each with a note. `npm audit`: 17 findings left, all in dev tools —
+pages on the built site. PRs #1–#4 and #6–#9 are closed (#6–#8 by
+Dependabot once the ignore rules landed); the work network blocks posting
+GitHub comments, so the reasons are in `660f363`'s message and dependabot.yml. `npm audit`: 17 findings left, all in dev tools —
 the 3 critical and 1 high are vitest 2 and its vite (vitest's major is a
 deliberate step, ignored in dependabot.yml); the moderates are vitest, tsup's
 own esbuild 0.27.7 and a `minimatch` inside typescript-eslint.
 
-## 2.19.1 (2026-11-06) — pushed; tags waiting on the owner
+## 2.19.1 (2026-11-06) — published, `v2.19.1` on `2f7b711`
 
 - **Library:** a staggered drawing finishes. With the default trigger the engine
   stopped as the drawing left the screen and every later path froze short of 1,
@@ -36,15 +37,15 @@ own esbuild 0.27.7 and a `minimatch` inside typescript-eslint.
   `NATIVE_PROJECTS` in `e2e/helpers.ts` makes them fail if Chromium or Firefox
   stops taking it. 681 runs (227 per engine). After pulling, run
   `npx playwright install chromium firefox webkit` once.
-- Owner: tag `v2.19.0` **on `f131f9c`** (the release job requires the tag to
-  match package.json at the tagged commit), wait for its release run, then tag
-  `v2.19.1` on the 2.19.1 commit — in that order, so npm `latest` ends on 2.19.1.
+- Released after 2.19.0. Both tags went out 22s apart and the runs raced:
+  2.19.1 published first, so 2.19.0 took npm `latest` and GitHub's latest
+  release; the owner moved both back (`npm dist-tag add svg-scroll-draw@2.19.1
+  latest`, and "Set as the latest release" on GitHub). See the gotcha below.
 
-## 2.19.0 (2026-11-06) — `f131f9c`, pushed; tag `v2.19.0` waiting on the owner
+## 2.19.0 (2026-11-06) — published, `v2.19.0` on `f131f9c`
 
 The owner asked for four follow-ups, done overnight, then committed and pushed
-on review. Publishing needs only the tag:
-`git pull && git tag v2.19.0 f131f9c && git push origin v2.19.0` — on `f131f9c`, not the latest commit.
+on review.
 
 - **Library:** one shared layout watcher (`src/core/layout-watch.ts`) for the
   animate, counter, progress, text, timeline and video engines (the draw engine
@@ -139,7 +140,24 @@ months, 81% to the homepage; `/vs-gsap` at position 11 with 425 impressions.
   the first time. The logs need a Vercel login (the CLI isn't installed here). If it
   keeps happening, read the log in the dashboard before changing anything.
 
+### Gotcha: two releases at once
+- npm makes whichever version publishes last `latest`, even a lower one, and
+  only after it finishes processing (a few minutes after "+ pkg@x.y.z"); the
+  release action marks each GitHub release latest when it creates it. So with
+  two versions to release, push the second tag only after the first is on npm
+  (`npm view svg-scroll-draw@<first> version` answers), or fix both afterwards:
+  `npm dist-tag add svg-scroll-draw@<newest> latest` (needs `npm login` and a
+  2FA approval in the browser) and "Set as the latest release" on GitHub.
+- Tag each release on its own commit (`git tag vX.Y.Z <sha>`): the job fails
+  when the tag disagrees with package.json at the tagged commit.
+
 ### Gotcha on this laptop
+- The work network answers some `gh` writes with its own HTML page instead of
+  passing them to GitHub ("invalid character '<'"): PR and issue comments (REST
+  or GraphQL, so `gh pr close --comment` fails outright) and release edits
+  (`gh release edit`, or a PATCH with `make_latest`). Closing a PR works:
+  `gh api -X PATCH repos/DhruvilChauahan0210/ink-scroll/pulls/<n> -f state=closed`.
+  Put the reasons in the commit message instead (found 2026-11-06).
 - The network intercepts TLS, and Node rejects api.github.com's certificate, so a
   plain `npm run dev` keeps serving a stale cached GitHub response. Run the dev server
   (and any local `vercel-build`) with `NODE_OPTIONS=--use-system-ca` (Node ≥ 22.15).
@@ -181,7 +199,7 @@ months, 81% to the homepage; `/vs-gsap` at position 11 with 425 impressions.
   suite against AOS 2.3.4. Watch npm weekly downloads for its effect.
 
 ### Next, in order
-1. **Owner:** push the `v2.19.0` tag on `f131f9c`, then `v2.19.1` (see the 2.19.1 section).
+1. ~~Tag `v2.19.0` and `v2.19.1`~~ — both published 2026-11-06.
 2. ~~A staggered drawing that never finishes; Playwright 1.65.0 and folding
    `firefox-native` into `firefox`~~ — both done in 2.19.1 (2026-11-06).
 3. **Owner:** create the `v2.10.1` GitHub release page by hand (its job lacked
