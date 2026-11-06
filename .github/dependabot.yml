@@ -18,7 +18,23 @@ updates:
         update-types: [version-update:semver-major]
       - dependency-name: vitest
         update-types: [version-update:semver-major]
+      # Has to share vitest's major; a coverage-v8 5 PR against vitest 2 fails.
+      - dependency-name: "@vitest/coverage-v8"
+        update-types: [version-update:semver-major]
       - dependency-name: "@playwright/test"
+        update-types: [version-update:semver-major]
+      # Blocked upstream, checked 2026-11-06. TypeScript 7's package has no
+      # compiler API and typescript-eslint (behind eslint-config-next) accepts
+      # TypeScript < 6.1. ESLint 10 is past the peer range of eslint-plugin-react,
+      # -import and -jsx-a11y, which eslint-config-next bundles. Revisit when
+      # those move.
+      - dependency-name: typescript
+        update-types: [version-update:semver-major]
+      - dependency-name: eslint
+        update-types: [version-update:semver-major]
+      # Matches the oldest Node CI runs (the matrix in ci.yml); types for a newer
+      # Node let code use APIs that runtime does not have. Move with the matrix.
+      - dependency-name: "@types/node"
         update-types: [version-update:semver-major]
 
   - package-ecosystem: github-actions

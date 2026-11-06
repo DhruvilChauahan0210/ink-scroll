@@ -472,7 +472,7 @@
     "@playwright/test": "^1.65.0",
     "@types/react": "^18.0.0",
     "@vitest/coverage-v8": "^2.0.0",
-    "esbuild": "^0.27.7",
+    "esbuild": "^0.28.2",
     "jsdom": "^25.0.0",
     "scrollreveal": "^4.0.9",
     "solid-js": "^1.9.13",

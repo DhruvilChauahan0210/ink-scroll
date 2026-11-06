@@ -163,6 +163,14 @@ at all.
 - [x] `/blog/horizontal-scroll-sections` is a full recipe — a case-study strip: runway matched to the travel, count and rail from `onProgress`, `overflow: clip` + a `focusin` scroll for the keyboard; five pitfalls measured on the file; files in `apps/demo/src/recipes/horizontal-scroll-sections/`; the recipe parts render inside a post's sections
 - [x] The five recipes planned are done (logo, sticky feature section, stat row, scrubbed film, horizontal strip)
 
+### Dependencies (2026-11-06; site and tooling only, no version bump)
+
+- [x] GitHub Actions v7 (`checkout`, `setup-node`, `upload-artifact`) and `action-gh-release` v3
+- [x] Next 16.4.5, React 19.3.1, esbuild 0.28.2 (tests only), Tailwind 4.3.4, Vue 3.5.45, Solid 1.9.18, type packages; `npm audit` 32 → 17 findings
+- [x] Declined with reasons in `.github/dependabot.yml`: TypeScript 7, ESLint 10, `@types/node` 26 (and `@vitest/coverage-v8` majors now follow vitest's)
+- [x] Dependabot PRs #1–#4 and #6–#9 closed after the push, each with a note on what landed or why it was declined
+- [ ] CI's Node matrix is [20, 22]; Node 20 is out of support. Moving to [22, 24] moves `@types/node` to ^22 with it
+
 ### 2.19.1 — a staggered drawing finishes (2026-11-06; pushed, not tagged)
 
 - [x] Off screen, the engine follows the scroll until the last staggered window ends (with the default trigger the later paths froze at the exit — 1 / 0.8 / 0.55 / 0.3 — and `onComplete` never fired, on any page); a drawing without `stagger` stops where it always did

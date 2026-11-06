@@ -399,6 +399,28 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### CI
 
+- **Dependencies, the eight open Dependabot PRs worked through (2026-11-06).**
+  GitHub Actions to `checkout`, `setup-node`, `upload-artifact` v7 and
+  `action-gh-release` v3 (Node 24 runtimes; the workflows use none of what
+  changed — no `pull_request_target`, explicit `cache: npm`, and the release
+  job's `npm ci` runs cleanly without setup-node's old placeholder token).
+  Every minor and patch update the stale grouped PR held, at today's versions:
+  Next 16.2.6 → 16.4.5, React and React DOM 19.2.4 → 19.3.1, esbuild 0.28.2
+  (tests only — tsup keeps its own, so the shipped files do not change),
+  Tailwind 4.3.4, Vue 3.5.45, Solid 1.9.18 and the type packages. `npm audit`
+  went from 32 findings (12 high, 6 critical) to 17 (1 high, 3 critical): the
+  critical and high ones are vitest 2 and its vite, the moderate ones vitest,
+  tsup's own esbuild and a `minimatch` inside typescript-eslint — dev tools
+  only; the published package has no dependencies. Checked with `verify`, the browser suite, every demo
+  check and a sweep of all 64 sitemap pages (status 200, no page or console
+  errors) on the built site. Declined, with the reason in `dependabot.yml` so
+  they are not reopened: TypeScript 7 (no compiler API in its package, and
+  typescript-eslint accepts < 6.1), ESLint 10 (past the peer range of three
+  plugins eslint-config-next bundles) and `@types/node` 26 (types should match
+  the oldest Node CI runs, 20). A type import that shared its name with a
+  component in `Recipe.tsx`, which TypeScript 7 rejects, is renamed. Fifteen
+  files of `@types/react` under `packages/svg-scroll-draw/node_modules`,
+  committed by accident with the first commit, are no longer tracked.
 - **One release run per tag at a time.** Re-pushing `v2.15.3` while its first
   run was going started a second run on the same commit; both reached
   `npm publish` seconds apart and one ended in E409. `release.yml` now has a

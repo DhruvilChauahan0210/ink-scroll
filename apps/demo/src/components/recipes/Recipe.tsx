@@ -5,7 +5,7 @@ import './recipe.css';
 import { CodeBox } from '../site/CodeBox';
 import { Plate } from '../site/Plate';
 import { StepRail } from '../site/StepRail';
-import type { RecipeFiles } from '@/recipes/read';
+import type { RecipeFiles as RecipeFileSet } from '@/recipes/read';
 import type { RecipeDef } from './recipes';
 
 const pad = (n: number) => String(n).padStart(2, '0');
@@ -52,7 +52,7 @@ export function RecipeSteps({ recipe, fig = 1 }: { recipe: RecipeDef; fig?: numb
 }
 
 /** The complete files with the component running beside or below them, then the no-build file. */
-export function RecipeFiles({ recipe, files, fig = 2 }: { recipe: RecipeDef; files: RecipeFiles; fig?: number }) {
+export function RecipeFiles({ recipe, files, fig = 2 }: { recipe: RecipeDef; files: RecipeFileSet; fig?: number }) {
   return (
     <>
       <div className={recipe.liveLayout === 'side' ? 'rc-files' : 'rc-files is-full'}>
@@ -107,7 +107,7 @@ export function RecipePitfalls({ recipe }: { recipe: RecipeDef }) {
  * disk at build time (`readRecipeFiles`), so what is listed is what is tested.
  * A blog post places the three parts in its own numbered sections instead.
  */
-export function Recipe({ recipe, files }: { recipe: RecipeDef; files: RecipeFiles }) {
+export function Recipe({ recipe, files }: { recipe: RecipeDef; files: RecipeFileSet }) {
   return (
     <div className="rc">
       <section className="rc-sec" aria-labelledby="rc-steps">

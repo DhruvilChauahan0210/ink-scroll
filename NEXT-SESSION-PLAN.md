@@ -4,6 +4,20 @@
 
 ---
 
+## Dependencies (2026-11-06) — pushed; the Dependabot PRs closed
+
+The eight open Dependabot PRs, worked locally rather than merged (main moves by
+pushing `feat/homepage-redesign:main`, so merging a PR would make the two
+diverge). Actions v7 / gh-release v3; Next 16.4.5, React 19.3.1, esbuild
+0.28.2 and the other minor/patch updates; TypeScript 7, ESLint 10 and
+`@types/node` 26 declined with the reason in `.github/dependabot.yml`. Checked:
+`verify`, the browser suite, the demo checks and a sweep of all 64 sitemap
+pages on the built site. PRs #1–#4 and #6–#9 were closed after the push,
+each with a note. `npm audit`: 17 findings left, all in dev tools —
+the 3 critical and 1 high are vitest 2 and its vite (vitest's major is a
+deliberate step, ignored in dependabot.yml); the moderates are vitest, tsup's
+own esbuild 0.27.7 and a `minimatch` inside typescript-eslint.
+
 ## 2.19.1 (2026-11-06) — pushed; tags waiting on the owner
 
 - **Library:** a staggered drawing finishes. With the default trigger the engine
