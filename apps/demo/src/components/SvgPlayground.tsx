@@ -560,7 +560,7 @@ export function SvgPlayground() {
 
       {/* ── The bench's title strip: figure, mode, live options, share ─── */}
       <div className="pl-bar">
-        <span className="pl-bar-n">fig. 2</span>
+        <span className="pl-bar-n">Fig. 2</span>
         <span className="pl-bar-mode" role="group" aria-label="Playground mode">
           <button type="button" className="pl-mode" aria-pressed={mode === 'v1'} onClick={() => setMode('v1')}>
             v1 <span>scrollDraw</span>
@@ -643,7 +643,7 @@ export function SvgPlayground() {
               </button>
             </div>
             <div className="pl-read">
-              <span>progress <b>{pct}%</b></span>
+              <span>Progress <b>{pct}%</b></span>
               <span><b>{ps.easing}</b> · {ps.speed.toFixed(1)}×</span>
             </div>
           </div>
@@ -653,7 +653,7 @@ export function SvgPlayground() {
         <div className="pl-panel pl-panel-c">
           <div className="pl-ph">
             <span className="pl-ph-z">C</span>
-            <span className="pl-ph-t">options</span>
+            <span className="pl-ph-t">Options</span>
             <span className="pl-ph-m">{activeFeatureTags.length} on</span>
           </div>
 

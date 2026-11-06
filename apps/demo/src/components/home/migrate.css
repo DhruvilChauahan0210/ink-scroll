@@ -13,7 +13,7 @@
   margin: 0 0 12px;
   font-family: var(--mono);
   font-size: 12px;
-  letter-spacing: 0.02em;
+  letter-spacing: 0;
   color: var(--fg-3);
 }
 .home .mg-title {
@@ -37,7 +37,7 @@
 .home .mg-tab {
   height: 40px;
   padding: 0 16px;
-  border-radius: 999px;
+  border-radius: 8px;
   border: 1px solid var(--line-2);
   background: none;
   color: var(--fg-2);
@@ -63,8 +63,7 @@
 .home .mg-side {
   font-family: var(--mono);
   font-size: 11px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  letter-spacing: 0;
   color: var(--fg-3);
 }
 .home .mg-win-after .mg-side { color: var(--accent); }
@@ -109,7 +108,7 @@
 
 .home .mg-eq { display: grid; justify-items: center; gap: 4px; color: var(--fg-3); }
 .home .mg-eq span { font-family: var(--sans); font-size: 34px; font-weight: 300; color: var(--fg-2); line-height: 1; }
-.home .mg-eq small { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; }
+.home .mg-eq small { font-family: var(--mono); font-size: 10px; letter-spacing: 0; }
 @media (max-width: 899.98px) {
   .home .mg-eq { grid-auto-flow: column; align-items: center; justify-content: start; gap: 8px; }
   .home .mg-eq span { font-size: 24px; }
@@ -160,8 +159,7 @@
 .home .mg-link {
   font-family: var(--mono);
   font-size: 11px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  letter-spacing: 0;
   color: var(--fg);
   padding: 8px 0;
   border-bottom: 1px solid var(--line-2);

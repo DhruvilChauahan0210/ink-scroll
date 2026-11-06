@@ -16,7 +16,7 @@ html:has(.site .ba), html:has(.site .bl) { scroll-behavior: smooth; }
 .site .bl-facts { max-width: 720px; }
 .site .bl-rss { color: var(--fg); border-bottom: 1px solid var(--line-2); transition: color 0.2s, border-color 0.2s; }
 .site .bl-rss:hover { color: var(--accent); border-color: var(--accent); }
-.site .bl-issued { margin: 16px 0 0; font: 500 11px/1.4 var(--mono); letter-spacing: 0.04em; color: var(--fg-3); }
+.site .bl-issued { margin: 16px 0 0; font: 500 11px/1.4 var(--mono); letter-spacing: 0; color: var(--fg-3); }
 
 /* fig. 1 — the topic key, which is also the filter */
 .site .bl-key { margin: 0; min-width: 0; }
@@ -31,8 +31,7 @@ html:has(.site .ba), html:has(.site .bl) { scroll-behavior: smooth; }
   padding: 0 0 8px;
   border-bottom: 1px solid var(--fg-3);
   font: 500 10px/1.4 var(--mono);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  letter-spacing: 0;
   color: var(--fg-3);
 }
 .site .bl-key-row {
@@ -48,7 +47,7 @@ html:has(.site .ba), html:has(.site .bl) { scroll-behavior: smooth; }
 }
 .site .bl-key-row:hover { background: var(--bg-2); color: var(--fg); }
 .site .bl-key-row:focus-visible { outline: 1px solid var(--accent); outline-offset: -1px; }
-.site .bl-key-t { padding-left: 4px; font-size: 14px; font-weight: 500; letter-spacing: -0.01em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.site .bl-key-t { padding-left: 4px; font-size: 14px; font-weight: 500; letter-spacing: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .site .bl-key-n { font: 500 11px/1 var(--mono); color: var(--fg-3); font-variant-numeric: tabular-nums; }
 .site .bl-key-bar { display: grid; grid-template-columns: minmax(0, 1fr) 54px; gap: 8px; align-items: center; }
 .site .bl-key-bar svg { display: block; width: 100%; height: 10px; overflow: visible; color: var(--fg-3); }
@@ -60,7 +59,7 @@ html:has(.site .ba), html:has(.site .bl) { scroll-behavior: smooth; }
 .site .bl-key-row[aria-pressed='true'] svg { color: var(--accent); }
 .site .bl-key-row[aria-pressed='true'] .bl-key-n,
 .site .bl-key-row[aria-pressed='true'] .bl-key-m { color: var(--accent); }
-.site .bl-key-cap { margin-top: 12px; font: 500 11px/1.4 var(--mono); letter-spacing: 0.04em; color: var(--fg-3); }
+.site .bl-key-cap { margin-top: 12px; font: 500 11px/1.4 var(--mono); letter-spacing: 0; color: var(--fg-3); }
 
 /* The register: every post as a numbered sheet */
 .site .bl-reg { padding: clamp(40px, 5vw, 80px) max(var(--gutter), calc((100% - 1560px) / 2)); }
@@ -82,16 +81,16 @@ html:has(.site .ba), html:has(.site .bl) { scroll-behavior: smooth; }
   font-size: clamp(19px, 1.7vw, 26px);
   font-weight: 500;
   line-height: 1.2;
-  letter-spacing: -0.025em;
+  letter-spacing: 0;
   color: var(--fg);
   text-wrap: balance;
 }
 .site .bl-row:hover .bl-t { text-decoration: underline; text-decoration-color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 5px; }
 .site .bl-d { display: block; margin-top: 8px; max-width: 72ch; font-size: 14.5px; line-height: 1.6; color: var(--fg-2); }
-.site .bl-tag, .site .bl-m, .site .bl-date, .site .bl-go { font: 500 11px/1.4 var(--mono); letter-spacing: 0.04em; color: var(--fg-3); }
+.site .bl-tag, .site .bl-m, .site .bl-date, .site .bl-go { font: 500 11px/1.4 var(--mono); letter-spacing: 0; color: var(--fg-3); }
 .site .bl-tag { display: flex; align-items: center; }
 .site .bl-m, .site .bl-date { display: none; }
-.site .bl-go { display: none; letter-spacing: 0.12em; text-transform: uppercase; }
+.site .bl-go { display: none; letter-spacing: 0; }
 .site .bl-row:hover .bl-go { color: var(--accent); }
 /* Phones: tag, read time and date share one line under the title. */
 @media (max-width: 899px) {
@@ -111,8 +110,7 @@ html:has(.site .ba), html:has(.site .bl) { scroll-behavior: smooth; }
   .site .bl-reg-hd {
     padding: 0 0 8px;
     font: 500 10px/1.4 var(--mono);
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+    letter-spacing: 0;
     color: var(--fg-3);
   }
   .site .bl-reg-hd span:first-child { padding-left: 4px; }
@@ -122,7 +120,7 @@ html:has(.site .ba), html:has(.site .bl) { scroll-behavior: smooth; }
   .site .bl-go { text-align: right; padding-right: 4px; }
   .site .bl-reg-hd span:nth-child(5) { grid-column: 5 / span 2; }
 }
-.site .bl-reg-foot { margin: 16px 0 0; font: 500 11px/1.4 var(--mono); letter-spacing: 0.04em; color: var(--fg-3); }
+.site .bl-reg-foot { margin: 16px 0 0; font: 500 11px/1.4 var(--mono); letter-spacing: 0; color: var(--fg-3); }
 .site .bl-clear {
   padding: 0;
   border: 0;
@@ -175,7 +173,7 @@ html:has(.site .ba), html:has(.site .bl) { scroll-behavior: smooth; }
     scrollbar-width: thin;
   }
 }
-.site .ba-toc-h { margin: 0; padding-bottom: 8px; border-bottom: 1px solid var(--line-2); font: 500 10px/1.4 var(--mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--fg-3); }
+.site .ba-toc-h { margin: 0; padding-bottom: 8px; border-bottom: 1px solid var(--line-2); font: 500 10px/1.4 var(--mono); letter-spacing: 0; color: var(--fg-3); }
 .site .ba-toc-a {
   display: grid;
   grid-template-columns: 30px minmax(0, 1fr);
@@ -195,7 +193,7 @@ html:has(.site .ba), html:has(.site .bl) { scroll-behavior: smooth; }
 .site .ba-sec h2 { scroll-margin-top: calc(var(--nav-h) + 90px); }
 .site .ba-tb { margin-bottom: 16px; }
 /* Section labels are often API names (onProgress, scrollSnap): keep their case. */
-.site .ba-tb > span:not(.tb-n) { text-transform: none; letter-spacing: 0.06em; }
+.site .ba-tb > span:not(.tb-n) { text-transform: none; letter-spacing: 0; }
 .site .ba-h2 {
   margin: 0 0 24px;
   font-family: var(--sans);
@@ -211,7 +209,7 @@ html:has(.site .ba), html:has(.site .bl) { scroll-behavior: smooth; }
   font-size: clamp(19px, 1.6vw, 23px);
   font-weight: 500;
   line-height: 1.2;
-  letter-spacing: -0.025em;
+  letter-spacing: 0;
   color: var(--fg);
 }
 
@@ -219,7 +217,7 @@ html:has(.site .ba), html:has(.site .bl) { scroll-behavior: smooth; }
 .site .ba-prose p:not([class]) { margin: 0 0 16px; max-width: 68ch; font-size: 16px; line-height: 1.75; color: var(--fg-2); }
 .site .ba-prose p:not([class]):last-child { margin-bottom: 0; }
 .site .ba-prose strong { font-weight: 500; color: var(--fg); }
-.site .ba-prose em { font-style: italic; color: var(--fg); }
+.site .ba-prose em { font-style: normal; color: var(--fg); }
 .site .ba-prose :not(pre) > code {
   padding: 1px 8px;
   border: 1px solid var(--line-2);
@@ -271,7 +269,7 @@ html:has(.site .ba), html:has(.site .bl) { scroll-behavior: smooth; }
   line-height: 1.65;
   color: var(--fg-2);
 }
-.site .ba-note-k { font: 500 10px/2.3 var(--mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); }
+.site .ba-note-k { font: 500 10px/2.3 var(--mono); letter-spacing: 0; color: var(--accent); }
 .site .ba-note-b > :last-child { margin-bottom: 0; }
 @media (max-width: 559px) { .site .ba-note { grid-template-columns: minmax(0, 1fr); gap: 8px; } }
 .site .ba-defs { margin: 0; }
@@ -293,15 +291,14 @@ html:has(.site .ba), html:has(.site .bl) { scroll-behavior: smooth; }
   align-items: center;
   gap: 8px;
   font: 500 11px/1.4 var(--mono);
-  letter-spacing: 0.06em;
+  letter-spacing: 0;
   color: var(--fg-2);
 }
 .site .ba-cmp-k span {
   padding: 2px 8px;
   border: 1px solid var(--line-2);
   font-size: 9.5px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  letter-spacing: 0;
   color: var(--fg-3);
 }
 .site .ba-cmp-col.is-after .ba-cmp-k { color: var(--fg); }
@@ -315,8 +312,7 @@ html:has(.site .ba), html:has(.site .bl) { scroll-behavior: smooth; }
   padding: 8px 16px 8px 0;
   border-bottom: 1px solid var(--line-2);
   font: 500 10px/1.4 var(--mono);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  letter-spacing: 0;
   text-align: left;
   color: var(--fg-3);
   white-space: nowrap;
@@ -350,7 +346,7 @@ html:has(.site .ba), html:has(.site .bl) { scroll-behavior: smooth; }
 .site .ba-cols { display: grid; gap: 0 clamp(24px, 3vw, 44px); margin: 16px 0 8px; }
 @media (min-width: 760px) { .site .ba-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .site .ba-checks { min-width: 0; margin-bottom: 16px; }
-.site .ba-checks-h { margin: 0; padding-bottom: 8px; border-bottom: 1px solid var(--fg-3); font: 500 11px/1.4 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg); }
+.site .ba-checks-h { margin: 0; padding-bottom: 8px; border-bottom: 1px solid var(--fg-3); font: 500 11px/1.4 var(--mono); letter-spacing: 0; color: var(--fg); }
 .site .ba-checks.is-muted .ba-checks-h { color: var(--fg-3); }
 .site .ba-checks ul { margin: 0; padding: 0; list-style: none; }
 .site .ba-checks li {
@@ -376,12 +372,12 @@ html:has(.site .ba), html:has(.site .bl) { scroll-behavior: smooth; }
   color: var(--fg-2);
 }
 .site .ba-notes-n { font: 500 11px/2.1 var(--mono); color: var(--accent); }
-.site .ba-notes strong { display: block; margin-bottom: 2px; font-size: 16.5px; font-weight: 500; letter-spacing: -0.015em; color: var(--fg); }
+.site .ba-notes strong { display: block; margin-bottom: 2px; font-size: 16.5px; font-weight: 500; letter-spacing: 0; color: var(--fg); }
 
 /* Spec strip */
 .site .ba-spec { margin: 20px 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); border-top: 1px solid var(--line-2); border-left: 1px solid var(--line); max-width: 760px; }
 .site .ba-spec > div { padding: 12px 16px 16px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-.site .ba-spec dt { font: 500 10px/1.4 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-3); }
+.site .ba-spec dt { font: 500 10px/1.4 var(--mono); letter-spacing: 0; color: var(--fg-3); }
 .site .ba-spec dd { margin: 8px 0 0; font: 500 13.5px/1.5 var(--mono); color: var(--fg); }
 
 /* Steps along an inked rail (StepRail) */
@@ -406,12 +402,12 @@ html:has(.site .ba), html:has(.site .bl) { scroll-behavior: smooth; }
   font: 500 12px/1 var(--mono);
   color: var(--fg);
 }
-.site .ba-step-k { margin: 8px 0 8px; font: 500 11px/1.4 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-3); }
+.site .ba-step-k { margin: 8px 0 8px; font: 500 11px/1.4 var(--mono); letter-spacing: 0; color: var(--fg-3); }
 .site .ba-step .ba-h3 { margin-top: 0; }
 
 /* Figures and captions */
 .site .ba-fig { margin: 24px 0 24px; min-width: 0; }
-.site .ba-cap { margin-top: 12px; font: 500 11px/1.5 var(--mono); letter-spacing: 0.04em; color: var(--fg-3); }
+.site .ba-cap { margin-top: 12px; font: 500 11px/1.5 var(--mono); letter-spacing: 0; color: var(--fg-3); }
 .site .ba-cap span { color: var(--accent); }
 .site .ba-prose .plate { margin: 24px 0 24px; }
 
@@ -439,7 +435,7 @@ html:has(.site .ba), html:has(.site .bl) { scroll-behavior: smooth; }
 
 /* The closing call to action */
 .site .ba-close { margin: 8px 0 0; padding: clamp(24px, 3vw, 36px); border: 1px solid var(--line-2); background: var(--panel); }
-.site .ba-close-k { margin: 0 0 12px; font: 500 11px/1.4 var(--mono); letter-spacing: 0.04em; color: var(--accent); }
+.site .ba-close-k { margin: 0 0 12px; font: 500 11px/1.4 var(--mono); letter-spacing: 0; color: var(--accent); }
 .site .ba-close-t { margin: 0; font-size: clamp(26px, 2.6vw, 38px); font-weight: 500; line-height: 1.05; letter-spacing: -0.04em; color: var(--fg); }
 .site .ba-close-l { margin: 12px 0 0; font-size: 15px; line-height: 1.6; color: var(--fg-2); }
 .site .ba-close-row { margin-top: 24px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
@@ -450,21 +446,21 @@ html:has(.site .ba), html:has(.site .bl) { scroll-behavior: smooth; }
   height: 40px;
   padding: 0 8px 0 16px;
   border: 1px solid var(--line-2);
-  border-radius: 999px;
+  border-radius: 8px;
   font: 400 13px/1 var(--mono);
   color: var(--fg);
   max-width: 100%;
 }
 .site .ba-cmd > span { color: var(--accent); }
 /* CopyButton is shared and painted for the old dark code blocks; re-ink it here. */
-.site .ba button[aria-label='Copy to clipboard'] { color: var(--fg-3); border-color: transparent; border-radius: 999px; }
+.site .ba button[aria-label='Copy to clipboard'] { color: var(--fg-3); border-color: transparent; border-radius: 8px; }
 .site .ba button[aria-label='Copy to clipboard']:hover { color: var(--fg); border-color: var(--line-2); }
 
 /* The footer: the parts list of where to go next */
 .site .ba-end { border-bottom: 0; }
-.site .ba-rel-k { display: block; margin-bottom: 4px; font: 500 10px/1.4 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-3); }
+.site .ba-rel-k { display: block; margin-bottom: 4px; font: 500 10px/1.4 var(--mono); letter-spacing: 0; color: var(--fg-3); }
 .site .ba-end-h { margin-top: clamp(36px, 4vw, 52px); }
-.site .ba-end-links { margin: 24px 0 0; display: flex; flex-wrap: wrap; gap: 8px 24px; font: 500 11px/1.4 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; }
+.site .ba-end-links { margin: 24px 0 0; display: flex; flex-wrap: wrap; gap: 8px 24px; font: 500 11px/1.4 var(--mono); letter-spacing: 0; }
 .site .ba-end-links a { color: var(--fg-2); transition: color 0.2s; }
 .site .ba-end-links a:hover { color: var(--accent); }
 @media (max-width: 559px) {
@@ -490,7 +486,7 @@ html:has(.site .ba), html:has(.site .bl) { scroll-behavior: smooth; }
 .site .pf-tick { stroke-width: 1.4; color: var(--accent); }
 .site .pf-head { fill: var(--fg-2); }
 .site .pf-dot { fill: var(--bg); stroke: var(--accent); stroke-width: 1.6; }
-.site .pf-k { font: 500 10.5px var(--mono); letter-spacing: 0.1em; text-transform: uppercase; fill: var(--fg-3); }
+.site .pf-k { font: 500 10.5px var(--mono); letter-spacing: 0; fill: var(--fg-3); }
 .site .pf-v { font: 500 12px var(--mono); fill: var(--fg-2); }
 .site .pf-m { font: 500 10.5px var(--mono); fill: var(--fg-3); }
 .site .pf-acc { fill: var(--accent); }
@@ -507,11 +503,10 @@ html:has(.site .ba), html:has(.site .bl) { scroll-behavior: smooth; }
   padding-bottom: 8px;
   border-bottom: 1px solid var(--fg-3);
   font: 500 11px/1.4 var(--mono);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  letter-spacing: 0;
   color: var(--fg-2);
 }
-.site .bom-hd span:last-child { color: var(--fg); letter-spacing: 0.04em; }
+.site .bom-hd span:last-child { color: var(--fg); letter-spacing: 0; }
 .site .bom-grp.is-self .bom-hd span:last-child { color: var(--accent); }
 .site .bom-row {
   display: grid;

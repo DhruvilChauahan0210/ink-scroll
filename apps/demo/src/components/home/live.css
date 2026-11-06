@@ -8,7 +8,7 @@
 
 .home .lv-head { display: grid; gap: 16px; align-items: end; margin-bottom: clamp(32px, 4.5vw, 56px); }
 @media (min-width: 900px) { .home .lv-head { grid-template-columns: minmax(0, 1fr) auto; } }
-.home .lv-kicker { margin: 0 0 12px; font-family: var(--mono); font-size: 12px; letter-spacing: 0.02em; color: var(--fg-3); }
+.home .lv-kicker { margin: 0 0 12px; font-family: var(--mono); font-size: 12px; letter-spacing: 0; color: var(--fg-3); }
 .home .lv-title {
   margin: 0;
   font-family: var(--sans);
@@ -26,8 +26,7 @@
   gap: 8px;
   font-family: var(--mono);
   font-size: 11px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  letter-spacing: 0;
   color: var(--fg-3);
 }
 .home .lv-live i {
@@ -92,8 +91,8 @@
   font-variant-numeric: tabular-nums;
   color: var(--fg);
 }
-.home .lv-label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-2); }
-.home .lv-src { font-family: var(--mono); font-size: 10px; letter-spacing: 0.04em; color: var(--fg-3); }
+.home .lv-label { font-family: var(--mono); font-size: 11px; letter-spacing: 0; color: var(--fg-2); }
+.home .lv-src { font-family: var(--mono); font-size: 10px; letter-spacing: 0; color: var(--fg-3); }
 
 /* ── The 30-day line ──────────────────────────────────────────────────── */
 
@@ -107,8 +106,7 @@
   border-bottom: 1px solid var(--line);
   font-family: var(--mono);
   font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  letter-spacing: 0;
   color: var(--fg-3);
 }
 .home .lv-chart-head b { font-weight: 500; color: var(--fg); }
@@ -168,8 +166,7 @@
   border: 1px solid var(--line-2);
   font-family: var(--mono);
   font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  letter-spacing: 0;
   white-space: nowrap;
   color: var(--fg-2);
   pointer-events: none;

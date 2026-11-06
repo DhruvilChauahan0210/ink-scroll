@@ -142,3 +142,7 @@ input[type="range"]:active::-webkit-slider-thumb { transform: scale(0.95); }
     outline-color: #ff90e8;
   }
 }
+
+/* Emphasis by colour, not italic (heydamir/unslop, type pass). :where keeps the
+   rule at zero specificity, so a component that styles its own <em> wins. */
+:where(.site, .home) :where(em, i:not([class])) { font-style: normal; color: var(--fg); }

@@ -9,7 +9,7 @@
   align-items: center;
 }
 .site .ba .tf-name { font: 500 11px/1.3 var(--mono); color: var(--fg-2); }
-.site .ba .tf-axis .tf-name { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-3); }
+.site .ba .tf-axis .tf-name { font-size: 10px; letter-spacing: 0; color: var(--fg-3); }
 .site .ba .tf-ticks { position: relative; height: 16px; margin-right: 24px; }
 .site .ba .tf-ticks span {
   position: absolute;
@@ -32,11 +32,10 @@
   padding-bottom: 8px;
   border-bottom: 1px solid var(--fg-3);
   font: 500 10.5px/1.4 var(--mono);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  letter-spacing: 0;
   color: var(--fg);
 }
-.site .ba .tf-hd span:last-child { letter-spacing: 0.02em; text-transform: none; color: var(--fg-3); }
+.site .ba .tf-hd span:last-child { letter-spacing: 0; text-transform: none; color: var(--fg-3); }
 .site .ba .tf-grp.is-native .tf-hd span:last-child { color: var(--accent); }
 
 .site .ba .tf-lane { padding: 0; border-bottom: 1px solid var(--line); }

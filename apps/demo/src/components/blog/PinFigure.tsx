@@ -52,7 +52,7 @@ export function PinFigure() {
 
         {/* copy scrolls up */}
         <path d="M346 168 V64" className="pf-ink pf-dim" stroke="currentColor" markerEnd="url(#pf-arr)" />
-        <text x="354" y="120" className="pf-v">copy</text>
+        <text x="354" y="120" className="pf-v">Copy</text>
         <text x="354" y="135" className="pf-v">scrolls</text>
 
         {/* ── The scroll axis ── */}

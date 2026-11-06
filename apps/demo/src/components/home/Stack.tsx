@@ -323,11 +323,6 @@ function Defs({ id }: { id: string }) {
           <circle key={`d${k}`} className="st-cut" cx={c[0].toFixed(1)} cy={c[1].toFixed(1)} r="9" fill="#000" />
         ))}
       </mask>
-      {/* User-space region: a perfectly straight trace has a zero-height
-          bounding box, which would collapse an objectBoundingBox region. */}
-      <filter id={`${id}-glow`} filterUnits="userSpaceOnUse" x={VIEW.x} y={VIEW.y} width={VIEW.w} height={VIEW.h}>
-        <feGaussianBlur stdDeviation="5" />
-      </filter>
     </defs>
   );
 }
@@ -407,11 +402,10 @@ const CORE_STYLE = {
   animationDuration: `${(CORE_PULSE.len / PULSE_SPEED).toFixed(2)}s`,
 } as CSSProperties;
 
-function Pulses({ tab, id }: { tab: Tab; id: string }) {
+function Pulses({ tab }: { tab: Tab }) {
   if (tab.nets.includes('core')) {
     return (
       <g className="st-pulse-g" style={at(doneAt(CHIP_DONE_AT))}>
-        <path className="st-pulse st-pulse-loop st-pulse-glow" d={CORE_PULSE.d} pathLength="100" filter={`url(#${id}-glow)`} style={CORE_STYLE} />
         <path className="st-pulse st-pulse-loop" d={CORE_PULSE.d} pathLength="100" style={CORE_STYLE} />
       </g>
     );
@@ -425,7 +419,6 @@ function Pulses({ tab, id }: { tab: Tab; id: string }) {
         return (
           <g key={n} className={`st-pulse-g${c.wide ? ' st-wide' : ''}`} style={at(doneAt(TRACE_INDEX[n as ConnId]))}>
             <path className="st-halo" d={pz.d} />
-            <path className="st-pulse st-pulse-glow" d={pz.d} pathLength="100" filter={`url(#${id}-glow)`} style={style} />
             <path className="st-pulse" d={pz.d} pathLength="100" style={style} />
           </g>
         );
@@ -459,7 +452,7 @@ function Drawing({ tab, lit, onPick }: { tab: Tab; lit: ReadonlySet<NetId>; onPi
         <Strokes id="st-i" lit={lit} />
 
         <g className="st-pulses" aria-hidden="true">
-          <Pulses key={tab.id} tab={tab} id="st-i" />
+          <Pulses key={tab.id} tab={tab} />
         </g>
 
         <g className="st-notes" aria-hidden="true">
@@ -583,7 +576,7 @@ function Code({ tab }: { tab: Tab }) {
         </span>
         <span className="st-panel-entry">{tab.entry}</span>
         <button type="button" className="st-copybtn" onClick={copy} aria-live="polite">
-          {copied ? 'copied' : 'copy'}
+          {copied ? 'Copied' : 'Copy'}
         </button>
       </div>
       <pre className="st-pre" style={{ '--st-lines': String(MAX_LINES) } as CSSProperties}>

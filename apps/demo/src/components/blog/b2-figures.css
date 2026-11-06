@@ -21,7 +21,7 @@
 .site .b2-head { fill: var(--fg-2); }
 .site .b2-dot { fill: var(--bg); stroke: var(--accent); stroke-width: 1.6; }
 .site .b2-hatch { stroke: var(--line-2); stroke-width: 1.4; }
-.site .b2-k { font: 500 10.5px var(--mono); letter-spacing: 0.1em; text-transform: uppercase; fill: var(--fg-3); }
+.site .b2-k { font: 500 10.5px var(--mono); letter-spacing: 0; fill: var(--fg-3); }
 .site .b2-v { font: 500 12px var(--mono); fill: var(--fg-2); }
 .site .b2-m { font: 500 10.5px var(--mono); fill: var(--fg-3); }
 .site .b2-strong { fill: var(--fg); }
@@ -57,11 +57,10 @@
   padding-bottom: 8px;
   border-bottom: 1px solid var(--fg-3);
   font: 500 10px/1.4 var(--mono);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  letter-spacing: 0;
   color: var(--fg-3);
 }
-.site .b2-pc-hd span:last-child { letter-spacing: 0.04em; text-transform: none; text-align: right; }
+.site .b2-pc-hd span:last-child { letter-spacing: 0; text-transform: none; text-align: right; }
 .site .b2-pc-row {
   display: grid;
   grid-template-columns: 26px minmax(0, 1fr) minmax(0, 210px);
@@ -111,7 +110,7 @@
 }
 .site .b2-lk-key a:hover { background: var(--bg-2); }
 .site .b2-lk-n { grid-row: span 2; font: 500 10.5px/1.6 var(--mono); color: var(--accent); }
-.site .b2-lk-t { font-size: 13px; font-weight: 500; line-height: 1.3; letter-spacing: -0.01em; color: var(--fg); }
+.site .b2-lk-t { font-size: 13px; font-weight: 500; line-height: 1.3; letter-spacing: 0; color: var(--fg); }
 .site .b2-lk-api { font: 400 11px/1.3 var(--mono); color: var(--fg-3); overflow-wrap: anywhere; }
 .site .b2-lk-key a:hover .b2-lk-api { color: var(--accent); }
 

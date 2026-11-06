@@ -55,7 +55,7 @@ export function GroupFigure() {
   return (
     <ScrollDraw className="gf" selector=".gf-ink" autoplay duration={700} delay={300} stagger={0.12} easing="ease-out" once>
       <div className="gf-row gf-axis" aria-hidden="true">
-        <span className="gf-l">scroll</span>
+        <span className="gf-l">Scroll</span>
         <span className="gf-track gf-ticks"><span>section enters</span><span>→</span></span>
         <span className="gf-note" />
       </div>

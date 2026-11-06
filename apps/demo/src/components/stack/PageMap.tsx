@@ -108,7 +108,7 @@ export function PageMap() {
       </div>
 
       <ol className="pm-parts" aria-label="Parts list">
-        <li className="pm-parts-h" aria-hidden="true"><span>no.</span><span>api</span><span>animates</span><span>file</span></li>
+        <li className="pm-parts-h" aria-hidden="true"><span>no.</span><span>Api</span><span>animates</span><span>file</span></li>
         {LIST.map((p) => (
           <li key={p.n}>
             <a href={p.href}>
@@ -120,7 +120,7 @@ export function PageMap() {
           </li>
         ))}
       </ol>
-      <figcaption className="stk-cap">fig. 1 — the page the quick start builds, one balloon per step</figcaption>
+      <figcaption className="stk-cap">Fig. 1 — the page the quick start builds, one balloon per step</figcaption>
     </figure>
   );
 }

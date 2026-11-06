@@ -15,7 +15,7 @@ export function Plate({ n, dark = false, caption = 'live — scroll to draw', ch
   return (
     <figure className="plate">
       <figcaption className="plate-cap">
-        <span className="plate-n">fig. {typeof n === 'number' ? String(n).padStart(2, '0') : n}</span>
+        <span className="plate-n">Fig. {typeof n === 'number' ? String(n).padStart(2, '0') : n}</span>
         <span>{caption}</span>
       </figcaption>
       <div className={`plate-body${dark ? ' is-dark' : ''}`}>{children}</div>

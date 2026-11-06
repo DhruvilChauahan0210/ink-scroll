@@ -248,7 +248,7 @@ export default async function Page({ params }: { params: Promise<{ framework: st
 
             {/* ── Questions ──────────────────────────────────── */}
             <section className="cmp-sec" aria-labelledby="fw-faq">
-              <div className="tb"><span className="tb-n">{n('fw-faq')}</span><span>questions</span></div>
+              <div className="tb"><span className="tb-n">{n('fw-faq')}</span><span>Questions</span></div>
               <h2 id="fw-faq" className="cmp-h2">{f.name} questions</h2>
               <div className="cmp-faq">
                 {f.faq.map((item, i) => (
@@ -265,7 +265,7 @@ export default async function Page({ params }: { params: Promise<{ framework: st
 
             {/* ── Other frameworks ───────────────────────────── */}
             <section className="cmp-sec" aria-labelledby="fw-more">
-              <div className="tb"><span className="tb-n">{n('fw-more')}</span><span>other frameworks</span></div>
+              <div className="tb"><span className="tb-n">{n('fw-more')}</span><span>Other frameworks</span></div>
               <h2 id="fw-more" className="cmp-h2">Other frameworks</h2>
               <div className="ex-rel-list">
                 {others.map((o, i) => (
@@ -275,7 +275,7 @@ export default async function Page({ params }: { params: Promise<{ framework: st
                       <span className="ex-rel-t"><i className="fw-sw" style={{ background: o.swatch }} aria-hidden="true" />{o.t}</span>
                       <span className="ex-rel-d">{o.d}</span>
                     </span>
-                    <span className="ex-rel-go" aria-hidden="true">open →</span>
+                    <span className="ex-rel-go" aria-hidden="true">Open →</span>
                   </Link>
                 ))}
               </div>

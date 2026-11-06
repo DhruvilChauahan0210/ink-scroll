@@ -375,7 +375,7 @@ export default function NextjsScrollAnimationPage() {
                 </svg>
               </ScrollDraw>
               <p className="stk-src">
-                fig. 1 — the line above is that <C>&lt;ScrollDraw&gt;</C>, rendered by this page, a Server Component.
+                Fig. 1 — the line above is that <C>&lt;ScrollDraw&gt;</C>, rendered by this page, a Server Component.
               </p>
               <Note k="Callbacks">
                 A function cannot cross from a Server Component to a client one, so options such as <C>onProgress</C> or{' '}

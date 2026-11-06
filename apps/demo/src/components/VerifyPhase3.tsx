@@ -251,7 +251,7 @@ export function SequenceCompletionProof() {
             on completion, so the getter read from an undefined instance and fell back to zero.
           </>
         ) : (
-          <>Scroll until all three have drawn. The number to watch is what <code>getProgress()</code> reports <em>after</em> the last one finishes.</>
+          <>Scroll until all three have drawn. The number to watch is what <code>getProgress()</code> reports <em>After</em> the last one finishes.</>
         )}
       </Verdict>
     </div>

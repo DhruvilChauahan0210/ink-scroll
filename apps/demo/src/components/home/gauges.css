@@ -24,7 +24,7 @@
   margin: 0 0 12px;
   font-family: var(--mono);
   font-size: 12px;
-  letter-spacing: 0.02em;
+  letter-spacing: 0;
   color: var(--fg-3);
 }
 
@@ -188,7 +188,7 @@
   fill: var(--fg-2);
 }
 .home .ga-label-t {
-  letter-spacing: 0.16em;
+  letter-spacing: 0;
   fill: var(--fg-3);
 }
 .home .ga-dim {
@@ -217,19 +217,19 @@
 .home .ga-e-num-end { fill: var(--fg); }
 .home .ga-e-plate,
 .home .ga-e-unit,
-.home .ga-e-small { letter-spacing: 0.18em; fill: var(--fg-3); }
+.home .ga-e-small { letter-spacing: 0; fill: var(--fg-3); }
 .home .ga-e-plate { fill: var(--fg-2); }
 
 .home .ga-fig-gauge .ga-e-num,
 .home .ga-fig-gauge .ga-e-num-end { font-size: 22px; }
 /* A phone shows the dial at ~165px: only the key numerals have room. */
 .home .ga-fig-gauge .ga-e-num:not(.ga-e-key) { display: none; }
-.home .ga-fig-gauge .ga-e-plate { font-size: 20px; letter-spacing: 0.1em; }
+.home .ga-fig-gauge .ga-e-plate { font-size: 20px; letter-spacing: 0; }
 .home .ga-fig-gauge .ga-e-unit { display: none; }
 .home .ga-fig-meter .ga-e-num { font-size: 17px; }
-.home .ga-fig-meter .ga-e-unit { font-size: 14px; letter-spacing: 0.2em; }
-.home .ga-fig-odo .ga-e-small { font-size: 19px; letter-spacing: 0.12em; }
-.home .ga-fig-plate .ga-e-plate { font-size: 17px; letter-spacing: 0.16em; }
+.home .ga-fig-meter .ga-e-unit { font-size: 14px; letter-spacing: 0; }
+.home .ga-fig-odo .ga-e-small { font-size: 19px; letter-spacing: 0; }
+.home .ga-fig-plate .ga-e-plate { font-size: 17px; letter-spacing: 0; }
 
 /* The odometer's digits: set in the mono face, rolled by onProgress. */
 .home .ga-drum text {
@@ -252,8 +252,7 @@
 }
 .home .ga-cap-t {
   font-size: 10px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  letter-spacing: 0;
   color: var(--fg-3);
 }
 .home .ga-cap-v {
@@ -333,11 +332,11 @@
   .home .ga-fig-gauge .ga-e-num,
   .home .ga-fig-gauge .ga-e-num-end { font-size: 14.5px; }
   .home .ga-fig-gauge .ga-e-num:not(.ga-e-key) { display: inline; }
-  .home .ga-fig-gauge .ga-e-plate { font-size: 15px; letter-spacing: 0.16em; }
+  .home .ga-fig-gauge .ga-e-plate { font-size: 15px; letter-spacing: 0; }
   .home .ga-fig-meter .ga-e-num { font-size: 19px; }
-  .home .ga-fig-meter .ga-e-unit { font-size: 16px; letter-spacing: 0.16em; }
-  .home .ga-fig-odo .ga-e-small { font-size: 16px; letter-spacing: 0.18em; }
-  .home .ga-fig-plate .ga-e-plate { font-size: 16px; letter-spacing: 0.2em; }
+  .home .ga-fig-meter .ga-e-unit { font-size: 16px; letter-spacing: 0; }
+  .home .ga-fig-odo .ga-e-small { font-size: 16px; letter-spacing: 0; }
+  .home .ga-fig-plate .ga-e-plate { font-size: 16px; letter-spacing: 0; }
 
   .home .ga-cap { margin-top: 4px; }
   .home .ga-cap-v { font-size: 12px; }
@@ -370,10 +369,10 @@
 
   .home .ga-fig-gauge .ga-e-num,
   .home .ga-fig-gauge .ga-e-num-end { font-size: 13px; }
-  .home .ga-fig-gauge .ga-e-plate { font-size: 12px; letter-spacing: 0.22em; }
-  .home .ga-fig-gauge .ga-e-unit { display: inline; font-size: 9.5px; letter-spacing: 0.24em; }
+  .home .ga-fig-gauge .ga-e-plate { font-size: 12px; letter-spacing: 0; }
+  .home .ga-fig-gauge .ga-e-unit { display: inline; font-size: 9.5px; letter-spacing: 0; }
   .home .ga-fig-meter .ga-e-num { font-size: 14.5px; }
-  .home .ga-fig-meter .ga-e-unit { font-size: 11px; letter-spacing: 0.24em; }
-  .home .ga-fig-odo .ga-e-small { font-size: 11px; letter-spacing: 0.26em; }
-  .home .ga-fig-plate .ga-e-plate { font-size: 15px; letter-spacing: 0.22em; }
+  .home .ga-fig-meter .ga-e-unit { font-size: 11px; letter-spacing: 0; }
+  .home .ga-fig-odo .ga-e-small { font-size: 11px; letter-spacing: 0; }
+  .home .ga-fig-plate .ga-e-plate { font-size: 15px; letter-spacing: 0; }
 }

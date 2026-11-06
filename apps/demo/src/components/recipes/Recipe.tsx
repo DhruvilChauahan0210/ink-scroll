@@ -31,7 +31,7 @@ export function RecipeSteps({ recipe, fig = 1 }: { recipe: RecipeDef; fig?: numb
           <li key={s.title} className="gd-step rc-step">
             <span className="gd-node" aria-hidden="true">{i + 1}</span>
             <div className="rc-step-copy">
-              <p className="gd-step-k">step {pad(i + 1)} · <span>{s.file}</span></p>
+              <p className="gd-step-k">Step {pad(i + 1)} · <span>{s.file}</span></p>
               <h3 className="gd-h3">{s.title}</h3>
               <p className="gd-p">{s.body}</p>
               <CodeBox file={s.file.split(' · ')[0]}>{s.code}</CodeBox>
@@ -39,7 +39,7 @@ export function RecipeSteps({ recipe, fig = 1 }: { recipe: RecipeDef; fig?: numb
             </div>
             <figure className="rc-fig">
               <figcaption className="rc-fig-cap">
-                <span className="rc-fig-n">fig. {fig}.{i + 1}</span>
+                <span className="rc-fig-n">Fig. {fig}.{i + 1}</span>
                 <span>{s.caption}</span>
               </figcaption>
               <div className="rc-fig-body">{s.figure}</div>
@@ -71,7 +71,7 @@ export function RecipeFiles({ recipe, files, fig = 2 }: { recipe: RecipeDef; fil
       {recipe.liveLayout === 'full' && (
         <figure className="rc-live">
           <figcaption className="rc-fig-cap">
-            <span className="rc-fig-n">fig. {fig}.1</span>
+            <span className="rc-fig-n">Fig. {fig}.1</span>
             <span>this file, running — keep scrolling</span>
           </figcaption>
           {recipe.live}

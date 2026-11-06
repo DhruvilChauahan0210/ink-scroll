@@ -58,7 +58,7 @@
 .site .ex-crumbs [aria-current] { color: var(--fg-2); }
 .site .ex-detail .pg-title { max-width: 18ch; font-size: clamp(38px, 5.4vw, 88px); }
 .site .ex-rel { padding: clamp(40px, 5vw, 80px) max(var(--gutter), calc((100% - 1560px) / 2)); border-top: 1px solid var(--line); }
-.site .ex-rel-h { margin: 0 0 16px; font: 500 12px/1.4 var(--mono); letter-spacing: 0.02em; color: var(--fg-3); }
+.site .ex-rel-h { margin: 0 0 16px; font: 500 12px/1.4 var(--mono); letter-spacing: 0; color: var(--fg-3); }
 .site .ex-rel-note { margin: 16px 0 0; max-width: 64ch; font-size: 14px; line-height: 1.6; color: var(--fg-2); }
 
 /* ── The catalogue ───────────────────────────────────────────────────── */
@@ -84,14 +84,13 @@
   align-items: stretch;
   border-bottom: 1px solid var(--line);
   font: 500 10.5px/1 var(--mono);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  letter-spacing: 0;
   color: var(--fg-3);
 }
 .site .ex-card-cap > * { display: flex; align-items: center; padding: 12px 16px; min-width: 0; }
 .site .ex-card-cap > * + * { border-left: 1px solid var(--line); }
-.site .ex-card-n { color: var(--accent); letter-spacing: 0.06em; flex: none; }
-.site .ex-card-tag { flex: 1; text-transform: none; letter-spacing: 0.02em; color: var(--fg-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block !important; line-height: 1.6 !important; padding-block: 8px !important; }
+.site .ex-card-n { color: var(--accent); letter-spacing: 0; flex: none; }
+.site .ex-card-tag { flex: 1; text-transform: none; letter-spacing: 0; color: var(--fg-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block !important; line-height: 1.6 !important; padding-block: 8px !important; }
 .site .ex-card-fw { flex: none; }
 @media (max-width: 639px) { .site .ex-card-fw { display: none !important; } }
 .site a.ex-card-go { flex: none; margin-left: auto; color: var(--fg-2); transition: color 0.2s, background-color 0.2s; }
@@ -119,8 +118,7 @@
   list-style: none;
   cursor: pointer;
   font: 500 10.5px/1.4 var(--mono);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  letter-spacing: 0;
   color: var(--fg-2);
 }
 .site .ex-code > summary::-webkit-details-marker { display: none; }
@@ -168,12 +166,11 @@
   gap: 8px;
   height: 40px;
   padding: 0 20px;
-  border-radius: 999px;
+  border-radius: 4px;
   background: #fff;
   color: #121110;
   font: 500 11px/1 var(--mono);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  letter-spacing: 0;
   box-shadow: 0 14px 34px -12px rgba(0, 0, 0, 0.55);
   transform: translateY(8px);
   transition: transform 0.45s var(--ease);
@@ -183,7 +180,7 @@
 
 /* Name and the one button, then the description. */
 .site .ex-card-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; }
-.site .ex-card-k { margin: 0 0 8px; font: 500 10.5px/1.4 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-3); }
+.site .ex-card-k { margin: 0 0 8px; font: 500 10.5px/1.4 var(--mono); letter-spacing: 0; color: var(--fg-3); }
 .site .ex-card-head .ex-card-t { margin: 0; }
 .site .sx-live {
   flex: none;
@@ -192,13 +189,12 @@
   gap: 8px;
   height: 36px;
   padding: 0 16px 0 16px;
-  border-radius: 999px;
+  border-radius: 8px;
   border: 1px solid var(--fg);
   background: var(--fg);
   color: var(--bg);
   font: 500 10.5px/1 var(--mono);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  letter-spacing: 0;
   transition: background-color 0.25s, border-color 0.25s, color 0.25s;
 }
 .site .sx-live:hover { background: var(--accent); border-color: var(--accent); color: #fff; }

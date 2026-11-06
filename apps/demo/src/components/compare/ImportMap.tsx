@@ -54,7 +54,7 @@ export function ImportMap({ entry, swatch, name, rows }: { entry: string; swatch
           ))}
         </ol>
       </ScrollDraw>
-      <figcaption className="im-cap">fig. 01 — what each sample below takes from {entry}</figcaption>
+      <figcaption className="im-cap">Fig. 01 — what each sample below takes from {entry}</figcaption>
     </figure>
   );
 }

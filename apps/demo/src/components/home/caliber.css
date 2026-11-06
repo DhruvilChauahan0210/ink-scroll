@@ -101,7 +101,7 @@
 }
 .home .cal-label-t {
   font-size: 13px;
-  letter-spacing: 0.16em;
+  letter-spacing: 0;
   fill: var(--fg-3);
 }
 .home .cal-dim { font-size: 17px; }
@@ -122,7 +122,7 @@
   margin: 0 0 12px;
   font-family: var(--mono);
   font-size: 12px;
-  letter-spacing: 0.02em;
+  letter-spacing: 0;
   color: var(--fg-3);
 }
 
@@ -159,7 +159,7 @@
   font-family: var(--sans);
   font-size: 15px;
   line-height: 1.35;
-  letter-spacing: -0.01em;
+  letter-spacing: 0;
   color: var(--fg-3);
   transition: color 0.5s var(--ease);
 }
@@ -169,7 +169,7 @@
 .home .cal-step-n {
   font-family: var(--mono);
   font-size: 11px;
-  letter-spacing: 0.04em;
+  letter-spacing: 0;
   color: var(--fg-3);
   transition: color 0.5s var(--ease);
 }

@@ -669,7 +669,7 @@ const chapterAt = (p) =>
         problem: 'The stage scrolls away instead of sticking',
         body: (
           <>
-            An ancestor has <C>overflow: hidden</C>, <C>auto</C> or <C>scroll</C>, and a sticky element sticks
+            An ancestor has <C>overflow: hidden</C>, <C>auto</C> or <C>Scroll</C>, and a sticky element sticks
             inside the nearest one of those, not the page. Remove it, or use <C>overflow: clip</C>, which does
             not create one.
           </>

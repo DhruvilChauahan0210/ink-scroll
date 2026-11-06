@@ -103,7 +103,7 @@ ro.observe(tr);
 ro.observe(st);`,
       note: (
         <>
-          Call <C>fit()</C> before <C>scrollHorizontal</C>, so its first measurement already sees the right
+          Call <C>fit()</C> Before <C>scrollHorizontal</C>, so its first measurement already sees the right
           runway. After that the observer keeps the height current, and the strip follows the runway’s
           new height on its own.
         </>

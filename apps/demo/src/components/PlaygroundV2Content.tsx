@@ -420,7 +420,7 @@ export function PlaygroundV2Content({ ground, onGround }: { ground: Ground; onGr
             </button>
           </div>
           <div className="pl-read">
-            <span>progress <b>{pct}%</b></span>
+            <span>Progress <b>{pct}%</b></span>
             <span><b>{ex.api}</b> · {easing}</span>
           </div>
         </div>

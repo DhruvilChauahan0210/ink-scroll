@@ -168,7 +168,7 @@ export default function PlaygroundPage() {
                 {STEPS.map((s, i) => (
                   <li key={s.title} className="pl-step">
                     <span className="pl-node" aria-hidden="true">{i + 1}</span>
-                    <p className="pl-step-k">step {pad(i + 1)} · <span>{s.k}, {s.zone}</span></p>
+                    <p className="pl-step-k">Step {pad(i + 1)} · <span>{s.k}, {s.zone}</span></p>
                     <h3 className="pl-h3">{s.title}</h3>
                     <p className="pl-p">{s.body}</p>
                     {s.code && <CodeBox file="Drawing.tsx">{s.code}</CodeBox>}
@@ -202,7 +202,7 @@ export default function PlaygroundPage() {
                       <span className="pl-part-c">{r.control}</span>
                       <span className="pl-part-p">{r.prop}</span>
                       <span className="pl-part-r">{r.range}</span>
-                      <span className="pl-part-go" aria-hidden="true">docs →</span>
+                      <span className="pl-part-go" aria-hidden="true">Docs →</span>
                     </Link>
                   ))}
                 </div>
@@ -221,7 +221,7 @@ export default function PlaygroundPage() {
                     <span className="ex-rel-t">{m.title}</span>
                     <span className="ex-rel-d">{m.note}</span>
                   </span>
-                  <span className="ex-rel-go" aria-hidden="true">open →</span>
+                  <span className="ex-rel-go" aria-hidden="true">Open →</span>
                 </Link>
               ))}
             </div>

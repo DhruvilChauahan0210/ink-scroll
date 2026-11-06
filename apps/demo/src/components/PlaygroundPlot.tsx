@@ -39,7 +39,7 @@ export function PlaygroundPlot() {
           );
         })}
       </div>
-      <figcaption className="pl-plot-cap">fig. 1 — one stroke, four scrub positions, ease-out: the curve front-loads the ink</figcaption>
+      <figcaption className="pl-plot-cap">Fig. 1 — one stroke, four scrub positions, ease-out: the curve front-loads the ink</figcaption>
     </figure>
   );
 }

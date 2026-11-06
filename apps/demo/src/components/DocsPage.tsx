@@ -218,7 +218,7 @@ function OptGroup({ children }: { children: React.ReactNode }) {
         </svg>
         <span className="dc-dim-label">{Children.count(children)} {Children.count(children) === 1 ? 'option' : 'options'}</span>
       </ScrollDraw>
-      <div className="dc-opts-h" aria-hidden="true"><span>option · type · default</span><span>what it does</span></div>
+      <div className="dc-opts-h" aria-hidden="true"><span>option · type · default</span><span>What it does</span></div>
       {children}
     </div>
   );
@@ -2020,7 +2020,7 @@ scrollProgress('#section', {
             <div className="overflow-x-auto mt-4">
               <table className="w-full text-[13px] border border-subtle-ash rounded-xl overflow-hidden">
                 <thead>
-                  <tr className="bg-pitch-black text-light-linen text-[11px] uppercase tracking-wide">
+                  <tr className="bg-pitch-black text-light-linen text-[11px]">
                     <th className="text-left px-4 py-2 font-medium">Option</th>
                     <th className="text-left px-4 py-2 font-medium">Type</th>
                     <th className="text-left px-4 py-2 font-medium">Default</th>
@@ -2083,7 +2083,7 @@ inst.destroy();  // cleanup`}
             <div className="overflow-x-auto mt-4">
               <table className="w-full text-[13px] border border-subtle-ash rounded-xl overflow-hidden">
                 <thead>
-                  <tr className="bg-pitch-black text-light-linen text-[11px] uppercase tracking-wide">
+                  <tr className="bg-pitch-black text-light-linen text-[11px]">
                     <th className="text-left px-4 py-2 font-medium">Option</th>
                     <th className="text-left px-4 py-2 font-medium">Type</th>
                     <th className="text-left px-4 py-2 font-medium">Default</th>
@@ -2144,7 +2144,7 @@ instance.destroy();`}
             <div className="overflow-x-auto mt-4">
               <table className="w-full text-[13px] border border-subtle-ash rounded-xl overflow-hidden">
                 <thead>
-                  <tr className="bg-pitch-black text-light-linen text-[11px] uppercase tracking-wide">
+                  <tr className="bg-pitch-black text-light-linen text-[11px]">
                     <th className="text-left px-4 py-2 font-medium">Option</th>
                     <th className="text-left px-4 py-2 font-medium">Type</th>
                     <th className="text-left px-4 py-2 font-medium">Default</th>
@@ -2244,7 +2244,7 @@ pin.destroy();`}
             <div className="overflow-x-auto mt-4">
               <table className="w-full text-[13px] border border-subtle-ash rounded-xl overflow-hidden">
                 <thead>
-                  <tr className="bg-pitch-black text-light-linen text-[11px] uppercase tracking-wide">
+                  <tr className="bg-pitch-black text-light-linen text-[11px]">
                     <th className="text-left px-4 py-2 font-medium">Option</th>
                     <th className="text-left px-4 py-2 font-medium">Type</th>
                     <th className="text-left px-4 py-2 font-medium">Default</th>
@@ -2309,7 +2309,7 @@ snap.destroy();`}
             <div className="overflow-x-auto mt-4">
               <table className="w-full text-[13px] border border-subtle-ash rounded-xl overflow-hidden">
                 <thead>
-                  <tr className="bg-pitch-black text-light-linen text-[11px] uppercase tracking-wide">
+                  <tr className="bg-pitch-black text-light-linen text-[11px]">
                     <th className="text-left px-4 py-2 font-medium">Option</th>
                     <th className="text-left px-4 py-2 font-medium">Type</th>
                     <th className="text-left px-4 py-2 font-medium">Default</th>
@@ -2460,7 +2460,7 @@ import { ScrollAnimate } from 'svg-scroll-draw/react';
             <div className="overflow-x-auto mt-4">
               <table className="w-full text-[13px] border border-subtle-ash rounded-xl overflow-hidden">
                 <thead>
-                  <tr className="bg-pitch-black text-light-linen text-[11px] uppercase tracking-wide">
+                  <tr className="bg-pitch-black text-light-linen text-[11px]">
                     <th className="text-left px-4 py-2 font-medium">Option</th>
                     <th className="text-left px-4 py-2 font-medium">Type</th>
                     <th className="text-left px-4 py-2 font-medium">Default</th>

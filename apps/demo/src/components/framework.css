@@ -23,12 +23,11 @@
   flex-wrap: wrap;
   gap: 4px 16px;
   font: 500 11px/1.4 var(--mono);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  letter-spacing: 0;
   color: var(--fg-3);
 }
 .site .fw-sample-k span:first-child { color: var(--accent); }
-.site .fw-sample-k span:last-child { text-transform: none; letter-spacing: 0.02em; color: var(--fg-2); }
+.site .fw-sample-k span:last-child { text-transform: none; letter-spacing: 0; color: var(--fg-2); }
 .site .fw-h3 { margin: 0 0 4px; font-size: clamp(22px, 2vw, 28px); font-weight: 500; line-height: 1.15; letter-spacing: -0.03em; color: var(--fg); transition: color 0.3s; }
 
 /* 02 — size */

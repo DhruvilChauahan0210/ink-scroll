@@ -39,7 +39,7 @@ export function SwapSheet({ from, to = 'drop-in', rows }: { from: string; to?: s
           );
         })}
       </ScrollDraw>
-      <figcaption className="sw-cap">fig. 1 — what changes, measured</figcaption>
+      <figcaption className="sw-cap">Fig. 1 — what changes, measured</figcaption>
     </figure>
   );
 }

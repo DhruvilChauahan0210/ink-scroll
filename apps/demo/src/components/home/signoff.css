@@ -97,7 +97,7 @@
 .home .so-zl {
   position: absolute;
   font: 500 9px/1 var(--mono);
-  letter-spacing: 0.04em;
+  letter-spacing: 0;
   color: var(--fg-3);
   transform: translate(-50%, -50%);
   pointer-events: none;
@@ -131,7 +131,7 @@
   margin: 0;
   font-family: var(--mono);
   font-size: 12px;
-  letter-spacing: 0.02em;
+  letter-spacing: 0;
   color: var(--fg-3);
 }
 .home .so-count {
@@ -195,7 +195,7 @@
 }
 .home .so-label-t {
   font-size: 17px;
-  letter-spacing: 0.16em;
+  letter-spacing: 0;
   fill: var(--fg-3);
 }
 .home .so-dim { font-size: 22px; }
@@ -282,8 +282,7 @@
   align-self: center;
   padding: 0 12px;
   font: 500 10px/1 var(--mono);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  letter-spacing: 0;
   color: var(--fg-3);
 }
 .home .so-pl-list {
@@ -308,7 +307,7 @@
   padding: 0 12px;
   overflow: hidden;
   font-size: 14px;
-  letter-spacing: -0.01em;
+  letter-spacing: 0;
   white-space: nowrap;
   text-overflow: ellipsis;
   color: var(--fg-2);
@@ -325,7 +324,7 @@
   display: flex;
   padding: 0 12px;
   font: 500 11px/1 var(--mono);
-  letter-spacing: 0.04em;
+  letter-spacing: 0;
   color: var(--fg-3);
 }
 
@@ -354,8 +353,7 @@
   gap: 8px;
   padding: 0 12px;
   font: 500 9.5px/1.3 var(--mono);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  letter-spacing: 0;
   color: var(--fg-3);
 }
 .home .so-tb-v {
@@ -368,7 +366,7 @@
 .home .so-tb-name {
   font-family: var(--sans);
   font-size: 17px;
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
 }
 .home .so-tb-rev { color: var(--accent); }
 .home .so-tb-project .so-tb-top .so-ink { stroke: var(--fg); stroke-width: 1; }
@@ -467,8 +465,7 @@
   padding-bottom: 8px;
   font-size: 10px;
   line-height: 1;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  letter-spacing: 0;
   color: var(--fg-3);
 }
 .home .so-cn-list {
@@ -507,14 +504,13 @@
   width: 100px;
   margin: 0 0 24px;
   font: 500 9px/1 var(--mono);
-  letter-spacing: 0.08em;
+  letter-spacing: 0;
   color: var(--fg-3);
 }
 .home .so-scale-t {
   display: block;
   margin-bottom: 8px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  letter-spacing: 0;
 }
 .home .so-scale-svg {
   display: block;

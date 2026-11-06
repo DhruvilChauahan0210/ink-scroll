@@ -44,7 +44,7 @@ export function TopicKey({ topics, total, active, onPick }: {
           );
         })}
       </ScrollDraw>
-      <figcaption className="bl-key-cap">fig. 1 — the posts by topic · pick a row to filter</figcaption>
+      <figcaption className="bl-key-cap">Fig. 1 — the posts by topic · pick a row to filter</figcaption>
     </figure>
   );
 }
@@ -66,7 +66,7 @@ export function BlogIndex({ head, posts, topics, total }: { head: ReactNode; pos
       </header>
       <section className="bl-reg" aria-label="Posts">
         <div className="bl-reg-hd" aria-hidden="true">
-          <span>no.</span><span>title</span><span>topic</span><span>read</span><span>issued</span>
+          <span>no.</span><span>title</span><span>topic</span><span>Read</span><span>issued</span>
         </div>
         <ol className="bl-reg-list">
           {shown.map(({ p, n }) => (
@@ -80,7 +80,7 @@ export function BlogIndex({ head, posts, topics, total }: { head: ReactNode; pos
                 <span className="bl-tag"><span className="tag">{p.tag}</span></span>
                 <span className="bl-m">{minutes(p)} min</span>
                 <span className="bl-date">{p.date}</span>
-                <span className="bl-go" aria-hidden="true">read →</span>
+                <span className="bl-go" aria-hidden="true">Read →</span>
               </Link>
             </li>
           ))}

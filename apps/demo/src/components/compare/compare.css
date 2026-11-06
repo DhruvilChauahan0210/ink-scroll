@@ -16,7 +16,7 @@
 .site .cmp-title .dim { display: block; color: var(--fg-3); }
 .site .cmp-head .pg-lede { max-width: 60ch; }
 .site .cmp-head .pg-facts { max-width: none; }
-.site .cmp-fact-sub { display: block; margin-top: 4px; font: 500 10.5px/1.3 var(--mono); letter-spacing: 0.04em; color: var(--fg-3); }
+.site .cmp-fact-sub { display: block; margin-top: 4px; font: 500 10.5px/1.3 var(--mono); letter-spacing: 0; color: var(--fg-3); }
 
 /* ── Body: sections down the sheet, contents beside them on wide screens ── */
 
@@ -49,7 +49,7 @@ html:has(.site .cmp) { scroll-behavior: smooth; }
   .site .cmp-main { order: 1; min-width: 0; }
   .site .cmp-toc { order: 2; display: block; position: sticky; top: calc(var(--nav-h) + 40px); margin-top: clamp(48px, 5.5vw, 84px); }
 }
-.site .cmp-toc-h { margin: 0; padding-bottom: 8px; border-bottom: 1px solid var(--line-2); font: 500 10px/1.4 var(--mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--fg-3); }
+.site .cmp-toc-h { margin: 0; padding-bottom: 8px; border-bottom: 1px solid var(--line-2); font: 500 10px/1.4 var(--mono); letter-spacing: 0; color: var(--fg-3); }
 .site .cmp-toc-a {
   display: grid;
   grid-template-columns: 30px minmax(0, 1fr);
@@ -67,13 +67,13 @@ html:has(.site .cmp) { scroll-behavior: smooth; }
 .site .cmp-note { margin: 28px 0 0; border: 1px solid var(--line-2); }
 .site .cmp-note .tb { display: flex; border: 0; border-bottom: 1px solid var(--line-2); }
 .site .cmp-note-body { margin: 0; padding: 16px 16px 16px; font-size: 15px; line-height: 1.7; color: var(--fg-2); }
-.site .cmp-note-body b { display: block; margin-bottom: 8px; font-size: clamp(19px, 1.7vw, 23px); font-weight: 500; line-height: 1.25; letter-spacing: -0.025em; color: var(--fg); }
+.site .cmp-note-body b { display: block; margin-bottom: 8px; font-size: clamp(19px, 1.7vw, 23px); font-weight: 500; line-height: 1.25; letter-spacing: 0; color: var(--fg); }
 
 /* Questions, numbered */
 .site .cmp-faq { border-top: 1px solid var(--fg-3); }
 .site .cmp-q { display: grid; grid-template-columns: 52px minmax(0, 1fr); padding: 24px 0 8px; border-bottom: 1px solid var(--line); }
 .site .cmp-q-n { font: 500 12px/1.9 var(--mono); color: var(--accent); }
-.site .cmp-q-t { margin: 0 0 8px; font-size: clamp(18px, 1.6vw, 22px); font-weight: 500; line-height: 1.3; letter-spacing: -0.02em; color: var(--fg); }
+.site .cmp-q-t { margin: 0 0 8px; font-size: clamp(18px, 1.6vw, 22px); font-weight: 500; line-height: 1.3; letter-spacing: 0; color: var(--fg); }
 
 /* ── fig. — sizes to scale (SizeScale) ───────────────────────────────── */
 
@@ -87,7 +87,7 @@ html:has(.site .cmp) { scroll-behavior: smooth; }
   border-bottom: 1px solid var(--line);
 }
 .site .sz-scale { padding: 8px 0; border-top: 1px solid var(--fg-3); border-bottom-color: var(--line-2); }
-.site .sz-scale .sz-label, .site .sz-scale .sz-val { font: 500 10px/1.4 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-3); }
+.site .sz-scale .sz-label, .site .sz-scale .sz-val { font: 500 10px/1.4 var(--mono); letter-spacing: 0; color: var(--fg-3); }
 .site .sz-track { position: relative; display: block; height: 24px; }
 .site .sz-rows .sz-track {
   border-left: 1px solid var(--line-2);
@@ -113,7 +113,7 @@ html:has(.site .cmp) { scroll-behavior: smooth; }
 .site .sz-sub { display: block; margin-top: 4px; font-size: 12.5px; line-height: 1.4; color: var(--fg-3); }
 .site .sz-val { font: 500 13px/1.3 var(--mono); font-variant-numeric: tabular-nums; text-align: right; color: var(--fg); white-space: nowrap; }
 .site .sz-row.is-ours .sz-val { color: var(--accent); }
-.site .sz-cap { margin-top: 16px; font: 500 11px/1.4 var(--mono); letter-spacing: 0.04em; color: var(--fg-3); }
+.site .sz-cap { margin-top: 16px; font: 500 11px/1.4 var(--mono); letter-spacing: 0; color: var(--fg-3); }
 @media (max-width: 639px) {
   .site .sz-row { grid-template-columns: minmax(0, 1fr) 64px; gap: 8px 12px; }
   .site .sz-row .sz-label { grid-column: 1 / -1; }
@@ -134,7 +134,7 @@ html:has(.site .cmp) { scroll-behavior: smooth; }
 }
 .site .im-sw { width: 10px; height: 10px; flex: none; }
 .site .im-entry { font: 500 14px/1.3 var(--mono); color: var(--fg); overflow-wrap: anywhere; }
-.site .im-fw { margin-left: auto; font: 500 10px/1.4 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-3); }
+.site .im-fw { margin-left: auto; font: 500 10px/1.4 var(--mono); letter-spacing: 0; color: var(--fg-3); }
 .site .im-rows { margin: 0; padding: 0; list-style: none; }
 .site .im-row { position: relative; padding: 16px 0 0 56px; }
 /* The pencil underdrawing, then the inked trunk over it. */
@@ -152,20 +152,20 @@ html:has(.site .cmp) { scroll-behavior: smooth; }
   transition: border-color 0.2s, background-color 0.2s;
 }
 .site .im-link:hover { border-color: var(--line-2); background: var(--bg-2); }
-.site .im-k { display: flex; gap: 8px; font: 500 10.5px/1.4 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--fg-3); }
+.site .im-k { display: flex; gap: 8px; font: 500 10.5px/1.4 var(--mono); letter-spacing: 0; color: var(--fg-3); }
 .site .im-n { color: var(--accent); }
-.site .im-h { display: block; margin-top: 8px; font-size: 15px; line-height: 1.4; letter-spacing: -0.01em; color: var(--fg); }
+.site .im-h { display: block; margin-top: 8px; font-size: 15px; line-height: 1.4; letter-spacing: 0; color: var(--fg); }
 .site .im-link:hover .im-h { color: var(--accent); }
 .site .im-names { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
 .site .im-names code {
   padding: 2px 8px;
   border: 1px solid var(--line-2);
-  border-radius: 999px;
+  border-radius: 4px;
   font: 500 11.5px/1.5 var(--mono);
   color: var(--fg-2);
   overflow-wrap: anywhere;
 }
-.site .im-cap { margin-top: 16px; font: 500 11px/1.4 var(--mono); letter-spacing: 0.04em; color: var(--fg-3); }
+.site .im-cap { margin-top: 16px; font: 500 11px/1.4 var(--mono); letter-spacing: 0; color: var(--fg-3); }
 @media (max-width: 559px) {
   .site .im-row { padding-left: 44px; }
   .site .im-branch { width: 24px; }

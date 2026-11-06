@@ -290,7 +290,7 @@ export default function ReactScrollAnimationPage() {
                   {QUICK_START.map((s, i) => (
                     <li key={s.file} id={`qs-${i + 1}`} className="stk-step">
                       <span className="stk-node" aria-hidden="true">{i + 1}</span>
-                      <p className="stk-step-k">step {pad(i + 1)} · <span>{s.file}</span></p>
+                      <p className="stk-step-k">Step {pad(i + 1)} · <span>{s.file}</span></p>
                       <h3 className="stk-h3">{i + 1}. {s.title}</h3>
                       <CodeBox file={s.file}>{s.code}</CodeBox>
                     </li>
@@ -302,7 +302,7 @@ export default function ReactScrollAnimationPage() {
             {/* ── 03 Every API ──────────────────────────────── */}
             <Sec n={3} k={`parts list · ${APIS.length} apis`} id="every-api" title="Every React API">
               <ol className="stk-parts">
-                <li className="stk-part stk-part-h" aria-hidden="true"><span>no.</span><span>api · entry</span><span>what it does</span></li>
+                <li className="stk-part stk-part-h" aria-hidden="true"><span>no.</span><span>api · entry</span><span>What it does</span></li>
                 {APIS.map(({ name, sub, desc, hook }, i) => (
                   <li key={name} className="stk-part">
                     <span className="stk-part-n">{pad(i + 1)}</span>

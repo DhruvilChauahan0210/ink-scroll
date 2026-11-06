@@ -261,7 +261,7 @@ export function ProcessGuardProof() {
       <div className="vf-guard">
         <p className="vf-guard-hd">
           <span>iframe · no <code>process</code> in scope</span>
-          <span>result</span>
+          <span>Result</span>
         </p>
         {[
           { label: 'before', code: "process.env.NODE_ENV !== 'production'", out: result?.old },

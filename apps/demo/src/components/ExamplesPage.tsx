@@ -338,7 +338,7 @@ export function ExamplesPage() {
           return (
             <article key={ex.id} id={ex.id} className={`ex-card${site ? ' is-site' : ''}`}>
               <header className="ex-card-cap">
-                <span className="ex-card-n">fig. {String(n).padStart(2, '0')}</span>
+                <span className="ex-card-n">Fig. {String(n).padStart(2, '0')}</span>
                 <span className="ex-card-tag">{ex.tag}</span>
                 {fws.length > 0 && (
                   <span className="ex-card-fw">{fws.map((k) => FILTERS.find((f) => f.key === k)?.label ?? k).join(' · ')}</span>

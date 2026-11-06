@@ -28,7 +28,7 @@
   margin: 0 0 12px;
   font-family: var(--mono);
   font-size: 12px;
-  letter-spacing: 0.02em;
+  letter-spacing: 0;
   color: var(--fg-3);
 }
 
@@ -56,7 +56,7 @@
   font-family: var(--sans);
   font-size: 15px;
   line-height: 1.55;
-  letter-spacing: -0.01em;
+  letter-spacing: 0;
   color: var(--fg-2);
 }
 
@@ -179,7 +179,7 @@
 /* Engraved on each connector's shell. */
 .home .st-name {
   font-size: 19px;
-  letter-spacing: 0.04em;
+  letter-spacing: 0;
   fill: var(--fg-2);
   transition: fill 0.35s var(--ease);
 }
@@ -189,7 +189,7 @@
 .home .st-clabel { font-size: 18px; fill: var(--fg-2); }
 .home .st-clabel-t {
   font-size: 13px;
-  letter-spacing: 0.16em;
+  letter-spacing: 0;
   fill: var(--fg-3);
 }
 /* The shared package name steps back, so each entry reads as its own word. */
@@ -205,14 +205,14 @@
 /* The package marking. Phone sizes keep every line at 8px or more in the
    crop (~0.45 px per unit); the tablet block restores chapter 02's values. */
 .home .st-marking { fill: var(--fg-2); }
-.home .st-marking-t { font-size: 18px; letter-spacing: 0.04em; }
+.home .st-marking-t { font-size: 18px; letter-spacing: 0; }
 .home .st-marking-v { font-size: 21px; fill: var(--fg); }
-.home .st-silk { font-size: 18px; letter-spacing: 0.1em; fill: var(--fg-3); }
+.home .st-silk { font-size: 18px; letter-spacing: 0; fill: var(--fg-3); }
 
 .home .st-annot { font-size: 18px; fill: var(--fg-2); }
 .home .st-annot-t {
   font-size: 13px;
-  letter-spacing: 0.16em;
+  letter-spacing: 0;
   fill: var(--fg-3);
 }
 
@@ -246,11 +246,8 @@
   stroke-linejoin: round;
   stroke-dasharray: var(--st-dash) 1000;
   stroke-dashoffset: var(--st-from);
-  animation: st-run 2s linear infinite both;
-}
-.home .st-pulse-glow {
-  stroke-width: 12;
-  opacity: 0.55;
+  /* Once, to show the signal travelling; a loop that never ends is decoration. */
+  animation: st-run 2s linear 1 both;
 }
 .home .st-pulse-loop {
   stroke-dasharray: var(--st-dash) var(--st-gap);
@@ -298,8 +295,7 @@
   border: 0;
   background: none;
   font: 500 11px/1 var(--mono);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  letter-spacing: 0;
   color: var(--fg-3);
   cursor: pointer;
   white-space: nowrap;
@@ -370,7 +366,7 @@
   background: #0e0e10;
   border-right: 1px solid rgba(236, 232, 224, 0.08);
   font: 500 12px/1 var(--mono);
-  letter-spacing: 0.01em;
+  letter-spacing: 0;
   color: #ece8e0;
   white-space: nowrap;
 }
@@ -399,7 +395,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   font: 11px/1 var(--mono);
-  letter-spacing: 0.02em;
+  letter-spacing: 0;
   color: var(--fg-3);
 }
 
@@ -410,11 +406,10 @@
   margin-right: 8px;
   padding: 0 12px;
   border: 1px solid rgba(236, 232, 224, 0.18);
-  border-radius: 999px;
+  border-radius: 8px;
   background: transparent;
   font: 500 10px/1 var(--mono);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  letter-spacing: 0;
   color: #ece8e0;
   cursor: pointer;
   transition: border-color 0.2s, background 0.2s;
@@ -467,19 +462,18 @@
   background: #131316;
   border-top: 1px solid rgba(236, 232, 224, 0.08);
   font: 11px/1 var(--mono);
-  letter-spacing: 0.02em;
+  letter-spacing: 0;
   color: #a19d95;
   white-space: nowrap;
 }
 .home .st-foot-cmd > span { color: var(--fg-3); }
 .home .st-foot-net {
   font-weight: 500;
-  letter-spacing: 0.12em;
+  letter-spacing: 0;
   color: var(--accent);
 }
 .home .st-foot-k {
   margin-right: 4px;
-  text-transform: uppercase;
   color: var(--fg-3);
 }
 
@@ -526,11 +520,11 @@
 
   .home .st-name {
     font-size: 15px;
-    letter-spacing: 0.16em;
+    letter-spacing: 0;
   }
   .home .st-marking-t {
     font-size: 13px;
-    letter-spacing: 0.16em;
+    letter-spacing: 0;
   }
   .home .st-marking-v { font-size: 18px; }
   .home .st-silk { font-size: 13px; }

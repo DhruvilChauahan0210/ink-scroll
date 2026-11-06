@@ -18,7 +18,7 @@
 }
 .site .vs-parts-row > span { min-width: 0; overflow-wrap: anywhere; }
 .site .vs-parts-row i { display: none; font-style: normal; }
-.site .vs-parts-hd { padding: 8px 0; border-bottom-color: var(--line-2); font: 500 10px/1.4 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-3); }
+.site .vs-parts-hd { padding: 8px 0; border-bottom-color: var(--line-2); font: 500 10px/1.4 var(--mono); letter-spacing: 0; color: var(--fg-3); }
 .site .vs-parts-hd span:last-child, .site .vs-parts-kb { text-align: right; }
 .site .vs-parts-n { color: var(--accent); font-size: 11px; }
 .site .vs-parts-name { color: var(--fg); font-weight: 500; }
@@ -32,7 +32,7 @@
   .site .vs-parts-row > span:nth-child(4),
   .site .vs-parts-row > span:nth-child(5) { grid-column: 2 / -1; font-size: 12px; }
   .site .vs-parts-kb { grid-column: 3; grid-row: 1; }
-  .site .vs-parts-row i { display: inline-block; width: 82px; color: var(--fg-3); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; }
+  .site .vs-parts-row i { display: inline-block; width: 82px; color: var(--fg-3); font-size: 10px; letter-spacing: 0; }
 }
 
 /* 02 — the matrix */
@@ -44,8 +44,7 @@
   padding: 8px 0;
   border-bottom-color: var(--line-2);
   font: 500 10px/1.35 var(--mono);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  letter-spacing: 0;
   color: var(--fg-3);
   vertical-align: bottom;
 }
@@ -75,7 +74,7 @@
 @media (max-width: 639px) {
   .site .vs-c-n { width: 30px; }
   .site .vs-c-m { width: 74px; }
-  .site .vs-table thead th { font-size: 9px; letter-spacing: 0.08em; }
+  .site .vs-table thead th { font-size: 9px; letter-spacing: 0; }
   .site .vs-feat { font-size: 14px; }
   .site .vs-note { font-size: 12.5px; }
   .site .vs-m.is-val { font-size: 11.5px; }
@@ -85,4 +84,4 @@
 .site .vs-wins { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--fg-3); }
 .site .vs-wins li { display: grid; grid-template-columns: 52px minmax(0, 1fr); padding: 20px 0 8px; border-bottom: 1px solid var(--line); }
 .site .vs-wins-n { font: 500 12px/1.9 var(--mono); color: var(--accent); }
-.site .vs-wins-t { margin: 0 0 8px; font-size: clamp(18px, 1.6vw, 22px); font-weight: 500; line-height: 1.3; letter-spacing: -0.02em; color: var(--fg); }
+.site .vs-wins-t { margin: 0 0 8px; font-size: clamp(18px, 1.6vw, 22px); font-weight: 500; line-height: 1.3; letter-spacing: 0; color: var(--fg); }

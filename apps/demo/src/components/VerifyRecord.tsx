@@ -56,7 +56,7 @@ export function VerifyRecord({ rows }: { rows: RecordRow[] }) {
           </div>
         ))}
       </ScrollDraw>
-      <figcaption className="vf-rec-cap">fig. 1 — the revision record: what each phase found, and where on this sheet it is re-run</figcaption>
+      <figcaption className="vf-rec-cap">Fig. 1 — the revision record: what each phase found, and where on this sheet it is re-run</figcaption>
     </figure>
   );
 }

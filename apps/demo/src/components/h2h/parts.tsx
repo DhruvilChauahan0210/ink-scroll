@@ -29,7 +29,7 @@ export function Head({ n, k, id, children }: { n: number; k: string; id: string;
 export function Toc({ items }: { items: [string, string][] }) {
   return (
     <nav className="h2h-toc" aria-label="On this page">
-      <p className="h2h-toc-h">on this page</p>
+      <p className="h2h-toc-h">On this page</p>
       {items.map(([id, label], i) => (
         <a key={id} href={`#${id}`} className="h2h-toc-a"><span>{pad(i + 1)}</span>{label}</a>
       ))}
@@ -67,8 +67,8 @@ export function Glyph({ v }: { v: Mark }) {
 export function Legend({ children }: { children?: ReactNode }) {
   return (
     <p className="h2h-legend">
-      <span><Glyph v={true} /> supported</span>
-      <span><Glyph v={false} /> not supported</span>
+      <span><Glyph v={true} /> Supported</span>
+      <span><Glyph v={false} /> Not supported</span>
       <span><Glyph v="partial" /> partial or extra setup</span>
       {children && <span className="h2h-legend-x">{children}</span>}
     </p>
@@ -248,7 +248,7 @@ export function OtherSheets({ current }: { current: string }) {
                 {c.label} {c.version} · {c.gzipKb.toFixed(1)} KB · {c.license} — against {SELF.gzipKb} KB, {SELF.license}
               </span>
             </span>
-            <span className="ex-rel-go" aria-hidden="true">open →</span>
+            <span className="ex-rel-go" aria-hidden="true">Open →</span>
           </Link>
         );
       })}
@@ -258,7 +258,7 @@ export function OtherSheets({ current }: { current: string }) {
           <span className="ex-rel-t">Migration guides</span>
           <span className="ex-rel-d">AOS, ScrollReveal and vivus in React and Next.js, step by step.</span>
         </span>
-        <span className="ex-rel-go" aria-hidden="true">open →</span>
+        <span className="ex-rel-go" aria-hidden="true">Open →</span>
       </Link>
     </div>
   );

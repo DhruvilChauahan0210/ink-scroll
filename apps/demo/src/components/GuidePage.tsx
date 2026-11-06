@@ -88,7 +88,7 @@ export function GuidePage({ slug }: { slug: string }) {
 
         <div className="gd-body">
           <nav className="gd-toc" aria-label="On this guide">
-            <p className="gd-toc-h">on this guide</p>
+            <p className="gd-toc-h">On this guide</p>
             {[
               ['gd-problem', 'The problem'],
               ['gd-steps', `The steps · ${g.steps.length}`],
@@ -119,7 +119,7 @@ export function GuidePage({ slug }: { slug: string }) {
                 {g.steps.map((s, i) => (
                   <li key={s.title} className="gd-step">
                     <span className="gd-node" aria-hidden="true">{i + 1}</span>
-                    <p className="gd-step-k">step {pad(i + 1)}{s.file ? <> · <span>{s.file}</span></> : null}</p>
+                    <p className="gd-step-k">Step {pad(i + 1)}{s.file ? <> · <span>{s.file}</span></> : null}</p>
                     <h3 className="gd-h3">{s.title}</h3>
                     <p className="gd-p">{s.body}</p>
                     {s.code && <CodeBox file={s.file ?? 'snippet'}>{s.code}</CodeBox>}
@@ -169,7 +169,7 @@ export function GuidePage({ slug }: { slug: string }) {
                     <span className="ex-rel-t">{o.from} in {o.framework}</span>
                     <span className="ex-rel-d">{o.description}</span>
                   </span>
-                  <span className="ex-rel-go" aria-hidden="true">open →</span>
+                  <span className="ex-rel-go" aria-hidden="true">Open →</span>
                 </Link>
               ))}
             </div>

@@ -49,8 +49,8 @@
   letter-spacing: 0.06em;
   fill: var(--fg);
 }
-.home .fin-note { font-size: 19px; fill: var(--fg-3); letter-spacing: 0.1em; }
-.home .fin-note-accent { fill: var(--accent); text-transform: uppercase; }
+.home .fin-note { font-size: 19px; fill: var(--fg-3); letter-spacing: 0; }
+.home .fin-note-accent { fill: var(--accent); }
 
 /* ── The instruments ─────────────────────────────────────────────────────
    Drawn like the sheet's set square and nib: cream line-art over a body of
@@ -81,8 +81,7 @@
 .home .fin-k {
   margin: 0;
   font: 500 11px/1.4 var(--mono);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  letter-spacing: 0;
   color: var(--fg-3);
 }
 
@@ -104,8 +103,7 @@
   display: grid;
   gap: 8px;
   font: 500 11px/1.4 var(--mono);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  letter-spacing: 0;
 }
 /* A step is faint until its first stroke starts, bright while it draws, then settles. */
 .home .fin-step {

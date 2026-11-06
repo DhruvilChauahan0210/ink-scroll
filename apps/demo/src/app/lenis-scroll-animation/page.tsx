@@ -163,7 +163,7 @@ export default function Page() {
                 and that is why there is no <C>/vs-lenis</C> page here.
               </p>
               <p className="stk-short">
-                <span className="stk-short-k">short version</span>
+                <span className="stk-short-k">Short version</span>
                 <span><b>On Lenis v2+ it just works, no adapter.</b> On Lenis v1 you need three extra lines.</span>
               </p>
               <dl className="pg-facts">

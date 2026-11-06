@@ -86,7 +86,7 @@ export function ProjectTree({ files, dependency, dir }: { files: TreeFile[]; dep
   return (
     <figure className="pt">
       <div className="tb pt-tb">
-        <span className="tb-n">fig. 1</span>
+        <span className="tb-n">Fig. 1</span>
         <span>your project, after shadcn add</span>
       </div>
       <ScrollDraw className="pt-grid" selector=".pt-ink" autoplay duration={420} delay={300} stagger={0.12} easing="ease-out" once>
@@ -124,7 +124,7 @@ export function ProjectTree({ files, dependency, dir }: { files: TreeFile[]; dep
         </ul>
       </ScrollDraw>
       <figcaption className="pt-cap">
-        fig. 1 — what the CLI writes: one file per block, one dependency. Read from <span>/r/*.json</span>.
+        Fig. 1 — what the CLI writes: one file per block, one dependency. Read from <span>/r/*.json</span>.
       </figcaption>
     </figure>
   );

@@ -543,7 +543,7 @@ function Section({ s }: { s: Sec & { n: number } }) {
       {s.kind === 'live proof' ? (
         <figure className="vf-fig">
           <figcaption className="vf-fig-cap">
-            <span className="vf-fig-n">fig. {pad(s.n)}</span>
+            <span className="vf-fig-n">Fig. {pad(s.n)}</span>
             <span>live — measured in this browser</span>
           </figcaption>
           <div className="vf-fig-body">{s.body}</div>

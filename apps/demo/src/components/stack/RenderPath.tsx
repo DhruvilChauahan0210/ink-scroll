@@ -63,7 +63,7 @@ export function RenderPath() {
         <span>html over the wire — no window, no document</span>
       </div>
       <Lane label="browser" sub="client · scroll" stops={BROWSER} start={4} delay={1050} />
-      <figcaption className="stk-cap">fig. 1 — one animated component, from request to scroll</figcaption>
+      <figcaption className="stk-cap">Fig. 1 — one animated component, from request to scroll</figcaption>
     </figure>
   );
 }

@@ -9,8 +9,7 @@
   padding-bottom: 8px;
   border-bottom: 1px solid var(--fg-3);
   font: 500 10.5px/1.4 var(--mono);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  letter-spacing: 0;
   color: var(--fg-3);
 }
 .site .ba .wf-list { margin: 0; padding: 0; list-style: none; }
@@ -24,7 +23,7 @@
 .site .ba .wf-n { font: 500 10.5px/20px var(--mono); color: var(--fg-3); }
 .site .ba .wf-main { min-width: 0; display: grid; gap: 8px; }
 .site .ba .wf-rh { margin: 0; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 2px 12px; }
-.site .ba .wf-fw { font-size: 14px; font-weight: 500; letter-spacing: -0.01em; color: var(--fg); }
+.site .ba .wf-fw { font-size: 14px; font-weight: 500; letter-spacing: 0; color: var(--fg); }
 .site .ba .wf-from { font: 400 11px/1.3 var(--mono); color: var(--fg-3); }
 .site .ba .wf-write { margin: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; }
 .site .ba .wf-write code { font: 500 12.5px/1.4 var(--mono); color: var(--accent); overflow-wrap: anywhere; }
@@ -73,7 +72,7 @@
 }
 
 .site .ba .wf-foot { margin: 0; font: 400 11.5px/1.7 var(--mono); color: var(--fg-3); }
-.site .ba .wf-foot > span { margin-right: 2px; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-2); }
+.site .ba .wf-foot > span { margin-right: 2px; font-size: 10px; letter-spacing: 0; color: var(--fg-2); }
 .site .ba .wf-foot code { color: var(--fg); overflow-wrap: anywhere; }
 
 @media (max-width: 479px) {

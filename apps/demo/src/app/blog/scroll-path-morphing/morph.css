@@ -46,7 +46,7 @@
   font: 500 12px/1.2 var(--mono);
   font-variant-numeric: tabular-nums;
 }
-.site .ba .mf-tl { font-size: 10.5px; letter-spacing: 0.04em; color: var(--fg-3); white-space: nowrap; }
+.site .ba .mf-tl { font-size: 10.5px; letter-spacing: 0; color: var(--fg-3); white-space: nowrap; }
 .site .ba .mf-t { text-align: center; min-width: 0; }
 .site .ba .mf-t.is-num { color: var(--fg-2); }
 .site .ba .mf-t.is-cmd { color: var(--fg-3); }
@@ -88,8 +88,7 @@
   align-items: center;
   gap: 8px;
   font: 500 10.5px/1.4 var(--mono);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  letter-spacing: 0;
   color: var(--fg);
 }
 .site .ba .mp-case.is-bad .mp-case-k { color: var(--fg-3); }

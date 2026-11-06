@@ -32,7 +32,7 @@ export function SizeScale({ bars, n = 1, caption }: { bars: SizeBar[]; n?: numbe
   return (
     <figure className="sz" style={{ '--sz-cols': top / step } as React.CSSProperties}>
       <div className="sz-row sz-scale" aria-hidden="true">
-        <span className="sz-label">package</span>
+        <span className="sz-label">Package</span>
         <span className="sz-track">
           {ticks.map((t) => (
             <span key={t} className="sz-tick" style={{ left: `${(t / top) * 100}%` }}>{t}</span>
@@ -56,7 +56,7 @@ export function SizeScale({ bars, n = 1, caption }: { bars: SizeBar[]; n?: numbe
           </div>
         ))}
       </ScrollDraw>
-      <figcaption className="sz-cap">fig. {String(n).padStart(2, '0')} — {caption}</figcaption>
+      <figcaption className="sz-cap">Fig. {String(n).padStart(2, '0')} — {caption}</figcaption>
     </figure>
   );
 }

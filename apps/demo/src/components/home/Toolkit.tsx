@@ -311,7 +311,7 @@ export function Toolkit() {
             <Link href="/docs" className="tk-card tk-end" data-cursor="docs">
               <span className="tk-end-k">sheet 05 · title block</span>
               <span className="tk-end-title">
-                Every option, <em>documented.</em>
+                Every option, <em>documented</em>
                 <svg viewBox="0 0 40 10" className="tk-end-arrow" aria-hidden="true">
                   <path d="M0 5H38M33 1.5L38 5L33 8.5" />
                 </svg>
@@ -330,11 +330,11 @@ export function Toolkit() {
                   <span>scrollDraw · speed {SPEED}</span>
                 </span>
                 <span className="tk-block-r">
-                  <span>version</span>
+                  <span>Version</span>
                   <span>{SELF.version}</span>
                 </span>
                 <span className="tk-block-r">
-                  <span>reference</span>
+                  <span>Reference</span>
                   <span>/docs</span>
                 </span>
               </span>

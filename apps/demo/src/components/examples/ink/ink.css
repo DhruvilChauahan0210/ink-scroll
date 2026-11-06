@@ -4,9 +4,9 @@
 .home .ink-sheet { width: 100%; }
 .home .ink-svg { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; max-height: 420px; overflow: visible; }
 .home .ink-svg text { font-family: var(--mono); }
-.home .ink-svg .uc-t-lg { font-size: 12px; letter-spacing: 0.04em; fill: var(--fg-2); }
+.home .ink-svg .uc-t-lg { font-size: 12px; letter-spacing: 0; fill: var(--fg-2); }
 .home .ink-svg .uc-t-ink { fill: var(--fg); }
-.home .ink-svg .uc-t-box { font-size: 10px; letter-spacing: 0.06em; fill: var(--fg-2); }
+.home .ink-svg .uc-t-box { font-size: 10px; letter-spacing: 0; fill: var(--fg-2); }
 .home .ink-svg .uc-t-dim { fill: var(--fg-3); }
 /* Fills that flood in on completion (the logo reveal). */
 .home .ink-svg .ink-flood { fill: var(--accent); stroke: none; opacity: 0; transition: opacity 0.7s var(--ease); }
@@ -54,8 +54,8 @@
 .home .ink-cell-icon { width: 64px; height: 64px; color: var(--fg); }
 .home .ink-cell-icon svg { width: 100%; height: 100%; overflow: visible; }
 .home .ink-cell-icon .uc-svg path { stroke-width: 1.6; }
-.home .ink-cell-k { font: 500 10px/1.4 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-3); }
-.home .ink-cell-v { font: 500 clamp(17px, 1.6vw, 22px)/1.15 var(--sans); letter-spacing: -0.03em; color: var(--fg); overflow-wrap: anywhere; }
+.home .ink-cell-k { font: 500 10px/1.4 var(--mono); letter-spacing: 0; color: var(--fg-3); }
+.home .ink-cell-v { font: 500 clamp(17px, 1.6vw, 22px)/1.15 var(--sans); letter-spacing: 0; color: var(--fg); overflow-wrap: anywhere; }
 .home .ink-seq-st { transition: background-color 0.4s var(--ease); }
 .home .ink-seq-st.is-done { background: var(--accent-2); }
 .home .ink-seq-st.is-done .ink-cell-k { color: var(--accent); }
@@ -65,7 +65,7 @@
   padding-top: 16px;
   text-align: center;
   font: 500 10.5px/1.4 var(--mono);
-  letter-spacing: 0.08em;
+  letter-spacing: 0;
   color: var(--fg-2);
 }
 .home .ink-bracket::before {
@@ -100,4 +100,4 @@
 .home .ink-preset-w { grid-area: w; min-width: 0; }
 .home .ink-preset-w svg { display: block; width: 100%; max-width: 220px; height: 44px; overflow: visible; }
 .home .ink-preset-w .uc-svg path { stroke-width: 1.6; }
-.home .ink-preset-v { grid-area: v; font: 500 10.5px/1.4 var(--mono); letter-spacing: 0.04em; color: var(--fg-3); }
+.home .ink-preset-v { grid-area: v; font: 500 10.5px/1.4 var(--mono); letter-spacing: 0; color: var(--fg-3); }

@@ -6,8 +6,7 @@
 
 .home .xb-label {
   font: 500 10.5px/1.4 var(--mono);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  letter-spacing: 0;
   color: var(--fg-3);
 }
 
@@ -30,7 +29,7 @@
 }
 .home .xb-rv-call {
   font: 400 10.5px/1.4 var(--mono);
-  letter-spacing: 0.02em;
+  letter-spacing: 0;
   color: var(--fg-3);
 }
 .home .xb-rv-title {
@@ -76,7 +75,7 @@
 .home .xb-rv-n {
   grid-area: n;
   font: 500 10.5px/1.6 var(--mono);
-  letter-spacing: 0.06em;
+  letter-spacing: 0;
   color: var(--fg-3);
 }
 .home .xb-rv-icon {
@@ -90,7 +89,7 @@
 .home .xb-rv-name {
   grid-area: name;
   font: 500 15px/1.3 var(--sans);
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
   color: var(--fg);
 }
 .home .xb-rv-body {
@@ -140,12 +139,11 @@
 }
 .home .xb-pin-dots { display: inline-flex; gap: 4px; }
 .home .xb-pin-dots i { width: 7px; height: 7px; border: 1px solid var(--line-2); border-radius: 50%; }
-.home .xb-pin-url { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; letter-spacing: 0.02em; }
+.home .xb-pin-url { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; letter-spacing: 0; }
 .home .xb-pin-hint {
   grid-area: hint;
   font: 400 10px/1 var(--mono);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  letter-spacing: 0;
   color: var(--fg-3);
   white-space: nowrap;
 }
@@ -188,14 +186,13 @@
 }
 .home .xb-pin-specs dt {
   font: 500 10px/1.4 var(--mono);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  letter-spacing: 0;
   color: var(--fg-3);
 }
 .home .xb-pin-specs dd { margin: 0; font: 400 14px/1.4 var(--sans); color: var(--fg-2); }
 .home .xb-pin-lede {
   font: 500 16px/1.2 var(--sans);
-  letter-spacing: -0.025em;
+  letter-spacing: 0;
   color: var(--fg);
 }
 
@@ -230,10 +227,9 @@
   height: 20px;
   padding: 0 8px;
   border: 1px solid var(--line-2);
-  border-radius: 999px;
+  border-radius: 4px;
   font: 500 9.5px/1 var(--mono);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  letter-spacing: 0;
   color: var(--fg-3);
   transition: color 0.25s, border-color 0.25s, background-color 0.25s;
 }
@@ -242,7 +238,7 @@
 .home .xb-pin-part-name { color: var(--fg-2); }
 .home .xb-pin-count {
   font: 400 10.5px/1 var(--mono);
-  letter-spacing: 0.06em;
+  letter-spacing: 0;
   font-variant-numeric: tabular-nums;
   color: var(--fg-3);
 }
@@ -261,7 +257,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.home .xb-pin-cb-k { letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-3); }
+.home .xb-pin-cb-k { letter-spacing: 0; color: var(--fg-3); }
 .home .xb-pin-prog { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px; }
 .home .xb-pin-rule { position: relative; height: 9px; }
 .home .xb-pin-rule::before {
@@ -299,13 +295,13 @@
 .home .xb-pin-feat:last-child { border-bottom: 0; }
 .home .xb-pin-fn {
   font: 500 10.5px/1 var(--mono);
-  letter-spacing: 0.06em;
+  letter-spacing: 0;
   color: var(--fg-3);
   transition: color 0.35s var(--ease);
 }
 .home .xb-pin-ft {
   font: 500 19px/1.15 var(--sans);
-  letter-spacing: -0.03em;
+  letter-spacing: 0;
   color: var(--fg-3);
   text-wrap: balance;
   transition: color 0.35s var(--ease);
@@ -363,7 +359,7 @@
 .home .xb-sn-count {
   margin: 0;
   font: 400 11px/1 var(--mono);
-  letter-spacing: 0.06em;
+  letter-spacing: 0;
   font-variant-numeric: tabular-nums;
   color: var(--fg-3);
   white-space: nowrap;
@@ -405,25 +401,23 @@
 .home .xb-sn-top { display: flex; align-items: center; gap: 8px; min-height: 24px; }
 .home .xb-sn-n {
   font: 500 10.5px/1 var(--mono);
-  letter-spacing: 0.06em;
+  letter-spacing: 0;
   color: var(--fg-3);
   transition: color 0.35s var(--ease);
 }
 .home .xb-sn-card.is-on .xb-sn-n { color: var(--accent); }
 .home .xb-sn-name {
   font: 500 10.5px/1 var(--mono);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  letter-spacing: 0;
   color: var(--fg-2);
 }
 .home .xb-sn-tag {
   margin-left: auto;
   padding: 4px 8px;
   border: 1px solid var(--line-2);
-  border-radius: 999px;
+  border-radius: 4px;
   font: 400 9.5px/1 var(--mono);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  letter-spacing: 0;
   color: var(--fg-3);
   white-space: nowrap;
 }
@@ -437,7 +431,7 @@
 .home .xb-sn-price small {
   margin-left: 8px;
   font: 400 11px/1 var(--mono);
-  letter-spacing: 0.04em;
+  letter-spacing: 0;
   color: var(--fg-3);
 }
 .home .xb-sn-note { margin: 8px 0 16px; font: 400 14px/1.5 var(--sans); color: var(--fg-2); }
@@ -478,7 +472,7 @@
   height: 32px;
   padding: 0 8px;
   font: 500 10.5px/1 var(--mono);
-  letter-spacing: 0.06em;
+  letter-spacing: 0;
 }
 .home .xb-sn-dot + .xb-sn-dot { border-left: 1px solid var(--line-2); }
 .home .xb-sn-dot:hover { color: var(--fg); background: var(--bg-2); }
@@ -571,7 +565,7 @@
 .home .xb-vd-app { opacity: clamp(0, calc((var(--g) - var(--i) * 0.03) * 2), 1); }
 .home .xb-vd-dim {
   font: 400 9.5px/1 var(--mono);
-  letter-spacing: 0.04em;
+  letter-spacing: 0;
   fill: var(--fg-2);
   opacity: clamp(0, calc((var(--p4) - 0.7) * 3.4), 1);
 }
@@ -612,8 +606,8 @@
   font: 500 10px/1 var(--mono);
   color: var(--fg);
 }
-.home .xb-vd-pn { grid-area: name; font: 500 14px/1.25 var(--sans); letter-spacing: -0.015em; color: var(--fg); }
-.home .xb-vd-ps { grid-area: spec; font: 400 10.5px/1.3 var(--mono); letter-spacing: 0.02em; color: var(--fg-3); }
+.home .xb-vd-pn { grid-area: name; font: 500 14px/1.25 var(--sans); letter-spacing: 0; color: var(--fg); }
+.home .xb-vd-ps { grid-area: spec; font: 400 10.5px/1.3 var(--mono); letter-spacing: 0; color: var(--fg-3); }
 
 /* The scrub: a hairline track, the accent tick is the playhead, seconds below. */
 .home .xb-vd-scrub { padding-top: 12px; border-top: 1px solid var(--line-2); }
@@ -649,7 +643,7 @@
   gap: 12px;
   margin-top: 8px;
   font: 400 10.5px/1 var(--mono);
-  letter-spacing: 0.04em;
+  letter-spacing: 0;
   font-variant-numeric: tabular-nums;
   color: var(--fg-3);
 }

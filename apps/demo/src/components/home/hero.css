@@ -39,7 +39,7 @@
   margin: 0 0 16px;
   font-family: var(--mono);
   font-size: 12px;
-  letter-spacing: 0.02em;
+  letter-spacing: 0;
   color: var(--fg-3);
 }
 .home .he-title {
@@ -62,7 +62,7 @@
   border-top: 1px solid var(--line);
 }
 .home .he-stats div { padding: 12px 0 0; }
-.home .he-stats dt { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-3); }
+.home .he-stats dt { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0; color: var(--fg-3); }
 .home .he-stats dd {
   margin: 8px 0 0;
   font-family: var(--sans);
@@ -110,7 +110,7 @@
    line-only over its pencil — and the assembled pen hides what goes inside. */
 .home .pe-fill { fill: var(--bg); fill-opacity: var(--asm); }
 .home .pe-axis { opacity: calc(1 - var(--asm) * 0.6); }
-.home .pe-engrave { font-family: var(--mono); letter-spacing: 0.32em; fill: var(--fg-3); opacity: 0; transition: opacity 0.8s var(--ease); }
+.home .pe-engrave { font-family: var(--mono); letter-spacing: 0; fill: var(--fg-3); opacity: 0; transition: opacity 0.8s var(--ease); }
 .home .pe[data-drawn] .pe-engrave { opacity: 1; }
 
 /* Each part slides home along its offset as --asm runs 0 → 1. */
@@ -127,7 +127,7 @@
 .home .pe-lead { fill: none; stroke: var(--fg-3); stroke-width: 1; }
 .home .pe-dot { fill: var(--fg); }
 .home .pe-dot-accent { fill: var(--accent); }
-.home .pe-lt { font-family: var(--mono); font-size: 12.5px; letter-spacing: 0.16em; fill: var(--fg-3); }
+.home .pe-lt { font-family: var(--mono); font-size: 12.5px; letter-spacing: 0; fill: var(--fg-3); }
 .home .pe-lv { font-family: var(--mono); font-size: 17px; fill: var(--fg-2); }
 .home .pe-lv-accent { fill: var(--accent); }
 .home .pe-notes { opacity: 0; transition: opacity 0.7s var(--ease); visibility: hidden; }
@@ -146,8 +146,7 @@
   border-top: 1px solid var(--line);
   font-family: var(--mono);
   font-size: 11px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  letter-spacing: 0;
   color: var(--fg-3);
 }
 .home .he-foot-k { color: var(--fg-2); }

@@ -10,6 +10,18 @@ import { CodeBox } from '../site/CodeBox';
 import { StepRail } from '../site/StepRail';
 import { CopyButton } from '../CopyButton';
 
+/**
+ * Sentence case for a label the posts pass in lowercase ('the request', 'media
+ * query'). Words that are code stay as written: anything with a dot, slash,
+ * parenthesis or capital after the first letter, like `prefers-reduced-motion`
+ * or `scrollText`, is a name, not prose.
+ */
+function sentence(s: string): string {
+  const first = s.split(/\s/)[0];
+  if (/[./()@]|[A-Z]/.test(first) || /^[a-z]+-[a-z-]+$/.test(first) && !s.includes(' ')) return s;
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
 export { Plate } from '../site/Plate';
 
 const pad = (n: number) => String(n).padStart(2, '0');
@@ -50,7 +62,7 @@ export function Section({ id, title, k, n = 0, children }: SectionProps) {
     <section className="ba-sec" aria-labelledby={id}>
       <div className="tb ba-tb">
         <span className="tb-n">{pad(n)}</span>
-        {k ? <span>{k}</span> : null}
+        {k ? <span>{sentence(k)}</span> : null}
       </div>
       <h2 id={id} className="ba-h2">{title}</h2>
       {children}
@@ -114,7 +126,7 @@ export function BlogArticle({
         <header className={`pg-head ba-head${figure ? ' has-fig' : ''}`}>
           <div className="ba-head-copy">
             <p className="pg-kicker">
-              {post ? <span><b>{pad(index + 1)}</b> / blog / {post.tag.toLowerCase()}</span> : <span>blog</span>}
+              {post ? <span><b>{pad(index + 1)}</b> / blog / {post.tag.toLowerCase()}</span> : <span>Blog</span>}
               {post ? <span>{post.date}</span> : null}
               {post ? <span>{post.readTime}</span> : null}
             </p>
@@ -128,7 +140,7 @@ export function BlogArticle({
             {facts?.length ? (
               <dl className="pg-facts ba-facts">
                 {facts.map((f) => (
-                  <div key={f.k}><dt>{f.k}</dt><dd>{f.v}</dd></div>
+                  <div key={f.k}><dt>{sentence(f.k)}</dt><dd>{f.v}</dd></div>
                 ))}
               </dl>
             ) : null}
@@ -139,7 +151,7 @@ export function BlogArticle({
         {/* ── Body, with its contents beside it on wide screens ── */}
         <div className="ba-body">
           <nav className="ba-toc" aria-label="In this post">
-            <p className="ba-toc-h">in this post</p>
+            <p className="ba-toc-h">In this post</p>
             {toc.map((t, i) => (
               <a key={t.id} href={`#${t.id}`} className="ba-toc-a"><span>{pad(i + 1)}</span>{t.label}</a>
             ))}
@@ -185,7 +197,7 @@ function BlogEnd({ slug, further = [] }: { slug: string; further?: LinkItem[] })
     <section className="ba-sec ba-end" aria-labelledby="ba-more">
       <div className="tb ba-tb">
         <span className="tb-n">→</span>
-        <span>parts list</span>
+        <span>Parts list</span>
       </div>
       <h2 id="ba-more" className="ba-h2">Keep reading</h2>
       {rows.length ? (
@@ -194,11 +206,11 @@ function BlogEnd({ slug, further = [] }: { slug: string; further?: LinkItem[] })
             <Link key={r.href} href={r.href} className="ex-rel-row">
               <span className="ex-rel-n">{pad(i + 1)}</span>
               <span>
-                <span className="ba-rel-k">{r.kind}</span>
+                <span className="ba-rel-k">{sentence(r.kind)}</span>
                 <span className="ex-rel-t">{r.label}</span>
                 {r.blurb ? <span className="ex-rel-d">{r.blurb}</span> : null}
               </span>
-              <span className="ex-rel-go" aria-hidden="true">open →</span>
+              <span className="ex-rel-go" aria-hidden="true">Open →</span>
             </Link>
           ))}
         </div>
@@ -213,7 +225,7 @@ function BlogEnd({ slug, further = [] }: { slug: string; further?: LinkItem[] })
               <span className="ba-rel-k">{p.tag} · {p.readTime}</span>
               <span className="ex-rel-t">{p.title}</span>
             </span>
-            <span className="ex-rel-go" aria-hidden="true">read →</span>
+            <span className="ex-rel-go" aria-hidden="true">Read →</span>
           </Link>
         ))}
       </div>
@@ -244,11 +256,11 @@ export function Compare({
   return (
     <div className="ba-cmp">
       <div className="ba-cmp-col">
-        <p className="ba-cmp-k"><span>before</span>{before.label}</p>
+        <p className="ba-cmp-k"><span>Before</span>{before.label}</p>
         <Code file={before.file}>{before.code}</Code>
       </div>
       <div className="ba-cmp-col is-after">
-        <p className="ba-cmp-k"><span>after</span>{after.label}</p>
+        <p className="ba-cmp-k"><span>After</span>{after.label}</p>
         <Code file={after.file}>{after.code}</Code>
       </div>
     </div>
@@ -259,7 +271,7 @@ export function Compare({
 export function Callout({ k = 'note', children }: { k?: string; children: ReactNode }) {
   return (
     <aside className="ba-note">
-      <span className="ba-note-k">{k}</span>
+      <span className="ba-note-k">{sentence(k)}</span>
       <div className="ba-note-b">{children}</div>
     </aside>
   );
@@ -365,7 +377,7 @@ export function Spec({ items }: { items: { k: string; v: ReactNode }[] }) {
   return (
     <dl className="ba-spec">
       {items.map((it) => (
-        <div key={it.k}><dt>{it.k}</dt><dd>{it.v}</dd></div>
+        <div key={it.k}><dt>{sentence(it.k)}</dt><dd>{it.v}</dd></div>
       ))}
     </dl>
   );
@@ -384,7 +396,7 @@ export function Step({ n, title, children }: { n: number; title: ReactNode; chil
   return (
     <li className="ba-step">
       <span className="ba-node" aria-hidden="true">{n}</span>
-      <p className="ba-step-k">step {pad(n)}</p>
+      <p className="ba-step-k">Step {pad(n)}</p>
       <h3 className="ba-h3">{title}</h3>
       {children}
     </li>
@@ -397,7 +409,7 @@ export function Figure({ n, caption, children }: { n: number | string; caption: 
     <figure className="ba-fig">
       {children}
       <figcaption className="ba-cap">
-        <span>fig. {typeof n === 'number' ? n : n}</span> — {caption}
+        <span>Fig. {typeof n === 'number' ? n : n}</span> — {caption}
       </figcaption>
     </figure>
   );

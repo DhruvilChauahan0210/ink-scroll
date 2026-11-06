@@ -276,7 +276,7 @@ export default function BlocksPage() {
                 {item.files.map((f) => (
                   <details key={f.path} className="bk-src">
                     <summary>
-                      <span>source</span>
+                      <span>Source</span>
                       <span className="bk-src-file">{target(f)}</span>
                       <span className="bk-src-n">{lineCount(f.content)} lines</span>
                     </summary>
@@ -319,7 +319,7 @@ export default function BlocksPage() {
             <CodeBox file="terminal">{`npm i ${dep}`}</CodeBox>
           </div>
           <div className="bk-manual-r">
-            <p className="bk-more-h">more</p>
+            <p className="bk-more-h">More</p>
             <div className="ex-rel-list">
               <a href="/r/registry.json" className="ex-rel-row">
                 <span className="ex-rel-n">01</span>
@@ -327,7 +327,7 @@ export default function BlocksPage() {
                   <span className="ex-rel-t">Registry index</span>
                   <span className="ex-rel-d bk-mono">/r/registry.json</span>
                 </span>
-                <span className="ex-rel-go" aria-hidden="true">open →</span>
+                <span className="ex-rel-go" aria-hidden="true">Open →</span>
               </a>
               <Link href="/examples" className="ex-rel-row">
                 <span className="ex-rel-n">02</span>
@@ -335,7 +335,7 @@ export default function BlocksPage() {
                   <span className="ex-rel-t">More examples</span>
                   <span className="ex-rel-d">Every pattern the library draws, with the code to paste.</span>
                 </span>
-                <span className="ex-rel-go" aria-hidden="true">open →</span>
+                <span className="ex-rel-go" aria-hidden="true">Open →</span>
               </Link>
               <Link href="/docs" className="ex-rel-row">
                 <span className="ex-rel-n">03</span>
@@ -343,7 +343,7 @@ export default function BlocksPage() {
                   <span className="ex-rel-t">Docs</span>
                   <span className="ex-rel-d">The API behind each block: ScrollDraw, scrollReveal, ScrollCounter, ScrollText and scrollAnimate.</span>
                 </span>
-                <span className="ex-rel-go" aria-hidden="true">open →</span>
+                <span className="ex-rel-go" aria-hidden="true">Open →</span>
               </Link>
             </div>
           </div>

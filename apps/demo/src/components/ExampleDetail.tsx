@@ -41,7 +41,7 @@ export function ExampleDetail({ slug, files = null }: { slug: string; files?: Re
         <nav aria-label="Breadcrumb" className="pg-kicker ex-crumbs">
           <Link href="/">home</Link>
           <span aria-hidden="true">/</span>
-          <Link href="/examples">examples</Link>
+          <Link href="/examples">Examples</Link>
           <span aria-hidden="true">/</span>
           <span aria-current="page">{seo.heading.toLowerCase()}</span>
         </nav>
@@ -87,7 +87,7 @@ export function ExampleDetail({ slug, files = null }: { slug: string; files?: Re
       </div>
 
       <section className="ex-rel" aria-labelledby="ex-rel">
-        <h2 id="ex-rel" className="ex-rel-h">related examples</h2>
+        <h2 id="ex-rel" className="ex-rel-h">Related examples</h2>
         {related.length > 0 && (
           <div className="ex-rel-list">
             {related.map(({ seo: r, example: ex }) => (
@@ -97,7 +97,7 @@ export function ExampleDetail({ slug, files = null }: { slug: string; files?: Re
                   <span className="ex-rel-t">{r!.heading}</span>
                   <span className="ex-rel-d">{r!.description}</span>
                 </span>
-                <span className="ex-rel-go" aria-hidden="true">open →</span>
+                <span className="ex-rel-go" aria-hidden="true">Open →</span>
               </Link>
             ))}
           </div>

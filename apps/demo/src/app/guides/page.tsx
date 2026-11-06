@@ -70,7 +70,7 @@ export default function GuidesIndex() {
                   <span className="ex-rel-t">{g.title}</span>
                   <span className="ex-rel-d">{g.from} · {g.framework} — {g.description}</span>
                 </span>
-                <span className="ex-rel-go" aria-hidden="true">read →</span>
+                <span className="ex-rel-go" aria-hidden="true">Read →</span>
               </Link>
             ))}
           </div>

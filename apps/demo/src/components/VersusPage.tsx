@@ -45,7 +45,7 @@ function Mark({ val }: { val: VersusRow['us'] }) {
     return (
       <span className="vs-m is-yes">
         <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5 L6.5 12 L13 4.5" className="cmp-ink" stroke="currentColor" /></svg>
-        <span className="sr-only">supported</span>
+        <span className="sr-only">Supported</span>
       </span>
     );
   }
@@ -53,7 +53,7 @@ function Mark({ val }: { val: VersusRow['us'] }) {
     return (
       <span className="vs-m is-no">
         <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 4.5 L11.5 11.5 M11.5 4.5 L4.5 11.5" className="cmp-ink" stroke="currentColor" /></svg>
-        <span className="sr-only">not supported</span>
+        <span className="sr-only">Not supported</span>
       </span>
     );
   }
@@ -168,7 +168,7 @@ export function VersusPage({ slug }: { slug: string }) {
           <aside aria-label="Measured size and the short version">
             <SizeScale bars={sizeBars(v, them)} caption="bytes shipped, to one scale" />
             <div className="cmp-note">
-              <div className="tb"><span className="tb-n">→</span><span>short version</span></div>
+              <div className="tb"><span className="tb-n">→</span><span>Short version</span></div>
               <p className="cmp-note-body"><b>{v.headline}</b>{v.verdict}</p>
             </div>
           </aside>
@@ -176,7 +176,7 @@ export function VersusPage({ slug }: { slug: string }) {
 
         <div className="cmp-body">
           <nav className="cmp-toc" aria-label="On this page">
-            <p className="cmp-toc-h">on this page</p>
+            <p className="cmp-toc-h">On this page</p>
             {toc.map(([id, label], i) => (
               <a key={id} href={`#${id}`} className="cmp-toc-a"><span>{pad(i + 1)}</span>{label}</a>
             ))}
@@ -190,9 +190,9 @@ export function VersusPage({ slug }: { slug: string }) {
               <div className="vs-parts" role="table" aria-label="Packages measured">
                 <div className="vs-parts-row vs-parts-hd" role="row">
                   <span role="columnheader">item</span>
-                  <span role="columnheader">package</span>
-                  <span role="columnheader">version</span>
-                  <span role="columnheader">licence</span>
+                  <span role="columnheader">Package</span>
+                  <span role="columnheader">Version</span>
+                  <span role="columnheader">Licence</span>
                   <span role="columnheader">last publish</span>
                   <span role="columnheader">gzip</span>
                 </div>
@@ -200,8 +200,8 @@ export function VersusPage({ slug }: { slug: string }) {
                   <div key={p.item} className={`vs-parts-row${i === 0 ? ' is-ours' : ''}`} role="row">
                     <span role="cell" className="vs-parts-n">{pad(i + 1)}</span>
                     <span role="cell" className="vs-parts-name">{p.c.name}</span>
-                    <span role="cell"><i>version</i>{p.c.version}</span>
-                    <span role="cell"><i>licence</i>{p.c.license}</span>
+                    <span role="cell"><i>Version</i>{p.c.version}</span>
+                    <span role="cell"><i>Licence</i>{p.c.license}</span>
                     <span role="cell"><i>published</i>{p.on}</span>
                     <span role="cell" className="vs-parts-kb">{p.gzip} KB</span>
                   </div>
@@ -228,7 +228,7 @@ export function VersusPage({ slug }: { slug: string }) {
                   <thead>
                     <tr>
                       <th scope="col" className="vs-c-n">#</th>
-                      <th scope="col" className="vs-c-f">feature</th>
+                      <th scope="col" className="vs-c-f">Feature</th>
                       <th scope="col" className="vs-c-m is-ours">svg-scroll-draw</th>
                       <th scope="col" className="vs-c-m">{them.label}</th>
                     </tr>
@@ -249,8 +249,8 @@ export function VersusPage({ slug }: { slug: string }) {
                 </table>
               </Ink>
               <p className="cmp-small vs-legend">
-                <span><Mark val={true} /> supported</span>
-                <span><Mark val={false} /> not supported</span>
+                <span><Mark val={true} /> Supported</span>
+                <span><Mark val={false} /> Not supported</span>
                 <span><Mark val="partial" /> partial or requires extra work</span>
                 <span>Checked against {them.name} {them.version}.</span>
               </p>
@@ -299,7 +299,7 @@ export function VersusPage({ slug }: { slug: string }) {
                       <span className="ex-rel-t">{o.t}</span>
                       <span className="ex-rel-d">{o.d}</span>
                     </span>
-                    <span className="ex-rel-go" aria-hidden="true">open →</span>
+                    <span className="ex-rel-go" aria-hidden="true">Open →</span>
                   </Link>
                 ))}
               </div>

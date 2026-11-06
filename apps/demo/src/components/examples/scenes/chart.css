@@ -24,7 +24,7 @@
 .lx-kpis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-bottom: 8px; }
 .lx-kpis > div { display: grid; gap: 4px; padding: 8px 12px; border: 1px solid var(--lx-line); border-radius: 10px; background: var(--lx-card); min-width: 0; }
 .lx-kpis span { font-size: 10.5px; color: var(--lx-mut); }
-.lx-kpis b { font-size: clamp(15px, 4.2cqi, 20px); font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.lx-kpis b { font-size: clamp(15px, 4.2cqi, 20px); font-weight: 600; letter-spacing: 0; font-variant-numeric: tabular-nums; }
 .lx-kpis em { font-style: normal; font-size: 10px; font-weight: 500; }
 .lx-kpis .up { color: #34d399; }
 .lx-kpis .down { color: #34d399; }

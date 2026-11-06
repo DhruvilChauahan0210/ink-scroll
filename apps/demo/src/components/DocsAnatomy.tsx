@@ -60,7 +60,7 @@ export function DocsAnatomy() {
           ))}
         </svg>
       </ScrollDraw>
-      <figcaption className="an-cap">fig. 1 — one call, and where each part is documented</figcaption>
+      <figcaption className="an-cap">Fig. 1 — one call, and where each part is documented</figcaption>
     </figure>
   );
 }

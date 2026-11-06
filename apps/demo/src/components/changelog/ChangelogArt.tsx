@@ -80,7 +80,7 @@ export function ReleaseChart({ bars }: { bars: ChartBar[] }) {
         </ScrollDraw>
       </div>
       <figcaption className="rc-cap">
-        <span>fig. 1 — entries per release, oldest → newest</span>
+        <span>Fig. 1 — entries per release, oldest → newest</span>
         <span className="rc-key"><i className="is-rest" />added, tests, site</span>
         <span className="rc-key"><i className="is-fix" />fixed · {fixTotal}</span>
       </figcaption>

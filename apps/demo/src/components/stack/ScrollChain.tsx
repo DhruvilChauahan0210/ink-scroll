@@ -67,7 +67,7 @@ export function ScrollChain() {
           </Fragment>
         ))}
       </ScrollDraw>
-      <figcaption className="stk-cap">fig. 1 — where the scroll position travels, wheel to path</figcaption>
+      <figcaption className="stk-cap">Fig. 1 — where the scroll position travels, wheel to path</figcaption>
     </figure>
   );
 }
