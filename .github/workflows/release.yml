@@ -8,9 +8,19 @@ name: Release
 # To cut a release:
 #   1. bump "version" in packages/svg-scroll-draw/package.json
 #   2. move the CHANGELOG [Unreleased] section under the new version
-#   3. commit, then: git tag v2.10.0 && git push origin v2.10.0
+#   3. commit, then: git tag v2.10.0 <sha> && git push origin v2.10.0
+#      One tag at a time: npm makes whichever version publishes last `latest`,
+#      so push the next tag only once the previous version is on npm.
 #
-# Requires an npm automation token in the NPM_TOKEN repository secret.
+# Authenticates with npm's trusted publishing: npm trusts this workflow
+# (DhruvilChauahan0210/ink-scroll, release.yml) and swaps the job's OIDC token
+# for a short-lived publish token, so no long-lived npm token has to exist.
+# npm restricts tokens that bypass 2FA from direct publishing in Jan 2027.
+# Until the trusted publisher is set up on npmjs.com (package Settings ->
+# Trusted Publisher; a new one lapses if it has not published within 2 days),
+# npm falls back to the NPM_TOKEN repository secret. Once a release shows
+# `_npmUser` as GitHub Actions (`npm view svg-scroll-draw@<v> _npmUser`),
+# remove NODE_AUTH_TOKEN below and delete the secret.
 
 on:
   push:
@@ -41,8 +51,8 @@ jobs:
       # write: the last step creates the GitHub release. With `read`, 2.10.1
       # published to npm and then failed here with a 403.
       contents: write
-      # Required for npm provenance — mints the OIDC token npm uses to attest
-      # that this build came from this workflow.
+      # Mints the OIDC token npm exchanges for a publish token (trusted
+      # publishing) and signs the provenance statement with.
       id-token: write
 
     steps:
@@ -91,8 +101,17 @@ jobs:
             exit 1
           fi
 
+      # Trusted publishing needs npm 11.5.1 or later; Node 22 ships npm 10.
+      # Only here, so the install and the tests above keep the npm they ran on.
+      # It runs on a dry run too, which is how a change to it gets tested.
+      - name: Use npm 11
+        run: npm install -g npm@11 && npm --version
+
       - name: Publish to npm with provenance
         if: startsWith(github.ref, 'refs/tags/v') && inputs.dry_run != true
+        # npm tries trusted publishing first and falls back to the token.
+        # --provenance is automatic under trusted publishing; it stays for the
+        # fallback.
         run: npm publish --provenance --access public
         working-directory: packages/svg-scroll-draw
         env:

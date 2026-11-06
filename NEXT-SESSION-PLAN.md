@@ -4,6 +4,28 @@
 
 ---
 
+## npm trusted publishing (2026-11-06, not committed)
+
+npm restricts tokens that bypass 2FA from direct publishing in January 2027;
+the release job used an `NPM_TOKEN` automation token. `release.yml` now
+publishes with npm 11, which tries trusted publishing first and the token
+second, so releases keep working before and after the npm side exists.
+The rest is the owner's, in order:
+
+1. **Done 2026-11-06** — the owner added it the same day, so it lapses unless
+   a release publishes through it by about 2026-11-08; after that, re-add it
+   shortly before the next release: npmjs.com → svg-scroll-draw → Settings →
+   Trusted Publisher → GitHub Actions. Organization or user
+   `DhruvilChauahan0210`, repository `ink-scroll`, workflow filename
+   `release.yml`, environment empty, allowed actions `npm publish`.
+2. Push the release tag. Check `npm view svg-scroll-draw@<version> _npmUser`:
+   GitHub Actions means trusted publishing worked (2.19.1 shows the owner's
+   account, `phantomcd0210`, published with the token).
+3. Then remove `NODE_AUTH_TOKEN` from the publish step, delete the `NPM_TOKEN`
+   repository secret, revoke the automation token on npmjs.com, and set the
+   package's Publishing access to "Require two-factor authentication and
+   disallow tokens".
+
 ## Dependencies (2026-11-06) — `660f363`, pushed; the Dependabot PRs closed
 
 The eight open Dependabot PRs, worked locally rather than merged (main moves by
@@ -200,6 +222,8 @@ months, 81% to the homepage; `/vs-gsap` at position 11 with 425 impressions.
 
 ### Next, in order
 1. ~~Tag `v2.19.0` and `v2.19.1`~~ — both published 2026-11-06.
+   **Next release:** the owner sets up npm's trusted publisher first (steps in
+   "npm trusted publishing" above), then checks `_npmUser` and retires the token.
 2. ~~A staggered drawing that never finishes; Playwright 1.65.0 and folding
    `firefox-native` into `firefox`~~ — both done in 2.19.1 (2026-11-06).
 3. **Owner:** create the `v2.10.1` GitHub release page by hand (its job lacked

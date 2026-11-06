@@ -399,6 +399,15 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### CI
 
+- **The release job is ready for npm's trusted publishing.** npm restricts
+  tokens that bypass 2FA from direct publishing in January 2027, and the job
+  published with an `NPM_TOKEN` automation token. It now publishes with npm 11
+  (trusted publishing needs 11.5.1 or later; the tarball is identical to npm
+  10's, 149 files, 951,147 bytes), which swaps the job's OIDC token for a
+  short-lived publish token once npm trusts this workflow, and falls back to
+  the token until then. The `release.yml` header says what to set up on
+  npmjs.com, how to tell a trusted publish (`_npmUser` is GitHub Actions), and
+  that tags go out one at a time.
 - **Dependencies, the eight open Dependabot PRs worked through (2026-11-06).**
   GitHub Actions to `checkout`, `setup-node`, `upload-artifact` v7 and
   `action-gh-release` v3 (Node 24 runtimes; the workflows use none of what

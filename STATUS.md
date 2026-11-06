@@ -163,6 +163,12 @@ at all.
 - [x] `/blog/horizontal-scroll-sections` is a full recipe — a case-study strip: runway matched to the travel, count and rail from `onProgress`, `overflow: clip` + a `focusin` scroll for the keyboard; five pitfalls measured on the file; files in `apps/demo/src/recipes/horizontal-scroll-sections/`; the recipe parts render inside a post's sections
 - [x] The five recipes planned are done (logo, sticky feature section, stat row, scrubbed film, horizontal strip)
 
+### npm trusted publishing (2026-11-06; release job only)
+
+- [x] `release.yml` publishes with npm 11 (≥ 11.5.1), trying trusted publishing (OIDC) first and `NPM_TOKEN` second; same tarball as npm 10
+- [x] Trusted publisher added on npmjs.com by the owner, 2026-11-06 (GitHub Actions: `DhruvilChauahan0210` / `ink-scroll` / `release.yml`). It lapses unless a release publishes through it within 2 days — by about 2026-11-08 — else re-add it before the next release
+- [ ] After the first release whose `_npmUser` is GitHub Actions: drop `NODE_AUTH_TOKEN` from `release.yml`, delete the `NPM_TOKEN` secret, revoke the automation token, and set Publishing access to "Require two-factor authentication and disallow tokens"
+
 ### Dependencies (2026-11-06; site and tooling only, no version bump)
 
 - [x] GitHub Actions v7 (`checkout`, `setup-node`, `upload-artifact`) and `action-gh-release` v3
