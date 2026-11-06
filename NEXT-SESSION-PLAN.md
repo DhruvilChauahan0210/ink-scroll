@@ -1,10 +1,10 @@
 # Next Session Plan — svg-scroll-draw
 
-> Updated: 2026-11-06 — **2.21.0 pushed** (`140ae6c`, not tagged: scrollText's screen-reader text; the site passes axe on every page). **2.20.1 pushed** (`975dce6`, not tagged: resume() off screen mid-tail finishes the drawing). **2.20.0 published** (`v2.20.0` on `972d705`: `scrollPin` `pinDistance: '150vh'`; the first release through npm's trusted publishing — `_npmUser` is GitHub Actions). **2.19.1 published** (`v2.19.1` on `2f7b711`: a staggered drawing finishes; Playwright 1.65.0; npm `latest`). **2.19.0 published** (`v2.19.0` on `f131f9c`: every engine follows the page; live wrapper options; Vue and Svelte blocks). Dependencies updated in `660f363` (site and tooling only). **2.18.1 published** (`v2.18.1` on `70c91cd`: `scrollHorizontal` follows the layout and measures against its sticky stage; the horizontal strip recipe, the fifth and last planned). **2.18.0 published** (`v2.18.0` on `1840983`: `scrollVideo` `triggerElement`; four recipes). **2.17.1 published** (`v2.17.1` on `ed77b58`: `once` keeps `stagger`; the logo example is a full recipe). Recipe 2, the pinned feature tour on `/examples/scroll-pin`, is done (site-only). **2.17.0 published** (`v2.17.0` on `d7b03b2`: the React, Vue, Nuxt, Solid and Svelte wrappers follow option changes, Angular gets `update()` for `ngOnChanges`). **2.16.1 published** (`v2.16.1` on `b3eb52a`) (`svg-scroll-draw/react` ships `"use client"` so Server Components render `<ScrollDraw>` directly; all 56 mutations run again). **2.16.0 published** (`v2.16.0` on `fde9f4c`: ES module entries share code through chunks — main + react 18.1 → 13.2 KB; the drop-ins share one instance with their React hooks; size tables generated; main entry 10.7 KB as shipped files). **2.15.3 published** (`v2.15.3` on `acc9acc`: scrollReveal's `stagger` is a fraction of the reveal window, per row, on top of a custom trigger; 2.15.2 before it kept scrollVideo's end frame under reduced motion). Every page is linked from every page (nav "More", phone menu, footer index — `components/site/sitemap.ts`, guarded by `check-nav`). Sitemap dates come from git for every URL, generated groups included — Search Console (2026-11-04) had 20 indexed, 35 "Discovered – not indexed" (never crawled), 2 "Crawled – not indexed". The native CSS path is no longer described as compositor work anywhere, and `/vs-aos` quotes the reveal entry and the real presets. Every page is on the homepage design and all 23 showcase sites are live — in `32f3409`, on `main`.
+> Updated: 2026-11-06 — **Live chapter merged** (site-only: the GitHub cards keep their last good figures, "npm / all time", a chart of every day since the first publish with a per-day read-out and a 30-day switch). **2.21.0 pushed** (`140ae6c`, not tagged: scrollText's screen-reader text; the site passes axe on every page). **2.20.1 pushed** (`975dce6`, not tagged: resume() off screen mid-tail finishes the drawing). **2.20.0 published** (`v2.20.0` on `972d705`: `scrollPin` `pinDistance: '150vh'`; the first release through npm's trusted publishing — `_npmUser` is GitHub Actions). **2.19.1 published** (`v2.19.1` on `2f7b711`: a staggered drawing finishes; Playwright 1.65.0; npm `latest`). **2.19.0 published** (`v2.19.0` on `f131f9c`: every engine follows the page; live wrapper options; Vue and Svelte blocks). Dependencies updated in `660f363` (site and tooling only). **2.18.1 published** (`v2.18.1` on `70c91cd`: `scrollHorizontal` follows the layout and measures against its sticky stage; the horizontal strip recipe, the fifth and last planned). **2.18.0 published** (`v2.18.0` on `1840983`: `scrollVideo` `triggerElement`; four recipes). **2.17.1 published** (`v2.17.1` on `ed77b58`: `once` keeps `stagger`; the logo example is a full recipe). Recipe 2, the pinned feature tour on `/examples/scroll-pin`, is done (site-only). **2.17.0 published** (`v2.17.0` on `d7b03b2`: the React, Vue, Nuxt, Solid and Svelte wrappers follow option changes, Angular gets `update()` for `ngOnChanges`). **2.16.1 published** (`v2.16.1` on `b3eb52a`) (`svg-scroll-draw/react` ships `"use client"` so Server Components render `<ScrollDraw>` directly; all 56 mutations run again). **2.16.0 published** (`v2.16.0` on `fde9f4c`: ES module entries share code through chunks — main + react 18.1 → 13.2 KB; the drop-ins share one instance with their React hooks; size tables generated; main entry 10.7 KB as shipped files). **2.15.3 published** (`v2.15.3` on `acc9acc`: scrollReveal's `stagger` is a fraction of the reveal window, per row, on top of a custom trigger; 2.15.2 before it kept scrollVideo's end frame under reduced motion). Every page is linked from every page (nav "More", phone menu, footer index — `components/site/sitemap.ts`, guarded by `check-nav`). Sitemap dates come from git for every URL, generated groups included — Search Console (2026-11-04) had 20 indexed, 35 "Discovered – not indexed" (never crawled), 2 "Crawled – not indexed". The native CSS path is no longer described as compositor work anywhere, and `/vs-aos` quotes the reveal entry and the real presets. Every page is on the homepage design and all 23 showcase sites are live — in `32f3409`, on `main`.
 
 ---
 
-## Reduced-motion post (2026-11-06, not committed)
+## Reduced-motion post (2026-11-06) — pushed in `08467e6`
 
 - `/blog/reduced-motion-scroll-animations`: effect by effect, built from what
   each engine does (`src/core/motion.ts`, `motion-watch.ts`, each engine's
@@ -25,9 +25,36 @@
   line-chart example's description.
 - New post `/blog/accessible-split-text-animation` (claims checked against
   WAI-ARIA 1.2 §5.2.8.6 and GSAP's SplitText docs on 2026-11-06).
-- In flight in its own worktree: the session "live-stats" — the homepage's
-  GitHub cards showing "—", lifetime npm downloads, tooltips on the 30-day
-  chart. Merge its branch when it reports.
+
+## The live chapter (2026-11-06, site-only, merged from `claude/funny-kowalevski-260099`)
+
+- **Why the GitHub cards said "—":** the homepage is static with hourly ISR.
+  When a regeneration finds a cached `fetch` stale, Next 16 refetches it in the
+  foreground and returns whatever came back (`patch-fetch.js`, the
+  `willConsumerServerCache` branch), and only 200s are cached. One refused
+  GitHub call (the anonymous limit, 60 an hour, shared by Vercel's IPs, is the
+  likely refusal; Vercel's logs were not readable from here) gave "—" for the
+  hour, with the good answer still cached. `/api/stars` had the same flaw.
+- **Now:** `apps/demo/src/lib/live-data.ts` keeps each figure in
+  `unstable_cache`, whose loader throws on anything but a well-formed 200;
+  `unstable_cache` returns the last value when a revalidation throws. A refusal
+  is logged as `revalidating cache with key: …` with the status. Replay it with
+  a production build: move `.next/server/app/index.*` and
+  `.next/server/route-cache` aside, set the `.next/cache/fetch-cache` files' mtime
+  2 h back and `next start` **without** `--use-system-ca` (on this laptop's
+  network that fails GitHub only, npm still answers).
+- **Lifetime downloads**: every day since the registry's `time.created`, a
+  year at a time (npm drops the oldest days of a range over 18 months), up to
+  yesterday. The card is their sum; the chart opens on them, with a "last 30
+  days / all time" switch (`charts` in `LiveBoard`, built by `plot()` in
+  `LiveStats`).
+- **The chart** has a read-out per day (hover, tap, keys), built as a
+  `role="slider"` pad over the plot (`Plot` in `components/home/LiveBoard.tsx`).
+- **Owner:** set `GITHUB_TOKEN` on Vercel (fine-grained, read-only access to
+  public repositories); without it a never-fetched figure can still show "—"
+  on a fresh data cache.
+- `apps/demo/src/components/LiveStats.tsx` is the May 2026 version of this
+  chapter and nothing imports it.
 
 ## 2.21.0 and the site's accessibility (2026-11-06) — pushed in `140ae6c`, not tagged
 
@@ -274,7 +301,8 @@ months, 81% to the homepage; `/vs-gsap` at position 11 with 425 impressions.
   Don't put that flag in package.json: it is for this laptop's network only
   (Node before 22.15 rejects it; CI runs 22 and 24 since 2026-11-06).
 - Optional: a `GITHUB_TOKEN` env var on Vercel lifts GitHub's anonymous rate limit
-  for the live stats chapter; it works without one.
+  for the live stats chapter. Without one a refused refresh keeps the last good
+  figures (`lib/live-data.ts`); "—" shows only before the first good answer.
 
 ### Adding a page (the redesign is done — every route uses `SiteShell`)
 - Wrap the route in `components/site/SiteShell` (nav, tokens, sign-off footer), add
