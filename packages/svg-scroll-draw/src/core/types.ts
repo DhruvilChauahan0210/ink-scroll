@@ -23,6 +23,12 @@ export interface ScrollDrawOptions {
   fade?: boolean;
   easing?: EasingName | ((t: number) => number);
   trigger?: TriggerConfig;
+  /**
+   * Each path starts this fraction of the scroll range after the previous one,
+   * and ends that much later too, so the last finishes after `trigger.end`.
+   * Where the page ends first, the stagger is tightened so the last path
+   * finishes at the bottom; a page with room keeps it as written.
+   */
   stagger?: number;
   direction?: 'forward' | 'reverse';
   once?: boolean;

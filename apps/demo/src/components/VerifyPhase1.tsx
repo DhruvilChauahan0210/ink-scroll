@@ -184,7 +184,7 @@ export function LiveParityProof() {
           <>
             This browser reports no scroll-driven animation support, so both boxes run
             the JS engine and Δ is trivially 0. That fallback is itself worth checking —
-            Firefox 153 takes exactly this path.
+            Firefox before 159 takes exactly this path.
           </>
         ) : !sweep ? (
           <>

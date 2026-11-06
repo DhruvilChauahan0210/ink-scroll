@@ -49,24 +49,12 @@ export default defineConfig({
     { name: 'firefox', use: { ...devices['Desktop Firefox'], viewport: VIEWPORT } },
     { name: 'webkit', use: { ...devices['Desktop Safari'], viewport: VIEWPORT } },
     /*
-     * Firefox 159 turned scroll-driven animations on by default (27 Oct 2026), but
-     * the newest Playwright still bundles Firefox 157/158, where the same Gecko
-     * implementation sits behind a pref. This project flips that pref and runs the
-     * native-path specs, so "the fast path matches the JS engine in Firefox" is
-     * measured here rather than taken from release notes. Drop the pref (and fold
-     * these specs back into `firefox`) once Playwright ships Firefox 159+.
+     * There was a fourth project, `firefox-native`: Firefox turned scroll-driven
+     * animations on by default in 159 (27 Oct 2026), and until Playwright bundled
+     * it (1.65.0) the parity suites ran in a Firefox with the Gecko pref flipped.
+     * The plain `firefox` project measures the fast path now, as shipped — and
+     * the parity suites fail if Chromium or Firefox stops taking it.
      */
-    {
-      name: 'firefox-native',
-      testMatch: ['**/parity.spec.ts', '**/animate-parity.spec.ts'],
-      use: {
-        ...devices['Desktop Firefox'],
-        viewport: VIEWPORT,
-        launchOptions: {
-          firefoxUserPrefs: { 'layout.css.scroll-driven-animations.enabled': true },
-        },
-      },
-    },
   ],
 
   webServer: {

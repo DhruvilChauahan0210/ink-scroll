@@ -52,7 +52,7 @@ their option types.
 | `fade` | `boolean` | `false` | opacity 0→1 with the draw |
 | `easing` | `Easing` | `'linear'` | |
 | `trigger` | `TriggerConfig` | `{ start: 'top bottom', end: 'bottom top' }` | |
-| `stagger` | `number` | `0` | fraction of the scroll range between paths |
+| `stagger` | `number` | `0` | fraction of the scroll range between paths; the last path ends that much after `trigger.end`, tightened to finish at the page's bottom when the page ends first |
 | `direction` | `'forward' \| 'reverse'` | `'forward'` | reverse erases |
 | `once` | `boolean` | `false` | latch at max progress |
 | `debug` | `boolean` | `false` | trigger-zone overlay |

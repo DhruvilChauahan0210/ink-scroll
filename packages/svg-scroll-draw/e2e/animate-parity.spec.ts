@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { openFixture, collectErrors, scrollToY, read, call, settle } from './helpers';
+import { openFixture, collectErrors, scrollToY, read, call, settle, NATIVE_PROJECTS } from './helpers';
 
 /**
  * `scrollAnimate`'s own native CSS fast path, in real browsers.
@@ -112,8 +112,8 @@ test.describe('scrollAnimate native CSS fast path', () => {
       styleTags: number;
     }>(page, 'engagement');
 
-    // See parity.spec.ts: the firefox-native project is worthless without the fast path.
-    if (testInfo.project.name === 'firefox-native') expect(e.supportsNative).toBe(true);
+    // See parity.spec.ts: a parity check without the fast path compares the JS engine with itself.
+    if (NATIVE_PROJECTS.includes(testInfo.project.name)) expect(e.supportsNative).toBe(true);
 
     for (const [key, on] of Object.entries(e.engaged)) {
       expect(on, `${key}: fast path did not match browser support`).toBe(e.supportsNative);

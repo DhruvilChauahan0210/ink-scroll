@@ -55,6 +55,17 @@ const KINDS: { k: Kind; label: string }[] = [
  */
 const RELEASES: Release[] = [
   {
+    version: '2.19.1',
+    title: 'A staggered drawing finishes',
+    date: '2026-11-06',
+    items: [
+      { type: 'fix', text: 'With stagger and the default trigger, the engine stopped as the drawing left the screen, so every later path froze short of 1 and onComplete never fired, on any page. It now follows the scroll off screen until the last path is done. Nothing on screen changes.' },
+      { type: 'fix', text: 'Near the bottom of a page, a staggered drawing whose last window ended past where the page scrolls stopped part-drawn (measured 0.75 and 0.5 on the last two of four paths). Only then is the stagger tightened, evenly, so the last path finishes where the page ends; a page with room keeps the stagger as written.' },
+      { type: 'test', text: 'A browser fixture for the end of the page, six tests in three browsers scrolled in 50px steps, five unit tests and two mutations (80 in all). Main entry 11.2 → 11.4 KB.' },
+      { type: 'test', text: 'Playwright 1.65.0 bundles Firefox 159, so Firefox runs both native-vs-JS parity suites on its fast path as shipped, no pref flipped; they fail if Chromium or Firefox stops taking it.' },
+    ],
+  },
+  {
     version: '2.19.0',
     title: 'Every engine follows the page',
     date: '2026-11-06',

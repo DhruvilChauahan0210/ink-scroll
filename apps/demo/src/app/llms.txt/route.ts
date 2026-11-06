@@ -9,9 +9,9 @@ const BODY = `# svg-scroll-draw
 > per-frame JavaScript, where the browser supports \`animation-timeline: view()\`.
 
 Native CSS support: Chrome and Edge 115+, Safari 26+, and Firefox 159+ (Firefox
-turned scroll-driven animations on by default on 27 Oct 2026). Our CI measures
-Gecko's implementation by enabling the feature pref in Playwright's Firefox 153
-and running the native-vs-JS parity suites. Other browsers fall back to the JS engine automatically.
+turned scroll-driven animations on by default on 27 Oct 2026). Our CI runs the
+native-vs-JS parity suites in Playwright's Firefox 159 as shipped, and fails if
+it does not take the fast path. Other browsers fall back to the JS engine automatically.
 
 Install: \`npm i svg-scroll-draw\`
 License: MIT

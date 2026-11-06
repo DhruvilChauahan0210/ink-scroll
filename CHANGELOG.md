@@ -393,6 +393,10 @@ All notable changes to `svg-scroll-draw` are documented here.
   before the scroll, staggered mid-way, drawn and coloured at the end, held on
   the way back, and finished on load under reduced motion.
 
+- **`/verify`'s v2.10.0 record quotes v2.10.0's mutation count.** The "as
+  merged" colophon gave v2.10.0's test counts beside a later release's 78
+  mutations; at the v2.10.0 tag there were 56.
+
 ### CI
 
 - **One release run per tag at a time.** Re-pushing `v2.15.3` while its first
@@ -406,6 +410,51 @@ All notable changes to `svg-scroll-draw` are documented here.
   allowed, followed by `check-jsx-text` and `check-nav`.
 
 ---
+
+## [2.19.1] — 2026-11-06
+
+### Fixed
+
+- **A staggered drawing finishes.** `stagger` starts each path's window
+  `stagger × range` after the one before, so the last path's window ends past
+  `trigger.end`. That left drawings unfinished in two ways:
+  - The default `trigger.end`, `'bottom top'`, is the moment the drawing leaves
+    the screen, and the engine stopped updating there. Every later path froze
+    short of 1 and `onComplete` never fired, on any page: four paths with
+    `stagger: 0.25` stayed at 1, 0.8, 0.55 and 0.3 however far the page
+    scrolled. The engine now keeps following the scroll off screen until the
+    last window ends, then stops. Nothing on screen changes, and a drawing
+    without `stagger` stops where it always did.
+  - Near the bottom of a page the last window can end past where the page
+    scrolls. With the page ending 200px after `trigger.end`, the last two of
+    four paths stopped at 0.75 and 0.5 drawn, on screen. Only then is the
+    stagger tightened, evenly, so the last path finishes where the page ends.
+    A page with room keeps the stagger as written, so a drawing that finished
+    before looks exactly as it did; a trigger whose own end is past the page
+    is left alone, since `stagger` is not what stops it. The page growing
+    later (lazy content below) re-measures and gives the stagger back.
+
+### Tests
+
+- `e2e/stagger.spec.ts` (+ `fixtures/stagger-end.html`): room to scroll keeps
+  every window as written, no room finishes at the page's end still
+  staggered, the same in a custom scroll container, the stagger restored when
+  the page grows, the default trigger finishing off screen, and an unreachable
+  `trigger.end` left alone — each scrolled in 50px steps, in all three
+  browsers. Five unit tests (`speed` counted in the room, the loop stopping on
+  the first frame outside every window, no change without `stagger`).
+  Mutations `stagger/fit-page-end` and `stagger/offscreen-tail`, 80 in all.
+- Main entry 11.2 → 11.4 KB; the budgets of the entries that carry the draw
+  engine moved with it, the reason in `scripts/size.mjs`.
+- **Playwright 1.62.1 → 1.65.0, and Firefox measures the fast path as
+  shipped.** 1.65.0 bundles Firefox 159, the first with scroll-driven
+  animations on by default, so the `firefox-native` project (Firefox with the
+  Gecko pref flipped, running only the parity suites) folds into `firefox`.
+  The parity suites now require the fast path in Chromium and Firefox — a
+  browser that stops taking it fails them rather than comparing the JS engine
+  with itself (watched failing with the feature switched off in Firefox).
+  WebKit, which CI runs as its Linux build, is held only to taking the fast
+  path exactly when it reports support. 227 browser tests per engine, 681 runs.
 
 ## [2.19.0] — 2026-11-06
 

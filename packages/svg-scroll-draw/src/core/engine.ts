@@ -249,6 +249,10 @@ export function createEngine(
 
   let tStart        = 0;
   let tEnd          = 0;
+  /** `stagger` as used: smaller only when the page ends first (fitStagger). */
+  let staggerFit    = stagger;
+  /** Where the last path's window ends. */
+  let tLast         = 0;
   let completed     = false;
   let started       = false;
   let rafId         = 0;
@@ -305,8 +309,36 @@ export function createEngine(
     return computeTriggers(frame, frame.scroll, vpSize(), startConfig, endConfig);
   }
 
+  /**
+   * Path i's window starts i × stagger × range after the first, so the last one
+   * ends past trigger.end — near the bottom of a page, further than the page
+   * scrolls. Measured on 2.19.0 with the page ending 200px after trigger.end:
+   * the last two of four paths stopped at 0.75 and 0.5 drawn, on screen, and
+   * onComplete never fired. Only then is the stagger tightened, evenly, so the
+   * last path finishes where the page ends. A page with room keeps the stagger
+   * as written, and a trigger whose own end is past the page is left alone:
+   * stagger is not what stops that one. 1px of slack for a fractional scroll.
+   *
+   * tLast also bounds the off-screen run in next(); in clip mode (no paths) or
+   * with a negative stagger it lands at or before tEnd, so there is none.
+   */
+  function fitStagger(): void {
+    const range = tEnd - tStart;
+    const gaps  = paths.length - 1;
+    const s     = scrollEl ?? document.documentElement;
+    const d     = axis === 'x' ? 'Width' : 'Height';
+    staggerFit = stagger;
+    if (stagger > 0 && gaps > 0 && range > 0) {
+      // How far the page scrolls past the point where the first path is done.
+      const room = s[`scroll${d}`] - s[`client${d}`] - 1 - tStart - range / speed;
+      if (room >= 0) staggerFit = Math.min(stagger, room / (gaps * range));
+    }
+    tLast = tEnd + gaps * staggerFit * range;
+  }
+
   function cacheTriggers(): void {
     ({ tStart, tEnd } = measureTriggers());
+    fitStagger();
     if (debug && IS_DEV) {
       destroyDebugOverlay();
       debugOverlay = createDebugOverlay(tStart, tEnd, axis);
@@ -797,7 +829,7 @@ export function createEngine(
   // ── rAF update loop ───────────────────────────────────────────────────────
 
   function update(): void {
-    if (!isVisible || paused) return;
+    if (paused || !looping) return;
 
     const now           = performance.now();
     const currentScroll = scrollPos();
@@ -815,7 +847,7 @@ export function createEngine(
     // velocityScale is excluded: its output depends on elapsed time as velocity
     // decays, so it genuinely needs a frame even at a fixed scroll position.
     if (!dirty && velocityScale === false && currentScroll === lastAppliedScroll) {
-      rafId = requestAnimationFrame(update);
+      next(currentScroll);
       return;
     }
     dirty = false;
@@ -880,13 +912,13 @@ export function createEngine(
       } else if (alpha < 1 && !once) {
         completed = false;
       }
-      rafId = requestAnimationFrame(update);
+      next(currentScroll);
       return;
     }
     // ── End clip mode ─────────────────────────────────────────────────────────
 
     paths.forEach((el, i) => {
-      const offset = i * stagger * range;
+      const offset = i * staggerFit * range;
       let alpha = easeFn(computeProgress(currentScroll, tStart + offset, tEnd + offset, effectiveSpeed));
 
       if (once && !autoReverse) {
@@ -968,7 +1000,25 @@ export function createEngine(
       completed = false;
     }
 
-    rafId = requestAnimationFrame(update);
+    next(currentScroll);
+  }
+
+  /**
+   * Off screen, a staggered path can still be mid-window: the default
+   * trigger.end ('bottom top') is the moment the drawing leaves the screen, and
+   * every later path's window ends after it. The loop used to stop at that exit,
+   * so those paths froze short of 1 and onComplete never fired, on any page.
+   * It now runs on until the scroll leaves [trigger.end, the last path's end),
+   * writing the frame that leaves it. Nothing on screen changes, and a drawing
+   * without stagger stops where it always did (tLast = tEnd).
+   */
+  function inStaggerTail(scroll: number): boolean {
+    return scroll >= tEnd && scroll < tLast;
+  }
+
+  function next(scroll: number): void {
+    if (isVisible || inStaggerTail(scroll)) rafId = requestAnimationFrame(update);
+    else looping = false;
   }
 
   // ── IntersectionObserver ──────────────────────────────────────────────────
@@ -1002,7 +1052,9 @@ export function createEngine(
           // is identical to when it left.
           dirty = true;
           startLoop();
-        } else {
+        } else if (!(looping && !paused && inStaggerTail(scrollPos()))) {
+          // Leaving with a staggered path still mid-window keeps the running
+          // loop until next() sees the scroll leave it.
           stopLoop();
         }
       });

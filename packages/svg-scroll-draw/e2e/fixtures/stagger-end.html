@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>A staggered drawing near the end of the page</title>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+  .lead { height: 1200px; background: #eee; }
+  #art { display: block; width: 600px; height: 200px; }
+  #art path { fill: none; stroke: #234; stroke-width: 6; }
+  #scroller { height: 800px; overflow: auto; }
+</style>
+</head>
+<body>
+<!--
+  Viewport 900x800. The drawing's top is at 1200, so its linear window
+  'top bottom' -> 'top top' is scroll 400 -> 1200 (range 800). With stagger 0.25
+  path i's window starts i x 200 later: the last one ends at 1800.
+  ?tail=N puts N px of page after the drawing, so the page scrolls to 600 + N:
+  tail=1400 -> 2000, room for every path; tail=800 -> 1400, the last two paths
+  can never finish. ?container=1 runs the same page inside an 800px scroller.
+-->
+<div id="root">
+  <div class="lead"></div>
+  <svg id="art" viewBox="0 0 600 200">
+    <path d="M20 25 H580" />
+    <path d="M20 75 H580" />
+    <path d="M20 125 H580" />
+    <path d="M20 175 H580" />
+  </svg>
+  <div id="tail"></div>
+</div>
+<script type="module">
+import { scrollDraw } from '/dist/index.mjs';
+import { publish, drawnFraction } from './_probe.mjs';
+
+const q = new URLSearchParams(location.search);
+document.getElementById('tail').style.height = `${Number(q.get('tail') ?? 1400)}px`;
+const inContainer = q.get('container') === '1';
+if (inContainer) {
+  const root = document.getElementById('root');
+  root.id = 'scroller';
+}
+const scroller = inContainer ? document.getElementById('scroller') : null;
+
+let completes = 0;
+const inst = scrollDraw('#art', {
+  stagger: Number(q.get('stagger') ?? 0.25),
+  easing: 'linear',
+  speed: Number(q.get('speed') ?? 1),
+  native: false,
+  // ?trigger=default: the library's own 'top bottom' -> 'bottom top' (400 -> 1400).
+  ...(q.get('trigger') === 'default' ? {} : { trigger: { start: 'top bottom', end: 'top top' } }),
+  ...(q.get('once') === '1' ? { once: true } : {}),
+  ...(scroller ? { scrollContainer: scroller } : {}),
+  onComplete: () => { completes++; },
+});
+
+publish({
+  scrollTo: (y) => { if (scroller) scroller.scrollTop = y; else window.scrollTo(0, y); },
+  scrollY: () => (scroller ? scroller.scrollTop : window.scrollY),
+  maxScroll: () => (scroller
+    ? scroller.scrollHeight - scroller.clientHeight
+    : document.documentElement.scrollHeight - document.documentElement.clientHeight),
+  fractions: () => [...document.querySelectorAll('#art path')].map(drawnFraction),
+  completes: () => completes,
+  progress: () => inst.getProgress(),
+  growTail: (px) => { document.getElementById('tail').style.height = `${px}px`; },
+});
+</script>
+</body>
+</html>

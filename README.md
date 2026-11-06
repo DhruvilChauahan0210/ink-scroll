@@ -22,7 +22,7 @@ Works in **React · Next.js · Vue 3 · Svelte · Solid · Angular · Nuxt · As
 
 ## Features at a glance
 
-- **11.2 KB gzipped** for the whole main entry — and you rarely need all of it. Every API is a separate entry point: `scrollReveal` is 5.5 KB, `scrollPin` 1.4 KB, `scrollSnap` 1.9 KB. [Full size table below](#bundle-sizes), measured by `npm run size` and enforced in CI.
+- **11.4 KB gzipped** for the whole main entry — and you rarely need all of it. Every API is a separate entry point: `scrollReveal` is 5.5 KB, `scrollPin` 1.4 KB, `scrollSnap` 1.9 KB. [Full size table below](#bundle-sizes), measured by `npm run size` and enforced in CI.
 - **Native CSS fast path** — where the browser supports scroll-driven animations the draw runs on a CSS `view-timeline` with zero per-frame JavaScript, and falls back to the JS engine automatically everywhere else. Both engines are [verified to produce the same output](#native-css-rendering) by a cross-browser test suite rather than assumed to.
 - **Zero dependencies** — no GSAP, no ScrollTrigger, no heavyweight runtime
 - **vivus drop-in** — `import Vivus from 'svg-scroll-draw/vivus'` keeps your `new Vivus()` code; SVG output matched exactly against vivus 0.4.6. [Details](#vivus-drop-in--keep-your-new-vivus-code)
@@ -34,8 +34,8 @@ Works in **React · Next.js · Vue 3 · Svelte · Solid · Angular · Nuxt · As
 - **30+ options** — easing, stagger, fade, stroke color/width lerp, fill opacity, clip reveal, morphTo, velocityScale, waypoints, callbacks, repeat, autoReverse, and more
 - **Group / Sequence / Timeline APIs** — animate multiple containers simultaneously, one-after-another, or on independent scroll windows with `loop` for auto-looping after scroll completion
 - **CSS custom property** — `--scroll-draw-progress` is set on every frame so you can drive any CSS animation without a callback
-- **685 tests across 36 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
-- **221 browser tests on top of those**, run against Chromium, Firefox and WebKit in CI. The unit suite runs in jsdom, where `getTotalLength` is stubbed and `IntersectionObserver` is faked — it can check the engine's arithmetic but nothing about real browser behaviour. Both counts are derived from the suites themselves and enforced in CI, so neither can quietly drift out of date
+- **690 tests across 36 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
+- **227 browser tests on top of those**, run against Chromium, Firefox and WebKit in CI. The unit suite runs in jsdom, where `getTotalLength` is stubbed and `IntersectionObserver` is faked — it can check the engine's arithmetic but nothing about real browser behaviour. Both counts are derived from the suites themselves and enforced in CI, so neither can quietly drift out of date
 
 ---
 
@@ -327,7 +327,7 @@ directly rather than relying on a version table:
 |---|---|
 | Chromium / Chrome / Edge 115+ | ✅ |
 | Safari / WebKit 26+ | ✅ |
-| Firefox 159+ | ✅ on by default since 27 Oct 2026. Measured on Gecko: Playwright still bundles Firefox 153, so the `firefox-native` e2e project turns on `layout.css.scroll-driven-animations.enabled` and runs both parity suites against it |
+| Firefox 159+ | ✅ on by default since 27 Oct 2026. Measured on Gecko: the e2e suite runs Playwright's Firefox 159 with no prefs, and both parity suites fail if it does not take the fast path |
 
 The timeline is a **named `view-timeline` declared on the container**, which the
 path animations then reference. That detail matters: putting
@@ -362,7 +362,7 @@ The library falls back to the JS engine automatically when:
 | `speed` | `number` | `1` | Scale factor — values above 1 complete faster |
 | `easing` | `string \| fn` | `"linear"` | `linear`, `ease-in`, `ease-out`, `ease-in-out`, `spring`, `bounce`, `elastic`, or a custom `(t: number) => number` |
 | `fade` | `boolean` | `false` | Animate `opacity 0 → 1` in sync with the draw |
-| `stagger` | `number` | `0` | Delay between each path as a fraction of the scroll range |
+| `stagger` | `number` | `0` | Delay between each path as a fraction of the scroll range. The last path ends that much after `trigger.end`; where the page ends first, the stagger tightens so it finishes at the bottom |
 | `direction` | `"forward" \| "reverse"` | `"forward"` | `reverse` starts fully drawn and erases on scroll |
 | `once` | `boolean` | `false` | Lock at max progress — don't erase when scrolling back |
 | `trigger.start` | `string` | `"top bottom"` | When animation begins — accepts anchor strings or percentages |
@@ -801,17 +801,17 @@ outgrows its budget.
 <!-- size-table:start -->
 | Entry point                          | Raw | Gzipped |
 |--------------------------------------|----:|--------:|
-| `svg-scroll-draw/nuxt`               | 39.2 KB | **12.8 KB** |
-| `svg-scroll-draw/vue`                | 38.9 KB | **12.7 KB** |
-| `svg-scroll-draw/react`              | 38.7 KB | **12.7 KB** |
-| `svg-scroll-draw/angular`            | 36.8 KB | **12.1 KB** |
-| `svg-scroll-draw/solid`              | 36.6 KB | **12.1 KB** |
-| `svg-scroll-draw/svelte`             | 37.0 KB | **12.1 KB** |
-| `svg-scroll-draw/astro`              | 35.1 KB | **11.7 KB** |
-| `svg-scroll-draw`                    | 33.3 KB | **11.2 KB** |
-| `dist/cdn/svg-scroll-draw.global.js` | 32.4 KB | **11.2 KB** |
-| `svg-scroll-draw/group`              | 29.8 KB | **9.8 KB** |
-| `svg-scroll-draw/web-component`      | 20.6 KB | **7.4 KB** |
+| `svg-scroll-draw/nuxt`               | 39.4 KB | **13.0 KB** |
+| `svg-scroll-draw/vue`                | 39.1 KB | **12.9 KB** |
+| `svg-scroll-draw/react`              | 38.9 KB | **12.8 KB** |
+| `svg-scroll-draw/angular`            | 37.1 KB | **12.3 KB** |
+| `svg-scroll-draw/solid`              | 36.9 KB | **12.2 KB** |
+| `svg-scroll-draw/svelte`             | 37.2 KB | **12.2 KB** |
+| `svg-scroll-draw/astro`              | 35.3 KB | **11.9 KB** |
+| `svg-scroll-draw`                    | 33.5 KB | **11.4 KB** |
+| `dist/cdn/svg-scroll-draw.global.js` | 32.7 KB | **11.4 KB** |
+| `svg-scroll-draw/group`              | 30.1 KB | **10.0 KB** |
+| `svg-scroll-draw/web-component`      | 20.9 KB | **7.6 KB** |
 | `svg-scroll-draw/reveal`             | 13.3 KB | **5.5 KB** |
 | `svg-scroll-draw/horizontal`         | 13.6 KB | **5.4 KB** |
 | `svg-scroll-draw/scrollreveal/react` | 11.7 KB | **4.7 KB** |
@@ -833,7 +833,7 @@ outgrows its budget.
 | `svg-scroll-draw/pin`                | 3.2 KB | **1.4 KB** |
 | `svg-scroll-draw/lenis`              | 0.4 KB | **0.2 KB** |
 
-Entries share code through chunks instead of each carrying its own copy, so `svg-scroll-draw` + `svg-scroll-draw/react` together is **14.2 KB**, not 11.2 KB + 12.7 KB.
+Entries share code through chunks instead of each carrying its own copy, so `svg-scroll-draw` + `svg-scroll-draw/react` together is **14.3 KB**, not 11.4 KB + 12.8 KB.
 <!-- size-table:end -->
 
 The framework entries are larger because each re-exports the full API surface for that
@@ -854,7 +854,7 @@ Chrome 80+, Safari 14+, Firefox 75+, Edge 80+.
 The native CSS fast path needs scroll-driven animation support (`view-timeline-name`
 plus `animation-timeline`). Chromium 115+, WebKit/Safari 26+ and Firefox 159+
 have it (Firefox turned it on by default on 27 Oct 2026; the e2e suite measures
-Gecko's implementation in Playwright's Firefox 153 with the feature pref enabled). Everything else falls back to the JS engine
+Gecko's implementation in Playwright's Firefox 159, as shipped). Everything else falls back to the JS engine
 automatically, and the two are tested for equivalence — see
 [Native CSS rendering](#native-css-rendering).
 

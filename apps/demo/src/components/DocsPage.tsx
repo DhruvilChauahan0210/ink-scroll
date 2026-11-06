@@ -526,6 +526,9 @@ instance.destroy();   // cleanup on unmount`}
               <Opt name="stagger" type="number" defaultVal="0">
                 Delay between each path starting, as a fraction of the total scroll range.{' '}
                 <code className="font-mono text-pitch-black">0.1</code> means each path starts 10% of the range after the previous one.
+                Each path also ends that much later, so the last one finishes after{' '}
+                <code className="font-mono text-pitch-black">trigger.end</code>; from 2.19.1, where the page ends
+                before it would, the stagger is tightened just enough for the last path to finish at the bottom.
               </Opt>
               <Opt name="once" type="boolean" defaultVal="false">
                 Lock draw progress at its maximum once reached. Scrolling back up will not erase the paths.

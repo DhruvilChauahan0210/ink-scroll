@@ -1,10 +1,10 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **2.19.0** — in the working tree, not yet committed or tagged (2.18.1 is the latest on npm)
-> Tests: **685 unit** across 36 suites · **221 browser tests** per engine (663 runs
-> across Chromium/Firefox/WebKit) · **78 mutations**, each caught by the one test
+> Current version: **2.19.1** — pushed to `main` (2026-11-06), not tagged. 2.19.0 (`f131f9c`) is not tagged either, so 2.18.1 is still the latest on npm
+> Tests: **690 unit** across 36 suites · **227 browser tests** per engine (681 runs
+> across Chromium/Firefox/WebKit) · **80 mutations**, each caught by the one test
 > named for it · **91.3% line coverage** (gate 90/90/82/82)
-> Bundle: **11.2 KB gzipped** (main entry as shipped files, chunks included; per-API entries from 0.2 KB) · zero runtime dependencies
+> Bundle: **11.4 KB gzipped** (main entry as shipped files, chunks included; per-API entries from 0.2 KB) · zero runtime dependencies
 > Last updated: 2026-11-06
 
 ---
@@ -49,11 +49,11 @@
 - [x] `scrollAnimateGroup` + `scrollAnimateSequence` + `scrollParallaxGroup` in `svg-scroll-draw/group`
 
 ### Testing
-- [x] 685 tests across 36 suites — `reactive` (the wrappers' option fingerprint and live callbacks), `directives` (the built files' "use client"), `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollText` (23)
+- [x] 690 tests across 36 suites — `reactive` (the wrappers' option fingerprint and live callbacks), `directives` (the built files' "use client"), `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollText` (23)
 - [x] Initial state fix — `createAnimateEngine` and `scrollCounter` now apply correct alpha immediately on init (no flash before IO fires)
 
 ### Browser tests (Phase 2, `packages/svg-scroll-draw/e2e`)
-221 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
+227 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
 `helpers.ts` (deterministic sweep — scroll to a fixed offset, wait two frames,
 read) and `fixtures/_probe.mjs` (parsing stays in the page, so specs assert on
 numbers).
@@ -163,7 +163,17 @@ at all.
 - [x] `/blog/horizontal-scroll-sections` is a full recipe — a case-study strip: runway matched to the travel, count and rail from `onProgress`, `overflow: clip` + a `focusin` scroll for the keyboard; five pitfalls measured on the file; files in `apps/demo/src/recipes/horizontal-scroll-sections/`; the recipe parts render inside a post's sections
 - [x] The five recipes planned are done (logo, sticky feature section, stat row, scrubbed film, horizontal strip)
 
-### 2.19.0 — every engine follows the page (2026-11-06; not yet released)
+### 2.19.1 — a staggered drawing finishes (2026-11-06; pushed, not tagged)
+
+- [x] Off screen, the engine follows the scroll until the last staggered window ends (with the default trigger the later paths froze at the exit — 1 / 0.8 / 0.55 / 0.3 — and `onComplete` never fired, on any page); a drawing without `stagger` stops where it always did
+- [x] Where the page ends before the last window, the stagger is tightened evenly so the last path finishes at the bottom (measured 0.75 / 0.5 on screen before); a page with room keeps it as written; an unreachable `trigger.end` is left alone
+- [x] Tests: `e2e/stagger.spec.ts` (6 × 3 browsers, scrolled in 50px steps), five unit tests, mutations `stagger/fit-page-end` and `stagger/offscreen-tail` (80, all caught)
+- [x] Sizes: main 11.2 → 11.4 KB; draw-engine budgets moved with the reason in `scripts/size.mjs`
+- [x] Docs: `/docs`, both READMEs, the skill's API table, the `stagger` JSDoc, CHANGELOG, `/changelog`
+- [x] Playwright 1.62.1 → 1.65.0 (Chromium 158, Firefox 159, WebKit 27.2): `firefox-native` folded into `firefox`, which takes the fast path with no prefs; the parity suites require it in Chromium and Firefox (watched failing with the feature off)
+- [ ] Released — pushed; waiting on the owner to tag `v2.19.0` on `f131f9c`, then `v2.19.1` once that release run is done
+
+### 2.19.0 — every engine follows the page (2026-11-06; pushed, not tagged)
 
 - [x] One shared layout watcher (`core/layout-watch`) for the animate, counter, progress, text, timeline and video engines; the draw engine and scrollHorizontal moved onto it. A move under a pixel is dropped; a re-measure leaves out the engine's own transform
 - [x] `refresh()` on scrollAnimate instances (group `refresh()` did nothing before)
@@ -177,7 +187,7 @@ at all.
 - [x] scrollPin: a resize while pinned moves the element with its wrapper (it kept its old left and width — measured 220px past the screen's edge); browser test + mutation `pin/resize-pinned`
 - [x] The layout watcher also watches the boxes above each element (previous siblings of it and its ancestors): growth inside a custom scrollContainer or on an `html, body { height: 100% }` page is heard; browser tests for both + mutation `layout/boxes-above`
 - [x] Svelte 5 versions of all nine blocks (`registry/svelte/`, `/r/svelte/<name>.json` without `path`, on /blocks, `test-svelte-blocks` in CI); `test-blocks` in CI against a built, started site
-- [ ] Released — waiting on the owner to review, commit, push and tag `v2.19.0`
+- [ ] Released — committed and pushed as `f131f9c` (2026-11-06); waiting on the owner to push the `v2.19.0` tag
 
 ### 2.18.1 — scrollHorizontal follows the layout (2026-11-05)
 

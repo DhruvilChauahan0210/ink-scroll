@@ -1,14 +1,36 @@
 # Next Session Plan — svg-scroll-draw
 
-> Updated: 2026-11-06 — **2.19.0 ready for review** (in the working tree, nothing committed; see below). **2.18.1 published** (`v2.18.1` on `70c91cd`: `scrollHorizontal` follows the layout and measures against its sticky stage; the horizontal strip recipe, the fifth and last planned). **2.18.0 published** (`v2.18.0` on `1840983`: `scrollVideo` `triggerElement`; four recipes). **2.17.1 published** (`v2.17.1` on `ed77b58`: `once` keeps `stagger`; the logo example is a full recipe). Recipe 2, the pinned feature tour on `/examples/scroll-pin`, is done (site-only). **2.17.0 published** (`v2.17.0` on `d7b03b2`: the React, Vue, Nuxt, Solid and Svelte wrappers follow option changes, Angular gets `update()` for `ngOnChanges`). **2.16.1 published** (`v2.16.1` on `b3eb52a`) (`svg-scroll-draw/react` ships `"use client"` so Server Components render `<ScrollDraw>` directly; all 56 mutations run again). **2.16.0 published** (`v2.16.0` on `fde9f4c`: ES module entries share code through chunks — main + react 18.1 → 13.2 KB; the drop-ins share one instance with their React hooks; size tables generated; main entry 10.7 KB as shipped files). **2.15.3 published** (`v2.15.3` on `acc9acc`: scrollReveal's `stagger` is a fraction of the reveal window, per row, on top of a custom trigger; 2.15.2 before it kept scrollVideo's end frame under reduced motion). Every page is linked from every page (nav "More", phone menu, footer index — `components/site/sitemap.ts`, guarded by `check-nav`). Sitemap dates come from git for every URL, generated groups included — Search Console (2026-11-04) had 20 indexed, 35 "Discovered – not indexed" (never crawled), 2 "Crawled – not indexed". The native CSS path is no longer described as compositor work anywhere, and `/vs-aos` quotes the reveal entry and the real presets. Every page is on the homepage design and all 23 showcase sites are built — in `32f3409`, on `main`.
+> Updated: 2026-11-06 — **2.19.1 pushed** (a staggered drawing finishes; see below; not tagged). **2.19.0 committed and pushed** (`f131f9c`, on `main` and `feat/homepage-redesign`; npm `latest` stays 2.18.1 until the owner pushes the `v2.19.0` tag). **2.18.1 published** (`v2.18.1` on `70c91cd`: `scrollHorizontal` follows the layout and measures against its sticky stage; the horizontal strip recipe, the fifth and last planned). **2.18.0 published** (`v2.18.0` on `1840983`: `scrollVideo` `triggerElement`; four recipes). **2.17.1 published** (`v2.17.1` on `ed77b58`: `once` keeps `stagger`; the logo example is a full recipe). Recipe 2, the pinned feature tour on `/examples/scroll-pin`, is done (site-only). **2.17.0 published** (`v2.17.0` on `d7b03b2`: the React, Vue, Nuxt, Solid and Svelte wrappers follow option changes, Angular gets `update()` for `ngOnChanges`). **2.16.1 published** (`v2.16.1` on `b3eb52a`) (`svg-scroll-draw/react` ships `"use client"` so Server Components render `<ScrollDraw>` directly; all 56 mutations run again). **2.16.0 published** (`v2.16.0` on `fde9f4c`: ES module entries share code through chunks — main + react 18.1 → 13.2 KB; the drop-ins share one instance with their React hooks; size tables generated; main entry 10.7 KB as shipped files). **2.15.3 published** (`v2.15.3` on `acc9acc`: scrollReveal's `stagger` is a fraction of the reveal window, per row, on top of a custom trigger; 2.15.2 before it kept scrollVideo's end frame under reduced motion). Every page is linked from every page (nav "More", phone menu, footer index — `components/site/sitemap.ts`, guarded by `check-nav`). Sitemap dates come from git for every URL, generated groups included — Search Console (2026-11-04) had 20 indexed, 35 "Discovered – not indexed" (never crawled), 2 "Crawled – not indexed". The native CSS path is no longer described as compositor work anywhere, and `/vs-aos` quotes the reveal entry and the real presets. Every page is on the homepage design and all 23 showcase sites are live — in `32f3409`, on `main`.
 
 ---
 
-## 2.19.0 in the working tree (2026-11-06, overnight, nothing committed)
+## 2.19.1 (2026-11-06) — pushed; tags waiting on the owner
 
-The owner asked for four follow-ups and went to sleep. All four are done in the
-working tree; nothing is committed, pushed or tagged. Review with `git diff`,
-then commit, push (both branches) and tag `v2.19.0` as usual.
+- **Library:** a staggered drawing finishes. With the default trigger the engine
+  stopped as the drawing left the screen and every later path froze short of 1,
+  so `onComplete` never fired on any page; it now follows the scroll off screen
+  until the last window ends (`next()` / `inStaggerTail()` in `core/engine.ts`).
+  Where the page ends before the last window, `fitStagger()` tightens the
+  stagger evenly so the last path finishes at the bottom; a page with room
+  keeps it exactly as written (the owner asked that existing drawings look the
+  same).
+- **Tests:** `e2e/stagger.spec.ts` + `fixtures/stagger-end.html`, five unit
+  tests in `engine-options`, mutations `stagger/fit-page-end` and
+  `stagger/offscreen-tail` (80). Main entry 11.4 KB.
+- **Playwright 1.65.0** (Firefox 159): the `firefox-native` project is gone;
+  `firefox` runs both parity suites on the real fast path, and
+  `NATIVE_PROJECTS` in `e2e/helpers.ts` makes them fail if Chromium or Firefox
+  stops taking it. 681 runs (227 per engine). After pulling, run
+  `npx playwright install chromium firefox webkit` once.
+- Owner: tag `v2.19.0` **on `f131f9c`** (the release job requires the tag to
+  match package.json at the tagged commit), wait for its release run, then tag
+  `v2.19.1` on the 2.19.1 commit — in that order, so npm `latest` ends on 2.19.1.
+
+## 2.19.0 (2026-11-06) — `f131f9c`, pushed; tag `v2.19.0` waiting on the owner
+
+The owner asked for four follow-ups, done overnight, then committed and pushed
+on review. Publishing needs only the tag:
+`git pull && git tag v2.19.0 f131f9c && git push origin v2.19.0` — on `f131f9c`, not the latest commit.
 
 - **Library:** one shared layout watcher (`src/core/layout-watch.ts`) for the
   animate, counter, progress, text, timeline and video engines (the draw engine
@@ -62,13 +84,12 @@ then commit, push (both branches) and tag `v2.19.0` as usual.
 - `test:blocks` in CI: build the demo, `next start -p 3100`, run it (proven
   locally the same way).
 
-### Found along the way, not done
-- A numeric scrollPin `pinDistance` is never re-read (a resize mid-pin is fixed
-  in 2.19.0; the distance itself stays what you passed).
-- With `stagger`, the last path's window runs past `trigger.end` (offset
-  `i × stagger × range`), so on a short page `onComplete` may never fire.
+### Found along the way
+- A numeric scrollPin `pinDistance` is a fixed pixel count (a resize mid-pin is
+  fixed in 2.19.0; the distance itself stays what you passed) — in "Next, in order".
+- With `stagger`, the last path's window runs past `trigger.end` — fixed in 2.19.1.
 
-## Current state (2026-10-30)
+## Background (2026-10-30, still true)
 
 **2.10.1 is on npm** (`latest`, signed provenance via `release.yml`). It shipped
 the shared devtools registry and the claims pass. The GitHub release page for
@@ -82,7 +103,7 @@ Numbers that set the priorities (Search Console and npm, 2026-10-30): 4,020
 lifetime downloads, ~170 a month; 5 GitHub stars; 147 Google clicks in five
 months, 81% to the homepage; `/vs-gsap` at position 11 with 425 impressions.
 
-### Showcase sites (all 23 built, not yet deployed)
+### Showcase sites (all 23 live from `main` since `32f3409`)
 - Each example has a complete demo site for a fictional company under `/showcase/<slug>`,
   linked from its card and its page. The owner wants real products, not this site's ink
   style. Sites 5–23 are built on the shared frame in `src/showcase/kit` (`Site`, `Hero`,
@@ -112,15 +133,12 @@ months, 81% to the homepage; `/vs-gsap` at position 11 with 425 impressions.
 - Optional: a `GITHUB_TOKEN` env var on Vercel lifts GitHub's anonymous rate limit
   for the live stats chapter; it works without one.
 
-### In flight
-- **Every page into the homepage's design, one page at a time, each pushed live.**
-  Wrap the route in `components/site/SiteShell` (nav, tokens, sign-off footer), add
-  the route to `components/site/routes.ts` (keeps the mascot off it), give the page
-  a `pg-head` opening and restyle its own pieces (shared: `CodeBox` listings,
-  `Plate` previews, `tb` title strips, `pill`s). Done: `/docs`, `/examples` (+ detail), `/guides` (+ each guide).
-  Also shared: `StepRail` (an inked procedure rail). Next, in order: `/blocks`, `/blog` (+ posts), the
-  `vs-*` pages (one `VersusPage` template), `/changelog`, `/playground`, the
-  framework landing pages, `/verify`.
+### Adding a page (the redesign is done — every route uses `SiteShell`)
+- Wrap the route in `components/site/SiteShell` (nav, tokens, sign-off footer), add
+  it to `components/site/routes.ts` (keeps the mascot off it) and to
+  `components/site/sitemap.ts` (`check-nav` fails otherwise), give it a `pg-head`
+  opening and reuse the shared pieces: `CodeBox` listings, `Plate` previews, `tb`
+  title strips, `pill`s, `StepRail`; comparison pages use the `VersusPage` template.
 
 ### Shipped since
 - **Homepage redesign** (site-only, live from `main` at 760bfb6, 2026-10-31): every
@@ -149,29 +167,30 @@ months, 81% to the homepage; `/vs-gsap` at position 11 with 425 impressions.
   suite against AOS 2.3.4. Watch npm weekly downloads for its effect.
 
 ### Next, in order
-1. Create the `v2.10.1` GitHub release page by hand (its job lacked
-   `contents: write`). From 2.10.2 the workflow creates it.
-2. Re-check Search Console in ~2 weeks for the new titles (`/vs-gsap`, home,
-   React, Next.js), and Page indexing for the 35 "Discovered – not indexed"
-   pages (sitemap resubmitted 2026-11-04, 64 discovered). Request indexing
-   for them ~10 a day; the 2026-11-04 attempt hit the daily quota. Also compare
-   CTR on `/docs`, `/vs-locomotive-scroll`, `/lenis-scroll-animation` and the
-   scroll-pin post, whose titles changed on 2026-11-04.
-   Watch GitHub stars after the homepage finale (shipped 2026-11-04).
-3. ~~Astro and `<scroll-draw>` read their options once~~ — done in 2.19.0.
-4. Recipes, one at a time, on the pages that already target each search
-   (pattern: `src/recipes/<slug>/` files + `components/recipes/recipes.tsx`
-   steps and pitfalls + a check in `scripts/test-recipes.mjs`; a blog post
-   uses `POST_RECIPE_SLUGS` and places `RecipeSteps` / `RecipeFiles` /
-   `RecipePitfalls` in its own sections, as `components/recipes/StripRecipe.tsx`
-   does). All five planned are done: logo (`/examples/logo-reveal`), pinned
-   feature tour (`/examples/scroll-pin`), stat row (`/examples/scroll-counter`),
-   pinned film (`/examples/scroll-video`), case-study strip
-   (`/blog/horizontal-scroll-sections`). Distinct framework pages and four more
-   blocks: done in 2.19.0's site work. Next: Vue/Svelte block versions.
-5. ~~The engines re-measure only on a window resize~~ — done in 2.19.0 for all
-   seven (the sub-pixel rule ends the self-sizing loop).
-6. Fold `firefox-native` into `firefox` once Playwright bundles Firefox 159+.
+1. **Owner:** push the `v2.19.0` tag on `f131f9c`, then `v2.19.1` (see the 2.19.1 section).
+2. ~~A staggered drawing that never finishes; Playwright 1.65.0 and folding
+   `firefox-native` into `firefox`~~ — both done in 2.19.1 (2026-11-06).
+3. **Owner:** create the `v2.10.1` GitHub release page by hand (its job lacked
+   `contents: write`; from 2.10.2 the workflow creates it).
+4. **Owner, ~2026-11-18:** re-check Search Console for the new titles
+   (`/vs-gsap`, home, React, Next.js) and Page indexing for the 35
+   "Discovered – not indexed" pages (sitemap resubmitted 2026-11-04, 64
+   discovered); request indexing ~10 a day (the daily quota). Compare CTR on
+   `/docs`, `/vs-locomotive-scroll`, `/lenis-scroll-animation` and the
+   scroll-pin post (titles changed 2026-11-04). Watch GitHub stars after the
+   homepage finale (2026-11-04).
+5. **Open, the owner's call:** the naming decision (see `ROADMAP.md`).
+6. A numeric scrollPin `pinDistance` is a fixed pixel count; a viewport-relative
+   value (`'100vh'`) would follow a resize.
+
+Recipes: all five planned are done — logo (`/examples/logo-reveal`), pinned
+feature tour (`/examples/scroll-pin`), stat row (`/examples/scroll-counter`),
+pinned film (`/examples/scroll-video`), case-study strip
+(`/blog/horizontal-scroll-sections`). Pattern for another: `src/recipes/<slug>/`
+files + `components/recipes/recipes.tsx` steps and pitfalls + a check in
+`scripts/test-recipes.mjs`; a blog post uses `POST_RECIPE_SLUGS` and places
+`RecipeSteps` / `RecipeFiles` / `RecipePitfalls` in its own sections, as
+`components/recipes/StripRecipe.tsx` does.
 
 ---
 

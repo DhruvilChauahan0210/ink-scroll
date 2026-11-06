@@ -7,7 +7,7 @@
 [![license](https://img.shields.io/npm/l/svg-scroll-draw)](./LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/DhruvilChauahan0210/ink-scroll?style=flat)](https://github.com/DhruvilChauahan0210/ink-scroll/stargazers)
 
-> Draw SVG paths on scroll — plus reveal, pin, snap, parallax, counters, video scrub and text splitting. **11.2 KB gzipped for every API, from 1.4 KB if you import one.** Zero dependencies, MIT, and a native CSS fast path that runs with no per-frame JavaScript. Works in React, Next.js, Vue, Svelte, Solid, Angular, Astro, Nuxt and vanilla JS.
+> Draw SVG paths on scroll — plus reveal, pin, snap, parallax, counters, video scrub and text splitting. **11.4 KB gzipped for every API, from 1.4 KB if you import one.** Zero dependencies, MIT, and a native CSS fast path that runs with no per-frame JavaScript. Works in React, Next.js, Vue, Svelte, Solid, Angular, Astro, Nuxt and vanilla JS.
 
 **[Live Demo](https://svg-scroll-draw.vercel.app)** · [npm](https://www.npmjs.com/package/svg-scroll-draw) · [Docs](https://svg-scroll-draw.vercel.app/docs) · [Examples](https://svg-scroll-draw.vercel.app/examples) · [Report a bug](https://github.com/DhruvilChauahan0210/ink-scroll/issues)
 
@@ -339,7 +339,7 @@ import { ScrollDraw } from 'svg-scroll-draw/vue';
 | `speed` | `number` | `1` | Scale factor relative to scroll distance |
 | `fade` | `boolean` | `false` | Animate `opacity 0 → 1` simultaneously |
 | `easing` | `string \| fn` | `"linear"` | `linear`, `ease-in`, `ease-out`, `ease-in-out`, `spring`, `bounce`, `elastic`, or `(t) => t` |
-| `stagger` | `number` | `0` | Offset between each path starting (fraction of scroll range) |
+| `stagger` | `number` | `0` | Offset between each path starting (fraction of scroll range). The last path ends that much after `trigger.end`; where the page ends first, the stagger tightens so it finishes at the bottom |
 | `direction` | `"forward" \| "reverse"` | `"forward"` | `reverse` erases the path as you scroll |
 | `trigger.start` | `string` | `"top bottom"` | When animation begins |
 | `trigger.end` | `string` | `"bottom top"` | When animation ends |
@@ -629,9 +629,9 @@ devtools.highlight('#my-element'); // outline for 2 seconds
 <!-- size-table:start -->
 | Entry | Gzipped |
 |---|---|
-| `svg-scroll-draw` (main, every core API) | 11.2 KB |
-| `svg-scroll-draw/react` (includes the engine) | 12.7 KB |
-| `svg-scroll-draw` + `svg-scroll-draw/react` (together; the engine ships once) | 14.2 KB |
+| `svg-scroll-draw` (main, every core API) | 11.4 KB |
+| `svg-scroll-draw/react` (includes the engine) | 12.8 KB |
+| `svg-scroll-draw` + `svg-scroll-draw/react` (together; the engine ships once) | 14.3 KB |
 | `svg-scroll-draw/reveal` | 5.5 KB |
 | `svg-scroll-draw/text` | 3.1 KB |
 | `svg-scroll-draw/video` | 2.7 KB |

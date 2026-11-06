@@ -14,6 +14,13 @@ import type { Page } from '@playwright/test';
  * casts below instead, and each spec supplies its own row type to `read`.
  */
 
+/**
+ * Projects whose browser ships the native CSS fast path (`animation-timeline:
+ * view()`), so a parity suite that finds it missing fails rather than comparing
+ * the JS engine with itself. Firefox joined at 159, bundled by Playwright 1.65.0.
+ */
+export const NATIVE_PROJECTS = ['chromium', 'firefox'];
+
 type ProbeWindow = {
   __probe: Record<string, (...args: unknown[]) => unknown>;
   __ready?: boolean;

@@ -762,6 +762,24 @@ const MUTATIONS = [
     spec: 'video',
     grep: 'reports real metadata',
   },
+  {
+    id: 'stagger/fit-page-end',
+    what: 'the stagger is never tightened, so near the end of the page the last paths stop part-drawn and onComplete never fires',
+    file: 'src/core/engine.ts',
+    from: '      if (room >= 0) staggerFit = Math.min(stagger, room / (gaps * range));\n',
+    to: '',
+    spec: 'stagger',
+    grep: 'without room, the last path finishes where the page ends',
+  },
+  {
+    id: 'stagger/offscreen-tail',
+    what: 'the loop stops once the drawing leaves the screen, so later staggered paths freeze short of 1 with the default trigger',
+    file: 'src/core/engine.ts',
+    from: '    if (isVisible || inStaggerTail(scroll)) rafId = requestAnimationFrame(update);',
+    to: '    if (isVisible) rafId = requestAnimationFrame(update);',
+    spec: 'stagger',
+    grep: 'with the default trigger, the paths still drawing',
+  },
 ];
 
 const args = process.argv.slice(2);

@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { NATIVE_PROJECTS } from './helpers';
 
 /**
  * The library's headline claim, tested in real browsers:
@@ -81,10 +82,11 @@ test.describe('native CSS fast path vs JS engine', () => {
       nativeEngaged: window.__probe.nativeEngaged(),
     }));
 
-    // The firefox-native project exists to measure Gecko's fast path. If the pref
-    // ever stops taking effect, every parity check there would quietly compare the
+    // Chromium and Firefox (159+, Playwright 1.65.0+) ship the fast path. If one
+    // ever stops taking it, every parity check there would quietly compare the
     // JS engine with itself and pass — so a missing fast path fails here instead.
-    if (testInfo.project.name === 'firefox-native') expect(supportsNative).toBe(true);
+    // WebKit is left to the check below: CI runs its Linux build, not Safari.
+    if (NATIVE_PROJECTS.includes(testInfo.project.name)) expect(supportsNative).toBe(true);
 
     // The engine must not claim the fast path on an unsupporting browser, and
     // must not silently decline it on a supporting one.

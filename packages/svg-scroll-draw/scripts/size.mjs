@@ -40,21 +40,26 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
  * options; an adversarial review before release added the reference counts and
  * transition handling. The main entry went 10.7 → 11.2 KB for that. Measured, not guessed:
  * each figure below is the 2.19.0 build rounded up to the next 0.1 KB.
+ *
+ * 2.19.1 moved the entries that carry the draw engine up 0.1–0.2 KB: a
+ * staggered drawing fits its stagger to where the page ends and keeps
+ * following the scroll off screen until its last path is done (it never
+ * finished before), 0.14 KB gzipped on the main entry. Same rule as above.
  */
 const BUDGETS_KB = {
-  '.':              11.3,
+  '.':              11.4,
   // The whole library in one IIFE, web component included — the single file a
   // `<script src>` user downloads. Not split, so unchanged by the chunks.
   cdn:              11.5,
-  react:            12.7,
-  vue:              12.8,
-  nuxt:             12.9,
-  svelte:           12.1,
-  solid:            12.1,
-  angular:          12.2,
-  astro:            11.8,
-  group:             9.9,
-  'web-component':   7.5,
+  react:            12.9,
+  vue:              12.9,
+  nuxt:             13.0,
+  svelte:           12.3,
+  solid:            12.3,
+  angular:          12.3,
+  astro:            11.9,
+  group:             10.1,
+  'web-component':   7.6,
   reveal:            5.6,
   // The AOS drop-in, stylesheet included (AOS itself is 6.7 KB with aos.css).
   aos:               3.2,
@@ -91,7 +96,7 @@ const BUDGETS_KB = {
  * 18.1 KB); the budget is what keeps the sharing from quietly coming undone.
  */
 const COMBINATIONS = [
-  { names: ['.', 'react'], budget: 14.2 },
+  { names: ['.', 'react'], budget: 14.4 },
 ];
 
 // ── Measure ──────────────────────────────────────────────────────────────────

@@ -601,6 +601,96 @@ describe('createEngine — once', () => {
     raf.tick();
     expect(onComplete).toHaveBeenCalledTimes(1);
   });
+
+  // The last staggered window ends past trigger.end; near the bottom of a page,
+  // past where the page scrolls (e2e/stagger.spec.ts measures it in a browser).
+  // Here: two paths, range 1300, stagger 0.2, so the second window is [-540, 760].
+  describe('the page ends before the last window', () => {
+    function pageScrollsTo(max: number) {
+      Object.defineProperty(document.documentElement, 'scrollHeight', { configurable: true, value: max + 800 });
+      Object.defineProperty(document.documentElement, 'clientHeight', { configurable: true, value: 800 });
+    }
+    afterEach(() => {
+      delete (document.documentElement as unknown as Record<string, unknown>).scrollHeight;
+      delete (document.documentElement as unknown as Record<string, unknown>).clientHeight;
+    });
+
+    it('tightens the stagger so the last path finishes where the page ends', () => {
+      pageScrollsTo(600); // 99px of room after trigger.end, with 1px of slack
+      const second = makePath();
+      const onComplete = vi.fn();
+      createEngine(makeContainer([makePath(), second]), { stagger: 0.2, easing: 'linear', onComplete });
+      FakeIO.instances[0].trigger(true);
+
+      vi.stubGlobal('scrollY', 300);
+      raf.tick();
+      expect(parseFloat(second.style.strokeDashoffset)).toBeCloseTo(100 * (1 - 1001 / 1300), 1);
+
+      vi.stubGlobal('scrollY', 600);
+      raf.tick();
+      expect(parseFloat(second.style.strokeDashoffset)).toBeCloseTo(0, 3);
+      expect(onComplete).toHaveBeenCalledTimes(1);
+    });
+
+    it('keeps the stagger as written when the page has room', () => {
+      pageScrollsTo(2000);
+      const second = makePath();
+      createEngine(makeContainer([makePath(), second]), { stagger: 0.2, easing: 'linear' });
+      FakeIO.instances[0].trigger(true);
+      vi.stubGlobal('scrollY', 300);
+      raf.tick();
+      expect(parseFloat(second.style.strokeDashoffset)).toBeCloseTo(100 * (1 - 840 / 1300), 1);
+    });
+
+    it('counts speed: the room is after the first path finishes, not after trigger.end', () => {
+      // speed 2: the first path is done at -150, so a page ending at 0 leaves
+      // 149px for the stagger — enough for the second path to finish there.
+      pageScrollsTo(0);
+      const second = makePath();
+      createEngine(makeContainer([makePath(), second]), { stagger: 0.2, speed: 2, easing: 'linear' });
+      FakeIO.instances[0].trigger(true);
+      raf.tick();
+      expect(parseFloat(second.style.strokeDashoffset)).toBeCloseTo(0, 3);
+    });
+
+    // trigger.end defaults to 'bottom top', the moment the drawing leaves the
+    // screen, and every later staggered window ends after it. The loop stopped at
+    // that exit, so those paths froze short of 1 and onComplete never fired.
+    it('keeps following the scroll off screen until the last staggered window ends', () => {
+      pageScrollsTo(4200);
+      const second = makePath();
+      const onComplete = vi.fn();
+      createEngine(makeContainer([makePath(), second]), { stagger: 0.2, easing: 'linear', onComplete });
+      const io = FakeIO.instances[0];
+      io.trigger(true);
+      vi.stubGlobal('scrollY', 550); // past trigger.end (500): the drawing has left
+      raf.tick();
+      io.trigger(false);
+
+      vi.stubGlobal('scrollY', 700);
+      raf.tick();
+      expect(parseFloat(second.style.strokeDashoffset)).toBeCloseTo(100 * (1 - 1240 / 1300), 1);
+      vi.stubGlobal('scrollY', 800);
+      raf.tick();
+      expect(parseFloat(second.style.strokeDashoffset)).toBeCloseTo(0, 3);
+      expect(onComplete).toHaveBeenCalledTimes(1);
+
+      // Out of every window: that frame was the last.
+      const scheduled = raf.schedule.mock.calls.length;
+      raf.tick();
+      expect(raf.schedule.mock.calls.length).toBe(scheduled);
+    });
+
+    it('without stagger, still stops when the drawing leaves the screen', () => {
+      createEngine(makeContainer([makePath()]), { easing: 'linear' });
+      const io = FakeIO.instances[0];
+      io.trigger(true);
+      vi.stubGlobal('scrollY', 550);
+      raf.tick();
+      io.trigger(false);
+      expect(raf.cancel).toHaveBeenCalled();
+    });
+  });
 });
 
 // ── repeat ───────────────────────────────────────────────────────────────────
