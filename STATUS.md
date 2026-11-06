@@ -163,6 +163,15 @@ at all.
 - [x] `/blog/horizontal-scroll-sections` is a full recipe — a case-study strip: runway matched to the travel, count and rail from `onProgress`, `overflow: clip` + a `focusin` scroll for the keyboard; five pitfalls measured on the file; files in `apps/demo/src/recipes/horizontal-scroll-sections/`; the recipe parts render inside a post's sections
 - [x] The five recipes planned are done (logo, sticky feature section, stat row, scrubbed film, horizontal strip)
 
+### Live chapter: GitHub figures, lifetime downloads, day read-out (2026-11-06; site-only, in the working tree)
+
+- [x] Fixed: the four GitHub cards showed "—" after a refused hourly refresh (Next refetches a stale `fetch` in the foreground during regeneration and caches only 200s). Each figure is an `unstable_cache` entry in `apps/demo/src/lib/live-data.ts` that keeps its last good value; `/api/stars` shares it. Replayed on a production build with GitHub unreachable: old code four "—", new code 8 / 0 / 2
+- [x] `GITHUB_TOKEN` used when set (bearer, never in a cache key); refusals logged with status and "rate limit reached"
+- [x] "npm / all time": summed a year at a time from the registry's `time.created`; grid is four to a row, one row per source
+- [x] 30-day chart: hover / tap / keyboard read-out of each day (date, downloads, ring, inked rule), a slider to assistive technology; checked in Chromium with Playwright (hover, keys, touch, no layout shift) and axe with the read-out open in both themes
+- [ ] Owner: set `GITHUB_TOKEN` on Vercel (a fine-grained token with read-only access to public repositories and no other permissions is enough)
+- [ ] Released
+
 ### 2.21.0 — split text a screen reader can read (2026-11-06; in the working tree)
 
 - [x] `scrollText`: one visually hidden copy of the text after the `aria-hidden` pieces, instead of an `aria-label` ARIA forbids on `<p>`/`<span>`/`<div>` (a screen reader could read nothing); `destroy()` leaves a page's own `aria-label`

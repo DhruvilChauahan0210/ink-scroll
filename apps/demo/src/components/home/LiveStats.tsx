@@ -1,4 +1,5 @@
 import { LiveBoard, type LiveCell, type Spark } from './LiveBoard';
+import { GH_REPO, NPM_PKG, getDays, getLifetime, getMonth, getRepo, getWeek, type Day } from '@/lib/live-data';
 
 /**
  * Chapter 09 — the project, counted live: GitHub and npm numbers, refreshed
@@ -6,32 +7,12 @@ import { LiveBoard, type LiveCell, type Spark } from './LiveBoard';
  * library inks as you scroll. A server component: the fetches run on the
  * server and the page is regenerated at most once an hour.
  *
- * A failed refresh keeps serving the previous response, so the chapter shows
- * when its numbers were fetched (the oldest `Date` header among them) rather
- * than claiming they are current. Set GITHUB_TOKEN to lift GitHub's 60-an-hour
- * anonymous limit, which shared build and function IPs can run into.
+ * Each figure is cached on its own (lib/live-data), and a refused refresh
+ * keeps the last good one, so the chapter shows when its numbers were fetched
+ * (the oldest `Date` header among them) rather than claiming they are current.
+ * Set GITHUB_TOKEN to lift GitHub's 60-an-hour anonymous limit, which shared
+ * build and function IPs run into.
  */
-
-const GH_REPO = 'DhruvilChauahan0210/ink-scroll';
-const NPM_PKG = 'svg-scroll-draw';
-const REVALIDATE = 3600;
-
-type Got<T> = { data: T; at: number } | null;
-
-async function getJSON<T>(url: string, headers?: Record<string, string>): Promise<Got<T>> {
-  try {
-    const r = await fetch(url, { next: { revalidate: REVALIDATE }, headers });
-    if (!r.ok) return null;
-    const at = Date.parse(r.headers.get('date') ?? '');
-    return { data: (await r.json()) as T, at: Number.isFinite(at) ? at : Date.now() };
-  } catch {
-    return null;
-  }
-}
-
-type GH = { stargazers_count: number; forks_count: number; open_issues_count: number; pushed_at: string };
-type Point = { downloads: number };
-type Range = { downloads: { day: string; downloads: number }[] };
 
 function relTime(iso: string): string {
   const s = Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 1000));
@@ -48,8 +29,8 @@ function fmt(n: number): string {
 }
 
 const f = (n: number) => n.toFixed(1);
-const day = (iso: string) =>
-  new Date(`${iso}T00:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
+const day = (iso: string, weekday?: 'short') =>
+  new Date(`${iso}T00:00:00Z`).toLocaleDateString('en-US', { weekday, month: 'short', day: 'numeric', timeZone: 'UTC' });
 const stamp = (ms: number) =>
   `${new Date(ms).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'UTC' })} UTC`;
 
@@ -59,7 +40,7 @@ const WIDE: Box = { W: 1000, H: 240, X0: 48, X1: 972, Y0: 36, Y1: 196 };
 const NARROW: Box = { W: 400, H: 300, X0: 34, X1: 388, Y0: 30, Y1: 244 };
 
 /** The 30-day line in `box`, as a smooth path plus its labels. */
-function spark(days: Range['downloads'], box: Box): Spark {
+function spark(days: Day[], box: Box): Spark {
   const { X0, X1, Y0, Y1 } = box;
   const max = Math.max(1, ...days.map((d) => d.downloads));
   const pts = days.map((d, i) => [
@@ -81,35 +62,29 @@ function spark(days: Range['downloads'], box: Box): Spark {
     area: `${d} L${f(X1)} ${Y1} L${f(X0)} ${Y1} Z`,
     peak: { x: pts[peakIdx][0], y: pts[peakIdx][1] },
     last: { x: pts[pts.length - 1][0], y: pts[pts.length - 1][1] },
+    pts: pts.map(([x, y]) => [Number(f(x)), Number(f(y))]),
   };
 }
 
 export async function LiveStats() {
-  const token = process.env.GITHUB_TOKEN;
-  const [gh, week, month, range] = await Promise.all([
-    getJSON<GH>(`https://api.github.com/repos/${GH_REPO}`, {
-      Accept: 'application/vnd.github+json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    }),
-    getJSON<Point>(`https://api.npmjs.org/downloads/point/last-week/${NPM_PKG}`),
-    getJSON<Point>(`https://api.npmjs.org/downloads/point/last-month/${NPM_PKG}`),
-    getJSON<Range>(`https://api.npmjs.org/downloads/range/last-month/${NPM_PKG}`),
-  ]);
+  const [gh, week, month, total, range] = await Promise.all([getRepo(), getWeek(), getMonth(), getLifetime(), getDays()]);
 
   const g = gh?.data;
+  const n = (x: { data: number } | null) => (x ? fmt(x.data) : '—');
   const cells: LiveCell[] = [
-    { icon: 'star', value: g ? fmt(g.stargazers_count) : '—', label: 'GitHub stars', source: 'github' },
-    { icon: 'fork', value: g ? fmt(g.forks_count) : '—', label: 'Forks', source: 'github' },
-    { icon: 'issue', value: g ? fmt(g.open_issues_count) : '—', label: 'Open issues', source: 'github' },
-    { icon: 'commit', value: g ? relTime(g.pushed_at) : '—', label: 'Last commit', source: 'github' },
-    { icon: 'down', value: week ? fmt(week.data.downloads) : '—', label: 'npm / week', source: 'npm' },
-    { icon: 'down', value: month ? fmt(month.data.downloads) : '—', label: 'npm / month', source: 'npm' },
+    { icon: 'star', value: g ? fmt(g.stars) : '—', label: 'GitHub stars', source: 'github' },
+    { icon: 'fork', value: g ? fmt(g.forks) : '—', label: 'Forks', source: 'github' },
+    { icon: 'issue', value: g ? fmt(g.issues) : '—', label: 'Open issues', source: 'github' },
+    { icon: 'commit', value: g ? relTime(g.pushed) : '—', label: 'Last commit', source: 'github' },
+    { icon: 'down', value: n(week), label: 'npm / week', source: 'npm' },
+    { icon: 'down', value: n(month), label: 'npm / month', source: 'npm' },
+    { icon: 'sum', value: n(total), label: 'npm / all time', source: 'npm' },
   ];
 
-  const fetched = [gh, week, month, range].filter((x): x is NonNullable<typeof x> => x !== null).map((x) => x.at);
+  const fetched = [gh, week, month, total, range].filter((x) => x !== null).map((x) => x.at);
   const checked = fetched.length ? stamp(Math.min(...fetched)) : null;
 
-  const days = range?.data.downloads ?? [];
+  const days = range?.data ?? [];
   const chart =
     days.length >= 2
       ? (() => {
@@ -122,6 +97,7 @@ export async function LiveStats() {
             total: days.reduce((s, x) => s + x.downloads, 0),
             from: day(days[0].day),
             to: day(days[days.length - 1].day),
+            days: days.map((x) => ({ label: day(x.day, 'short'), value: x.downloads })),
           };
         })()
       : null;

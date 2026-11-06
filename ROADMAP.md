@@ -97,6 +97,7 @@
 - [x] Dark/light mode toggle
 - [x] Native CSS support badge
 - [x] Live npm / GitHub stats
+- [x] Live stats keep their last good figures when GitHub refuses; lifetime npm downloads; a per-day read-out on the 30-day chart (hover, tap, keys)
 
 ---
 

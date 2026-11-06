@@ -8,6 +8,41 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### Site
 
+- **The live chapter's GitHub numbers no longer fall to "—".** The four
+  GitHub cards (stars, forks, open issues, last commit) showed "—" on the live
+  site while the npm cards worked, and `/api/stars` could answer
+  `{"stars":null}`. Cause: the hourly regeneration of a static page refetches a
+  stale `fetch` in the foreground and hands the page whatever comes back, and
+  Next caches only 200s, so one refused call to GitHub (most likely the
+  anonymous limit of 60 calls an hour, shared by Vercel's build and function
+  IPs) became "—" for the next hour, with the previous good answer still in
+  the cache. The 2.x note that "a failed hourly refresh keeps serving the last
+  good response" was wrong. Replayed on a production build with GitHub
+  unreachable and npm reachable: the old code gives exactly the screenshot
+  (four "—", npm figures, `stars: null`); the new code keeps 8 / 0 / 2 and
+  refreshes npm. Each figure is now an `unstable_cache` entry
+  (`apps/demo/src/lib/live-data.ts`, shared with `/api/stars`) whose loader
+  throws on anything but a well-formed 200, and `unstable_cache` returns its
+  last value when a revalidation throws. "—" is left only for a figure that has
+  never once been fetched. A refused call is logged with its status (and
+  "rate limit reached" when GitHub says so). `GITHUB_TOKEN`, when set, is sent
+  as a bearer token (5,000 calls an hour); it is not part of any cache key.
+- **Lifetime npm downloads.** A seventh figure, "npm / all time", sums
+  `api.npmjs.org/downloads/point/<from>:<to>` a year at a time from the first
+  publish (`time.created` in the registry, fetched once and kept: the document
+  is ~300 KB). npm answers at most 18 months per request and silently drops
+  the oldest days of a longer range, so each answer must start on the day
+  asked for. Refreshed hourly with the rest. The figures now sit four to a
+  row, one row per source (GitHub, then npm, the last widened); seven in one
+  row left "12h ago" no room at 1280 px.
+- **The 30-day chart reads out each day.** Hover, a tap, or the arrow keys on
+  the focused chart show that day's date and downloads beside the line, a ring
+  on the line and a rule inked up from the base, with the peak label faded
+  while you read. The chart is a slider to assistive technology ("Downloads by
+  day", `aria-valuetext` "Thu, Oct 30: 856 downloads"; arrows step a day,
+  Page Up/Down a week, Home/End, Escape hides); the read-out is `aria-hidden`
+  and positioned over the plot, so nothing moves the layout. A tap keeps its
+  day until a tap elsewhere; the plot still scrolls the page vertically.
 - **Every page passes axe (WCAG 2.1 A and AA), and every internal link
   resolves.** `apps/demo/scripts/test-a11y.mjs` runs axe on all 64 sitemap
   pages in Chromium, before and after scrolling, under reduced motion so every

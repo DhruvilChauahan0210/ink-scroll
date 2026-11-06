@@ -44,7 +44,7 @@
   100% { box-shadow: 0 0 0 0 transparent; }
 }
 
-/* ── The six numbers ──────────────────────────────────────────────────── */
+/* ── The seven numbers ────────────────────────────────────────────────── */
 
 .home .lv-grid {
   display: grid;
@@ -52,8 +52,11 @@
   border-top: 1px solid var(--line-2);
   border-left: 1px solid var(--line);
 }
-@media (min-width: 720px) { .home .lv-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-@media (min-width: 1200px) { .home .lv-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+@media (min-width: 720px) { .home .lv-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+/* GitHub's four figures take a row and npm's three the next; the last one
+   widens to close its row. Seven in one row left "12h ago" no room. */
+@media (max-width: 719px) { .home .lv-cell:last-child:nth-child(2n + 1) { grid-column: 1 / -1; } }
+@media (min-width: 720px) { .home .lv-cell:last-child:nth-child(4n + 3) { grid-column: span 2; } }
 .home .lv-cell {
   position: relative;
   display: grid;
@@ -124,10 +127,45 @@
 .home .lv-peak { font-family: var(--mono); font-size: 14px; fill: var(--fg-2); }
 .home .lv-note { opacity: calc((var(--lv-p) - 0.9) * 10); transition: opacity 0.2s linear; }
 
+/* Reading a day: a rule inked up from the base to the line, a ring on the
+   line, and the date and count off its shoulder: above a low day, below a
+   high one, on the side with more room. The pad over the plot takes the
+   pointer, a tap and the keys (it is the slider); nothing moves the layout. */
+.home .lv-pad { position: absolute; inset: 0; z-index: 1; touch-action: pan-y; -webkit-tap-highlight-color: transparent; }
+.home .lv-pad:focus { outline: none; }
+.home .lv-pad:focus-visible { outline: 1px solid var(--fg-3); outline-offset: 6px; }
+.home .lv-plot svg[data-reading] .lv-peak { opacity: 0.2; }
+.home .lv-peak { transition: opacity 0.2s linear; }
+.home .lv-rule { fill: none; stroke: var(--fg-3); stroke-width: 1; stroke-dasharray: 1; animation: lv-ink 0.28s var(--ease) both; }
+@keyframes lv-ink { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+.home .lv-mark-dot { fill: var(--bg); stroke: var(--accent); stroke-width: 2; }
+.home .lv-tip {
+  position: absolute;
+  z-index: 2;
+  display: grid;
+  gap: 3px;
+  padding: 8px 11px 9px;
+  transform: translate(10px, calc(-100% - 12px));
+  background: var(--bg);
+  border: 1px solid var(--line-2);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--fg-2);
+  pointer-events: none;
+}
+.home .lv-tip[data-left] { transform: translate(calc(-100% - 10px), calc(-100% - 12px)); }
+.home .lv-tip[data-below] { transform: translate(10px, 12px); }
+.home .lv-tip[data-left][data-below] { transform: translate(calc(-100% - 10px), 12px); }
+.home .lv-tip b { font-family: var(--sans); font-size: 20px; font-weight: 500; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; color: var(--fg); }
+
 .home .lv-cta { margin-top: clamp(28px, 3.6vw, 44px); display: flex; flex-wrap: wrap; gap: 10px; }
 .home .lv-cta svg { margin-right: 2px; }
 
 @media (prefers-reduced-motion: reduce) {
   .home .lv-live i { animation: none; }
   .home .lv-chart { --lv-p: 1 !important; }
+  .home .lv-rule { animation: none; }
 }
