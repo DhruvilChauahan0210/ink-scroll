@@ -161,7 +161,6 @@ export function RelaySite() {
     >
       {/* ── Hero ─────────────────────────────────────────────────────── */}
       <section className="ry-hero">
-        <a className="ry-pill" href="#top"><span>New</span>Huddle notes — every call, written up<i>→</i></a>
         <h1 className="ry-h1">All your team’s talk. <span>None of the noise.</span></h1>
         <p className="ry-lede ry-hero-lede">Channels for every project, threads that keep them readable, and huddles for when typing is too slow. Relay keeps the conversation next to the work — and out of your inbox.</p>
         <div className="ry-ctas">

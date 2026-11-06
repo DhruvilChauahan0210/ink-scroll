@@ -85,7 +85,6 @@ export function TesseraSite() {
     >
       {/* ── Head + billing toggle ── */}
       <section className="ts-head">
-        <a className="ts-pill" href="#ai"><b>New</b>Tessera AI now answers from your pages <span aria-hidden="true">→</span></a>
         <h1 className="ts-h1">One wiki for the whole company. Priced for every stage of it.</h1>
         <p className="ts-lede">Start free with unlimited pages. Upgrade when you need permissions, history and single sign-on — every paid plan starts with 14 days free.</p>
         <div className="ts-bill" role="radiogroup" aria-label="Billing period">
@@ -133,7 +132,7 @@ export function TesseraSite() {
 
       {/* ── Who uses it ── */}
       <section className="ts-logos" aria-label="Customers">
-        <p>Trusted by 41,000 teams — from two-person studios to public companies</p>
+        <p>Some of the teams that write in Tessera</p>
         <div>{LOGOS.map((l) => <span key={l.n}><svg viewBox="0 0 24 24" aria-hidden="true"><path d={l.d} /></svg>{l.n}</span>)}</div>
       </section>
 

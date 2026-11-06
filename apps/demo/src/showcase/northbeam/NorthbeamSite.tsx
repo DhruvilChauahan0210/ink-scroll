@@ -306,7 +306,6 @@ export function NorthbeamSite() {
     >
       {/* ── Hero ── */}
       <section className="nb-hero">
-        <a className="nb-pill" href="#top"><b>New</b>Queues are generally available — 1M messages a month free<span aria-hidden="true">→</span></a>
         <h1 className="nb-h1">Every request, answered from the <span>nearest city.</span></h1>
         <p className="nb-lede">Northbeam runs your functions, cache and Postgres in 62 regions. Push to git and your app is live worldwide in under a minute — with a median time to first byte of 18&nbsp;ms.</p>
         <div className="nb-ctas">
@@ -325,7 +324,7 @@ export function NorthbeamSite() {
 
       {/* ── Logos ── */}
       <section className="nb-logos" aria-label="Customers">
-        <p>Trusted by 48,000 teams, from two-person startups to public companies</p>
+        <p>Some of the teams that deploy on Northbeam</p>
         <div>{LOGOS.map((l) => <span key={l.n} className={`nb-logo ${l.cls}`}><svg viewBox="0 0 24 24" aria-hidden="true">{l.g}</svg>{l.n}</span>)}</div>
       </section>
 

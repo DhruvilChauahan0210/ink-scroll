@@ -225,7 +225,6 @@ export function StrideSite() {
     >
       <section className="st-hero">
         <div className="st-hero-copy">
-          <a className="st-kick" href="#plans"><span>New</span>Race-day pacing for the Tejo Half →</a>
           <h1 className="st-h1">Run your best race. Remember every run.</h1>
           <p className="st-lede">Stride builds a plan around your week, coaches you in your ear while you run, and draws every route and climb when you get home. From your first 5K to your next marathon.</p>
           <Badges />

@@ -63,7 +63,6 @@ export function PlugboardSite() {
     >
       {/* ── Hero ─────────────────────────────────────────────────────── */}
       <section className="pb-hero">
-        <a className="pb-announce" href="#logic"><span>New</span>Paths, AI steps and auto-replay on every paid plan<i>→</i></a>
         <h1 className="pb-h1">The busywork between your apps, <em>handled.</em></h1>
         <p className="pb-lede">When an order is paid, raise the invoice. When the invoice goes out, book the courier. Plugboard connects 412 apps with flows anyone on the team can build — and shows you every run.</p>
         <div className="pb-ctas">

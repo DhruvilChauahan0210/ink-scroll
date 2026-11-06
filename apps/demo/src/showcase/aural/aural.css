@@ -6,10 +6,10 @@ html:has(.au) body { background: #0a0a0a; }
   --bg: #0a0a0a; --bg-2: #121211; --fg: #f2ede5; --mut: #8e8881; --line: #1f1e1c; --card: #121211;
   --accent: #d6c19c; --accent-fg: #17130c; --radius: 18px;
 }
-.au .sk-brand { font-size: 15px; font-weight: 500; letter-spacing: 0.38em; text-transform: uppercase; }
+.au .sk-brand { font-size: 15px; font-weight: 500; letter-spacing: 0; }
 .au .sk-btn { border-radius: 999px; }
 .au .sk-btn-ghost { border-color: #34312d; }
-.au .sk-kick { font-weight: 500; letter-spacing: 0.16em; }
+.au .sk-kick { font-weight: 500; letter-spacing: 0; }
 .au .sk-h1 { font-weight: 500; letter-spacing: -0.045em; }
 .au .sk-h2 { font-weight: 500; letter-spacing: -0.035em; }
 .au .sk-hero { padding-bottom: clamp(20px, 3vw, 48px); }
@@ -62,7 +62,7 @@ html:has(.au) body { background: #0a0a0a; }
 
 .au-rail { position: relative; height: 1px; margin: 26px 0 30px; background: var(--line); }
 .au-rail-fill { position: absolute; inset: 0; background: var(--accent); transform-origin: left; transform: scaleX(var(--p)); }
-.au-rail span { position: absolute; top: 10px; font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; white-space: nowrap; color: var(--mut); }
+.au-rail span { position: absolute; top: 10px; font-size: 11px; font-weight: 500; letter-spacing: 0; white-space: nowrap; color: var(--mut); }
 
 .no-film { height: auto; }
 .no-film .au-stage { position: relative; height: auto; grid-template-columns: minmax(0, 1fr); }
@@ -72,7 +72,7 @@ html:has(.au) body { background: #0a0a0a; }
 /* ── Specs ─────────────────────────────────────────────────────────────── */
 .au-specs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: var(--line); }
 .au-spec { display: grid; align-content: start; gap: 10px; padding: clamp(22px, 2.6vw, 36px); background: var(--bg); }
-.au-spec span { font-size: 12.5px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--mut); }
+.au-spec span { font-size: 12.5px; font-weight: 500; letter-spacing: 0; color: var(--mut); }
 .au-spec b { font: 400 clamp(36px, 3.6vw, 52px)/1 var(--head); letter-spacing: -0.04em; color: var(--accent); }
 .au-spec p { margin: 4px 0 0; max-width: 34ch; font-size: 15px; line-height: 1.6; color: var(--mut); }
 

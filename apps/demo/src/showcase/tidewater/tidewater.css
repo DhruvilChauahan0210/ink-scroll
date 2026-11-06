@@ -19,7 +19,7 @@ html:has(.tw) body { background: #f4efe6; }
 .tw-mark { display: block; flex: none; }
 
 /* Type */
-.tw-kick { margin: 0 0 16px; font-size: 12.5px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--signal); }
+.tw-kick { margin: 0 0 16px; font-size: 12.5px; font-weight: 600; letter-spacing: 0; color: var(--signal); }
 .tw-h1 { margin: 0; font: 400 clamp(44px, 6.4vw, 96px)/0.98 var(--serif); letter-spacing: -0.03em; text-wrap: balance; }
 .tw-h1 em { font-style: italic; color: var(--sea); }
 .tw-h2 { margin: 0; font: 400 clamp(32px, 3.9vw, 56px)/1.04 var(--serif); letter-spacing: -0.025em; text-wrap: balance; }
@@ -65,7 +65,7 @@ html:has(.tw) body { background: #f4efe6; }
 .tw-search { position: relative; z-index: 2; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) auto; gap: 0; max-width: 1040px; margin: -46px auto 0; padding: 8px; border-radius: 20px; background: var(--card); border: 1px solid var(--line); box-shadow: 0 30px 60px -30px rgba(18, 41, 58, 0.45); }
 .tw-search label { position: relative; display: grid; gap: 2px; padding: 10px 40px 10px 18px; border-right: 1px solid var(--line); cursor: pointer; }
 .tw-search label:nth-child(3) { border-right: 0; }
-.tw-search span { font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--mut); }
+.tw-search span { font-size: 12px; font-weight: 600; letter-spacing: 0; color: var(--mut); }
 .tw-search b { font-size: 15.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .tw-search i { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); font-style: normal; font-size: 12px; color: var(--mut); }
 .tw-search .tw-btn { height: auto; min-height: 56px; border-radius: 14px; }
@@ -103,7 +103,7 @@ html:has(.tw) body { background: #f4efe6; }
 .tw-scene svg .wall { fill: color-mix(in srgb, var(--land) 80%, #000); stroke: none; }
 .tw-scene svg .beam { fill: rgba(255, 236, 190, 0.22); stroke: none; }
 .tw-scene svg .tower { fill: #f4efe6; stroke: none; }
-.tw-scene svg .lamp { fill: #ffd98a; stroke: none; filter: drop-shadow(0 0 3px #ffd98a); }
+.tw-scene svg .lamp { fill: #ffd98a; stroke: none; filter: none; }
 .s-noon { --sky1: #cfe2e7; --sky2: #eef1ea; --land: #7c9c86; --sea1: #7fb1bc; --sea2: #2f6f86; --sun: rgba(255, 252, 240, 0.9); --suny: 18%; --sunx: 80%; }
 .s-blue { --sky1: #c9dbe3; --sky2: #e6ecea; --land: #56767c; --sea1: #5d93a5; --sea2: #1f4f66; --sun: rgba(255, 255, 255, 0); }
 .s-dusk { --sky1: #9c9fbd; --sky2: #f0ad83; --land: #4d5872; --sea1: #9a8fa4; --sea2: #394866; --sun: rgba(255, 214, 160, 0.95); --sunx: 30%; --suny: 58%; }
@@ -231,7 +231,7 @@ html:has(.tw) body { background: #f4efe6; }
 .c-n { font: 700 10px var(--font-geist-sans), sans-serif; fill: var(--signal); text-anchor: middle; }
 .c-arrow { fill: var(--sea); }
 .c-v { font: 500 22px var(--serif); fill: var(--ink); text-anchor: middle; }
-.c-u { font: 500 9px var(--font-geist-sans), sans-serif; fill: var(--mut); text-anchor: middle; letter-spacing: 0.08em; text-transform: uppercase; }
+.c-u { font: 500 9px var(--font-geist-sans), sans-serif; fill: var(--mut); text-anchor: middle; letter-spacing: 0; }
 .tw-wx-read p { margin: 0; }
 .tw-wx-big { font: 500 22px/1.15 var(--serif); }
 .tw-wx-big em { display: block; font: 500 13px var(--font-geist-sans), sans-serif; font-style: normal; color: var(--mut); }
@@ -329,7 +329,7 @@ html:has(.tw) body { background: #f4efe6; }
 .ch-buoy.r { fill: #c4513a; }
 .ch-buoy.g { fill: #2c7a58; }
 .ch-sound { font: italic 500 10.5px var(--serif); fill: #5f7f86; }
-.ch-name { font: 600 11px var(--font-geist-sans), sans-serif; letter-spacing: 0.16em; fill: #6a5a3c; text-anchor: start; }
+.ch-name { font: 600 11px var(--font-geist-sans), sans-serif; letter-spacing: 0; fill: #6a5a3c; text-anchor: start; }
 .ch-it { font: italic 500 14px var(--serif); letter-spacing: 0; fill: #3f6670; }
 .ch-pin circle:first-child { fill: rgba(196, 81, 58, 0.18); stroke: var(--signal); stroke-width: 1.5; }
 .ch-pin circle:last-child { fill: var(--signal); }
@@ -388,7 +388,7 @@ html:has(.tw) body { background: #f4efe6; }
   .tw-cal-list li:first-child { border-top: 0; }
   .tw-cl-date { display: grid; justify-items: center; padding: 6px 0; border-radius: 10px; background: var(--bg-2); }
   .tw-cl-date b { font: 500 16px var(--serif); font-variant-numeric: tabular-nums; }
-  .tw-cl-date em { font-style: normal; font-size: 11px; color: var(--mut); text-transform: uppercase; letter-spacing: 0.08em; }
+  .tw-cl-date em { font-style: normal; font-size: 11px; color: var(--mut); letter-spacing: 0; }
   .tw-cl-t { display: grid; gap: 2px; min-width: 0; }
   .tw-cl-t b { font-size: 14.5px; }
   .tw-cl-t em { font-style: normal; font-size: 12.5px; color: var(--mut); }

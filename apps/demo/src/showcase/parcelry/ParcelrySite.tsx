@@ -360,7 +360,6 @@ export function ParcelrySite() {
     >
       <section className="pc-hero">
         <div className="pc-hero-copy">
-          <a className="pc-kick" href="#coverage"><span>New</span>Same-day now in Porto and Braga →</a>
           <h1 className="pc-h1">Across Lisbon in 90&nbsp;minutes, <em>on two wheels.</em></h1>
           <p className="pc-lede">Book by 19:30 and a rider collects within 30 minutes, then takes it straight to the door — no depot, no van, no “out for delivery” black box. You watch every turn live.</p>
           <Booking />

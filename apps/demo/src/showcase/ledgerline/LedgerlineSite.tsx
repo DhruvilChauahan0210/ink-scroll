@@ -259,7 +259,6 @@ export function LedgerlineSite() {
 
       <section className="ll-hero" id="top">
         <div className="ll-glow" aria-hidden="true" />
-        <a className="ll-pill" href="#forecast"><span>New</span>Forecasts with confidence intervals<i>→</i></a>
         <h1 className="ll-h1">Every dollar of MRR, accounted for.</h1>
         <p className="ll-lede">Revenue analytics for subscription businesses. Connect billing in two minutes and Ledgerline turns every invoice, upgrade and cancellation into MRR, churn, cohorts and a forecast — reconciled to the cent, refreshed every hour.</p>
         <div className="ll-ctas">

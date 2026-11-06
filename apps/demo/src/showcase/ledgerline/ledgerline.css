@@ -40,7 +40,7 @@ html:has(.ll) body { background: #0b0d12; }
 
 /* ── Nav ──────────────────────────────────────────────────────────────── */
 .ll-nav { position: sticky; top: 0; z-index: 30; display: flex; align-items: center; gap: 36px; padding: 14px var(--pad); background: rgba(11, 13, 18, 0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
-.ll-brand { display: inline-flex; align-items: center; gap: 9px; font-size: 16.5px; font-weight: 650; letter-spacing: -0.02em; }
+.ll-brand { display: inline-flex; align-items: center; gap: 9px; font-size: 16.5px; font-weight: 650; letter-spacing: 0; }
 .ll-links { display: flex; gap: 26px; font-size: 14px; color: var(--mut); }
 .ll-links a:hover { color: var(--fg); }
 .ll-nav-r { display: flex; align-items: center; gap: 18px; margin-left: auto; font-size: 14px; }
@@ -53,7 +53,7 @@ html:has(.ll) body { background: #0b0d12; }
 .ll-btn-sm { height: 34px; padding: 0 14px; font-size: 13.5px; border-radius: 8px; }
 .ll-btn-ghost { background: var(--card); color: var(--fg) !important; border-color: var(--line-2); }
 .ll-btn-ghost:hover { background: var(--card-2); border-color: #3a4155; }
-.ll-h1 { margin: 0; max-width: 13em; font-size: clamp(40px, 5.6vw, 78px); font-weight: 650; line-height: 1; letter-spacing: -0.05em; text-wrap: balance; background: linear-gradient(180deg, #fff 30%, #a7acc0); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.ll-h1 { margin: 0; max-width: 13em; font-size: clamp(40px, 5.6vw, 78px); font-weight: 650; line-height: 1; letter-spacing: -0.05em; text-wrap: balance; color: #fff; }
 .ll-h2 { margin: 0; font-size: clamp(30px, 3.4vw, 46px); font-weight: 650; line-height: 1.06; letter-spacing: -0.04em; text-wrap: balance; }
 .ll-lede { margin: 22px auto 0; max-width: 60ch; font-size: clamp(16px, 1.25vw, 18px); line-height: 1.6; color: var(--mut); text-wrap: pretty; }
 .ll-kick { margin: 0 0 14px; font: 500 13px var(--mono); color: var(--ind); }
@@ -68,9 +68,6 @@ html:has(.ll) body { background: #0b0d12; }
   radial-gradient(30% 26% at 85% 62%, rgba(52, 211, 153, 0.06), transparent 70%),
   radial-gradient(30% 26% at 12% 70%, rgba(124, 140, 255, 0.08), transparent 70%); }
 .ll-glow::after { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px); background-size: 56px 56px; -webkit-mask-image: radial-gradient(60% 46% at 50% 18%, #000, transparent 75%); mask-image: radial-gradient(60% 46% at 50% 18%, #000, transparent 75%); }
-.ll-pill { display: inline-flex; align-items: center; gap: 10px; max-width: 100%; margin-bottom: 26px; padding: 4px 14px 4px 4px; border: 1px solid var(--line-2); border-radius: 999px; background: rgba(18, 21, 29, 0.8); font-size: 13.5px; color: #c6cad6; }
-.ll-pill span { flex: none; padding: 3px 9px; border-radius: 999px; background: rgba(124, 140, 255, 0.16); color: var(--ind-2); font-size: 12px; font-weight: 600; }
-.ll-pill i { font-style: normal; color: var(--mut); }
 .ll-proof { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 28px; margin: 28px 0 0; padding: 0; list-style: none; font-size: 13.5px; color: var(--mut); }
 .ll-proof li { display: inline-flex; align-items: center; gap: 8px; }
 .ll-proof .ll-ic { width: 15px; height: 15px; color: var(--mint); stroke-width: 2; }
@@ -106,7 +103,7 @@ html:has(.ll) body { background: #0b0d12; }
 .ll-page-h { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 14px; }
 .ll-crumb { margin: 0; font-size: 13px; color: var(--mut); }
 .ll-crumb i { font-style: normal; margin: 0 6px; opacity: 0.5; }
-.ll-crumb b { font-size: 19px; font-weight: 650; letter-spacing: -0.02em; color: var(--fg); }
+.ll-crumb b { font-size: 19px; font-weight: 650; letter-spacing: 0; color: var(--fg); }
 .ll-synced { display: flex; align-items: center; gap: 7px; margin: 6px 0 0; font-size: 12.5px; color: var(--mut); }
 .ll-page-r { display: flex; align-items: center; gap: 8px; flex: none; }
 .ll-seg { display: inline-flex; flex: none; padding: 3px; border: 1px solid var(--line); border-radius: 8px; background: #0f1218; color: var(--mut); font-size: 12px; }
@@ -120,7 +117,7 @@ html:has(.ll) body { background: #0b0d12; }
 .ll-kpis { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
 .ll-kpi { display: grid; gap: 5px; min-width: 0; padding: 12px 14px 13px; border: 1px solid var(--line); border-radius: 11px; background: var(--card); }
 .ll-kpi > span { font-size: 12px; color: var(--mut); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.ll-kpi b { font-size: clamp(18px, 1.7vw, 23px); font-weight: 650; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.ll-kpi b { font-size: clamp(18px, 1.7vw, 23px); font-weight: 650; letter-spacing: 0; font-variant-numeric: tabular-nums; }
 .ll-kpi em { display: flex; align-items: center; gap: 5px; font-style: normal; font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; }
 .ll-kpi em i { font-style: normal; font-size: 9px; }
 .ll-kpi em.up, .ll-kpi em.dn { color: var(--mint); }
@@ -132,7 +129,7 @@ html:has(.ll) body { background: #0b0d12; }
 .ll-chart .ll-mv-legend { margin-top: auto; }
 .ll-chart .ll-plot { margin-bottom: 10px; }
 .ll-chart-h { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
-.ll-chart h4, .ll-card h4 { margin: 0; font-size: 13.5px; font-weight: 600; letter-spacing: -0.01em; }
+.ll-chart h4, .ll-card h4 { margin: 0; font-size: 13.5px; font-weight: 600; letter-spacing: 0; }
 .ll-legend { display: flex; gap: 14px; margin-top: 7px; font-size: 12px; color: var(--mut); }
 .ll-legend span { display: inline-flex; align-items: center; gap: 6px; }
 .ll-legend i { width: 14px; height: 2.5px; border-radius: 2px; }
@@ -226,9 +223,9 @@ html:has(.ll) body { background: #0b0d12; }
 .ll-logo { font-size: 21px; color: #9aa0b2; opacity: 0.8; white-space: nowrap; }
 .ll-logo.l0 { font-weight: 650; letter-spacing: -0.03em; }
 .ll-logo.l1 { font-family: ui-serif, Georgia, serif; font-style: italic; }
-.ll-logo.l2 { font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; font-size: 17px; }
-.ll-logo.l3 { font-weight: 300; letter-spacing: 0.12em; }
-.ll-logo.l4 { font-family: ui-serif, Georgia, serif; font-weight: 700; letter-spacing: 0.2em; font-size: 17px; }
+.ll-logo.l2 { font-weight: 800; letter-spacing: 0; font-size: 17px; }
+.ll-logo.l3 { font-weight: 300; letter-spacing: 0; }
+.ll-logo.l4 { font-family: ui-serif, Georgia, serif; font-weight: 700; letter-spacing: 0; font-size: 17px; }
 .ll-logo.l5 { font-weight: 700; letter-spacing: -0.02em; }
 .ll-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 48px 0 0; border: 1px solid var(--line); border-radius: 14px; background: var(--bg-2); text-align: left; }
 .ll-stats div { padding: 20px 24px; border-left: 1px solid var(--line); }
@@ -250,7 +247,7 @@ html:has(.ll) body { background: #0b0d12; }
 
 .ll-panel { --p: 0; min-width: 0; padding: 20px; border: 1px solid var(--line-2); border-radius: 16px; background: var(--card); box-shadow: 0 40px 90px -60px rgba(124, 140, 255, 0.4); }
 .ll-panel-h { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px 16px; margin-bottom: 16px; }
-.ll-panel-h h3 { margin: 0; font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
+.ll-panel-h h3 { margin: 0; font-size: 15px; font-weight: 600; letter-spacing: 0; }
 .ll-panel-h p { margin: 4px 0 0; font-size: 12.5px; color: var(--mut); }
 .ll-chips { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
 
@@ -428,7 +425,7 @@ html:has(.ll) body { background: #0b0d12; }
 .ll-hub-rec { display: grid; gap: 7px; padding: 12px; border: 1px solid var(--line); border-radius: 10px; background: #0e1117; }
 .ll-hub-rec p { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin: 0; font-size: 12px; color: var(--mut); }
 .ll-hub-rec b { display: inline-flex; align-items: center; gap: 6px; font: 600 12.5px var(--mono); color: var(--fg); }
-.ll-hub-rec .ll-hub-l { font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--dim); }
+.ll-hub-rec .ll-hub-l { font-size: 11px; font-weight: 600; letter-spacing: 0; color: var(--dim); }
 .ll-hub-diff { padding-top: 7px; border-top: 1px dashed var(--line-2); }
 .ll-hub-diff b { color: var(--mint); }
 .ll-hub-foot { display: flex; justify-content: space-between; gap: 10px; font-size: 12px; color: var(--mut); }
@@ -471,7 +468,7 @@ html:has(.ll) body { background: #0b0d12; }
 /* Story */
 .ll-story { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: clamp(32px, 5vw, 72px); align-items: start; }
 .ll-quote { margin: 0; }
-.ll-qlogo { display: inline-flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 650; letter-spacing: -0.02em; color: #d9dcea; }
+.ll-qlogo { display: inline-flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 650; letter-spacing: 0; color: #d9dcea; }
 .ll-quote blockquote { margin: 26px 0 0; font-size: clamp(22px, 2.3vw, 30px); font-weight: 500; line-height: 1.36; letter-spacing: -0.02em; text-wrap: pretty; }
 .ll-quote figcaption { display: flex; align-items: center; gap: 14px; margin-top: 28px; }
 .ll-quote figcaption > span:not(.ll-av) { display: grid; gap: 2px; font-size: 13.5px; color: var(--mut); }
@@ -486,7 +483,7 @@ html:has(.ll) body { background: #0b0d12; }
 .ll-story-stats dd b span { color: var(--dim); font-weight: 400; }
 .ll-story-stats dd small { font-size: 11.5px; font-weight: 400; letter-spacing: 0; color: var(--dim); }
 .ll-co-card { padding: 16px 20px; border: 1px solid var(--line); border-radius: 14px; background: var(--bg-2); }
-.ll-co-card-h { margin: 0 0 10px; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--dim); }
+.ll-co-card-h { margin: 0 0 10px; font-size: 11px; font-weight: 600; letter-spacing: 0; color: var(--dim); }
 .ll-co-card dl { display: grid; gap: 7px; margin: 0; }
 .ll-co-card div { display: flex; justify-content: space-between; gap: 16px; font-size: 13px; }
 .ll-co-card dt { color: var(--mut); }
@@ -626,7 +623,7 @@ html:has(.ll) body { background: #0b0d12; }
   .ll-wf-grid em { display: none; }
   .ll-wf-bar { left: 10%; right: 10%; }
   .ll-wf-link { left: -10%; width: 20%; }
-  .ll-wf-bar b { font-size: 9.5px; letter-spacing: -0.02em; }
+  .ll-wf-bar b { font-size: 9.5px; letter-spacing: 0; }
   .ll-wf-l { font-size: 11.5px; }
   .ll-wf-l small { display: none; }
   .ll-co-panel { --coh: 200px; }

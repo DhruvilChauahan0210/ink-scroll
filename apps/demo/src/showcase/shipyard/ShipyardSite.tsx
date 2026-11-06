@@ -273,7 +273,6 @@ export function ShipyardSite() {
       {/* ── Hero ─────────────────────────────────────────────────────── */}
       <section className="sy-hero">
         <div className="sy-glow" aria-hidden="true" />
-        <a className="sy-pill" href="#top"><span>New</span>Timing-based test sharding is here<i>→</i></a>
         <h1 className="sy-h1">From push to production in under three minutes.</h1>
         <p className="sy-lede sy-hero-lede">Shipyard builds only what changed, deals your tests out by how long they really take, and gives every pull request its own URL. The median pipeline on Shipyard finishes in 2m 14s.</p>
         <div className="sy-ctas">
@@ -285,7 +284,7 @@ export function ShipyardSite() {
 
       {/* ── Logos + numbers ──────────────────────────────────────────── */}
       <section className="sy-proof" aria-label="Customers">
-        <p>Trusted by 4,200 engineering teams shipping 38 million builds a month</p>
+        <p>Some of the teams that build on Shipyard</p>
         <div className="sy-logos">
           {LOGOS.map((l) => (
             <span key={l.n} className={`sy-logo ${l.c}`}>

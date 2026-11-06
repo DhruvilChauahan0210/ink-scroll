@@ -134,7 +134,7 @@ export function MintcoSite() {
       {/* ── Hero ─────────────────────────────────────────────────────── */}
       <section className="mc-hero">
         <div className="mc-hero-copy">
-          <p className="mc-pill"><span>Guaranteed</span>Switched in 7 working days</p>
+          <p className="mc-kick">Switched in 7 working days, guaranteed</p>
           <h1 className="mc-h1">Switch in four minutes. <em>We’ll do the other seven days.</em></h1>
           <p className="mc-lede">Open a Mint account in the app, pick your old bank and a date. We move your salary, direct debits and standing orders across, close the old account and catch anything still sent to it.</p>
           <div className="mc-ctas">

@@ -39,8 +39,6 @@ html:has(.mc) body { background: #f6f4ee; }
 
 /* ── Hero ─────────────────────────────────────────────────────────────── */
 .mc-hero { display: grid; grid-template-columns: minmax(0, 1.02fr) minmax(0, 1fr); gap: clamp(32px, 4vw, 72px); align-items: center; padding: clamp(40px, 5vw, 72px) var(--pad) clamp(48px, 5vw, 80px); }
-.mc-pill { display: inline-flex; align-items: center; gap: 10px; margin: 0 0 28px; padding: 5px 14px 5px 5px; border-radius: 999px; background: #fff; box-shadow: inset 0 0 0 1px var(--line), 0 1px 2px rgba(10, 42, 31, 0.05); font-size: 14px; font-weight: 500; }
-.mc-pill span { padding: 4px 10px; border-radius: 999px; background: var(--mint-soft); color: var(--deep); font-size: 12.5px; font-weight: 650; }
 .mc-proof { display: flex; flex-wrap: wrap; gap: 14px 32px; margin-top: 40px; padding-top: 26px; border-top: 1px solid var(--line); }
 .mc-proof > span { display: inline-flex; align-items: center; gap: 10px; }
 .mc-proof-r b { font-size: 17px; }
@@ -89,7 +87,7 @@ html:has(.mc) body { background: #f6f4ee; }
 .mc-tx li { display: flex; align-items: center; gap: 10px; padding: 7px 12px; }
 .mc-tx-h { margin-top: 12px !important; }
 .mc-tx li + li { border-top: 1px solid #eff1ec; }
-.mc-merch { display: grid; place-items: center; flex: none; width: 30px; height: 30px; border-radius: 9px; background: var(--mb); color: var(--m); font-size: 9.5px; font-weight: 700; letter-spacing: -0.02em; }
+.mc-merch { display: grid; place-items: center; flex: none; width: 30px; height: 30px; border-radius: 9px; background: var(--mb); color: var(--m); font-size: 9.5px; font-weight: 700; letter-spacing: 0; }
 .mc-tx-n { display: grid; flex: 1; min-width: 0; gap: 1px; }
 .mc-tx-n b { font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .mc-tx-n small { font-size: 10.5px; color: var(--mut); }
@@ -103,12 +101,12 @@ html:has(.mc) body { background: #f6f4ee; }
 /* The card */
 .mc-card { position: relative; display: block; width: 340px; aspect-ratio: 1.586; padding: 20px 22px; border-radius: 18px; background: radial-gradient(130% 120% at 0% 0%, #7cf0bd 0%, #45dd9c 38%, #2bbf84 100%); color: var(--forest); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35), 0 40px 70px -36px rgba(10, 42, 31, 0.6); overflow: hidden; }
 .mc-card::after { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(115deg, transparent 0 22px, rgba(255, 255, 255, 0.07) 22px 23px); pointer-events: none; }
-.mc-card-top { display: flex; align-items: center; gap: 8px; font-size: 15px; letter-spacing: -0.02em; }
+.mc-card-top { display: flex; align-items: center; gap: 8px; font-size: 15px; letter-spacing: 0; }
 .mc-card-chip { position: absolute; left: 22px; top: 42%; width: 40px; height: 30px; border-radius: 7px; background: linear-gradient(135deg, #f6e6b0, #cfae5f); box-shadow: inset 0 0 0 1px rgba(120, 90, 20, 0.25); }
 .mc-card-chip::before { content: ''; position: absolute; inset: 7px 12px; border: 1px solid rgba(120, 90, 20, 0.35); border-radius: 3px; }
 .mc-card-nfc { position: absolute; left: 72px; top: calc(42% + 4px); opacity: 0.6; }
-.mc-card-no { position: absolute; left: 22px; bottom: 44px; font: 600 15px var(--mono); letter-spacing: 0.08em; }
-.mc-card-name { position: absolute; left: 22px; bottom: 20px; font-size: 11.5px; font-weight: 600; letter-spacing: 0.1em; opacity: 0.75; }
+.mc-card-no { position: absolute; left: 22px; bottom: 44px; font: 600 15px var(--mono); letter-spacing: 0; }
+.mc-card-name { position: absolute; left: 22px; bottom: 20px; font-size: 11.5px; font-weight: 600; letter-spacing: 0; opacity: 0.75; }
 .mc-card-kind { position: absolute; right: 22px; bottom: 18px; font: 700 italic 20px var(--font-geist-sans), sans-serif; letter-spacing: -0.04em; }
 .mc-card.is-frozen { filter: saturate(0.35) brightness(1.06); }
 .mc-card-frost { position: absolute; inset: 0; z-index: 1; display: grid; place-content: center; justify-items: center; gap: 4px; background: rgba(226, 238, 246, 0.6); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); color: #23485f; font-size: 12px; font-weight: 700; }
@@ -169,7 +167,7 @@ html:has(.mc) body { background: #f6f4ee; }
 .mc-sui-acct { gap: 10px 28px; padding: 14px 16px; }
 .mc-sui-acct > span:not(.mc-copy) { display: grid; gap: 2px; }
 .mc-sui-acct small { font-size: 12px; color: var(--mut); }
-.mc-sui-acct b { font: 600 17px var(--mono); letter-spacing: 0.02em; }
+.mc-sui-acct b { font: 600 17px var(--mono); letter-spacing: 0; }
 .mc-copy { margin-left: auto; padding: 8px 14px; border-radius: 999px; background: var(--forest); color: #fff; font-size: 13px; font-weight: 600; }
 .mc-sui-date { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
 .mc-select { display: flex; align-items: center; gap: 10px; padding: 8px 12px 8px 8px; border-radius: 12px; box-shadow: inset 0 0 0 1px var(--line); }
@@ -279,7 +277,7 @@ html:has(.mc) body { background: #f6f4ee; }
 
 .mc-viz-payee { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
 .mc-payee { display: grid; gap: 6px; align-content: start; padding: 12px; border-radius: 12px; background: var(--bg); }
-.mc-payee-h { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--mut); }
+.mc-payee-h { font-size: 11px; font-weight: 600; letter-spacing: 0; color: var(--mut); }
 .mc-payee > span:not(.mc-payee-h):not(.mc-payee-ok) { display: flex; justify-content: space-between; gap: 8px; }
 .mc-payee small { color: var(--mut); }
 .mc-payee b { font-weight: 600; font-variant-numeric: tabular-nums; }
@@ -297,7 +295,7 @@ html:has(.mc) body { background: #f6f4ee; }
 .mc-rates th { padding: 0 0 10px; font-size: 12.5px; font-weight: 500; text-align: left; color: var(--mut); border-bottom: 1px solid var(--line); }
 .mc-rates td { padding: 16px 12px 16px 0; border-bottom: 1px solid var(--line); color: var(--mut); }
 .mc-rates td b { color: var(--fg); font-weight: 650; }
-.mc-rates td:nth-child(2) b { font-size: 18px; color: var(--deep); letter-spacing: -0.02em; }
+.mc-rates td:nth-child(2) b { font-size: 18px; color: var(--deep); letter-spacing: 0; }
 .mc-fine { margin: 18px 0 0; max-width: 62ch; font-size: 12.5px; line-height: 1.55; color: var(--mut); }
 .mc-calc { padding: clamp(24px, 3vw, 36px); border-radius: 28px; background: #fff; box-shadow: inset 0 0 0 1px var(--line), 0 40px 80px -50px rgba(10, 42, 31, 0.35); }
 .mc-calc-h { margin: 0; font-size: 14px; color: var(--mut); }
@@ -331,7 +329,7 @@ html:has(.mc) body { background: #f6f4ee; }
 .mc-dist small { color: var(--mut); text-align: right; }
 .mc-revs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 .mc-rev { display: flex; flex-direction: column; gap: 12px; margin: 0; padding: 26px; border-radius: 22px; background: #fff; box-shadow: inset 0 0 0 1px var(--line); }
-.mc-rev > b { font-size: 17px; line-height: 1.35; letter-spacing: -0.01em; }
+.mc-rev > b { font-size: 17px; line-height: 1.35; letter-spacing: 0; }
 .mc-rev blockquote { margin: 0; font-size: 15px; line-height: 1.6; color: var(--mut); }
 .mc-rev figcaption { display: grid; grid-template-columns: 36px minmax(0, 1fr); column-gap: 10px; align-items: center; margin-top: auto; padding-top: 14px; border-top: 1px solid #eef0eb; font-size: 14px; font-weight: 600; }
 .mc-rev figcaption small { grid-column: 2; font-size: 12.5px; font-weight: 400; color: var(--mut); }
@@ -341,7 +339,7 @@ html:has(.mc) body { background: #f6f4ee; }
 .mc-faq { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: clamp(32px, 6vw, 112px); align-items: start; }
 .mc-qs { border-top: 1px solid var(--line); }
 .mc-qs details { border-bottom: 1px solid var(--line); }
-.mc-qs summary { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 24px 0; font-size: clamp(17px, 1.4vw, 20px); font-weight: 600; letter-spacing: -0.015em; cursor: pointer; list-style: none; }
+.mc-qs summary { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 24px 0; font-size: clamp(17px, 1.4vw, 20px); font-weight: 600; letter-spacing: 0; cursor: pointer; list-style: none; }
 .mc-qs summary::-webkit-details-marker { display: none; }
 .mc-qs summary i { position: relative; flex: none; width: 32px; height: 32px; border-radius: 50%; background: #fff; box-shadow: inset 0 0 0 1px var(--line); }
 .mc-qs summary i::before, .mc-qs summary i::after { content: ''; position: absolute; left: 50%; top: 50%; width: 12px; height: 1.8px; margin: -0.9px 0 0 -6px; border-radius: 1px; background: var(--fg); transition: transform 0.2s; }

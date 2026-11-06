@@ -12,7 +12,7 @@ html:has(.sl) body { background: #f6f7f9; }
   --wrap: 1120px;
   overflow-x: clip;
 }
-.sl .sk-brand { gap: 10px; font-size: 18px; font-weight: 650; letter-spacing: -0.02em; }
+.sl .sk-brand { gap: 10px; font-size: 18px; font-weight: 650; letter-spacing: 0; }
 .sl-mark { display: block; flex: none; }
 .sl-brand-tag { margin-left: 2px; padding: 3px 8px; border-radius: 6px; border: 1px solid var(--line); background: #fff; font: 500 12.5px/1 var(--body); letter-spacing: 0; color: var(--mut); }
 .sl svg { flex: none; }
@@ -22,7 +22,7 @@ html:has(.sl) body { background: #f6f7f9; }
 .sl-sec-h h2, .sl-hist-side h2, .sl-subcard h2 { margin: 0; font-size: 22px; font-weight: 650; letter-spacing: -0.02em; }
 .sl-sec-h p { margin: 6px 0 0; max-width: 64ch; font-size: 14.5px; line-height: 1.55; color: var(--mut); }
 .sl-card { border-radius: 16px; background: var(--card); border: 1px solid var(--line); box-shadow: 0 1px 2px rgba(13, 19, 33, 0.04); }
-.sl-mini-h { margin: 28px 0 10px; font-size: 11.5px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: #8a92a1; }
+.sl-mini-h { margin: 28px 0 10px; font-size: 11.5px; font-weight: 600; letter-spacing: 0; color: #8a92a1; }
 
 .sl-pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; font-size: 12.5px; font-weight: 600; white-space: nowrap; }
 .sl-pill i { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
@@ -110,7 +110,7 @@ html:has(.sl) body { background: #f6f7f9; }
 .sl-parts em { margin-left: auto; font: 12px var(--mono); font-style: normal; color: #8a92a1; }
 
 .sl-regions { display: grid; gap: 12px; padding: 16px 24px 18px; border-radius: 0 0 16px 16px; background: #fafbfc; }
-.sl-regions p { margin: 0; font-size: 11.5px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: #8a92a1; }
+.sl-regions p { margin: 0; font-size: 11.5px; font-weight: 600; letter-spacing: 0; color: #8a92a1; }
 .sl-regions ul { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px 12px; margin: 0; padding: 0; list-style: none; }
 .sl-regions li { display: flex; align-items: center; gap: 9px; min-width: 0; padding: 9px 12px; border-radius: 10px; background: #fff; border: 1px solid var(--line); }
 .sl-regions i { flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--ok-bar); }
@@ -171,7 +171,7 @@ html:has(.sl) body { background: #f6f7f9; }
 .sl-hist-side > p { margin: 8px 0 18px; font-size: 14.5px; line-height: 1.55; color: var(--mut); }
 .sl-mcard { display: grid; grid-template-columns: 46px minmax(0, 1fr); gap: 14px; padding: 16px; border-radius: 14px; background: #fff; border: 1px solid var(--line); border-left: 3px solid var(--maint); }
 .sl-calday { display: grid; justify-items: center; align-self: start; padding: 6px 0 7px; border-radius: 9px; background: #eef4ff; color: #1e3a8a; }
-.sl-calday b { font-size: 10.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--maint); }
+.sl-calday b { font-size: 10.5px; font-weight: 600; letter-spacing: 0; color: var(--maint); }
 .sl-calday i { font-style: normal; font-size: 19px; font-weight: 650; line-height: 1.1; }
 .sl-mcard > div { display: grid; justify-items: start; gap: 6px; min-width: 0; font-size: 14px; }
 .sl-mcard > div > b { font-weight: 600; line-height: 1.35; }
@@ -188,7 +188,7 @@ html:has(.sl) body { background: #f6f7f9; }
 .sl-quiet { margin: 0; font-size: 14px; color: #8a92a1; }
 .sl-inc { padding: 20px 22px 6px; border-radius: 16px; background: #fff; border: 1px solid var(--line); box-shadow: 0 1px 2px rgba(13, 19, 33, 0.04); }
 .sl-inc header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
-.sl-inc h4 { margin: 0; font-size: 16px; font-weight: 600; line-height: 1.35; letter-spacing: -0.01em; }
+.sl-inc h4 { margin: 0; font-size: 16px; font-weight: 600; line-height: 1.35; letter-spacing: 0; }
 .sl-badge { flex: none; padding: 4px 9px; border-radius: 7px; font-size: 12px; font-weight: 600; white-space: nowrap; }
 .sl-badge.is-minor { background: #fff3dc; color: #a35400; }
 .sl-badge.is-partial { background: #ffeadb; color: #b4410b; }
@@ -237,7 +237,7 @@ html:has(.sl) body { background: #f6f7f9; }
 .sl-form small { font-size: 12px; color: #8a92a1; text-align: center; }
 
 .sl-api { display: flex; flex-direction: column; padding: 28px; border-radius: 16px; background: #0d1321; color: #e6e9ef; }
-.sl-api h3 { margin: 0; font-size: 18px; font-weight: 650; letter-spacing: -0.015em; color: #fff; }
+.sl-api h3 { margin: 0; font-size: 18px; font-weight: 650; letter-spacing: 0; color: #fff; }
 .sl-api > p { margin: 8px 0 20px; max-width: 56ch; font-size: 14px; line-height: 1.55; color: #9aa3b2; }
 .sl-code { overflow: hidden; border-radius: 12px; background: #070b14; border: 1px solid rgba(255, 255, 255, 0.08); }
 .sl-code-bar { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); font: 12px var(--mono); color: #c9d1dd; }

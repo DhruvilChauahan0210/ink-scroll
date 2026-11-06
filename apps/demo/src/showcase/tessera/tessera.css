@@ -38,9 +38,6 @@ html:has(.ts) body { background: #ffffff; }
 /* ── Head ─────────────────────────────────────────────────────────────── */
 .ts-head { position: relative; padding: clamp(48px, 7vw, 96px) var(--pad) clamp(36px, 4vw, 52px); text-align: center; }
 .ts-head::before { content: ''; position: absolute; inset: 0 0 -40% 0; z-index: -1; background: radial-gradient(50% 60% at 50% 0%, #eef2ff, transparent 75%); pointer-events: none; }
-.ts-pill { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 28px; padding: 4px 14px 4px 4px; border-radius: 999px; border: 1px solid var(--line); background: #fff; box-shadow: 0 1px 2px rgba(27, 27, 31, 0.05); font-size: 13.5px; color: var(--fg); }
-.ts-pill b { padding: 3px 9px; border-radius: 999px; background: var(--blue); color: #fff; font-size: 12px; font-weight: 600; }
-.ts-pill span { color: var(--mut); }
 .ts-bill { display: inline-flex; gap: 2px; margin-top: 32px; padding: 4px; border-radius: 11px; background: #f0f0ee; }
 .ts-bill button { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 16px; border: 0; border-radius: 8px; background: transparent; color: var(--mut); font: 500 14px var(--head); cursor: pointer; transition: background-color 0.2s, color 0.2s, box-shadow 0.2s; }
 .ts-bill button.on { background: #fff; color: var(--fg); box-shadow: 0 1px 2px rgba(27, 27, 31, 0.1), 0 0 0 1px rgba(27, 27, 31, 0.04); }
@@ -82,7 +79,7 @@ html:has(.ts) body { background: #ffffff; }
 .ts-logos { padding: clamp(56px, 7vw, 88px) var(--pad) 0; text-align: center; }
 .ts-logos p { margin: 0 0 26px; font-size: 14px; color: var(--mut); }
 .ts-logos div { display: flex; flex-wrap: wrap; justify-content: center; gap: 18px clamp(26px, 3.6vw, 52px); }
-.ts-logos span { display: inline-flex; align-items: center; gap: 8px; font: 650 19px var(--head); letter-spacing: -0.03em; color: #8d8d95; }
+.ts-logos span { display: inline-flex; align-items: center; gap: 8px; font: 650 19px var(--head); letter-spacing: 0; color: #8d8d95; }
 .ts-logos svg { width: 22px; height: 22px; }
 .ts-logos path { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
@@ -110,7 +107,7 @@ html:has(.ts) body { background: #ffffff; }
 .ts-ws { display: flex; align-items: center; gap: 8px; padding: 6px 8px; margin-bottom: 14px; font-weight: 600; }
 .ts-ws span { display: grid; place-items: center; width: 20px; height: 20px; border-radius: 5px; background: #0e2a3b; color: #fff; font-size: 11px; }
 .ts-ws kbd { margin-left: auto; }
-.ts-side p { margin: 0 8px 6px; font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: #9a9aa0; }
+.ts-side p { margin: 0 8px 6px; font-size: 11px; font-weight: 600; letter-spacing: 0; color: #9a9aa0; }
 .ts-side ul { margin: 0; padding: 0; list-style: none; }
 .ts-side li { padding: 5px 8px; border-radius: 6px; color: #3a3a40; }
 .ts-side li::before { content: '▸'; display: inline-block; width: 14px; font-size: 10px; color: #a8a8ad; }
@@ -145,10 +142,10 @@ html:has(.ts) body { background: #ffffff; }
 .ts-table { width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; font-size: 14.5px; }
 .ts-table thead th { position: sticky; top: 66px; z-index: 2; padding: 18px 14px 16px; background: rgba(255, 255, 255, 0.94); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); text-align: left; vertical-align: bottom; font-weight: 400; }
 .ts-th-feat { width: 32%; }
-.ts-th b { display: block; font: 650 16px var(--head); letter-spacing: -0.01em; }
+.ts-th b { display: block; font: 650 16px var(--head); letter-spacing: 0; }
 .ts-th span { display: block; margin: 4px 0 12px; font-size: 13px; color: var(--mut); }
 .ts-th.hot b { color: var(--blue); }
-.ts-group th { padding: 36px 14px 10px; font: 650 13px var(--head); letter-spacing: 0.02em; text-align: left; border-bottom: 1px solid var(--fg); }
+.ts-group th { padding: 36px 14px 10px; font: 650 13px var(--head); letter-spacing: 0; text-align: left; border-bottom: 1px solid var(--fg); }
 .ts-table tbody tr:not(.ts-group) th, .ts-table tbody td { padding: 14px; border-bottom: 1px solid var(--line); }
 .ts-table tbody tr:not(.ts-group) th { font-weight: 500; text-align: left; }
 .ts-table tbody th small { display: block; margin-top: 2px; font-size: 12.5px; font-weight: 400; color: var(--mut); }
@@ -170,9 +167,9 @@ html:has(.ts) body { background: #ffffff; }
 .ts-ent-ctas { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 24px; margin-top: 36px; }
 .ts-ent .ts-link { color: #9fb4ff; }
 .ts-ent-logos { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 14px 40px; padding-top: 28px; border-top: 1px solid #2c2c35; }
-.ts-ent-logos p { margin: 0; font: 500 12px var(--mono); letter-spacing: 0.06em; text-transform: uppercase; color: #6d6d78; }
+.ts-ent-logos p { margin: 0; font: 500 12px var(--mono); letter-spacing: 0; color: #6d6d78; }
 .ts-ent-logos div { display: flex; flex-wrap: wrap; gap: 14px 36px; }
-.ts-ent-logos span { display: inline-flex; align-items: center; gap: 8px; font: 650 18px var(--head); letter-spacing: -0.03em; color: #9a9aa5; }
+.ts-ent-logos span { display: inline-flex; align-items: center; gap: 8px; font: 650 18px var(--head); letter-spacing: 0; color: #9a9aa5; }
 .ts-ent-logos svg { width: 20px; height: 20px; }
 .ts-ent-logos path { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .ts-console { overflow: hidden; border-radius: 14px; background: #1b1b21; border: 1px solid #2c2c35; box-shadow: 0 40px 80px -40px rgba(0, 0, 0, 0.8); font-size: 13.5px; }
@@ -210,7 +207,7 @@ html:has(.ts) body { background: #ffffff; }
 .ts-faq-head { position: sticky; top: 100px; }
 .ts-faq { border-top: 1px solid var(--line); }
 .ts-faq details { border-bottom: 1px solid var(--line); }
-.ts-faq summary { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 20px 0; cursor: pointer; list-style: none; font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
+.ts-faq summary { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 20px 0; cursor: pointer; list-style: none; font-size: 17px; font-weight: 600; letter-spacing: 0; }
 .ts-faq summary::-webkit-details-marker { display: none; }
 .ts-faq summary span { position: relative; flex: none; width: 14px; height: 14px; }
 .ts-faq summary span::before, .ts-faq summary span::after { content: ''; position: absolute; left: 0; top: 6px; width: 14px; height: 2px; border-radius: 1px; background: var(--mut); transition: transform 0.25s; }
@@ -269,7 +266,6 @@ html:has(.ts) body { background: #ffffff; }
 @media (max-width: 640px) {
   .ts-plans { grid-template-columns: minmax(0, 1fr); }
   .ts-plan-d { min-height: 0; }
-  .ts-pill { font-size: 12.5px; }
   .ts-doc { padding: 22px 16px 16px; }
   .ts-doc-h { font-size: 21px; }
   .ts-ai-body { min-height: 0; }

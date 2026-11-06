@@ -9,10 +9,10 @@ html:has(.lu) body { background: #0b0b0c; }
   --mono: var(--font-geist-mono), ui-monospace, monospace;
   --cam: #dcd9d1; --cam-dim: #74716a;
 }
-.lu .sk-brand { font-size: 15px; font-weight: 600; letter-spacing: 0.34em; }
+.lu .sk-brand { font-size: 15px; font-weight: 600; letter-spacing: 0; }
 .lu-mark { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--accent); box-shadow: inset 0 0 0 3px var(--bg), inset 0 0 0 9px var(--accent); }
 .lu .sk-btn { border-radius: 999px; }
-.lu .sk-kick { font-size: 12px; letter-spacing: 0.2em; }
+.lu .sk-kick { font-size: 12px; letter-spacing: 0; }
 .lu .sk-h1 { font-weight: 500; letter-spacing: -0.04em; max-width: 12ch; }
 .lu .sk-h2 { font-weight: 500; }
 
@@ -37,11 +37,11 @@ html:has(.lu) body { background: #0b0b0c; }
 .lu-plate { fill: #19191c; transition: fill 0.5s; }
 .lu-barrel { fill: #0d0d0f; }
 .is-silver .lu-plate { fill: #c9c6bf; }
-.lu-word { fill: var(--cam); font: 600 14px var(--font-geist-sans), system-ui, sans-serif; letter-spacing: 4.5px; transition: fill 0.5s; }
+.lu-word { fill: var(--cam); font: 600 14px var(--font-geist-sans), system-ui, sans-serif; letter-spacing: 0; transition: fill 0.5s; }
 .is-silver .lu-word { fill: #1b1b1d; }
 .is-silver .lu-model { fill: #7a5a26; }
-.lu-model { fill: var(--accent); font: 600 14px var(--font-geist-sans), system-ui, sans-serif; letter-spacing: 1px; }
-.lu-lens-text { fill: var(--cam-dim); font: 500 8px var(--mono); letter-spacing: 1.4px; }
+.lu-model { fill: var(--accent); font: 600 14px var(--font-geist-sans), system-ui, sans-serif; letter-spacing: 0; }
+.lu-lens-text { fill: var(--cam-dim); font: 500 8px var(--mono); letter-spacing: 0; }
 .lu-fill { transition: opacity 0.9s ease; }
 .lu-hero-cam:not(.is-inked) .lu-fill { opacity: 0; }
 .lu-lens, .lu-grip { transition: opacity 0.5s ease; }
@@ -52,7 +52,7 @@ html:has(.lu) body { background: #0b0b0c; }
 /* The "in tour" state: the chapter rail only shows while the stage is pinned */
 .lu-rail { display: flex; align-items: center; gap: 24px; padding-bottom: 16px; font: 500 12px var(--mono); color: var(--mut); opacity: 0; visibility: hidden; transform: translateY(-8px); transition: opacity 0.4s, transform 0.4s, visibility 0s 0.4s; }
 .lu-stage[data-tour='on'] .lu-rail { opacity: 1; visibility: visible; transform: none; transition: opacity 0.4s, transform 0.4s; }
-.lu-rail-l { color: var(--accent); letter-spacing: 0.16em; text-transform: uppercase; white-space: nowrap; }
+.lu-rail-l { color: var(--accent); letter-spacing: 0; white-space: nowrap; }
 .lu-rail ol { flex: 1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 0; padding: 0; list-style: none; }
 .lu-rail li { display: grid; gap: 9px; min-width: 0; }
 .lu-rail li i { position: relative; height: 2px; border-radius: 2px; background: var(--line); overflow: hidden; }
@@ -74,7 +74,7 @@ html:has(.lu) body { background: #0b0b0c; }
 .lu-af-tr { transform: translate(calc((var(--fx) + var(--fw) / 2) * 1px), calc((var(--fy) - var(--fh) / 2) * 1px)); }
 .lu-af-bl { transform: translate(calc((var(--fx) - var(--fw) / 2) * 1px), calc((var(--fy) + var(--fh) / 2) * 1px)); }
 .lu-af-br { transform: translate(calc((var(--fx) + var(--fw) / 2) * 1px), calc((var(--fy) + var(--fh) / 2) * 1px)); }
-.lu-tag { position: absolute; left: calc((var(--fx) - var(--fw) / 2 - 30) * 100% / 740); top: calc((var(--fy) - var(--fh) / 2 - 84) * 100% / 320); transform: translateY(calc(-100% - 6px)); padding: 4px 7px; border-radius: 3px; background: var(--accent); color: var(--accent-fg); font: 600 11px/1 var(--mono); letter-spacing: 0.04em; white-space: nowrap; pointer-events: none; transition: left 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), top 0.7s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.lu-tag { position: absolute; left: calc((var(--fx) - var(--fw) / 2 - 30) * 100% / 740); top: calc((var(--fy) - var(--fh) / 2 - 84) * 100% / 320); transform: translateY(calc(-100% - 6px)); padding: 4px 7px; border-radius: 3px; background: var(--accent); color: var(--accent-fg); font: 600 11px/1 var(--mono); letter-spacing: 0; white-space: nowrap; pointer-events: none; transition: left 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), top 0.7s cubic-bezier(0.2, 0.8, 0.2, 1); }
 
 /* The x-ray of each part draws in when its feature is on */
 .lu-x { opacity: 0; transition: opacity 0.45s ease; }
@@ -86,30 +86,30 @@ html:has(.lu) body { background: #0b0b0c; }
 .lu-cam[data-f='sensor'] .lu-lens, .lu-cam[data-f='ibis'] .lu-lens { opacity: 0.16; }
 .lu-cam[data-f='battery'] .lu-grip { opacity: 0.18; }
 .lu-cam[data-f='lens'] .lu-ap { stroke: var(--accent); }
-.lu-x .lu-scan { stroke-width: 2; filter: drop-shadow(0 0 3px var(--accent)); }
+.lu-x .lu-scan { stroke-width: 2; filter: none; }
 .lu-charge { fill: var(--accent); fill-opacity: 0.3; }
-.lu-xt { fill: var(--accent); font: 600 11px var(--mono); letter-spacing: 0.08em; }
+.lu-xt { fill: var(--accent); font: 600 11px var(--mono); letter-spacing: 0; }
 
 /* The camera's own readout, scrubbed by onProgress */
 .lu-lcd { display: grid; grid-template-columns: auto repeat(4, minmax(0, 1fr)); align-items: center; gap: 6px; max-width: 540px; margin: 20px auto 0; padding: 11px 16px; border: 1px solid var(--line); border-radius: 10px; background: #0f0f11; font: 500 15px/1 var(--mono); }
 .lu-lcd span { display: grid; gap: 6px; justify-items: center; color: var(--cam-dim); transition: color 0.3s; }
-.lu-lcd i { font-style: normal; font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase; }
+.lu-lcd i { font-style: normal; font-size: 9.5px; letter-spacing: 0; }
 .lu-lcd b { font-weight: 500; font-variant-numeric: tabular-nums; color: var(--cam); white-space: nowrap; transition: color 0.3s; }
 .lu-lcd span.is-on, .lu-lcd span.is-on b { color: var(--accent); }
 .lu-led { width: 7px; height: 7px; border-radius: 50%; background: #2c2c2f; transition: background-color 0.3s, box-shadow 0.3s; }
-.lu-stage[data-tour='on'] .lu-led { background: #4ade80; box-shadow: 0 0 8px rgba(74, 222, 128, 0.8); }
+.lu-stage[data-tour='on'] .lu-led { background: #4ade80; box-shadow: none; }
 
 /* Captions: one at a time, the next rising in as the last lifts away */
 .lu-caps { display: grid; min-width: 0; }
 .lu-cap { grid-area: 1 / 1; opacity: 0; visibility: hidden; transform: translateY(18px); transition: opacity 0.45s ease, transform 0.55s cubic-bezier(0.2, 0.8, 0.2, 1), visibility 0s 0.55s; }
 .lu-cap.is-past { transform: translateY(-18px); }
 .lu-cap.is-on { opacity: 1; visibility: visible; transform: none; transition: opacity 0.45s ease 0.08s, transform 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) 0.08s, visibility 0s; }
-.lu-cap-n { margin: 0 0 14px; font: 500 12px var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); }
+.lu-cap-n { margin: 0 0 14px; font: 500 12px var(--mono); letter-spacing: 0; color: var(--accent); }
 .lu-cap-n span { color: var(--cam-dim); }
 .lu-cap h3 { margin: 0; font: 500 clamp(24px, 2.4vw, 36px)/1.12 var(--head); letter-spacing: -0.025em; text-wrap: balance; }
 .lu-cap-p { margin: 16px 0 0; max-width: 44ch; font-size: clamp(14.5px, 1.1vw, 16.5px); line-height: 1.6; color: var(--mut); }
 .lu-figs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin: 26px 0 0; padding: 18px 0 0; border-top: 1px solid var(--line); list-style: none; }
-.lu-figs b { display: block; font: 500 clamp(19px, 1.7vw, 24px)/1.1 var(--head); letter-spacing: -0.02em; }
+.lu-figs b { display: block; font: 500 clamp(19px, 1.7vw, 24px)/1.1 var(--head); letter-spacing: 0; }
 .lu-figs span { display: block; margin-top: 6px; font-size: 12.5px; line-height: 1.35; color: var(--mut); }
 
 /* ── Sample photos, made of light and gradients ── */
@@ -118,7 +118,7 @@ html:has(.lu) body { background: #0b0b0c; }
 .lu-tile:first-child { grid-column: span 2; grid-row: span 2; }
 .lu-shot { position: absolute; inset: 0; }
 .lu-shot::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 75% 75% at 50% 45%, transparent 55%, rgba(0, 0, 0, 0.36)); }
-.lu-look { position: absolute; top: 10px; left: 10px; padding: 4px 7px; border-radius: 3px; background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); font: 600 10.5px/1 var(--mono); letter-spacing: 0.06em; color: #f3f1ec; }
+.lu-look { position: absolute; top: 10px; left: 10px; padding: 4px 7px; border-radius: 3px; background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); font: 600 10.5px/1 var(--mono); letter-spacing: 0; color: #f3f1ec; }
 .lu-tile figcaption { position: absolute; left: 0; right: 0; bottom: 0; display: grid; gap: 4px; padding: 32px 14px 12px; background: linear-gradient(transparent, rgba(0, 0, 0, 0.62)); color: #f3f1ec; }
 .lu-tile figcaption b { font-size: 13.5px; font-weight: 600; }
 .lu-tile figcaption span { font: 11px/1.35 var(--mono); color: rgba(243, 241, 236, 0.75); }
@@ -203,7 +203,7 @@ html:has(.lu) body { background: #0b0b0c; }
 
 /* ── Specs ── */
 .lu-specs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px clamp(32px, 5vw, 80px); }
-.lu-spec h3 { margin: 0; padding: 18px 0 12px; font: 500 12px var(--mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); }
+.lu-spec h3 { margin: 0; padding: 18px 0 12px; font: 500 12px var(--mono); letter-spacing: 0; color: var(--accent); }
 .lu-spec table { width: 100%; border-collapse: collapse; }
 .lu-spec th, .lu-spec td { padding: 13px 0; border-top: 1px solid var(--line); text-align: left; vertical-align: top; font-size: 15px; line-height: 1.5; }
 .lu-spec th { width: 34%; padding-right: 18px; font-weight: 500; color: var(--mut); }
@@ -214,7 +214,7 @@ html:has(.lu) body { background: #0b0b0c; }
 .lu-buy-art p { margin: 22px 0 0; text-align: center; font: 12px var(--mono); color: var(--mut); }
 .lu-buy-panel { display: grid; gap: 24px; }
 .lu-opts { display: grid; gap: 10px; min-width: 0; margin: 0; padding: 0; border: 0; }
-.lu-opts legend { margin-bottom: 10px; padding: 0; font: 500 12px var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--mut); }
+.lu-opts legend { margin-bottom: 10px; padding: 0; font: 500 12px var(--mono); letter-spacing: 0; color: var(--mut); }
 .lu-opts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .lu-opt { position: relative; display: flex; align-items: center; gap: 12px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 10px; cursor: pointer; transition: border-color 0.2s, background-color 0.2s; }
 .lu-opt:hover { border-color: #3a3a3d; }
@@ -257,7 +257,7 @@ html:has(.lu) body { background: #0b0b0c; }
   .lu-cam { max-width: none; margin: 30px calc(var(--pad) * -1) 0; overflow-x: clip; }
   .lu-zoom { transform: scale(1.3); }
   .lu-lcd { margin-top: 34px; padding: 9px 10px; gap: 2px; font-size: 13px; }
-  .lu-lcd i { font-size: 8.5px; letter-spacing: 0.08em; }
+  .lu-lcd i { font-size: 8.5px; letter-spacing: 0; }
   .lu-cap-n { margin-bottom: 10px; font-size: 11px; }
   .lu-cap h3 { font-size: 22px; }
   .lu-cap-p { margin-top: 10px; font-size: 14.5px; line-height: 1.55; }

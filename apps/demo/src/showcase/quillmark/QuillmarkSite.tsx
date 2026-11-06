@@ -115,7 +115,6 @@ function Hero() {
   return (
     <section className="qm-hero">
       <div className="qm-hero-copy">
-        <p className="qm-pill"><span>New</span>Bulk send for lease renewals</p>
         <h1 className="qm-h1">Contracts signed before the coffee cools.</h1>
         <p className="qm-lede">Send a lease, an NDA or a statement of work in under a minute. Your client signs on their phone — no account, no app — and you get a sealed PDF with an audit trail a court will accept.</p>
         <div className="qm-ctas">
