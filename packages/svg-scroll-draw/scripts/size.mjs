@@ -49,22 +49,30 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
  * 2.21.0 moved the entries that carry scrollText up 0.1 KB: it keeps one
  * visually hidden copy of the text for screen readers instead of an aria-label
  * ARIA forbids on a <p> (text 3.1 -> 3.17 KB). Same rule.
+ *
+ * 2.22.0 moved the entries that carry an engine up 0.1-0.4 KB: reduced motion
+ * turned on mid-visit finishes every effect at once. One shared helper
+ * (core/motion-live, rebuilt behind a stable object) and the preference
+ * listener in text, video and cinematic, which had none (main 11.38 -> 11.70,
+ * text 3.17 -> 3.41; the single-file CDN build, no chunk overhead, +0.22).
+ * The helper has a file of its own so snap and the timeline, which only
+ * listen, do not carry it. Same rule.
  */
 const BUDGETS_KB = {
-  '.':              11.4,
+  '.':              11.8,
   // The whole library in one IIFE, web component included — the single file a
   // `<script src>` user downloads. Not split, so unchanged by the chunks.
-  cdn:              11.5,
-  react:            13.0,
-  vue:              13.0,
-  nuxt:             13.1,
-  svelte:           12.3,
-  solid:            12.4,
-  angular:          12.4,
-  astro:            12.0,
-  group:             10.1,
-  'web-component':   7.6,
-  reveal:            5.6,
+  cdn:              11.7,
+  react:            13.3,
+  vue:              13.3,
+  nuxt:             13.4,
+  svelte:           12.7,
+  solid:            12.7,
+  angular:          12.7,
+  astro:            12.3,
+  group:             10.3,
+  'web-component':   7.9,
+  reveal:            5.8,
   // The AOS drop-in, stylesheet included (AOS itself is 6.7 KB with aos.css).
   aos:               3.2,
   'cdn-aos':         3.4,
@@ -81,11 +89,14 @@ const BUDGETS_KB = {
   'cdn-vivus':       4.2,
   // 4.7 -> 5.0 in 2.18.1: it follows the layout (ResizeObserver, a rebuild only
   // when the travel or the runway moved) and measures against its sticky stage.
-  horizontal:        5.5,
-  timeline:          4.1,
-  text:              3.2,
-  video:             2.7,
-  cinematic:         2.3,
+  horizontal:        5.7,
+  // 4.1 -> 4.2 in 2.22.0 with no change to its code: its files are the same
+  // bytes, but the chunks now load in another order, and gzip of the joined
+  // files went 4,198 -> 4,201 bytes, 3 over the line.
+  timeline:          4.2,
+  text:              3.5,
+  video:             2.9,
+  cinematic:         2.4,
   progress:          2.5,
   devtools:          1.9,
   snap:              2.0,
@@ -102,7 +113,7 @@ const BUDGETS_KB = {
  * 18.1 KB); the budget is what keeps the sharing from quietly coming undone.
  */
 const COMBINATIONS = [
-  { names: ['.', 'react'], budget: 14.5 },
+  { names: ['.', 'react'], budget: 14.9 },
 ];
 
 // ── Measure ──────────────────────────────────────────────────────────────────

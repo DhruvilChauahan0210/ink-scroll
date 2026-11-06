@@ -14,6 +14,7 @@
  *   node scripts/mutation-check.mjs           # run them all
  *   node scripts/mutation-check.mjs --list    # just show what would run
  *   node scripts/mutation-check.mjs reveal    # only mutations whose id matches
+ *   node scripts/mutation-check.mjs --anchors # every anchor still applies (seconds; in verify)
  *
  * Not wired into `npm run test:e2e`: it rebuilds the library once per mutation,
  * so it belongs in a pre-release check rather than the inner loop.
@@ -134,20 +135,11 @@ const MUTATIONS = [
     grep: 'reduced motion snaps instantly',
   },
   {
-    id: 'text/aria-label',
-    what: 'the split element loses its accessible name',
-    file: 'src/text/index.ts',
-    from: "  const originalHTML = el.innerHTML;\n  el.setAttribute('aria-label', el.textContent ?? '');",
-    to: '  const originalHTML = el.innerHTML;',
-    spec: 'text',
-    grep: 'assistive technology',
-  },
-  {
     id: 'text/destroy-restore',
     what: 'destroy() leaves the split spans in place of the original markup',
     file: 'src/text/index.ts',
-    from: "      clearTimeout(resizeTimer);\n      el.innerHTML = originalHTML;\n      el.removeAttribute('aria-label');",
-    to: '      clearTimeout(resizeTimer);',
+    from: '      clearTimeout(resizeTimer);\n      el.innerHTML = originalHTML;\n      _unregister(el);',
+    to: '      clearTimeout(resizeTimer);\n      _unregister(el);',
     spec: 'text',
     grep: 'restores the original markup exactly',
   },
@@ -822,6 +814,87 @@ const MUTATIONS = [
     spec: 'pin',
     grep: 'an address bar sliding leaves a vh pin alone',
   },
+  {
+    id: 'reduced-live/draw',
+    what: 'scrollDraw reads reduced motion once at start-up, so turning it on mid-visit leaves the drawing moving',
+    file: 'src/core/engine.ts',
+    from: 'return finishWhenReduced(rawOptions, (options, reduced) => buildEngine(container, options, reduced));',
+    to: "return buildEngine(container, rawOptions, matchMedia('(prefers-reduced-motion: reduce)').matches);",
+    spec: 'motion-live',
+    grep: 'finishes every effect at once',
+  },
+  {
+    id: 'reduced-live/animate',
+    what: 'the animate engine (reveal, parallax, the groups) reads reduced motion once, so cards stay hidden after it is turned on',
+    file: 'src/animate/engine.ts',
+    from: 'return finishWhenReduced(options, (opts, reduced) => buildAnimateEngine(el, opts, reduced));',
+    to: "return buildAnimateEngine(el, options, matchMedia('(prefers-reduced-motion: reduce)').matches);",
+    spec: 'motion-live',
+    grep: 'finishes every effect at once',
+  },
+  {
+    id: 'reduced-live/text',
+    what: 'scrollText reads reduced motion once, so its words stay hidden after it is turned on',
+    file: 'src/text/index.ts',
+    from: 'return finishWhenReduced(options, (opts, reduced) => buildText(el, opts, reduced));',
+    to: "return buildText(el, options, matchMedia('(prefers-reduced-motion: reduce)').matches);",
+    spec: 'motion-live',
+    grep: 'finishes every effect at once',
+  },
+  {
+    id: 'reduced-live/counter',
+    what: 'scrollCounter reads reduced motion once, so the number stays at its start after it is turned on',
+    file: 'src/counter/index.ts',
+    from: 'return finishWhenReduced(options, (opts, reduced) => buildCounter(raw, opts, reduced));',
+    to: "return buildCounter(raw, options, matchMedia('(prefers-reduced-motion: reduce)').matches);",
+    spec: 'motion-live',
+    grep: 'finishes every effect at once',
+  },
+  {
+    id: 'reduced-live/video',
+    what: 'scrollVideo ignores reduced motion turned on mid-scrub and keeps scrubbing',
+    file: 'src/video/index.ts',
+    from: '    if (!reduced) return;\n    unwatchMotion();\n    prefersReduced = true;',
+    to: '    if (reduced) return;\n    unwatchMotion();\n    prefersReduced = true;',
+    spec: 'video',
+    grep: 'reduced motion turned on mid-scrub stops on the end frame',
+  },
+  {
+    id: 'reduced-live/cinematic',
+    what: 'Cinematic ignores reduced motion turned on mid-story and keeps scrubbing',
+    file: 'src/cinematic/index.ts',
+    from: '      if (!reduced) return;\n      unwatchMotion();\n      stop();',
+    to: '      if (reduced) return;\n      unwatchMotion();\n      stop();',
+    spec: 'cinematic',
+    grep: 'reduced motion turned on mid-story',
+  },
+  {
+    id: 'reduced-live/complete-once',
+    what: 'an effect already at its end fires onComplete a second time when reduced motion is turned on',
+    file: 'src/core/motion-live.ts',
+    from: 'inst = build(finished ? { ...options, onComplete: undefined } : options, true);',
+    to: 'inst = build(options, true);',
+    spec: 'motion-live',
+    grep: 'an effect already finished does not fire onComplete again',
+  },
+  {
+    id: 'reduced-live/one-way',
+    what: 'turning reduced motion off again rebuilds every effect with motion, hiding what the reader has seen',
+    file: 'src/core/motion-live.ts',
+    from: '    if (!reduced) return;\n    unwatch();\n    const finished = (inst.getProgress?.() ?? 0) >= 1;\n    inst.destroy();\n    inst = build(finished ? { ...options, onComplete: undefined } : options, true);',
+    to: '    const finished = (inst.getProgress?.() ?? 0) >= 1;\n    inst.destroy();\n    inst = build(finished ? { ...options, onComplete: undefined } : options, reduced);',
+    spec: 'motion-live',
+    grep: 'turning it off again leaves everything finished',
+  },
+  {
+    id: 'reduced-live/same-object',
+    what: 'the page keeps the destroyed instance, so a replay() taken off it before the switch redraws from nothing',
+    file: 'src/core/motion-live.ts',
+    from: '  return live as T;',
+    to: '  return inst;',
+    spec: 'motion-live',
+    grep: 'replay\\(\\) is ignored',
+  },
 ];
 
 const args = process.argv.slice(2);
@@ -839,6 +912,21 @@ if (!selected.length) {
 if (listOnly) {
   for (const m of selected) console.log(`${m.id.padEnd(26)} ${m.spec} -g "${m.grep}"`);
   process.exit(0);
+}
+
+/*
+ * --anchors: every mutation still applies to its file, checked in a second
+ * without building anything. A full run takes hours, so it is rare, and 2.21.0
+ * left two anchors on an aria-label it had removed; `verify` runs this so the
+ * next refactor that moves an anchor says so at once. (Test names are not
+ * checked here: -g matches the full title path, describe blocks included,
+ * which only Playwright can resolve.)
+ */
+if (args.includes('--anchors')) {
+  const broken = selected.filter((m) => readFileSync(join(ROOT, m.file), 'utf8').split(m.from).length - 1 !== 1);
+  for (const m of broken) console.error(`✗ ${m.id}: its anchor no longer appears exactly once in ${m.file}`);
+  console.log(`${selected.length} mutation(s): ${broken.length ? `${broken.length} anchor(s) broken` : 'every anchor applies once'}.`);
+  process.exit(broken.length ? 1 : 0);
 }
 
 function run(cmd, cmdArgs) {

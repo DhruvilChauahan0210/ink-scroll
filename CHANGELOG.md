@@ -491,6 +491,14 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### CI
 
+- **IndexNow warns, instead of failing, when the engines refuse the site.**
+  After two runs answered 202, the next two (`44e4dfd`, `08467e6`) got 403
+  "UserForbiddedToAccessSite" from Bing while the key file was served with the
+  key, so each deploy showed a red run that no change here could fix. A 403,
+  429 or 5xx now leaves a warning on the run (a GitHub annotation, with the
+  Bing Webmaster Tools step for a 403) and exits 0. A malformed request (400,
+  422), a missing key file, a key file the site does not serve and an empty
+  sitemap still fail.
 - **IndexNow after every production deploy.** When Vercel reports a production
   deploy as live, `.github/workflows/indexnow.yml` sends the sitemap URLs dated
   on or after the previous deploy's day to IndexNow, which Bing, Yandex, Seznam
@@ -556,6 +564,65 @@ All notable changes to `svg-scroll-draw` are documented here.
   allowed, followed by `check-jsx-text` and `check-nav`.
 
 ---
+
+## [2.22.0] — 2026-11-06
+
+### Changed
+
+- **Reduced motion turned on while the page is open applies at once.** Every
+  engine read `prefers-reduced-motion` once, at start-up, so a reader who
+  turned it on mid-visit — quite possibly because the page was making them
+  unwell — kept every animation until a reload. Only `scrollSnap` and the
+  timeline's loop followed it. Now `scrollDraw`, `scrollAnimate`,
+  `scrollParallax`, `scrollReveal`, the group and sequence APIs, `scrollText`,
+  `scrollCounter`, `scrollVideo`, `Cinematic`, `useScrollDrawProgress` and
+  `scrollHorizontal` with `respectReducedMotion: true` finish the moment it
+  changes, exactly as a page loaded under reduced motion shows them: drawings
+  drawn, elements in their final state, the counter on its number, the video on
+  its end frame, the story on its last frame. `onComplete` fires once for an
+  effect that had not finished, and not again for one that had. The instance
+  you hold stays the same object, so framework wrappers, and methods a page took
+  off the instance, reach the finished one.
+- **One way.** Turning reduced motion off again leaves everything finished;
+  motion returns on the next load. Going back would hide content the reader has
+  already seen, and would lose any `pause()` or `seek()` the page had applied.
+  `scrollSnap` and the timeline's loop, which hide nothing, still follow it both
+  ways. The drop-ins (`aos`, `scrollreveal`, `vivus`) still read it at `init()`,
+  as the libraries they replace do.
+- How: `core/motion-live.ts` builds an instance, and on the switch destroys it
+  (which puts the element back) and builds it again through the start-up
+  reduced-motion branch, behind a stable object. `scrollVideo` and `Cinematic`
+  finish in place instead: the video's instance stays live under reduced motion,
+  and `Cinematic`'s `destroy()` leaves the stage it built.
+- `scrollCounter` under reduced motion reports `getProgress()` 1, not 0.
+
+### Size
+
+- Entries that carry an engine grow 0.1–0.3 KB gzipped: main 11.38 → 11.70 KB,
+  react 12.90 → 13.24, reveal 5.52 → 5.78, text 3.17 → 3.41, video
+  2.68 → 2.80, cinematic 2.17 → 2.31; the single-file CDN build, which pays no
+  chunk overhead, 11.38 → 11.60. The helper is a file of its own, so `snap`,
+  `timeline`, `pin` and the drop-ins are unchanged. Budgets moved with it.
+
+### Tests
+
+- `e2e/motion-live.spec.ts`, in Chromium, Firefox and WebKit: a page with a
+  drawing part drawn, and a drawing, reveal cards, split text, a counter and a
+  parallax layer below the fold, turns reduced motion on with
+  `page.emulateMedia` after load. Everything finishes without a scroll, each
+  `onComplete` fires once, the screen-reader copy is there once; nothing moves
+  with the scroll afterwards; a `replay()` taken off the instance before the
+  switch is ignored; turning it off again leaves everything finished; a drawing
+  already at its end does not fire `onComplete` again; `destroy()` restores the
+  text. The video and cinematic suites each turn it on mid-scrub.
+- `motionLive.test.ts`: the helper (start-up, the rebuild, `onComplete` once,
+  one way, destroy before and after) and each engine, the React hook included.
+- Nine mutations, one per engine's wiring plus `onComplete` once, one way and
+  the stable object. Two anchors had gone stale in 2.21.0 when `scrollText`
+  stopped setting `aria-label`: `text/aria-label` is gone (`text/readable`
+  covers it) and `text/destroy-restore` is re-anchored, 92 in all.
+  `mutation-check.mjs --anchors` checks every anchor in a second, in `verify`
+  and CI; the full run rebuilds once per mutation and takes hours.
 
 ## [2.21.0] — 2026-11-06
 

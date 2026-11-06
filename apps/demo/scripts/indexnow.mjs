@@ -17,6 +17,10 @@
  *   node scripts/indexnow.mjs --all        # every sitemap URL, once, to catch up
  *   node scripts/indexnow.mjs --dry-run    # print the request, send nothing
  *
+ * It fails on what this repo controls (no key file, a key file the site does
+ * not serve, an empty sitemap, a request IndexNow calls malformed) and only
+ * warns when the engines refuse the site or are busy (403, 429, 5xx).
+ *
  * GITHUB_TOKEN and GITHUB_REPOSITORY (set in Actions) find the previous
  * deploy; without them it falls back to the last day. SITEMAP_URL reads the
  * sitemap from somewhere else (a local `next start`) to try it before a deploy.
@@ -101,6 +105,21 @@ const res = await fetch(ENDPOINT, {
   body: JSON.stringify(body),
 });
 // 200: received. 202: received, the key is still being checked (first use).
-if (res.status !== 200 && res.status !== 202) fail(`IndexNow answered ${res.status}: ${(await res.text()).slice(0, 300)}`);
+// 400 and 422 say this request is wrong (its shape, or URLs off the host), so
+// the run fails. Anything else is the engines' answer about the site: a 403
+// (on 2026-11-06 Bing took two runs with 202, then refused the next two with
+// "UserForbiddedToAccessSite", while the key file answered as above), a 429,
+// a 5xx. No change here fixes those, so they warn instead of turning the
+// deploy red.
+if (res.status !== 200 && res.status !== 202) {
+  const said = `IndexNow answered ${res.status}: ${(await res.text()).slice(0, 300)}`;
+  if (res.status === 400 || res.status === 422) fail(said);
+  const hint = res.status === 403
+    ? ` The key file answers with the key, so the engine refused the site itself; adding the site to Bing Webmaster Tools and verifying it there is the first thing to try.`
+    : '';
+  console.warn(`⚠ indexnow: ${said}.${hint} None of the ${urlList.length} URL(s) were taken; a manual run with "all" sends every page again.`);
+  if (process.env.GITHUB_ACTIONS) console.log(`::warning title=IndexNow refused the request::${said}.${hint}`);
+  process.exit(0);
+}
 console.log(`✓ sent ${urlList.length} URL(s) to IndexNow (${res.status})`);
 for (const u of urlList) console.log(`  ${u}`);

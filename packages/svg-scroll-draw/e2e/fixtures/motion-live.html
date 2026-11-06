@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Reduced motion turned on mid-visit</title>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; font: 16px/1.4 system-ui, sans-serif; }
+  svg { display: block; width: 300px; height: 150px; }
+  .card { height: 80px; margin: 20px 40px; background: #eee; }
+  #text { font-size: 32px; margin: 40px; }
+  #count { font-size: 32px; margin: 40px; }
+  #par { height: 80px; margin: 40px; background: #ddd; }
+</style>
+</head>
+<body>
+
+<!-- In view at load, part drawn: the default window runs from its top at the
+     viewport's bottom to its bottom at the viewport's top. -->
+<div style="height: 300px"></div>
+<svg id="scrub" viewBox="0 0 300 150"><path d="M10 75 C 80 10, 220 140, 290 75" fill="none" stroke="#000" stroke-width="4"/></svg>
+
+<!-- Everything below starts well below the fold: not started at load. -->
+<div style="height: 1600px"></div>
+<svg id="below" viewBox="0 0 300 150"><path d="M10 75 H 290" fill="none" stroke="#000" stroke-width="4"/></svg>
+<div class="card"></div>
+<div class="card"></div>
+<p id="text">Ship real browser tests</p>
+<div id="count">0</div>
+<div id="par"></div>
+<div style="height: 2000px"></div>
+
+<script type="module">
+import { scrollDraw, scrollCounter, scrollParallax } from '/dist/index.mjs';
+import { scrollReveal } from '/dist/reveal/index.mjs';
+import { scrollText } from '/dist/text/index.mjs';
+import { drawnFraction, opacityOf, transformOf, publish } from './_probe.mjs';
+
+const completes = { scrub: 0, below: 0, text: 0, count: 0 };
+const TEXT = document.querySelector('#text').textContent;
+
+const instances = {
+  scrub: scrollDraw('#scrub', { native: false, onComplete: () => completes.scrub++ }),
+  below: scrollDraw('#below', { native: false, onComplete: () => completes.below++ }),
+  reveal: scrollReveal('.card'),
+  text: scrollText('#text', { onComplete: () => completes.text++ }),
+  count: scrollCounter('#count', { to: 480, onComplete: () => completes.count++ }),
+  par: scrollParallax('#par', { speed: 0.5 }),
+};
+// Taken off the instance before any switch, as a page might.
+const { replay } = instances.below;
+
+const words = () =>
+  [...document.querySelectorAll('#text span[aria-hidden="true"]')].filter((s) => s.textContent.trim());
+
+publish({
+  read: () => ({
+    scrollY: window.scrollY,
+    scrub: drawnFraction(document.querySelector('#scrub path')),
+    below: drawnFraction(document.querySelector('#below path')),
+    cards: [...document.querySelectorAll('.card')].map(opacityOf),
+    words: words().map(opacityOf),
+    // What a screen reader is given: the sentence once, however often it was split.
+    copies: [...document.querySelectorAll('#text span')].filter((s) => s.textContent === TEXT).length,
+    count: document.querySelector('#count').textContent,
+    par: transformOf(document.querySelector('#par')).y,
+    progress: { scrub: instances.scrub.getProgress(), below: instances.below.getProgress() },
+    completes: { ...completes },
+  }),
+  replayBelow: () => replay(),
+  destroyAll: () => Object.values(instances).forEach((i) => i.destroy()),
+  textHTML: () => document.querySelector('#text').innerHTML,
+});
+</script>
+</body>
+</html>

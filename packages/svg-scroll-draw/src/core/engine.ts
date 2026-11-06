@@ -9,6 +9,7 @@ import { IS_DEV, warn as warnDev } from './env';
 import { cssTimingFor } from './css-easing';
 import { _register, _unregister } from './registry';
 import { watchLayout } from './layout-watch';
+import { finishWhenReduced } from './motion-live';
 
 // ── Native CSS scroll-driven animation (animation-timeline: view()) ───────────
 // Which easings the fast path can express, and as what, lives in core/css-easing.
@@ -162,14 +163,21 @@ export function createEngine(
   if (typeof window === 'undefined') {
     return { destroy: () => {}, replay: () => {}, pause: () => {}, resume: () => {}, seek: () => {}, getProgress: () => 0 };
   }
+  // Reduced motion turned on mid-visit finishes the drawing as a page loaded
+  // under it would (core/motion-live).
+  return finishWhenReduced(rawOptions, (options, reduced) => buildEngine(container, options, reduced));
+}
 
+function buildEngine(
+  container: Element,
+  rawOptions: ScrollDrawOptions,
+  prefersReduced: boolean,
+): ScrollDrawInstance {
   // Apply preset as base — user options always win
   const { preset, ...userOptions } = rawOptions;
   const options: ScrollDrawOptions = preset
     ? { ...PRESETS[preset], ...userOptions }
     : userOptions;
-
-  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const {
     selector       = 'path, polyline, line, polygon, rect, circle',

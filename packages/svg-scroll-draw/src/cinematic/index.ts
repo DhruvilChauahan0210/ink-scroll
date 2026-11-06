@@ -1,6 +1,7 @@
 import { EASINGS } from '../core/easing';
 import { warn } from '../core/env';
 import { _register, _unregister } from '../core/registry';
+import { watchReducedMotion } from '../core/motion-watch';
 import type { Story, StoryEasing, StoryAnimation } from './story';
 
 export type { Story } from './story';
@@ -221,8 +222,21 @@ export class Cinematic {
       },
     });
 
+    // Reduced motion turned on mid-visit: the finished frame, no more scrubbing,
+    // as a page loaded under it would show. One way (core/motion-live).
+    const unwatchMotion = watchReducedMotion((reduced) => {
+      if (!reduced) return;
+      unwatchMotion();
+      stop();
+      observer.disconnect();
+      _unregister(mount);
+      progress = 1;
+      apply(1);
+    });
+
     return {
       destroy() {
+        unwatchMotion();
         stop();
         observer.disconnect();
         _unregister(mount);

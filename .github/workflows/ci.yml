@@ -76,6 +76,13 @@ jobs:
         run: npm run size:check
         working-directory: packages/svg-scroll-draw
 
+      # Fails if a mutation's anchor no longer applies to its file. The full
+      # mutation run rebuilds once per mutation and takes hours, so it is rare;
+      # this catches a refactor that moved an anchor in seconds.
+      - name: Check mutation anchors
+        run: node scripts/mutation-check.mjs --anchors
+        working-directory: packages/svg-scroll-draw
+
       # Fails if the test/example counts quoted in the README or demo drift
       # from the real numbers.
       - name: Check doc claims

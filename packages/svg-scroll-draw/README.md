@@ -7,7 +7,7 @@
 [![license](https://img.shields.io/npm/l/svg-scroll-draw)](./LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/DhruvilChauahan0210/ink-scroll?style=flat)](https://github.com/DhruvilChauahan0210/ink-scroll/stargazers)
 
-> Draw SVG paths on scroll — plus reveal, pin, snap, parallax, counters, video scrub and text splitting. **11.4 KB gzipped for every API, from 1.4 KB if you import one.** Zero dependencies, MIT, and a native CSS fast path that runs with no per-frame JavaScript. Works in React, Next.js, Vue, Svelte, Solid, Angular, Astro, Nuxt and vanilla JS.
+> Draw SVG paths on scroll — plus reveal, pin, snap, parallax, counters, video scrub and text splitting. **11.7 KB gzipped for every API, from 1.6 KB if you import one.** Zero dependencies, MIT, and a native CSS fast path that runs with no per-frame JavaScript. Works in React, Next.js, Vue, Svelte, Solid, Angular, Astro, Nuxt and vanilla JS.
 
 **[Live Demo](https://svg-scroll-draw.vercel.app)** · [npm](https://www.npmjs.com/package/svg-scroll-draw) · [Docs](https://svg-scroll-draw.vercel.app/docs) · [Examples](https://svg-scroll-draw.vercel.app/examples) · [Report a bug](https://github.com/DhruvilChauahan0210/ink-scroll/issues)
 
@@ -28,13 +28,15 @@
 | `scrollParallax` | `svg-scroll-draw` | Move any element at a different rate than scroll. Speed multiplier, reverse direction. |
 | `scrollDraw` | `svg-scroll-draw` | The original — scroll-driven SVG path drawing via `stroke-dashoffset`. |
 | `scrollVideo` | `svg-scroll-draw/video` | Tie `<video>.currentTime` to scroll. The Apple/Stripe product-page pattern. |
-| `scrollText` | `svg-scroll-draw/text` | Split text into chars/words/lines and stagger-animate each on scroll. 3.2 KB, nothing else to load. |
+| `scrollText` | `svg-scroll-draw/text` | Split text into chars/words/lines and stagger-animate each on scroll. 3.4 KB, nothing else to load. |
 | `devtools` | `svg-scroll-draw/devtools` | Visual overlay showing every active animation's triggers and progress. Dev-only. |
 | `AOS` | `svg-scroll-draw/aos` | Drop-in replacement for AOS: same `AOS.init()`, same `data-aos` markup, no `aos.css`. |
 | `ScrollReveal` | `svg-scroll-draw/scrollreveal` | Drop-in replacement for ScrollReveal.js 4, MIT instead of GPL-3.0. |
 | `Vivus` | `svg-scroll-draw/vivus` | Drop-in replacement for vivus 0.4: same `new Vivus()` API and output. |
 
 All APIs return the same instance object: `{ destroy, replay, pause, resume, seek, getProgress }`.
+
+Under `prefers-reduced-motion: reduce` each one shows its finished state instead of animating. If the reader turns the setting on while the page is open, everything still moving finishes at once, as if the page had loaded that way; turning it off again leaves it finished until the next load.
 
 ---
 
@@ -273,7 +275,7 @@ import { ScrollText } from 'svg-scroll-draw/react';
 | `once` | `boolean` | `true` | — |
 | `onComplete` | `() => void` | — | — |
 
-> **Accessibility:** `scrollText` preserves the original text in `aria-label` on the container and adds `aria-hidden="true"` to all split spans. `destroy()` fully restores the original HTML.
+> **Accessibility:** `scrollText` adds `aria-hidden="true"` to every split piece and keeps the whole text once in a visually hidden span, which a screen reader reads as part of the element (ARIA does not allow an `aria-label` on a `<p>`, `<span>` or `<div>`). `destroy()` fully restores the original HTML.
 
 ---
 
@@ -629,12 +631,12 @@ devtools.highlight('#my-element'); // outline for 2 seconds
 <!-- size-table:start -->
 | Entry | Gzipped |
 |---|---|
-| `svg-scroll-draw` (main, every core API) | 11.4 KB |
-| `svg-scroll-draw/react` (includes the engine) | 12.9 KB |
-| `svg-scroll-draw` + `svg-scroll-draw/react` (together; the engine ships once) | 14.4 KB |
-| `svg-scroll-draw/reveal` | 5.5 KB |
-| `svg-scroll-draw/text` | 3.2 KB |
-| `svg-scroll-draw/video` | 2.7 KB |
+| `svg-scroll-draw` (main, every core API) | 11.7 KB |
+| `svg-scroll-draw/react` (includes the engine) | 13.2 KB |
+| `svg-scroll-draw` + `svg-scroll-draw/react` (together; the engine ships once) | 14.8 KB |
+| `svg-scroll-draw/reveal` | 5.8 KB |
+| `svg-scroll-draw/text` | 3.4 KB |
+| `svg-scroll-draw/video` | 2.8 KB |
 | `svg-scroll-draw/scrollreveal` | 4.5 KB |
 | `svg-scroll-draw/vivus` | 4.0 KB |
 | `svg-scroll-draw/aos` (styles included) | 3.1 KB |

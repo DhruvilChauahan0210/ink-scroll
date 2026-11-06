@@ -49,3 +49,13 @@ every rect is zero. Anything about real layout, real scrolling, the native CSS
 path or a framework wrapper belongs in `e2e/`. `src/__tests__/ssr.test.ts` is the
 third environment: no DOM at all, which is the only place a server-side crash
 shows up.
+
+## The mutation run is slow; its anchors are checked fast
+
+`packages/svg-scroll-draw/scripts/mutation-check.mjs` rebuilds the library once
+per mutation (about two minutes each, hours for all of them), so run the ones a
+change touches by id: `node scripts/mutation-check.mjs reduced-live text/`.
+SIGINT cannot stop it between builds; if you kill it, `git diff` the one file
+the last mutation names before anything else. `--anchors` (in `verify` and CI)
+checks in a second that every mutation still applies, so a refactor that moves
+an anchor fails at once instead of at the next full run.

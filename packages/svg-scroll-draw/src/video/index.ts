@@ -4,6 +4,7 @@ import { parseTrigger, computeProgress, computeTriggers } from '../core/trigger'
 import { _register, _unregister } from '../core/registry';
 import { watchLayout } from '../core/layout-watch';
 import { warn } from '../core/env';
+import { watchReducedMotion } from '../core/motion-watch';
 
 // ── Public types ──────────────────────────────────────────────────────────────
 
@@ -69,7 +70,7 @@ export function scrollVideo(
 
   const measured: Element = triggerElement ?? video;
 
-  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let prefersReduced   = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const easeFn         = typeof easing === 'function' ? easing : (EASINGS[easing] ?? EASINGS.linear);
   const startConfig    = parseTrigger(trigger.start ?? 'top top');
   const endConfig      = parseTrigger(trigger.end   ?? 'bottom top');
@@ -172,6 +173,16 @@ export function scrollVideo(
 
   if (!ready) cacheTriggers(); // best-effort before metadata
 
+  // Reduced motion turned on mid-visit stops the scrub on the end frame, as a
+  // page loaded under it would. One way, as everywhere (core/motion-live).
+  const unwatchMotion = prefersReduced ? () => {} : watchReducedMotion((reduced) => {
+    if (!reduced) return;
+    unwatchMotion();
+    prefersReduced = true;
+    cancelAnimationFrame(rafId);
+    applyAlpha(1);
+  });
+
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((e) => {
@@ -207,6 +218,7 @@ export function scrollVideo(
       window.removeEventListener('resize', onResize);
       window.removeEventListener('orientationchange', onResize);
       unwatch();
+      unwatchMotion();
       clearTimeout(resizeTimer);
       _unregister(video);
     },

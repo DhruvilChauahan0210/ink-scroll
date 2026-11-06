@@ -2096,7 +2096,7 @@ inst.destroy();  // cleanup`}
                     ['trigger',              'TriggerConfig',             '{ start: "top top", end: "bottom bottom" }', 'Scroll window the travel is mapped across.'],
                     ['easing',               'EasingName | fn',           '"linear"',      'Easing for the movement. Linear gives the scrub feel.'],
                     ['triggerElement',       'string | Element',          'sticky parent', 'Element whose height defines the scroll window. Defaults to the container of the track’s nearest position:sticky ancestor — the element that actually holds the scroll room. A sticky-pinned track is only one viewport tall, so measuring against it would give a zero-length window and no movement.'],
-                    ['respectReducedMotion', 'boolean',                   'false',         'Unlike other APIs here, defaults to false. The transform is scroll-linked scrubbing — it advances only as the user scrolls — and holding a final state instead would leave every panel but one unreachable inside the sticky container. Set true if you have a non-transform fallback.'],
+                    ['respectReducedMotion', 'boolean',                   'false',         'Unlike other APIs here, defaults to false. The transform is scroll-linked scrubbing — it advances only as the user scrolls — and holding a final state instead would leave every panel but one unreachable inside the sticky container. Set true if you have a non-transform fallback; the strip then also holds still if the reader turns reduced motion on mid-visit.'],
                     ['scrollContainer',      'string | Element',          'window',        'Custom scroll container.'],
                     ['onProgress',           '(p: number) => void',       '—',             'Fires every frame with 0–1 progress through the window.'],
                   ].map(([opt, type, def, desc]) => (
@@ -2476,7 +2476,7 @@ import { ScrollAnimate } from 'svg-scroll-draw/react';
                     ['once', 'boolean', 'false', 'Freeze at max progress — does not reverse on scroll back.'],
                     ['axis', '"x" | "y"', '"y"', 'Scroll axis.'],
                     ['native', 'boolean', 'true', 'Use CSS animation-timeline: view() fast path when eligible.'],
-                    ['respectReducedMotion', 'boolean', 'true', 'Honour prefers-reduced-motion by applying the final state instead of animating. Set false only for scroll-linked scrubbing, which advances 1:1 with the user’s own scrolling rather than playing on its own.'],
+                    ['respectReducedMotion', 'boolean', 'true', 'Honour prefers-reduced-motion by applying the final state instead of animating, also when the reader turns it on while the page is open (2.22.0+). Set false only for scroll-linked scrubbing, which advances 1:1 with the user’s own scrolling rather than playing on its own.'],
                     ['triggerElement', 'Element', 'the animated element', 'Measure the trigger window from a different element. Needed when the animated element cannot supply the scroll length itself — a position:sticky element is only one viewport tall, so its window collapses to zero. Setting this disables the native CSS fast path, which can only measure its own subject.'],
                     ['onProgress',   '(n) => void', '—', 'Called as the scroll moves, with alpha 0–1 (the first path’s, under stagger).'],
                     ['onComplete',   '() => void', '—', 'Fires when alpha reaches 1.'],

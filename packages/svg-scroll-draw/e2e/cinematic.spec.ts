@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { openFixture, collectErrors, scrollToY, read, call, table } from './helpers';
+import { openFixture, collectErrors, scrollToY, read, call, table, settle } from './helpers';
 
 /**
  * `Cinematic` in a real browser: a story JSON in, a scroll-scrubbed show out.
@@ -177,6 +177,28 @@ test.describe('Cinematic', () => {
     await scrollToY(page, 1200);
     const scrolled = await read<Row>(page);
     expect(scrolled.late, 'reduced motion still scrubbed the story').toBeCloseTo(1, 1);
+  });
+
+  test('reduced motion turned on mid-story shows the finished frame and stops scrubbing', async ({ page }) => {
+    await openFixture(page, 'cinematic.html');
+    await scrollToY(page, 960);
+    const mid = await read<Row>(page);
+    expect(mid.progress, 'not mid-story before the switch').toBeLessThan(0.9);
+
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await settle(page);
+
+    const done = await read<Row>(page);
+    expect(done.progress).toBe(1);
+    expect(done.early).toBeCloseTo(1, 1);
+    expect(done.late).toBeCloseTo(1, 1);
+    expect(done.photo).toBeCloseTo(1, 1);
+
+    // Scrolling back to the top must not start scrubbing it away again.
+    await scrollToY(page, 0);
+    const top = await read<Row>(page);
+    expect(top.late, 'scrubbed after reduced motion was turned on').toBeCloseTo(1, 1);
+    expect(top.photo).toBeCloseTo(1, 1);
   });
 
   /**

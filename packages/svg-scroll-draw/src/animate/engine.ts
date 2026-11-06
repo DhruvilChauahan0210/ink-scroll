@@ -7,6 +7,7 @@ import { cssTimingFor } from '../core/css-easing';
 import { _register, _unregister } from '../core/registry';
 import { warn } from '../core/env';
 import { watchLayout } from '../core/layout-watch';
+import { finishWhenReduced } from '../core/motion-live';
 
 // ── Public types ──────────────────────────────────────────────────────────────
 
@@ -27,7 +28,8 @@ export interface ScrollAnimateOptions {
   velocityScale?: boolean | number;
   /**
    * Honour `prefers-reduced-motion: reduce` by applying the final state and not
-   * animating. Default: `true`.
+   * animating, also when the reader turns it on while the page is open.
+   * Default: `true`.
    *
    * Set to `false` only when the movement is *scroll-linked scrubbing* rather
    * than autonomous motion — it advances solely as the user scrolls, 1:1 with
@@ -160,15 +162,27 @@ function supportsNativeTimeline(): boolean {
 
 // ── Engine ────────────────────────────────────────────────────────────────────
 
+const NOOP: ScrollDrawInstance = {
+  destroy: () => {}, replay: () => {}, pause: () => {},
+  resume: () => {}, seek: () => {}, getProgress: () => 0,
+};
+
 export function createAnimateEngine(
   el: Element,
   options: ScrollAnimateOptions,
 ): ScrollDrawInstance {
-  const NOOP: ScrollDrawInstance = {
-    destroy: () => {}, replay: () => {}, pause: () => {},
-    resume: () => {}, seek: () => {}, getProgress: () => 0,
-  };
   if (typeof window === 'undefined') return NOOP;
+  if (options.respectReducedMotion === false) return buildAnimateEngine(el, options, false);
+  // Reduced motion turned on mid-visit applies the final state as a page loaded
+  // under it would (core/motion-live).
+  return finishWhenReduced(options, (opts, reduced) => buildAnimateEngine(el, opts, reduced));
+}
+
+function buildAnimateEngine(
+  el: Element,
+  options: ScrollAnimateOptions,
+  prefersReduced: boolean,
+): ScrollDrawInstance {
 
   const {
     props,
@@ -180,7 +194,6 @@ export function createAnimateEngine(
     scrollContainer,
     native   = true,
     velocityScale = false,
-    respectReducedMotion = true,
     triggerElement,
     onProgress,
     onComplete,
@@ -190,8 +203,6 @@ export function createAnimateEngine(
     onLeaveBack,
   } = options;
 
-  const prefersReduced =
-    respectReducedMotion && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const easeFn         = typeof easing === 'function' ? easing : (EASINGS[easing] ?? EASINGS['ease-out']);
   const startConfig    = parseTrigger(trigger.start ?? 'top bottom');
   const endConfig      = parseTrigger(trigger.end   ?? 'bottom top');

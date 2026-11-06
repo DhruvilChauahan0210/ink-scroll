@@ -55,6 +55,16 @@ const KINDS: { k: Kind; label: string }[] = [
  */
 const RELEASES: Release[] = [
   {
+    version: '2.22.0',
+    title: 'Reduced motion turned on mid-visit applies at once',
+    date: '2026-11-06',
+    items: [
+      { type: 'new', text: 'Every engine read prefers-reduced-motion once, at start-up, so a reader who turned it on while the page was open kept every animation until a reload. Now drawings, reveals, parallax, split text, counters, scrubbed video, Cinematic stories and useScrollDrawProgress finish the moment it changes, exactly as a page loaded under reduced motion shows them. onComplete fires once for an effect that had not finished, not again for one that had, and the instance you hold stays the same object.' },
+      { type: 'new', text: 'One way: turning it off again leaves everything finished until the next load, so nothing the reader has seen disappears. scrollSnap and the timeline’s loop still follow it both ways. The main entry is 11.7 KB (+0.3).' },
+      { type: 'test', text: 'Browser tests in three engines turn reduced motion on after load, mid-drawing, mid-video and mid-story; nine mutations (92 in all, after two stale since 2.21.0 were fixed). A new anchor check in verify and CI catches a mutation that no longer applies in a second.' },
+    ],
+  },
+  {
     version: '2.21.0',
     title: 'Split text a screen reader can read',
     date: '2026-11-06',

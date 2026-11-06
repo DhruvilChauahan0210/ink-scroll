@@ -283,7 +283,7 @@ const FAQ: { q: string; a: string }[] = [
   },
   {
     q: 'Does it respect prefers-reduced-motion?',
-    a: 'Yes. With reduced motion requested, drawings, reveals and text show in their final state instead of animating.',
+    a: 'Yes. With reduced motion requested, drawings, reveals and text show in their final state instead of animating, and if the reader turns it on while the page is open, everything still moving finishes at once.',
   },
 ];
 

@@ -85,8 +85,9 @@ import { scrollSnap } from 'svg-scroll-draw/snap';
 import { scrollHorizontal } from 'svg-scroll-draw/horizontal';
 
 scrollReveal('.card');           // reduced motion: every card shown, no transition
-scrollSnap('.section');          // reduced motion: jumps, and follows the setting live
-scrollHorizontal('.track');      // keeps scrubbing; { respectReducedMotion: true } holds it`;
+scrollSnap('.section');          // reduced motion: jumps instead of gliding
+scrollHorizontal('.track');      // keeps scrubbing; { respectReducedMotion: true } holds it
+// Turned on mid-visit, each one finishes at once (2.22.0+).`;
 
 const ROWS: [string, string, string][] = [
   ['A path drawing itself, a fade-up, split text, a counter, parallax', 'Show the finished state at once', 'Decoration played at the reader'],
@@ -177,6 +178,12 @@ export default function Page() {
           that until the next load. Listen for the change, and apply it to anything still to come.
         </p>
         <Code file="live.js">{LIVE}</Code>
+        <p>
+          The two directions are not equal. Turned on, finish whatever is still moving, straight away: the reader
+          may have turned it on because the page was making them unwell. Turned off, leave what is already shown
+          alone and let motion come back on the next load; hiding content again so it can animate in is worse
+          than one missing animation.
+        </p>
       </Section>
 
       <Section id="test" k="verify" title="Test it in a real browser">
@@ -195,13 +202,19 @@ export default function Page() {
         <p>
           Every effect in the library follows the table above. Drawings, reveals, split text, counters and
           parallax show their finished state and still fire <code>onComplete</code>; a scrubbed video shows its
-          end frame; <code>scrollSnap</code> jumps instead of animating and follows a change to the setting
-          live; <code>scrollHorizontal</code> keeps scrubbing by default, with{' '}
-          <code>respectReducedMotion: true</code> to hold it; a timeline keeps its scrubbing and stops its timed
-          loop. Each behaviour is pinned by a test that emulates reduced motion: browser tests in Chromium,
-          Firefox and WebKit for the reveals, text, counters, parallax, video, snapping, the horizontal strip and
-          the timeline, and unit tests for the path drawing. Most effects read the setting when they start, so a
-          change mid-visit reaches them on the next load; snapping and the timeline’s loop follow it at once.
+          end frame; <code>scrollSnap</code> jumps instead of animating; <code>scrollHorizontal</code> keeps
+          scrubbing by default, with <code>respectReducedMotion: true</code> to hold it; a timeline keeps its
+          scrubbing and stops its timed loop. Each behaviour is pinned by a test that emulates reduced motion:
+          browser tests in Chromium, Firefox and WebKit for the reveals, text, counters, parallax, video,
+          snapping, the horizontal strip and the timeline, and unit tests for the path drawing at start-up.
+        </p>
+        <p>
+          Since 2.22.0 every effect also follows the setting live, the way the section above describes. Turned
+          on mid-visit, each one finishes at once, exactly as a page loaded under reduced motion shows it, and
+          fires <code>onComplete</code> once if it had not finished. Turned off again, what finished stays
+          finished until the next load; snapping and the timeline’s loop, which hide nothing either way, follow
+          it in both directions. Browser tests turn the setting on after the page has loaded, mid-drawing,
+          mid-video and mid-story, in all three engines.
         </p>
         <Code file="app.js">{LIBRARY}</Code>
       </Section>

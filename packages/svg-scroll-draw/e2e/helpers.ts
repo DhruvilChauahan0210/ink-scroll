@@ -36,8 +36,9 @@ export async function settle(page: Page): Promise<void> {
 /**
  * Load a fixture and wait until its probe is published.
  *
- * Call `page.emulateMedia({ reducedMotion: 'reduce' })` *before* this when
- * testing reduced motion — the engines read the media query once at construction.
+ * Call `page.emulateMedia({ reducedMotion: 'reduce' })` *before* this to test
+ * a page loaded under reduced motion; calling it after tests the setting turned
+ * on mid-visit, which every engine follows since 2.22.0 (motion-live.spec.ts).
  */
 export async function openFixture(page: Page, file: string): Promise<void> {
   await page.goto(`/e2e/fixtures/${file}`);

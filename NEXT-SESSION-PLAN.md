@@ -1,17 +1,45 @@
 # Next Session Plan — svg-scroll-draw
 
-> Updated: 2026-11-06 — **Live chapter merged** (site-only: the GitHub cards keep their last good figures, "npm / all time", a chart of every day since the first publish with a per-day read-out and a 30-day switch). **2.21.0 pushed** (`140ae6c`, not tagged: scrollText's screen-reader text; the site passes axe on every page). **2.20.1 pushed** (`975dce6`, not tagged: resume() off screen mid-tail finishes the drawing). **2.20.0 published** (`v2.20.0` on `972d705`: `scrollPin` `pinDistance: '150vh'`; the first release through npm's trusted publishing — `_npmUser` is GitHub Actions). **2.19.1 published** (`v2.19.1` on `2f7b711`: a staggered drawing finishes; Playwright 1.65.0; npm `latest`). **2.19.0 published** (`v2.19.0` on `f131f9c`: every engine follows the page; live wrapper options; Vue and Svelte blocks). Dependencies updated in `660f363` (site and tooling only). **2.18.1 published** (`v2.18.1` on `70c91cd`: `scrollHorizontal` follows the layout and measures against its sticky stage; the horizontal strip recipe, the fifth and last planned). **2.18.0 published** (`v2.18.0` on `1840983`: `scrollVideo` `triggerElement`; four recipes). **2.17.1 published** (`v2.17.1` on `ed77b58`: `once` keeps `stagger`; the logo example is a full recipe). Recipe 2, the pinned feature tour on `/examples/scroll-pin`, is done (site-only). **2.17.0 published** (`v2.17.0` on `d7b03b2`: the React, Vue, Nuxt, Solid and Svelte wrappers follow option changes, Angular gets `update()` for `ngOnChanges`). **2.16.1 published** (`v2.16.1` on `b3eb52a`) (`svg-scroll-draw/react` ships `"use client"` so Server Components render `<ScrollDraw>` directly; all 56 mutations run again). **2.16.0 published** (`v2.16.0` on `fde9f4c`: ES module entries share code through chunks — main + react 18.1 → 13.2 KB; the drop-ins share one instance with their React hooks; size tables generated; main entry 10.7 KB as shipped files). **2.15.3 published** (`v2.15.3` on `acc9acc`: scrollReveal's `stagger` is a fraction of the reveal window, per row, on top of a custom trigger; 2.15.2 before it kept scrollVideo's end frame under reduced motion). Every page is linked from every page (nav "More", phone menu, footer index — `components/site/sitemap.ts`, guarded by `check-nav`). Sitemap dates come from git for every URL, generated groups included — Search Console (2026-11-04) had 20 indexed, 35 "Discovered – not indexed" (never crawled), 2 "Crawled – not indexed". The native CSS path is no longer described as compositor work anywhere, and `/vs-aos` quotes the reveal entry and the real presets. Every page is on the homepage design and all 23 showcase sites are live — in `32f3409`, on `main`.
+> Updated: 2026-11-06 — **2.22.0 in the working tree** (reduced motion turned on mid-visit finishes every effect at once, one way; IndexNow warns instead of failing when Bing refuses the site). **Live chapter merged** (site-only: the GitHub cards keep their last good figures, "npm / all time", a chart of every day since the first publish with a per-day read-out and a 30-day switch). **2.21.0 pushed** (`140ae6c`, not tagged: scrollText's screen-reader text; the site passes axe on every page). **2.20.1 pushed** (`975dce6`, not tagged: resume() off screen mid-tail finishes the drawing). **2.20.0 published** (`v2.20.0` on `972d705`: `scrollPin` `pinDistance: '150vh'`; the first release through npm's trusted publishing — `_npmUser` is GitHub Actions). **2.19.1 published** (`v2.19.1` on `2f7b711`: a staggered drawing finishes; Playwright 1.65.0; npm `latest`). **2.19.0 published** (`v2.19.0` on `f131f9c`: every engine follows the page; live wrapper options; Vue and Svelte blocks). Dependencies updated in `660f363` (site and tooling only). **2.18.1 published** (`v2.18.1` on `70c91cd`: `scrollHorizontal` follows the layout and measures against its sticky stage; the horizontal strip recipe, the fifth and last planned). **2.18.0 published** (`v2.18.0` on `1840983`: `scrollVideo` `triggerElement`; four recipes). **2.17.1 published** (`v2.17.1` on `ed77b58`: `once` keeps `stagger`; the logo example is a full recipe). Recipe 2, the pinned feature tour on `/examples/scroll-pin`, is done (site-only). **2.17.0 published** (`v2.17.0` on `d7b03b2`: the React, Vue, Nuxt, Solid and Svelte wrappers follow option changes, Angular gets `update()` for `ngOnChanges`). **2.16.1 published** (`v2.16.1` on `b3eb52a`) (`svg-scroll-draw/react` ships `"use client"` so Server Components render `<ScrollDraw>` directly; all 56 mutations run again). **2.16.0 published** (`v2.16.0` on `fde9f4c`: ES module entries share code through chunks — main + react 18.1 → 13.2 KB; the drop-ins share one instance with their React hooks; size tables generated; main entry 10.7 KB as shipped files). **2.15.3 published** (`v2.15.3` on `acc9acc`: scrollReveal's `stagger` is a fraction of the reveal window, per row, on top of a custom trigger; 2.15.2 before it kept scrollVideo's end frame under reduced motion). Every page is linked from every page (nav "More", phone menu, footer index — `components/site/sitemap.ts`, guarded by `check-nav`). Sitemap dates come from git for every URL, generated groups included — Search Console (2026-11-04) had 20 indexed, 35 "Discovered – not indexed" (never crawled), 2 "Crawled – not indexed". The native CSS path is no longer described as compositor work anywhere, and `/vs-aos` quotes the reveal entry and the real presets. Every page is on the homepage design and all 23 showcase sites are live — in `32f3409`, on `main`.
 
 ---
+
+## 2.22.0 — reduced motion followed live (2026-11-06, not pushed)
+
+- `core/motion-live.ts` `finishWhenReduced(options, build)`: builds the
+  instance; when reduced motion turns on it destroys it and builds it again
+  through the start-up reduced branch, behind a stable object (methods taken
+  off it keep reaching the live one), without `onComplete` if the old one had
+  finished. Used by the draw engine, the animate engine (reveal, parallax,
+  groups, horizontal with `respectReducedMotion: true`), text and counter.
+  Video and `Cinematic` finish in place (`watchReducedMotion`); the React
+  progress hook sets 1. Drop-ins untouched. A file of its own so snap and the
+  timeline do not carry it (the chunked build shares whole files).
+- One way, on purpose: turning it off leaves everything finished.
+- Tests: `motionLive.test.ts` (14), `e2e/motion-live.spec.ts` (5) plus one
+  each in video and cinematic, 9 mutations run and caught. Two mutation anchors
+  had been stale since 2.21.0 (`text/aria-label` removed, `text/destroy-restore`
+  re-anchored): `mutation-check.mjs --anchors` now runs in verify and CI.
+- **The full mutation run takes hours** (a tsup build per mutation, about two
+  minutes each). Run a subset by id (`node scripts/mutation-check.mjs
+  reduced-live`); SIGINT cannot interrupt it between builds, so if you must stop
+  it, kill it and `git diff` the one file the last mutation names.
+- **Owner:** tags in order, each once npm shows the one before: `v2.20.1` on
+  `975dce6`, `v2.21.0` on `140ae6c`, then `v2.22.0` on its release commit.
+
+## IndexNow refusals warn (2026-11-06, not pushed)
+
+- `indexnow.mjs`: a 403, 429 or 5xx from IndexNow leaves a GitHub warning and
+  exits 0; 400/422, the key file and the sitemap still fail. Bing answered 202
+  twice, then 403 "UserForbiddedToAccessSite" with the key file served.
 
 ## Reduced-motion post (2026-11-06) — pushed in `08467e6`
 
 - `/blog/reduced-motion-scroll-animations`: effect by effect, built from what
   each engine does (`src/core/motion.ts`, `motion-watch.ts`, each engine's
   `prefersReduced` branch) and the 13 e2e specs that emulate reduced motion.
-  It says plainly that most engines read the setting once at start-up; only
-  scrollSnap and the timeline's loop follow a change live — a possible library
-  improvement.
+  Since 2.22.0 it also describes the live switch (on: finish at once; off:
+  stay finished) and the library's behaviour since then.
 - Port etiquette with other sessions: use your own port for `next start` and
   stop your own PID; `pkill -f "next start -p 3100"` once killed another
   session's server.
@@ -88,9 +116,14 @@
   `/blocks`, the recipes behind the example pages and the guides behind the
   framework pages, and `--check` runs in verify and CI (whose checkouts now
   fetch full history). CLAUDE.md says to run it before committing a page.
-- **Owner, after the push:** Actions → IndexNow → Run workflow, tick "all",
-  once (the 35 unindexed pages); `gh workflow run` is blocked on this network.
-  Then add the site to Bing Webmaster Tools to see the submissions.
+- **Bing refuses it for now:** runs on `975dce6` and `140ae6c` got 202; the
+  runs on `44e4dfd` and `08467e6` got 403 "UserForbiddedToAccessSite", with the
+  key file served correctly (checked with Bingbot's user agent too). A 403,
+  429 or 5xx now warns (GitHub annotation) and exits 0; 400/422 and anything
+  about the key file or the sitemap still fail.
+- **Owner:** add the site to Bing Webmaster Tools and verify it first, then
+  Actions → IndexNow → Run workflow, tick "all", once (the 35 unindexed
+  pages); `gh workflow run` is blocked on this network.
 
 ## 2.20.0 (2026-11-06) — published, `v2.20.0` on `972d705`
 

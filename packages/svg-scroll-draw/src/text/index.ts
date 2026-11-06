@@ -4,6 +4,7 @@ import { parseTrigger, computeProgress, computeTriggers } from '../core/trigger'
 import { _register, _unregister } from '../core/registry';
 import { watchLayout } from '../core/layout-watch';
 import { warn } from '../core/env';
+import { finishWhenReduced } from '../core/motion-live';
 
 // ── Public types ──────────────────────────────────────────────────────────────
 
@@ -175,7 +176,12 @@ export function scrollText(
   }
 
   const el = raw as HTMLElement;
+  // Reduced motion turned on mid-visit shows the final text as a page loaded
+  // under it would (core/motion-live).
+  return finishWhenReduced(options, (opts, reduced) => buildText(el, opts, reduced));
+}
 
+function buildText(el: HTMLElement, options: ScrollTextOptions, prefersReduced: boolean): ScrollDrawInstance {
   const {
     split   = 'words',
     stagger = 0.04,
@@ -186,7 +192,6 @@ export function scrollText(
     onComplete,
   } = options;
 
-  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const easeFn         = typeof easing === 'function' ? easing : (EASINGS[easing] ?? EASINGS['ease-out']);
   const startConfig    = parseTrigger(trigger.start ?? 'top 85%');
   const endConfig      = parseTrigger(trigger.end   ?? 'top 40%');

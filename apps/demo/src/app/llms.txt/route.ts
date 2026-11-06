@@ -4,7 +4,7 @@ const BODY = `# svg-scroll-draw
 
 > Scroll-driven animation for the web. Draw SVG paths, reveal elements, pin
 > sections, scrub video, split text, and count numbers — all tied to scroll
-> position. ~11 KB gzipped for the whole main entry, zero runtime dependencies,
+> position. ~12 KB gzipped for the whole main entry, zero runtime dependencies,
 > and a native CSS fast path, driven by the browser's scroll timeline with no
 > per-frame JavaScript, where the browser supports \`animation-timeline: view()\`.
 
@@ -24,7 +24,7 @@ Agent skill (Claude Code and other coding agents): https://github.com/DhruvilCha
 Every API is a separate entry point, so you only pay for what you import:
 
 - \`scrollDraw\` — animate an SVG path's \`stroke-dashoffset\` on scroll (the core case)
-- \`scrollReveal\` (5.5 KB) — fade/slide elements in as they enter the viewport
+- \`scrollReveal\` (5.8 KB) — fade/slide elements in as they enter the viewport
 - \`scrollAnimate\` — animate any CSS property: opacity, transform, color, any unit value
 - \`scrollPin\` (1.6 KB) — pin an element while the page scrolls past it
 - \`scrollSnap\` (1.9 KB) — snap between sections
@@ -36,7 +36,7 @@ Every API is a separate entry point, so you only pay for what you import:
 - \`scrollParallax\` — move an element at a multiple of scroll distance
 - \`scrollCounter\` — animate a number from → to
 - \`scrollVideo\` — bind \`video.currentTime\` to scroll position
-- \`scrollText\` (3.2 KB) — split text into chars/words/lines and stagger them
+- \`scrollText\` (3.4 KB) — split text into chars/words/lines and stagger them
 - \`scrollHorizontal\` — horizontal scroll sections
 - Group / Sequence / Timeline APIs for orchestrating several at once
 

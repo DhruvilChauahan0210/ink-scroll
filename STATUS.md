@@ -1,10 +1,10 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **2.21.0** — pushed (`140ae6c`), not tagged. 2.20.1 is pushed (`975dce6`), not tagged either; 2.20.0 is the latest published (`v2.20.0` on `972d705`, the first through npm's trusted publishing)
-> Tests: **695 unit** across 36 suites · **230 browser tests** per engine (690 runs
-> across Chromium/Firefox/WebKit) · **84 mutations**, each caught by the one test
-> named for it · **91.3% line coverage** (gate 90/90/82/82)
-> Bundle: **11.4 KB gzipped** (main entry as shipped files, chunks included; per-API entries from 0.2 KB) · zero runtime dependencies
+> Current version: **2.22.0** — in the working tree (reduced motion followed live). 2.21.0 is pushed (`140ae6c`), not tagged; 2.20.1 is pushed (`975dce6`), not tagged either; 2.20.0 is the latest published (`v2.20.0` on `972d705`, the first through npm's trusted publishing)
+> Tests: **709 unit** across 37 suites · **237 browser tests** per engine (711 runs
+> across Chromium/Firefox/WebKit) · **92 mutations**, each caught by the one test
+> named for it · **91.5% line coverage** (gate 90/90/82/82)
+> Bundle: **11.7 KB gzipped** (main entry as shipped files, chunks included; per-API entries from 0.2 KB) · zero runtime dependencies
 > Last updated: 2026-11-06
 
 ---
@@ -49,11 +49,11 @@
 - [x] `scrollAnimateGroup` + `scrollAnimateSequence` + `scrollParallaxGroup` in `svg-scroll-draw/group`
 
 ### Testing
-- [x] 695 tests across 36 suites — `reactive` (the wrappers' option fingerprint and live callbacks), `directives` (the built files' "use client"), `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollText` (23)
+- [x] 709 tests across 37 suites — `motionLive` (reduced motion turned on mid-visit, every engine and the React hook), `reactive` (the wrappers' option fingerprint and live callbacks), `directives` (the built files' "use client"), `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollText` (23)
 - [x] Initial state fix — `createAnimateEngine` and `scrollCounter` now apply correct alpha immediately on init (no flash before IO fires)
 
 ### Browser tests (Phase 2, `packages/svg-scroll-draw/e2e`)
-230 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
+237 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
 `helpers.ts` (deterministic sweep — scroll to a fixed offset, wait two frames,
 read) and `fixtures/_probe.mjs` (parsing stays in the page, so specs assert on
 numbers).
@@ -63,7 +63,7 @@ numbers).
 - [x] `reveal` — resolved transforms, stagger cascade, `once` latching, reduced motion, destroy restores styles
 - [x] `pin` — no layout shift on wrapper injection, pin/unpin boundaries, parked position and width, progress, all four lifecycle callbacks, `refresh()`, ResizeObserver auto-refresh, destroy unwraps
 - [x] `snap` — exact section landing, index clamping, threshold both directions, one section per gesture, animated vs **real** reduced-motion instant snap, destroy
-- [x] `text` — split preserves rendered text exactly, `aria-label` + `aria-hidden` spans, stagger cascade, no re-split/reflow loop over 30 frames, reduced motion, destroy restores markup byte-for-byte including nested elements
+- [x] `text` — split preserves rendered text exactly, `aria-hidden` pieces + one visually hidden copy (the sentence once in the accessibility snapshot), stagger cascade, no re-split/reflow loop over 30 frames, reduced motion, destroy restores markup byte-for-byte including nested elements
 - [x] `counter` — from-value at construction, formatting/decimals/custom format at the final value, well-formed text every frame (no NaN/exponential/out-of-range), `once` hold, reduced motion, destroy
 - [x] `progress` — accurate raw value across the window, **dependent CSS resolving the variables through `calc()`**, eased ≠ raw, `onProgress`, renamed variable, `easedVariable: null`, clamping, destroy removes the properties
 - [x] `parallax` — travel = speed x height, negative speed reverses, `axis: 'x'` uses width, reverses on the way back, reduced motion, destroy restores
@@ -73,9 +73,10 @@ numbers).
 - [x] `group` — draw group members animating together, `seek`/`destroy` reaching every member, the sequence gate (a step held until its predecessor finishes), `once` latching across a scroll-back, chain completion reporting, `scrollAnimateGroup` cascade from per-member windows, `scrollParallaxGroup` travel = speed x **each member's own** height
 - [x] `timeline` — per-track `from`/`to` windows, a track driving every element it matches, per-track easing, `fade`, the `--scroll-draw-progress` custom property, `onComplete`, `seek`/`replay`, `refresh()`, time-driven `loop`, reduced motion (scrubbing continues, the loop does not), `debug` panel lifecycle, destroy restores the paths
 - [x] `cinematic` — the whole structure built from a story (400vh mount, sticky stage, canvas viewBox, stroke widths, pre-measured vs self-measured path lengths), per-animation scene windows, fade curve, first paint mid-story, a story shorter than the viewport, reduced motion, destroy leaves the built DOM
+- [x] `motion-live` — reduced motion turned on after load (`emulateMedia`): a part-drawn drawing, a drawing, reveal cards, split text, a counter and parallax all finish without a scroll, each `onComplete` once, the screen-reader copy once; nothing moves afterwards; a `replay()` taken off the instance is ignored; turning it off leaves everything finished. Video and cinematic suites turn it on mid-scrub
 - [x] `frameworks` — all eight wrappers (React, Vue, Solid, Svelte, Angular, Astro, Nuxt, the web component) mounted for real and held to one contract: the engine runs, unmounting leaks no observer and no frame loop, re-mounting works, and option changes reach the engine only where the wrapper claims they do. React/Vue/Solid/Nuxt are bundled from `dist/` by `e2e/build-fixtures.mjs`
 - [x] `cdn` — both CDN builds loaded from a plain `<script src>`: the production one exposes the API, registers `<scroll-draw>` and says nothing; the dev one reports the same mistakes the production build hides, and does not mistake a stroke set from CSS for a missing one
-- [x] `scripts/mutation-check.mjs` — 56 one-line source mutations, each required to fail the single test named for it
+- [x] `scripts/mutation-check.mjs` — 92 one-line source mutations, each required to fail the single test named for it; `--anchors` checks in a second that every one still applies (verify and CI)
 - [x] `scripts/make-fixture-video.mjs` — reproducible 4s scrub clip, no system tooling needed
 
 ### Browser tests still missing
@@ -173,6 +174,16 @@ at all.
 - [ ] Owner: set `GITHUB_TOKEN` on Vercel (a fine-grained token with read-only access to public repositories and no other permissions is enough)
 - [x] Merged into `feat/homepage-redesign` and pushed (2026-11-06)
 
+### 2.22.0 — reduced motion turned on mid-visit applies at once (2026-11-06; in the working tree)
+
+- [x] Every engine but the drop-ins follows `prefers-reduced-motion` turned on while the page is open: `core/motion-live.ts` destroys the instance and rebuilds it through the start-up reduced branch behind the same object (draw, animate — reveal, parallax, groups, horizontal with `respectReducedMotion: true` — text, counter); video and `Cinematic` finish in place; `useScrollDrawProgress` reports 1
+- [x] One way: turning it off leaves everything finished until the next load; snap and the timeline's loop still follow both ways
+- [x] `onComplete` once for an effect that had not finished, never twice; `scrollCounter`'s reduced `getProgress()` is 1
+- [x] Tests: 14 unit (`motionLive.test.ts`), 7 browser tests × 3 engines (`motion-live.spec.ts`, video, cinematic), 9 mutations; two mutation anchors stale since 2.21.0 fixed (92 in all), `--anchors` in verify and CI
+- [x] Sizes: main 11.38 → 11.70 KB, CDN +0.22; snap, timeline, pin and the drop-ins unchanged; budgets moved, reason in `scripts/size.mjs`
+- [x] Site: the reduced-motion post, `/docs` option rows, the Next.js FAQ, `/changelog`, both READMEs
+- [ ] Released
+
 ### 2.21.0 — split text a screen reader can read (2026-11-06; pushed in `140ae6c`, not tagged)
 
 - [x] `scrollText`: one visually hidden copy of the text after the `aria-hidden` pieces, instead of an `aria-label` ARIA forbids on `<p>`/`<span>`/`<div>` (a screen reader could read nothing); `destroy()` leaves a page's own `aria-label`
@@ -200,7 +211,8 @@ at all.
 
 - [x] `.github/workflows/indexnow.yml` + `apps/demo/scripts/indexnow.mjs`: after each successful production deploy, the sitemap URLs dated on or after the previous deploy's day go to IndexNow (key file `public/cff7b1aad337fe3f2e7de7398f3b57b9.txt`); a manual run with "all" sends all 64
 - [x] `refresh-sitemap-dates.mjs`: uncommitted files count as today, `/docs`, `/examples`, `/blocks` and the strip post read the files behind them, the example group includes the recipes and the framework group its guides; `--check` in verify and CI (full-history checkout). Eleven dates had sat at 2026-11-04 through a day of releases
-- [ ] Owner, after the push: Actions → IndexNow → Run workflow with "all" once, to send all 64 pages (the 35 "Discovered – not indexed" among them); and add the site to Bing Webmaster Tools
+- [x] A refusal by the engines warns instead of failing: 403, 429 and 5xx leave a GitHub warning annotation and exit 0; 400/422, a missing or unserved key file and an empty sitemap still fail. Bing answered 202 twice, then 403 "UserForbiddedToAccessSite" on `44e4dfd` and `08467e6` with the key file served correctly
+- [ ] Owner: add the site to Bing Webmaster Tools and verify it (the first thing to try for the 403); then Actions → IndexNow → Run workflow with "all" once, to send every page (the 35 "Discovered – not indexed" among them)
 
 ### 2.20.1 — resuming off screen finishes the drawing (2026-11-06; in the working tree)
 

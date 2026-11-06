@@ -40,7 +40,8 @@ export interface ScrollHorizontalOptions {
   triggerElement?: string | Element;
   /**
    * Honour `prefers-reduced-motion: reduce` by holding the track at its final
-   * position instead of scrubbing. Default: **`false`** — unlike every other
+   * position instead of scrubbing, also when the reader turns it on while the
+   * page is open. Default: **`false`** — unlike every other
    * API here, which defaults to `true`.
    *
    * The reasoning: this transform is scroll-linked scrubbing, not autonomous

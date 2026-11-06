@@ -4,6 +4,7 @@ import { parseTrigger, computeProgress, computeTriggers } from '../core/trigger'
 import { _register, _unregister } from '../core/registry';
 import { watchLayout } from '../core/layout-watch';
 import { warn } from '../core/env';
+import { finishWhenReduced } from '../core/motion-live';
 
 // ── Public types ──────────────────────────────────────────────────────────────
 
@@ -36,7 +37,12 @@ export function scrollCounter(
     warn('scrollCounter: element not found:', target);
     return NOOP;
   }
-  const el = raw;
+  // Reduced motion turned on mid-visit writes the final number as a page loaded
+  // under it would (core/motion-live).
+  return finishWhenReduced(options, (opts, reduced) => buildCounter(raw, opts, reduced));
+}
+
+function buildCounter(el: HTMLElement, options: ScrollCounterOptions, prefersReduced: boolean): ScrollDrawInstance {
 
   const {
     from        = 0,
@@ -58,12 +64,10 @@ export function scrollCounter(
   const startConfig = parseTrigger(trigger.start ?? 'top 80%');
   const endConfig   = parseTrigger(trigger.end   ?? 'top 20%');
 
-  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
   if (prefersReduced) {
     el.textContent = fmt(to);
     onComplete?.();
-    return NOOP;
+    return { ...NOOP, getProgress: () => 1 };
   }
 
   // The initial text is written further down, once the trigger window is known:

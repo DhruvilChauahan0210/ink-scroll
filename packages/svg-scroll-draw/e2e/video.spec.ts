@@ -178,6 +178,25 @@ test.describe('scrollVideo', () => {
     }
   });
 
+  test('reduced motion turned on mid-scrub stops on the end frame', async ({ page }) => {
+    await openFixture(page, 'video.html');
+    await requireDecoder(page);
+    await expect.poll(async () => (await read<Row>(page)).duration, { timeout: 5000 }).not.toBeNull();
+    await scrollToY(page, 1400);
+    const mid = await read<Row>(page);
+    expect(mid.currentTime, 'not mid-scrub before the switch').toBeLessThan(DURATION - 0.3);
+
+    // The reader turns reduced motion on while the clip is playing under the scroll.
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await expect.poll(async () => (await read<Row>(page)).currentTime, { timeout: 5000 }).toBeCloseTo(DURATION, 1);
+
+    // And it stays there as the page keeps scrolling, both ways.
+    for (const y of [T_START, T_END]) {
+      await scrollToY(page, y);
+      expect((await read<Row>(page)).currentTime, `end frame lost at y=${y}`).toBeCloseTo(DURATION, 1);
+    }
+  });
+
   test('destroy() stops scrubbing', async ({ page }) => {
     await openFixture(page, 'video.html');
     await requireDecoder(page);

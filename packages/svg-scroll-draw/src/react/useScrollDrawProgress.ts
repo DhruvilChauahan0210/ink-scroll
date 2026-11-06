@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, type RefObject } from 'react';
 import { EASINGS } from '../core/easing';
 import { parseTrigger, computeProgress, computeTriggers } from '../core/trigger';
+import { watchReducedMotion } from '../core/motion-watch';
 import type { EasingName, TriggerConfig } from '../core/types';
 
 export interface UseScrollDrawProgressOptions {
@@ -142,7 +143,18 @@ export function useScrollDrawProgress(
     window.addEventListener('resize', onResize);
     window.addEventListener('orientationchange', onResize);
 
+    // Reduced motion turned on mid-visit: complete, and no more ticks, as at
+    // mount under it. One way, as in every engine (core/motion-live).
+    const unwatchMotion = watchReducedMotion((reduced) => {
+      if (!reduced) return;
+      unwatchMotion();
+      cancelAnimationFrame(rafId);
+      observer.disconnect();
+      setProgress(1);
+    });
+
     return () => {
+      unwatchMotion();
       cancelAnimationFrame(rafId);
       clearTimeout(resizeTimer);
       observer.disconnect();
