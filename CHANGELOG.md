@@ -399,6 +399,13 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### CI
 
+- **CI runs on Node 22 and 24, and no job can hang for 6 hours.** Node 20 left
+  support in April 2026 and Vercel builds the site on 24; `@types/node` moves
+  to ^22 with the oldest version tested (checked locally under Node 24.22.2:
+  `verify` and the coverage thresholds pass). Every job has a
+  `timeout-minutes`, about three times a normal run: on 2026-11-06 a browser
+  job sat on "Install Playwright browsers" for 47 minutes and counting, under
+  GitHub's default limit of 6 hours, while the next run's took 2.
 - **The release job publishes with npm's trusted publishing and holds no
   token.** 2.20.0 was the first release through it (`_npmUser` is GitHub
   Actions); `NODE_AUTH_TOKEN` and `--provenance` are gone from the publish

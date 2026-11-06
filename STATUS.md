@@ -184,7 +184,8 @@ at all.
 - [x] Next 16.4.5, React 19.3.1, esbuild 0.28.2 (tests only), Tailwind 4.3.4, Vue 3.5.45, Solid 1.9.18, type packages; `npm audit` 32 → 17 findings
 - [x] Declined with reasons in `.github/dependabot.yml`: TypeScript 7, ESLint 10, `@types/node` 26 (and `@vitest/coverage-v8` majors now follow vitest's)
 - [x] Dependabot PRs #1–#4 and #6–#9 closed after the push (#6–#8 by Dependabot itself once the ignore rules landed). No notes on them: this laptop's network answers GitHub comment posts with its own page, so the reasons live in `660f363`'s message and `dependabot.yml`
-- [ ] CI's Node matrix is [20, 22]; Node 20 is out of support. Moving to [22, 24] moves `@types/node` to ^22 with it
+- [x] CI's Node matrix is [22, 24] (Node 20 left support in April 2026), `@types/node` ^22 with it; verify and coverage checked under Node 24.22.2 locally
+- [x] Every job has `timeout-minutes` (15 / 30 / 30 for the release): a browser job hung 47+ minutes on "Install Playwright browsers" on 2026-11-06, and the default is 6 hours
 
 ### 2.19.1 — a staggered drawing finishes (2026-11-06)
 

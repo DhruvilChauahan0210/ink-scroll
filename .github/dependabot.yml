@@ -32,8 +32,9 @@ updates:
         update-types: [version-update:semver-major]
       - dependency-name: eslint
         update-types: [version-update:semver-major]
-      # Matches the oldest Node CI runs (the matrix in ci.yml); types for a newer
-      # Node let code use APIs that runtime does not have. Move with the matrix.
+      # Matches the oldest Node CI runs (22, the matrix in ci.yml); types for a
+      # newer Node let code use APIs that runtime does not have. Move with the
+      # matrix.
       - dependency-name: "@types/node"
         update-types: [version-update:semver-major]
 

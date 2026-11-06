@@ -10,10 +10,16 @@ jobs:
   test:
     name: Test & Build
     runs-on: ubuntu-latest
+    # A job without a limit runs GitHub's default of 6 hours. On 2026-11-06 a
+    # browser job hung on "Install Playwright browsers" for 47 minutes and
+    # counting while the next run's took 2. Each limit is about 3x a normal run.
+    timeout-minutes: 15
 
+    # Node 20 left support in April 2026; Vercel builds the site on 24.
+    # `@types/node` in apps/demo follows the oldest version here.
     strategy:
       matrix:
-        node-version: [20, 22]
+        node-version: [22, 24]
 
     steps:
       - uses: actions/checkout@v7
@@ -74,6 +80,7 @@ jobs:
   e2e:
     name: Browser tests
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
       - uses: actions/checkout@v7

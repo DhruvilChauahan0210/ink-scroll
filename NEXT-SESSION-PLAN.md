@@ -195,14 +195,16 @@ months, 81% to the homepage; `/vs-gsap` at position 11 with 425 impressions.
 ### Gotcha on this laptop
 - The work network answers some `gh` writes with its own HTML page instead of
   passing them to GitHub ("invalid character '<'"): PR and issue comments (REST
-  or GraphQL, so `gh pr close --comment` fails outright) and release edits
-  (`gh release edit`, or a PATCH with `make_latest`). Closing a PR works:
+  or GraphQL, so `gh pr close --comment` fails outright), release edits
+  (`gh release edit`, or a PATCH with `make_latest`) and cancelling a run
+  (`gh run cancel`, or the REST POST). Closing a PR works:
   `gh api -X PATCH repos/DhruvilChauahan0210/ink-scroll/pulls/<n> -f state=closed`.
   Put the reasons in the commit message instead (found 2026-11-06).
 - The network intercepts TLS, and Node rejects api.github.com's certificate, so a
   plain `npm run dev` keeps serving a stale cached GitHub response. Run the dev server
   (and any local `vercel-build`) with `NODE_OPTIONS=--use-system-ca` (Node ≥ 22.15).
-  Don't put that flag in package.json: CI runs Node 20, which rejects it.
+  Don't put that flag in package.json: it is for this laptop's network only
+  (Node before 22.15 rejects it; CI runs 22 and 24 since 2026-11-06).
 - Optional: a `GITHUB_TOKEN` env var on Vercel lifts GitHub's anonymous rate limit
   for the live stats chapter; it works without one.
 
@@ -256,8 +258,8 @@ months, 81% to the homepage; `/vs-gsap` at position 11 with 425 impressions.
    scroll-pin post (titles changed 2026-11-04). Watch GitHub stars after the
    homepage finale (2026-11-04).
 5. **Open, the owner's call:** the naming decision (see `ROADMAP.md`).
-6. A numeric scrollPin `pinDistance` is a fixed pixel count; a viewport-relative
-   value (`'100vh'`) would follow a resize.
+6. ~~A viewport-relative scrollPin `pinDistance`~~ — `'150vh'` in 2.20.0,
+   measured as CSS's vh.
 
 Recipes: all five planned are done — logo (`/examples/logo-reveal`), pinned
 feature tour (`/examples/scroll-pin`), stat row (`/examples/scroll-counter`),

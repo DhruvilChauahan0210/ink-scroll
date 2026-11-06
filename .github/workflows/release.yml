@@ -44,6 +44,9 @@ jobs:
   release:
     name: Verify & publish
     runs-on: ubuntu-latest
+    # About 3x a normal run (9.5 minutes). A hang fails here instead of holding
+    # the tag's release for GitHub's default 6 hours.
+    timeout-minutes: 30
 
     permissions:
       # write: the last step creates the GitHub release. With `read`, 2.10.1
