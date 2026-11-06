@@ -242,7 +242,7 @@ export const RECIPES: Record<RecipeSlug, RecipeDef> = {
         ),
         code: `const pin = scrollPin(stage.current, {
   top: HEADER,
-  pinDistance: window.innerHeight * (n - 1),
+  pinDistance: \`\${(n - 1) * 100}vh\`,
   onProgress: (p) => { … },
 });
 
@@ -353,9 +353,9 @@ drawings.forEach((d, j) =>
         problem: 'The tour is the wrong length after the phone rotates',
         body: (
           <>
-            <C>pinDistance: window.innerHeight * 2</C> is measured once. Leave <C>pinDistance</C> out and the
-            default, one viewport height, is measured again on every resize; a number you pass stays as it
-            was.
+            <C>pinDistance: window.innerHeight * 2</C> is a number, measured once, so it keeps the old
+            screen’s height. Write <C>{"'200vh'"}</C> instead (2.20.0): it is measured as CSS measures
+            vh, so a rotation re-measures it and the address bar sliding in and out does not.
           </>
         ),
       },

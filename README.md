@@ -22,7 +22,7 @@ Works in **React · Next.js · Vue 3 · Svelte · Solid · Angular · Nuxt · As
 
 ## Features at a glance
 
-- **11.4 KB gzipped** for the whole main entry — and you rarely need all of it. Every API is a separate entry point: `scrollReveal` is 5.5 KB, `scrollPin` 1.4 KB, `scrollSnap` 1.9 KB. [Full size table below](#bundle-sizes), measured by `npm run size` and enforced in CI.
+- **11.4 KB gzipped** for the whole main entry — and you rarely need all of it. Every API is a separate entry point: `scrollReveal` is 5.5 KB, `scrollPin` 1.6 KB, `scrollSnap` 1.9 KB. [Full size table below](#bundle-sizes), measured by `npm run size` and enforced in CI.
 - **Native CSS fast path** — where the browser supports scroll-driven animations the draw runs on a CSS `view-timeline` with zero per-frame JavaScript, and falls back to the JS engine automatically everywhere else. Both engines are [verified to produce the same output](#native-css-rendering) by a cross-browser test suite rather than assumed to.
 - **Zero dependencies** — no GSAP, no ScrollTrigger, no heavyweight runtime
 - **vivus drop-in** — `import Vivus from 'svg-scroll-draw/vivus'` keeps your `new Vivus()` code; SVG output matched exactly against vivus 0.4.6. [Details](#vivus-drop-in--keep-your-new-vivus-code)
@@ -34,8 +34,8 @@ Works in **React · Next.js · Vue 3 · Svelte · Solid · Angular · Nuxt · As
 - **30+ options** — easing, stagger, fade, stroke color/width lerp, fill opacity, clip reveal, morphTo, velocityScale, waypoints, callbacks, repeat, autoReverse, and more
 - **Group / Sequence / Timeline APIs** — animate multiple containers simultaneously, one-after-another, or on independent scroll windows with `loop` for auto-looping after scroll completion
 - **CSS custom property** — `--scroll-draw-progress` is set on every frame so you can drive any CSS animation without a callback
-- **690 tests across 36 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
-- **227 browser tests on top of those**, run against Chromium, Firefox and WebKit in CI. The unit suite runs in jsdom, where `getTotalLength` is stubbed and `IntersectionObserver` is faked — it can check the engine's arithmetic but nothing about real browser behaviour. Both counts are derived from the suites themselves and enforced in CI, so neither can quietly drift out of date
+- **695 tests across 36 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
+- **229 browser tests on top of those**, run against Chromium, Firefox and WebKit in CI. The unit suite runs in jsdom, where `getTotalLength` is stubbed and `IntersectionObserver` is faked — it can check the engine's arithmetic but nothing about real browser behaviour. Both counts are derived from the suites themselves and enforced in CI, so neither can quietly drift out of date
 
 ---
 
@@ -830,7 +830,7 @@ outgrows its budget.
 | `svg-scroll-draw/cinematic`          | 4.7 KB | **2.2 KB** |
 | `svg-scroll-draw/snap`               | 4.1 KB | **1.9 KB** |
 | `svg-scroll-draw/devtools`           | 4.0 KB | **1.8 KB** |
-| `svg-scroll-draw/pin`                | 3.2 KB | **1.4 KB** |
+| `svg-scroll-draw/pin`                | 3.7 KB | **1.6 KB** |
 | `svg-scroll-draw/lenis`              | 0.4 KB | **0.2 KB** |
 
 Entries share code through chunks instead of each carrying its own copy, so `svg-scroll-draw` + `svg-scroll-draw/react` together is **14.3 KB**, not 11.4 KB + 12.8 KB.

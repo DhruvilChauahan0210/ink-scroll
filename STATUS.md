@@ -1,8 +1,8 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **2.19.1** — published (npm `latest`, GitHub's latest release; `v2.19.1` on `2f7b711`). 2.19.0 published just before it (`v2.19.0` on `f131f9c`)
-> Tests: **690 unit** across 36 suites · **227 browser tests** per engine (681 runs
-> across Chromium/Firefox/WebKit) · **80 mutations**, each caught by the one test
+> Current version: **2.20.0** — in the working tree, not committed. 2.19.1 is the latest published (npm `latest`, `v2.19.1` on `2f7b711`)
+> Tests: **695 unit** across 36 suites · **229 browser tests** per engine (687 runs
+> across Chromium/Firefox/WebKit) · **82 mutations**, each caught by the one test
 > named for it · **91.3% line coverage** (gate 90/90/82/82)
 > Bundle: **11.4 KB gzipped** (main entry as shipped files, chunks included; per-API entries from 0.2 KB) · zero runtime dependencies
 > Last updated: 2026-11-06
@@ -49,11 +49,11 @@
 - [x] `scrollAnimateGroup` + `scrollAnimateSequence` + `scrollParallaxGroup` in `svg-scroll-draw/group`
 
 ### Testing
-- [x] 690 tests across 36 suites — `reactive` (the wrappers' option fingerprint and live callbacks), `directives` (the built files' "use client"), `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollText` (23)
+- [x] 695 tests across 36 suites — `reactive` (the wrappers' option fingerprint and live callbacks), `directives` (the built files' "use client"), `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollText` (23)
 - [x] Initial state fix — `createAnimateEngine` and `scrollCounter` now apply correct alpha immediately on init (no flash before IO fires)
 
 ### Browser tests (Phase 2, `packages/svg-scroll-draw/e2e`)
-227 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
+229 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
 `helpers.ts` (deterministic sweep — scroll to a fixed offset, wait two frames,
 read) and `fixtures/_probe.mjs` (parsing stays in the page, so specs assert on
 numbers).
@@ -162,6 +162,14 @@ at all.
 - [x] `/examples/scroll-video` is a full recipe — pinned film in a sticky stage measured with `triggerElement` (2.18.0); keyframe interval and Range requests measured; files in `apps/demo/src/recipes/scroll-video/`
 - [x] `/blog/horizontal-scroll-sections` is a full recipe — a case-study strip: runway matched to the travel, count and rail from `onProgress`, `overflow: clip` + a `focusin` scroll for the keyboard; five pitfalls measured on the file; files in `apps/demo/src/recipes/horizontal-scroll-sections/`; the recipe parts render inside a post's sections
 - [x] The five recipes planned are done (logo, sticky feature section, stat row, scrubbed film, horizontal strip)
+
+### 2.20.0 — pin for screens, not pixels (2026-11-06; in the working tree)
+
+- [x] `scrollPin` `pinDistance: '150vh'`, measured as CSS's vh (follows rotation and resizes, not a phone's address bar), `'600px'`, numbers unchanged; the default stays `window.innerHeight`; anything else warns once
+- [x] Tests: browser tests resizing the viewport and simulating an address bar (3 engines), five unit tests, mutations `pin/vh-follows` and `pin/vh-is-css`; `pin/refresh`, `parallax/travel` and `parallax/axis` re-anchored (stale since 2.19.0) — all 82 run and caught
+- [x] Docs and examples write screens as `'300vh'`; the scroll-pin recipe and the pinned-feature-tour block (React, Vue, Svelte) use vh; the block requires `svg-scroll-draw@^2.20.0`
+- [x] Sizes: pin 1.4 → 1.6 KB (1.58; budget 1.6, reason in `scripts/size.mjs`)
+- [ ] Released — the first release through npm's trusted publisher (added 2026-11-06, lapses about 2026-11-08); then check `_npmUser`
 
 ### npm trusted publishing (2026-11-06; release job only)
 

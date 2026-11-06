@@ -3,8 +3,14 @@ import { _register, _unregister } from '../core/registry';
 import { warn } from '../core/env';
 
 export interface ScrollPinOptions {
-  /** Extra pixels of scroll to stay pinned after the element hits its viewport position. Default: viewport height. */
-  pinDistance?: number;
+  /**
+   * How much scroll the element stays pinned for once it reaches `top`.
+   * A number is pixels and stays that; `'600px'` is 600. `'150vh'` is CSS's
+   * 150vh: it follows rotation and window resizes, but not a phone's address
+   * bar sliding in and out. Default: `window.innerHeight`, read again on every
+   * resize, address bar included.
+   */
+  pinDistance?: number | `${number}vh` | `${number}px`;
   /** Viewport Y position (px) where the element pins. Default: 0 (top of viewport). */
   top?: number;
   /** Custom scroll container (CSS selector or Element). Default: window. */
@@ -86,11 +92,45 @@ export function scrollPin(
   let currentProgress = 0;
   let rafId  = 0;
   let dirty  = false;
+  let warned = false;
+
+  /**
+   * The pin zone in pixels, read on every measure. A number was always a fixed
+   * count, so `window.innerHeight * 2` was measured once and stayed the old
+   * screen's two heights after a rotation.
+   *
+   * A vh value is measured as CSS measures it, from an element 100vh tall, not
+   * from `window.innerHeight`: on a phone innerHeight changes as the address
+   * bar slides and fires a resize, so a pin zone built from it grew and shrank
+   * under the reader's thumb. CSS's vh is the tall viewport and holds still.
+   * An element that measures 0 (no layout, as in jsdom) falls back to
+   * innerHeight.
+   */
+  function distance(): number {
+    const d = options.pinDistance;
+    if (d === undefined) return window.innerHeight;
+    if (typeof d === 'number') return d;
+    const n = parseFloat(d);
+    const unit = d.trim().slice(-2);
+    if (n === n && unit === 'px') return n;
+    if (n === n && unit === 'vh') {
+      const probe = document.createElement('div');
+      // Fixed, so it never touches the page's layout; it is gone before any paint.
+      probe.style.cssText = 'position:fixed;height:100vh';
+      document.body.appendChild(probe);
+      const vh = probe.offsetHeight || window.innerHeight;
+      probe.remove();
+      return (n * vh) / 100;
+    }
+    if (!warned) warn('scrollPin: pinDistance is not a number, vh or px; using window.innerHeight:', d);
+    warned = true;
+    return window.innerHeight;
+  }
 
   function measure(): void {
     elWidth     = wrapper.offsetWidth;
     elHeight    = htmlEl.offsetHeight;
-    pinDistance = options.pinDistance ?? window.innerHeight;
+    pinDistance = distance();
     wrapper.style.height = `${elHeight + pinDistance}px`;
   }
 

@@ -442,6 +442,52 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ---
 
+## [2.20.0] — 2026-11-06
+
+### Added
+
+- **`scrollPin`'s `pinDistance` takes viewport heights, measured as CSS
+  measures them.** `'150vh'` is CSS's 150vh, read from an element that tall on
+  every measure: the pin zone follows a rotation or a window resize, but not a
+  phone's address bar sliding in and out, which changes `window.innerHeight`
+  and fires a resize while the layout stays put. `'600px'` is 600, a number is
+  still a fixed pixel count, and leaving it out still means
+  `window.innerHeight`. The usual way to ask for screens,
+  `pinDistance: window.innerHeight * 2`, was measured once and kept the old
+  screen's height after a rotation. A value it cannot read (`'2 screens'`)
+  warns once in development and uses `window.innerHeight`. GSAP's
+  `end: '+=200%'` is `pinDistance: '200vh'`.
+
+### Tests
+
+- Browser tests in all three browsers: a 400px panel with `'150vh'` holds
+  1600 → 1300 when the viewport goes from 800 to 600 tall while `600` and
+  `'600px'` stay 1000; and with a simulated address bar (`innerHeight` 800 →
+  700 and a resize, nothing else) it stays 1600. Five unit tests (CSS vh
+  against `innerHeight`, the default, decimals, the warning once, the probe
+  removed). Mutations `pin/vh-follows` and `pin/vh-is-css`, 82 in all, every
+  one run and caught. Three had not applied since 2.19.0 changed the code
+  under them, so the "all caught" of 2.19.0 and 2.19.1 was not true of them:
+  `pin/refresh` named `refresh()`'s body from before `remeasure()`, and
+  `parallax/travel` and `parallax/axis` named the pixel travel that became a
+  percentage. All three are re-anchored and caught. 695 unit / 229 browser
+  tests per engine.
+- The pin entry is 1.4 → 1.6 KB (1.58; its budget moved to 1.6, the reason in
+  `scripts/size.mjs`).
+
+### Docs and blocks
+
+- `/docs`, the scroll-pin post, the React and Next.js pages, the complete
+  guide, the examples and the skill's API and GSAP tables write screens as
+  `'300vh'`. The scroll-pin recipe uses `` `${(n - 1) * 100}vh` ``, and its
+  "wrong length after the phone rotates" pitfall says why.
+- The pinned-feature-tour block (React, Vue and Svelte) uses it too: its
+  comment had kept a number on purpose so the address bar would not stretch
+  the tour, which CSS vh now also guarantees, and a rotation re-measures it.
+  Its registry dependency is `svg-scroll-draw@^2.20.0`, since an older
+  installed copy would not read a string; `build-registry` accepts a versioned
+  dependency and `/blocks` counts packages by name.
+
 ## [2.19.1] — 2026-11-06
 
 ### Fixed

@@ -227,3 +227,77 @@ describe('scrollPin', () => {
     expect(() => instance.destroy()).not.toThrow();
   });
 });
+
+// A number was the only form, so `window.innerHeight * 2` was measured once and
+// kept the old screen's height after a rotation. A vh value is re-read on every
+// measure, from an element 100vh tall, as CSS measures it. jsdom has no layout,
+// so that element measures 0 and these fall back to innerHeight, except where a
+// test gives 100vh its own height.
+describe('scrollPin — pinDistance units', () => {
+  const height = () => (document.querySelector('[data-ssd-pin-wrapper]') as HTMLElement).style.height;
+
+  it('a vh value is a share of the viewport height, and follows it', () => {
+    const instance = scrollPin(makeEl(), { pinDistance: '150vh' });
+    expect(height()).toBe('1400px'); // 200 + 1.5 × 800
+    vi.stubGlobal('innerHeight', 600);
+    instance.refresh();
+    expect(height()).toBe('1100px'); // 200 + 1.5 × 600
+    instance.destroy();
+  });
+
+  it('a number, and a px string, stay put when the viewport changes', () => {
+    for (const pinDistance of [600, '600px'] as const) {
+      vi.stubGlobal('innerHeight', 800);
+      const instance = scrollPin(makeEl(), { pinDistance });
+      vi.stubGlobal('innerHeight', 600);
+      instance.refresh();
+      expect(height(), String(pinDistance)).toBe('800px');
+      instance.destroy();
+    }
+  });
+
+  it('the default is window.innerHeight, read again on every resize', () => {
+    const instance = scrollPin(makeEl());
+    expect(height()).toBe('1000px');
+    vi.stubGlobal('innerHeight', 500);
+    instance.refresh();
+    expect(height()).toBe('700px');
+    instance.destroy();
+  });
+
+  // On a phone the two differ: innerHeight moves with the address bar, CSS's vh
+  // is the tall viewport and does not.
+  it('a vh value is CSS vh, not innerHeight; the default stays innerHeight', () => {
+    const offset = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'offsetHeight')!;
+    Object.defineProperty(HTMLElement.prototype, 'offsetHeight', {
+      configurable: true,
+      get(this: HTMLElement) { return this.style.height === '100vh' ? 900 : 0; },
+    });
+    try {
+      const vh = scrollPin(makeEl(), { pinDistance: '100vh' });
+      expect(height()).toBe('1100px'); // 200 + 900, the CSS vh
+      vh.destroy();
+      const byDefault = scrollPin(makeEl());
+      expect(height()).toBe('1000px'); // 200 + 800, innerHeight
+      byDefault.destroy();
+      expect(document.querySelectorAll('div[style*="100vh"]').length, 'the probe is removed').toBe(0);
+    } finally {
+      Object.defineProperty(HTMLElement.prototype, 'offsetHeight', offset);
+    }
+  });
+
+  it('decimals work, and a value it cannot read warns once and uses innerHeight', () => {
+    const decimal = scrollPin(makeEl(), { pinDistance: '12.5vh' });
+    expect(height()).toBe('300px'); // 200 + 0.125 × 800
+    decimal.destroy();
+
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const instance = scrollPin(makeEl(), { pinDistance: '2 screens' as never });
+    instance.refresh();
+    expect(height()).toBe('1000px');
+    expect(warn).toHaveBeenCalledTimes(1);
+    expect(warn.mock.calls[0].join(' ')).toContain('pinDistance is not a number, vh or px; using window.innerHeight: 2 screens');
+    instance.destroy();
+    warn.mockRestore();
+  });
+});

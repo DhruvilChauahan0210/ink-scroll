@@ -99,8 +99,10 @@ const MUTATIONS = [
     id: 'pin/refresh',
     what: 'refresh() no longer re-measures after a content change',
     file: 'src/pin/index.ts',
-    from: '    refresh() {\n      measure();\n      scheduleUpdate();\n    },',
-    to: '    refresh() {\n      scheduleUpdate();\n    },',
+    // refresh() calls remeasure() since 2.19.0; this anchor still named the old
+    // measure() + scheduleUpdate() body until 2.20.0, so it could not apply.
+    from: '    refresh() {\n      remeasure();\n    },',
+    to: '    refresh() {},',
     spec: 'pin',
     grep: 'refresh\\(\\) picks up a content height change',
   },
@@ -196,19 +198,23 @@ const MUTATIONS = [
   },
   {
     id: 'parallax/travel',
-    what: 'travel distance ignores the element size',
+    what: 'travel is not speed times the layer\u2019s own size',
     file: 'src/animate/index.ts',
-    from: '  const travel = speed * size;',
-    to: '  const travel = speed * 100;',
+    // Re-anchored in 2.20.0: since 2.19.0 the travel is a percentage of the
+    // layer (`-speed * 100`), and the old `speed * size` anchor no longer applied.
+    from: '  const travel = -speed * 100;',
+    to: '  const travel = -speed * 50;',
     spec: 'parallax',
     grep: 'travel distance matches speed x height',
   },
   {
     id: 'parallax/axis',
-    what: 'the x axis measures height instead of width',
+    what: 'axis: x still moves the layer vertically',
     file: 'src/animate/index.ts',
-    from: "  const size   = axis === 'x' ? rect.width : rect.height;",
-    to: '  const size   = rect.height;',
+    // Re-anchored in 2.20.0: the axis picks translateX or translateY since
+    // 2.19.0; there is no measured size left to swap.
+    from: "    props: axis === 'x'\n",
+    to: '    props: false\n',
     spec: 'parallax',
     grep: 'axis: x translates horizontally',
   },
@@ -779,6 +785,24 @@ const MUTATIONS = [
     to: '    if (isVisible) rafId = requestAnimationFrame(update);',
     spec: 'stagger',
     grep: 'with the default trigger, the paths still drawing',
+  },
+  {
+    id: 'pin/vh-follows',
+    what: 'a vh pinDistance is resolved against the first viewport height and never again, as window.innerHeight * n was',
+    file: 'src/pin/index.ts',
+    from: "return (n * vh) / 100;",
+    to: "return (n * 800) / 100;",
+    spec: 'pin',
+    grep: 'a vh pinDistance follows the viewport height',
+  },
+  {
+    id: 'pin/vh-is-css',
+    what: 'a vh pinDistance reads window.innerHeight, so a phone address bar sliding resizes the pin zone mid-scroll',
+    file: 'src/pin/index.ts',
+    from: "const vh = probe.offsetHeight || window.innerHeight;",
+    to: "const vh = window.innerHeight;",
+    spec: 'pin',
+    grep: 'an address bar sliding leaves a vh pin alone',
   },
 ];
 

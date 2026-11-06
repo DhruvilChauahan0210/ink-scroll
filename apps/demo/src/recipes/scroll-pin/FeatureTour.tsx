@@ -57,7 +57,7 @@ export function FeatureTour() {
 
     const pin = scrollPin(el, {
       top: HEADER,
-      pinDistance: window.innerHeight * (n - 1), // three features, two screens of scroll
+      pinDistance: `${(n - 1) * 100}vh`, // three features, two screens of scroll
       onProgress: (p) => {
         const i = Math.min(n - 1, Math.floor(p * n));
         setActive(i);

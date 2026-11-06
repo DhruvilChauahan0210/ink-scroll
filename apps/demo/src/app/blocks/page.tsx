@@ -142,7 +142,9 @@ const lineCount = (s: string) => s.replace(/\n+$/, '').split('\n').length;
 const target = (f: RegistryItem['files'][number]) => f.target ?? f.path;
 
 // Figures for the opening, read from the items rather than typed.
-const DEPENDENCIES = [...new Set(BLOCKS.flatMap(({ item }) => item.dependencies ?? []))];
+// Package names, without a block's minimum version (`svg-scroll-draw@^2.20.0`):
+// one package however many blocks ask for a newer copy of it.
+const DEPENDENCIES = [...new Set(BLOCKS.flatMap(({ item }) => (item.dependencies ?? []).map((d) => d.replace(/(?!^)@.*$/, ''))))];
 const FILES_EACH = Math.max(...BLOCKS.map(({ item }) => item.files.length));
 const FIRST_TARGET = target(BLOCKS[0].item.files[0]);
 const TARGET_DIR = FIRST_TARGET.slice(0, FIRST_TARGET.lastIndexOf('/'));

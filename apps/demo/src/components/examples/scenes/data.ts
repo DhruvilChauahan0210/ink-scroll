@@ -466,7 +466,7 @@ scrollReveal('.release-note', {
 
 const pin = scrollPin('.stage', {
   top: 66,                              // below the sticky header
-  pinDistance: innerHeight * 3,         // four features, three screens
+  pinDistance: '300vh',                 // four features, three screens
   onEnter:     () => (stage.dataset.tour = 'on'),
   onEnterBack: () => (stage.dataset.tour = 'on'),
   onLeave:     () => (stage.dataset.tour = 'after'),

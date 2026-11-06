@@ -48,7 +48,7 @@ const articleJsonLd = {
 };
 
 const API: [string, string, string][] = [
-  ['pinDistance', 'number', 'Pixels of scroll to stay pinned. Default: window.innerHeight'],
+  ['pinDistance', "number | '150vh'", "Scroll to stay pinned: pixels, which stay fixed, or CSS's vh, which follows rotation and window resizes but not a phone's address bar (2.20.0). Default: window.innerHeight"],
   ['top', 'number', 'Viewport Y (px) to pin at. Default: 0 (viewport top)'],
   ['scrollContainer', 'string | Element', 'Custom scroll container. Default: window'],
   ['onEnter', '() => void', 'Fires when pin zone is entered (scrolling down)'],
@@ -112,7 +112,7 @@ export default function Page() {
         <Code file="app.js">{`import { scrollPin } from 'svg-scroll-draw/pin';
 
 const instance = scrollPin('#panel', {
-  pinDistance: window.innerHeight, // default
+  pinDistance: '100vh', // one screen, measured as CSS measures 100vh
 });
 
 // Later: remove pin and restore the DOM
@@ -179,7 +179,7 @@ import { scrollAnimate } from 'svg-scroll-draw';
 // Pin the product image
 const pin = scrollPin('#product-image', {
   top:         80,
-  pinDistance: window.innerHeight * 3,
+  pinDistance: '300vh',
   onEnter: () => image.src = '/hero-active.png',
 });
 
@@ -209,7 +209,7 @@ export function FeatureSection() {
     if (!imageRef.current) return;
     const instance = scrollPin(imageRef.current, {
       top:         80,
-      pinDistance: window.innerHeight * 2,
+      pinDistance: '200vh',
       onEnter:     () => console.log('pinned'),
       onLeave:     () => console.log('released'),
     });

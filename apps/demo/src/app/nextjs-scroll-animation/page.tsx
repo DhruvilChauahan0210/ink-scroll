@@ -134,7 +134,7 @@ export function ProductWalkthrough() {
   useEffect(() => {
     const instances = [
       imageRef.current && scrollPin(imageRef.current, {
-        pinDistance: window.innerHeight * 3,
+        pinDistance: '300vh',
         onEnter: () => console.log('pinned'),
       }),
       scrollReveal('.feature-text', { preset: 'fadeUp', stagger: 0.08 }),

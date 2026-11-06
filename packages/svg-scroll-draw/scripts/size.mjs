@@ -86,7 +86,9 @@ const BUDGETS_KB = {
   devtools:          1.9,
   snap:              2.0,
   // 1.39 once clamp got a file of its own; it used to drag every easing along.
-  pin:               1.5,
+  // 1.58 in 2.20.0: pinDistance reads '150vh' (from an element 100vh tall, as
+  // CSS measures it) and '600px', and warns once on anything else.
+  pin:               1.6,
   lenis:             0.5,
 };
 

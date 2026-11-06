@@ -38,7 +38,10 @@ const preInit = {
 
 const events = [];
 
+// ?distance=50vh / ?distance=600: pinDistance as a string or a number.
+const d = new URLSearchParams(location.search).get('distance');
 const inst = scrollPin('#panel', {
+  ...(d === null ? {} : { pinDistance: /^-?[\d.]+$/.test(d) ? Number(d) : d }),
   onEnter:      () => events.push('enter'),
   onLeave:      () => events.push('leave'),
   onEnterBack:  () => events.push('enterBack'),

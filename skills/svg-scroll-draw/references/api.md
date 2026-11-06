@@ -155,7 +155,7 @@ Scroll-scrubbed over a short window (not a timed tween). Always JS engine.
 
 | Option | Type | Default |
 |---|---|---|
-| `pinDistance` | `number` (px) | `window.innerHeight` |
+| `pinDistance` | `number` (px, fixed) or `'150vh'` / `'600px'` (vh is CSS's vh: follows rotation and resizes, not a phone's address bar; 2.20.0+) | `window.innerHeight` |
 | `top` | `number` (px from viewport top) | `0` |
 | `scrollContainer` | `string \| Element` | window |
 | `onEnter`, `onLeave`, `onEnterBack`, `onLeaveBack` | `() => void` | — |

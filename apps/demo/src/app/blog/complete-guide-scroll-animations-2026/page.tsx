@@ -179,7 +179,7 @@ scrollAnimate('#image', {
 // Pin product image while feature text scrolls
 scrollPin('#product-image', {
   top:         80,                     // 80px from viewport top (below nav)
-  pinDistance: window.innerHeight * 3, // stay pinned for 3 viewport heights
+  pinDistance: '300vh', // stay pinned for 3 viewport heights
   onEnter:     () => image.classList.add('active'),
   onLeave:     () => image.classList.remove('active'),
   onEnterBack: () => image.classList.add('active'),

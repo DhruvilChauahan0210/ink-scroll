@@ -26,7 +26,7 @@ Every API is a separate entry point, so you only pay for what you import:
 - \`scrollDraw\` — animate an SVG path's \`stroke-dashoffset\` on scroll (the core case)
 - \`scrollReveal\` (5.5 KB) — fade/slide elements in as they enter the viewport
 - \`scrollAnimate\` — animate any CSS property: opacity, transform, color, any unit value
-- \`scrollPin\` (1.4 KB) — pin an element while the page scrolls past it
+- \`scrollPin\` (1.6 KB) — pin an element while the page scrolls past it
 - \`scrollSnap\` (1.9 KB) — snap between sections
 - \`npx svg-scroll-draw migrate\` (add --dry-run to preview) rewrites a project's aos / scrollreveal / vivus imports, CDN script tags, aos.css and package.json to the drop-ins below.
 - React / Next.js hooks for the drop-ins (\"use client\" entries): \`import { AOSInit, useAOS } from 'svg-scroll-draw/aos/react'\` (put \`<AOSInit />\` in app/layout.tsx), \`useScrollReveal({ selector, interval })\` from 'svg-scroll-draw/scrollreveal/react' (returns a ref), \`const [ref, vivus] = useVivus(options)\` from 'svg-scroll-draw/vivus/react'. Each cleans up on unmount.

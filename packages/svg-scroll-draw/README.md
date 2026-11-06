@@ -640,7 +640,7 @@ devtools.highlight('#my-element'); // outline for 2 seconds
 | `svg-scroll-draw/aos` (styles included) | 3.1 KB |
 | `svg-scroll-draw/snap` | 1.9 KB |
 | `svg-scroll-draw/devtools` | 1.8 KB (dev only) |
-| `svg-scroll-draw/pin` | 1.4 KB |
+| `svg-scroll-draw/pin` | 1.6 KB |
 <!-- size-table:end -->
 
 Measured with `npm run size`: each entry plus the shared chunks it imports, minified, gzip level 9. Entries share their code through those chunks, so importing several costs less than the sum. For comparison, GSAP 3.15.0 core + ScrollTrigger is 45.3 KB gzipped, and 47.5 KB with DrawSVG. GSAP does far more than scroll animation; for the scroll effects this library covers, that is the size difference.

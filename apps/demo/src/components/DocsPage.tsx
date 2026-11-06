@@ -2221,7 +2221,7 @@ scrollDraw('#logo', {
 
 // Pin at top of viewport for one viewport-height of scroll
 const pin = scrollPin('#panel', {
-  pinDistance: window.innerHeight,
+  pinDistance: '100vh', // one screen; holds still while a phone's address bar slides
   onEnter:     () => panel.classList.add('active'),
   onLeave:     () => panel.classList.remove('active'),
   onEnterBack: () => panel.classList.add('active'),
@@ -2253,7 +2253,7 @@ pin.destroy();`}
                 </thead>
                 <tbody>
                   {[
-                    ['pinDistance',  'number',           'window.innerHeight', 'Pixels of scroll to stay pinned.'],
+                    ['pinDistance',  "number | '150vh'", 'window.innerHeight', "Scroll to stay pinned. A number is pixels and stays fixed; '150vh' is CSS's 150vh, which follows rotation and window resizes but not a phone's address bar (2.20.0)."],
                     ['top',          'number',           '0',                  'Viewport Y (px) to pin at. 0 = top of viewport.'],
                     ['scrollContainer', 'string|Element','—',                  'Custom scroll container. Default: window.'],
                     ['onEnter',      '() => void',       '—',                  'Fires when scroll enters the pin zone (scrolling down).'],

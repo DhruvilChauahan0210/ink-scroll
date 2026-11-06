@@ -32,6 +32,7 @@ anchors (`'50% 50%'`), or `containerAnimation`. Do not half-port those.
 | `scrub: 1` (smoothing) | no equivalent |
 | `once: true` / `toggleActions: 'play none none none'` | `once: true` latches at max progress (still scrubbed until then). For SVG paths that should play on a clock instead: `scrollDraw(el, { autoplay: true, duration: 1200, once: true })` |
 | `pin: true`, `end: '+=600'` | `scrollPin(el, { pinDistance: 600 })` |
+| `pin: true`, `end: '+=200%'` (of the viewport) | `scrollPin(el, { pinDistance: '200vh' })` — CSS's vh, re-read on rotation (2.20.0+) |
 | `pinSpacing` | always on: a wrapper reserves `pinDistance` of scroll |
 | `snap` | `scrollSnap(sections, { duration, easing, threshold })` |
 | `markers: true` | `debug: true` on `scrollDraw` / `scrollDrawTimeline`, or `devtools.enable()` from `svg-scroll-draw/devtools` |

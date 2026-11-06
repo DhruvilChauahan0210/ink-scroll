@@ -137,12 +137,12 @@ const svgWrap = useScrollDraw({ easing: 'ease-out', fade: true });
 **CDN, no build** — the global build exposes the main entry as `SvgScrollDraw` and registers `<scroll-draw>`:
 
 ```html
-<script src="https://unpkg.com/svg-scroll-draw@2.19.1/dist/cdn/svg-scroll-draw.global.js"></script>
+<script src="https://unpkg.com/svg-scroll-draw@2.20.0/dist/cdn/svg-scroll-draw.global.js"></script>
 <script>SvgScrollDraw.scrollDraw('#logo', { easing: 'ease-out' });</script>
 ```
 
 For other entries without a bundler, import the self-contained ESM file:
-`import { scrollReveal } from 'https://cdn.jsdelivr.net/npm/svg-scroll-draw@2.19.1/dist/reveal/index.mjs'`.
+`import { scrollReveal } from 'https://cdn.jsdelivr.net/npm/svg-scroll-draw@2.20.0/dist/reveal/index.mjs'`.
 
 ## SSR safety
 
@@ -171,7 +171,7 @@ own media-query guard on top.
 - Expecting React/Vue wrapper props to re-apply on change: options are read once on mount. Change the component `key` to re-create.
 - Never calling `destroy()` in SPAs: listeners and observers leak across route changes.
 - Passing a single Element to `scrollReveal` or `scrollSnap`: they take a selector string, `NodeList` or `Element[]` (wrap one element as `[el]`).
-- GSAP-style trigger offsets like `'top+=100 center'`, `'+=500'` or `'50% 50%'` (element percentages): not supported. Use anchors and viewport percentages; for pin length use `pinDistance`.
+- GSAP-style trigger offsets like `'top+=100 center'`, `'+=500'` or `'50% 50%'` (element percentages): not supported. Use anchors and viewport percentages; for pin length use `pinDistance` (pixels, or `'200vh'` for a share of the viewport height).
 - Inventing options. If it is not in `references/api.md`, it does not exist.
 - Expecting native CSS on configs that use `once`, `stagger`, callbacks, a custom trigger, `speed ≠ 1`, `spring`/`bounce`/`elastic`/function easing or a custom `scrollContainer`: those correctly fall back to JS. That is fine; do not "fix" it.
 - Adding Lenis adapter for Lenis v2+: not needed.
@@ -186,6 +186,7 @@ own media-query guard on top.
 | `gsap.from('.card', { opacity: 0, y: 32, stagger: 0.1, scrollTrigger: '.cards' })` | `scrollReveal('.card', { stagger: 0.1 })` |
 | `gsap.to(el, { yPercent: -30, ease: 'none', scrollTrigger: { scrub: true } })` | `scrollParallax(el, { speed: 0.3 })` |
 | `ScrollTrigger.create({ trigger: el, pin: true, start: 'top top', end: '+=600' })` | `scrollPin(el, { pinDistance: 600 })` |
+| `ScrollTrigger.create({ trigger: el, pin: true, end: '+=200%' })` | `scrollPin(el, { pinDistance: '200vh' })` — CSS's vh: follows rotation, not the address bar (2.20.0+) |
 | `snap` across full-height sections | `scrollSnap('.section')` |
 | `gsap.to(track, { x: -dist, scrollTrigger: { pin: true, scrub: true } })` | sticky CSS + `scrollHorizontal('.track')` |
 | `SplitText` + `gsap.from(split.words, { opacity: 0, y: 24, stagger: 0.05 })` | `scrollText(el, { split: 'words', stagger: 0.05, from: { opacity: 0, y: 24 } })` |

@@ -78,7 +78,9 @@ for (const item of registry.items) {
   if (names.has(item.name)) errors.push(`${item.name}: duplicate name`);
   names.add(item.name);
   if (item.type !== 'registry:block') errors.push(`${item.name}: type must be registry:block`);
-  if (!item.dependencies?.includes('svg-scroll-draw')) errors.push(`${item.name}: must depend on svg-scroll-draw`);
+  // A block may ask for a minimum version (`svg-scroll-draw@^2.20.0`) when it
+  // uses something newer than what an older installed copy understands.
+  if (!item.dependencies?.some((d) => d === 'svg-scroll-draw' || d.startsWith('svg-scroll-draw@'))) errors.push(`${item.name}: must depend on svg-scroll-draw`);
   if (!item.files?.length) errors.push(`${item.name}: no files`);
   for (const file of item.files ?? []) {
     const abs = join(APP, file.path);

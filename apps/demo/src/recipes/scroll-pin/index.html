@@ -117,8 +117,8 @@
   <div class="spacer"></div>
 
   <script type="module">
-    import { scrollDraw } from 'https://cdn.jsdelivr.net/npm/svg-scroll-draw@2.19.1/dist/index.mjs';
-    import { scrollPin } from 'https://cdn.jsdelivr.net/npm/svg-scroll-draw@2.19.1/dist/pin/index.mjs';
+    import { scrollDraw } from 'https://cdn.jsdelivr.net/npm/svg-scroll-draw@2.20.0/dist/index.mjs';
+    import { scrollPin } from 'https://cdn.jsdelivr.net/npm/svg-scroll-draw@2.20.0/dist/pin/index.mjs';
 
     const HEADER = 64; // the height of your sticky header
     const stage = document.getElementById('stage');
@@ -133,7 +133,7 @@
     let shown = 0;
     scrollPin(stage, {
       top: HEADER,
-      pinDistance: innerHeight * (n - 1), // three features, two screens of scroll
+      pinDistance: `${(n - 1) * 100}vh`, // three features, two screens of scroll
       onProgress: (p) => {
         const i = Math.min(n - 1, Math.floor(p * n));
         if (i !== shown) {

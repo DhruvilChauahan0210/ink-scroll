@@ -135,9 +135,10 @@
       top,
       // n − 1 screens of scroll: three features get two-thirds of a screen each.
       // One feature still gets one screen: a pin of 0 has no progress to report.
-      // A number is kept as passed, so the URL bar showing and hiding never
-      // stretches the tour under the reader's thumb.
-      pinDistance: window.innerHeight * Math.max(1, n - 1),
+      // vh is CSS's vh (svg-scroll-draw 2.20.0+): a rotation re-measures it,
+      // the URL bar showing and hiding does not, so the tour never stretches
+      // under the reader's thumb.
+      pinDistance: `${Math.max(1, n - 1) * 100}vh`,
       // 0 where the pin starts, 1 where it ends. Cut into n equal shares: the
       // feature whose share the reader is in is current; earlier drawings are
       // finished, later ones empty, the current one as far as its share.

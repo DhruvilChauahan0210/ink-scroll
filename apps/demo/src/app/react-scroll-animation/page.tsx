@@ -140,7 +140,7 @@ export function ProductSection() {
     if (!imageRef.current) return;
     const inst = scrollPin(imageRef.current, {
       top:         80,                     // below fixed header
-      pinDistance: window.innerHeight * 3,
+      pinDistance: '300vh',
       onEnter:     () => setActive(true),
       onLeave:     () => setActive(false),
     });

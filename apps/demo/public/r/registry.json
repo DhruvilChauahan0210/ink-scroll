@@ -110,7 +110,7 @@
       "title": "Pinned Feature Tour",
       "description": "A section pinned under your header while three features take turns, each with a line drawing that inks itself as the pin moves on.",
       "dependencies": [
-        "svg-scroll-draw"
+        "svg-scroll-draw@^2.20.0"
       ],
       "files": [
         {

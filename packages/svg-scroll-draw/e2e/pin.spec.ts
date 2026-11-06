@@ -178,6 +178,45 @@ test.describe('scrollPin', () => {
     expect(after.left).toBe(0);
   });
 
+  /**
+   * A number was the only way to give a distance, so the docs' own
+   * `pinDistance: window.innerHeight * 2` was measured once: shrink the window
+   * and the pin still held for two of the old screen's heights. A vh value is
+   * re-read on every measure, as CSS's vh.
+   */
+  test('a vh pinDistance follows the viewport height; a number stays put', async ({ page }) => {
+    const wrapperAt = async (distance: string, height: number) => {
+      await page.setViewportSize({ width: 900, height: 800 });
+      await openFixture(page, `pin.html?distance=${distance}`);
+      const before = (await read<Row>(page)).wrapperHeight;
+      await page.setViewportSize({ width: 900, height });
+      await page.waitForTimeout(400); // the re-measure is debounced
+      return [before, (await read<Row>(page)).wrapperHeight];
+    };
+    expect(await wrapperAt('150vh', 600), '400 + 1.5 × the viewport height').toEqual([1600, 1300]);
+    expect(await wrapperAt('600', 600), 'a number is pixels').toEqual([1000, 1000]);
+    expect(await wrapperAt('600px', 600)).toEqual([1000, 1000]);
+  });
+
+  /**
+   * On a phone the address bar sliding in and out changes window.innerHeight
+   * and fires a resize, while the layout, and CSS's 100vh, stay put. A vh pin
+   * read from innerHeight grew and shrank under the reader's thumb; it is read
+   * from an element 100vh tall instead. Simulated here: innerHeight drops by
+   * 100, a resize fires, nothing else moves.
+   */
+  test('an address bar sliding leaves a vh pin alone', async ({ page }) => {
+    await page.setViewportSize({ width: 900, height: 800 });
+    await openFixture(page, 'pin.html?distance=150vh');
+    expect((await read<Row>(page)).wrapperHeight).toBe(1600);
+    await page.evaluate(() => {
+      Object.defineProperty(window, 'innerHeight', { configurable: true, value: 700 });
+      window.dispatchEvent(new Event('resize'));
+    });
+    await page.waitForTimeout(400); // the re-measure is debounced
+    expect((await read<Row>(page)).wrapperHeight, 'the pin zone followed the address bar').toBe(1600);
+  });
+
   test('destroy() unwraps and restores the element', async ({ page }) => {
     await openFixture(page, 'pin.html');
     await scrollToY(page, 1000); // destroy while actively pinned

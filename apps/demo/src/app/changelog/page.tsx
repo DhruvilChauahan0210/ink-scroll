@@ -55,6 +55,16 @@ const KINDS: { k: Kind; label: string }[] = [
  */
 const RELEASES: Release[] = [
   {
+    version: '2.20.0',
+    title: 'Pin for screens, not pixels',
+    date: '2026-11-06',
+    items: [
+      { type: 'new', text: "scrollPin's pinDistance takes '150vh', measured as CSS measures 150vh: the pin zone follows a rotation or a window resize, but not a phone's address bar sliding in and out. pinDistance: window.innerHeight * 2 was measured once and kept the old screen's height. '600px' is 600, a number stays pixels, and leaving it out still means window.innerHeight." },
+      { type: 'site', text: 'The pinned-feature-tour block (React, Vue and Svelte) uses it, and asks for svg-scroll-draw@^2.20.0 so an older copy is not left reading a string.' },
+      { type: 'test', text: 'Browser tests that resize the viewport and slide a simulated address bar, in all three browsers; five unit tests; two mutations, and three re-anchored that 2.19.0 had left stale (82 in all, each caught). The pin entry is 1.6 KB.' },
+    ],
+  },
+  {
     version: '2.19.1',
     title: 'A staggered drawing finishes',
     date: '2026-11-06',
