@@ -399,6 +399,10 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### CI
 
+- **The release job publishes with npm's trusted publishing and holds no
+  token.** 2.20.0 was the first release through it (`_npmUser` is GitHub
+  Actions); `NODE_AUTH_TOKEN` and `--provenance` are gone from the publish
+  step, since trusted publishing signs provenance itself.
 - **The release job is ready for npm's trusted publishing.** npm restricts
   tokens that bypass 2FA from direct publishing in January 2027, and the job
   published with an `NPM_TOKEN` automation token. It now publishes with npm 11

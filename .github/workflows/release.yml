@@ -2,7 +2,7 @@ name: Release
 
 # Publishing was previously manual from a laptop, which meant no reproducible
 # build and no provenance attestation on npm. This runs the full verification
-# gauntlet first and then publishes with --provenance, so each released version is
+# gauntlet first and then publishes with provenance, so each released version is
 # cryptographically linked to the commit and workflow run that produced it.
 #
 # To cut a release:
@@ -13,14 +13,12 @@ name: Release
 #      so push the next tag only once the previous version is on npm.
 #
 # Authenticates with npm's trusted publishing: npm trusts this workflow
-# (DhruvilChauahan0210/ink-scroll, release.yml) and swaps the job's OIDC token
-# for a short-lived publish token, so no long-lived npm token has to exist.
-# npm restricts tokens that bypass 2FA from direct publishing in Jan 2027.
-# Until the trusted publisher is set up on npmjs.com (package Settings ->
-# Trusted Publisher; a new one lapses if it has not published within 2 days),
-# npm falls back to the NPM_TOKEN repository secret. Once a release shows
-# `_npmUser` as GitHub Actions (`npm view svg-scroll-draw@<v> _npmUser`),
-# remove NODE_AUTH_TOKEN below and delete the secret.
+# (DhruvilChauahan0210/ink-scroll, release.yml; package Settings -> Trusted
+# Publisher on npmjs.com) and swaps the job's OIDC token for a short-lived
+# publish token, so no npm token exists anywhere. First used for 2.20.0, whose
+# `npm view svg-scroll-draw@2.20.0 _npmUser` is GitHub Actions. There is no
+# fallback: if that setting is removed or the workflow file is renamed, the
+# publish step fails rather than reaching for a token.
 
 on:
   push:
@@ -109,13 +107,9 @@ jobs:
 
       - name: Publish to npm with provenance
         if: startsWith(github.ref, 'refs/tags/v') && inputs.dry_run != true
-        # npm tries trusted publishing first and falls back to the token.
-        # --provenance is automatic under trusted publishing; it stays for the
-        # fallback.
-        run: npm publish --provenance --access public
+        # Trusted publishing signs the provenance statement by itself.
+        run: npm publish --access public
         working-directory: packages/svg-scroll-draw
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Dry run summary
         if: inputs.dry_run == true

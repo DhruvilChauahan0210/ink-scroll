@@ -1,10 +1,10 @@
 # Next Session Plan — svg-scroll-draw
 
-> Updated: 2026-11-06 — **2.20.0 in the working tree** (`scrollPin` `pinDistance: '150vh'`; not committed; its release is the first through npm's trusted publisher, which lapses about 2026-11-08). **2.19.1 published** (`v2.19.1` on `2f7b711`: a staggered drawing finishes; Playwright 1.65.0; npm `latest`). **2.19.0 published** (`v2.19.0` on `f131f9c`: every engine follows the page; live wrapper options; Vue and Svelte blocks). Dependencies updated in `660f363` (site and tooling only). **2.18.1 published** (`v2.18.1` on `70c91cd`: `scrollHorizontal` follows the layout and measures against its sticky stage; the horizontal strip recipe, the fifth and last planned). **2.18.0 published** (`v2.18.0` on `1840983`: `scrollVideo` `triggerElement`; four recipes). **2.17.1 published** (`v2.17.1` on `ed77b58`: `once` keeps `stagger`; the logo example is a full recipe). Recipe 2, the pinned feature tour on `/examples/scroll-pin`, is done (site-only). **2.17.0 published** (`v2.17.0` on `d7b03b2`: the React, Vue, Nuxt, Solid and Svelte wrappers follow option changes, Angular gets `update()` for `ngOnChanges`). **2.16.1 published** (`v2.16.1` on `b3eb52a`) (`svg-scroll-draw/react` ships `"use client"` so Server Components render `<ScrollDraw>` directly; all 56 mutations run again). **2.16.0 published** (`v2.16.0` on `fde9f4c`: ES module entries share code through chunks — main + react 18.1 → 13.2 KB; the drop-ins share one instance with their React hooks; size tables generated; main entry 10.7 KB as shipped files). **2.15.3 published** (`v2.15.3` on `acc9acc`: scrollReveal's `stagger` is a fraction of the reveal window, per row, on top of a custom trigger; 2.15.2 before it kept scrollVideo's end frame under reduced motion). Every page is linked from every page (nav "More", phone menu, footer index — `components/site/sitemap.ts`, guarded by `check-nav`). Sitemap dates come from git for every URL, generated groups included — Search Console (2026-11-04) had 20 indexed, 35 "Discovered – not indexed" (never crawled), 2 "Crawled – not indexed". The native CSS path is no longer described as compositor work anywhere, and `/vs-aos` quotes the reveal entry and the real presets. Every page is on the homepage design and all 23 showcase sites are live — in `32f3409`, on `main`.
+> Updated: 2026-11-06 — **2.20.0 published** (`v2.20.0` on `972d705`: `scrollPin` `pinDistance: '150vh'`; the first release through npm's trusted publishing — `_npmUser` is GitHub Actions). **2.19.1 published** (`v2.19.1` on `2f7b711`: a staggered drawing finishes; Playwright 1.65.0; npm `latest`). **2.19.0 published** (`v2.19.0` on `f131f9c`: every engine follows the page; live wrapper options; Vue and Svelte blocks). Dependencies updated in `660f363` (site and tooling only). **2.18.1 published** (`v2.18.1` on `70c91cd`: `scrollHorizontal` follows the layout and measures against its sticky stage; the horizontal strip recipe, the fifth and last planned). **2.18.0 published** (`v2.18.0` on `1840983`: `scrollVideo` `triggerElement`; four recipes). **2.17.1 published** (`v2.17.1` on `ed77b58`: `once` keeps `stagger`; the logo example is a full recipe). Recipe 2, the pinned feature tour on `/examples/scroll-pin`, is done (site-only). **2.17.0 published** (`v2.17.0` on `d7b03b2`: the React, Vue, Nuxt, Solid and Svelte wrappers follow option changes, Angular gets `update()` for `ngOnChanges`). **2.16.1 published** (`v2.16.1` on `b3eb52a`) (`svg-scroll-draw/react` ships `"use client"` so Server Components render `<ScrollDraw>` directly; all 56 mutations run again). **2.16.0 published** (`v2.16.0` on `fde9f4c`: ES module entries share code through chunks — main + react 18.1 → 13.2 KB; the drop-ins share one instance with their React hooks; size tables generated; main entry 10.7 KB as shipped files). **2.15.3 published** (`v2.15.3` on `acc9acc`: scrollReveal's `stagger` is a fraction of the reveal window, per row, on top of a custom trigger; 2.15.2 before it kept scrollVideo's end frame under reduced motion). Every page is linked from every page (nav "More", phone menu, footer index — `components/site/sitemap.ts`, guarded by `check-nav`). Sitemap dates come from git for every URL, generated groups included — Search Console (2026-11-04) had 20 indexed, 35 "Discovered – not indexed" (never crawled), 2 "Crawled – not indexed". The native CSS path is no longer described as compositor work anywhere, and `/vs-aos` quotes the reveal entry and the real presets. Every page is on the homepage design and all 23 showcase sites are live — in `32f3409`, on `main`.
 
 ---
 
-## 2.20.0 in the working tree (2026-11-06, not committed)
+## 2.20.0 (2026-11-06) — published, `v2.20.0` on `972d705`
 
 - **Library:** `scrollPin`'s `pinDistance` takes `'150vh'`, measured from an
   element 100vh tall as CSS measures it (follows rotation and window resizes,
@@ -24,31 +24,26 @@
   accepts a versioned one; `/blocks` counts packages by name). Until 2.20.0 is
   on npm, `shadcn add` for that block cannot resolve the version — push the
   tag soon after the commit.
-- **Release:** this is the first through npm's trusted publisher. Tag it after
-  pushing; then `npm view svg-scroll-draw@2.20.0 _npmUser` should be GitHub
-  Actions, and step 3 below retires the token.
+- **Release:** the first through npm's trusted publisher: `npm view
+  svg-scroll-draw@2.20.0 _npmUser` is GitHub Actions (`trustedPublisher:
+  github`), with a SLSA provenance attestation.
 
 ## npm trusted publishing (2026-11-06)
 
 npm restricts tokens that bypass 2FA from direct publishing in January 2027;
-the release job used an `NPM_TOKEN` automation token. `release.yml` now
-publishes with npm 11, which tries trusted publishing first and the token
-second, so releases keep working before and after the npm side exists.
-The rest is the owner's, in order:
+the release job used an `NPM_TOKEN` automation token. It now publishes with
+npm 11 through npm's trusted publisher (npmjs.com → svg-scroll-draw → Settings
+→ Trusted Publisher → GitHub Actions: `DhruvilChauahan0210` / `ink-scroll` /
+`release.yml`, no environment, `npm publish` allowed).
 
-1. **Done 2026-11-06** — the owner added it the same day, so it lapses unless
-   a release publishes through it by about 2026-11-08; after that, re-add it
-   shortly before the next release: npmjs.com → svg-scroll-draw → Settings →
-   Trusted Publisher → GitHub Actions. Organization or user
-   `DhruvilChauahan0210`, repository `ink-scroll`, workflow filename
-   `release.yml`, environment empty, allowed actions `npm publish`.
-2. Push the release tag. Check `npm view svg-scroll-draw@<version> _npmUser`:
-   GitHub Actions means trusted publishing worked (2.19.1 shows the owner's
-   account, `phantomcd0210`, published with the token).
-3. Then remove `NODE_AUTH_TOKEN` from the publish step, delete the `NPM_TOKEN`
-   repository secret, revoke the automation token on npmjs.com, and set the
-   package's Publishing access to "Require two-factor authentication and
-   disallow tokens".
+1. ~~Trusted publisher added~~ — 2026-11-06.
+2. ~~First release through it~~ — 2.20.0: `_npmUser` is GitHub Actions
+   (2.19.1 shows the owner's account, `phantomcd0210`, published with the token).
+3. `NODE_AUTH_TOKEN` and `--provenance` are out of `release.yml`, so there is no
+   token fallback (not yet pushed when written). **Owner:** delete the
+   `NPM_TOKEN` repository secret, revoke the automation token on npmjs.com,
+   and set the package's Publishing access to "Require two-factor
+   authentication and disallow bypass 2fa tokens".
 
 ## Dependencies (2026-11-06) — `660f363`, pushed; the Dependabot PRs closed
 
@@ -246,8 +241,9 @@ months, 81% to the homepage; `/vs-gsap` at position 11 with 425 impressions.
 
 ### Next, in order
 1. ~~Tag `v2.19.0` and `v2.19.1`~~ — both published 2026-11-06.
-   **Next release:** the owner sets up npm's trusted publisher first (steps in
-   "npm trusted publishing" above), then checks `_npmUser` and retires the token.
+   2.20.0 published 2026-11-06 through npm's trusted publisher. The owner's
+   last steps (delete `NPM_TOKEN`, revoke the token, disallow tokens) are in
+   "npm trusted publishing" above.
 2. ~~A staggered drawing that never finishes; Playwright 1.65.0 and folding
    `firefox-native` into `firefox`~~ — both done in 2.19.1 (2026-11-06).
 3. **Owner:** create the `v2.10.1` GitHub release page by hand (its job lacked

@@ -1,6 +1,6 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **2.20.0** — in the working tree, not committed. 2.19.1 is the latest published (npm `latest`, `v2.19.1` on `2f7b711`)
+> Current version: **2.20.0** — published (npm `latest`, GitHub's latest release; `v2.20.0` on `972d705`), the first release through npm's trusted publishing
 > Tests: **695 unit** across 36 suites · **229 browser tests** per engine (687 runs
 > across Chromium/Firefox/WebKit) · **82 mutations**, each caught by the one test
 > named for it · **91.3% line coverage** (gate 90/90/82/82)
@@ -163,19 +163,20 @@ at all.
 - [x] `/blog/horizontal-scroll-sections` is a full recipe — a case-study strip: runway matched to the travel, count and rail from `onProgress`, `overflow: clip` + a `focusin` scroll for the keyboard; five pitfalls measured on the file; files in `apps/demo/src/recipes/horizontal-scroll-sections/`; the recipe parts render inside a post's sections
 - [x] The five recipes planned are done (logo, sticky feature section, stat row, scrubbed film, horizontal strip)
 
-### 2.20.0 — pin for screens, not pixels (2026-11-06; in the working tree)
+### 2.20.0 — pin for screens, not pixels (2026-11-06)
 
 - [x] `scrollPin` `pinDistance: '150vh'`, measured as CSS's vh (follows rotation and resizes, not a phone's address bar), `'600px'`, numbers unchanged; the default stays `window.innerHeight`; anything else warns once
 - [x] Tests: browser tests resizing the viewport and simulating an address bar (3 engines), five unit tests, mutations `pin/vh-follows` and `pin/vh-is-css`; `pin/refresh`, `parallax/travel` and `parallax/axis` re-anchored (stale since 2.19.0) — all 82 run and caught
 - [x] Docs and examples write screens as `'300vh'`; the scroll-pin recipe and the pinned-feature-tour block (React, Vue, Svelte) use vh; the block requires `svg-scroll-draw@^2.20.0`
 - [x] Sizes: pin 1.4 → 1.6 KB (1.58; budget 1.6, reason in `scripts/size.mjs`)
-- [ ] Released — the first release through npm's trusted publisher (added 2026-11-06, lapses about 2026-11-08); then check `_npmUser`
+- [x] Released — `v2.20.0` on `972d705`, published by GitHub Actions through npm's trusted publisher (`_npmUser` GitHub Actions, `trustedPublisher: github`), with a SLSA provenance attestation
 
 ### npm trusted publishing (2026-11-06; release job only)
 
 - [x] `release.yml` publishes with npm 11 (≥ 11.5.1), trying trusted publishing (OIDC) first and `NPM_TOKEN` second; same tarball as npm 10
-- [x] Trusted publisher added on npmjs.com by the owner, 2026-11-06 (GitHub Actions: `DhruvilChauahan0210` / `ink-scroll` / `release.yml`). It lapses unless a release publishes through it within 2 days — by about 2026-11-08 — else re-add it before the next release
-- [ ] After the first release whose `_npmUser` is GitHub Actions: drop `NODE_AUTH_TOKEN` from `release.yml`, delete the `NPM_TOKEN` secret, revoke the automation token, and set Publishing access to "Require two-factor authentication and disallow tokens"
+- [x] Trusted publisher added on npmjs.com by the owner, 2026-11-06 (GitHub Actions: `DhruvilChauahan0210` / `ink-scroll` / `release.yml`). 2.20.0 published through it the same day, so it stays
+- [x] `NODE_AUTH_TOKEN` and `--provenance` dropped from `release.yml` (trusted publishing signs provenance itself); no fallback left
+- [ ] Owner: delete the `NPM_TOKEN` repository secret, revoke the automation token on npmjs.com, and set Publishing access to "Require two-factor authentication and disallow bypass 2fa tokens"
 
 ### Dependencies (2026-11-06; site and tooling only, no version bump)
 
