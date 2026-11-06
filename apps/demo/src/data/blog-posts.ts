@@ -19,6 +19,17 @@ export type BlogPost = {
 
 export const POSTS: BlogPost[] = [
   {
+    slug: 'reduced-motion-scroll-animations',
+    title: 'Reduced motion for scroll animations, effect by effect',
+    description:
+      'What prefers-reduced-motion should do to each scroll effect: reveals finish at once, snapping jumps, and scrubbing that follows the reader’s own scroll can stay.',
+    tag: 'Accessibility',
+    tagColor: '#8b5cf6',
+    readTime: '6 min read',
+    date: 'November 2026',
+    published: '2026-11-06',
+  },
+  {
     slug: 'accessible-split-text-animation',
     title: 'Split-text animation a screen reader can read',
     description:

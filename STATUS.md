@@ -170,7 +170,11 @@ at all.
 - [x] Sizes: text 3.1 → 3.2 KB (3.17), the entries that include it +0.1 KB, reason in `scripts/size.mjs`
 - [ ] Released
 
-### SEO check and an accessibility post (2026-11-06; in the working tree)
+### Reduced-motion post (2026-11-06; in the working tree)
+
+- [x] `/blog/reduced-motion-scroll-animations`: what `prefers-reduced-motion` should do per effect, the library's behaviour per engine (checked against the source and its reduced-motion tests), live listening, a Playwright test; passes axe, the SEO check and the sweep (66 pages)
+
+### SEO check and an accessibility post (2026-11-06; pushed in `44e4dfd`)
 
 - [x] `apps/demo/scripts/test-seo.mjs` (`npm run test:seo -w apps/demo`, in CI): every sitemap page's title (≤ 60, unique), description (50–160, unique), canonical, one `<h1>`, `lang`, no `noindex`, OG/Twitter tags with a loading image, JSON-LD that parses, 2+ inbound links — 65 pages, 0 problems after shortening `/examples/line-chart`'s description (175 → 140)
 - [x] Post `/blog/accessible-split-text-animation`: the `aria-label` pattern ARIA 1.2 forbids on a paragraph (GSAP SplitText's default), the visually hidden copy `scrollText` uses since 2.21.0, the `ariaSnapshot()` check; passes axe and the SEO check

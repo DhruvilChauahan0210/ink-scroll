@@ -8,6 +8,14 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### Site
 
+- **New post: Reduced motion for scroll animations, effect by effect**
+  (`/blog/reduced-motion-scroll-animations`). What `prefers-reduced-motion`
+  should do to each kind of scroll effect — reveals and drawings finish at
+  once, snapping jumps, scrubbing that follows the reader's own scroll can stay
+  (a horizontal strip held still hides its panels), timed loops stop — with
+  the code, a Playwright `emulateMedia` test, and what each svg-scroll-draw
+  engine does, checked against the source and its reduced-motion tests. In the
+  index, RSS, sitemap and related links.
 - **What a crawler reads is checked on every page.** `apps/demo/scripts/test-seo.mjs`
   (`npm run test:seo`, in CI with the blocks and axe checks) reads the
   server-rendered HTML of every sitemap page: a title of at most 60

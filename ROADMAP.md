@@ -116,6 +116,7 @@
 - [x] "5 scroll animation patterns in under 10 lines" — `/blog/5-patterns-under-10-lines`
 - [x] "Replace GSAP ScrollTrigger with scrollAnimate" — `/blog/replace-gsap-scrolltrigger`
 - [x] "Split-text animation a screen reader can read" — `/blog/accessible-split-text-animation` (2026-11-06)
+- [x] "Reduced motion for scroll animations, effect by effect" — `/blog/reduced-motion-scroll-animations` (2026-11-06)
 
 ---
 

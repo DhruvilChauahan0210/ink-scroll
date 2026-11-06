@@ -163,6 +163,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
+      url: `${SITE_URL}/blog/reduced-motion-scroll-animations`,
+      lastModified: new Date("2026-11-06"),
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
       url: `${SITE_URL}/blog/accessible-split-text-animation`,
       lastModified: new Date("2026-11-06"),
       changeFrequency: "monthly",

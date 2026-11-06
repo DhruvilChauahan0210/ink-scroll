@@ -4,7 +4,19 @@
 
 ---
 
-## SEO check and an accessibility post (2026-11-06, not committed)
+## Reduced-motion post (2026-11-06, not committed)
+
+- `/blog/reduced-motion-scroll-animations`: effect by effect, built from what
+  each engine does (`src/core/motion.ts`, `motion-watch.ts`, each engine's
+  `prefersReduced` branch) and the 13 e2e specs that emulate reduced motion.
+  It says plainly that most engines read the setting once at start-up; only
+  scrollSnap and the timeline's loop follow a change live — a possible library
+  improvement.
+- Port etiquette with other sessions: use your own port for `next start` and
+  stop your own PID; `pkill -f "next start -p 3100"` once killed another
+  session's server.
+
+## SEO check and an accessibility post (2026-11-06) — pushed in `44e4dfd`
 
 - `apps/demo/scripts/test-seo.mjs` reads every sitemap page's server HTML for
   what search results are built from (title, description, canonical, one h1,

@@ -29,6 +29,12 @@ export const RELATED_BY_POST: Record<string, RelatedLinks> = {
       { href: '/vs-gsap', label: 'svg-scroll-draw vs GSAP', blurb: 'Measured sizes and where GSAP is still the better call.' },
     ],
   },
+  'reduced-motion-scroll-animations': {
+    examples: ['scroll-reveal', 'scroll-snap', 'scroll-video'],
+    pages: [
+      { href: '/blog/horizontal-scroll-sections', label: 'Horizontal scroll sections', blurb: 'The strip that keeps scrubbing under reduced motion, built step by step.' },
+    ],
+  },
   'accessible-split-text-animation': {
     examples: ['scroll-text', 'scroll-text-lines'],
     pages: [
