@@ -6,8 +6,15 @@
  *   registry/blocks/<name>.tsx      (block sources)
  *     → public/r/<name>.json        (one registry-item per block, file content inlined)
  *     → public/r/registry.json      (the index, same shape as the source)
+ *   registry/vue/<name>.vue         (the Vue version of a block, where there is one)
+ *     → public/r/vue/<name>.json    (a shadcn-vue registry-item)
+ *     → public/r/vue/registry.json
  *
- * so `npx shadcn@latest add https://svg-scroll-draw.vercel.app/r/<name>.json` works.
+ * so `npx shadcn@latest add https://svg-scroll-draw.vercel.app/r/<name>.json` and
+ * `npx shadcn-vue@latest add https://svg-scroll-draw.vercel.app/r/vue/<name>.json`
+ * work. Each framework gets its own item at its own URL: the file, its type and
+ * its dependencies differ, and shadcn-svelte's schema forbids the `path` the
+ * other two require.
  *
  * Deterministic: no timestamps, keys in a fixed order, LF line endings, one
  * trailing newline. Running it twice produces byte-identical output.
@@ -87,6 +94,53 @@ for (const item of registry.items) {
   }
 }
 
+// ── Other frameworks ─────────────────────────────────────────────────────────
+
+/** A block's Vue version, if registry/vue/<name>.vue exists: same item, its own file. */
+const pascal = (name) => name.replace(/(^|-)([a-z0-9])/g, (_, __, c) => c.toUpperCase());
+const FRAMEWORKS = [
+  {
+    dir: 'vue',
+    ext: '.vue',
+    allowed: (spec) => spec === 'vue' || spec === 'svg-scroll-draw' || spec.startsWith('svg-scroll-draw/'),
+    itemSchema: 'https://shadcn-vue.com/schema/registry-item.json',
+    registrySchema: 'https://shadcn-vue.com/schema/registry.json',
+    target: (name) => `components/scroll/${pascal(name)}.vue`,
+  },
+  {
+    // shadcn-svelte's item schema requires content, type and target on every
+    // file and forbids `path`, so its items carry no path.
+    dir: 'svelte',
+    ext: '.svelte',
+    allowed: (spec) => spec === 'svelte' || spec.startsWith('svelte/') || spec === 'svg-scroll-draw' || spec.startsWith('svg-scroll-draw/'),
+    itemSchema: 'https://shadcn-svelte.com/schema/registry-item.json',
+    registrySchema: 'https://shadcn-svelte.com/schema/registry.json',
+    target: (name) => `src/lib/components/scroll/${pascal(name)}.svelte`,
+    noPath: true,
+  },
+];
+
+/** shadcn-svelte rejects `path`: drop it from every file of an item. */
+const withoutPath = (item) => ({
+  ...item,
+  files: item.files.map((f) => {
+    const copy = { ...f };
+    delete copy.path;
+    return copy;
+  }),
+});
+
+function frameworkItem(fw, item) {
+  const path = `registry/${fw.dir}/${item.name}${fw.ext}`;
+  const abs = join(APP, path);
+  if (!existsSync(abs)) return null;
+  const src = readFileSync(abs, 'utf8');
+  for (const [, spec] of src.matchAll(/^import[^'"]*['"]([^'"]+)['"]/gm)) {
+    if (!fw.allowed(spec)) errors.push(`${path}: imports "${spec}" (only ${fw.dir} and svg-scroll-draw allowed)`);
+  }
+  return { ...item, files: [{ path, type: 'registry:component', target: fw.target(item.name) }] };
+}
+
 // ── Build ────────────────────────────────────────────────────────────────────
 
 const outputs = new Map();
@@ -97,15 +151,28 @@ const index = { $schema: REGISTRY_SCHEMA, name: registry.name, homepage: registr
 index.items = registry.items.map((item) => orderItem(item, false));
 outputs.set('registry.json', stringify(index));
 
+for (const fw of FRAMEWORKS) {
+  const items = registry.items.map((item) => frameworkItem(fw, item)).filter(Boolean);
+  if (!items.length) continue;
+  for (const item of items) {
+    let out = orderItem(item, true);
+    out.$schema = fw.itemSchema;
+    if (fw.noPath) out = withoutPath(out);
+    outputs.set(`${fw.dir}/${item.name}.json`, stringify(out));
+  }
+  const fwIndex = { $schema: fw.registrySchema, name: registry.name, homepage: registry.homepage };
+  fwIndex.items = items.map((item) => (fw.noPath ? withoutPath(orderItem(item, false)) : orderItem(item, false)));
+  outputs.set(`${fw.dir}/registry.json`, stringify(fwIndex));
+}
+
 if (errors.length) {
   console.error('build-registry: failed\n  ' + errors.join('\n  '));
   process.exit(1);
 }
 
-// Files in public/r that no item produces any more.
-const stale = existsSync(OUT)
-  ? readdirSync(OUT).filter((f) => f.endsWith('.json') && !outputs.has(f))
-  : [];
+// Files in public/r (and its framework folders) that no item produces any more.
+const listed = (dir) => (existsSync(join(OUT, dir)) ? readdirSync(join(OUT, dir)).filter((f) => f.endsWith('.json')).map((f) => (dir ? `${dir}/${f}` : f)) : []);
+const stale = ['', ...FRAMEWORKS.map((fw) => fw.dir)].flatMap(listed).filter((f) => !outputs.has(f));
 
 if (CHECK) {
   const drift = [];
@@ -120,8 +187,10 @@ if (CHECK) {
   }
   console.log(`build-registry --check: ${outputs.size} files up to date`);
 } else {
-  mkdirSync(OUT, { recursive: true });
-  for (const [file, content] of outputs) writeFileSync(join(OUT, file), content);
+  for (const [file, content] of outputs) {
+    mkdirSync(dirname(join(OUT, file)), { recursive: true });
+    writeFileSync(join(OUT, file), content);
+  }
   if (stale.length) console.warn(`build-registry: orphan files in public/r (not deleted): ${stale.join(', ')}`);
-  console.log(`build-registry: wrote ${outputs.size} files to public/r (${registry.items.length} blocks + index)`);
+  console.log(`build-registry: wrote ${outputs.size} files to public/r (${registry.items.length} blocks + index, and their framework versions)`);
 }

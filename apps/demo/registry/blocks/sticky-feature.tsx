@@ -71,6 +71,11 @@ export function StickyFeature({
     return () => anim.destroy();
   }, []);
 
+  // Keyed on the titles, not the count: the list items are keyed by title, so
+  // the same number of renamed steps (a locale switch) replaces every <li>, and
+  // an observer kept on the old ones froze the highlight.
+  const titles = steps.map((s) => s.title).join('\u0000');
+
   // Active step: the last step with any part in the top half of the viewport.
   // A set of visible steps, rather than a thin band, so a fast scroll that jumps
   // a step straight past the middle still lands on the right one.
@@ -93,7 +98,7 @@ export function StickyFeature({
     );
     items.forEach((item) => observer.observe(item));
     return () => observer.disconnect();
-  }, [steps.length]);
+  }, [titles]);
 
   return (
     <section className={`mx-auto grid w-full max-w-5xl gap-10 md:grid-cols-2 md:gap-16 ${className}`}>

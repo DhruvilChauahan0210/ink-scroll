@@ -1,6 +1,7 @@
 import type { EasingName, TriggerConfig, ScrollDrawInstance } from '../core/types';
 import { createAnimateEngine } from '../animate/engine';
 import { warn } from '../core/env';
+import { watchLayout } from '../core/layout-watch';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -244,14 +245,10 @@ export function scrollHorizontal(
   window.addEventListener('resize', onLayout);
   window.addEventListener('orientationchange', onLayout);
 
-  const watcher = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(onLayout) : undefined;
+  let unwatch = () => {};
   function watch(): void {
-    if (!watcher) return;
-    watcher.disconnect();
-    // body, not just documentElement: the latter's box does not follow content
-    // growth in a scrolling document (see the drawing engine).
-    const targets = [document.body, document.documentElement, htmlEl, triggerEl];
-    targets.filter((t, i) => t && targets.indexOf(t) === i).forEach((t) => watcher.observe(t));
+    unwatch();
+    unwatch = watchLayout([htmlEl, triggerEl], onLayout);
   }
   watch();
 
@@ -260,7 +257,7 @@ export function scrollHorizontal(
       clearTimeout(timer);
       window.removeEventListener('resize', onLayout);
       window.removeEventListener('orientationchange', onLayout);
-      watcher?.disconnect();
+      unwatch();
       inner.destroy();
     },
     replay()   { held = null; inner.replay(); },

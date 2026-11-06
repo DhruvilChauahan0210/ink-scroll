@@ -1,0 +1,189 @@
+{
+  "$schema": "https://shadcn-vue.com/schema/registry.json",
+  "name": "svg-scroll-draw",
+  "homepage": "https://svg-scroll-draw.vercel.app/blocks",
+  "items": [
+    {
+      "name": "signature-draw",
+      "type": "registry:block",
+      "title": "Signature Draw",
+      "description": "A handwritten SVG signature that inks itself in on scroll, followed by an underline flourish.",
+      "dependencies": [
+        "svg-scroll-draw"
+      ],
+      "files": [
+        {
+          "path": "registry/vue/signature-draw.vue",
+          "type": "registry:component",
+          "target": "components/scroll/SignatureDraw.vue"
+        }
+      ],
+      "categories": [
+        "scroll",
+        "svg"
+      ]
+    },
+    {
+      "name": "reveal-cards",
+      "type": "registry:block",
+      "title": "Reveal Cards",
+      "description": "A grid of feature cards that fade up one after another as the grid scrolls into view.",
+      "dependencies": [
+        "svg-scroll-draw"
+      ],
+      "files": [
+        {
+          "path": "registry/vue/reveal-cards.vue",
+          "type": "registry:component",
+          "target": "components/scroll/RevealCards.vue"
+        }
+      ],
+      "categories": [
+        "scroll",
+        "features"
+      ]
+    },
+    {
+      "name": "stat-counter-row",
+      "type": "registry:block",
+      "title": "Stat Counter Row",
+      "description": "A row of three or four stats that count up from zero as the row scrolls into view.",
+      "dependencies": [
+        "svg-scroll-draw"
+      ],
+      "files": [
+        {
+          "path": "registry/vue/stat-counter-row.vue",
+          "type": "registry:component",
+          "target": "components/scroll/StatCounterRow.vue"
+        }
+      ],
+      "categories": [
+        "scroll",
+        "stats"
+      ]
+    },
+    {
+      "name": "sticky-feature",
+      "type": "registry:block",
+      "title": "Sticky Feature",
+      "description": "A pinned left panel with a progress rail while numbered steps scroll past on the right.",
+      "dependencies": [
+        "svg-scroll-draw"
+      ],
+      "files": [
+        {
+          "path": "registry/vue/sticky-feature.vue",
+          "type": "registry:component",
+          "target": "components/scroll/StickyFeature.vue"
+        }
+      ],
+      "categories": [
+        "scroll",
+        "features"
+      ]
+    },
+    {
+      "name": "headline-text-reveal",
+      "type": "registry:block",
+      "title": "Headline Text Reveal",
+      "description": "A hero headline whose words rise into place one after another on scroll.",
+      "dependencies": [
+        "svg-scroll-draw"
+      ],
+      "files": [
+        {
+          "path": "registry/vue/headline-text-reveal.vue",
+          "type": "registry:component",
+          "target": "components/scroll/HeadlineTextReveal.vue"
+        }
+      ],
+      "categories": [
+        "scroll",
+        "hero",
+        "text"
+      ]
+    },
+    {
+      "name": "pinned-feature-tour",
+      "type": "registry:block",
+      "title": "Pinned Feature Tour",
+      "description": "A section pinned under your header while three features take turns, each with a line drawing that inks itself as the pin moves on.",
+      "dependencies": [
+        "svg-scroll-draw"
+      ],
+      "files": [
+        {
+          "path": "registry/vue/pinned-feature-tour.vue",
+          "type": "registry:component",
+          "target": "components/scroll/PinnedFeatureTour.vue"
+        }
+      ],
+      "categories": [
+        "scroll",
+        "svg",
+        "pin"
+      ]
+    },
+    {
+      "name": "horizontal-case-strip",
+      "type": "registry:block",
+      "title": "Horizontal Case Strip",
+      "description": "A row of case studies that scrolls sideways while the page scrolls down: a pixel of scroll moves it a pixel, with a count, a progress rail and keyboard focus that brings each card into view.",
+      "dependencies": [
+        "svg-scroll-draw"
+      ],
+      "files": [
+        {
+          "path": "registry/vue/horizontal-case-strip.vue",
+          "type": "registry:component",
+          "target": "components/scroll/HorizontalCaseStrip.vue"
+        }
+      ],
+      "categories": [
+        "scroll",
+        "horizontal"
+      ]
+    },
+    {
+      "name": "video-scrub",
+      "type": "registry:block",
+      "title": "Video Scrub",
+      "description": "A pinned product film scrubbed by scroll, with chapters that follow the film. Bring your own film, encoded with a keyframe every few frames.",
+      "dependencies": [
+        "svg-scroll-draw"
+      ],
+      "files": [
+        {
+          "path": "registry/vue/video-scrub.vue",
+          "type": "registry:component",
+          "target": "components/scroll/VideoScrub.vue"
+        }
+      ],
+      "categories": [
+        "scroll",
+        "video"
+      ]
+    },
+    {
+      "name": "reading-progress",
+      "type": "registry:block",
+      "title": "Reading Progress",
+      "description": "A thin bar at the top of the screen that fills as the reader moves through an article.",
+      "dependencies": [
+        "svg-scroll-draw"
+      ],
+      "files": [
+        {
+          "path": "registry/vue/reading-progress.vue",
+          "type": "registry:component",
+          "target": "components/scroll/ReadingProgress.vue"
+        }
+      ],
+      "categories": [
+        "scroll",
+        "progress"
+      ]
+    }
+  ]
+}

@@ -6,6 +6,7 @@ import { lerpColor } from '../core/color';
 import { cssTimingFor } from '../core/css-easing';
 import { _register, _unregister } from '../core/registry';
 import { warn } from '../core/env';
+import { watchLayout } from '../core/layout-watch';
 
 // ── Public types ──────────────────────────────────────────────────────────────
 
@@ -319,6 +320,8 @@ export function createAnimateEngine(
     });
 
     const instance: ScrollDrawInstance = {
+      // The view() timeline measures the element every frame.
+      refresh() {},
       destroy() {
         (el as HTMLElement).classList.remove(cls);
         style.remove();
@@ -376,9 +379,37 @@ export function createAnimateEngine(
     return axis === 'x' ? window.innerWidth : window.innerHeight;
   };
 
+  /**
+   * The props this engine writes that move the element's box without moving its
+   * layout. When the trigger is measured on the animated element itself, they are
+   * put back to what the page set while it is measured: the first measurement ran
+   * before any frame was applied, and a later one that saw the engine's own
+   * translateY started scrollReveal's fade-up 32px late.
+   */
+  // Every prop this engine writes, not only transforms: an element animating its
+  // own height measured with that height re-measured itself forever.
+  const moving = triggerEl === el ? entries : [];
+  let measured = false;
+
   function cacheTriggers(): void {
+    const style = (el as HTMLElement).style;
+    const held  = moving.map((e) => style.getPropertyValue(e.prop));
+    // A CSS transition would start from the engine's own value, which the rect
+    // would still read: keep transitions off until the frame is put back.
+    const transition = style.transition;
+    if (moving.length) style.transition = 'none';
+    moving.forEach((e) => style.setProperty(e.prop, savedInline.get(e.prop) ?? ''));
     const frame  = measureTriggerFrame(triggerEl, scrollEl, axis);
+    moving.forEach((e, i) => style.setProperty(e.prop, held[i]));
+    if (moving.length) {
+      void (el as HTMLElement).offsetWidth;
+      style.transition = transition;
+    }
     const result = computeTriggers(frame, frame.scroll, vpSize(), startConfig, endConfig);
+    // A move under a pixel is rounding, not layout. Taking it would let an
+    // element that animates its own size re-measure itself forever.
+    if (measured && Math.abs(result.tStart - tStart) < 1 && Math.abs(result.tEnd - tEnd) < 1) return;
+    measured = true;
     tStart = result.tStart;
     tEnd   = result.tEnd;
   }
@@ -478,6 +509,9 @@ export function createAnimateEngine(
   }
   window.addEventListener('resize', onResize);
   window.addEventListener('orientationchange', onResize);
+  // Most layout changes are not window resizes: an image loading above the
+  // element, a font swapping in, content arriving late.
+  const unwatch = watchLayout([triggerEl], onResize);
   observer.observe(el);
 
   _register(el, {
@@ -492,6 +526,7 @@ export function createAnimateEngine(
       observer.disconnect();
       window.removeEventListener('resize', onResize);
       window.removeEventListener('orientationchange', onResize);
+      unwatch();
       clearTimeout(resizeTimer);
       restoreInline();
       _unregister(el);
@@ -521,5 +556,6 @@ export function createAnimateEngine(
       applyAlpha(clamped);
     },
     getProgress() { return currentAlpha; },
+    refresh() { cacheTriggers(); },
   };
 }

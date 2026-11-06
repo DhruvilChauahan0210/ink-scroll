@@ -2,6 +2,7 @@ import type { EasingName, ScrollDrawInstance, TriggerConfig } from '../core/type
 import { EASINGS } from '../core/easing';
 import { parseTrigger, computeProgress, computeTriggers } from '../core/trigger';
 import { _register, _unregister } from '../core/registry';
+import { watchLayout } from '../core/layout-watch';
 import { warn } from '../core/env';
 
 // ── Public types ──────────────────────────────────────────────────────────────
@@ -288,6 +289,8 @@ export function scrollText(
   }
   window.addEventListener('resize', onResize);
   window.addEventListener('orientationchange', onResize);
+  // Layout changes that are not window resizes: images, fonts, late content.
+  const unwatch = watchLayout([el], onResize);
   observer.observe(el);
 
   _register(el, {
@@ -302,6 +305,7 @@ export function scrollText(
       observer.disconnect();
       window.removeEventListener('resize', onResize);
       window.removeEventListener('orientationchange', onResize);
+      unwatch();
       clearTimeout(resizeTimer);
       el.innerHTML = originalHTML;
       el.removeAttribute('aria-label');

@@ -64,8 +64,10 @@ class FakeRO {
   targets: Element[] = [];
   constructor(private cb: ResizeObserverCallback) { FakeRO.instances.push(this); }
   observe = (t: Element) => { this.targets.push(t); };
+  unobserve = (t: Element) => { this.targets = this.targets.filter((x) => x !== t); };
   disconnect = () => { this.targets = []; };
-  fire() { this.cb([], this as unknown as ResizeObserver); }
+  /** Report `t` resized. A real observer reports each target once on observe, which is skipped. */
+  fire(t: Element) { this.cb([{ target: t } as ResizeObserverEntry], this as unknown as ResizeObserver); }
 }
 
 describe('scrollHorizontal', () => {
@@ -179,8 +181,9 @@ describe('scrollHorizontal', () => {
     expect(ro.targets).toEqual(expect.arrayContaining([document.body, document.documentElement, el, stage.parentElement]));
 
     inst.seek(1);
+    ro.fire(el); // the report every target gets when it is first observed
     trackWidth = 6000; // an image inside a panel loaded
-    ro.fire();
+    ro.fire(el);
     vi.advanceTimersByTime(150);
     expect(el.style.transform).toContain('translateX(-4800px)');
     inst.destroy();

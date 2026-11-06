@@ -9,10 +9,11 @@
  * changes, so a new `speed` reaches the running draw — stated as
  * `reactiveOptions: true` and checked by the spec rather than assumed.
  *
- * `native` is not a declared prop of `<ScrollDraw>`, so the draw here may take
- * the native CSS fast path where the browser supports it. That is what a Vue
- * user gets, and it is why the fade below pins `native: false`: the leak
- * assertions need at least one engine that really runs a frame loop.
+ * `<ScrollDraw>` declares every option as a prop (it used to declare 12 of 35,
+ * so `native`, `preset`, `strokeColor` and the rest rendered as attributes on
+ * the div and never reached the engine). `native: false` keeps both engines on
+ * the JS path, so the leak assertions have a frame loop to detect; `data-role`
+ * is an ordinary attribute and must fall through to the div.
  */
 import { createApp, h, nextTick, ref } from 'vue';
 import { ScrollDraw, ScrollAnimate } from '../../dist/vue/index.mjs';
@@ -35,14 +36,9 @@ const Root = {
   setup() {
     return () =>
       h('div', { 'data-tick': tick.value }, [
-        // `stagger` is set for one reason: it disqualifies the native CSS fast
-        // path, so this component always runs the JS engine and the leak
-        // assertion has a frame loop to detect. With a single path it changes
-        // nothing about the drawing. `native` is not a declared prop of
-        // <ScrollDraw>, so this is the only way to express it from a template.
         // A fresh `onProgress` and a fresh slot function every render: neither
         // may count as a changed option.
-        h(ScrollDraw, { class: 'fw-draw', easing: 'linear', stagger: 0.01, speed: speed.value, onProgress: () => {} }, () => [svg()]),
+        h(ScrollDraw, { class: 'fw-draw', 'data-role': 'drawing', easing: 'linear', native: false, speed: speed.value, onProgress: () => {} }, () => [svg()]),
         h(ScrollAnimate, {
           class: 'fw-anim',
           options: { props: { opacity: [0, 1] }, easing: 'linear', native: false },

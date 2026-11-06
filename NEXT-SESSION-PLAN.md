@@ -1,8 +1,72 @@
 # Next Session Plan — svg-scroll-draw
 
-> Updated: 2026-11-05 — **2.18.1 ready to tag** (`scrollHorizontal` follows the layout and measures against its sticky stage; the horizontal strip recipe, the fifth and last planned). **2.18.0 published** (`v2.18.0` on `1840983`: `scrollVideo` `triggerElement`; four recipes). **2.17.1 published** (`v2.17.1` on `ed77b58`: `once` keeps `stagger`; the logo example is a full recipe). Recipe 2, the pinned feature tour on `/examples/scroll-pin`, is done (site-only). **2.17.0 published** (`v2.17.0` on `d7b03b2`: the React, Vue, Nuxt, Solid and Svelte wrappers follow option changes, Angular gets `update()` for `ngOnChanges`). **2.16.1 published** (`v2.16.1` on `b3eb52a`) (`svg-scroll-draw/react` ships `"use client"` so Server Components render `<ScrollDraw>` directly; all 56 mutations run again). **2.16.0 published** (`v2.16.0` on `fde9f4c`: ES module entries share code through chunks — main + react 18.1 → 13.2 KB; the drop-ins share one instance with their React hooks; size tables generated; main entry 10.7 KB as shipped files). **2.15.3 published** (`v2.15.3` on `acc9acc`: scrollReveal's `stagger` is a fraction of the reveal window, per row, on top of a custom trigger; 2.15.2 before it kept scrollVideo's end frame under reduced motion). Every page is linked from every page (nav "More", phone menu, footer index — `components/site/sitemap.ts`, guarded by `check-nav`). Sitemap dates come from git for every URL, generated groups included — Search Console (2026-11-04) had 20 indexed, 35 "Discovered – not indexed" (never crawled), 2 "Crawled – not indexed". The native CSS path is no longer described as compositor work anywhere, and `/vs-aos` quotes the reveal entry and the real presets. Every page is on the homepage design and all 23 showcase sites are built — in `32f3409`, on `main`.
+> Updated: 2026-11-06 — **2.19.0 ready for review** (in the working tree, nothing committed; see below). **2.18.1 published** (`v2.18.1` on `70c91cd`: `scrollHorizontal` follows the layout and measures against its sticky stage; the horizontal strip recipe, the fifth and last planned). **2.18.0 published** (`v2.18.0` on `1840983`: `scrollVideo` `triggerElement`; four recipes). **2.17.1 published** (`v2.17.1` on `ed77b58`: `once` keeps `stagger`; the logo example is a full recipe). Recipe 2, the pinned feature tour on `/examples/scroll-pin`, is done (site-only). **2.17.0 published** (`v2.17.0` on `d7b03b2`: the React, Vue, Nuxt, Solid and Svelte wrappers follow option changes, Angular gets `update()` for `ngOnChanges`). **2.16.1 published** (`v2.16.1` on `b3eb52a`) (`svg-scroll-draw/react` ships `"use client"` so Server Components render `<ScrollDraw>` directly; all 56 mutations run again). **2.16.0 published** (`v2.16.0` on `fde9f4c`: ES module entries share code through chunks — main + react 18.1 → 13.2 KB; the drop-ins share one instance with their React hooks; size tables generated; main entry 10.7 KB as shipped files). **2.15.3 published** (`v2.15.3` on `acc9acc`: scrollReveal's `stagger` is a fraction of the reveal window, per row, on top of a custom trigger; 2.15.2 before it kept scrollVideo's end frame under reduced motion). Every page is linked from every page (nav "More", phone menu, footer index — `components/site/sitemap.ts`, guarded by `check-nav`). Sitemap dates come from git for every URL, generated groups included — Search Console (2026-11-04) had 20 indexed, 35 "Discovered – not indexed" (never crawled), 2 "Crawled – not indexed". The native CSS path is no longer described as compositor work anywhere, and `/vs-aos` quotes the reveal entry and the real presets. Every page is on the homepage design and all 23 showcase sites are built — in `32f3409`, on `main`.
 
 ---
+
+## 2.19.0 in the working tree (2026-11-06, overnight, nothing committed)
+
+The owner asked for four follow-ups and went to sleep. All four are done in the
+working tree; nothing is committed, pushed or tagged. Review with `git diff`,
+then commit, push (both branches) and tag `v2.19.0` as usual.
+
+- **Library:** one shared layout watcher (`src/core/layout-watch.ts`) for the
+  animate, counter, progress, text, timeline and video engines (the draw engine
+  and scrollHorizontal moved onto it); `refresh()` on scrollAnimate instances;
+  measuring without the engine's own transform; stagger `getProgress()` = first
+  path, as `onProgress`; React attributes on the element; Vue `<ScrollDraw>`
+  takes every option and absent booleans stay absent; `<scroll-draw>`
+  observedAttributes; Astro one live engine per element and kind; the Astro
+  counter example fixed. Version 2.19.0 everywhere, sizes and claims updated,
+  CHANGELOG and `/changelog` written.
+- **Tests:** `e2e/layout.spec.ts` (+ `late-layout.html`), framework fixtures that
+  write the real attribute, unit `layoutWatch` / `vueProps` / refresh / stagger;
+  15 new mutations — all 78 caught; scrollPin resize mid-pin and scrollParallax travel fixed too.
+- **Site:** framework pages with sections of their own
+  (`apps/demo/src/data/framework-guides/`), measured shared text 40–50% → 9.5–15.9%;
+  four new blocks with `npm run test:blocks --workspace=apps/demo` (needs the
+  site running); `build-registry --check` in CI and `verify`.
+
+- **Vue blocks (done):** `apps/demo/registry/vue/<name>.vue` for the nine blocks
+  (written, browser-checked and reviewed for parity by a workflow); `build-registry.mjs`
+  publishes them as shadcn-vue items at `/r/vue/<name>.json` (+ index) and
+  `--check` covers them; `/blocks` shows each one's `shadcn-vue add` command and
+  source; `node apps/demo/scripts/test-vue-blocks.mjs` compiles each SFC, styles
+  it with its own Tailwind 4 CSS and runs it in Chromium (in CI after the
+  recipes). The React sticky-feature block now re-observes when its steps are
+  renamed — a reviewer found the highlight froze on a same-length rename.
+
+- **Adversarial review before release (end of the night):** three reviewers on
+  the library changes, each finding reproduced in a browser before it counted.
+  Fixed: the layout watcher dropped a change landing before its first report
+  (now compared with the box at observe time), stopped reporting for a second
+  engine on the same element when one was destroyed (now counted), and threw in
+  a document with no body; Vue `:trigger="null"` reached the engine; the
+  `<scroll-draw>` key could not tell `once` added from absent; a second Astro
+  kind on one element narrowed the MutationObserver filter, and an old Astro
+  handle could destroy an engine a newer one used (handles are counted now);
+  parallax on an SVG child resolved its percentage against the SVG viewport
+  (`transform-box: fill-box`, restored on destroy); a re-measure measured the
+  engine's own size props and fought a CSS transition (all of its props are
+  put back, transitions off, while it measures). The scrollContainer /
+  100%-tall-body gap it left open is closed too (see below).
+
+### Done after the review (2026-11-06, the owner asked: "do them as well")
+- The layout gap: the watcher also observes the boxes above each element, so
+  growth inside a custom scrollContainer or on an `html, body { height: 100% }`
+  page is heard (browser tests for both, mutation `layout/boxes-above`).
+- Size: the watcher was compacted (543 → 473 B gzipped on its own); the main
+  entry is 11.2 KB with every fix in.
+- Svelte 5 versions of all nine blocks, published for shadcn-svelte without
+  `path`, on /blocks, run by `test-svelte-blocks` in CI.
+- `test:blocks` in CI: build the demo, `next start -p 3100`, run it (proven
+  locally the same way).
+
+### Found along the way, not done
+- A numeric scrollPin `pinDistance` is never re-read (a resize mid-pin is fixed
+  in 2.19.0; the distance itself stays what you passed).
+- With `stagger`, the last path's window runs past `trigger.end` (offset
+  `i × stagger × range`), so on a short page `onComplete` may never fire.
 
 ## Current state (2026-10-30)
 
@@ -94,8 +158,7 @@ months, 81% to the homepage; `/vs-gsap` at position 11 with 425 impressions.
    CTR on `/docs`, `/vs-locomotive-scroll`, `/lenis-scroll-animation` and the
    scroll-pin post, whose titles changed on 2026-11-04.
    Watch GitHub stars after the homepage finale (shipped 2026-11-04).
-3. Astro and `<scroll-draw>` still read their options once (2.17.0 made the
-   other six wrappers live) — a `MutationObserver` / `observedAttributes` would close it.
+3. ~~Astro and `<scroll-draw>` read their options once~~ — done in 2.19.0.
 4. Recipes, one at a time, on the pages that already target each search
    (pattern: `src/recipes/<slug>/` files + `components/recipes/recipes.tsx`
    steps and pitfalls + a check in `scripts/test-recipes.mjs`; a blog post
@@ -104,15 +167,10 @@ months, 81% to the homepage; `/vs-gsap` at position 11 with 425 impressions.
    does). All five planned are done: logo (`/examples/logo-reveal`), pinned
    feature tour (`/examples/scroll-pin`), stat row (`/examples/scroll-counter`),
    pinned film (`/examples/scroll-video`), case-study strip
-   (`/blog/horizontal-scroll-sections`). Next: more distinct framework pages
-   and more blocks.
-5. The shared animate engine (`scrollAnimate`, `scrollReveal`, groups, the
-   wrappers) re-measures its trigger window only on a window resize, so content
-   loading above an element shifts it — the bug 2.18.1 fixed for
-   `scrollHorizontal` alone. The engine-wide fix needs care: an animation that
-   writes a size (`height`, `padding`) to its own trigger element would make a
-   ResizeObserver feed itself. Measure on the JS path (Firefox, older Safari)
-   before deciding.
+   (`/blog/horizontal-scroll-sections`). Distinct framework pages and four more
+   blocks: done in 2.19.0's site work. Next: Vue/Svelte block versions.
+5. ~~The engines re-measure only on a window resize~~ — done in 2.19.0 for all
+   seven (the sub-pixel rule ends the self-sizing loop).
 6. Fold `firefox-native` into `firefox` once Playwright bundles Firefox 159+.
 
 ---

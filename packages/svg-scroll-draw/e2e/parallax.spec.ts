@@ -5,10 +5,10 @@ import { openFixture, collectErrors, scrollToY, read, call, sweep, table } from 
  * `scrollParallax` in real browsers.
  *
  * The only entry point in the library with no unit coverage at all, and the one
- * whose whole behaviour is derived from measured layout: travel distance is
- * `speed × element size`, taken from `getBoundingClientRect()` at construction.
- * In jsdom that measurement is 0, so the computed travel would be 0 and every
- * assertion about it would be trivially satisfied.
+ * whose whole behaviour is derived from layout: travel distance is
+ * `speed × element size`. Since 2.19.0 it is a percentage the browser resolves
+ * against the element's box every frame (it was measured once at construction);
+ * jsdom has no layout, so only a real browser can check it.
  *
  * Fixture geometry (viewport 900x800): targets are at document top 1200, 300 tall.
  * Default window `top bottom` → `bottom top`:
@@ -66,6 +66,25 @@ test.describe('scrollParallax', () => {
     // Ends: undisplaced at the start of the window, full travel at the end.
     expect(rows[0].half.y, shown).toBeCloseTo(0, 0);
     expect(rows[rows.length - 1].half.y, shown).toBeCloseTo(-TRAVEL_Y, 0);
+  });
+
+  /**
+   * The travel was measured once in px at construction. A layer that grew
+   * afterwards — an image loading inside it — kept travelling its first height.
+   * As a percentage of its own box the browser resolves it every frame.
+   */
+  test('travel follows the layer when it grows after init', async ({ page }) => {
+    await openFixture(page, 'parallax.html');
+    await call(page, 'growHalf', 500);
+    await page.waitForTimeout(300); // the trigger window re-measures after a layout change
+
+    for (const y of [700, 1000, 1300]) {
+      await scrollToY(page, y);
+      const row = await read<Row>(page);
+      const p = await call<number>(page, 'halfProgress');
+      expect(p, `no progress at y=${y}`).toBeGreaterThan(0);
+      expect(row.half.y, `at y=${y}, progress ${p.toFixed(3)}`).toBeCloseTo(-0.5 * 500 * p, 0);
+    }
   });
 
   test('a negative speed reverses the direction', async ({ page }) => {

@@ -157,6 +157,27 @@ test.describe('scrollPin', () => {
       .toBe(700 + 800);
   });
 
+  /**
+   * setState() wrote `left` and `width` only on the way into the pinned state,
+   * so a window resized while pinned left the element at its old size: measured
+   * 1200 → 800 wide, a pinned element stayed 840px wide at left 180 and ran
+   * 220px past the screen's edge until it unpinned.
+   */
+  test('a resize mid-pin moves the pinned element with its wrapper', async ({ page }) => {
+    await openFixture(page, 'pin.html');
+    await scrollToY(page, 1000);
+    const before = await read<{ position: string; width: number; left: number }>(page);
+    expect(before.position).toBe('fixed');
+    expect(before.width).toBe(900);
+
+    await page.setViewportSize({ width: 700, height: 800 });
+    await page.waitForTimeout(400); // the re-measure is debounced
+    const after = await read<{ position: string; width: number; left: number }>(page);
+    expect(after.position, 'it unpinned instead').toBe('fixed');
+    expect(after.width, 'the pinned element kept its old width').toBe(700);
+    expect(after.left).toBe(0);
+  });
+
   test('destroy() unwraps and restores the element', async ({ page }) => {
     await openFixture(page, 'pin.html');
     await scrollToY(page, 1000); // destroy while actively pinned

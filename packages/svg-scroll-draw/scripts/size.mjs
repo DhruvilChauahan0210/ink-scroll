@@ -33,21 +33,29 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
  * bundler nothing grew: esbuild-bundling `export *` from each entry measured
  * within 0.01 KB of the unsplit build, and pin 0.3 KB smaller.
  */
+/*
+ * 2.19.0 moved most budgets up 0.1–0.4 KB. Every scroll-linked engine follows
+ * layout changes now (one shared ResizeObserver, core/layout-watch), not only
+ * window resizes; the React, Vue, Astro and web-component wrappers follow their
+ * options; an adversarial review before release added the reference counts and
+ * transition handling. The main entry went 10.7 → 11.2 KB for that. Measured, not guessed:
+ * each figure below is the 2.19.0 build rounded up to the next 0.1 KB.
+ */
 const BUDGETS_KB = {
-  '.':              11.0,
+  '.':              11.3,
   // The whole library in one IIFE, web component included — the single file a
   // `<script src>` user downloads. Not split, so unchanged by the chunks.
   cdn:              11.5,
-  react:            12.1,
-  vue:              12.2,
-  nuxt:             12.3,
-  svelte:           11.6,
-  solid:            11.6,
-  angular:          11.7,
-  astro:            11.1,
-  group:             9.6,
-  'web-component':   7.2,
-  reveal:            5.2,
+  react:            12.7,
+  vue:              12.8,
+  nuxt:             12.9,
+  svelte:           12.1,
+  solid:            12.1,
+  angular:          12.2,
+  astro:            11.8,
+  group:             9.9,
+  'web-component':   7.5,
+  reveal:            5.6,
   // The AOS drop-in, stylesheet included (AOS itself is 6.7 KB with aos.css).
   aos:               3.2,
   'cdn-aos':         3.4,
@@ -64,12 +72,12 @@ const BUDGETS_KB = {
   'cdn-vivus':       4.2,
   // 4.7 -> 5.0 in 2.18.1: it follows the layout (ResizeObserver, a rebuild only
   // when the travel or the runway moved) and measures against its sticky stage.
-  horizontal:        5.1,
-  timeline:          3.9,
-  text:              2.9,
-  video:             2.4,
+  horizontal:        5.5,
+  timeline:          4.1,
+  text:              3.1,
+  video:             2.7,
   cinematic:         2.3,
-  progress:          2.2,
+  progress:          2.5,
   devtools:          1.9,
   snap:              2.0,
   // 1.39 once clamp got a file of its own; it used to drag every easing along.
@@ -83,7 +91,7 @@ const BUDGETS_KB = {
  * 18.1 KB); the budget is what keeps the sharing from quietly coming undone.
  */
 const COMBINATIONS = [
-  { names: ['.', 'react'], budget: 14.0 },
+  { names: ['.', 'react'], budget: 14.2 },
 ];
 
 // ── Measure ──────────────────────────────────────────────────────────────────

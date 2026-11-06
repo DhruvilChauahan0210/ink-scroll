@@ -592,16 +592,17 @@ describe('scrollParallaxGroup', () => {
     const instance = scrollParallaxGroup([a, b], { speed: 0.5 });
 
     instance.seek(1);
-    // Rect height is stubbed at 500, so travel is 0.5 x 500 = 250, upward.
-    expect(a.style.transform).toContain('translateY(-250');
-    expect(b.style.transform).toContain('translateY(-250');
+    // Half of each member's own height, upward: a percentage the browser
+    // resolves against the member's box, so it follows the member's size.
+    expect(a.style.transform).toContain('translateY(-50%');
+    expect(b.style.transform).toContain('translateY(-50%');
   });
 
   it('a negative speed moves the other way', () => {
     const a = makeBox();
     const instance = scrollParallaxGroup([a], { speed: -0.2 });
     instance.seek(1);
-    expect(a.style.transform).toContain('translateY(100');
+    expect(a.style.transform).toContain('translateY(20%');
   });
 
   it('destroy() restores every member', () => {

@@ -22,7 +22,7 @@ Works in **React · Next.js · Vue 3 · Svelte · Solid · Angular · Nuxt · As
 
 ## Features at a glance
 
-- **10.7 KB gzipped** for the whole main entry — and you rarely need all of it. Every API is a separate entry point: `scrollReveal` is 5.0 KB, `scrollPin` 1.4 KB, `scrollSnap` 1.9 KB. [Full size table below](#bundle-sizes), measured by `npm run size` and enforced in CI.
+- **11.2 KB gzipped** for the whole main entry — and you rarely need all of it. Every API is a separate entry point: `scrollReveal` is 5.5 KB, `scrollPin` 1.4 KB, `scrollSnap` 1.9 KB. [Full size table below](#bundle-sizes), measured by `npm run size` and enforced in CI.
 - **Native CSS fast path** — where the browser supports scroll-driven animations the draw runs on a CSS `view-timeline` with zero per-frame JavaScript, and falls back to the JS engine automatically everywhere else. Both engines are [verified to produce the same output](#native-css-rendering) by a cross-browser test suite rather than assumed to.
 - **Zero dependencies** — no GSAP, no ScrollTrigger, no heavyweight runtime
 - **vivus drop-in** — `import Vivus from 'svg-scroll-draw/vivus'` keeps your `new Vivus()` code; SVG output matched exactly against vivus 0.4.6. [Details](#vivus-drop-in--keep-your-new-vivus-code)
@@ -34,8 +34,8 @@ Works in **React · Next.js · Vue 3 · Svelte · Solid · Angular · Nuxt · As
 - **30+ options** — easing, stagger, fade, stroke color/width lerp, fill opacity, clip reveal, morphTo, velocityScale, waypoints, callbacks, repeat, autoReverse, and more
 - **Group / Sequence / Timeline APIs** — animate multiple containers simultaneously, one-after-another, or on independent scroll windows with `loop` for auto-looping after scroll completion
 - **CSS custom property** — `--scroll-draw-progress` is set on every frame so you can drive any CSS animation without a callback
-- **669 tests across 34 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
-- **212 browser tests on top of those**, run against Chromium, Firefox and WebKit in CI. The unit suite runs in jsdom, where `getTotalLength` is stubbed and `IntersectionObserver` is faked — it can check the engine's arithmetic but nothing about real browser behaviour. Both counts are derived from the suites themselves and enforced in CI, so neither can quietly drift out of date
+- **685 tests across 36 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
+- **221 browser tests on top of those**, run against Chromium, Firefox and WebKit in CI. The unit suite runs in jsdom, where `getTotalLength` is stubbed and `IntersectionObserver` is faked — it can check the engine's arithmetic but nothing about real browser behaviour. Both counts are derived from the suites themselves and enforced in CI, so neither can quietly drift out of date
 
 ---
 
@@ -99,7 +99,7 @@ options are all decent — they just make different trade-offs:
 Sizes measured 2026-08-14 at gzip level 9 — see `CLAIMS-AUDIT.md` for the commands.
 
 `svg-scroll-draw` is 10.7 KB for every API at once, and each API is a separate entry point
-(`scrollReveal` alone is 5.0 KB). If you need one effect, the small libraries above are a
+(`scrollReveal` alone is 5.5 KB). If you need one effect, the small libraries above are a
 fair choice. If you need several, one dependency beats four.
 
 Moving from GSAP ScrollTrigger? The [step-by-step guide](https://svg-scroll-draw.vercel.app/guides/gsap-scrolltrigger-react)
@@ -801,47 +801,47 @@ outgrows its budget.
 <!-- size-table:start -->
 | Entry point                          | Raw | Gzipped |
 |--------------------------------------|----:|--------:|
-| `svg-scroll-draw/nuxt`               | 38.1 KB | **12.2 KB** |
-| `svg-scroll-draw/vue`                | 37.8 KB | **12.2 KB** |
-| `svg-scroll-draw/react`              | 37.2 KB | **12.1 KB** |
-| `svg-scroll-draw/angular`            | 35.6 KB | **11.6 KB** |
-| `svg-scroll-draw/solid`              | 35.4 KB | **11.6 KB** |
-| `svg-scroll-draw/svelte`             | 35.8 KB | **11.6 KB** |
-| `svg-scroll-draw/astro`              | 33.0 KB | **10.8 KB** |
-| `svg-scroll-draw`                    | 32.0 KB | **10.7 KB** |
-| `dist/cdn/svg-scroll-draw.global.js` | 30.9 KB | **10.6 KB** |
-| `svg-scroll-draw/group`              | 28.6 KB | **9.4 KB** |
-| `svg-scroll-draw/web-component`      | 19.7 KB | **7.0 KB** |
-| `svg-scroll-draw/reveal`             | 12.1 KB | **5.0 KB** |
-| `svg-scroll-draw/horizontal`         | 12.5 KB | **5.0 KB** |
+| `svg-scroll-draw/nuxt`               | 39.2 KB | **12.8 KB** |
+| `svg-scroll-draw/vue`                | 38.9 KB | **12.7 KB** |
+| `svg-scroll-draw/react`              | 38.7 KB | **12.7 KB** |
+| `svg-scroll-draw/angular`            | 36.8 KB | **12.1 KB** |
+| `svg-scroll-draw/solid`              | 36.6 KB | **12.1 KB** |
+| `svg-scroll-draw/svelte`             | 37.0 KB | **12.1 KB** |
+| `svg-scroll-draw/astro`              | 35.1 KB | **11.7 KB** |
+| `svg-scroll-draw`                    | 33.3 KB | **11.2 KB** |
+| `dist/cdn/svg-scroll-draw.global.js` | 32.4 KB | **11.2 KB** |
+| `svg-scroll-draw/group`              | 29.8 KB | **9.8 KB** |
+| `svg-scroll-draw/web-component`      | 20.6 KB | **7.4 KB** |
+| `svg-scroll-draw/reveal`             | 13.3 KB | **5.5 KB** |
+| `svg-scroll-draw/horizontal`         | 13.6 KB | **5.4 KB** |
 | `svg-scroll-draw/scrollreveal/react` | 11.7 KB | **4.7 KB** |
 | `svg-scroll-draw/scrollreveal`       | 11.4 KB | **4.5 KB** |
 | `dist/cdn/scrollreveal.global.js`    | 11.1 KB | **4.5 KB** |
 | `svg-scroll-draw/vivus/react`        | 11.5 KB | **4.2 KB** |
+| `svg-scroll-draw/timeline`           | 9.8 KB | **4.1 KB** |
 | `svg-scroll-draw/vivus`              | 11.2 KB | **4.0 KB** |
 | `dist/cdn/vivus.global.js`           | 10.7 KB | **3.8 KB** |
-| `svg-scroll-draw/timeline`           | 9.0 KB | **3.7 KB** |
 | `svg-scroll-draw/aos/react`          | 8.6 KB | **3.2 KB** |
+| `svg-scroll-draw/text`               | 7.3 KB | **3.1 KB** |
 | `dist/cdn/aos.global.js`             | 8.3 KB | **3.1 KB** |
 | `svg-scroll-draw/aos`                | 8.3 KB | **3.1 KB** |
-| `svg-scroll-draw/text`               | 6.5 KB | **2.8 KB** |
-| `svg-scroll-draw/video`              | 5.0 KB | **2.3 KB** |
+| `svg-scroll-draw/video`              | 5.8 KB | **2.7 KB** |
+| `svg-scroll-draw/progress`           | 5.5 KB | **2.4 KB** |
 | `svg-scroll-draw/cinematic`          | 4.7 KB | **2.2 KB** |
-| `svg-scroll-draw/progress`           | 4.7 KB | **2.1 KB** |
 | `svg-scroll-draw/snap`               | 4.1 KB | **1.9 KB** |
 | `svg-scroll-draw/devtools`           | 4.0 KB | **1.8 KB** |
 | `svg-scroll-draw/pin`                | 3.2 KB | **1.4 KB** |
 | `svg-scroll-draw/lenis`              | 0.4 KB | **0.2 KB** |
 
-Entries share code through chunks instead of each carrying its own copy, so `svg-scroll-draw` + `svg-scroll-draw/react` together is **13.5 KB**, not 10.7 KB + 12.1 KB.
+Entries share code through chunks instead of each carrying its own copy, so `svg-scroll-draw` + `svg-scroll-draw/react` together is **14.2 KB**, not 11.2 KB + 12.7 KB.
 <!-- size-table:end -->
 
 The framework entries are larger because each re-exports the full API surface for that
 framework; importing a single API from one of them tree-shakes down considerably.
 
 For comparison, GSAP 3.15.0 core + ScrollTrigger + DrawSVGPlugin is 47.5 KB gzipped and
-Framer Motion's CJS entry 34.3 KB — so the full main entry here is about 4.4× smaller than
-the GSAP stack, and a single-purpose import like `scrollReveal` (5.0 KB) about 9.5×. On supporting browsers the simple draw case
+Framer Motion's CJS entry 34.3 KB — so the full main entry here is about 4.2× smaller than
+the GSAP stack, and a single-purpose import like `scrollReveal` (5.5 KB) about 8.6×. On supporting browsers the simple draw case
 runs as a native CSS scroll animation with no JS on the critical path at all.
 
 ---

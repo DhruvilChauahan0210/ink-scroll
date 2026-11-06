@@ -25,6 +25,71 @@ function defaultRoot(): Element | Document | null {
   return typeof document === 'undefined' ? null : document;
 }
 
+// ── Live options ─────────────────────────────────────────────────────────────
+
+/** The engine running on an element for one kind, and how to rebuild it. */
+type Running = { inst: ScrollDrawInstance; key: string; build: () => void; users: number };
+
+const running = new WeakMap<Element, Map<string, Running>>();
+let watcher: MutationObserver | undefined;
+
+/**
+ * Start `kind` on `el` from its options attribute, and keep it in step with it.
+ *
+ * The init functions read the JSON once, so editing the attribute later did
+ * nothing (2.17.0 made the framework wrappers rebuild on a real change), and
+ * calling init again — on every `astro:page-load` with View Transitions — put a
+ * second engine on an element that already had one. Now one engine runs per
+ * element and kind: an equal attribute keeps it, a changed one rebuilds it, and
+ * a MutationObserver rebuilds it when the attribute is edited. The instance
+ * returned follows whichever engine is current.
+ */
+function live(el: HTMLElement, kind: string, raw: () => string, make: (raw: string) => ScrollDrawInstance): ScrollDrawInstance {
+  const kinds = running.get(el) ?? new Map<string, Running>();
+  running.set(el, kinds);
+  const build = () => {
+    const key = raw();
+    const cur = kinds.get(kind);
+    if (cur && cur.key === key) return;
+    cur?.inst.destroy();
+    kinds.set(kind, { inst: make(key), key, build, users: cur?.users ?? 0 });
+  };
+  build();
+  // Every handle is a user of the one engine: it stops when the last one goes.
+  kinds.get(kind)!.users++;
+  let live = true;
+  if (typeof MutationObserver !== 'undefined') {
+    watcher ??= new MutationObserver((records) =>
+      records.forEach((r) => running.get(r.target as Element)?.forEach((k) => k.build())),
+    );
+    // One filter for every kind: observing again replaces the options, so a
+    // filter for this kind alone stopped the element's other kinds updating.
+    watcher.observe(el, { attributes: true, attributeFilter: ['draw', 'animate', 'counter', 'text'].map((k) => `data-scroll-${k}-options`).concat('data-scroll-drawoptions') });
+  }
+  const now = () => kinds.get(kind)?.inst;
+  return {
+    destroy: () => {
+      const cur = kinds.get(kind);
+      if (!live || !cur) return;
+      live = false;
+      if (--cur.users > 0) return;
+      cur.inst.destroy();
+      kinds.delete(kind);
+    },
+    replay: () => now()?.replay(),
+    pause: () => now()?.pause(),
+    resume: () => now()?.resume(),
+    seek: (p) => now()?.seek(p),
+    getProgress: () => now()?.getProgress() ?? 0,
+    refresh: () => now()?.refresh?.(),
+  };
+}
+
+/** Parse an options attribute; invalid JSON gives `fallback`. */
+function parse<O>(raw: string, fallback: O): O {
+  try { return raw ? (JSON.parse(raw) as O) : fallback; } catch { return fallback; }
+}
+
 // ── initScrollDraw ────────────────────────────────────────────────────────────
 
 /**
@@ -44,14 +109,14 @@ function defaultRoot(): Element | Document | null {
  */
 export function initScrollDraw(root: Element | Document | null = defaultRoot()): ScrollDrawInstance[] {
   if (!root) return [];
-  return Array.from(root.querySelectorAll<HTMLElement>('[data-scroll-draw]')).map((el) => {
-    let opts: ScrollDrawOptions = {};
-    try {
-      const raw = el.dataset.scrollDrawOptions ?? el.dataset.scrollDrawoptions ?? '';
-      if (raw) opts = JSON.parse(raw);
-    } catch { /* ignore invalid JSON */ }
-    return createEngine(el, opts);
-  });
+  return Array.from(root.querySelectorAll<HTMLElement>('[data-scroll-draw]')).map((el) =>
+    live(
+      el,
+      'draw',
+      () => el.dataset.scrollDrawOptions ?? el.dataset.scrollDrawoptions ?? '',
+      (raw) => createEngine(el, parse<ScrollDrawOptions>(raw, {})),
+    ),
+  );
 }
 
 // ── initScrollAnimate ─────────────────────────────────────────────────────────
@@ -75,14 +140,14 @@ export function initScrollDraw(root: Element | Document | null = defaultRoot()):
  */
 export function initScrollAnimate(root: Element | Document | null = defaultRoot()): ScrollDrawInstance[] {
   if (!root) return [];
-  return Array.from(root.querySelectorAll<HTMLElement>('[data-scroll-animate]')).map((el) => {
-    let opts: ScrollAnimateOptions = { props: {} };
-    try {
-      const raw = el.dataset.scrollAnimateOptions ?? '';
-      if (raw) opts = JSON.parse(raw) as ScrollAnimateOptions;
-    } catch { /* ignore invalid JSON */ }
-    return createAnimateEngine(el, opts);
-  });
+  return Array.from(root.querySelectorAll<HTMLElement>('[data-scroll-animate]')).map((el) =>
+    live(
+      el,
+      'animate',
+      () => el.dataset.scrollAnimateOptions ?? '',
+      (raw) => createAnimateEngine(el, parse<ScrollAnimateOptions>(raw, { props: {} })),
+    ),
+  );
 }
 
 // ── initScrollCounter ─────────────────────────────────────────────────────────
@@ -90,12 +155,13 @@ export function initScrollAnimate(root: Element | Document | null = defaultRoot(
 /**
  * Auto-initialises all [data-scroll-counter] elements on the page.
  * Options are read from the data-scroll-counter-options JSON attribute.
- * The `to` value is required — pass it via JSON options.
+ * The `to` value is required — pass it via JSON options. `format` is a function,
+ * so it cannot come from JSON: use `decimals`, or call scrollCounter() yourself.
  *
  * @example
  * <span
  *   data-scroll-counter
- *   data-scroll-counter-options='{"to":1250000,"format":"$%d","once":true}'
+ *   data-scroll-counter-options='{"to":1250000,"decimals":0,"once":true}'
  * />
  *
  * <script>
@@ -105,18 +171,22 @@ export function initScrollAnimate(root: Element | Document | null = defaultRoot(
  */
 export function initScrollCounter(root: Element | Document | null = defaultRoot()): ScrollDrawInstance[] {
   if (!root) return [];
-  return Array.from(root.querySelectorAll<HTMLElement>('[data-scroll-counter]')).map((el) => {
-    let opts: Partial<ScrollCounterOptions> = {};
-    try {
-      const raw = el.dataset.scrollCounterOptions ?? '';
-      if (raw) opts = JSON.parse(raw) as Partial<ScrollCounterOptions>;
-    } catch { /* ignore invalid JSON */ }
-    if (!opts.to && opts.to !== 0) {
-      warn('initScrollCounter: element missing "to" in options JSON:', el);
-      opts.to = 0;
-    }
-    return scrollCounter(el, opts as ScrollCounterOptions);
-  });
+  return Array.from(root.querySelectorAll<HTMLElement>('[data-scroll-counter]')).map((el) =>
+    live(el, 'counter', () => el.dataset.scrollCounterOptions ?? '', (raw) => {
+      const opts = parse<Partial<ScrollCounterOptions>>(raw, {});
+      if (!opts.to && opts.to !== 0) {
+        warn('initScrollCounter: element missing "to" in options JSON:', el);
+        opts.to = 0;
+      }
+      // JSON cannot carry a function. A string here threw "format is not a
+      // function" on the first frame, and the docs' own example passed one.
+      if (typeof opts.format !== 'function' && opts.format !== undefined) {
+        warn('initScrollCounter: "format" must be a function, so it cannot come from JSON; use "decimals":', el);
+        delete opts.format;
+      }
+      return scrollCounter(el, opts as ScrollCounterOptions);
+    }),
+  );
 }
 
 // ── initScrollText ────────────────────────────────────────────────────────────
@@ -140,14 +210,14 @@ export function initScrollCounter(root: Element | Document | null = defaultRoot(
  */
 export function initScrollText(root: Element | Document | null = defaultRoot()): ScrollDrawInstance[] {
   if (!root) return [];
-  return Array.from(root.querySelectorAll<HTMLElement>('[data-scroll-text]')).map((el) => {
-    let opts: ScrollTextOptions = {};
-    try {
-      const raw = el.dataset.scrollTextOptions ?? '';
-      if (raw) opts = JSON.parse(raw) as ScrollTextOptions;
-    } catch { /* ignore invalid JSON */ }
-    return scrollText(el, opts);
-  });
+  return Array.from(root.querySelectorAll<HTMLElement>('[data-scroll-text]')).map((el) =>
+    live(
+      el,
+      'text',
+      () => el.dataset.scrollTextOptions ?? '',
+      (raw) => scrollText(el, parse<ScrollTextOptions>(raw, {})),
+    ),
+  );
 }
 
 // ── initAll ───────────────────────────────────────────────────────────────────

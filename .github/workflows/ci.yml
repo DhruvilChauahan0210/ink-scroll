@@ -47,8 +47,10 @@ jobs:
       # The demo carried 52 lint errors for months because nothing ran eslint.
       # check-jsx-text: SWC drops the space in front of a multi-line JSX text
       # that contains an HTML entity, which had run words together on 22 lines.
+      # build-registry --check: the published block JSON must match its source;
+      # it only ran inside the Vercel build before.
       - name: Lint demo
-        run: npm run lint -- --max-warnings=0 && node scripts/check-jsx-text.mjs && node scripts/check-nav.mjs
+        run: npm run lint -- --max-warnings=0 && node scripts/check-jsx-text.mjs && node scripts/check-nav.mjs && node scripts/build-registry.mjs --check
         working-directory: apps/demo
 
       - name: Run tests (all workspaces)
@@ -100,6 +102,26 @@ jobs:
       # a listing nobody ran is the easiest thing on the site to get wrong.
       - name: Recipe files work in a browser
         run: node apps/demo/scripts/test-recipes.mjs
+
+      # The site renders the React blocks; nothing else would notice a Vue
+      # version that does not compile or never starts its engine.
+      - name: Vue blocks compile and run
+        run: node apps/demo/scripts/test-vue-blocks.mjs
+
+      - name: Svelte blocks compile and run
+        run: node apps/demo/scripts/test-svelte-blocks.mjs
+
+      # The React blocks run on /blocks itself: build the site, serve it and
+      # scroll through each block in Chromium.
+      - name: Build the demo
+        run: npm run build -w demo
+
+      - name: Blocks work on /blocks
+        run: |
+          npx next start -p 3100 &
+          for i in $(seq 1 60); do curl -sf http://localhost:3100/blocks > /dev/null && break; sleep 1; done
+          BASE_URL=http://localhost:3100 node scripts/test-blocks.mjs
+        working-directory: apps/demo
 
       - uses: actions/upload-artifact@v4
         if: failure()

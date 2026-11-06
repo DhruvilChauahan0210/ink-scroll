@@ -1,11 +1,11 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **2.18.1** — committed, waiting on the owner to push the `v2.18.1` tag (2.18.0 is the latest on npm)
-> Tests: **669 unit** across 34 suites · **212 browser tests** per engine (636 runs
-> across Chromium/Firefox/WebKit) · **63 mutations**, each caught by the one test
+> Current version: **2.19.0** — in the working tree, not yet committed or tagged (2.18.1 is the latest on npm)
+> Tests: **685 unit** across 36 suites · **221 browser tests** per engine (663 runs
+> across Chromium/Firefox/WebKit) · **78 mutations**, each caught by the one test
 > named for it · **91.3% line coverage** (gate 90/90/82/82)
-> Bundle: **10.7 KB gzipped** (main entry as shipped files, chunks included; per-API entries from 0.2 KB) · zero runtime dependencies
-> Last updated: 2026-11-04
+> Bundle: **11.2 KB gzipped** (main entry as shipped files, chunks included; per-API entries from 0.2 KB) · zero runtime dependencies
+> Last updated: 2026-11-06
 
 ---
 
@@ -49,11 +49,11 @@
 - [x] `scrollAnimateGroup` + `scrollAnimateSequence` + `scrollParallaxGroup` in `svg-scroll-draw/group`
 
 ### Testing
-- [x] 669 tests across 34 suites — `reactive` (the wrappers' option fingerprint and live callbacks), `directives` (the built files' "use client"), `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollText` (23)
+- [x] 685 tests across 36 suites — `reactive` (the wrappers' option fingerprint and live callbacks), `directives` (the built files' "use client"), `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollText` (23)
 - [x] Initial state fix — `createAnimateEngine` and `scrollCounter` now apply correct alpha immediately on init (no flash before IO fires)
 
 ### Browser tests (Phase 2, `packages/svg-scroll-draw/e2e`)
-212 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
+221 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
 `helpers.ts` (deterministic sweep — scroll to a fixed offset, wait two frames,
 read) and `fixtures/_probe.mjs` (parsing stays in the page, so specs assert on
 numbers).
@@ -163,13 +163,29 @@ at all.
 - [x] `/blog/horizontal-scroll-sections` is a full recipe — a case-study strip: runway matched to the travel, count and rail from `onProgress`, `overflow: clip` + a `focusin` scroll for the keyboard; five pitfalls measured on the file; files in `apps/demo/src/recipes/horizontal-scroll-sections/`; the recipe parts render inside a post's sections
 - [x] The five recipes planned are done (logo, sticky feature section, stat row, scrubbed film, horizontal strip)
 
+### 2.19.0 — every engine follows the page (2026-11-06; not yet released)
+
+- [x] One shared layout watcher (`core/layout-watch`) for the animate, counter, progress, text, timeline and video engines; the draw engine and scrollHorizontal moved onto it. A move under a pixel is dropped; a re-measure leaves out the engine's own transform
+- [x] `refresh()` on scrollAnimate instances (group `refresh()` did nothing before)
+- [x] Stagger: `getProgress()` = the first path, as `onProgress` and `--scroll-draw-progress`
+- [x] React: `id`, `role`, `title`, `aria-*`, `data-*` go on the element. Vue: `<ScrollDraw>` takes all 35 options; absent booleans stay absent (`<ScrollCounter>` defaulted `once` to false)
+- [x] `<scroll-draw>` observedAttributes; Astro one live engine per element and kind; the Astro counter example fixed
+- [x] Tests: `e2e/layout.spec.ts` (7 engines × 3 browsers), framework fixtures that write the real attribute, `react wrapper attributes`, `vue wrapper props`, unit `layoutWatch` / `vueProps` / refresh / stagger agreement; 15 new mutations (78, all caught)
+- [x] Sizes: main 10.7 → 11.2 KB, budgets moved to the measured build with the reason in `scripts/size.mjs`
+- [x] Site: each framework page has three sections of its own (`data/framework-guides/`), its own entry size, and the shared Size prose cut — measured, text shared with another framework page fell from 40–50% to 9.5–15.9%; four new blocks (pinned-feature-tour, horizontal-case-strip, video-scrub, reading-progress) run in a browser by `npm run test:blocks`; a Vue version of all nine blocks (`registry/vue/`, published at `/r/vue/<name>.json` for shadcn-vue, shown on /blocks, compiled and run in Chromium by `test-vue-blocks` in CI); sticky-feature re-observes when its steps are renamed (the highlight froze); `build-registry --check` in CI and `verify`
+- [x] scrollParallax: travel is a percentage of the layer's own box, so it follows a layer that grows after init (measured 34.6px moved where 57.7px was right)
+- [x] scrollPin: a resize while pinned moves the element with its wrapper (it kept its old left and width — measured 220px past the screen's edge); browser test + mutation `pin/resize-pinned`
+- [x] The layout watcher also watches the boxes above each element (previous siblings of it and its ancestors): growth inside a custom scrollContainer or on an `html, body { height: 100% }` page is heard; browser tests for both + mutation `layout/boxes-above`
+- [x] Svelte 5 versions of all nine blocks (`registry/svelte/`, `/r/svelte/<name>.json` without `path`, on /blocks, `test-svelte-blocks` in CI); `test-blocks` in CI against a built, started site
+- [ ] Released — waiting on the owner to review, commit, push and tag `v2.19.0`
+
 ### 2.18.1 — scrollHorizontal follows the layout (2026-11-05)
 
 - [x] Travel and runway re-measured 150 ms after the window, the page, the track or the runway resizes; rebuilt only when either moved; a held (`pause`/`seek`) position survives the rebuild and `refresh()`
 - [x] Default distance = track − the sticky stage's content box; without a stage, the scroll container or `documentElement.clientWidth` (classic scrollbar left out)
 - [x] Four browser tests × 3 engines, seven unit tests, mutations `horizontal/stage-width` and `horizontal/follow-layout` (63 in all); horizontal entry 5.0 KB, budget 5.1
 - [x] Docs: `/docs` scrollHorizontal section, skill API, the complete guide's snippet, the post's API table, CHANGELOG, `/changelog`
-- [ ] Released — waiting on the owner to push the `v2.18.1` tag
+- [x] Released — `v2.18.1` on `70c91cd`; the release run passed and npm `latest` is 2.18.1
 
 ### 2.18.0 — scrollVideo `triggerElement` (2026-11-05)
 
@@ -260,7 +276,7 @@ at all.
 - [x] Released as 2.11.0
 
 ### 2.10.2 — reach pass (branch `feat/day2-reach`, 2026-10-30)
-- [x] `/blocks` + shadcn registry (5 blocks), agent skill in `skills/`
+- [x] `/blocks` + shadcn registry (9 blocks from 2.19.0's site work), agent skill in `skills/`
 - [x] Titles ≤ 60 chars site-wide, `/vs-gsap` table up top, 2025 guide → 2026 with redirect
 - [x] Types fixed for ESM/node10 (`attw` clean); `scrollVideo` no longer re-seeks every frame; `<scroll-draw once>` works
 - [x] `firefox-native` e2e project; release job can create the GitHub release

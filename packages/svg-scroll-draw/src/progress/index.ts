@@ -3,6 +3,7 @@ import { EASINGS } from '../core/easing';
 import { parseTrigger, computeProgress, computeTriggers } from '../core/trigger';
 import { measureTriggerFrame } from '../core/trigger-frame';
 import { _register, _unregister } from '../core/registry';
+import { watchLayout } from '../core/layout-watch';
 import { warn } from '../core/env';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -152,6 +153,8 @@ export function scrollProgress(
   }
   window.addEventListener('resize', onResize);
   window.addEventListener('orientationchange', onResize);
+  // Layout changes that are not window resizes: images, fonts, late content.
+  const unwatch = watchLayout([htmlEl], onResize);
   observer.observe(el!);
 
   _register(el, {
@@ -166,6 +169,7 @@ export function scrollProgress(
       observer.disconnect();
       window.removeEventListener('resize', onResize);
       window.removeEventListener('orientationchange', onResize);
+      unwatch();
       clearTimeout(resizeTimer);
       htmlEl.style.removeProperty(variable);
       if (easedVariable != null) htmlEl.style.removeProperty(easedVariable);

@@ -40,7 +40,10 @@ let instances = [];
 let speed = 1;
 
 setupFramework({
-  reactiveOptions: false,
+  // Each element keeps one engine per kind and watches its options attribute:
+  // an edit rebuilds it, an equal one — or initAll() run again, as on every
+  // astro:page-load with View Transitions — keeps it.
+  reactiveOptions: true,
 
   mount() {
     const drawEl = document.createElement('div');
@@ -66,7 +69,15 @@ setupFramework({
     root.replaceChildren();
   },
 
-  setSpeed(v) { speed = v; },
+  setSpeed(v) {
+    speed = v;
+    root.querySelector('.fw-draw')?.setAttribute('data-scroll-draw-options', JSON.stringify({ ...DRAW_OPTIONS, speed }));
+  },
+
+  rerender() {
+    root.querySelector('.fw-draw')?.setAttribute('data-scroll-draw-options', JSON.stringify({ ...DRAW_OPTIONS, speed }));
+    initAll(root);
+  },
 });
 </script>
 </body>

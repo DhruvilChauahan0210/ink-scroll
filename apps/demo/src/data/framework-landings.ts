@@ -10,7 +10,7 @@
  * wrapper's API changes, these samples are wrong and must change with it.
  */
 
-import { SELF } from './competitors';
+import { COMPETITORS, SELF } from './competitors';
 
 /** The main entry, rounded — the figure every description quotes. */
 const KB = Math.round(SELF.gzipKb);
@@ -133,7 +133,7 @@ const heading = useScrollText({ split: 'words', stagger: 0.05 });
       },
       {
         q: 'Is there a Vue alternative to GSAP ScrollTrigger?',
-        a: 'svg-scroll-draw covers the common ScrollTrigger cases — scroll-driven animation, pin, snap, parallax, text split, counters and video scrub — at 10.0 KB for every API versus 47.5 KB for GSAP core plus ScrollTrigger plus DrawSVG. GSAP is broader; if you need timelines, Draggable or Flip, use GSAP.',
+        a: `svg-scroll-draw covers the common ScrollTrigger cases — scroll-driven animation, pin, snap, parallax, text split, counters and video scrub — at ${SELF.gzipKb} KB for every API versus ${COMPETITORS.gsapStack.gzipKb} KB for GSAP core plus ScrollTrigger plus DrawSVG. GSAP is broader; if you need timelines, Draggable or Flip, use GSAP.`,
       },
     ],
     related: ['nuxt-scroll-animation', 'svelte-scroll-animation'],

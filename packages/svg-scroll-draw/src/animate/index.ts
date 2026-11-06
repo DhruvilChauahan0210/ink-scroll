@@ -54,17 +54,28 @@ export function scrollParallax(
   }
 
   const { speed = 0.3, axis = 'y', easing = 'linear', trigger, onProgress } = options;
-  const rect   = el.getBoundingClientRect();
-  const size   = axis === 'x' ? rect.width : rect.height;
-  const travel = speed * size;
+  // The travel is `speed` times the element's own size. As a percentage the
+  // browser resolves it against the element's box on every frame; it used to
+  // be measured once in px and baked in, so a layer that grew after init (an
+  // image loading inside it) kept travelling its first height.
+  const travel = -speed * 100;
 
-  return createAnimateEngine(el, {
+  // An SVG child resolves transform percentages against the SVG's viewport
+  // unless its transform box is its own: give it its own, and give it back.
+  const style = (el as HTMLElement).style;
+  const svg = !!(el as SVGElement).ownerSVGElement;
+  const box = style.getPropertyValue('transform-box');
+  if (svg) style.setProperty('transform-box', 'fill-box');
+
+  const inst = createAnimateEngine(el, {
     props: axis === 'x'
-      ? { transform: [`translateX(0px)`, `translateX(${-travel}px)`] }
-      : { transform: [`translateY(0px)`, `translateY(${-travel}px)`] },
+      ? { transform: [`translateX(0%)`, `translateX(${travel}%)`] }
+      : { transform: [`translateY(0%)`, `translateY(${travel}%)`] },
     trigger: trigger ?? { start: 'top bottom', end: 'bottom top' },
     easing,
     native: false,
     onProgress,
   });
+  if (!svg) return inst;
+  return { ...inst, destroy() { inst.destroy(); style.setProperty('transform-box', box); } };
 }

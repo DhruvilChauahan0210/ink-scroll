@@ -59,41 +59,48 @@ export function useScrollDraw(options: MaybeRefOrGetter<ScrollDrawOptions> = {})
   return containerRef;
 }
 
+/**
+ * Every ScrollDrawOptions key, with how Vue should read it from a template:
+ * 0 any value, 1 a boolean (`<ScrollDraw once>`), 2 a boolean or a string,
+ * 3 a boolean or a number. `satisfies` makes a missing key, or one that is not
+ * an option, a compile error, so the component cannot fall behind the options
+ * again: it declared 12 of the 35, and the other 23 (preset, native, axis,
+ * strokeColor…) rendered as attributes on the div and never reached the engine.
+ */
+const DRAW_KEYS = {
+  preset: 0, selector: 0, speed: 0, fade: 1, easing: 0, trigger: 0, stagger: 0, direction: 0,
+  once: 1, debug: 1, axis: 0, scrollContainer: 0, autoReverse: 1, delay: 0, strokeColor: 0,
+  strokeWidth: 0, fillOpacity: 0, clip: 2, waypoints: 0, velocityScale: 3, threshold: 0,
+  rootMargin: 0, repeat: 0, repeatDelay: 0, morphTo: 0, onProgress: 0, onStart: 0, onComplete: 0,
+  onEnter: 0, onLeave: 0, onEnterBack: 0, onLeaveBack: 0, autoplay: 1, duration: 0, native: 1,
+} satisfies Record<keyof ScrollDrawOptions, 0 | 1 | 2 | 3>;
+
+const BOOLEAN_TYPES = [null, Boolean, [Boolean, String], [Boolean, Number]];
+
+/**
+ * A boolean prop Vue leaves undefined when it is absent. Without the explicit
+ * `default: undefined` Vue turns an absent Boolean prop into false, which
+ * overrode presets and the engines' own defaults: <ScrollCounter> ran with
+ * once: false while useScrollCounter and the core default to true.
+ */
+const flag = (type: unknown) => ({ type, default: undefined }) as unknown as { type: BooleanConstructor };
+
 /** Component — wraps children in a <div> and initialises the engine. */
 export const ScrollDraw = defineComponent({
   name: 'ScrollDraw',
-  props: {
-    selector:   { type: String },
-    speed:      { type: Number },
-    fade:       { type: Boolean },
-    stagger:    { type: Number },
-    easing:     { type: [String, Function] },
-    direction:  { type: String as () => 'forward' | 'reverse' },
-    trigger:    { type: Object },
-    onProgress: { type: Function },
-    onStart:    { type: Function },
-    onComplete: { type: Function },
-    once:       { type: Boolean },
-    debug:      { type: Boolean },
-  },
+  props: Object.fromEntries(
+    Object.entries(DRAW_KEYS).map(([k, t]) => [k, t ? flag(BOOLEAN_TYPES[t]) : null]),
+  ) as Record<keyof ScrollDrawOptions, null>,
   setup(props, { slots }) {
     const containerRef = ref<HTMLElement | null>(null);
 
     useEngine(containerRef, () => {
-      const opts: ScrollDrawOptions = {};
-      if (props.selector   != null) opts.selector   = props.selector;
-      if (props.speed      != null) opts.speed      = props.speed;
-      if (props.fade       != null) opts.fade       = props.fade;
-      if (props.stagger    != null) opts.stagger    = props.stagger;
-      if (props.easing     != null) opts.easing     = props.easing as ScrollDrawOptions['easing'];
-      if (props.direction  != null) opts.direction  = props.direction;
-      if (props.trigger    != null) opts.trigger    = props.trigger as ScrollDrawOptions['trigger'];
-      if (props.once       != null) opts.once       = props.once;
-      if (props.debug      != null) opts.debug      = props.debug;
-      if (props.onProgress != null) opts.onProgress = props.onProgress as ScrollDrawOptions['onProgress'];
-      if (props.onStart    != null) opts.onStart    = props.onStart    as ScrollDrawOptions['onStart'];
-      if (props.onComplete != null) opts.onComplete = props.onComplete as ScrollDrawOptions['onComplete'];
-      return opts;
+      const opts: Record<string, unknown> = {};
+      for (const k in DRAW_KEYS) {
+        const v = (props as Record<string, unknown>)[k];
+        if (v != null) opts[k] = v; // `:trigger="null"` means unset, as it did
+      }
+      return opts as ScrollDrawOptions;
     }, createEngine);
 
     return () => h('div', { ref: containerRef }, slots.default?.());
@@ -172,7 +179,7 @@ export const ScrollCounter = defineComponent({
     format:     { type: Function as unknown as () => ScrollCounterOptions['format'] },
     easing:     { type: [String, Function] },
     trigger:    { type: Object },
-    once:       { type: Boolean },
+    once:       flag(Boolean),
     decimals:   { type: Number },
     onComplete: { type: Function },
   },

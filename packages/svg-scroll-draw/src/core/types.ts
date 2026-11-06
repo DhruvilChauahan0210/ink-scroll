@@ -71,6 +71,11 @@ export interface ScrollDrawOptions {
    * `<line>`, and other SVG shape elements.
    */
   morphTo?: string;
+  /**
+   * Progress 0–1, called as the scroll moves. Under `stagger` it is the first
+   * path's, the same value `getProgress()` and `--scroll-draw-progress` give;
+   * `onComplete` waits for the last path.
+   */
   onProgress?: (alpha: number) => void;
   onStart?: () => void;
   onComplete?: () => void;
@@ -129,7 +134,7 @@ export interface ScrollDrawInstance {
   resume: () => void;
   /** Jump to a specific progress value (0–1) and pause. */
   seek: (progress: number) => void;
-  /** Returns current draw progress (0–1). */
+  /** Returns current draw progress (0–1): the first path's under `stagger`, as `onProgress`. */
   getProgress: () => number;
   /**
    * Re-measure after a layout change: path lengths, and the scroll trigger window.

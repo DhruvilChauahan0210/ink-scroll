@@ -55,6 +55,22 @@ const KINDS: { k: Kind; label: string }[] = [
  */
 const RELEASES: Release[] = [
   {
+    version: '2.19.0',
+    title: 'Every engine follows the page',
+    date: '2026-11-06',
+    items: [
+      { type: 'fix', text: 'scrollReveal, scrollAnimate (on its JS path, the only one in Firefox and Safari), scrollCounter, scrollProgress, scrollText, scrollDrawTimeline and scrollVideo re-measure when the layout moves, not only when the window resizes. With 480px arriving above them after load, every one of them used to run as if it had not.' },
+      { type: 'fix', text: 'A re-measure leaves out the engine’s own transform, so scrollReveal’s fade-up no longer starts 32px late after a resize.' },
+      { type: 'fix', text: 'getProgress() agrees with onProgress under stagger: both report the first path. They disagreed by up to 0.6.' },
+      { type: 'fix', text: 'A window resized while scrollPin is pinned moves the element with its wrapper; it kept its old size and position until it unpinned.' },
+      { type: 'fix', text: 'scrollParallax travel is a percentage of the layer’s own size, so a layer that grows after load travels its new height, not its first.' },
+      { type: 'fix', text: 'React components put id, role, title, aria-* and data-* on the element instead of in the options. Vue’s <ScrollDraw> takes every option (it took 12 of 35), and an absent boolean prop stays absent instead of turning false.' },
+      { type: 'new', text: '<scroll-draw> and the Astro scanner follow their options, as the other wrappers do since 2.17.0; running an Astro init again keeps the engine it started. refresh() on scrollAnimate instances.' },
+      { type: 'test', text: 'A fixture with all seven engines under a layout that moves; framework fixtures that change the real attribute; 15 new mutations, 78 in all, each caught.' },
+      { type: 'site', text: 'Each framework page has sections of its own on how its wrapper works, and quotes its own entry size. Four new blocks: a pinned feature tour, a horizontal case strip, a scrubbed video and a reading-progress bar. Every block now has a Vue and a Svelte version, installed with shadcn-vue or shadcn-svelte and run in a browser in CI.' },
+    ],
+  },
+  {
     version: '2.18.1',
     title: 'A strip that follows the page',
     date: '2026-11-05',

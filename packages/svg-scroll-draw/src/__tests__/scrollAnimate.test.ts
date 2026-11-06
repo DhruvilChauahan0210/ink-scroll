@@ -292,6 +292,46 @@ describe('scrollAnimate', () => {
 
 // ── scrollParallax ────────────────────────────────────────────────────────────
 
+describe('scrollAnimate refresh()', () => {
+  const rect = (top: number) => ({
+    top, height: 400, left: 0, width: 300, right: 300, bottom: top + 400, x: 0, y: top,
+    toJSON: () => ({}),
+  });
+  const linear = { easing: 'linear' as const, trigger: { start: 'top bottom', end: 'top top' }, native: false };
+
+  it('re-measures the trigger window — what group refresh() relies on', () => {
+    const el = makeDiv();
+    vi.stubGlobal('scrollY', 200);
+    const inst = scrollAnimate(el, { ...linear, props: { opacity: [0, 1] } });
+    FakeIO.instances[0].trigger(true);
+    raf.tick();
+    expect(inst.getProgress()).toBeCloseTo(0.75, 5); // doc top 400, scrollY 200: 600 of 800
+
+    // Content arrived above it: the element is now 600px below where it was measured.
+    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue(rect(600));
+    inst.refresh!();
+    raf.tick();
+    expect(inst.getProgress()).toBeCloseTo(0.25, 5); // doc top 800, scrollY 200
+    inst.destroy();
+  });
+
+  it('ignores a move under a pixel, so an element animating its own size cannot loop', () => {
+    const el = makeDiv();
+    vi.stubGlobal('scrollY', 200);
+    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue(rect(600));
+    const inst = scrollAnimate(el, { ...linear, props: { opacity: [0, 1] } });
+    FakeIO.instances[0].trigger(true);
+    raf.tick();
+    const before = inst.getProgress();
+
+    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue(rect(600.4));
+    inst.refresh!();
+    raf.tick();
+    expect(inst.getProgress()).toBe(before);
+    inst.destroy();
+  });
+});
+
 describe('scrollParallax', () => {
   it('returns noop when element not found', () => {
     const inst = scrollParallax('#missing');

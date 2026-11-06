@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Every engine follows a layout change that is not a window resize</title>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+
+  /* Viewport is 900x800. Every engine below uses the same linear window,
+     'top bottom' -> 'top top', so its progress at scroll y is
+     (y + 800 - top) / 800: 0.5 when its top is halfway up the screen.
+     #grow is 0 tall until grow() runs, which stands in for an image that
+     loads late above everything — a layout change no resize event reports. */
+  #lead  { height: 800px; background: #eee; }
+  #grow  { height: 0; background: #ccd; }
+  .slot  { height: 1000px; padding-top: 0; }
+  .box   { width: 200px; height: 120px; background: #9ab; }
+  svg    { display: block; width: 200px; height: 120px; }
+  video  { display: block; width: 200px; height: 120px; }
+  #tail  { height: 1600px; }
+</style>
+</head>
+<body>
+
+<div id="lead"></div>
+<div id="grow"></div>
+
+<div class="slot"><div class="box" id="animate"></div></div>
+<div class="slot"><div class="box" id="reveal"></div></div>
+<div class="slot"><p class="box" id="counter">0</p></div>
+<div class="slot"><div class="box" id="progress"></div></div>
+<div class="slot"><p class="box" id="text">Every word here is one step of the reveal</p></div>
+<div class="slot">
+  <svg id="timeline" viewBox="0 0 200 120"><path d="M 10 60 H 190" stroke="#000" stroke-width="4" fill="none"/></svg>
+</div>
+<div class="slot"><video id="video" src="clip.webm" muted playsinline preload="auto"></video></div>
+<div class="slot"><div class="box" id="revealup"></div></div>
+<div id="tail"></div>
+
+<script type="module">
+import { scrollAnimate, scrollCounter } from '/dist/index.mjs';
+import { scrollReveal } from '/dist/reveal/index.mjs';
+import { scrollProgress } from '/dist/progress/index.mjs';
+import { scrollText } from '/dist/text/index.mjs';
+import { scrollDrawTimeline } from '/dist/timeline/index.mjs';
+import { scrollVideo } from '/dist/video/index.mjs';
+import { docTop, opacityOf, publish } from './_probe.mjs';
+
+const $ = (id) => document.getElementById(id);
+const trigger = { start: 'top bottom', end: 'top top' };
+const linear = { easing: 'linear', trigger };
+
+const inst = {
+  animate:  scrollAnimate($('animate'), { ...linear, props: { opacity: ['0', '1'] }, native: false }),
+  counter:  scrollCounter($('counter'), { ...linear, from: 0, to: 1000, once: false }),
+  progress: scrollProgress($('progress'), linear),
+  text:     scrollText($('text'), { ...linear, once: false }),
+  timeline: scrollDrawTimeline($('timeline'), { ...linear, tracks: [{ selector: 'path', from: 0, to: 1 }] }),
+  video:    scrollVideo($('video'), linear),
+};
+// scrollReveal returns no progress; its opacity is the progress here.
+scrollReveal('#reveal', { ...linear, from: { opacity: 0, y: 0 }, once: false });
+// The default fade-up: the engine writes translateY(32px) at the start, which a
+// re-measure must not count as the element having moved.
+scrollReveal('#revealup', { ...linear, once: false });
+
+const NAMES = ['animate', 'reveal', 'counter', 'progress', 'text', 'timeline', 'video'];
+
+publish({
+  names: () => NAMES,
+  // Where the page put it: offsetTop ignores transforms (the fade-up's 32px).
+  // The svg has no offsetTop and no transform.
+  top: (name) => { const el = $(name); return el instanceof HTMLElement ? el.offsetTop : docTop(el); },
+  progress: (name) => (name.startsWith('reveal') ? opacityOf($(name)) : inst[name].getProgress()),
+  grow: (px) => { $('grow').style.height = `${px}px`; },
+});
+</script>
+</body>
+</html>

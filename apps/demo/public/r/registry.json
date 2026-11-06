@@ -103,6 +103,87 @@
         "hero",
         "text"
       ]
+    },
+    {
+      "name": "pinned-feature-tour",
+      "type": "registry:block",
+      "title": "Pinned Feature Tour",
+      "description": "A section pinned under your header while three features take turns, each with a line drawing that inks itself as the pin moves on.",
+      "dependencies": [
+        "svg-scroll-draw"
+      ],
+      "files": [
+        {
+          "path": "registry/blocks/pinned-feature-tour.tsx",
+          "type": "registry:component",
+          "target": "components/scroll/pinned-feature-tour.tsx"
+        }
+      ],
+      "categories": [
+        "scroll",
+        "svg",
+        "pin"
+      ]
+    },
+    {
+      "name": "horizontal-case-strip",
+      "type": "registry:block",
+      "title": "Horizontal Case Strip",
+      "description": "A row of case studies that scrolls sideways while the page scrolls down: a pixel of scroll moves it a pixel, with a count, a progress rail and keyboard focus that brings each card into view.",
+      "dependencies": [
+        "svg-scroll-draw"
+      ],
+      "files": [
+        {
+          "path": "registry/blocks/horizontal-case-strip.tsx",
+          "type": "registry:component",
+          "target": "components/scroll/horizontal-case-strip.tsx"
+        }
+      ],
+      "categories": [
+        "scroll",
+        "horizontal"
+      ]
+    },
+    {
+      "name": "video-scrub",
+      "type": "registry:block",
+      "title": "Video Scrub",
+      "description": "A pinned product film scrubbed by scroll, with chapters that follow the film. Bring your own film, encoded with a keyframe every few frames.",
+      "dependencies": [
+        "svg-scroll-draw"
+      ],
+      "files": [
+        {
+          "path": "registry/blocks/video-scrub.tsx",
+          "type": "registry:component",
+          "target": "components/scroll/video-scrub.tsx"
+        }
+      ],
+      "categories": [
+        "scroll",
+        "video"
+      ]
+    },
+    {
+      "name": "reading-progress",
+      "type": "registry:block",
+      "title": "Reading Progress",
+      "description": "A thin bar at the top of the screen that fills as the reader moves through an article.",
+      "dependencies": [
+        "svg-scroll-draw"
+      ],
+      "files": [
+        {
+          "path": "registry/blocks/reading-progress.tsx",
+          "type": "registry:component",
+          "target": "components/scroll/reading-progress.tsx"
+        }
+      ],
+      "categories": [
+        "scroll",
+        "progress"
+      ]
     }
   ]
 }

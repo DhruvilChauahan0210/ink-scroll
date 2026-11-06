@@ -46,16 +46,19 @@ import { setupFramework, DRAW_SVG } from './_fw.mjs';
 const root = document.querySelector('#root');
 let speed = 1;
 
+const attrs = () => ({ easing: 'linear', stagger: '0.05', speed: String(speed) });
+const set = (el) => Object.entries(attrs()).forEach(([k, v]) => el.setAttribute(k, v));
+
 setupFramework({
-  reactiveOptions: false,
+  // The element observes its option attributes: a changed one rebuilds the
+  // engine, an equal one (rerender) keeps it.
+  reactiveOptions: true,
   hasAnim: false,
 
   mount() {
     const el = document.createElement('scroll-draw');
     el.className = 'fw-draw';
-    el.setAttribute('easing', 'linear');
-    el.setAttribute('stagger', '0.05');
-    el.setAttribute('speed', String(speed));
+    set(el);
     el.innerHTML = DRAW_SVG;
     // Appending is what runs connectedCallback.
     root.append(el);
@@ -66,7 +69,17 @@ setupFramework({
     root.replaceChildren();
   },
 
-  setSpeed(v) { speed = v; },
+  setSpeed(v) {
+    speed = v;
+    const el = root.querySelector('scroll-draw');
+    if (el) el.setAttribute('speed', String(v));
+  },
+
+  // Every option attribute written again with the value it already has.
+  rerender() {
+    const el = root.querySelector('scroll-draw');
+    if (el) set(el);
+  },
 });
 </script>
 </body>

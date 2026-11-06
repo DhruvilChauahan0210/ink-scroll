@@ -1,0 +1,22 @@
+{
+  "$schema": "https://shadcn-svelte.com/schema/registry-item.json",
+  "name": "headline-text-reveal",
+  "type": "registry:block",
+  "title": "Headline Text Reveal",
+  "description": "A hero headline whose words rise into place one after another on scroll.",
+  "dependencies": [
+    "svg-scroll-draw"
+  ],
+  "files": [
+    {
+      "content": "<script lang=\"ts\" module>\n  /**\n   * headline-text-reveal — a hero headline whose words rise into place one after\n   * another as it scrolls into view, followed by the supporting line.\n   *\n   * Built on svg-scroll-draw (MIT): https://svg-scroll-draw.vercel.app/blocks\n   * Needs: svelte 5, svg-scroll-draw. Styling: Tailwind CSS.\n   *\n   * Props: eyebrow, headline, subline, as, trigger, className (for the\n   * <section>: a Svelte component does not pass a plain `class` on).\n   *\n   * The text stays one string in the server HTML, so search engines and screen\n   * readers get the full sentence. Reduced motion is handled by the library: the\n   * words are shown in place, with no animation.\n   *\n   * At the very top of a page the headline is already inside the trigger window\n   * on load, so it starts part-way revealed. For a reveal that begins as soon as\n   * the reader scrolls, pass trigger={{ start: 'top bottom', end: 'top 20%' }}.\n   */\n\n  import type { ScrollTextOptions } from 'svg-scroll-draw/svelte';\n\n  export interface HeadlineTextRevealProps {\n    eyebrow?: string;\n    /** Plain text only: the words are split at runtime. */\n    headline?: string;\n    /** Plain text only. */\n    subline?: string;\n    /** Heading level for the headline. Use 'h1' when this is the page's hero. */\n    as?: 'h1' | 'h2' | 'h3';\n    /** Scroll window for the headline, e.g. { start: 'top 90%', end: 'top 30%' }. */\n    trigger?: { start?: string; end?: string };\n    className?: string;\n  }\n\n  const SUBLINE_OPTIONS: ScrollTextOptions = {\n    split: 'words',\n    stagger: 0.03,\n    from: { opacity: 0, y: 12 },\n    easing: 'ease-out',\n    once: true,\n    trigger: { start: 'top 92%', end: 'top 55%' },\n  };\n</script>\n\n<script lang=\"ts\">\n  import { scrollTextAction } from 'svg-scroll-draw/svelte';\n\n  let {\n    eyebrow = 'Introducing',\n    headline = 'Make every scroll feel like the page is paying attention.',\n    subline = 'Words arrive in reading order, at the pace the reader sets with their own scroll.',\n    as = 'h2',\n    trigger = { start: 'top 90%', end: 'top 35%' },\n    className = '',\n  }: HeadlineTextRevealProps = $props();\n\n  // The action rebuilds its engine when these options change (here: `trigger`),\n  // and leaves it alone when an equal object is passed again.\n  const headlineOptions: ScrollTextOptions = $derived({\n    split: 'words',\n    stagger: 0.08,\n    from: { opacity: 0, y: 32 },\n    easing: 'ease-out',\n    once: true,\n    trigger,\n  });\n</script>\n\n<section class=\"mx-auto w-full max-w-4xl text-center {className}\">\n  <p class=\"font-mono text-[11px] uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400\">\n    {eyebrow}\n  </p>\n\n  <!-- {#key} remounts the split if the text changes (and the headline's heading\n       level): the action reads its string once, on mount, and splits it into\n       word spans that Svelte does not know about. -->\n  {#key `${as}|${headline}`}\n    <svelte:element\n      this={as}\n      use:scrollTextAction={headlineOptions}\n      class=\"mt-4 text-[clamp(2.25rem,6vw,4.5rem)] font-extrabold leading-[0.95] tracking-tight text-neutral-950 text-balance dark:text-neutral-50\"\n    >\n      {headline}\n    </svelte:element>\n  {/key}\n\n  {#key subline}\n    <p\n      use:scrollTextAction={SUBLINE_OPTIONS}\n      class=\"mx-auto mt-6 max-w-2xl text-lg text-neutral-600 dark:text-neutral-400\"\n    >\n      {subline}\n    </p>\n  {/key}\n</section>\n",
+      "type": "registry:component",
+      "target": "src/lib/components/scroll/HeadlineTextReveal.svelte"
+    }
+  ],
+  "categories": [
+    "scroll",
+    "hero",
+    "text"
+  ]
+}

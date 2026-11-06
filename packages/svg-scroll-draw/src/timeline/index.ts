@@ -5,6 +5,7 @@ import { prefersReducedMotion } from '../core/motion';
 import { watchReducedMotion } from '../core/motion-watch';
 import { warn } from '../core/env';
 import { _register, _unregister } from '../core/registry';
+import { watchLayout } from '../core/layout-watch';
 import type { ScrollDrawInstance, EasingName } from '../core/types';
 
 export interface TimelineTrack {
@@ -387,6 +388,8 @@ export function scrollDrawTimeline(
   }
   window.addEventListener('resize', onResize);
   window.addEventListener('orientationchange', onResize);
+  // Layout changes that are not window resizes: images, fonts, late content.
+  const unwatch = watchLayout([container], onResize);
 
   // A timeline is a multi-track draw, so devtools lists it as one.
   _register(container, {
@@ -404,6 +407,7 @@ export function scrollDrawTimeline(
       _unregister(container);
       window.removeEventListener('resize', onResize);
       window.removeEventListener('orientationchange', onResize);
+      unwatch();
       stopWatchingMotion();
       if (debugEl) { debugEl.remove(); debugEl = null; }
       // Put the paths back the way they were found, rather than leaving them

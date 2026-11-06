@@ -34,7 +34,7 @@ let applyTick = null;
 function App() {
   const [speed, setSpeed] = React.useState(1);
   // Bumped by rerender(): App renders again, so both components get fresh props.
-  const [, setTick] = React.useState(0);
+  const [tick, setTick] = React.useState(0);
   applySpeed = setSpeed;
   applyTick = setTick;
 
@@ -45,7 +45,10 @@ function App() {
       ScrollDraw,
       // A fresh arrow every render, as most React code passes one: it must not
       // count as a changed option.
-      { className: 'fw-draw', easing: 'linear', native: false, speed, onProgress: () => {} },
+      // Attributes for the element: they must reach the page, and data-tick
+      // changing on every re-render must not count as a changed option.
+      { className: 'fw-draw', id: 'fw-draw-el', 'aria-label': 'Drawing', 'data-tick': tick,
+        easing: 'linear', native: false, speed, onProgress: () => {} },
       svg(),
     ),
     h(

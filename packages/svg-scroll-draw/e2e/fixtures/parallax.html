@@ -57,6 +57,10 @@ publish({
     viewport: window.innerHeight,
   }),
   destroyAll: () => instances.forEach((i) => i.destroy()),
+  /** The half layer's own progress, so a test can check travel = speed × height × progress. */
+  halfProgress: () => instances[0].getProgress(),
+  /** The layer grows after init, as when an image inside it loads. */
+  growHalf: (h) => { half.style.height = `${h}px`; },
 });
 </script>
 </body>

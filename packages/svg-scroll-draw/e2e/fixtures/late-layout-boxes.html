@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Layout changes that resize neither body nor the element</title>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+  /* ?mode=full: body is one screen tall and the content overflows it, so body
+     keeps its size whatever grows inside. */
+  html.full, html.full body { height: 100%; }
+  /* ?mode=container: an 800px scroll container; growth inside it changes
+     neither the container's box nor body. */
+  #scroller { height: 800px; overflow: auto; position: relative; }
+  .lead { height: 800px; background: #eee; }
+  #grow { height: 0; background: #ccd; }
+  #box  { height: 120px; background: #9ab; }
+  .tail { height: 1600px; }
+</style>
+</head>
+<body>
+<script>
+  if (new URLSearchParams(location.search).get('mode') === 'full') document.documentElement.classList.add('full');
+</script>
+<div id="scroller">
+  <div class="lead"></div>
+  <div id="grow"></div>
+  <div id="box"></div>
+  <div class="tail"></div>
+</div>
+<script type="module">
+import { scrollAnimate } from '/dist/index.mjs';
+import { publish } from './_probe.mjs';
+
+const full = document.documentElement.classList.contains('full');
+const scroller = document.getElementById('scroller');
+// In full mode the container is not a scroll container: the window scrolls.
+if (full) scroller.style.height = 'auto', scroller.style.overflow = 'visible';
+const box = document.getElementById('box');
+
+// One linear screen: 'top bottom' -> 'top top', so 0.5 when the top is halfway.
+const inst = scrollAnimate(box, {
+  props: { opacity: ['0', '1'] },
+  native: false,
+  easing: 'linear',
+  trigger: { start: 'top bottom', end: 'top top' },
+  ...(full ? {} : { scrollContainer: scroller }),
+});
+
+publish({
+  /** Scroll so the box's top sits 400px below the top of its viewport. */
+  halfway: () => {
+    if (full) window.scrollTo(0, box.offsetTop - 400);
+    else scroller.scrollTop = box.offsetTop - 400;
+  },
+  progress: () => inst.getProgress(),
+  grow: (px) => { document.getElementById('grow').style.height = `${px}px`; },
+  bodyHeight: () => document.body.offsetHeight,
+});
+</script>
+</body>
+</html>

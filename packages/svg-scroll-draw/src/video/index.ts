@@ -2,6 +2,7 @@ import type { EasingName, ScrollDrawInstance, TriggerConfig } from '../core/type
 import { EASINGS } from '../core/easing';
 import { parseTrigger, computeProgress, computeTriggers } from '../core/trigger';
 import { _register, _unregister } from '../core/registry';
+import { watchLayout } from '../core/layout-watch';
 import { warn } from '../core/env';
 
 // ── Public types ──────────────────────────────────────────────────────────────
@@ -188,6 +189,8 @@ export function scrollVideo(
   }
   window.addEventListener('resize', onResize);
   window.addEventListener('orientationchange', onResize);
+  // Layout changes that are not window resizes: images, fonts, late content.
+  const unwatch = watchLayout([measured], onResize);
   observer.observe(video);
 
   _register(video, {
@@ -203,6 +206,7 @@ export function scrollVideo(
       video.removeEventListener('loadedmetadata', onMetadataLoaded);
       window.removeEventListener('resize', onResize);
       window.removeEventListener('orientationchange', onResize);
+      unwatch();
       clearTimeout(resizeTimer);
       _unregister(video);
     },

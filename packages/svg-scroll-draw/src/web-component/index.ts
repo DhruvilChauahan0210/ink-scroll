@@ -17,10 +17,38 @@ if (
   typeof customElements !== 'undefined' &&
   !customElements.get('scroll-draw')
 ) {
+  /** The attributes that are options. Changing one after connect rebuilds the engine. */
+  const OPTIONS = ['speed', 'easing', 'stagger', 'direction', 'selector', 'fade', 'once'];
+
   class ScrollDrawElement extends HTMLElement {
+    static observedAttributes = OPTIONS;
+
     private instance: ScrollDrawInstance | null = null;
+    /** The option attributes the running engine was built from. */
+    private key = '';
 
     connectedCallback() {
+      this.build();
+    }
+
+    /**
+     * An option changed after connect. The element read its attributes once, so
+     * setting `speed` or `easing` later did nothing; the other wrappers rebuild on
+     * a real change since 2.17.0. Called for every parsed attribute before connect
+     * too — those are read in connectedCallback — and for an equal setAttribute,
+     * which build() ignores.
+     */
+    attributeChangedCallback() {
+      if (this.instance) this.build();
+    }
+
+    private build() {
+      // JSON keeps an absent attribute (null) apart from an empty one (`once`).
+      const key = JSON.stringify(OPTIONS.map((a) => this.getAttribute(a)));
+      if (this.instance && key === this.key) return;
+      this.instance?.destroy();
+      this.key = key;
+
       const opts: ScrollDrawOptions = {};
 
       const speed     = this.getAttribute('speed');

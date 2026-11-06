@@ -5,6 +5,7 @@ import { seoTitle } from '../_lib/seo';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { FRAMEWORK_LANDINGS, FRAMEWORK_SLUGS } from '@/data/framework-landings';
+import { GUIDES } from '@/data/framework-guides';
 import { COMPETITORS, SELF, SELF_ENTRIES, MEASURED_ON } from '@/data/competitors';
 import { EXAMPLE_COUNT } from '@/data/examples-index';
 import { jsonLd as serialiseJsonLd } from '@/lib/json-ld';
@@ -16,6 +17,11 @@ import { ImportMap, type ImportRow } from '@/components/compare/ImportMap';
 
 const SITE_URL = 'https://svg-scroll-draw.vercel.app';
 const pad = (n: number) => String(n).padStart(2, '0');
+
+/** A paragraph from a guide, with `backticks` set as inline code. */
+function inline(text: string) {
+  return text.split('`').map((part, i) => (i % 2 ? <code key={i} className="fw-code">{part}</code> : part));
+}
 
 export function generateStaticParams() {
   return FRAMEWORK_SLUGS.map((framework) => ({ framework }));
@@ -72,7 +78,9 @@ export default async function Page({ params }: { params: Promise<{ framework: st
   if (!f) notFound();
 
   const url = `${SITE_URL}/${f.slug}`;
-  const ratio = Math.round((COMPETITORS.gsapStack.gzipKb / SELF.gzipKb) * 100) / 100;
+  const guide = GUIDES[f.slug]?.sections ?? [];
+  // The wrapper's own entry point, measured (check:claims compares it with the build).
+  const entryKb = SELF_ENTRIES[f.entry.split('/')[1]];
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -83,7 +91,7 @@ export default async function Page({ params }: { params: Promise<{ framework: st
         description: f.description,
         url,
         datePublished: '2026-08-15',
-        dateModified: '2026-08-15',
+        dateModified: '2026-11-06',
         author: { '@type': 'Person', name: 'Dhruvil Chauhan', url: 'https://github.com/DhruvilChauahan0210' },
         publisher: { '@type': 'Organization', name: 'svg-scroll-draw', url: SITE_URL },
         mainEntityOfPage: { '@type': 'WebPage', '@id': url },
@@ -114,17 +122,20 @@ export default async function Page({ params }: { params: Promise<{ framework: st
       .filter((s) => s !== f.slug)
       .map((s) => FRAMEWORK_LANDINGS.find((o) => o.slug === s)!)
       .filter(Boolean)
-      .map((o) => ({ href: `/${o.slug}`, t: o.name, d: `${o.worksWith} — ${o.primitive.toLowerCase()} from ${o.entry}`, swatch: o.accent })),
-    { href: '/react-scroll-animation', t: 'React', d: 'Components and hooks from svg-scroll-draw/react', swatch: '#61dafb' },
-    { href: '/nextjs-scroll-animation', t: 'Next.js', d: 'The React wrappers in the App Router', swatch: 'currentColor' },
+      .map((o) => ({ href: `/${o.slug}`, t: o.name, d: o.entry, swatch: o.accent })),
+    { href: '/react-scroll-animation', t: 'React', d: 'svg-scroll-draw/react', swatch: '#61dafb' },
+    { href: '/nextjs-scroll-animation', t: 'Next.js', d: 'svg-scroll-draw/react, App Router', swatch: 'currentColor' },
   ];
 
   const toc: [string, string][] = [
     ['fw-start', `Quick start · ${f.samples.length}`],
+    ...guide.map((g): [string, string] => [g.id, g.title]),
     ['fw-size', 'Size'],
     ['fw-faq', `Questions · ${f.faq.length}`],
     ['fw-more', 'Other frameworks'],
   ];
+  // Sections are numbered in page order; the guide's sit after the quick start.
+  const n = (id: string) => pad(toc.findIndex(([t]) => t === id) + 1);
   const short = f.name.toLowerCase();
 
   return (
@@ -149,8 +160,8 @@ export default async function Page({ params }: { params: Promise<{ framework: st
               <Link href="/examples" className="btn" data-magnetic>{EXAMPLE_COUNT} live examples →</Link>
             </div>
             <dl className="pg-facts">
+              <div><dt>{f.entry.split('/')[1]} entry</dt><dd>{entryKb} KB</dd></div>
               <div><dt>Every API</dt><dd>{SELF.gzipKb} KB</dd></div>
-              <div><dt>Reveal only</dt><dd>{SELF_ENTRIES.reveal} KB</dd></div>
               <div><dt>GSAP stack</dt><dd>{COMPETITORS.gsapStack.gzipKb} KB</dd></div>
               <div><dt>Version</dt><dd>{SELF.version}</dd></div>
             </dl>
@@ -173,9 +184,9 @@ export default async function Page({ params }: { params: Promise<{ framework: st
           </nav>
           <div className="cmp-main">
 
-            {/* ── 01 Quick start ─────────────────────────────── */}
+            {/* ── Quick start ────────────────────────────────── */}
             <section className="cmp-sec" aria-labelledby="fw-start">
-              <div className="tb"><span className="tb-n">01</span><span>{f.primitive}</span></div>
+              <div className="tb"><span className="tb-n">{n('fw-start')}</span><span>{f.primitive}</span></div>
               <h2 id="fw-start" className="cmp-h2">Quick start</h2>
               <p className="cmp-p">
                 Import from <code className="fw-code">{f.entry}</code> — every sample below is written against the
@@ -198,22 +209,31 @@ export default async function Page({ params }: { params: Promise<{ framework: st
               </div>
             </section>
 
-            {/* ── 02 Size ────────────────────────────────────── */}
+            {/* ── The framework's own sections ────────────────── */}
+            {guide.map((g) => (
+              <section key={g.id} className="cmp-sec" aria-labelledby={g.id}>
+                <div className="tb"><span className="tb-n">{n(g.id)}</span><span>{g.k}</span></div>
+                <h2 id={g.id} className="cmp-h2">{g.title}</h2>
+                {g.body.map((para, i) => (
+                  <p key={i} className="cmp-p">{inline(para)}</p>
+                ))}
+                {g.sample ? <CodeBox file={g.sample.file}>{g.sample.code}</CodeBox> : null}
+              </section>
+            ))}
+
+            {/* ── Size ───────────────────────────────────────── */}
             <section className="cmp-sec" aria-labelledby="fw-size">
-              <div className="tb"><span className="tb-n">02</span><span>size</span></div>
+              <div className="tb"><span className="tb-n">{n('fw-size')}</span><span>size</span></div>
               <h2 id="fw-size" className="cmp-h2">Size</h2>
               <p className="cmp-p">
-                {SELF.gzipKb} KB gzipped for every API at once, and each one is a separate entry point — so a page that
-                only reveals elements ships {SELF_ENTRIES.reveal} KB, not the lot. The equivalent GSAP stack for the same
-                work is {COMPETITORS.gsapStack.gzipKb} KB, which makes this {ratio}× smaller. GSAP is free and considerably
-                broader; if you need timelines, Draggable or Flip, use GSAP.
+                <code className="fw-code">{f.entry}</code> is {entryKb} KB gzipped, the engines it wraps included.
               </p>
               <div className="fw-fig">
                 <SizeScale
                   n={2}
                   caption="the same work, to one scale"
                   bars={[
-                    { label: `svg-scroll-draw ${SELF.version}`, sub: 'every API, main entry', kb: SELF.gzipKb, ours: true },
+                    { label: f.entry, sub: `${f.name}, every engine it wraps`, kb: entryKb, ours: true },
                     { label: 'scrollReveal', sub: 'its own entry point, for a reveal-only page', kb: SELF_ENTRIES.reveal, ours: true },
                     { label: `gsap ${COMPETITORS.gsapStack.version}`, sub: COMPETITORS.gsapStack.label, kb: COMPETITORS.gsapStack.gzipKb },
                   ]}
@@ -226,9 +246,9 @@ export default async function Page({ params }: { params: Promise<{ framework: st
               </p>
             </section>
 
-            {/* ── 03 Questions ───────────────────────────────── */}
+            {/* ── Questions ──────────────────────────────────── */}
             <section className="cmp-sec" aria-labelledby="fw-faq">
-              <div className="tb"><span className="tb-n">03</span><span>questions</span></div>
+              <div className="tb"><span className="tb-n">{n('fw-faq')}</span><span>questions</span></div>
               <h2 id="fw-faq" className="cmp-h2">{f.name} questions</h2>
               <div className="cmp-faq">
                 {f.faq.map((item, i) => (
@@ -243,9 +263,9 @@ export default async function Page({ params }: { params: Promise<{ framework: st
               </div>
             </section>
 
-            {/* ── 04 Other frameworks ────────────────────────── */}
+            {/* ── Other frameworks ───────────────────────────── */}
             <section className="cmp-sec" aria-labelledby="fw-more">
-              <div className="tb"><span className="tb-n">04</span><span>other frameworks</span></div>
+              <div className="tb"><span className="tb-n">{n('fw-more')}</span><span>other frameworks</span></div>
               <h2 id="fw-more" className="cmp-h2">Other frameworks</h2>
               <div className="ex-rel-list">
                 {others.map((o, i) => (

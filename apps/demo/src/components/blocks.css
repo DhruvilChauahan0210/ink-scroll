@@ -173,6 +173,8 @@ html:has(.site .blocks) { scroll-behavior: smooth; }
 
 /* The source, folded under the plate. */
 .site .bk-src { margin-top: 14px; border-top: 1px solid var(--line); }
+/* The Vue version's own install line, above its source. */
+.site .bk-src-cmd { margin: 12px 0; }
 .site .bk-src > summary {
   display: flex;
   align-items: center;

@@ -8,6 +8,7 @@ import { PRESETS } from './presets';
 import { IS_DEV, warn as warnDev } from './env';
 import { cssTimingFor } from './css-easing';
 import { _register, _unregister } from './registry';
+import { watchLayout } from './layout-watch';
 
 // ── Native CSS scroll-driven animation (animation-timeline: view()) ───────────
 // Which easings the fast path can express, and as what, lives in core/css-easing.
@@ -892,8 +893,6 @@ export function createEngine(
         alpha = frozenPath[i] = Math.max(frozenPath[i] ?? frozenAlpha, alpha);
       }
 
-      currentAlpha = alpha;
-
       el.style.strokeDashoffset =
         effectiveDir === 'reverse' ? `${lengths[i] * alpha}` : `${lengths[i] * (1 - alpha)}`;
 
@@ -916,6 +915,11 @@ export function createEngine(
         el.setAttribute('d', morphPath(originalDs[i], morphTo, alpha));
 
       if (i === 0) {
+        // The first path is the instance's progress, as on the autoplay path:
+        // getProgress() used to take whichever path ran last, so under stagger
+        // it read 0.3 while onProgress and --scroll-draw-progress read 0.9.
+        // onComplete still waits for the last path.
+        currentAlpha = alpha;
         onProgress?.(alpha);
         (container as HTMLElement).style.setProperty('--scroll-draw-progress', String(alpha));
       }
@@ -1038,18 +1042,9 @@ export function createEngine(
   // the demo's own /verify page, against a native CSS path that stays correct
   // because its view-timeline is live.
   //
-  // A ResizeObserver on the document element catches document-height changes, and
-  // one on the container catches the element's own box changing.
-  let layoutObserver: ResizeObserver | undefined;
-  if (typeof ResizeObserver !== 'undefined') {
-    layoutObserver = new ResizeObserver(() => onResize());
-    // documentElement alone is not enough: its observed box does not track content
-    // growth in a scrolling document (measured — a 21px page growth produced no
-    // callback). body does.
-    layoutObserver.observe(document.body);
-    layoutObserver.observe(document.documentElement);
-    layoutObserver.observe(container);
-  }
+  // The shared layout watcher (./layout-watch) reports the page's own height
+  // changing and the container's box changing.
+  const unwatch = watchLayout([container], onResize);
 
   if (delay > 0) setTimeout(() => observer.observe(container), delay);
   else observer.observe(container);
@@ -1062,7 +1057,7 @@ export function createEngine(
       clearTimeout(repeatTimer);
       stopLoop();
       observer.disconnect();
-      layoutObserver?.disconnect();
+      unwatch();
       window.removeEventListener('resize', onResize);
       window.removeEventListener('orientationchange', onResize);
       clearTimeout(resizeTimer);

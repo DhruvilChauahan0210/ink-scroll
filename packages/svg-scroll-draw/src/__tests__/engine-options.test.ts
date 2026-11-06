@@ -566,6 +566,28 @@ describe('createEngine — once', () => {
     expect(parseFloat(second.style.strokeDashoffset)).toBeCloseTo(100 * (1 - 540 / 1300), 1);
   });
 
+  // getProgress() took whichever path ran last while onProgress and
+  // --scroll-draw-progress took the first, so under stagger they disagreed by up
+  // to 0.6 (measured 0.9 against 0.3). The first path is the instance's progress,
+  // as on the autoplay path.
+  for (const once of [false, true]) {
+    it(`getProgress(), onProgress and --scroll-draw-progress agree under stagger (once: ${once})`, () => {
+      const reported: number[] = [];
+      const container = makeContainer([makePath(), makePath(), makePath()]);
+      const instance = createEngine(container, { stagger: 0.2, once, easing: 'linear', onProgress: (p) => reported.push(p) });
+      FakeIO.instances[0].trigger(true);
+
+      for (const y of [-500, -100, 200, 500]) {
+        vi.stubGlobal('scrollY', y);
+        raf.tick();
+        const last = reported[reported.length - 1];
+        expect(instance.getProgress(), `y=${y}`).toBeCloseTo(last, 6);
+        expect(parseFloat(container.style.getPropertyValue('--scroll-draw-progress')), `y=${y}`).toBeCloseTo(last, 6);
+      }
+      instance.destroy();
+    });
+  }
+
   it('fires onComplete when the last staggered path is done, not the first', () => {
     const onComplete = vi.fn();
     createEngine(makeContainer([makePath(), makePath()]), { once: true, stagger: 0.2, onComplete });

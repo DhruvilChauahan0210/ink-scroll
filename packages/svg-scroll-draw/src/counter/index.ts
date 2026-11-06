@@ -2,6 +2,7 @@ import type { EasingName, ScrollDrawInstance, TriggerConfig } from '../core/type
 import { EASINGS } from '../core/easing';
 import { parseTrigger, computeProgress, computeTriggers } from '../core/trigger';
 import { _register, _unregister } from '../core/registry';
+import { watchLayout } from '../core/layout-watch';
 import { warn } from '../core/env';
 
 // ── Public types ──────────────────────────────────────────────────────────────
@@ -73,6 +74,7 @@ export function scrollCounter(
 
   let tStart       = 0;
   let tEnd         = 0;
+  let measured     = false;
   let rafId        = 0;
   let isVisible    = false;
   let paused       = false;
@@ -89,6 +91,10 @@ export function scrollCounter(
       { top: rect.top, height: rect.height },
       scrollPos(), vpSize(), startConfig, endConfig,
     );
+    // The counter rewrites its own text, which can change its height; a move
+    // under a pixel is rounding, and taking it could re-measure forever.
+    if (measured && Math.abs(result.tStart - tStart) < 1 && Math.abs(result.tEnd - tEnd) < 1) return;
+    measured = true;
     tStart = result.tStart;
     tEnd   = result.tEnd;
   }
@@ -143,6 +149,8 @@ export function scrollCounter(
   }
   window.addEventListener('resize', onResize);
   window.addEventListener('orientationchange', onResize);
+  // Layout changes that are not window resizes: images, fonts, late content.
+  const unwatch = watchLayout([el], onResize);
   observer.observe(el);
 
   _register(el, {
@@ -157,6 +165,7 @@ export function scrollCounter(
       observer.disconnect();
       window.removeEventListener('resize', onResize);
       window.removeEventListener('orientationchange', onResize);
+      unwatch();
       clearTimeout(resizeTimer);
       _unregister(el);
     },

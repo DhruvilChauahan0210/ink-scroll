@@ -11,7 +11,10 @@
     "check:competitors": "node scripts/check-competitors.mjs",
     "check:examples": "node scripts/check-examples.mjs",
     "registry:build": "node scripts/build-registry.mjs",
-    "registry:check": "node scripts/build-registry.mjs --check"
+    "registry:check": "node scripts/build-registry.mjs --check",
+    "test:blocks": "node scripts/test-blocks.mjs",
+    "test:vue-blocks": "node scripts/test-vue-blocks.mjs",
+    "test:svelte-blocks": "node scripts/test-svelte-blocks.mjs"
   },
   "dependencies": {
     "lenis": "^1.3.27",
@@ -27,6 +30,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
+    "svelte": "^5.57.3",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

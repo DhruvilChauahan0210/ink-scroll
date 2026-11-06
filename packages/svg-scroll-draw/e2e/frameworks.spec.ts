@@ -162,9 +162,11 @@ for (const wrapper of WRAPPERS) {
      * React, Vue, Nuxt and Solid rebuild the engine when an option really
      * changes (2.17.0; before that they read their options once on mount).
      * Svelte's action and Angular's `update()` do the same when called — Svelte
-     * calls it for you, an Angular component from ngOnChanges. Astro and the web
-     * component still read their options once. Pinning each claim means none
-     * can change by accident in either direction.
+     * calls it for you, an Angular component from ngOnChanges. Since 2.19.0
+     * <scroll-draw> watches its option attributes and Astro its JSON attribute;
+     * both fixtures write the real attribute (they used to change a local
+     * variable, so the check passed whatever the wrapper did). Pinning each claim
+     * means none can change by accident in either direction.
      */
     test('option changes reach the engine only where the wrapper says they do', async ({
       page,
@@ -250,5 +252,43 @@ test.describe('nuxt plugin', () => {
     expect(geo.drawTop, '<ScrollDraw> did not resolve from the plugin').toBe(1000);
     expect(geo.animTop, '<ScrollAnimate> did not resolve from the plugin').toBe(1300);
     expect(geo.pathLength).toBeGreaterThan(100);
+  });
+});
+
+test.describe('react wrapper attributes', () => {
+  /**
+   * Every prop but children, className and style used to become an engine
+   * option: id, aria-label and data-* never reached the page, and a data-*
+   * value changing on each render rebuilt the engine. The fixture passes all
+   * three; data-tick changes on every rerender(), which the equal re-render test
+   * above also covers.
+   */
+  test('id, aria-* and data-* reach the element', async ({ page }) => {
+    await openFixture(page, 'fw-react.html');
+    const attrs = await page.evaluate(() => {
+      const el = document.querySelector('.fw-draw');
+      return { id: el?.id, label: el?.getAttribute('aria-label'), tick: el?.getAttribute('data-tick') };
+    });
+    expect(attrs).toEqual({ id: 'fw-draw-el', label: 'Drawing', tick: '0' });
+
+    await call(page, 'rerender');
+    expect(await page.evaluate(() => document.querySelector('.fw-draw')?.getAttribute('data-tick'))).toBe('1');
+  });
+});
+
+test.describe('vue wrapper props', () => {
+  /**
+   * <ScrollDraw> declared 12 of the 35 options as props. The rest rendered as
+   * attributes on the div — native="false" — and never reached the engine.
+   * Every option is a prop now, and an attribute that is not an option still
+   * falls through to the div, as Vue does.
+   */
+  test('options reach the engine, not the DOM; other attributes reach the DOM', async ({ page }) => {
+    await openFixture(page, 'fw-vue.html');
+    const div = await page.evaluate(() => {
+      const el = document.querySelector('.fw-draw');
+      return { native: el?.hasAttribute('native'), easing: el?.hasAttribute('easing'), role: el?.getAttribute('data-role') };
+    });
+    expect(div).toEqual({ native: false, easing: false, role: 'drawing' });
   });
 });

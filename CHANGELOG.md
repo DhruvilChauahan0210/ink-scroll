@@ -288,6 +288,33 @@ All notable changes to `svg-scroll-draw` are documented here.
   which asks GitHub at most once an hour for everyone (ISR), so no
   visitor's browser calls GitHub.
 
+- **Every block has a Svelte version too.** `apps/demo/registry/svelte/<name>.svelte`
+  (Svelte 5, runes), published as shadcn-svelte items at `/r/svelte/<name>.json`
+  — without `path`, which shadcn-svelte's schema forbids — shown on /blocks,
+  and compiled with `svelte/compiler` and run in Chromium by
+  `test-svelte-blocks` in CI. `test-blocks` runs in CI too, against a built and
+  started site.
+- **Every block has a Vue version.** `apps/demo/registry/vue/<name>.vue` for
+  all nine, published as shadcn-vue items at `/r/vue/<name>.json` (each
+  framework needs its own item: the file, its type and its dependencies differ,
+  and shadcn-svelte's schema forbids the `path` the others require). `/blocks`
+  shows each one's `shadcn-vue add` command and source. `test-vue-blocks`
+  compiles each SFC with `@vue/compiler-sfc`, styles it with the Tailwind 4 CSS
+  its own classes produce and runs it in Chromium, in CI.
+- **Four new blocks:** a pinned feature tour (scrollPin + scrollDraw), a
+  horizontal case strip (scrollHorizontal), a scrubbed product film
+  (scrollVideo, your own film) and a reading-progress bar (scrollProgress).
+  `test-blocks` runs them on /blocks in Chromium — the first browser test any
+  block has had. `build-registry --check` runs in CI and `verify`.
+- **The sticky-feature block follows renamed steps.** Its observer was keyed on
+  the number of steps, so the same number of renamed steps (a locale switch)
+  replaced every item and the highlight froze on the old ones.
+- **Framework pages say what is true of each framework.** Vue, Nuxt, Svelte,
+  Solid, Angular and Astro each get three sections on how the wrapper works,
+  written from the source and reviewed against it, and the entry size of their
+  own wrapper; the shared Size prose is gone. Measured with word 5-grams, the
+  text each page shares with another of the six fell from 40–50% to 9.5–15.9%.
+  The Vue page's hard-coded "10.0 KB" is derived now.
 - **The horizontal scroll post is a full recipe.** `/blog/horizontal-scroll-sections`
   builds a strip of case studies in five steps: a runway, a stage and a track;
   one `scrollHorizontal` call with no distance; a runway as long as the
@@ -377,6 +404,116 @@ All notable changes to `svg-scroll-draw` are documented here.
   and the GitHub release out of step.
 - **The demo is linted in CI and in `npm run verify`**, with no warnings
   allowed, followed by `check-jsx-text` and `check-nav`.
+
+---
+
+## [2.19.0] — 2026-11-06
+
+### Fixed
+
+- **Every scroll-linked engine follows the layout, not just the window.** The
+  engines measured their trigger window once and re-measured it only on a
+  window resize, but most layout changes are not resizes: an image loading
+  above the element, a font swapping in, an accordion opening, content
+  arriving late. Measured on 2.18.1 with 480px arriving above the element
+  800ms after init: `scrollReveal` was fully revealed where it should have
+  started, `scrollAnimate` on its JS path read 0.72 instead of 0 (the JS path
+  is the only one in Firefox and Safari, and the only one `scrollReveal`,
+  `scrollParallax` and the sequences use), and `scrollCounter` showed its final
+  value where it should have shown its first. `scrollProgress`, `scrollText`,
+  `scrollDrawTimeline` and `scrollVideo` were off the same way. All of them now
+  share one ResizeObserver (`core/layout-watch`) that watches the page, each
+  engine's element and every box above it — the previous siblings of the
+  element and of its ancestors, so growth inside a custom scroll container or
+  on an `html, body { height: 100% }` page, where body keeps its size, is heard
+  too; the draw engine and `scrollHorizontal` moved onto it from
+  their own. A re-measure that moves the window by under a pixel is dropped, so
+  an element animating its own height cannot re-measure itself forever over
+  sub-pixel rounding (measured: 304.140px ↔ 304.142px, six times a second).
+- **A re-measure leaves out the element's own transform.** The first
+  measurement ran before any frame was written; any later one — a window
+  resize included — saw the engine's own `translateY`, so `scrollReveal`'s
+  fade-up started 32px late after the first resize.
+
+- **`getProgress()` agrees with `onProgress` under `stagger`.** On scroll it
+  took whichever path ran last, while `onProgress` and `--scroll-draw-progress`
+  took the first, so the two disagreed by up to 0.6 (measured: 0.9 against 0.3).
+  Both now report the first path, as the autoplay path always did;
+  `onComplete` still waits for the last path. The docs said `onProgress` gave
+  per-path values; it never did, and now they say what it gives.
+- **React components put `id`, `role`, `title`, `aria-*` and `data-*` on the
+  element.** Every prop but `children`, `className` and `style` became an engine
+  option, so those never reached the page (TypeScript does not check hyphenated
+  JSX attributes, so nothing warned), and each change to a `data-*` value rebuilt
+  the engine — 4 builds for 3 changes, measured.
+- **Vue's `<ScrollDraw>` takes every option.** It declared 12 of the 35 as props;
+  the other 23 — `preset`, `native`, `axis`, `strokeColor` and the rest — rendered
+  as attributes on the div and never reached the engine. The key list is checked
+  against `ScrollDrawOptions` at compile time.
+- **An absent boolean prop stays absent in Vue.** Vue turns a missing `Boolean`
+  prop into `false`, which overrode presets and the engines' own defaults:
+  `<ScrollCounter>` ran with `once: false` while `useScrollCounter` and the core
+  default to `true`. `<ScrollDraw once fade>` still means `true`.
+- **`<scroll-draw>` and Astro follow their options** (2.17.0 did this for the
+  other six wrappers). The element observes its option attributes; the Astro
+  scanner watches each element's JSON attribute. Both rebuild only on a real
+  change. Running an Astro init again — on every `astro:page-load` with View
+  Transitions — keeps the engine it started instead of stacking a second one, and
+  the instance it returns follows the current engine.
+- **`scrollParallax` travel follows the layer's size.** It was measured once in
+  px at construction (`speed ×` the element's height), so a layer that grew
+  afterwards — an image loading inside it — kept travelling its first height:
+  measured, a layer grown from 300 to 500px moved 34.6px where it should have
+  moved 57.7px. The travel is now a percentage of the layer's own box, which the
+  browser resolves every frame.
+- **A resize while `scrollPin` is pinned moves the element with its wrapper.**
+  `left` and `width` were written only on the way into the pinned state, so a
+  window narrowed from 1200 to 800px mid-pin left the element at its old 840px
+  width and left 180, running 220px past the screen's edge until it unpinned.
+- **The Astro counter example no longer throws.** It passed `"format":"$%d"`
+  through JSON, but `format` is a function: the counter threw on its first frame.
+  The example uses `decimals`, and a string `format` now warns and is ignored.
+
+### Added
+
+- **`refresh()` on `scrollAnimate` instances** (a no-op on the native CSS path,
+  whose view() timeline measures itself). `scrollAnimateGroup().refresh()` used
+  to do nothing, because the instances it called had no `refresh`.
+
+### Size
+
+- Most entries grew 0.1–0.4 KB for the shared layout watcher and the live
+  wrapper options: the main entry 10.7 → 11.2 KB, `reveal` 5.0 → 5.5 KB, React
+  12.1 → 12.7 KB. Budgets moved to the measured sizes, with the reason in
+  `scripts/size.mjs`.
+
+### Tests
+
+- `e2e/layout.spec.ts` on a fixture with all seven engines on one linear
+  window: each reads 0.5 halfway with nothing moved, and after 480px arrives
+  above them (on 2.18.1 every one read 1.0); and the fade-up measured without
+  its own 32px. Unit tests for the shared watcher (first reports skipped, only
+  the engines watching a target hear it, the observer let go when idle) and for
+  `refresh()` and the sub-pixel rule. Mutations `layout/notify`,
+  `layout/animate`, `layout/counter`, `layout/progress`, `layout/text`,
+  `layout/timeline`, `layout/video` and `layout/own-transform`.
+- Unit tests for `getProgress()`, `onProgress` and `--scroll-draw-progress`
+  agreeing under stagger, with and without `once` (both fail on 2.18.1), and for
+  what the Vue components hand the engines (all four fail on 2.18.1).
+- Browser: React's `id`, `aria-*` and `data-*` reach the element, and the equal
+  re-render check runs with a `data-*` value that changes every render; Vue's
+  options stay off the DOM while other attributes fall through; the web
+  component and Astro fixtures write the real attribute, so their option-change
+  and equal re-render checks run (both were skipped or passed whatever the
+  wrapper did). Mutations `react/attributes`, `web-component/live-options`,
+  `astro/live-options` and `astro/one-engine`; `astro/attribute-options`
+  re-anchored.
+- Browser: a resize mid-pin moves the pinned element with its wrapper
+  (mutation `pin/resize-pinned`), and parallax travel follows a layer that
+  grows after init (fails on 2.18.1 in all three engines; mutation
+  `parallax/follows-size`), and growth inside a scroll container or a
+  100%-tall body is heard (`layout/boxes-above`). 78 mutations in all, every one
+  caught.
 
 ---
 

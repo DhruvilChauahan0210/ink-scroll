@@ -152,8 +152,8 @@ const LIMITS: [string, string][] = [
     'All eight now mount for real and are held to the same contract — the engine runs, unmounting leaks no observer and no frame loop, re-mounting works. But Svelte is exercised through its action functions rather than a compiled component, and Angular through its ref classes rather than a running Angular app. That is the whole public surface in both cases, and it is still not the same as a real build.',
   ],
   [
-    'Astro and the web component still read their options once',
-    'Since 2.17.0 the React, Vue, Nuxt, Solid, Svelte and Angular wrappers rebuild the engine when an option really changes, and keep it when a re-render passes equal options: a fresh inline object, a new callback. The browser suite checks both halves on every engine. The Astro scanner reads its data attributes once when it runs, and <scroll-draw> does not watch its attributes, so changing either afterwards does nothing until it is initialised again.',
+    'Every wrapper follows its options, and that is all it checks',
+    'Since 2.17.0 the React, Vue, Nuxt, Solid, Svelte and Angular wrappers rebuild the engine when an option really changes, and keep it when a re-render passes equal options: a fresh inline object, a new callback. Since 2.19.0 Astro and <scroll-draw> do too: the element watches its option attributes and the Astro scanner its JSON attribute, and running the scanner again keeps the engine it started. The browser suite checks both halves on every engine, through the options each wrapper takes — not through every way a framework can change them.',
   ],
   [
     'This page found a bug the e2e suite missed',
@@ -641,7 +641,7 @@ export default function VerifyPage() {
               </div>
               <p>
                 v2.10.0, merged to <code>main</code> · 531 unit tests + 175 browser tests per engine (525 runs
-                across Chromium, Firefox and WebKit) · 63 mutations, each caught by the one test named for it ·
+                across Chromium, Firefox and WebKit) · 78 mutations, each caught by the one test named for it ·
                 91% line coverage · <code>npm run verify</code> and <code>npm run test:e2e</code> both exit 0
               </p>
             </div>

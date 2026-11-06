@@ -414,29 +414,43 @@ describe('scrollDraw', () => {
         static instances: FakeRO[] = [];
         constructor(public cb: () => void) { FakeRO.instances.push(this); }
         observe = vi.fn((el: Element) => { observed.push(el); });
+        unobserve = vi.fn();
         disconnect = vi.fn();
       }
       vi.stubGlobal('ResizeObserver', FakeRO);
 
       const container = makeContainer([makeSvgPath()]);
-      createEngine(container);
+      const instance = createEngine(container);
 
       expect(FakeRO.instances.length).toBe(1);
       expect(observed).toContain(document.documentElement);
       expect(observed).toContain(container);
+      // The observer is shared across the page; leave none behind for the next test.
+      instance.destroy();
     });
 
-    it('disconnects the layout observer on destroy', () => {
+    it('stops observing on destroy, and lets the shared observer go when nothing is left', () => {
       const disconnect = vi.fn();
+      const unobserved: Element[] = [];
       class FakeRO {
         constructor(public cb: () => void) {}
         observe = vi.fn();
+        unobserve = vi.fn((el: Element) => { unobserved.push(el); });
         disconnect = disconnect;
       }
       vi.stubGlobal('ResizeObserver', FakeRO);
 
-      const instance = createEngine(makeContainer([makeSvgPath()]));
-      instance.destroy();
+      // The survivor is created first, so the destroyed engine's container is
+      // not above it (boxes above an element are watched on its behalf).
+      const second = makeContainer([makeSvgPath()]);
+      const first = makeContainer([makeSvgPath()]);
+      const b = createEngine(second);
+      const a = createEngine(first);
+      a.destroy();
+      expect(unobserved).toContain(first);
+      expect(unobserved).not.toContain(document.documentElement); // b still needs the page
+      expect(disconnect).not.toHaveBeenCalled();
+      b.destroy();
       expect(disconnect).toHaveBeenCalled();
     });
 

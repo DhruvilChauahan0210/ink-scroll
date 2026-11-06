@@ -354,13 +354,19 @@ Classes with `init(element, options)` and `destroy()` (plus `replay`, `pause`,
 `initScrollText(root?)`, `initAll(root?)` — scan `[data-scroll-draw]`,
 `[data-scroll-animate]`, etc., reading JSON from `data-scroll-draw-options` /
 `data-scroll-animate-options`. Return instance arrays. Safe (return `[]`) on the server.
+From 2.19.0 each element keeps one engine per kind: editing its JSON attribute
+rebuilds it, an equal value keeps it, and running an init again (e.g. on
+`astro:page-load`) keeps the engine it started. `format` and callbacks cannot
+come from JSON — use `"decimals"`, or call the core API in a script.
 
 ### `svg-scroll-draw/web-component` and the CDN build
 
 `<scroll-draw>` reads only these attributes: `speed`, `easing`, `stagger`,
 `direction`, `selector`, `fade`, and `once` (`once` from 2.10.2; earlier
 versions ignore it). Anything else is ignored; use
-`SvgScrollDraw.scrollDraw()` for other options.
+`SvgScrollDraw.scrollDraw()` for other options. From 2.19.0 changing one of
+these attributes after the element connects rebuilds the engine; setting an
+equal value does not.
 
 CDN global `SvgScrollDraw` (from `dist/cdn/svg-scroll-draw.global.js`, or
 `svg-scroll-draw.dev.global.js` with dev warnings) contains the main entry only

@@ -779,6 +779,12 @@ export function Hero() {
               callbacks such as <code className="font-mono">onProgress</code> need a client component of your own. A
               complete project is in the <Link href="/nextjs-scroll-animation" className="underline">Next.js guide</Link>.
             </Note>
+            <p className="text-sm text-graphite-border leading-relaxed mt-3">
+              <code className="font-mono">id</code>, <code className="font-mono">role</code>,{' '}
+              <code className="font-mono">title</code>, <code className="font-mono">aria-*</code> and{' '}
+              <code className="font-mono">data-*</code> go on the rendered element; every other prop is an option. Before
+              2.19.0 they all became options, so a test id never reached the page.
+            </p>
           </DocSection>
 
           {/* ── Vue ──────────────────────────────────────────── */}
@@ -813,7 +819,9 @@ const liveRef = useScrollDraw(() => ({ easing: 'spring', speed: speed.value }));
             </CodeBlock>
             <Note>
               Component props are live, and so are composable options passed as a getter or a ref. A plain
-              object is read once. Equal options never rebuild the animation.
+              object is read once. Equal options never rebuild the animation. From 2.19.0{' '}
+              <code className="font-mono">&lt;ScrollDraw&gt;</code> takes every option as a prop (it took 12), an
+              absent boolean is left to the engine’s default, and other attributes fall through to the div.
             </Note>
           </DocSection>
 
@@ -1158,6 +1166,12 @@ export default defineNuxtPlugin((nuxtApp) => {
             <Note>
               Pass a root element to any init function — e.g. <code className="font-mono">initAll(document.querySelector(&apos;main&apos;))</code> — to scope initialisation to a specific subtree.
             </Note>
+            <p className="text-sm text-graphite-border leading-relaxed mt-3">
+              From 2.19.0 each element keeps one engine per kind: editing its options attribute rebuilds it, an equal
+              value keeps it, and running an init again — on every <code className="font-mono">astro:page-load</code>{' '}
+              with View Transitions — keeps the engine it started. <code className="font-mono">format</code> and
+              callbacks cannot come from JSON; use <code className="font-mono">&quot;decimals&quot;</code>.
+            </p>
           </DocSection>
 
           {/* ── Web Component ────────────────────────────────── */}
@@ -1180,6 +1194,7 @@ export default defineNuxtPlugin((nuxtApp) => {
               String and number options map directly to HTML attributes. Boolean options like{' '}
               <code className="font-mono text-pitch-black">fade</code> and{' '}
               <code className="font-mono text-pitch-black">once</code> are presence-based (add the attribute to enable).
+              From 2.19.0, changing one of these attributes later rebuilds the engine; an equal value does not.
             </p>
           </DocSection>
 
@@ -1649,8 +1664,10 @@ scrollDraw('#hero-svg', { easing: 'ease-out', once: true });
             </CodeBlock>
             <Note>
               The value is the progress of the <strong>first path</strong> (path index 0) in normal mode,
-              and the overall alpha in clip mode. Use{' '}
-              <code className="font-mono">onProgress</code> if you need per-path values.
+              and the overall alpha in clip mode. <code className="font-mono">onProgress</code> and{' '}
+              <code className="font-mono">getProgress()</code> report the same value; with{' '}
+              <code className="font-mono">stagger</code>, <code className="font-mono">onComplete</code> waits
+              for the last path.
             </Note>
           </DocSection>
 
@@ -2458,7 +2475,7 @@ import { ScrollAnimate } from 'svg-scroll-draw/react';
                     ['native', 'boolean', 'true', 'Use CSS animation-timeline: view() fast path when eligible.'],
                     ['respectReducedMotion', 'boolean', 'true', 'Honour prefers-reduced-motion by applying the final state instead of animating. Set false only for scroll-linked scrubbing, which advances 1:1 with the user’s own scrolling rather than playing on its own.'],
                     ['triggerElement', 'Element', 'the animated element', 'Measure the trigger window from a different element. Needed when the animated element cannot supply the scroll length itself — a position:sticky element is only one viewport tall, so its window collapses to zero. Setting this disables the native CSS fast path, which can only measure its own subject.'],
-                    ['onProgress',   '(n) => void', '—', 'Called every frame with alpha 0–1.'],
+                    ['onProgress',   '(n) => void', '—', 'Called as the scroll moves, with alpha 0–1 (the first path’s, under stagger).'],
                     ['onComplete',   '() => void', '—', 'Fires when alpha reaches 1.'],
                     ['onEnter',      '() => void', '—', 'Fires when scroll enters the trigger zone (scrolling forward). Forces JS engine.'],
                     ['onLeave',      '() => void', '—', 'Fires when scroll exits the trigger zone at the end (scrolling forward).'],

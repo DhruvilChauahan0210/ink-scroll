@@ -155,6 +155,22 @@ export function scrollPin(
     }
   }
 
+  /**
+   * Re-measure, and move an element that is already pinned to where its wrapper
+   * now is. setState() writes `left` and `width` only on the way into the pinned
+   * state, so a window narrowed from 1200px to 800px mid-pin left the element at
+   * its old 840px width and left 180, running 220px past the screen's edge until
+   * it unpinned.
+   */
+  function remeasure(): void {
+    measure();
+    if (state === 'pinned') {
+      htmlEl.style.left  = `${wrapper.getBoundingClientRect().left}px`;
+      htmlEl.style.width = `${elWidth}px`;
+    }
+    scheduleUpdate();
+  }
+
   // Use scroll + resize listeners — pin needs to react to every scroll event
   const scrollTarget = scrollEl ?? window;
   scrollTarget.addEventListener('scroll', scheduleUpdate, { passive: true });
@@ -162,7 +178,7 @@ export function scrollPin(
   let resizeTimer: ReturnType<typeof setTimeout>;
   function onResize(): void {
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => { measure(); scheduleUpdate(); }, 150);
+    resizeTimer = setTimeout(remeasure, 150);
   }
   window.addEventListener('resize', onResize);
   window.addEventListener('orientationchange', onResize);
@@ -172,7 +188,7 @@ export function scrollPin(
   if (typeof ResizeObserver !== 'undefined') {
     ro = new ResizeObserver(() => {
       clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(() => { measure(); scheduleUpdate(); }, 100);
+      resizeTimer = setTimeout(remeasure, 100);
     });
     ro.observe(wrapper);
     ro.observe(document.documentElement);
@@ -221,8 +237,7 @@ export function scrollPin(
     },
 
     refresh() {
-      measure();
-      scheduleUpdate();
+      remeasure();
     },
 
     getProgress() {

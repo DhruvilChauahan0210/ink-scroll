@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import type { ComponentType } from 'react';
+import { existsSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import Link from 'next/link';
 import '@/components/blocks.css';
 import { CopyButton } from '@/components/CopyButton';
@@ -16,6 +18,10 @@ import { RevealCards } from '../../../registry/blocks/reveal-cards';
 import { StatCounterRow } from '../../../registry/blocks/stat-counter-row';
 import { StickyFeature } from '../../../registry/blocks/sticky-feature';
 import { HeadlineTextReveal } from '../../../registry/blocks/headline-text-reveal';
+import { PinnedFeatureTour } from '../../../registry/blocks/pinned-feature-tour';
+import { HorizontalCaseStrip } from '../../../registry/blocks/horizontal-case-strip';
+import { VideoScrub } from '../../../registry/blocks/video-scrub';
+import { ReadingProgress } from '../../../registry/blocks/reading-progress';
 
 // …and the source panels read the built registry items, so the code shown here
 // is byte-for-byte what `npx shadcn add` writes. Rebuild with
@@ -25,6 +31,10 @@ import revealCardsItem from '../../../public/r/reveal-cards.json';
 import statCounterRowItem from '../../../public/r/stat-counter-row.json';
 import stickyFeatureItem from '../../../public/r/sticky-feature.json';
 import headlineTextRevealItem from '../../../public/r/headline-text-reveal.json';
+import pinnedFeatureTourItem from '../../../public/r/pinned-feature-tour.json';
+import horizontalCaseStripItem from '../../../public/r/horizontal-case-strip.json';
+import videoScrubItem from '../../../public/r/video-scrub.json';
+import readingProgressItem from '../../../public/r/reading-progress.json';
 
 const SITE = 'https://svg-scroll-draw.vercel.app';
 
@@ -78,15 +88,54 @@ interface Block {
   tall?: boolean;
 }
 
+/**
+ * The video block needs a film; this page lends it the Aural showcase's, which
+ * has colourway stills after the film in the same file, hence `to`.
+ */
+function FilmPreview() {
+  return (
+    <VideoScrub
+      src="/showcase/aural-fdc4222c.webm"
+      to={4.98}
+      label="Headphones turning, then taken apart"
+      chapters={[
+        { from: 0, title: 'Built to be worn all day', body: 'A sprung steel band and memory-foam cushions, 254 g all in.' },
+        { from: 0.45, title: 'Taken apart', body: 'The cup comes apart layer by layer: the cap, the shell, the board.' },
+        { from: 0.75, title: 'The part you hear', body: 'A 40 mm driver with a beryllium-coated dome, 4 Hz to 40 kHz.' },
+      ]}
+    />
+  );
+}
+
 const BLOCKS: Block[] = [
   { item: signatureDrawItem, Preview: SignatureDraw },
   { item: revealCardsItem, Preview: RevealCards },
   { item: statCounterRowItem, Preview: StatCounterRow },
   { item: stickyFeatureItem, Preview: StickyFeature },
   { item: headlineTextRevealItem, Preview: HeadlineTextReveal, tall: true },
+  { item: pinnedFeatureTourItem, Preview: PinnedFeatureTour, tall: true },
+  { item: horizontalCaseStripItem, Preview: HorizontalCaseStrip, tall: true },
+  { item: videoScrubItem, Preview: FilmPreview, tall: true },
+  { item: readingProgressItem, Preview: ReadingProgress, tall: true },
 ];
 
 const installCommand = (name: string) => `npx shadcn@latest add ${SITE}/r/${name}.json`;
+/** The other frameworks a block can come in, each from its own CLI and registry folder. */
+const FRAMEWORK_VERSIONS = [
+  { dir: 'vue', label: 'vue', cli: 'shadcn-vue' },
+  { dir: 'svelte', label: 'svelte', cli: 'shadcn-svelte' },
+];
+
+type FrameworkFile = { path?: string; content: string; target?: string };
+/**
+ * A block's version for another framework, read from its built registry item at
+ * build time, so the source shown is what that CLI writes. Null for a block
+ * without one.
+ */
+function frameworkFile(dir: string, name: string): FrameworkFile | null {
+  const file = join(process.cwd(), 'public/r', dir, `${name}.json`);
+  return existsSync(file) ? (JSON.parse(readFileSync(file, 'utf8')) as { files: FrameworkFile[] }).files[0] : null;
+}
 const pad = (n: number) => String(n).padStart(2, '0');
 /** Lines as CodeBox counts them: trailing newlines don't make a line. */
 const lineCount = (s: string) => s.replace(/\n+$/, '').split('\n').length;
@@ -118,11 +167,10 @@ const jsonLd = {
 };
 
 /** The one command for a block, in a title strip: what it is, the line, copy. */
-function InstallCommand({ name }: { name: string }) {
-  const cmd = installCommand(name);
+function InstallCommand({ cmd, k = 'shadcn cli' }: { cmd: string; k?: string }) {
   return (
     <div className="bk-cmd">
-      <span className="bk-cmd-k">shadcn cli</span>
+      <span className="bk-cmd-k">{k}</span>
       <span className="bk-cmd-line">
         <span aria-hidden="true" className="bk-cmd-p">$</span>
         <code>{cmd}</code>
@@ -201,7 +249,7 @@ export default function BlocksPage() {
                     <p className="bk-desc">{item.description}</p>
                   </div>
                   <div className="bk-install">
-                    <InstallCommand name={item.name} />
+                    <InstallCommand cmd={installCommand(item.name)} />
                     <dl className="bk-parts">
                       <div><dt>writes</dt><dd className="bk-mono">{target(file)}</dd></div>
                       <div><dt>lines</dt><dd className="bk-mono">{lines}</dd></div>
@@ -232,6 +280,24 @@ export default function BlocksPage() {
                     <CodeBox file={target(f)}>{f.content}</CodeBox>
                   </details>
                 ))}
+                {FRAMEWORK_VERSIONS.map(({ dir, label, cli }) => {
+                  const f = frameworkFile(dir, item.name);
+                  if (!f) return null;
+                  const file = f.target ?? f.path ?? item.name;
+                  return (
+                    <details key={dir} className="bk-src">
+                      <summary>
+                        <span>{label}</span>
+                        <span className="bk-src-file">{file}</span>
+                        <span className="bk-src-n">{lineCount(f.content)} lines</span>
+                      </summary>
+                      <div className="bk-src-cmd">
+                        <InstallCommand cmd={`npx ${cli}@latest add ${SITE}/r/${dir}/${item.name}.json`} k={cli} />
+                      </div>
+                      <CodeBox file={file}>{f.content}</CodeBox>
+                    </details>
+                  );
+                })}
               </section>
             );
           })}
