@@ -124,7 +124,7 @@ export function StickyFeature({
                 className={`flex items-baseline gap-3 text-sm transition-colors duration-300 ${
                   i === active
                     ? 'font-semibold text-neutral-950 dark:text-neutral-50'
-                    : 'text-neutral-400 dark:text-neutral-600'
+                    : 'text-neutral-500 dark:text-neutral-400'
                 }`}
               >
                 <span className="font-mono text-xs">{String(i + 1).padStart(2, '0')}</span>

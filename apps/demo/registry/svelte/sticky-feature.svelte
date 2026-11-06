@@ -144,7 +144,7 @@
             aria-current={i === active ? 'step' : undefined}
             class="flex items-baseline gap-3 text-sm transition-colors duration-300 {i === active
               ? 'font-semibold text-neutral-950 dark:text-neutral-50'
-              : 'text-neutral-400 dark:text-neutral-600'}"
+              : 'text-neutral-500 dark:text-neutral-400'}"
           >
             <span class="font-mono text-xs">{pad(i + 1)}</span>{step.title}
           </li>

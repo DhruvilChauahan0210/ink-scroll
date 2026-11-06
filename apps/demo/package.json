@@ -13,6 +13,7 @@
     "registry:build": "node scripts/build-registry.mjs",
     "registry:check": "node scripts/build-registry.mjs --check",
     "test:blocks": "node scripts/test-blocks.mjs",
+    "test:a11y": "node scripts/test-a11y.mjs",
     "test:vue-blocks": "node scripts/test-vue-blocks.mjs",
     "test:svelte-blocks": "node scripts/test-svelte-blocks.mjs"
   },
@@ -28,6 +29,7 @@
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "axe-core": "^4.14.0",
     "eslint": "^9",
     "eslint-config-next": "16.4.5",
     "svelte": "^5.57.3",

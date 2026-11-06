@@ -51,7 +51,20 @@ const charsInst = scrollText('#chars', { split: 'chars', stagger: 0.06 });
 const linesInst = scrollText('#lines', { split: 'lines', stagger: 0.1 });
 
 /** Every span the splitter created, animated or not. */
-const spansOf = (el) => [...el.querySelectorAll('span')];
+/**
+ * The one span a screen reader reads: the whole text, visually hidden, after
+ * the split pieces (2.21.0; it used to be an aria-label on the element).
+ */
+const srOf = (el) => [...el.children].find((c) => c.tagName === 'SPAN' && c.getAttribute('aria-hidden') !== 'true') ?? null;
+/** The split pieces: every span but the screen-reader copy. */
+const spansOf = (el) => [...el.querySelectorAll('span')].filter((s) => s !== srOf(el));
+/** The text as drawn, without the screen-reader copy. */
+const drawnText = (el) => {
+  const c = el.cloneNode(true);
+  const sr = srOf(c);
+  if (sr) sr.remove();
+  return c.textContent;
+};
 
 /**
  * Only the spans the engine actually animates.
@@ -68,13 +81,14 @@ const unitsOf = (el) => spansOf(el).filter((s) => s.style.opacity !== '');
 const describe = (el) => {
   const units = unitsOf(el);
   return {
-    text: el.textContent,
+    text: drawnText(el),
     ariaLabel: el.getAttribute('aria-label'),
+    spoken: srOf(el)?.textContent ?? null,
     unitCount: units.length,
     spanCount: spansOf(el).length,
     // A visible unit that a screen reader would read twice is the failure this
-    // guards: the label carries the text, so every span must be hidden.
-    allHidden: spansOf(el).every((s) => s.getAttribute('aria-hidden') === 'true'),
+    // guards: the copy carries the text, so every piece must be hidden.
+    allHidden: spansOf(el).every((s) => s.closest('[aria-hidden="true"]')),
     opacities: units.map(opacityOf),
     firstY: units.length ? transformOf(units[0]).y : 0,
     height: el.offsetHeight,
@@ -98,10 +112,11 @@ publish({
    * line and nothing to notice.
    */
   linesReport: () => ({
-    text: lines.textContent,
+    text: drawnText(lines),
     originalText: original.linesText,
-    lineSpans: [...lines.children].filter((c) => c.tagName === 'SPAN').length,
+    lineSpans: [...lines.children].filter((c) => c.tagName === 'SPAN' && c !== srOf(lines)).length,
     ariaLabel: lines.getAttribute('aria-label'),
+    spoken: srOf(lines)?.textContent ?? null,
     // Rendered width of the paragraph's first line, which collapses if the
     // spaces are gone.
     height: lines.offsetHeight,

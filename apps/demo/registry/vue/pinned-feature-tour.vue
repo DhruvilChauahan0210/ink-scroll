@@ -216,18 +216,16 @@ onBeforeUnmount(stop);
               v-for="(f, i) in features"
               :key="f.title"
               :aria-current="i === current ? 'step' : undefined"
-              :class="[
-                'transition-opacity duration-300 motion-reduce:transition-none',
-                i === current ? 'opacity-100' : `opacity-[0.35] ${COMPACT_HIDE}`,
-              ]"
+              :class="['transition-colors duration-300 motion-reduce:transition-none', i === current ? '' : COMPACT_HIDE]"
             >
+              <!-- Not the current feature: greyed by colour, not opacity, so every feature keeps WCAG AA contrast (at 35% opacity the text measured about 2:1). -->
               <span class="flex items-center gap-2 font-mono text-xs">
-                <span class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-[#ff90e8] font-bold text-neutral-950">{{ pad(i + 1) }}</span>
+                <span :class="['inline-flex h-7 w-7 items-center justify-center rounded-full font-bold transition-colors duration-300 motion-reduce:transition-none', i === current ? 'bg-[#ff90e8] text-neutral-950' : 'bg-neutral-200 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300']">{{ pad(i + 1) }}</span>
                 <!-- With one feature on screen, say how many there are. -->
                 <span aria-hidden="true" :class="[COMPACT_SHOW, 'text-neutral-500 dark:text-neutral-400']">of {{ pad(features.length) }}</span>
               </span>
-              <h3 class="mt-3 text-2xl font-semibold leading-tight text-neutral-950 dark:text-neutral-50">{{ f.title }}</h3>
-              <p class="mt-1.5 max-w-[36ch] leading-relaxed text-neutral-600 dark:text-neutral-400">{{ f.body }}</p>
+              <h3 :class="['mt-3 text-2xl font-semibold leading-tight', i === current ? 'text-neutral-950 dark:text-neutral-50' : 'text-neutral-500 dark:text-neutral-400']">{{ f.title }}</h3>
+              <p :class="['mt-1.5 max-w-[36ch] leading-relaxed', i === current ? 'text-neutral-600 dark:text-neutral-300' : 'text-neutral-500 dark:text-neutral-400']">{{ f.body }}</p>
             </li>
           </ol>
         </div>

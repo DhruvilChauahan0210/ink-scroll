@@ -8,6 +8,37 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### Site
 
+- **Every page passes axe (WCAG 2.1 A and AA), and every internal link
+  resolves.** `apps/demo/scripts/test-a11y.mjs` runs axe on all 64 sitemap
+  pages in Chromium, before and after scrolling, under reduced motion so every
+  scroll effect is in its final state, and checks every internal link and
+  `#anchor`; it runs in CI against the built site. It found and this fixes:
+  the muted text colour in both themes (3.10:1 dark, 2.89:1 light, on every
+  page; now 4.65:1 and 4.70:1); eight homepage links to `/docs` anchors that
+  did not exist and four `/work/…` placeholders on `/blocks` that were 404s
+  there (the block still ships them; its preview links within the page);
+  names that did not contain the visible text (the nav brand, the copy chips,
+  the toolkit cards); code listings and install lines a keyboard could not
+  scroll; a wireframe drawn as `role="img"` that hid its own links; the pill
+  counts, the playground's mode labels and the code panel's comment colours;
+  and in the blocks and recipes, features and chapters that were not current
+  faded to 32–35% opacity (about 2:1). Those are greyed by colour now — the
+  pinned-feature-tour and video-scrub blocks in React, Vue and Svelte, the
+  scroll-pin and scroll-video recipes — and the sticky-feature block's
+  inactive steps, the strip recipe's meta line and the tour's step numbers use
+  colours that pass. axe 4.14 measures content cut off by `overflow: clip` (not
+  by `overflow: hidden`), so the check leaves out what a clip box cuts off at
+  its centre.
+- **Syne is no longer preloaded on every page.** The site's pages draw in the
+  sans; Syne is only on the homepage's live-stats chapter, below the fold, and
+  8 showcase sites, so the root layout's preload sent it to every page ahead of
+  the fonts the first screen needs: 86 → 52 KB of fonts on the site's pages.
+  Measured with a 4× slower CPU on mobile 4G: every page's LCP, CLS and scroll
+  frames were already within Google's "good" (LCP 0.66–1.3 s, CLS ≤ 0.002, no
+  frame over 50 ms while scrolling); the homepage's LCP median went from
+  1.1–1.3 s to about 0.9 s. `/docs` stays one 2,709-line client component:
+  server-rendering it was tried and measured no faster (27 KB less JS, 41 KB
+  more HTML, the same main-thread work), so it was reverted.
 - **Every page moves to the homepage's design, one page at a time, starting
   with `/docs`.** A shared `SiteShell` gives inner pages the homepage's frame:
   its tokens, the glass nav (solid from the start, with the current section
@@ -464,6 +495,31 @@ All notable changes to `svg-scroll-draw` are documented here.
   allowed, followed by `check-jsx-text` and `check-nav`.
 
 ---
+
+## [2.21.0] — 2026-11-06
+
+### Fixed
+
+- **`scrollText` no longer hides its text from screen readers.** It split the
+  text into `aria-hidden` pieces and put the whole text in an `aria-label` on
+  the element, but ARIA forbids `aria-label` on a paragraph, a `span` or a
+  `div`, the elements it runs on most, and screen readers may skip it there,
+  reading nothing at all. Found by the site's new accessibility check
+  (axe: `aria-prohibited-attr`) on the headline block. The text now goes in one
+  visually hidden span after the pieces, which every role reads; the
+  browser's accessibility tree carries the sentence exactly once (checked in
+  all three engines).
+- Two visible consequences: the element holds one more `span`, so
+  `el.textContent` contains the text twice (the pieces and the copy); and
+  `destroy()` no longer removes an `aria-label` the page had set itself.
+
+### Tests
+
+- Unit tests and the browser fixture count the drawn pieces apart from the
+  screen-reader copy; the browser test reads Playwright's accessibility
+  snapshot. Mutation `text/readable`, 84 in all. 695 unit / 230 browser tests
+  per engine. The text entry is 3.1 → 3.2 KB (3.17), the entries that include
+  it 0.1 KB up, budgets moved with the reason in `scripts/size.mjs`.
 
 ## [2.20.1] — 2026-11-06
 

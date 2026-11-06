@@ -25,14 +25,14 @@ import { PLATES, PlateArt, SPEED, staggerFor, type PlateKey } from './art/toolki
 type Item = { key: PlateKey; name: string; desc: string; entry: string; href: string };
 
 const ITEMS: Item[] = [
-  { key: 'draw', name: 'scrollDraw', desc: 'Draw any SVG path from scroll.', entry: 'svg-scroll-draw', href: '/docs#scrolldraw' },
-  { key: 'animate', name: 'scrollAnimate', desc: 'Any CSS property, scrubbed by position.', entry: 'svg-scroll-draw', href: '/docs#scrollanimate' },
-  { key: 'text', name: 'scrollText', desc: 'Split headlines into words, characters or lines.', entry: 'svg-scroll-draw/text', href: '/docs#scrolltext' },
-  { key: 'pin', name: 'scrollPin', desc: 'Hold a section while the page keeps moving.', entry: 'svg-scroll-draw/pin', href: '/docs#scrollpin' },
-  { key: 'parallax', name: 'scrollParallax', desc: 'Layers at their own fraction of the scroll.', entry: 'svg-scroll-draw', href: '/docs#scrollparallax' },
-  { key: 'video', name: 'scrollVideo', desc: 'Tie a video’s current time to scroll.', entry: 'svg-scroll-draw/video', href: '/docs#scrollvideo' },
-  { key: 'counter', name: 'scrollCounter', desc: 'Numbers that count up as they arrive.', entry: 'svg-scroll-draw', href: '/docs#scrollcounter' },
-  { key: 'snap', name: 'scrollSnap', desc: 'Snap between sections with thresholds.', entry: 'svg-scroll-draw/snap', href: '/docs#scrollsnap' },
+  { key: 'draw', name: 'scrollDraw', desc: 'Draw any SVG path from scroll.', entry: 'svg-scroll-draw', href: '/docs#core-options' },
+  { key: 'animate', name: 'scrollAnimate', desc: 'Any CSS property, scrubbed by position.', entry: 'svg-scroll-draw', href: '/docs#scroll-animate' },
+  { key: 'text', name: 'scrollText', desc: 'Split headlines into words, characters or lines.', entry: 'svg-scroll-draw/text', href: '/docs#scroll-text' },
+  { key: 'pin', name: 'scrollPin', desc: 'Hold a section while the page keeps moving.', entry: 'svg-scroll-draw/pin', href: '/docs#scroll-pin' },
+  { key: 'parallax', name: 'scrollParallax', desc: 'Layers at their own fraction of the scroll.', entry: 'svg-scroll-draw', href: '/docs#scroll-parallax' },
+  { key: 'video', name: 'scrollVideo', desc: 'Tie a video’s current time to scroll.', entry: 'svg-scroll-draw/video', href: '/docs#scroll-video' },
+  { key: 'counter', name: 'scrollCounter', desc: 'Numbers that count up as they arrive.', entry: 'svg-scroll-draw', href: '/docs#scroll-counter' },
+  { key: 'snap', name: 'scrollSnap', desc: 'Snap between sections with thresholds.', entry: 'svg-scroll-draw/snap', href: '/docs#scroll-snap' },
 ];
 
 const N = ITEMS.length;
@@ -290,7 +290,7 @@ export function Toolkit() {
 
           <div className="tk-list" ref={listRef}>
             {ITEMS.map((it, i) => (
-              <Link href={it.href} className="tk-card" key={it.key} data-i={i} data-cursor="open" aria-label={`${it.name}: ${it.desc}`}>
+              <Link href={it.href} className="tk-card" key={it.key} data-i={i} data-cursor="open">
                 <div className="tk-plate" id={`tk-plate-${it.key}`}>
                   <PlateArt plate={PLATES[it.key]} ink={`tk-ink-${i}`} stagger={STAGGERS[i]} />
                 </div>
@@ -308,7 +308,7 @@ export function Toolkit() {
               </Link>
             ))}
 
-            <Link href="/docs" className="tk-card tk-end" data-cursor="docs" aria-label="Every option, documented: read the docs">
+            <Link href="/docs" className="tk-card tk-end" data-cursor="docs">
               <span className="tk-end-k">sheet 05 · title block</span>
               <span className="tk-end-title">
                 Every option, <em>documented.</em>

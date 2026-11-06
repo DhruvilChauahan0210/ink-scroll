@@ -201,7 +201,9 @@
 }
 .site .pill:hover { color: var(--fg); border-color: var(--fg-3); }
 .site .pill[aria-pressed='true'] { background: var(--fg); border-color: var(--fg); color: var(--bg); }
-.site .pill-n { opacity: 0.55; }
+/* 0.85: the lowest that keeps the count at WCAG AA in both themes (0.55
+   measured 2.92:1 dark and 2.49:1 light). */
+.site .pill-n { opacity: 0.85; }
 
 /* A parts list of links: number, title and note, then "open". */
 .site .ex-rel-list { border-top: 1px solid var(--fg-3); }

@@ -12,7 +12,9 @@
   --panel: #f8f6f1;
   --fg: #121110;
   --fg-2: #55524c;
-  --fg-3: #8c877e;
+  /* Muted text, at WCAG AA (4.5:1) on every background here: #8c877e measured
+     2.89:1 on --bg-2 and failed axe on every page. */
+  --fg-3: #69655e;
   --line: rgba(18, 17, 16, 0.10);
   --line-2: rgba(18, 17, 16, 0.22);
   --accent: #d9381e;
@@ -38,7 +40,8 @@ html.dark .home {
   --panel: #0f0f11;
   --fg: #ece8e0;
   --fg-2: #a19d95;
-  --fg-3: #66635d;
+  /* 4.65:1 on the darkest background; #66635d measured 3.10:1 (failed WCAG AA). */
+  --fg-3: #837f77;
   --line: rgba(236, 232, 224, 0.08);
   --line-2: rgba(236, 232, 224, 0.18);
   --accent: #ff5a36;

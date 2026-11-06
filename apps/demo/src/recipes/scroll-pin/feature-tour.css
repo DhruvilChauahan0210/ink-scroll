@@ -39,9 +39,13 @@
 }
 
 .tour-copy { display: grid; gap: 28px; margin: 0; padding: 0; list-style: none; }
-.tour-copy li { opacity: 0.35; transition: opacity 0.3s ease; }
-.tour-copy li[aria-current] { opacity: 1; }
-.tour-n { font: 600 12px/1 ui-monospace, monospace; color: var(--accent); }
+/* Not the current feature: greyed by colour, not opacity, so its text keeps
+   WCAG AA (at 35% opacity it measured about 2:1). #75695f is 4.6:1 on the paper. */
+.tour-copy li { color: #75695f; transition: color 0.3s ease; }
+.tour-copy li[aria-current] { color: var(--ink); }
+.tour-copy li:not([aria-current]) .tour-n { color: inherit; }
+/* The accent, darkened for small text: #c4572b is 3.81:1 on the paper, #ae4d26 4.62:1. */
+.tour-n { font: 600 12px/1 ui-monospace, monospace; color: #ae4d26; }
 .tour-copy h3 { margin: 8px 0 6px; font: 600 24px/1.2 system-ui, sans-serif; }
 .tour-copy p { max-width: 36ch; margin: 0; font: 400 16px/1.6 system-ui, sans-serif; }
 

@@ -15,8 +15,11 @@ export function CopyCommand({ command = 'npm i svg-scroll-draw' }: { command?: s
     }
   };
   return (
-    <button type="button" className="chip" onClick={copy} aria-label={`Copy: ${command}`}>
-      <span><span className="prompt">$ </span>{command}</span>
+    // Named by what it shows ("npm i svg-scroll-draw copy"): an aria-label of
+    // "Copy: …" did not contain the visible text, and failed axe's
+    // label-content-name-mismatch wherever the chip appears.
+    <button type="button" className="chip" onClick={copy}>
+      <span><span className="prompt" aria-hidden="true">$ </span>{command}</span>
       <span className="copy" aria-live="polite">{copied ? 'copied' : 'copy'}</span>
     </button>
   );

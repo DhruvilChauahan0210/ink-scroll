@@ -25,6 +25,22 @@ export interface ScrollTextOptions {
 
 // ── Text splitting helpers ────────────────────────────────────────────────────
 
+/**
+ * The whole text once more, for screen readers, after the split pieces (each
+ * aria-hidden). It used to be an aria-label on the element, which ARIA forbids
+ * on a paragraph, a span or a div, the elements scrollText runs on most: a
+ * screen reader may skip it, and with every piece hidden it then reads nothing
+ * (axe: aria-prohibited-attr, found on the site's own headline block).
+ * Visually hidden, not selectable, so a copy picks up the text once.
+ */
+function readable(el: Element, text: string): void {
+  const sr = document.createElement('span');
+  sr.textContent = text;
+  sr.style.cssText = 'position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;user-select:none';
+  el.appendChild(sr);
+}
+
+
 function splitIntoWords(el: Element): HTMLSpanElement[] {
   const text = el.textContent ?? '';
   el.textContent = '';
@@ -175,15 +191,16 @@ export function scrollText(
   const startConfig    = parseTrigger(trigger.start ?? 'top 85%');
   const endConfig      = parseTrigger(trigger.end   ?? 'top 40%');
 
-  // Save original text for accessibility and destroy()
+  // Saved for destroy() and for the screen-reader copy.
   const originalHTML = el.innerHTML;
-  el.setAttribute('aria-label', el.textContent ?? '');
+  const text = el.textContent ?? '';
 
   // Split the element
   let spans: HTMLSpanElement[];
   if (split === 'chars') spans = splitIntoChars(el);
   else if (split === 'lines') spans = splitIntoLines(el);
   else spans = splitIntoWords(el);
+  readable(el, text);
 
   const n = spans.length;
 
@@ -210,7 +227,6 @@ export function scrollText(
     return {
       destroy() {
         el.innerHTML = originalHTML;
-        el.removeAttribute('aria-label');
       },
       replay: () => {}, pause: () => {}, resume: () => {},
       seek: () => {}, getProgress: () => 1,
@@ -280,8 +296,8 @@ export function scrollText(
         // Re-measure lines on resize
         const savedAlpha = currentAlpha;
         el.innerHTML = originalHTML;
-        el.setAttribute('aria-label', el.textContent ?? '');
         spans = splitIntoLines(el);
+        readable(el, text);
         applyAll(savedAlpha);
       }
       cacheTriggers();
@@ -308,7 +324,6 @@ export function scrollText(
       unwatch();
       clearTimeout(resizeTimer);
       el.innerHTML = originalHTML;
-      el.removeAttribute('aria-label');
       _unregister(el);
     },
     replay() {

@@ -19,7 +19,7 @@ import { StatCounterRow } from '../../../registry/blocks/stat-counter-row';
 import { StickyFeature } from '../../../registry/blocks/sticky-feature';
 import { HeadlineTextReveal } from '../../../registry/blocks/headline-text-reveal';
 import { PinnedFeatureTour } from '../../../registry/blocks/pinned-feature-tour';
-import { HorizontalCaseStrip } from '../../../registry/blocks/horizontal-case-strip';
+import { CaseStripPreview } from '@/components/blocks/CaseStripPreview';
 import { VideoScrub } from '../../../registry/blocks/video-scrub';
 import { ReadingProgress } from '../../../registry/blocks/reading-progress';
 
@@ -114,7 +114,7 @@ const BLOCKS: Block[] = [
   { item: stickyFeatureItem, Preview: StickyFeature },
   { item: headlineTextRevealItem, Preview: HeadlineTextReveal, tall: true },
   { item: pinnedFeatureTourItem, Preview: PinnedFeatureTour, tall: true },
-  { item: horizontalCaseStripItem, Preview: HorizontalCaseStrip, tall: true },
+  { item: horizontalCaseStripItem, Preview: CaseStripPreview, tall: true },
   { item: videoScrubItem, Preview: FilmPreview, tall: true },
   { item: readingProgressItem, Preview: ReadingProgress, tall: true },
 ];
@@ -173,7 +173,8 @@ function InstallCommand({ cmd, k = 'shadcn cli' }: { cmd: string; k?: string }) 
   return (
     <div className="bk-cmd">
       <span className="bk-cmd-k">{k}</span>
-      <span className="bk-cmd-line">
+      {/* Scrolls sideways on a phone; focusable so a keyboard can too. */}
+      <span className="bk-cmd-line" tabIndex={0}>
         <span aria-hidden="true" className="bk-cmd-p">$</span>
         <code>{cmd}</code>
       </span>

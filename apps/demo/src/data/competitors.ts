@@ -51,7 +51,7 @@ export const MEASURED_ON = '2026-08-14';
 export const SELF: Competitor = {
   name: 'svg-scroll-draw',
   label: 'svg-scroll-draw (all APIs)',
-  version: '2.20.1',
+  version: '2.21.0',
   license: 'MIT',
   gzipKb: 11.4,
   lastPublish: '2026-08-14',
@@ -72,11 +72,11 @@ export const SELF_ENTRIES: Record<string, number> = {
   scrollreveal: 4.5,
   // The vivus drop-in (`svg-scroll-draw/vivus`).
   vivus: 4.0,
-  text: 3.1,
+  text: 3.2,
   // Each framework landing quotes its own entry, wrapper and engines included.
   vue: 12.9,
   nuxt: 13.0,
-  svelte: 12.2,
+  svelte: 12.3,
   solid: 12.3,
   angular: 12.3,
   astro: 11.9,

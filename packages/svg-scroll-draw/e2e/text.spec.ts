@@ -19,6 +19,7 @@ import { openFixture, collectErrors, scrollToY, read, call, table } from './help
 type Unit = {
   text: string;
   ariaLabel: string | null;
+  spoken: string | null;
   unitCount: number;
   allHidden: boolean;
   opacities: number[];
@@ -67,9 +68,16 @@ test.describe('scrollText', () => {
     const original = await call<{ wordsText: string }>(page, 'original');
     const row = await read<Row>(page);
 
-    // The element carries the whole sentence as its accessible name...
-    expect(row.words.ariaLabel).toBe(original.wordsText);
-    // ...and every generated span is hidden, so it is announced once, not twice.
+    // One visually hidden copy carries the whole sentence. It was an aria-label,
+    // which ARIA forbids on a <p>, so a screen reader could skip it and, with
+    // every piece hidden, read nothing (axe: aria-prohibited-attr).
+    expect(row.words.spoken).toBe(original.wordsText);
+    expect(row.words.ariaLabel).toBeNull();
+    // What the browser hands assistive technology: the sentence, exactly once.
+    const tree = await page.locator('#words').ariaSnapshot();
+    const said = tree.split(original.wordsText).length - 1;
+    expect(said, `accessibility tree:\n${tree}`).toBe(1);
+    // ...and every generated piece is hidden, so it is announced once, not twice.
     expect(row.words.allHidden, 'a split span was left visible to screen readers').toBe(true);
     expect(row.chars.allHidden).toBe(true);
   });
@@ -160,7 +168,7 @@ test.describe('scrollText', () => {
     expect(after.spanCount, 'split spans left behind').toBe(0);
     // The nested element the splitter flattened has to come back.
     expect(after.strongCount, '<strong> not restored').toBe(1);
-    // aria-label was added by the library, so it must not outlive it.
+    // The library sets no aria-label, so none may appear.
     expect(after.ariaLabel).toBeNull();
   });
 });
@@ -184,6 +192,7 @@ test.describe('scrollText — split: lines', () => {
     originalText: string;
     lineSpans: number;
     ariaLabel: string | null;
+    spoken: string | null;
     height: number;
     progress: number;
   };
@@ -202,9 +211,7 @@ test.describe('scrollText — split: lines', () => {
     const r = await call<LinesReport>(page, 'linesReport');
 
     expect(r.text, `split: 'lines' changed the rendered text`).toBe(r.originalText);
-    expect(r.ariaLabel, 'the accessible name was not set from the original text').toBe(
-      r.originalText,
-    );
+    expect(r.spoken, 'the screen-reader copy is not the original text').toBe(r.originalText);
   });
 
   test('destroy() puts the paragraph back', async ({ page }) => {

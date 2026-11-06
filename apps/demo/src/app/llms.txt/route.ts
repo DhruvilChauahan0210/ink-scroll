@@ -36,7 +36,7 @@ Every API is a separate entry point, so you only pay for what you import:
 - \`scrollParallax\` — move an element at a multiple of scroll distance
 - \`scrollCounter\` — animate a number from → to
 - \`scrollVideo\` — bind \`video.currentTime\` to scroll position
-- \`scrollText\` (3.1 KB) — split text into chars/words/lines and stagger them
+- \`scrollText\` (3.2 KB) — split text into chars/words/lines and stagger them
 - \`scrollHorizontal\` — horizontal scroll sections
 - Group / Sequence / Timeline APIs for orchestrating several at once
 

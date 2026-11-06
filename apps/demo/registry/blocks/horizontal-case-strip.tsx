@@ -62,7 +62,7 @@ export interface HorizontalCaseStripProps {
   className?: string;
 }
 
-const DEFAULT_CASES: CaseStudy[] = [
+export const DEFAULT_CASES: CaseStudy[] = [
   {
     client: 'Tidewater Ferries',
     title: 'A timetable you can read from the pier',

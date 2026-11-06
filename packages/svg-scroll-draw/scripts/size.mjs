@@ -45,19 +45,23 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
  * staggered drawing fits its stagger to where the page ends and keeps
  * following the scroll off screen until its last path is done (it never
  * finished before), 0.14 KB gzipped on the main entry. Same rule as above.
+ *
+ * 2.21.0 moved the entries that carry scrollText up 0.1 KB: it keeps one
+ * visually hidden copy of the text for screen readers instead of an aria-label
+ * ARIA forbids on a <p> (text 3.1 -> 3.17 KB). Same rule.
  */
 const BUDGETS_KB = {
   '.':              11.4,
   // The whole library in one IIFE, web component included — the single file a
   // `<script src>` user downloads. Not split, so unchanged by the chunks.
   cdn:              11.5,
-  react:            12.9,
-  vue:              12.9,
-  nuxt:             13.0,
+  react:            13.0,
+  vue:              13.0,
+  nuxt:             13.1,
   svelte:           12.3,
-  solid:            12.3,
-  angular:          12.3,
-  astro:            11.9,
+  solid:            12.4,
+  angular:          12.4,
+  astro:            12.0,
   group:             10.1,
   'web-component':   7.6,
   reveal:            5.6,
@@ -79,7 +83,7 @@ const BUDGETS_KB = {
   // when the travel or the runway moved) and measures against its sticky stage.
   horizontal:        5.5,
   timeline:          4.1,
-  text:              3.1,
+  text:              3.2,
   video:             2.7,
   cinematic:         2.3,
   progress:          2.5,
@@ -98,7 +102,7 @@ const BUDGETS_KB = {
  * 18.1 KB); the budget is what keeps the sharing from quietly coming undone.
  */
 const COMBINATIONS = [
-  { names: ['.', 'react'], budget: 14.4 },
+  { names: ['.', 'react'], budget: 14.5 },
 ];
 
 // ── Measure ──────────────────────────────────────────────────────────────────

@@ -400,7 +400,7 @@
   white-space: nowrap;
   font: 11px/1 var(--mono);
   letter-spacing: 0.02em;
-  color: #66635d;
+  color: var(--fg-3);
 }
 
 .home .st-copybtn {
@@ -471,7 +471,7 @@
   color: #a19d95;
   white-space: nowrap;
 }
-.home .st-foot-cmd > span { color: #66635d; }
+.home .st-foot-cmd > span { color: var(--fg-3); }
 .home .st-foot-net {
   font-weight: 500;
   letter-spacing: 0.12em;
@@ -480,16 +480,16 @@
 .home .st-foot-k {
   margin-right: 4px;
   text-transform: uppercase;
-  color: #66635d;
+  color: var(--fg-3);
 }
 
 .home .st-k-f,
 .home .st-k-g,
 .home .st-k-n { color: #ece8e0; }
-.home .st-k-k { color: #7f7a72; }
+.home .st-k-k { color: var(--fg-3); } /* #7f7a72 measured 4.46:1, under AA */
 .home .st-k-s { color: #d4c9b5; }
 .home .st-k-e { color: var(--accent); }
-.home .st-k-c { color: #5f5c56; }
+.home .st-k-c { color: var(--fg-3); } /* #5f5c56 measured 2.89:1 */
 
 /* ── Tablet and up: the whole sheet, with its notes ──────────────────────── */
 

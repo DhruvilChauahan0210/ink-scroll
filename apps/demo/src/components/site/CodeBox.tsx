@@ -15,7 +15,9 @@ export function CodeBox({ file, children }: { file: string; children: string }) 
         <span className="code-meta">{lines.length} {lines.length === 1 ? 'line' : 'lines'}</span>
         <span className="code-copy"><CopyButton text={children} /></span>
       </div>
-      <pre className="code-body">
+      {/* Focusable so a keyboard can scroll a long line into view (axe:
+          scrollable-region-focusable failed on 26 pages). */}
+      <pre className="code-body" tabIndex={0}>
         <code>
           {lines.map((l, i) => (
             <span key={i} className="code-ln">{l}{i < lines.length - 1 ? '\n' : ''}</span>

@@ -77,10 +77,14 @@ describe('scrollText', () => {
     expect(spans.length).toBeGreaterThanOrEqual(2);
   });
 
-  it('sets aria-label on container', () => {
+  // An aria-label is not allowed on a <p>, <span> or <div>, and a screen reader
+  // may skip it; with every split piece aria-hidden it then read nothing.
+  it('keeps the whole text once for screen readers, with no aria-label', () => {
     const el = makeParagraph('Hello world');
     scrollText(el);
-    expect(el.getAttribute('aria-label')).toBe('Hello world');
+    expect(el.hasAttribute('aria-label')).toBe(false);
+    const readable = Array.from(el.querySelectorAll('span')).filter((s) => !s.closest('[aria-hidden="true"]'));
+    expect(readable.map((s) => s.textContent)).toEqual(['Hello world']);
   });
 
   it('sets aria-hidden on word spans', () => {
@@ -98,11 +102,12 @@ describe('scrollText', () => {
     expect(el.innerHTML).toBe(original);
   });
 
-  it('removes aria-label on destroy', () => {
+  it('destroy() leaves an aria-label the page set alone', () => {
     const el = makeParagraph('Hello');
+    el.setAttribute('aria-label', 'Greeting');
     const inst = scrollText(el);
     inst.destroy();
-    expect(el.getAttribute('aria-label')).toBeNull();
+    expect(el.getAttribute('aria-label')).toBe('Greeting');
   });
 
   it('applies opacity at seek(0) from default from', () => {
@@ -233,22 +238,23 @@ describe('scrollText — resize handling', () => {
     vi.advanceTimersByTime(200); // past the 150ms debounce
   }
 
-  it('re-splits lines without losing the accessible name or the markup', () => {
+  it('re-splits lines without losing the screen-reader text or the markup', () => {
     const el = makeParagraph('Hello world foo bar');
     scrollText(el, { split: 'lines' });
+    // What is drawn: the aria-hidden pieces. The screen-reader copy is the rest.
+    const shown = () => Array.from(el.children).filter((c) => c.getAttribute('aria-hidden') === 'true').map((c) => c.textContent).join('');
+    const spoken = () => Array.from(el.children).filter((c) => c.getAttribute('aria-hidden') !== 'true').map((c) => c.textContent);
 
     const before = el.querySelectorAll('span').length;
     expect(before, 'nothing was split to begin with').toBeGreaterThan(0);
     // The gaps between words survive the split itself, not only the re-split.
-    expect(el.textContent, 'the split glued the words together').toBe('Hello world foo bar');
+    expect(shown(), 'the split glued the words together').toBe('Hello world foo bar');
 
     resize();
 
     expect(el.querySelectorAll('span').length, 'the re-split lost the units').toBe(before);
-    expect(el.getAttribute('aria-label'), 'the accessible name was dropped').toBe(
-      'Hello world foo bar',
-    );
-    expect(el.textContent, 'the rendered text changed').toBe('Hello world foo bar');
+    expect(spoken(), 'the screen-reader text was dropped or doubled').toEqual(['Hello world foo bar']);
+    expect(shown(), 'the rendered text changed').toBe('Hello world foo bar');
   });
 
   it('keeps the current progress across a re-split', () => {

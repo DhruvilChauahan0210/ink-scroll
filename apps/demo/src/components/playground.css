@@ -80,7 +80,7 @@
 }
 .site .play .pl-mode:hover { color: var(--fg); border-color: var(--line-2); }
 .site .play .pl-mode[aria-pressed='true'] { background: var(--fg); border-color: var(--fg); color: var(--bg); }
-.site .play .pl-mode span { opacity: 0.6; text-transform: none; letter-spacing: 0.02em; }
+.site .play .pl-mode span { text-transform: none; letter-spacing: 0.02em; } /* no opacity: on --fg-3 even 0.85 measured 3.86:1 */
 .site .play .pl-bar-tags { flex: 1; gap: 6px; flex-wrap: wrap; padding-top: 6px; padding-bottom: 6px; }
 .site .play .pl-bar-tags .tag { color: var(--fg); border-color: color-mix(in srgb, var(--accent) 45%, transparent); background: var(--accent-2); }
 .site .play .pl-bar-empty { letter-spacing: 0.04em; text-transform: none; }

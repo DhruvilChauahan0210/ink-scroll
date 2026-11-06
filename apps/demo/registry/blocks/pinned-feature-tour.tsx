@@ -202,12 +202,13 @@ export function PinnedFeatureTour({
                 <li
                   key={f.title}
                   aria-current={i === current ? 'step' : undefined}
-                  className={`transition-opacity duration-300 motion-reduce:transition-none ${
-                    i === current ? 'opacity-100' : `opacity-[0.35] ${COMPACT_HIDE}`
+                  // Not the current feature: greyed by colour, not opacity, so every feature keeps WCAG AA contrast (at 35% opacity the text measured about 2:1).
+                  className={`transition-colors duration-300 motion-reduce:transition-none ${
+                    i === current ? '' : COMPACT_HIDE
                   }`}
                 >
                   <span className="flex items-center gap-2 font-mono text-xs">
-                    <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-[#ff90e8] font-bold text-neutral-950">
+                    <span className={`inline-flex h-7 w-7 items-center justify-center rounded-full font-bold transition-colors duration-300 motion-reduce:transition-none ${i === current ? 'bg-[#ff90e8] text-neutral-950' : 'bg-neutral-200 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300'}`}>
                       {pad(i + 1)}
                     </span>
                     {/* With one feature on screen, say how many there are. */}
@@ -215,10 +216,10 @@ export function PinnedFeatureTour({
                       of {pad(features.length)}
                     </span>
                   </span>
-                  <h3 className="mt-3 text-2xl font-semibold leading-tight text-neutral-950 dark:text-neutral-50">
+                  <h3 className={`mt-3 text-2xl font-semibold leading-tight ${i === current ? 'text-neutral-950 dark:text-neutral-50' : 'text-neutral-500 dark:text-neutral-400'}`}>
                     {f.title}
                   </h3>
-                  <p className="mt-1.5 max-w-[36ch] leading-relaxed text-neutral-600 dark:text-neutral-400">{f.body}</p>
+                  <p className={`mt-1.5 max-w-[36ch] leading-relaxed ${i === current ? 'text-neutral-600 dark:text-neutral-300' : 'text-neutral-500 dark:text-neutral-400'}`}>{f.body}</p>
                 </li>
               ))}
             </ol>

@@ -139,7 +139,7 @@ of examining a single API in a real browser.
 
 ### Correctness (Phase 2, Priorities 1–3)
 - [x] Browser coverage for `scrollReveal`, `scrollPin`, `scrollSnap`, `scrollText`, `scrollCounter`, `scrollProgress`, `scrollParallax`, `scrollVideo`
-- [x] Mutation harness proving each new test fails against a deliberately broken build (83 mutations)
+- [x] Mutation harness proving each new test fails against a deliberately broken build (84 mutations)
 - [x] A staggered drawing finishes (2.19.1): followed off screen until its last window ends, and fitted to the page's end where the page is too short
 - [x] `scrollPin` `pinDistance: '150vh'` (2.20.0), measured as CSS's vh: follows rotation, not a phone's address bar; numbers stay pixels
 - [x] `scrollHorizontal` — reduced-motion decision (keeps scrubbing), the zero-length-trigger fix, and browser tests
@@ -183,6 +183,8 @@ of examining a single API in a real browser.
 - [x] Share card (og:image) on every indexable page, in the current design — 57 of 64 had none
 - [x] Structured data: `WebSite` + `SoftwareApplication` on home, breadcrumbs on every page, page data on the pages that had none (FAQ/HowTo rich results are limited by Google since 2023; existing ones kept)
 - [x] IndexNow on deploy — `.github/workflows/indexnow.yml` sends the changed sitemap URLs after each production deploy; the sitemap's dates are checked against git in CI (2026-11-06)
+- [x] Every page passes axe (WCAG 2.1 A/AA) and every internal link resolves — `test-a11y.mjs`, in CI (2026-11-06)
+- [x] ~~`/docs` as server-rendered content with client islands~~ — tried 2026-11-06 and reverted: as a Server Component with a client sidebar it shipped 27 KB less JS but 41 KB more HTML (React's server payload repeats the content), and measured the same main-thread work (script 193 → 188 ms, all tasks 895 → 939 ms at CPU 4×, median of 7) with LCP the same or slightly worse. The script time is React, the router, the drawings and the copy buttons, not the content
 - [ ] Bing Webmaster Tools (owner): add the site and watch IndexNow submissions there
 - [x] `/nextjs-scroll-animation` (position 24, the most impressions after home): full App Router example, FAQ, more internal links
 - [x] Ship `"use client"` on `svg-scroll-draw/react` (as the drop-in hooks already do) so Server Components can render `<ScrollDraw>` directly (2.16.1)

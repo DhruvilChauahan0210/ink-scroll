@@ -28,7 +28,7 @@
 | `scrollParallax` | `svg-scroll-draw` | Move any element at a different rate than scroll. Speed multiplier, reverse direction. |
 | `scrollDraw` | `svg-scroll-draw` | The original — scroll-driven SVG path drawing via `stroke-dashoffset`. |
 | `scrollVideo` | `svg-scroll-draw/video` | Tie `<video>.currentTime` to scroll. The Apple/Stripe product-page pattern. |
-| `scrollText` | `svg-scroll-draw/text` | Split text into chars/words/lines and stagger-animate each on scroll. 3.1 KB, nothing else to load. |
+| `scrollText` | `svg-scroll-draw/text` | Split text into chars/words/lines and stagger-animate each on scroll. 3.2 KB, nothing else to load. |
 | `devtools` | `svg-scroll-draw/devtools` | Visual overlay showing every active animation's triggers and progress. Dev-only. |
 | `AOS` | `svg-scroll-draw/aos` | Drop-in replacement for AOS: same `AOS.init()`, same `data-aos` markup, no `aos.css`. |
 | `ScrollReveal` | `svg-scroll-draw/scrollreveal` | Drop-in replacement for ScrollReveal.js 4, MIT instead of GPL-3.0. |
@@ -631,9 +631,9 @@ devtools.highlight('#my-element'); // outline for 2 seconds
 |---|---|
 | `svg-scroll-draw` (main, every core API) | 11.4 KB |
 | `svg-scroll-draw/react` (includes the engine) | 12.9 KB |
-| `svg-scroll-draw` + `svg-scroll-draw/react` (together; the engine ships once) | 14.3 KB |
+| `svg-scroll-draw` + `svg-scroll-draw/react` (together; the engine ships once) | 14.4 KB |
 | `svg-scroll-draw/reveal` | 5.5 KB |
-| `svg-scroll-draw/text` | 3.1 KB |
+| `svg-scroll-draw/text` | 3.2 KB |
 | `svg-scroll-draw/video` | 2.7 KB |
 | `svg-scroll-draw/scrollreveal` | 4.5 KB |
 | `svg-scroll-draw/vivus` | 4.0 KB |

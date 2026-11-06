@@ -86,7 +86,7 @@ export function HomeNav({
       <header ref={nav} className={`nav${open ? ' is-open' : ''}`} data-scrolled={solid ? '' : undefined}>
         <Progress />
         <div className="nav-in">
-          <Link href="/" className="nav-brand" aria-label="svg-scroll-draw home" onClick={() => setOpen(false)}>
+          <Link href="/" className="nav-brand" onClick={() => setOpen(false)}>
             <ScrollDraw className="nav-mark-wrap" autoplay duration={1100} delay={250} easing="ease-in-out" once>
               <svg className="nav-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d="M3 17 C 6 6, 10 6, 12 12 S 18 18, 21 7" />
@@ -94,6 +94,9 @@ export function HomeNav({
             </ScrollDraw>
             <span className="nav-word">svg-scroll-draw</span>
             <span className="nav-ver">v{version}</span>
+            {/* The name is the visible text plus this: an aria-label that left the
+                version out failed axe's label-content-name-mismatch on every page. */}
+            <span className="sr-only"> home</span>
           </Link>
 
           <nav className="nav-links" aria-label="Primary">

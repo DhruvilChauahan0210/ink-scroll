@@ -127,11 +127,14 @@ jobs:
       - name: Build the demo
         run: npm run build -w demo
 
-      - name: Blocks work on /blocks
+      # One server for both: the blocks on /blocks, then every sitemap page
+      # through axe (WCAG 2.1 A and AA) and every internal link and #anchor.
+      - name: Blocks work on /blocks, and every page passes axe and its links
         run: |
           npx next start -p 3100 &
           for i in $(seq 1 60); do curl -sf http://localhost:3100/blocks > /dev/null && break; sleep 1; done
           BASE_URL=http://localhost:3100 node scripts/test-blocks.mjs
+          BASE_URL=http://localhost:3100 node scripts/test-a11y.mjs
         working-directory: apps/demo
 
       - uses: actions/upload-artifact@v7

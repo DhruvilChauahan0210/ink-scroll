@@ -46,7 +46,7 @@ export function PageMap() {
         </svg>
 
         <ScrollDraw className="pm-draw" selector=".pm-ink" autoplay duration={650} delay={200} stagger={0.035} easing="ease-out" once>
-          <svg viewBox="0 0 620 432" role="img" aria-label="A landing page wireframe: headline, hero, a stat, a pinned product shot and three feature cards, each numbered to the quick-start step that animates it">
+          <svg viewBox="0 0 620 432" role="group" aria-label="A landing page wireframe: headline, hero, a stat, a pinned product shot and three feature cards, each numbered to the quick-start step that animates it">
             {/* The browser */}
             <path d={rect(0.5, 0.5, 540, 431)} className="pm-ink" stroke="currentColor" />
             <path d="M0.5 28 H540.5" className="pm-ink pm-thin" stroke="currentColor" />

@@ -50,9 +50,11 @@
     }
 
     .tour-copy { display: grid; gap: 28px; margin: 0; padding: 0; list-style: none; }
-    .tour-copy li { opacity: 0.35; transition: opacity 0.3s ease; }
-    .tour-copy li[aria-current] { opacity: 1; }
-    .tour-n { font: 600 12px/1 ui-monospace, monospace; color: var(--accent); }
+    /* Not the current feature: greyed by colour, not opacity, so it keeps WCAG AA. */
+    .tour-copy li { color: #75695f; transition: color 0.3s ease; }
+    .tour-copy li[aria-current] { color: var(--ink); }
+    .tour-copy li:not([aria-current]) .tour-n { color: inherit; }
+    .tour-n { font: 600 12px/1 ui-monospace, monospace; color: #ae4d26; } /* the accent darkened to AA for small text */
     .tour-copy h3 { margin: 8px 0 6px; font: 600 24px/1.2 system-ui, sans-serif; }
     .tour-copy p { max-width: 36ch; margin: 0; font: 400 16px/1.6 system-ui, sans-serif; }
 
@@ -117,8 +119,8 @@
   <div class="spacer"></div>
 
   <script type="module">
-    import { scrollDraw } from 'https://cdn.jsdelivr.net/npm/svg-scroll-draw@2.20.1/dist/index.mjs';
-    import { scrollPin } from 'https://cdn.jsdelivr.net/npm/svg-scroll-draw@2.20.1/dist/pin/index.mjs';
+    import { scrollDraw } from 'https://cdn.jsdelivr.net/npm/svg-scroll-draw@2.21.0/dist/index.mjs';
+    import { scrollPin } from 'https://cdn.jsdelivr.net/npm/svg-scroll-draw@2.21.0/dist/pin/index.mjs';
 
     const HEADER = 64; // the height of your sticky header
     const stage = document.getElementById('stage');

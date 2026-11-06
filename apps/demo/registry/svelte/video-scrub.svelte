@@ -202,11 +202,12 @@ $effect(() => {
       {#each chapters as chapter, i (chapter.title)}
         <li
           aria-current={i === current ? 'step' : undefined}
-          class="transition-[opacity,visibility] duration-300 motion-reduce:transition-none max-md:motion-safe:col-start-1 max-md:motion-safe:row-start-1 {i === current
+          class="transition-[opacity,visibility,color] duration-300 motion-reduce:transition-none max-md:motion-safe:col-start-1 max-md:motion-safe:row-start-1 {i === current
             ? 'opacity-100'
-            : 'opacity-[0.32] motion-reduce:opacity-100 max-md:motion-safe:invisible max-md:motion-safe:opacity-0'}"
+            : 'text-[#817f7c] motion-reduce:text-[#ece8e1] max-md:motion-safe:invisible max-md:motion-safe:opacity-0'}"
         >
-          <span class="font-mono text-xs font-semibold leading-none text-[#d0a15c]">{String(i + 1).padStart(2, '0')}</span>
+          <!-- Not the current chapter: greyed by colour, not opacity, so it keeps WCAG AA on the dark ground (at 32% opacity it measured under 2:1). -->
+          <span class="font-mono text-xs font-semibold leading-none {i === current ? 'text-[#d0a15c]' : 'text-[#9b7947] motion-reduce:text-[#d0a15c]'}">{String(i + 1).padStart(2, '0')}</span>
           <h3 class="mb-1.5 mt-2 text-2xl font-semibold leading-[1.2]">{chapter.title}</h3>
           <p class="m-0 max-w-[34ch] text-base leading-[1.6]">{chapter.body}</p>
         </li>

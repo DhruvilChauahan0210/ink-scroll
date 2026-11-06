@@ -796,6 +796,15 @@ const MUTATIONS = [
     grep: 'paused and resumed off screen mid-tail',
   },
   {
+    id: 'text/readable',
+    what: 'scrollText splits without a screen-reader copy, so every piece is hidden and nothing is read',
+    file: 'src/text/index.ts',
+    from: '  else spans = splitIntoWords(el);\n  readable(el, text);',
+    to: '  else spans = splitIntoWords(el);',
+    spec: 'text',
+    grep: 'keeps the sentence readable to assistive technology',
+  },
+  {
     id: 'pin/vh-follows',
     what: 'a vh pinDistance is resolved against the first viewport height and never again, as window.innerHeight * n was',
     file: 'src/pin/index.ts',

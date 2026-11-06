@@ -25,8 +25,11 @@
 .film-stage video { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; }
 
 .film-copy { display: grid; gap: 28px; margin: 0; padding: 0; list-style: none; }
-.film-copy li { opacity: 0.32; transition: opacity 0.3s ease; }
-.film-copy li[aria-current] { opacity: 1; }
+/* Not the current chapter: greyed by colour, not opacity, so it keeps WCAG AA
+   (#817f7c is 4.7:1 on the film's ground, the dimmed gold 4.65:1). */
+.film-copy li { color: #817f7c; transition: color 0.3s ease; }
+.film-copy li[aria-current] { color: var(--ink); }
+.film-copy li:not([aria-current]) .film-n { color: #9b7947; }
 .film-n { font: 600 12px/1 ui-monospace, monospace; color: var(--accent); }
 .film-copy h3 { margin: 8px 0 6px; font: 600 24px/1.2 system-ui, sans-serif; }
 .film-copy p { max-width: 34ch; margin: 0; font: 400 16px/1.6 system-ui, sans-serif; }
@@ -40,6 +43,7 @@
 /* Reduced motion shows the film's last frame, so the chapters cannot be
    scrolled through: show them all. */
 @media (prefers-reduced-motion: reduce) {
-  .film-copy li { opacity: 1; transition: none; }
+  .film-copy li { color: var(--ink); transition: none; }
+  .film-copy li:not([aria-current]) .film-n { color: var(--accent); }
   .film-copy li:not([aria-current]) { display: block; }
 }

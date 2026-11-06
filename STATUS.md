@@ -1,8 +1,8 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **2.20.1** — in the working tree, not committed. 2.20.0 is the latest published (`v2.20.0` on `972d705`, the first through npm's trusted publishing)
+> Current version: **2.21.0** — in the working tree, not committed. 2.20.1 is pushed (`975dce6`) but not tagged; 2.20.0 is the latest published (`v2.20.0` on `972d705`, the first through npm's trusted publishing)
 > Tests: **695 unit** across 36 suites · **230 browser tests** per engine (690 runs
-> across Chromium/Firefox/WebKit) · **83 mutations**, each caught by the one test
+> across Chromium/Firefox/WebKit) · **84 mutations**, each caught by the one test
 > named for it · **91.3% line coverage** (gate 90/90/82/82)
 > Bundle: **11.4 KB gzipped** (main entry as shipped files, chunks included; per-API entries from 0.2 KB) · zero runtime dependencies
 > Last updated: 2026-11-06
@@ -163,7 +163,21 @@ at all.
 - [x] `/blog/horizontal-scroll-sections` is a full recipe — a case-study strip: runway matched to the travel, count and rail from `onProgress`, `overflow: clip` + a `focusin` scroll for the keyboard; five pitfalls measured on the file; files in `apps/demo/src/recipes/horizontal-scroll-sections/`; the recipe parts render inside a post's sections
 - [x] The five recipes planned are done (logo, sticky feature section, stat row, scrubbed film, horizontal strip)
 
-### IndexNow and true sitemap dates (2026-11-06; site and CI, in the working tree)
+### 2.21.0 — split text a screen reader can read (2026-11-06; in the working tree)
+
+- [x] `scrollText`: one visually hidden copy of the text after the `aria-hidden` pieces, instead of an `aria-label` ARIA forbids on `<p>`/`<span>`/`<div>` (a screen reader could read nothing); `destroy()` leaves a page's own `aria-label`
+- [x] Tests: unit and browser fixtures count pieces apart from the copy; the browser test reads the accessibility snapshot (sentence exactly once, 3 engines); mutation `text/readable` (84)
+- [x] Sizes: text 3.1 → 3.2 KB (3.17), the entries that include it +0.1 KB, reason in `scripts/size.mjs`
+- [ ] Released
+
+### Accessibility, links and speed of the site (2026-11-06; in the working tree)
+
+- [x] `apps/demo/scripts/test-a11y.mjs` (`npm run test:a11y -w apps/demo`, in CI): axe WCAG 2.1 A/AA on all 64 sitemap pages under reduced motion, plus every internal link and `#anchor` — 0 violations, 0 broken links
+- [x] Fixed: the muted text colour (both themes), 8 dead `/docs` anchors and 4 `/work/…` 404s, names that hid visible text, keyboard-unscrollable code, a `role="img"` hiding links, faded (32–35%) non-current steps in two blocks and two recipes now greyed by colour, and other small contrast misses
+- [x] Speed: Syne no longer preloaded on every page (fonts 86 → 52 KB); LCP 0.66–1.3 s, CLS ≤ 0.002, no scroll frame over 50 ms (4× CPU, mobile 4G)
+- [x] `/docs` as a Server Component: tried 2026-11-06 and reverted: as a Server Component with a client sidebar it shipped 27 KB less JS but 41 KB more HTML (React's server payload repeats the content), and measured the same main-thread work (script 193 → 188 ms, all tasks 895 → 939 ms at CPU 4×, median of 7) with LCP the same or slightly worse. The script time is React, the router, the drawings and the copy buttons, not the content
+
+### IndexNow and true sitemap dates (2026-11-06; site and CI, pushed in `975dce6`)
 
 - [x] `.github/workflows/indexnow.yml` + `apps/demo/scripts/indexnow.mjs`: after each successful production deploy, the sitemap URLs dated on or after the previous deploy's day go to IndexNow (key file `public/cff7b1aad337fe3f2e7de7398f3b57b9.txt`); a manual run with "all" sends all 64
 - [x] `refresh-sitemap-dates.mjs`: uncommitted files count as today, `/docs`, `/examples`, `/blocks` and the strip post read the files behind them, the example group includes the recipes and the framework group its guides; `--check` in verify and CI (full-history checkout). Eleven dates had sat at 2026-11-04 through a day of releases

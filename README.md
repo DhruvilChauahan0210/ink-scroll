@@ -801,12 +801,12 @@ outgrows its budget.
 <!-- size-table:start -->
 | Entry point                          | Raw | Gzipped |
 |--------------------------------------|----:|--------:|
-| `svg-scroll-draw/nuxt`               | 39.4 KB | **13.0 KB** |
-| `svg-scroll-draw/vue`                | 39.2 KB | **12.9 KB** |
-| `svg-scroll-draw/react`              | 39.0 KB | **12.9 KB** |
-| `svg-scroll-draw/angular`            | 37.1 KB | **12.3 KB** |
-| `svg-scroll-draw/solid`              | 36.9 KB | **12.3 KB** |
-| `svg-scroll-draw/svelte`             | 37.2 KB | **12.2 KB** |
+| `svg-scroll-draw/nuxt`               | 39.5 KB | **13.0 KB** |
+| `svg-scroll-draw/vue`                | 39.3 KB | **12.9 KB** |
+| `svg-scroll-draw/react`              | 39.1 KB | **12.9 KB** |
+| `svg-scroll-draw/angular`            | 37.2 KB | **12.3 KB** |
+| `svg-scroll-draw/solid`              | 37.0 KB | **12.3 KB** |
+| `svg-scroll-draw/svelte`             | 37.3 KB | **12.3 KB** |
 | `svg-scroll-draw/astro`              | 35.4 KB | **11.9 KB** |
 | `svg-scroll-draw`                    | 33.5 KB | **11.4 KB** |
 | `dist/cdn/svg-scroll-draw.global.js` | 32.7 KB | **11.4 KB** |
@@ -822,7 +822,7 @@ outgrows its budget.
 | `svg-scroll-draw/vivus`              | 11.2 KB | **4.0 KB** |
 | `dist/cdn/vivus.global.js`           | 10.7 KB | **3.8 KB** |
 | `svg-scroll-draw/aos/react`          | 8.6 KB | **3.2 KB** |
-| `svg-scroll-draw/text`               | 7.3 KB | **3.1 KB** |
+| `svg-scroll-draw/text`               | 7.4 KB | **3.2 KB** |
 | `dist/cdn/aos.global.js`             | 8.3 KB | **3.1 KB** |
 | `svg-scroll-draw/aos`                | 8.3 KB | **3.1 KB** |
 | `svg-scroll-draw/video`              | 5.8 KB | **2.7 KB** |
@@ -833,7 +833,7 @@ outgrows its budget.
 | `svg-scroll-draw/pin`                | 3.7 KB | **1.6 KB** |
 | `svg-scroll-draw/lenis`              | 0.4 KB | **0.2 KB** |
 
-Entries share code through chunks instead of each carrying its own copy, so `svg-scroll-draw` + `svg-scroll-draw/react` together is **14.3 KB**, not 11.4 KB + 12.9 KB.
+Entries share code through chunks instead of each carrying its own copy, so `svg-scroll-draw` + `svg-scroll-draw/react` together is **14.4 KB**, not 11.4 KB + 12.9 KB.
 <!-- size-table:end -->
 
 The framework entries are larger because each re-exports the full API surface for that

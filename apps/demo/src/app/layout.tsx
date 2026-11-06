@@ -20,11 +20,16 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+// Not preloaded: the site's own pages set --font-display back to the sans
+// (site.css), so Syne is only drawn by the homepage's live-stats chapter, below
+// the fold, and by 8 of the showcase sites. Preloaded from this root layout it
+// went out on every page, ahead of the fonts the first screen needs.
 const syne = Syne({
   variable: "--font-syne",
   subsets: ["latin"],
   weight: ["700", "800"],
   display: "block",
+  preload: false,
 });
 
 const SITE_URL = "https://svg-scroll-draw.vercel.app";

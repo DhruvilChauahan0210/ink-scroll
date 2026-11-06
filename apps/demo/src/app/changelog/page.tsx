@@ -55,6 +55,15 @@ const KINDS: { k: Kind; label: string }[] = [
  */
 const RELEASES: Release[] = [
   {
+    version: '2.21.0',
+    title: 'Split text a screen reader can read',
+    date: '2026-11-06',
+    items: [
+      { type: 'fix', text: 'scrollText put the whole text in an aria-label on the element and hid every split piece, but ARIA forbids aria-label on a <p>, <span> or <div>, so a screen reader could read nothing. The text now goes in one visually hidden span the reader reads; the accessibility tree carries it exactly once. el.textContent now holds the text twice, and destroy() leaves an aria-label the page set alone.' },
+      { type: 'test', text: 'Found by the site’s new axe check of every page. Accessibility-snapshot test in three engines, mutation text/readable (84 in all). The text entry is 3.2 KB.' },
+    ],
+  },
+  {
     version: '2.20.1',
     title: 'Resuming off screen finishes the drawing',
     date: '2026-11-06',
