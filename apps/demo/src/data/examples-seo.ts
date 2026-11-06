@@ -57,7 +57,7 @@ export const EXAMPLE_SEO: Record<string, ExampleSeo> = {
     slug: 'line-chart',
     title: 'SVG Line Chart Animation on Scroll (No Library)',
     description:
-      'Animate a line chart as it scrolls into view — the grid and axes first, then two years of data tracing in, this year\'s in the accent. Copy-paste code, zero chart dependencies.',
+      'Animate a line chart as it scrolls into view: the grid and axes first, then two years of data tracing in. Copy-paste code, no chart library.',
     heading: 'Line chart that draws on scroll',
     intro:
       'Animated charts usually mean pulling in a charting library, or hand-rolling a requestAnimationFrame loop that fights the scroll position. Neither is necessary when the chart is already an SVG path. This example sequences two draws — the axes settle first, then two years of revenue trace across them, last year\'s in grey and this year\'s in the accent, staggered so the eye reads them in order.',

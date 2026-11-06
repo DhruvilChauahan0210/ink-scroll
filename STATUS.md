@@ -1,6 +1,6 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **2.21.0** — in the working tree, not committed. 2.20.1 is pushed (`975dce6`) but not tagged; 2.20.0 is the latest published (`v2.20.0` on `972d705`, the first through npm's trusted publishing)
+> Current version: **2.21.0** — pushed (`140ae6c`), not tagged. 2.20.1 is pushed (`975dce6`), not tagged either; 2.20.0 is the latest published (`v2.20.0` on `972d705`, the first through npm's trusted publishing)
 > Tests: **695 unit** across 36 suites · **230 browser tests** per engine (690 runs
 > across Chromium/Firefox/WebKit) · **84 mutations**, each caught by the one test
 > named for it · **91.3% line coverage** (gate 90/90/82/82)
@@ -163,14 +163,19 @@ at all.
 - [x] `/blog/horizontal-scroll-sections` is a full recipe — a case-study strip: runway matched to the travel, count and rail from `onProgress`, `overflow: clip` + a `focusin` scroll for the keyboard; five pitfalls measured on the file; files in `apps/demo/src/recipes/horizontal-scroll-sections/`; the recipe parts render inside a post's sections
 - [x] The five recipes planned are done (logo, sticky feature section, stat row, scrubbed film, horizontal strip)
 
-### 2.21.0 — split text a screen reader can read (2026-11-06; in the working tree)
+### 2.21.0 — split text a screen reader can read (2026-11-06; pushed in `140ae6c`, not tagged)
 
 - [x] `scrollText`: one visually hidden copy of the text after the `aria-hidden` pieces, instead of an `aria-label` ARIA forbids on `<p>`/`<span>`/`<div>` (a screen reader could read nothing); `destroy()` leaves a page's own `aria-label`
 - [x] Tests: unit and browser fixtures count pieces apart from the copy; the browser test reads the accessibility snapshot (sentence exactly once, 3 engines); mutation `text/readable` (84)
 - [x] Sizes: text 3.1 → 3.2 KB (3.17), the entries that include it +0.1 KB, reason in `scripts/size.mjs`
 - [ ] Released
 
-### Accessibility, links and speed of the site (2026-11-06; in the working tree)
+### SEO check and an accessibility post (2026-11-06; in the working tree)
+
+- [x] `apps/demo/scripts/test-seo.mjs` (`npm run test:seo -w apps/demo`, in CI): every sitemap page's title (≤ 60, unique), description (50–160, unique), canonical, one `<h1>`, `lang`, no `noindex`, OG/Twitter tags with a loading image, JSON-LD that parses, 2+ inbound links — 65 pages, 0 problems after shortening `/examples/line-chart`'s description (175 → 140)
+- [x] Post `/blog/accessible-split-text-animation`: the `aria-label` pattern ARIA 1.2 forbids on a paragraph (GSAP SplitText's default), the visually hidden copy `scrollText` uses since 2.21.0, the `ariaSnapshot()` check; passes axe and the SEO check
+
+### Accessibility, links and speed of the site (2026-11-06; pushed in `140ae6c`)
 
 - [x] `apps/demo/scripts/test-a11y.mjs` (`npm run test:a11y -w apps/demo`, in CI): axe WCAG 2.1 A/AA on all 64 sitemap pages under reduced motion, plus every internal link and `#anchor` — 0 violations, 0 broken links
 - [x] Fixed: the muted text colour (both themes), 8 dead `/docs` anchors and 4 `/work/…` 404s, names that hid visible text, keyboard-unscrollable code, a `role="img"` hiding links, faded (32–35%) non-current steps in two blocks and two recipes now greyed by colour, and other small contrast misses

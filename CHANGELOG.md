@@ -8,6 +8,20 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### Site
 
+- **What a crawler reads is checked on every page.** `apps/demo/scripts/test-seo.mjs`
+  (`npm run test:seo`, in CI with the blocks and axe checks) reads the
+  server-rendered HTML of every sitemap page: a title of at most 60
+  characters and unique, a meta description of 50–160 and unique, a canonical
+  that is the page's own absolute URL, exactly one `<h1>`, `<html lang>`, no
+  `noindex`, Open Graph and Twitter tags with a preview image that loads, JSON-LD
+  that parses, and every page linked from at least two others. One page failed:
+  `/examples/line-chart`'s description ran to 175 characters and is now 140.
+- **New post: Split-text animation a screen reader can read**
+  (`/blog/accessible-split-text-animation`). Why the common `aria-label` on a
+  split paragraph breaks — WAI-ARIA 1.2 §5.2.8.6 forbids naming `generic` and
+  `paragraph`; GSAP's SplitText does it by default — and the visually hidden
+  copy `scrollText` uses since 2.21.0, with the Playwright `ariaSnapshot()`
+  check. In the index, RSS, sitemap and related links.
 - **Every page passes axe (WCAG 2.1 A and AA), and every internal link
   resolves.** `apps/demo/scripts/test-a11y.mjs` runs axe on all 64 sitemap
   pages in Chromium, before and after scrolling, under reduced motion so every

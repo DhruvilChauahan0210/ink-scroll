@@ -115,6 +115,7 @@
 - [x] "Scroll-driven path morphing with morphTo" — `/blog/scroll-path-morphing`
 - [x] "5 scroll animation patterns in under 10 lines" — `/blog/5-patterns-under-10-lines`
 - [x] "Replace GSAP ScrollTrigger with scrollAnimate" — `/blog/replace-gsap-scrolltrigger`
+- [x] "Split-text animation a screen reader can read" — `/blog/accessible-split-text-animation` (2026-11-06)
 
 ---
 
@@ -184,6 +185,7 @@ of examining a single API in a real browser.
 - [x] Structured data: `WebSite` + `SoftwareApplication` on home, breadcrumbs on every page, page data on the pages that had none (FAQ/HowTo rich results are limited by Google since 2023; existing ones kept)
 - [x] IndexNow on deploy — `.github/workflows/indexnow.yml` sends the changed sitemap URLs after each production deploy; the sitemap's dates are checked against git in CI (2026-11-06)
 - [x] Every page passes axe (WCAG 2.1 A/AA) and every internal link resolves — `test-a11y.mjs`, in CI (2026-11-06)
+- [x] Every page gives a crawler a full set: title, description, canonical, one h1, preview image, JSON-LD, two or more inbound links — `test-seo.mjs`, in CI (2026-11-06)
 - [x] ~~`/docs` as server-rendered content with client islands~~ — tried 2026-11-06 and reverted: as a Server Component with a client sidebar it shipped 27 KB less JS but 41 KB more HTML (React's server payload repeats the content), and measured the same main-thread work (script 193 → 188 ms, all tasks 895 → 939 ms at CPU 4×, median of 7) with LCP the same or slightly worse. The script time is React, the router, the drawings and the copy buttons, not the content
 - [ ] Bing Webmaster Tools (owner): add the site and watch IndexNow submissions there
 - [x] `/nextjs-scroll-animation` (position 24, the most impressions after home): full App Router example, FAQ, more internal links

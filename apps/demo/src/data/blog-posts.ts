@@ -19,6 +19,17 @@ export type BlogPost = {
 
 export const POSTS: BlogPost[] = [
   {
+    slug: 'accessible-split-text-animation',
+    title: 'Split-text animation a screen reader can read',
+    description:
+      'Animate a headline word by word without hiding it from screen readers: why an aria-label on a <p> breaks under ARIA 1.2, and the visually hidden copy that holds up.',
+    tag: 'Accessibility',
+    tagColor: '#8b5cf6',
+    readTime: '5 min read',
+    date: 'November 2026',
+    published: '2026-11-06',
+  },
+  {
     slug: 'complete-guide-scroll-animations-2026',
     title: 'The complete guide to scroll animations in 2026',
     description:
