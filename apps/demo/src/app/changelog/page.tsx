@@ -55,6 +55,15 @@ const KINDS: { k: Kind; label: string }[] = [
  */
 const RELEASES: Release[] = [
   {
+    version: '2.20.1',
+    title: 'Resuming off screen finishes the drawing',
+    date: '2026-11-06',
+    items: [
+      { type: 'fix', text: 'A staggered drawing paused and resumed after it had left the screen mid-tail froze its later paths (1, 0.95, 0.7, 0.45) and never fired onComplete: resume() restarted the loop only on screen. resume(), replay() and refresh() now restart it whenever a path is still mid-window.' },
+      { type: 'test', text: 'Found by a browser review of 2.19.1–2.20.0. A browser test in all three engines and a mutation (83 in all).' },
+    ],
+  },
+  {
     version: '2.20.0',
     title: 'Pin for screens, not pixels',
     date: '2026-11-06',

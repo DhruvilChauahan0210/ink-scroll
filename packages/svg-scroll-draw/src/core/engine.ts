@@ -1021,6 +1021,16 @@ export function createEngine(
     else looping = false;
   }
 
+  /**
+   * Whether the loop has work to do now: the same rule as next(). resume(),
+   * replay() and refresh() restarted it only on screen, so pausing and resuming
+   * a drawing that had left the screen mid-tail froze its later paths short of
+   * 1 (measured 1 / 0.95 / 0.7 / 0.45) and onComplete never fired.
+   */
+  function live(): boolean {
+    return isVisible || inStaggerTail(scrollPos());
+  }
+
   // ── IntersectionObserver ──────────────────────────────────────────────────
 
   // A single rafId was previously written from both here and the tail of
@@ -1131,7 +1141,7 @@ export function createEngine(
       resetPaths();
       // Wound back to zero without the scroll position changing.
       dirty = true;
-      if (isVisible) startLoop();
+      if (live()) startLoop();
     },
 
     pause() {
@@ -1143,7 +1153,7 @@ export function createEngine(
       if (!paused) return;
       paused = false;
       dirty  = true;
-      if (isVisible) startLoop();
+      if (live()) startLoop();
     },
 
     seek(progress: number) {
@@ -1172,7 +1182,7 @@ export function createEngine(
     refresh() {
       clearTimeout(resizeTimer);
       remeasure();
-      if (isVisible && !paused) startLoop();
+      if (live() && !paused) startLoop();
     },
   }, () => ({ tStart, tEnd }));
 }

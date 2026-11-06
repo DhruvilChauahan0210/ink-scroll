@@ -35,7 +35,7 @@ Works in **React · Next.js · Vue 3 · Svelte · Solid · Angular · Nuxt · As
 - **Group / Sequence / Timeline APIs** — animate multiple containers simultaneously, one-after-another, or on independent scroll windows with `loop` for auto-looping after scroll completion
 - **CSS custom property** — `--scroll-draw-progress` is set on every frame so you can drive any CSS animation without a callback
 - **695 tests across 36 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
-- **229 browser tests on top of those**, run against Chromium, Firefox and WebKit in CI. The unit suite runs in jsdom, where `getTotalLength` is stubbed and `IntersectionObserver` is faked — it can check the engine's arithmetic but nothing about real browser behaviour. Both counts are derived from the suites themselves and enforced in CI, so neither can quietly drift out of date
+- **230 browser tests on top of those**, run against Chromium, Firefox and WebKit in CI. The unit suite runs in jsdom, where `getTotalLength` is stubbed and `IntersectionObserver` is faked — it can check the engine's arithmetic but nothing about real browser behaviour. Both counts are derived from the suites themselves and enforced in CI, so neither can quietly drift out of date
 
 ---
 
@@ -802,12 +802,12 @@ outgrows its budget.
 | Entry point                          | Raw | Gzipped |
 |--------------------------------------|----:|--------:|
 | `svg-scroll-draw/nuxt`               | 39.4 KB | **13.0 KB** |
-| `svg-scroll-draw/vue`                | 39.1 KB | **12.9 KB** |
-| `svg-scroll-draw/react`              | 38.9 KB | **12.8 KB** |
+| `svg-scroll-draw/vue`                | 39.2 KB | **12.9 KB** |
+| `svg-scroll-draw/react`              | 39.0 KB | **12.9 KB** |
 | `svg-scroll-draw/angular`            | 37.1 KB | **12.3 KB** |
-| `svg-scroll-draw/solid`              | 36.9 KB | **12.2 KB** |
+| `svg-scroll-draw/solid`              | 36.9 KB | **12.3 KB** |
 | `svg-scroll-draw/svelte`             | 37.2 KB | **12.2 KB** |
-| `svg-scroll-draw/astro`              | 35.3 KB | **11.9 KB** |
+| `svg-scroll-draw/astro`              | 35.4 KB | **11.9 KB** |
 | `svg-scroll-draw`                    | 33.5 KB | **11.4 KB** |
 | `dist/cdn/svg-scroll-draw.global.js` | 32.7 KB | **11.4 KB** |
 | `svg-scroll-draw/group`              | 30.1 KB | **10.0 KB** |
@@ -833,7 +833,7 @@ outgrows its budget.
 | `svg-scroll-draw/pin`                | 3.7 KB | **1.6 KB** |
 | `svg-scroll-draw/lenis`              | 0.4 KB | **0.2 KB** |
 
-Entries share code through chunks instead of each carrying its own copy, so `svg-scroll-draw` + `svg-scroll-draw/react` together is **14.3 KB**, not 11.4 KB + 12.8 KB.
+Entries share code through chunks instead of each carrying its own copy, so `svg-scroll-draw` + `svg-scroll-draw/react` together is **14.3 KB**, not 11.4 KB + 12.9 KB.
 <!-- size-table:end -->
 
 The framework entries are larger because each re-exports the full API surface for that

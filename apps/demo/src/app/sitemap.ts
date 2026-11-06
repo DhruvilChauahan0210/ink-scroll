@@ -11,9 +11,9 @@ const SITE_URL = "https://svg-scroll-draw.vercel.app";
 // Pages generated from data share one date per group: the last commit to the
 // template, its component or its data file. `npm run sitemap:dates` rewrites
 // these alongside the literal entries below — never type them by hand.
-const FRAMEWORK_PAGES_DATE = "2026-11-04";
+const FRAMEWORK_PAGES_DATE = "2026-11-06";
 const VERSUS_PAGES_DATE = "2026-11-04";
-const EXAMPLE_PAGES_DATE = "2026-11-04";
+const EXAMPLE_PAGES_DATE = "2026-11-06";
 const GUIDE_PAGES_DATE = "2026-11-04";
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -27,19 +27,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${SITE_URL}/docs`,
-      lastModified: new Date("2026-11-04"),
+      lastModified: new Date("2026-11-06"),
       changeFrequency: "weekly",
       priority: 0.9,
     },
     {
       url: `${SITE_URL}/examples`,
-      lastModified: new Date("2026-11-04"),
+      lastModified: new Date("2026-11-05"),
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
       url: `${SITE_URL}/blocks`,
-      lastModified: new Date("2026-11-04"),
+      lastModified: new Date("2026-11-06"),
       changeFrequency: "monthly",
       priority: 0.8,
     },
@@ -51,7 +51,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${SITE_URL}/changelog`,
-      lastModified: new Date("2026-11-04"),
+      lastModified: new Date("2026-11-06"),
       changeFrequency: "monthly",
       priority: 0.5,
     },
@@ -59,13 +59,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // ── Framework landing pages ─────────────────────────────────────────────
     {
       url: `${SITE_URL}/react-scroll-animation`,
-      lastModified: new Date("2026-11-04"),
+      lastModified: new Date("2026-11-06"),
       changeFrequency: "monthly",
       priority: 0.9,
     },
     {
       url: `${SITE_URL}/nextjs-scroll-animation`,
-      lastModified: new Date("2026-11-04"),
+      lastModified: new Date("2026-11-06"),
       changeFrequency: "monthly",
       priority: 0.9,
     },
@@ -164,7 +164,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${SITE_URL}/blog/complete-guide-scroll-animations-2026`,
-      lastModified: new Date("2026-11-04"),
+      lastModified: new Date("2026-11-06"),
       changeFrequency: "monthly",
       priority: 0.8,
     },
@@ -182,13 +182,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${SITE_URL}/blog/horizontal-scroll-sections`,
-      lastModified: new Date("2026-11-01"),
+      lastModified: new Date("2026-11-06"),
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
       url: `${SITE_URL}/blog/scroll-pin-without-gsap`,
-      lastModified: new Date("2026-11-04"),
+      lastModified: new Date("2026-11-06"),
       changeFrequency: "monthly",
       priority: 0.8,
     },

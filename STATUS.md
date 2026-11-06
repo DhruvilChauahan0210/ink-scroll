@@ -1,8 +1,8 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **2.20.0** — published (npm `latest`, GitHub's latest release; `v2.20.0` on `972d705`), the first release through npm's trusted publishing
-> Tests: **695 unit** across 36 suites · **229 browser tests** per engine (687 runs
-> across Chromium/Firefox/WebKit) · **82 mutations**, each caught by the one test
+> Current version: **2.20.1** — in the working tree, not committed. 2.20.0 is the latest published (`v2.20.0` on `972d705`, the first through npm's trusted publishing)
+> Tests: **695 unit** across 36 suites · **230 browser tests** per engine (690 runs
+> across Chromium/Firefox/WebKit) · **83 mutations**, each caught by the one test
 > named for it · **91.3% line coverage** (gate 90/90/82/82)
 > Bundle: **11.4 KB gzipped** (main entry as shipped files, chunks included; per-API entries from 0.2 KB) · zero runtime dependencies
 > Last updated: 2026-11-06
@@ -53,7 +53,7 @@
 - [x] Initial state fix — `createAnimateEngine` and `scrollCounter` now apply correct alpha immediately on init (no flash before IO fires)
 
 ### Browser tests (Phase 2, `packages/svg-scroll-draw/e2e`)
-229 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
+230 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
 `helpers.ts` (deterministic sweep — scroll to a fixed offset, wait two frames,
 read) and `fixtures/_probe.mjs` (parsing stays in the page, so specs assert on
 numbers).
@@ -162,6 +162,19 @@ at all.
 - [x] `/examples/scroll-video` is a full recipe — pinned film in a sticky stage measured with `triggerElement` (2.18.0); keyframe interval and Range requests measured; files in `apps/demo/src/recipes/scroll-video/`
 - [x] `/blog/horizontal-scroll-sections` is a full recipe — a case-study strip: runway matched to the travel, count and rail from `onProgress`, `overflow: clip` + a `focusin` scroll for the keyboard; five pitfalls measured on the file; files in `apps/demo/src/recipes/horizontal-scroll-sections/`; the recipe parts render inside a post's sections
 - [x] The five recipes planned are done (logo, sticky feature section, stat row, scrubbed film, horizontal strip)
+
+### IndexNow and true sitemap dates (2026-11-06; site and CI, in the working tree)
+
+- [x] `.github/workflows/indexnow.yml` + `apps/demo/scripts/indexnow.mjs`: after each successful production deploy, the sitemap URLs dated on or after the previous deploy's day go to IndexNow (key file `public/cff7b1aad337fe3f2e7de7398f3b57b9.txt`); a manual run with "all" sends all 64
+- [x] `refresh-sitemap-dates.mjs`: uncommitted files count as today, `/docs`, `/examples`, `/blocks` and the strip post read the files behind them, the example group includes the recipes and the framework group its guides; `--check` in verify and CI (full-history checkout). Eleven dates had sat at 2026-11-04 through a day of releases
+- [ ] Owner, after the push: Actions → IndexNow → Run workflow with "all" once, to send all 64 pages (the 35 "Discovered – not indexed" among them); and add the site to Bing Webmaster Tools
+
+### 2.20.1 — resuming off screen finishes the drawing (2026-11-06; in the working tree)
+
+- [x] A review of 2.19.1–2.20.0 in a real browser: `once`, `repeat`, `autoReverse`, `refresh()`, `replay()`, a horizontal container and a page loaded mid-tail behave; the pin `vh` probe gives 1.5 × CSS vh in all three engines under a transformed, zoomed or filtered `body`, and is always removed
+- [x] Fixed: `resume()` (and `replay()`, `refresh()`) restarted the loop only on screen, so a staggered drawing paused and resumed off screen mid-tail froze (1 / 0.95 / 0.7 / 0.45) and `onComplete` never fired; they now use `live()`, the rule `next()` uses
+- [x] Tests: browser test (3 engines), mutation `stagger/resume-tail` (83)
+- [ ] Released
 
 ### 2.20.0 — pin for screens, not pixels (2026-11-06)
 

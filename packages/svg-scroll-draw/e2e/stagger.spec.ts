@@ -95,6 +95,19 @@ test.describe('a staggered drawing near the end of the page', () => {
     expect(await call<number>(page, 'completes')).toBe(1);
   });
 
+  test('paused and resumed off screen mid-tail, the drawing still finishes', async ({ page }) => {
+    // resume() restarted the loop only on screen. At 1600 the drawing has left
+    // (it is off screen from 1400) with paths 2 and 3 mid-window; on 2.20.0 a
+    // pause and resume there froze them at 0.7 and 0.45 for good.
+    await openFixture(page, 'stagger-end.html?tail=1800&trigger=default');
+    await at(page, 1600);
+    await call(page, 'call', 'pause');
+    await call(page, 'call', 'resume');
+    const end = await at(page, 2400);
+    end.forEach((f, i) => expect(f, `path ${i}: ${end.map((v) => v.toFixed(3))}`).toBeCloseTo(1, 2));
+    expect(await call<number>(page, 'completes')).toBe(1);
+  });
+
   test('a trigger whose own end is past the page is left as written', async ({ page }) => {
     // tail=400: the page scrolls to 1000, before trigger.end (1200). Nothing can
     // finish, with or without stagger, so the stagger is not the cause and stays.

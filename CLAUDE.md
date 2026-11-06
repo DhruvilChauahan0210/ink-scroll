@@ -28,6 +28,14 @@ and fails when a doc disagrees; `npm run size` does the same for bundle figures.
 Run them instead of editing a number by hand — CI enforces both. The counts live
 in `README.md`, `STATUS.md`, the demo's opengraph image and its React landing page.
 
+## Sitemap dates come from git, and verify checks them
+
+`apps/demo/src/app/sitemap.ts` holds each page's last-commit date as a literal
+(Vercel's shallow clone cannot run `git log`). After changing a page, run
+`npm run sitemap:dates --workspace=apps/demo` before committing: uncommitted
+files count as changed today. `verify` and CI fail on a stale date, because
+Google and the IndexNow workflow read these dates to find what changed.
+
 ## The browser suite tests the built output, not `src/`
 
 `packages/svg-scroll-draw/e2e` fixtures import `/dist/...` — the same files that

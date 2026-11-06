@@ -399,6 +399,18 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### CI
 
+- **IndexNow after every production deploy.** When Vercel reports a production
+  deploy as live, `.github/workflows/indexnow.yml` sends the sitemap URLs dated
+  on or after the previous deploy's day to IndexNow, which Bing, Yandex, Seznam
+  and Naver read; a manual run with "all" sends all 64 (35 sat as "Discovered
+  – not indexed" in Search Console). The key file is in `apps/demo/public/`.
+- **The sitemap's dates are checked against git.** They are literals written by
+  `npm run sitemap:dates`, which nothing ran after 2026-11-04, so eleven pages
+  changed through a day of releases still said 4 November. The script now
+  counts uncommitted files as today, reads the files behind `/docs`,
+  `/examples`, `/blocks`, the example pages (the recipes) and the framework
+  pages (their guides), and its `--check` runs in `verify` and CI, which now
+  checks out full history for it.
 - **CI runs on Node 22 and 24, and no job can hang for 6 hours.** Node 20 left
   support in April 2026 and Vercel builds the site on 24; `@types/node` moves
   to ^22 with the oldest version tested (checked locally under Node 24.22.2:
@@ -452,6 +464,27 @@ All notable changes to `svg-scroll-draw` are documented here.
   allowed, followed by `check-jsx-text` and `check-nav`.
 
 ---
+
+## [2.20.1] — 2026-11-06
+
+### Fixed
+
+- **A staggered drawing resumed off screen finishes.** Since 2.19.1 the engine
+  keeps following the scroll off screen until the last staggered window ends,
+  but `resume()` restarted the loop only on screen: paused and resumed after
+  the drawing had left mid-tail, its later paths froze (measured 1, 0.95, 0.7,
+  0.45) and `onComplete` never fired. `resume()`, `replay()` and `refresh()`
+  now restart it by the same rule as the running loop. Found by a review of
+  2.19.1–2.20.0 in a real browser, which also checked `once`, `repeat`,
+  `autoReverse`, a horizontal container and a page loaded mid-tail, and the
+  pin `vh` probe in all three engines under a transformed, zoomed or filtered
+  `body`: all as intended.
+
+### Tests
+
+- A browser test that pauses and resumes off screen mid-tail, in all three
+  browsers; mutation `stagger/resume-tail`, 83 in all. 695 unit / 230 browser
+  tests per engine.
 
 ## [2.20.0] — 2026-11-06
 

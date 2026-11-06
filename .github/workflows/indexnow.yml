@@ -1,0 +1,47 @@
+name: IndexNow
+
+# Tells the IndexNow search engines (Bing, Yandex, Seznam, Naver and the rest)
+# which pages changed, as soon as Vercel reports a production deploy as live.
+# The pages are the sitemap URLs whose date is on or after the previous
+# production deploy's day (apps/demo/scripts/indexnow.mjs); the sitemap's dates
+# are kept true to git by `refresh-sitemap-dates.mjs --check` in CI.
+#
+# Run it by hand with "all" to send every sitemap URL once (a catch-up after
+# pages sat as "Discovered – not indexed").
+
+on:
+  deployment_status:
+  workflow_dispatch:
+    inputs:
+      all:
+        description: 'Send every sitemap URL, not only the changed ones'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  # Reads the previous production deployment's date.
+  deployments: read
+
+jobs:
+  ping:
+    name: Send changed pages
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.deployment_status.state == 'success' &&
+       github.event.deployment.environment == 'Production')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      # No install: the script uses only Node's own fetch.
+      - name: Send to IndexNow
+        run: node apps/demo/scripts/indexnow.mjs ${{ inputs.all && '--all' || '' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

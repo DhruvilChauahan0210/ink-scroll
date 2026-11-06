@@ -68,6 +68,8 @@ publish({
   completes: () => completes,
   progress: () => inst.getProgress(),
   growTail: (px) => { document.getElementById('tail').style.height = `${px}px`; },
+  /** pause, resume, refresh, replay on the instance. */
+  call: (method) => inst[method](),
 });
 </script>
 </body>

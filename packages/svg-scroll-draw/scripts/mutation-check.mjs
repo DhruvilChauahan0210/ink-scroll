@@ -787,6 +787,15 @@ const MUTATIONS = [
     grep: 'with the default trigger, the paths still drawing',
   },
   {
+    id: 'stagger/resume-tail',
+    what: 'resume() restarts the loop only on screen, so a drawing resumed off screen mid-tail freezes',
+    file: 'src/core/engine.ts',
+    from: '      paused = false;\n      dirty  = true;\n      if (live()) startLoop();',
+    to: '      paused = false;\n      dirty  = true;\n      if (isVisible) startLoop();',
+    spec: 'stagger',
+    grep: 'paused and resumed off screen mid-tail',
+  },
+  {
     id: 'pin/vh-follows',
     what: 'a vh pinDistance is resolved against the first viewport height and never again, as window.innerHeight * n was',
     file: 'src/pin/index.ts',

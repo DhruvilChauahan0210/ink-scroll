@@ -1,8 +1,26 @@
 # Next Session Plan — svg-scroll-draw
 
-> Updated: 2026-11-06 — **2.20.0 published** (`v2.20.0` on `972d705`: `scrollPin` `pinDistance: '150vh'`; the first release through npm's trusted publishing — `_npmUser` is GitHub Actions). **2.19.1 published** (`v2.19.1` on `2f7b711`: a staggered drawing finishes; Playwright 1.65.0; npm `latest`). **2.19.0 published** (`v2.19.0` on `f131f9c`: every engine follows the page; live wrapper options; Vue and Svelte blocks). Dependencies updated in `660f363` (site and tooling only). **2.18.1 published** (`v2.18.1` on `70c91cd`: `scrollHorizontal` follows the layout and measures against its sticky stage; the horizontal strip recipe, the fifth and last planned). **2.18.0 published** (`v2.18.0` on `1840983`: `scrollVideo` `triggerElement`; four recipes). **2.17.1 published** (`v2.17.1` on `ed77b58`: `once` keeps `stagger`; the logo example is a full recipe). Recipe 2, the pinned feature tour on `/examples/scroll-pin`, is done (site-only). **2.17.0 published** (`v2.17.0` on `d7b03b2`: the React, Vue, Nuxt, Solid and Svelte wrappers follow option changes, Angular gets `update()` for `ngOnChanges`). **2.16.1 published** (`v2.16.1` on `b3eb52a`) (`svg-scroll-draw/react` ships `"use client"` so Server Components render `<ScrollDraw>` directly; all 56 mutations run again). **2.16.0 published** (`v2.16.0` on `fde9f4c`: ES module entries share code through chunks — main + react 18.1 → 13.2 KB; the drop-ins share one instance with their React hooks; size tables generated; main entry 10.7 KB as shipped files). **2.15.3 published** (`v2.15.3` on `acc9acc`: scrollReveal's `stagger` is a fraction of the reveal window, per row, on top of a custom trigger; 2.15.2 before it kept scrollVideo's end frame under reduced motion). Every page is linked from every page (nav "More", phone menu, footer index — `components/site/sitemap.ts`, guarded by `check-nav`). Sitemap dates come from git for every URL, generated groups included — Search Console (2026-11-04) had 20 indexed, 35 "Discovered – not indexed" (never crawled), 2 "Crawled – not indexed". The native CSS path is no longer described as compositor work anywhere, and `/vs-aos` quotes the reveal entry and the real presets. Every page is on the homepage design and all 23 showcase sites are live — in `32f3409`, on `main`.
+> Updated: 2026-11-06 — **2.20.1 in the working tree** (resume() off screen mid-tail finishes the drawing; found by a browser review of 2.19.1–2.20.0; not committed). **2.20.0 published** (`v2.20.0` on `972d705`: `scrollPin` `pinDistance: '150vh'`; the first release through npm's trusted publishing — `_npmUser` is GitHub Actions). **2.19.1 published** (`v2.19.1` on `2f7b711`: a staggered drawing finishes; Playwright 1.65.0; npm `latest`). **2.19.0 published** (`v2.19.0` on `f131f9c`: every engine follows the page; live wrapper options; Vue and Svelte blocks). Dependencies updated in `660f363` (site and tooling only). **2.18.1 published** (`v2.18.1` on `70c91cd`: `scrollHorizontal` follows the layout and measures against its sticky stage; the horizontal strip recipe, the fifth and last planned). **2.18.0 published** (`v2.18.0` on `1840983`: `scrollVideo` `triggerElement`; four recipes). **2.17.1 published** (`v2.17.1` on `ed77b58`: `once` keeps `stagger`; the logo example is a full recipe). Recipe 2, the pinned feature tour on `/examples/scroll-pin`, is done (site-only). **2.17.0 published** (`v2.17.0` on `d7b03b2`: the React, Vue, Nuxt, Solid and Svelte wrappers follow option changes, Angular gets `update()` for `ngOnChanges`). **2.16.1 published** (`v2.16.1` on `b3eb52a`) (`svg-scroll-draw/react` ships `"use client"` so Server Components render `<ScrollDraw>` directly; all 56 mutations run again). **2.16.0 published** (`v2.16.0` on `fde9f4c`: ES module entries share code through chunks — main + react 18.1 → 13.2 KB; the drop-ins share one instance with their React hooks; size tables generated; main entry 10.7 KB as shipped files). **2.15.3 published** (`v2.15.3` on `acc9acc`: scrollReveal's `stagger` is a fraction of the reveal window, per row, on top of a custom trigger; 2.15.2 before it kept scrollVideo's end frame under reduced motion). Every page is linked from every page (nav "More", phone menu, footer index — `components/site/sitemap.ts`, guarded by `check-nav`). Sitemap dates come from git for every URL, generated groups included — Search Console (2026-11-04) had 20 indexed, 35 "Discovered – not indexed" (never crawled), 2 "Crawled – not indexed". The native CSS path is no longer described as compositor work anywhere, and `/vs-aos` quotes the reveal entry and the real presets. Every page is on the homepage design and all 23 showcase sites are live — in `32f3409`, on `main`.
 
 ---
+
+## IndexNow and true sitemap dates (2026-11-06, not committed)
+
+- After each production deploy Vercel reports to GitHub, `indexnow.yml` runs
+  `apps/demo/scripts/indexnow.mjs`: the sitemap URLs dated on or after the
+  previous production deploy's day go to api.indexnow.org (Bing, Yandex,
+  Seznam, Naver…). Key `cff7b1aad337fe3f2e7de7398f3b57b9`, served from
+  `apps/demo/public/`. `--dry-run` prints the request; `SITEMAP_URL` points it
+  at a local `next start`; a manual run with "all" sends every URL.
+- The sitemap's dates had sat at 2026-11-04 through a day of releases:
+  `npm run sitemap:dates` was manual. It now counts uncommitted files as today,
+  reads the component behind `/docs` and `/examples`, the registry behind
+  `/blocks`, the recipes behind the example pages and the guides behind the
+  framework pages, and `--check` runs in verify and CI (whose checkouts now
+  fetch full history). CLAUDE.md says to run it before committing a page.
+- **Owner, after the push:** Actions → IndexNow → Run workflow, tick "all",
+  once (the 35 unindexed pages); `gh workflow run` is blocked on this network.
+  Then add the site to Bing Webmaster Tools to see the submissions.
 
 ## 2.20.0 (2026-11-06) — published, `v2.20.0` on `972d705`
 
@@ -80,7 +98,7 @@ own esbuild 0.27.7 and a `minimatch` inside typescript-eslint.
   `npx playwright install chromium firefox webkit` once.
 - Released after 2.19.0. Both tags went out 22s apart and the runs raced:
   2.19.1 published first, so 2.19.0 took npm `latest` and GitHub's latest
-  release; the owner moved both back (`npm dist-tag add svg-scroll-draw@2.20.0
+  release; the owner moved both back (`npm dist-tag add svg-scroll-draw@2.19.1
   latest`, and "Set as the latest release" on GitHub). See the gotcha below.
 
 ## 2.19.0 (2026-11-06) — published, `v2.19.0` on `f131f9c`
@@ -180,6 +198,13 @@ months, 81% to the homepage; `/vs-gsap` at position 11 with 425 impressions.
   the same commit passed and local `vercel-build` passed; an identical re-run succeeded
   the first time. The logs need a Vercel login (the CLI isn't installed here). If it
   keeps happening, read the log in the dashboard before changing anything.
+
+### Gotcha: bumping the version
+- Replace only the pinned CDN URLs (`unpkg.com/svg-scroll-draw@x` and
+  `cdn.jsdelivr.net/npm/svg-scroll-draw@x`), `package.json`, the lockfile and
+  `SELF` in `competitors.ts`. A blanket `svg-scroll-draw@<old>` replace also
+  rewrote history (an `npm dist-tag` command, an `_npmUser` check) and the
+  blocks' `svg-scroll-draw@^x` minimum; fixed 2026-11-06.
 
 ### Gotcha: two releases at once
 - npm makes whichever version publishes last `latest`, even a lower one, and
