@@ -261,7 +261,7 @@ export function Toolkit() {
               </span>
             </p>
             <h2 className="tk-title" id="tk-title">
-              Eight instruments. One instance shape.
+              Eight instruments, one instance shape
             </h2>
             <p className="tk-lede">destroy, replay, pause, resume, seek, getProgress — learn one, know them all.</p>
             <code className="tk-code">

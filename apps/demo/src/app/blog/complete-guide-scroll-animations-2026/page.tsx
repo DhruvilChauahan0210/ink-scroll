@@ -80,7 +80,7 @@ export default function CompletGuidePage() {
       slug="complete-guide-scroll-animations-2026"
       jsonLd={articleJsonLd}
       tags={['Cornerstone', 'every pattern', 'copy-paste code']}
-      title={<>The complete guide to scroll animations in 2026.</>}
+      title={<>The complete guide to scroll animations in 2026</>}
       lede={
         <>
           Every scroll animation pattern — fade reveal, parallax, sticky pin, section snap, text split,
@@ -340,7 +340,7 @@ scrollAnimate('#section', {
         </p>
       </Section>
 
-      <Section id="all-apis" k="parts list" title="One library, all patterns." toc="All patterns, one table">
+      <Section id="all-apis" k="parts list" title="One library, all patterns" toc="All patterns, one table">
         <Table
           head={['API', 'Import from', 'Pattern']}
           rows={PATTERNS.map((p, i) => [
@@ -355,7 +355,7 @@ scrollAnimate('#section', {
       </Section>
 
       <Closing
-        title="One library, all patterns."
+        title="One library, all patterns"
         lede={`Each pattern is its own entry point, so you ship only what you import — scrollPin alone is ${kb(SELF_ENTRIES.pin)}, scrollReveal ${kb(SELF_ENTRIES.reveal)}, the main entry ${kb(SELF.gzipKb)}. ${SELF.license}, zero dependencies.`}
         links={[
           { href: '/', label: 'Get started →' },

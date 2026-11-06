@@ -153,7 +153,7 @@ export default function VsAosPage() {
               <span>measured {MEASURED_ON}</span>
             </p>
             <h1 className="pg-title h2h-title is-name">
-              <span className="nb">svg-scroll-draw</span> <span className="dim">vs AOS vs ScrollReveal.</span>
+              <span className="nb">svg-scroll-draw</span> <span className="dim">vs AOS vs ScrollReveal</span>
             </h1>
             <p className="pg-lede is-lead">
               Already on AOS or ScrollReveal? Change one import.{' '}
@@ -345,7 +345,7 @@ ScrollReveal({ distance: '40px' }).reveal('.card', { interval: 80 });` },
         {/* ── The last word ──────────────────────────────────────────────── */}
         <Closing
           n={7}
-          title="One import. Done."
+          title="One import, and you’re done"
           actions={
             <>
               <Link href="/docs" className="btn btn-solid" data-magnetic>Read the docs →</Link>

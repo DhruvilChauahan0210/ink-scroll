@@ -63,12 +63,12 @@
 .home .st-links {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
   margin-top: clamp(18px, 2.6svh, 28px);
 }
 /* A phone fits both on one line with a little less padding. */
 @media (max-width: 420px) {
-  .home .st-links .btn { padding: 0 13px; }
+  .home .st-links .btn { padding: 0 12px; }
 }
 
 /* ── The drawing ─────────────────────────────────────────────────────────── */
@@ -279,7 +279,7 @@
 /* Phone: one row that scrolls sideways, bleeding to the screen's edges. */
 .home .st-tabs {
   display: flex;
-  margin: 0 calc(-1 * var(--gutter)) 14px;
+  margin: 0 calc(-1 * var(--gutter)) 16px;
   padding: 0 var(--gutter);
   overflow-x: auto;
   scrollbar-width: none;
@@ -293,8 +293,8 @@
   flex: none;
   display: inline-flex;
   align-items: center;
-  gap: 9px;
-  padding: 13px 13px 14px;
+  gap: 8px;
+  padding: 12px 12px 16px;
   border: 0;
   background: none;
   font: 500 11px/1 var(--mono);
@@ -353,7 +353,7 @@
 .home .st-panel-head {
   display: flex;
   align-items: stretch;
-  min-height: 42px;
+  min-height: 40px;
   background: #131316;
   border-bottom: 1px solid rgba(236, 232, 224, 0.08);
 }
@@ -364,8 +364,8 @@
   position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 9px;
-  padding: 0 18px 0 16px;
+  gap: 8px;
+  padding: 0 16px 0 16px;
   margin-bottom: -1px;
   background: #0e0e10;
   border-right: 1px solid rgba(236, 232, 224, 0.08);
@@ -394,7 +394,7 @@
   flex: 1;
   min-width: 0;
   align-self: center;
-  padding: 0 14px;
+  padding: 0 16px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -406,8 +406,8 @@
 .home .st-copybtn {
   flex: none;
   align-self: center;
-  height: 26px;
-  margin-right: 10px;
+  height: 24px;
+  margin-right: 8px;
   padding: 0 12px;
   border: 1px solid rgba(236, 232, 224, 0.18);
   border-radius: 999px;
@@ -427,7 +427,7 @@
 .home .st-pre {
   flex: 1 0 auto;
   margin: 0;
-  padding: 16px 0 14px;
+  padding: 16px 0 16px;
   min-height: calc(var(--st-lines) * 1.7em + 30px);
   overflow-x: auto;
   font: 13px/1.7 var(--mono);
@@ -462,7 +462,7 @@
   justify-content: space-between;
   align-items: center;
   gap: 16px;
-  min-height: 34px;
+  min-height: 32px;
   padding: 0 16px;
   background: #131316;
   border-top: 1px solid rgba(236, 232, 224, 0.08);
@@ -555,7 +555,7 @@
   }
   .home .st-tab,
   .home .st-tab:first-child {
-    padding: 14px 10px 15px 0;
+    padding: 16px 8px 16px 0;
     border-top: 1px solid var(--line);
   }
   .home .st-tab::after,

@@ -113,7 +113,7 @@ export default function Page() {
       slug="native-css-svg-scroll-animations"
       jsonLd={jsonLd}
       tags={['animation-timeline', 'view()', 'scroll timeline']}
-      title={<>Zero-JS SVG scroll animations.</>}
+      title={<>Zero-JS SVG scroll animations</>}
       lede={
         <>
           Since v1.1.0, svg-scroll-draw automatically hands eligible animations to the browser&apos;s own scroll-driven
@@ -171,7 +171,7 @@ path {
         <p>
           The catch: you have to know the path length upfront (to set <code>--path-length</code>), and older browsers —
           Safari before 26, Firefox before 159 — don&apos;t support it. That&apos;s where svg-scroll-draw comes in — it
-          measures the length, injects the CSS, and falls back to the JS engine seamlessly on unsupported browsers.
+          measures the length, injects the CSS, and runs the same draw on its JS engine where the browser has no scroll timelines.
         </p>
       </Section>
 

@@ -35,7 +35,7 @@
 }
 
 /* Interface plates built from hairline cells. */
-.home .ink-ui { width: 100%; display: grid; gap: 18px; }
+.home .ink-ui { width: 100%; display: grid; gap: 16px; }
 .home .ink-cells, .home .ink-seq {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -46,7 +46,7 @@
   display: grid;
   justify-items: start;
   gap: 8px;
-  padding: 18px 16px 16px;
+  padding: 16px 16px 16px;
   border-right: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
   min-width: 0;
@@ -62,7 +62,7 @@
 .home .ink-bracket {
   position: relative;
   margin: 0;
-  padding-top: 14px;
+  padding-top: 16px;
   text-align: center;
   font: 500 10.5px/1.4 var(--mono);
   letter-spacing: 0.08em;
@@ -78,7 +78,7 @@
 }
 @media (max-width: 479px) {
   .home .ink-cells, .home .ink-seq { grid-template-columns: minmax(0, 1fr); }
-  .home .ink-cell, .home .ink-seq-st { grid-template-columns: 48px minmax(0, 1fr); align-items: center; column-gap: 14px; }
+  .home .ink-cell, .home .ink-seq-st { grid-template-columns: 48px minmax(0, 1fr); align-items: center; column-gap: 16px; }
   .home .ink-cell-icon { width: 48px; height: 48px; grid-row: span 2; }
 }
 
@@ -89,8 +89,8 @@
   grid-template-columns: 96px minmax(0, 1fr);
   grid-template-areas: 'k w' 'v v';
   align-items: center;
-  gap: 4px 14px;
-  padding: 10px 0;
+  gap: 4px 16px;
+  padding: 8px 0;
   border-bottom: 1px solid var(--line);
 }
 @media (min-width: 640px) {

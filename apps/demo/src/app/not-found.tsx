@@ -27,7 +27,7 @@ export default function NotFound() {
       <div className="guide">
         <header className="pg-head">
           <p className="pg-kicker"><span>404</span><span>no page at this address</span></p>
-          <h1 className="pg-title">Nothing is drawn here.</h1>
+          <h1 className="pg-title">Nothing is drawn here</h1>
           <p className="pg-lede">
             The link may be old, or the address mistyped. These are where most links into the site lead.
           </p>

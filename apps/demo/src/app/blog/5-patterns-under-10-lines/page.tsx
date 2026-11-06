@@ -147,7 +147,7 @@ export default function Page() {
       slug="5-patterns-under-10-lines"
       jsonLd={jsonLd}
       tags={PATTERNS.map((p) => `preset: ${p.preset}`)}
-      title={<>{PATTERNS.length} scroll animation patterns. <span className="b2-dim-t">Under 10 lines.</span></>}
+      title={<>{PATTERNS.length} scroll animation patterns, <span className="b2-dim-t">each under 10 lines</span></>}
       lede={
         <>
           The five scroll animation patterns behind most real-world SVG scroll effects — each in 3 lines using

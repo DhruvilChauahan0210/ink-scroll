@@ -12,7 +12,7 @@
 }
 .site .dc-strip a {
   flex: none;
-  padding: 5px 12px;
+  padding: 4px 12px;
   border: 1px solid var(--line-2);
   border-radius: 999px;
   font: 500 11px/1.4 var(--mono);
@@ -39,7 +39,7 @@
   flex: none;
   max-height: calc(100svh - var(--nav-h) - 20px);
   overflow-y: auto;
-  padding: 32px 18px 48px var(--gutter);
+  padding: 32px 16px 48px var(--gutter);
   border-right: 1px solid var(--line);
   scrollbar-width: thin;
 }
@@ -48,7 +48,7 @@
   margin: 0;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   padding: 0 0 8px;
   border-bottom: 1px solid var(--line-2);
   font: 500 10px/1.4 var(--mono);
@@ -60,7 +60,7 @@
   display: grid;
   place-items: center;
   width: 18px;
-  height: 18px;
+  height: 16px;
   border: 1px solid var(--line-2);
   border-radius: 50%;
   font-size: 9.5px;
@@ -72,7 +72,7 @@
   display: grid;
   grid-template-columns: 30px minmax(0, 1fr);
   align-items: baseline;
-  padding: 6px 0;
+  padding: 8px 0;
   border-bottom: 1px solid var(--line);
   font-size: 13.5px;
   line-height: 1.35;
@@ -125,7 +125,7 @@
 .site .dc-tb-link { color: var(--fg-3); transition: color 0.2s, background-color 0.2s; }
 .site .dc-tb-link:hover { color: var(--fg); background: var(--bg-2); }
 .site .dc-h2 {
-  margin: 0 0 22px;
+  margin: 0 0 24px;
   font-family: var(--sans);
   font-weight: 500;
   font-size: clamp(30px, 3.3vw, 52px);
@@ -146,11 +146,11 @@
 }
 .site .dc-sub::before { content: ''; width: 22px; height: 1px; background: var(--accent); }
 .site .dc-note {
-  margin: 18px 0;
+  margin: 16px 0;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
-  gap: 14px;
-  padding: 14px 16px;
+  gap: 16px;
+  padding: 16px 16px;
   border: 1px solid var(--line-2);
   border-left: 2px solid var(--accent);
   font-size: 14px;
@@ -170,7 +170,7 @@
   transition: background-color 0.2s;
 }
 .site .dc-pm-row:hover { background: var(--bg-2); }
-.site .dc-pm-row > * { padding: 12px 10px; min-width: 0; }
+.site .dc-pm-row > * { padding: 12px 8px; min-width: 0; }
 .site .dc-pm-n { font: 500 10.5px/1 var(--mono); color: var(--fg-3); }
 .site .dc-pm-k { font: 500 10.5px/1 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-2); }
 .site .dc-pm-cmd { font: 400 14px/1.4 var(--mono); color: var(--fg); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -181,18 +181,18 @@
 .site .dc-opts { border-top: 1px solid var(--fg-3); }
 .site .dc-opts-h {
   display: none;
-  padding: 10px 0;
+  padding: 8px 0;
   border-bottom: 1px solid var(--line-2);
   font: 500 10px/1.4 var(--mono);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--fg-3);
 }
-.site .dc-opt { display: grid; gap: 10px; padding: 18px 0; border-bottom: 1px solid var(--line); }
+.site .dc-opt { display: grid; gap: 8px; padding: 16px 0; border-bottom: 1px solid var(--line); }
 @media (min-width: 900px) {
   .site .dc-opts-h, .site .dc-opt { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 28px; }
 }
-.site .dc-opt-l { display: flex; flex-direction: column; align-items: flex-start; gap: 7px; min-width: 0; }
+.site .dc-opt-l { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; min-width: 0; }
 .site .dc-opt-name { font: 600 14px/1.3 var(--mono); color: var(--fg); }
 .site .dc-opt-type { max-width: 100%; font: 500 11px/1.45 var(--mono); color: var(--accent); overflow-wrap: anywhere; }
 .site .dc-opt-default { font: 500 11px/1.45 var(--mono); color: var(--fg-3); }
@@ -235,13 +235,13 @@
 }
 .site .an-k, .site .an-v, .site .an-dot { animation-delay: calc(900ms + var(--i, 0) * 110ms); }
 @keyframes an-in { to { opacity: 1; } }
-.site .an-cap { margin-top: 14px; font: 500 11px/1.4 var(--mono); letter-spacing: 0.04em; color: var(--fg-3); }
+.site .an-cap { margin-top: 16px; font: 500 11px/1.4 var(--mono); letter-spacing: 0.04em; color: var(--fg-3); }
 @media (prefers-reduced-motion: reduce) {
   .site .an-dot, .site .an-k, .site .an-v, .site .an-code { animation: none; opacity: 1; }
 }
 
 /* The dimension line over each option sheet. */
-.site .dc-dim { position: relative; height: 24px; margin-bottom: 10px; color: var(--accent); }
+.site .dc-dim { position: relative; height: 24px; margin-bottom: 8px; color: var(--accent); }
 .site .dc-dim svg { position: absolute; inset: 0; width: 100%; height: 24px; overflow: visible; }
 .site .dc-dim-ink { stroke-width: 1; fill: none; }
 .site .dc-dim-label {

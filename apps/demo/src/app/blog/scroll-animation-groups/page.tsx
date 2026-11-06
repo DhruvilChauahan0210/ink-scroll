@@ -69,7 +69,7 @@ export default function BlogScrollAnimationGroups() {
       slug="scroll-animation-groups"
       jsonLd={articleJsonLd}
       tags={['svg-scroll-draw/group', 'stagger', 'parallax']}
-      title={<>Animate multiple elements on scroll — one call.</>}
+      title={<>Animate multiple elements on scroll — one call</>}
       lede={
         <>
           Every real landing page needs more than one animated element. svg-scroll-draw ships four group APIs for
@@ -325,7 +325,7 @@ scrollAnimateSequence(
       </Section>
 
       <Closing
-        title="See a group run."
+        title="See a group run"
         lede="The live example animates a whole grid from one call; the docs list every option it takes."
         links={[
           { href: '/examples#scroll-animate-group', label: 'See live example →' },

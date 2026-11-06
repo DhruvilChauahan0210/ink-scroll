@@ -390,7 +390,7 @@ export function Annotate() {
               </span>
             </p>
             <h2 className="an-title" id="an-title">
-              Notes in the margin, drawn as you read.
+              Notes in the margin, drawn as you read
             </h2>
           </header>
           <div className="an-plate">

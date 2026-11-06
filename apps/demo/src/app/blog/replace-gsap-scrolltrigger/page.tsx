@@ -74,7 +74,7 @@ export default function Page() {
       slug="replace-gsap-scrolltrigger"
       jsonLd={articleJsonLd}
       tags={['ScrollTrigger', 'scrollAnimate', 'no GSAP']}
-      title={<>Replace GSAP ScrollTrigger with scrollAnimate.</>}
+      title={<>Replace GSAP ScrollTrigger with scrollAnimate</>}
       lede={
         <>
           svg-scroll-draw v2 ships <code>scrollAnimate</code> — a replacement for the common scroll animation use

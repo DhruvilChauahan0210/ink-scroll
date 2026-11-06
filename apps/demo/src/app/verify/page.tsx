@@ -574,7 +574,7 @@ export default function VerifyPage() {
               <span>verify / internal · noindex</span>
               <span>sections 01 – {pad(SECTIONS.length)}</span>
             </p>
-            <h1 className="pg-title vf-title">Verify.</h1>
+            <h1 className="pg-title vf-title">Verify</h1>
             <p className="pg-lede">
               Three phases of correctness work, most of which has no UI surface — engine internals, CI gates,
               packaging, README numbers. This page renders the parts that <em>can</em> be seen, so they can be

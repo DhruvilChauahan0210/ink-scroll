@@ -4,7 +4,7 @@
 .site .ba .gf-row {
   display: grid;
   grid-template-columns: 104px minmax(0, 1fr) 132px;
-  gap: 14px;
+  gap: 16px;
   align-items: center;
   border-bottom: 1px solid var(--line);
 }
@@ -13,7 +13,7 @@
 .site .ba .gf-track {
   position: relative;
   display: block;
-  padding: 13px 0;
+  padding: 12px 0;
   /* quarter marks of the scroll through the section */
   background-image: linear-gradient(to right, var(--line) 1px, transparent 1px);
   background-size: 25% 100%;
@@ -48,7 +48,7 @@
 .site .ba .gf-ticks {
   display: flex;
   justify-content: space-between;
-  padding: 6px 0 8px;
+  padding: 8px 0 8px;
   background: none;
   box-shadow: none;
   font: 500 10.5px/1.3 var(--mono);
@@ -61,7 +61,7 @@
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  padding-bottom: 9px;
+  padding-bottom: 8px;
   border-bottom: 1px solid var(--line-2);
   font: 500 10.5px/1.4 var(--mono);
   letter-spacing: 0.14em;
@@ -73,7 +73,7 @@
 
 .site .ba .gf-inst { margin: 0; font: 400 11.5px/1.7 var(--mono); color: var(--fg-3); }
 .site .ba .gf-inst span { color: var(--fg-2); text-transform: uppercase; letter-spacing: 0.12em; font-size: 10px; margin-right: 4px; }
-.site .ba .gf-inst code { margin-right: 6px; color: var(--fg); white-space: nowrap; }
+.site .ba .gf-inst code { margin-right: 8px; color: var(--fg); white-space: nowrap; }
 
 @media (max-width: 559px) {
   .site .ba .gf-row { grid-template-columns: 84px minmax(0, 1fr); gap: 0 12px; }

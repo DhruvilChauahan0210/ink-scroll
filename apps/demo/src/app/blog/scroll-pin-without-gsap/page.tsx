@@ -65,7 +65,7 @@ export default function Page() {
       slug="scroll-pin-without-gsap"
       jsonLd={articleJsonLd}
       tags={['scrollPin', 'svg-scroll-draw/pin', 'no GSAP']}
-      title={<>Pin sections on scroll without GSAP.</>}
+      title={<>Pin sections on scroll without GSAP</>}
       lede={
         <>
           The Apple product page. The Stripe feature walkthrough. The sticky image with scrolling text.

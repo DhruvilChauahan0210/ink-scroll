@@ -63,7 +63,7 @@ export default function BlogPage() {
           head={
             <>
               <p className="pg-kicker"><span>blog / {POSTS.length} posts</span><span>guides · comparisons · deep-dives</span></p>
-              <h1 className="pg-title bl-title">Guides &amp; comparisons.</h1>
+              <h1 className="pg-title bl-title">Guides &amp; comparisons</h1>
               <p className="pg-lede">
                 Guides, comparisons, and deep-dives on scroll-driven SVG animation — svg-scroll-draw vs GSAP,
                 migration guides, and more.

@@ -479,7 +479,7 @@ export function SvgPlayground() {
     const url = `${window.location.origin}${window.location.pathname}#p=${encoded}`;
     window.history.replaceState(null, '', `#p=${encoded}`);
     navigator.clipboard?.writeText(url)
-      .then(() => { setShareMsg('Copied!'); setTimeout(() => setShareMsg(''), 2500); })
+      .then(() => { setShareMsg('Link copied'); setTimeout(() => setShareMsg(''), 2500); })
       .catch(() => { setShareMsg('URL updated'); setTimeout(() => setShareMsg(''), 3000); });
     if (!navigator.clipboard) { setShareMsg('URL updated'); setTimeout(() => setShareMsg(''), 3000); }
   }
@@ -608,7 +608,7 @@ export function SvgPlayground() {
               wrap="off"
               aria-label="SVG markup"
               className="pl-ed-ta"
-              placeholder="Paste your SVG markup here…"
+              placeholder="Paste SVG markup"
             />
           </div>
           {error && (
@@ -919,7 +919,7 @@ export function SvgPlayground() {
                       value={ps.morphTo}
                       onChange={e => update('morphTo', e.target.value)}
                       aria-label="Target path d"
-                      placeholder="M ... target path d attribute (must have same command count)"
+                      placeholder="M 0 0 L 100 0"
                       className="pl-morph"
                     />
                     <p className="pl-hint">

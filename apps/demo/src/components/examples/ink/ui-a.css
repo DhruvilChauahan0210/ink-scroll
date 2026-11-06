@@ -6,7 +6,7 @@
 
 /* ── Shared: line icons, mono labels ─────────────────────────────────────── */
 
-.home .xa-ico { display: block; flex: none; width: 22px; height: 22px; color: var(--fg-2); overflow: visible; }
+.home .xa-ico { display: block; flex: none; width: 22px; height: 24px; color: var(--fg-2); overflow: visible; }
 .home .xa-ink { fill: none; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
 
 .home .xa-label {
@@ -31,14 +31,14 @@
   border: 1px solid var(--line-2);
   background: var(--bg);
 }
-.home .xa-price-top { display: grid; gap: 20px; padding: 22px 22px 0; }
+.home .xa-price-top { display: grid; gap: 20px; padding: 24px 24px 0; }
 
 .home .xa-badge {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   width: fit-content;
-  padding: 6px 11px 6px 9px;
+  padding: 8px 12px 8px 8px;
   border: 1px solid var(--line-2);
   border-radius: 999px;
   font: 500 10px/1 var(--mono);
@@ -59,7 +59,7 @@
 }
 .home .xa-plan-d { margin: 8px 0 0; font-size: 14px; line-height: 1.55; color: var(--fg-2); text-wrap: pretty; }
 
-.home .xa-amount { display: flex; align-items: baseline; gap: 10px; }
+.home .xa-amount { display: flex; align-items: baseline; gap: 8px; }
 .home .xa-amount-n {
   font-family: var(--sans);
   font-weight: 500;
@@ -71,14 +71,14 @@
 }
 .home .xa-amount-u { font: 500 11px/1 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-3); }
 
-.home .xa-feats-wrap { margin: 22px 22px 0; }
+.home .xa-feats-wrap { margin: 24px 24px 0; }
 .home .xa-feats { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--fg-3); }
 .home .xa-feat {
   display: grid;
   grid-template-columns: 16px minmax(0, 1fr) auto;
   align-items: center;
   gap: 12px;
-  padding: 11px 0;
+  padding: 12px 0;
   border-bottom: 1px solid var(--line);
   font-size: 14px;
   line-height: 1.4;
@@ -94,14 +94,14 @@
   white-space: nowrap;
 }
 
-.home .xa-cta-wrap { padding: 20px 22px 22px; }
+.home .xa-cta-wrap { padding: 20px 24px 24px; }
 .home .xa-cta {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  height: 46px;
-  padding: 0 7px 0 20px;
+  height: 48px;
+  padding: 0 8px 0 20px;
   border: 1px solid var(--fg);
   border-radius: 999px;
   background: var(--fg);
@@ -128,7 +128,7 @@
 .home .xa-cta-go .xa-ico { width: 14px; height: 14px; color: currentColor; }
 .home .xa-cta-go .xa-ink { stroke-width: 1.8; }
 .home .xa-cta-note {
-  margin: 10px 0 0;
+  margin: 8px 0 0;
   text-align: center;
   font: 500 10.5px/1.4 var(--mono);
   letter-spacing: 0.04em;
@@ -149,7 +149,7 @@
   align-content: start;
   gap: 8px;
   min-width: 0;
-  padding: 18px 16px 20px;
+  padding: 16px 16px 20px;
   border-right: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
 }
@@ -174,7 +174,7 @@
 .home .xa-hl-kicker {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
   margin-bottom: clamp(18px, 5cqi, 28px);
   font: 500 10.5px/1.4 var(--mono);
   letter-spacing: 0.14em;
@@ -199,7 +199,7 @@
 .home .xa-hl-line.is-a { color: var(--accent); }
 .home .xa-hl-desc {
   margin: clamp(22px, 5.5cqi, 32px) 0 0;
-  padding-top: 14px;
+  padding-top: 16px;
   border-top: 1px solid var(--line);
   font: 500 11px/1.6 var(--mono);
   letter-spacing: 0.1em;
@@ -216,7 +216,7 @@
   grid-template-columns: 22px minmax(0, 1fr) auto;
   align-items: start;
   gap: 16px;
-  padding: 16px 0 17px;
+  padding: 16px 0 16px;
   border-bottom: 1px solid var(--line);
 }
 .home .xa-fl-row .xa-ico { margin-top: 1px; }
@@ -231,8 +231,8 @@
   color: var(--fg);
   text-wrap: balance;
 }
-.home .xa-fl-d { display: block; margin-top: 3px; font-size: 14px; line-height: 1.55; color: var(--fg-2); text-wrap: pretty; }
-.home .xa-fl-n { padding-top: 3px; font: 500 10.5px/1.4 var(--mono); letter-spacing: 0.04em; color: var(--fg-3); }
+.home .xa-fl-d { display: block; margin-top: 4px; font-size: 14px; line-height: 1.55; color: var(--fg-2); text-wrap: pretty; }
+.home .xa-fl-n { padding-top: 4px; font: 500 10.5px/1.4 var(--mono); letter-spacing: 0.04em; color: var(--fg-3); }
 
 /* ── 5 · API cards ───────────────────────────────────────────────────────── */
 
@@ -246,9 +246,9 @@
 .home .xa-card {
   display: grid;
   align-content: start;
-  gap: 10px;
+  gap: 8px;
   min-width: 0;
-  padding: 16px 14px 18px;
+  padding: 16px 16px 16px;
   border-right: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
   background: var(--panel);
@@ -269,6 +269,6 @@
   .home .xa-grp .xa-label > span:last-child { display: none; }
 }
 @container (min-width: 440px) {
-  .home .xa-card { padding: 18px 18px 20px; }
+  .home .xa-card { padding: 16px 16px 20px; }
   .home .xa-card-name { font-size: 13px; }
 }

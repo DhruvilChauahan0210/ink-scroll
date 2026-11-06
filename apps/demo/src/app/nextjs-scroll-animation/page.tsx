@@ -337,7 +337,7 @@ export default function NextjsScrollAnimationPage() {
               <span>next.js / ssr-safe</span>
               <span>app router · pages router</span>
             </p>
-            <h1 className="pg-title stk-title">Scroll animations for Next.js.</h1>
+            <h1 className="pg-title stk-title">Scroll animations for Next.js</h1>
             <p className="pg-lede">
               svg-scroll-draw is built SSR-first. All scroll APIs guard against <C>window</C> being undefined.
               Works in App Router Server Components, Client Components, and Pages Router — no hydration errors,
@@ -362,7 +362,7 @@ export default function NextjsScrollAnimationPage() {
           <div className="stk-main">
 
             {/* ── 01 The answer ─────────────────────────────── */}
-            <Sec n={1} k="the answer" id="answer" title="Render it from a Server Component.">
+            <Sec n={1} k="the answer" id="answer" title="Render it from a Server Component">
               <p className="stk-p">
                 The components in <C>svg-scroll-draw/react</C> carry <C>&apos;use client&apos;</C> (from v2.16.1), so
                 a Server Component renders them directly: your markup is server-rendered, and the animation starts in
@@ -385,7 +385,7 @@ export default function NextjsScrollAnimationPage() {
             </Sec>
 
             {/* ── 02 A complete App Router example ──────────── */}
-            <Sec n={2} k="copy the whole thing" id="example" title="A complete App Router example.">
+            <Sec n={2} k="copy the whole thing" id="example" title="A complete App Router example">
               <p className="stk-p">
                 The smallest project that shows the split: one client file holds every animated part, and the page
                 stays a Server Component that fetches its data. Install, add these files, run <C>next dev</C>.
@@ -405,7 +405,7 @@ export default function NextjsScrollAnimationPage() {
             </Sec>
 
             {/* ── 03 The patterns ───────────────────────────── */}
-            <Sec n={3} k={`${PATTERNS.length} patterns`} id="patterns" title="The patterns.">
+            <Sec n={3} k={`${PATTERNS.length} patterns`} id="patterns" title="The patterns">
               <div className="stk-pats">
                 {PATTERNS.map((p, i) => (
                   <div key={p.file} id={`pt-${i + 1}`} className="stk-pat">
@@ -423,12 +423,12 @@ export default function NextjsScrollAnimationPage() {
               </Note>
               <Note k="Native CSS">
                 When the browser supports <C>animation-timeline: view()</C>, svg-scroll-draw automatically uses it —
-                zero JS scroll listeners, zero rAF calls, no JavaScript per frame. Falls back to JS engine seamlessly.
+                zero JS scroll listeners, zero rAF calls, no JavaScript per frame. Where it is missing, the JS engine draws the same thing.
               </Note>
             </Sec>
 
             {/* ── 04 Questions ──────────────────────────────── */}
-            <Sec n={4} k={`${FAQ.length} questions`} id="faq" title="Questions Next.js developers ask.">
+            <Sec n={4} k={`${FAQ.length} questions`} id="faq" title="Questions Next.js developers ask">
               <div className="stk-faq">
                 {FAQ.map((f, i) => (
                   <div key={f.q} className="stk-q">
@@ -443,7 +443,7 @@ export default function NextjsScrollAnimationPage() {
             </Sec>
 
             {/* ── 05 vs alternatives ────────────────────────── */}
-            <Sec n={5} k="measured" id="alternatives" title="vs common alternatives.">
+            <Sec n={5} k="measured" id="alternatives" title="vs common alternatives">
               <SizeBars
                 caption="fig. 2 — bundle, minified + gzipped, to one scale"
                 rows={CMP.map((c) => ({ label: c.name, kb: c.size, self: c.highlight }))}
@@ -467,7 +467,7 @@ export default function NextjsScrollAnimationPage() {
             </Sec>
 
             {/* ── 06 Built for Next.js ──────────────────────── */}
-            <Sec n={6} k="drop it in" id="built-for-next" title="Built for Next.js.">
+            <Sec n={6} k="drop it in" id="built-for-next" title="Built for Next.js">
               <dl className="stk-close-specs">
                 <div><dt>SSR</dt><dd>Safe by default</dd></div>
                 <div><dt>Router</dt><dd>App Router ready</dd></div>

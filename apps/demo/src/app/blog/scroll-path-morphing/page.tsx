@@ -73,7 +73,7 @@ const LIMITS = [
   { t: '<path> only', d: 'morphTo no-ops on <rect>, <circle>, <line>, <polyline>, and other SVG shape elements (a development build warns in the console). Convert them to <path> equivalents first.' },
   { t: 'Non-SVG elements', d: 'This is SVG path interpolation — it does not work on HTML elements, CSS clip-paths, or canvas. For HTML morphing you still need GSAP or the Web Animations API.' },
   { t: 'Complex structure changes', d: 'If your paths have fundamentally different command structures (e.g. one uses cubic beziers, the other straight lines), the interpolation will look wrong. Restructure to match.' },
-  { t: 'Activates native CSS opt-out', d: 'morphTo requires JS per-frame updates, so it automatically bypasses the native CSS animation-timeline path. That\'s fine — the JS engine handles it seamlessly.' },
+  { t: 'Activates native CSS opt-out', d: 'morphTo requires JS per-frame updates, so it automatically bypasses the native CSS animation-timeline path. The JS engine draws it frame by frame instead.' },
 ];
 
 /** [option, type, notes] — the quick reference. */
@@ -93,7 +93,7 @@ export default function Page() {
       slug="scroll-path-morphing"
       jsonLd={jsonLd}
       tags={['morphTo', 'SVG paths', 'no MorphSVG']}
-      title={<>Scroll-driven SVG <span className="ba-nw">path morphing.</span></>}
+      title={<>Scroll-driven SVG <span className="ba-nw">path morphing</span></>}
       lede={
         <>
           The <code>morphTo</code> option lets you interpolate a SVG path&apos;s <code>d</code> attribute from its

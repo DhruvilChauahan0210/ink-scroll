@@ -167,7 +167,7 @@ export function Migrate() {
       <header className="mg-head">
         <div>
           <p className="mg-kicker">08 / switching</p>
-          <h2 id="mg-title" className="mg-title">Already on AOS? Change one import.</h2>
+          <h2 id="mg-title" className="mg-title">Already on AOS? Change one import</h2>
         </div>
         <p className="mg-body">
           Your markup and your calls stay exactly as they are. Only the import changes — and the page does the

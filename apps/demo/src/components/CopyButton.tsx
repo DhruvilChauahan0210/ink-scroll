@@ -24,7 +24,7 @@ export function CopyButton({ text }: { text: string }) {
           : 'text-[#888] border-transparent hover:text-[#aaa] hover:border-[#444]'
       }`}
     >
-      {copied ? 'copied!' : 'copy'}
+      {copied ? 'Copied' : 'Copy'}
     </button>
   );
 }

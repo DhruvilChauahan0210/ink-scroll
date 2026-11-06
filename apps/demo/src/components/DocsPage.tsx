@@ -1478,7 +1478,7 @@ scrollDraw('#svg', { easing: createElastic({ amplitude: 1.1, period: 0.6 }) });`
             <Note>
               Try both in the{' '}
               <Link href="/playground" className="underline underline-offset-2 hover:text-pitch-black transition-colors">
-                ⚡ Playground
+                playground
               </Link>{' '}
               — the easing dropdown includes <code className="font-mono">bounce</code> and{' '}
               <code className="font-mono">elastic</code> with live parameter sliders.

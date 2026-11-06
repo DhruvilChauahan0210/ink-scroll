@@ -145,7 +145,7 @@ export function VersusPage({ slug }: { slug: string }) {
               <span>{v.rows.length} rows</span>
             </p>
             <h1 className="pg-title cmp-title">
-              svg-scroll-draw <span className="dim">vs {them.label}.</span>
+              svg-scroll-draw <span className="dim">vs {them.label}</span>
             </h1>
             <p className="pg-lede"><Prose text={v.intro} /></p>
             <div className="pg-actions">

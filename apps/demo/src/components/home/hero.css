@@ -32,31 +32,11 @@
 /* ── Copy ─────────────────────────────────────────────────────────────── */
 
 .home .he-copy { max-width: 600px; }
-.home .he-news {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  max-width: 100%;
-  margin-bottom: clamp(16px, 3svh, 34px);
-  padding: 7px 14px 7px 10px;
-  border: 1px solid var(--line-2);
-  border-radius: 999px;
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.04em;
-  color: var(--fg);
-  white-space: nowrap;
-  transition: border-color 0.25s;
-}
-.home .he-news:hover { border-color: var(--fg-3); }
-.home .he-news i { flex: none; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px var(--accent-2); }
-.home .he-news-t { overflow: hidden; text-overflow: ellipsis; color: var(--fg-3); }
-
 .home .he-kicker {
   display: flex;
   justify-content: space-between;
   gap: 16px;
-  margin: 0 0 14px;
+  margin: 0 0 16px;
   font-family: var(--mono);
   font-size: 12px;
   letter-spacing: 0.02em;
@@ -72,8 +52,8 @@
   color: var(--fg);
   text-wrap: balance;
 }
-.home .he-sub { margin: 18px 0 0; max-width: 44ch; font-size: clamp(15px, 1.15vw, 17px); line-height: 1.6; color: var(--fg-2); }
-.home .he-cta { margin-top: clamp(18px, 3svh, 32px); display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.home .he-sub { margin: 16px 0 0; max-width: 44ch; font-size: clamp(15px, 1.15vw, 17px); line-height: 1.6; color: var(--fg-2); }
+.home .he-cta { margin-top: clamp(18px, 3svh, 32px); display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 
 .home .he-stats {
   margin: clamp(20px, 3.6svh, 40px) 0 0;
@@ -84,7 +64,7 @@
 .home .he-stats div { padding: 12px 0 0; }
 .home .he-stats dt { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-3); }
 .home .he-stats dd {
-  margin: 6px 0 0;
+  margin: 8px 0 0;
   font-family: var(--sans);
   font-weight: 500;
   font-size: clamp(22px, 1.9vw, 30px);
@@ -160,7 +140,7 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 8px 26px;
+  gap: 8px 24px;
   margin-top: clamp(14px, 2.4svh, 32px);
   padding: 16px var(--gutter);
   border-top: 1px solid var(--line);
@@ -195,12 +175,10 @@
 }
 /* Phones: the drawing above the copy, the copy trimmed so both fit. */
 @media (max-width: 999.98px) {
-  .home .he-news-t { display: none; }
   .home .he-stats { display: none; }
   .home .pe-stage { max-height: 38svh; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .home .pe { --asm: 1; }
-  .home .he-news { transition: none; }
 }

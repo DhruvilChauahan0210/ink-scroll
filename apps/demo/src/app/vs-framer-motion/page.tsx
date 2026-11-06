@@ -187,7 +187,7 @@ export default function VsFramerMotionPage() {
               <span>measured {MEASURED_ON}</span>
             </p>
             <h1 className="pg-title h2h-title is-name">
-              <span className="nb">svg-scroll-draw</span> <span className="dim">vs Framer Motion.</span>
+              <span className="nb">svg-scroll-draw</span> <span className="dim">vs Framer Motion</span>
             </h1>
             <p className="pg-lede">
               Framer Motion is excellent for React component animations. For scroll-driven effects specifically,
@@ -319,7 +319,7 @@ scrollProgress('#hero', { easing: 'ease-in-out' });`}</CodeBox>
         {/* ── The last word ──────────────────────────────────────────────── */}
         <Closing
           n={6}
-          title="Scroll animations, solved."
+          title="Scroll animations, solved"
           actions={
             <>
               <Link href="/docs" className="btn btn-solid" data-magnetic>Read the docs →</Link>

@@ -154,7 +154,7 @@ export default function Page() {
                 <span>smooth scroll + scroll animation</span>
               </p>
               <h1 className="pg-title stk-title">
-                Lenis + <span className="stk-nw">svg-scroll-draw.</span> <span className="dim">Not a competition.</span>
+                Lenis + <span className="stk-nw">svg-scroll-draw,</span> <span className="dim">not a competition</span>
               </h1>
               <p className="pg-lede">
                 Lenis is the smooth-scroll library everyone reaches for, and it comes up constantly as an
@@ -181,7 +181,7 @@ export default function Page() {
             <div className="stk-main">
 
               {/* ── 01 Lenis v2 ───────────────────────────────── */}
-              <Sec n={1} k="lenis v2+" id="lenis-v2" title="Lenis v2 and later.">
+              <Sec n={1} k="lenis v2+" id="lenis-v2" title="Lenis v2 and later">
                 <p className="stk-p">
                   Nothing special required. Lenis v2 patches <C>window.scrollY</C> itself, so every engine here reads
                   the correct position with no adapter and no configuration.
@@ -190,7 +190,7 @@ export default function Page() {
               </Sec>
 
               {/* ── 02 Lenis v1 ───────────────────────────────── */}
-              <Sec n={2} k="lenis v1 · adapter" id="lenis-v1" title="Lenis v1.">
+              <Sec n={2} k="lenis v1 · adapter" id="lenis-v1" title="Lenis v1">
                 <p className="stk-p">
                   v1 keeps scroll position in a virtual value and never updates <C>window.scrollY</C>, so anything
                   reading native scroll sees a stale number and your animations appear frozen. The adapter patches it
@@ -200,7 +200,7 @@ export default function Page() {
               </Sec>
 
               {/* ── 03 The trade-off ──────────────────────────── */}
-              <Sec n={3} k="the trade-off" id="trade-off" title="The one trade-off.">
+              <Sec n={3} k="the trade-off" id="trade-off" title="The one trade-off">
                 <p className="stk-p">
                   Worth knowing before you commit: the native CSS fast path does not survive a virtual scroll value.
                   A CSS <C>view-timeline</C> reads real scroll position, so when Lenis v1 is driving, affected animations
@@ -222,7 +222,7 @@ export default function Page() {
               </Sec>
 
               {/* ── 04 Questions ──────────────────────────────── */}
-              <Sec n={4} k="questions" id="questions" title="Questions.">
+              <Sec n={4} k="questions" id="questions" title="Questions">
                 <div className="stk-faq">
                   {faq.map((item, i) => (
                     <div key={item.q} className="stk-q">

@@ -76,14 +76,14 @@ export default function HomePage() {
 
       <main>
         {/* ── 00 Hero: the lettering sheet ────────────────────────────── */}
-        <Hero version={SELF.version} gzipKb={SELF.gzipKb} unitTests={UNIT_TESTS} browserTests={BROWSER_TESTS} />
+        <Hero gzipKb={SELF.gzipKb} unitTests={UNIT_TESTS} browserTests={BROWSER_TESTS} />
 
         {/* ── 01 Use cases ─────────────────────────────────────────────── */}
         <section className="sec" aria-labelledby="uc-title">
           <div className="sec-head">
             <span className="label"><b>01</b> / what people draw</span>
             <div>
-              <h2 id="uc-title" className="h2">If it’s a line, it can follow the scroll.</h2>
+              <h2 id="uc-title" className="h2">If it’s a line, it can follow the scroll</h2>
               <p className="body">Signatures, maps, charts, product sketches, logos, diagrams — each one below is drawn by the library as you reach it.</p>
             </div>
           </div>

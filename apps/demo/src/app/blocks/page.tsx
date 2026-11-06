@@ -209,7 +209,7 @@ export default function BlocksPage() {
               <span>shadcn cli · react + tailwind</span>
             </p>
             <h1 className="pg-title bk-title">
-              Scroll blocks you <span className="bk-dim">copy, not install.</span>
+              Scroll blocks you <span className="bk-dim">copy, not install</span>
             </h1>
             <p className="pg-lede">
               Copy-paste scroll blocks. MIT. Built on svg-scroll-draw, {SELF.gzipKb} KB. Each block is one

@@ -312,8 +312,8 @@ export default function VsGsapPage() {
               <span>measured {MEASURED_ON}</span>
             </p>
             <h1 className="pg-title h2h-title">
-              GSAP ScrollTrigger alternative.{' '}
-              <span className="dim">{RATIO_STACK}× smaller, MIT.</span>
+              GSAP ScrollTrigger alternative,{' '}
+              <span className="dim">{RATIO_STACK}× smaller, MIT</span>
             </h1>
             <p className="pg-lede">
               GSAP is free since 2025 — every plugin — and it does more than we do. This page isn&#39;t about price.
@@ -464,7 +464,7 @@ export default function VsGsapPage() {
         {/* ── The last word ──────────────────────────────────────────────── */}
         <Closing
           n={7}
-          title="Try it in 30 seconds."
+          title="Try it in 30 seconds"
           actions={
             <>
               <Link href="/docs" className="btn btn-solid" data-magnetic>Read the docs →</Link>

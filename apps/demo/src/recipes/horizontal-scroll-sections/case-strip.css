@@ -64,13 +64,13 @@
 }
 .work-cover path { fill: none; stroke: var(--ink); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .work-n { margin: 16px 0 0; font: 600 12px/1 ui-monospace, monospace; color: var(--accent); }
-.work-title { margin: 8px 0 6px; font: 600 clamp(19px, 2vw, 24px)/1.2 system-ui, sans-serif; }
+.work-title { margin: 8px 0 8px; font: 600 clamp(19px, 2vw, 24px)/1.2 system-ui, sans-serif; }
 .work-text { max-width: 44ch; margin: 0; font: 400 15px/1.55 system-ui, sans-serif; opacity: 0.8; }
 /* 0.7: at 0.6 the meta line measured under WCAG AA's 4.5:1 (0.63 is the floor). */
 .work-meta { margin: 8px 0 0; font: 400 13px/1.4 system-ui, sans-serif; opacity: 0.7; }
 .work-link {
   align-self: flex-start;
-  margin-top: 10px;
+  margin-top: 8px;
   font: 500 15px/1.4 system-ui, sans-serif;
   color: var(--ink);
   text-underline-offset: 3px;

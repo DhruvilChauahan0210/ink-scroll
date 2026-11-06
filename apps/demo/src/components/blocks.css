@@ -4,7 +4,7 @@
 .site .blocks { --bk-x: max(var(--gutter), calc((100% - 1560px) / 2)); }
 .site .blocks .bk-mono { font-family: var(--mono); font-size: 0.92em; letter-spacing: 0; }
 .site .blocks .bk-code {
-  padding: 1px 6px;
+  padding: 1px 8px;
   border: 1px solid var(--line-2);
   background: var(--bg-2);
   font: 500 0.86em/1.4 var(--mono);
@@ -24,7 +24,7 @@ html:has(.site .blocks) { scroll-behavior: smooth; }
 
 /* fig. 1 — the project tree */
 .site .pt { margin: 0; min-width: 0; }
-.site .pt-tb { margin-bottom: 14px; }
+.site .pt-tb { margin-bottom: 16px; }
 .site .pt-grid { border-top: 1px solid var(--fg-3); }
 .site .pt-list { margin: 0; padding: 0; list-style: none; }
 .site .pt-a {
@@ -32,7 +32,7 @@ html:has(.site .blocks) { scroll-behavior: smooth; }
   grid-template-columns: minmax(0, 1fr) auto 44px;
   align-items: center;
   gap: 12px;
-  height: 34px;
+  height: 32px;
   border-bottom: 1px solid var(--line);
   transition: background-color 0.2s;
 }
@@ -40,7 +40,7 @@ html:has(.site .blocks) { scroll-behavior: smooth; }
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto 44px;
   gap: 12px;
-  padding: 10px 0;
+  padding: 8px 0;
   border-bottom: 1px solid var(--line-2);
   font: 500 10px/1.4 var(--mono);
   letter-spacing: 0.14em;
@@ -54,7 +54,7 @@ html:has(.site .blocks) { scroll-behavior: smooth; }
 .site .pt-ink { fill: none; stroke-width: 1; stroke-linecap: square; }
 .site .pt-name {
   min-width: 0;
-  padding-left: 6px;
+  padding-left: 8px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -70,7 +70,7 @@ html:has(.site .blocks) { scroll-behavior: smooth; }
 .site .pt-row.is-file .pt-ref { color: var(--accent); }
 .site a.pt-a:hover { background: var(--bg-2); }
 .site a.pt-a:hover .pt-name { color: var(--accent); }
-.site .pt-cap { margin-top: 14px; font: 500 11px/1.5 var(--mono); letter-spacing: 0.04em; color: var(--fg-3); }
+.site .pt-cap { margin-top: 16px; font: 500 11px/1.5 var(--mono); letter-spacing: 0.04em; color: var(--fg-3); }
 .site .pt-cap span { color: var(--fg-2); }
 @media (max-width: 559px) {
   .site .pt-meta-long { display: none; }
@@ -92,7 +92,7 @@ html:has(.site .blocks) { scroll-behavior: smooth; }
 .site .bk-copy, .site .bk-install { min-width: 0; }
 .site .bk-tb-name { text-transform: none; letter-spacing: 0.02em; color: var(--fg-2); }
 .site .bk-h2 {
-  margin: 20px 0 14px;
+  margin: 20px 0 16px;
   font-family: var(--sans);
   font-weight: 500;
   font-size: clamp(32px, 3.6vw, 56px);
@@ -112,7 +112,7 @@ html:has(.site .blocks) { scroll-behavior: smooth; }
 }
 .site .bk-cmd > * { display: flex; align-items: center; min-width: 0; }
 .site .bk-cmd-k {
-  padding: 7px 12px;
+  padding: 8px 12px;
   border-bottom: 1px solid var(--line-2);
   background: var(--bg-2);
   font: 500 10px/1.4 var(--mono);
@@ -121,8 +121,8 @@ html:has(.site .blocks) { scroll-behavior: smooth; }
   color: var(--fg-3);
   white-space: nowrap;
 }
-.site .bk-cmd-copy { padding: 0 6px; border-left: 1px solid var(--line-2); border-bottom: 1px solid var(--line-2); background: var(--bg-2); }
-.site .bk-cmd-line { grid-column: 1 / -1; grid-row: 2; gap: 10px; padding: 14px 14px 15px; overflow-x: auto; scrollbar-width: thin; }
+.site .bk-cmd-copy { padding: 0 8px; border-left: 1px solid var(--line-2); border-bottom: 1px solid var(--line-2); background: var(--bg-2); }
+.site .bk-cmd-line { grid-column: 1 / -1; grid-row: 2; gap: 8px; padding: 16px 16px 16px; overflow-x: auto; scrollbar-width: thin; }
 .site .bk-cmd-line code { font: 400 12.5px/1.4 var(--mono); color: var(--fg); white-space: nowrap; }
 .site .bk-cmd-p { font: 500 12.5px/1.4 var(--mono); color: var(--accent); }
 .site .blocks .bk-cmd-copy button, .site .blocks .code-copy button { color: var(--fg-3); border-radius: 0; }
@@ -141,25 +141,25 @@ html:has(.site .blocks) { scroll-behavior: smooth; }
   grid-template-columns: minmax(0, 0.6fr) minmax(0, 1.3fr) minmax(0, 1.3fr);
   border-left: 1px solid var(--line);
 }
-.site .bk-parts > div { padding: 10px 12px 12px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); min-width: 0; }
+.site .bk-parts > div { padding: 8px 12px 12px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); min-width: 0; }
 .site .bk-parts > div:first-child { grid-column: 1 / -1; }
 .site .bk-parts dt { font: 500 9.5px/1.4 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-3); }
-.site .bk-parts dd { margin: 6px 0 0; font-size: 13px; line-height: 1.4; color: var(--fg); overflow-wrap: anywhere; }
-.site .bk-parts > div:first-child { display: flex; align-items: baseline; gap: 14px; }
+.site .bk-parts dd { margin: 8px 0 0; font-size: 13px; line-height: 1.4; color: var(--fg); overflow-wrap: anywhere; }
+.site .bk-parts > div:first-child { display: flex; align-items: baseline; gap: 16px; }
 .site .bk-parts > div:first-child dd { margin: 0; }
 .site .bk-tags { display: flex; flex-wrap: wrap; gap: 4px; }
 .site .blocks .bk-parts dd.bk-mono { font-size: 13px; }
 @media (max-width: 559px) {
   /* A phone reads the parts list as label / value rows. */
   .site .bk-parts { grid-template-columns: minmax(0, 1fr); }
-  .site .bk-parts > div { display: grid !important; grid-template-columns: 64px minmax(0, 1fr); align-items: baseline; gap: 10px; padding: 9px 12px; }
+  .site .bk-parts > div { display: grid !important; grid-template-columns: 64px minmax(0, 1fr); align-items: baseline; gap: 8px; padding: 8px 12px; }
   .site .bk-parts dd { margin: 0; }
   .site .blocks .bk-parts dd.bk-mono { font-size: 12px; }
   /* The path gets the full width, under its label, so it stays on one line. */
   .site .bk-parts > div:first-child { display: block !important; }
-  .site .bk-parts > div:first-child dd { margin-top: 5px; }
+  .site .bk-parts > div:first-child dd { margin-top: 4px; }
 }
-.site .bk-tags .tag { padding: 1px 7px; font-size: 10px; }
+.site .bk-tags .tag { padding: 1px 8px; font-size: 10px; }
 
 /* The plate. The stage is clipped with `overflow: clip`, which, unlike
    hidden, makes no scroll container, so sticky-feature's panel still sticks. */
@@ -172,14 +172,14 @@ html:has(.site .blocks) { scroll-behavior: smooth; }
 .site .blocks .bk-plate.is-tall .plate-body { padding-block: clamp(88px, 10vw, 136px); }
 
 /* The source, folded under the plate. */
-.site .bk-src { margin-top: 14px; border-top: 1px solid var(--line); }
+.site .bk-src { margin-top: 16px; border-top: 1px solid var(--line); }
 /* The Vue version's own install line, above its source. */
 .site .bk-src-cmd { margin: 12px 0; }
 .site .bk-src > summary {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 14px 0 4px;
+  gap: 16px;
+  padding: 16px 0 4px;
   list-style: none;
   cursor: pointer;
   font: 500 10.5px/1.4 var(--mono);
@@ -195,7 +195,7 @@ html:has(.site .blocks) { scroll-behavior: smooth; }
   display: grid;
   place-items: center;
   width: 18px;
-  height: 18px;
+  height: 16px;
   border: 1px solid var(--line-2);
   border-radius: 50%;
   font-size: 12px;
@@ -224,5 +224,5 @@ html:has(.site .blocks) { scroll-behavior: smooth; }
 @media (min-width: 1000px) { .site .bk-manual { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
 .site .bk-manual-l, .site .bk-manual-r { min-width: 0; }
 .site .bk-manual .code-box { margin-top: 24px; max-width: 520px; }
-.site .bk-more-h { margin: 0 0 14px; font: 500 10.5px/1.4 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-3); }
-@media (min-width: 1000px) { .site .bk-more-h { margin-top: 6px; } }
+.site .bk-more-h { margin: 0 0 16px; font: 500 10.5px/1.4 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-3); }
+@media (min-width: 1000px) { .site .bk-more-h { margin-top: 8px; } }

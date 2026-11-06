@@ -31,7 +31,7 @@
 .film-copy li[aria-current] { color: var(--ink); }
 .film-copy li:not([aria-current]) .film-n { color: #9b7947; }
 .film-n { font: 600 12px/1 ui-monospace, monospace; color: var(--accent); }
-.film-copy h3 { margin: 8px 0 6px; font: 600 24px/1.2 system-ui, sans-serif; }
+.film-copy h3 { margin: 8px 0 8px; font: 600 24px/1.2 system-ui, sans-serif; }
 .film-copy p { max-width: 34ch; margin: 0; font: 400 16px/1.6 system-ui, sans-serif; }
 
 /* On a phone the stage still has to fit one screen: one chapter at a time. */

@@ -54,7 +54,7 @@
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  padding-bottom: 9px;
+  padding-bottom: 8px;
   border-bottom: 1px solid var(--fg-3);
   font: 500 10px/1.4 var(--mono);
   letter-spacing: 0.14em;
@@ -67,7 +67,7 @@
   grid-template-columns: 26px minmax(0, 1fr) minmax(0, 210px);
   gap: 12px;
   align-items: center;
-  padding: 6px 0;
+  padding: 8px 0;
   border-bottom: 1px solid var(--line);
 }
 .site .b2-pc-n { font: 500 10.5px/1 var(--mono); color: var(--accent); }
@@ -81,12 +81,12 @@
 .site .b2-pc-ink.is-late { stroke-width: 1.2; color: var(--fg-3); }
 .site .b2-pc-row:first-of-type .b2-pc-ink:not(.is-late) { color: var(--accent); }
 @media (max-width: 479px) {
-  .site .b2-pc-row { grid-template-columns: 22px minmax(0, 1fr) minmax(0, 150px); gap: 10px; }
+  .site .b2-pc-row { grid-template-columns: 22px minmax(0, 1fr) minmax(0, 150px); gap: 8px; }
   .site .b2-pc-hd span:last-child { display: none; }
 }
 
 /* ── The landing-page key plan ──────────────────────────────────────────── */
-.site .b2-lk { display: grid; grid-template-columns: 196px minmax(0, 1fr); gap: 18px; align-items: start; }
+.site .b2-lk { display: grid; grid-template-columns: 196px minmax(0, 1fr); gap: 16px; align-items: start; }
 .site .b2-lk-svg { display: block; width: 196px; height: auto; overflow: visible; }
 .site .b2-frame-ink { stroke-width: 1.3; color: var(--fg); }
 .site .b2-bar { stroke-width: 2.6; stroke-linecap: butt; }
@@ -104,8 +104,8 @@
 .site .b2-lk-key a {
   display: grid;
   grid-template-columns: 24px minmax(0, 1fr);
-  gap: 1px 6px;
-  padding: 5px 0 6px;
+  gap: 1px 8px;
+  padding: 4px 0 8px;
   border-bottom: 1px solid var(--line);
   transition: background-color 0.2s;
 }
@@ -116,7 +116,7 @@
 .site .b2-lk-key a:hover .b2-lk-api { color: var(--accent); }
 
 /* ── AOS: parts lists (rows from blog.css .bom) ─────────────────────────── */
-.site .b2-rv { gap: 18px; }
+.site .b2-rv { gap: 16px; }
 .site .b2-rv-lic { font-style: normal; color: var(--fg-3); }
 .site .b2-rv .bom-row.is-setup .bom-name { overflow-wrap: anywhere; }
 

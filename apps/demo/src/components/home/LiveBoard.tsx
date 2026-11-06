@@ -186,7 +186,7 @@ export function LiveBoard({ cells, charts, checked, repo, pkg }: {
       <header className="lv-head">
         <div>
           <p className="lv-kicker"><span>09 / in the open</span></p>
-          <h2 id="lv-title" className="lv-title">Built in the open. Counted live.</h2>
+          <h2 id="lv-title" className="lv-title">Built in the open, counted live</h2>
         </div>
         <p className="lv-live">
           <i aria-hidden="true" /> live · refreshed hourly{checked && <> · checked {checked}</>}

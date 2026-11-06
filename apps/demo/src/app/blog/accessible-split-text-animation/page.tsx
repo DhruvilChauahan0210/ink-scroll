@@ -99,7 +99,7 @@ export default function Page() {
       slug="accessible-split-text-animation"
       jsonLd={articleJsonLd}
       tags={['scrollText', 'ARIA', 'screen readers']}
-      title={<>Split-text animation a screen reader can read.</>}
+      title={<>Split-text animation a screen reader can read</>}
       lede={
         <>
           Animating a headline word by word means wrapping every word in its own element. The usual way to keep

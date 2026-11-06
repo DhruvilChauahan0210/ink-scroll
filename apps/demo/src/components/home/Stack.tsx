@@ -698,7 +698,7 @@ export function Stack() {
           </span>
         </p>
         <h2 id="st-title" className="st-title">
-          Written the way your framework writes.
+          Written the way your framework writes
         </h2>
         <p className="st-lede">
           A component in React and Vue, an action in Svelte, a hook in Solid, a custom element for plain HTML. SSR-safe.

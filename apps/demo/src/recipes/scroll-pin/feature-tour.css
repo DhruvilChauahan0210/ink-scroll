@@ -46,7 +46,7 @@
 .tour-copy li:not([aria-current]) .tour-n { color: inherit; }
 /* The accent, darkened for small text: #c4572b is 3.81:1 on the paper, #ae4d26 4.62:1. */
 .tour-n { font: 600 12px/1 ui-monospace, monospace; color: #ae4d26; }
-.tour-copy h3 { margin: 8px 0 6px; font: 600 24px/1.2 system-ui, sans-serif; }
+.tour-copy h3 { margin: 8px 0 8px; font: 600 24px/1.2 system-ui, sans-serif; }
 .tour-copy p { max-width: 36ch; margin: 0; font: 400 16px/1.6 system-ui, sans-serif; }
 
 /* On a phone the stage still has to fit: show one feature at a time. */

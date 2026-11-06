@@ -155,7 +155,7 @@
   display: none;
   grid-template-columns: 34px 1fr;
   align-items: baseline;
-  padding: 10px 0;
+  padding: 8px 0;
   font-family: var(--sans);
   font-size: 15px;
   line-height: 1.35;
@@ -178,7 +178,7 @@
 .home .cal-code {
   display: block;
   margin-top: clamp(10px, 2svh, 32px);
-  padding-top: 14px;
+  padding-top: 16px;
   border-top: 1px solid var(--line);
   font-family: var(--mono);
   font-size: 11.5px;
@@ -226,7 +226,7 @@
 
   .home .cal-step {
     display: grid;
-    padding: 13px 0;
+    padding: 12px 0;
     font-size: 16px;
     border-top: 1px solid var(--line);
   }

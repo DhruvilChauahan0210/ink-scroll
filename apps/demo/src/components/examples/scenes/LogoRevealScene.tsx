@@ -32,7 +32,7 @@ export function LogoRevealScene() {
         <div className="fw-hero">
           <div className="fw-copy">
             <p className="fw-kick">June lots · roasted Tuesday</p>
-            <h3 className="fw-h">Coffee from three farms, roasted the week you drink it.</h3>
+            <h3 className="fw-h">Coffee from three farms, roasted the week you drink it</h3>
             <p className="fw-sub">A washed Yirgacheffe, a honey Tarrazú and a natural from Huila. 250 g bags from €14.</p>
             <div className="fw-ctas">
               <span className="fw-cta">Shop the June lots</span>

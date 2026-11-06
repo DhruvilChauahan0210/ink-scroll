@@ -824,7 +824,7 @@ export function SignOff({ version, gzipKb, unitTests, browserTests, kicker = '10
           <Plate />
           <Flank side="r" view={FLANK_NIB} base={AT_FLANK_R} />
           <h2 id="so-title" className="so-title">
-            <span>One install. One call.</span> <span>The page follows the scroll.</span>
+            <span>One install, one call,</span> <span>and the page follows the scroll</span>
           </h2>
           <div className="so-cta">
             <CopyCommand />

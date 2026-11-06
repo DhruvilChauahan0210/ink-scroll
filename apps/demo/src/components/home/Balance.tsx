@@ -413,7 +413,7 @@ export function Balance() {
             </span>
           </p>
           <h2 id="bal-title" className="bal-title">
-            The same drawing. A fifth of the bytes.
+            The same drawing in a fifth of the bytes
           </h2>
           <div className="bal-cards">
             <figure className="bal-card bal-card-them">

@@ -263,7 +263,7 @@ export function Caliber() {
               <span ref={countRef}>{pad(0)}</span> / {TOTAL} strokes
             </span>
           </p>
-          <h2 className="cal-title">A watchmaker’s drawing, inked by your scroll.</h2>
+          <h2 className="cal-title">A watchmaker’s drawing, inked by your scroll</h2>
           <ol className="cal-steps">
             {STEPS.map((s, i) => (
               <li key={s} className={`cal-step${i === shown ? ' is-on' : ''}${i < shown ? ' is-done' : ''}`}>

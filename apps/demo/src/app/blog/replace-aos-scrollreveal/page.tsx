@@ -85,7 +85,7 @@ export default function Page() {
       slug="replace-aos-scrollreveal"
       jsonLd={articleJsonLd}
       tags={['scrollReveal', 'AOS', 'ScrollReveal.js']}
-      title={<>Replace AOS and ScrollReveal.js with one function call.</>}
+      title={<>Replace AOS and ScrollReveal.js with one function call</>}
       lede={
         <>
           AOS and ScrollReveal.js work — but they require data attributes on every element,

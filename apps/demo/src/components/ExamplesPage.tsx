@@ -284,7 +284,7 @@ export function ExamplesPage() {
         <div>
           <p className="pg-kicker"><span>examples / {EXAMPLES.length} patterns</span><span>live on this page</span></p>
           <h1 className="pg-title">
-            SVG scroll animations <span className="ex-dim">without GSAP.</span>
+            SVG scroll animations <span className="ex-dim">without GSAP</span>
           </h1>
         </div>
         <div className="ex-head-r">

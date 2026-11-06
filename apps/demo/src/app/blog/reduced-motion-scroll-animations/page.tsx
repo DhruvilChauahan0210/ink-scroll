@@ -103,7 +103,7 @@ export default function Page() {
       slug="reduced-motion-scroll-animations"
       jsonLd={articleJsonLd}
       tags={['prefers-reduced-motion', 'accessibility', 'scroll effects']}
-      title={<>Reduced motion for scroll animations, effect by effect.</>}
+      title={<>Reduced motion for scroll animations, effect by effect</>}
       lede={
         <>
           <code>prefers-reduced-motion: reduce</code> is a request for less motion, not for none. Turning every

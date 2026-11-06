@@ -69,7 +69,7 @@ export default function ScrollPerformancePage() {
       slug="scroll-animation-performance"
       jsonLd={articleJsonLd}
       tags={['animation-timeline', 'scroll timeline', 'rAF']}
-      title={<>Scroll animation performance. Native CSS vs JavaScript.</>}
+      title={<>Scroll animation performance: native CSS vs JavaScript</>}
       lede={
         <>
           Most scroll animation libraries run JavaScript on every scroll event. svg-scroll-draw takes a different approach:
@@ -142,14 +142,14 @@ export default function ScrollPerformancePage() {
         />
         <Code file="app.js">{`import { scrollAnimate } from 'svg-scroll-draw';
 
-// ✅ Native CSS path — zero JS scroll listeners
+// Native CSS path: zero JS scroll listeners
 scrollAnimate('#hero', {
   props:  { opacity: [0, 1], transform: ['translateY(32px)', 'translateY(0)'] },
   easing: 'ease-out',
   // native: true is the default
 });
 
-// ⚡ Falls back to JS engine — callbacks require main-thread JS
+// JS engine: callbacks need main-thread JS
 scrollAnimate('#section', {
   props:   { opacity: [0, 1] },
   onEnter: () => nav.setActive('section'),  // needs JS

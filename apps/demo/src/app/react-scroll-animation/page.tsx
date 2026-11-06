@@ -246,7 +246,7 @@ export default function ReactScrollAnimationPage() {
               <span>works with next.js app router, remix, vite</span>
             </p>
             <h1 className="pg-title stk-title">
-              React scroll animations. <span className="dim">{SELF.gzipKb}&nbsp;KB. Zero&nbsp;deps.</span>
+              React scroll animations <span className="dim">in {SELF.gzipKb}&nbsp;KB, zero&nbsp;deps</span>
             </h1>
             <p className="pg-lede">
               Typed React components and hooks for every scroll animation pattern — fade, slide, pin, snap, counter,
@@ -281,7 +281,7 @@ export default function ReactScrollAnimationPage() {
             </Sec>
 
             {/* ── 02 Quick start ────────────────────────────── */}
-            <Sec n={2} k={`quick start · ${QUICK_START.length} steps`} id="quick-start" title="Quick start.">
+            <Sec n={2} k={`quick start · ${QUICK_START.length} steps`} id="quick-start" title="Quick start">
               <p className="stk-p">
                 Five patterns that cover most of a landing page — the same five numbered on the drawing above.
               </p>
@@ -300,7 +300,7 @@ export default function ReactScrollAnimationPage() {
             </Sec>
 
             {/* ── 03 Every API ──────────────────────────────── */}
-            <Sec n={3} k={`parts list · ${APIS.length} apis`} id="every-api" title="Every React API.">
+            <Sec n={3} k={`parts list · ${APIS.length} apis`} id="every-api" title="Every React API">
               <ol className="stk-parts">
                 <li className="stk-part stk-part-h" aria-hidden="true"><span>no.</span><span>api · entry</span><span>what it does</span></li>
                 {APIS.map(({ name, sub, desc, hook }, i) => (
@@ -314,7 +314,7 @@ export default function ReactScrollAnimationPage() {
             </Sec>
 
             {/* ── 04 Next.js App Router ─────────────────────── */}
-            <Sec n={4} k="next.js" id="app-router" title="Next.js App Router.">
+            <Sec n={4} k="next.js" id="app-router" title="Next.js App Router">
               <p className="stk-p">
                 svg-scroll-draw is fully SSR-safe. All engines guard against <C>window</C> being undefined.
                 In Next.js App Router, add <C>&apos;use client&apos;</C> to any component that calls scroll APIs — or use{' '}
@@ -328,7 +328,7 @@ export default function ReactScrollAnimationPage() {
             </Sec>
 
             {/* ── 05 Drop it in ─────────────────────────────── */}
-            <Sec n={5} k="drop it in" id="drop-in" title="Drop-in for React + Next.js.">
+            <Sec n={5} k="drop it in" id="drop-in" title="Drop-in for React + Next.js">
               <dl className="stk-close-specs">
                 <div><dt>Licence</dt><dd>MIT</dd></div>
                 <div><dt>Dependencies</dt><dd>Zero</dd></div>

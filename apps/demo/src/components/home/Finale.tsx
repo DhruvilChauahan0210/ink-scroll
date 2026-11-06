@@ -306,7 +306,7 @@ export function Finale() {
         <div className="fin-copy">
           <p className="fin-k">★ / one more plate</p>
           <h2 id="fin-title" className="fin-title">
-            A star, by compass and scroll.
+            A star, by compass and scroll
           </h2>
           <ol className="fin-steps">
             {STEPS.map((s, k) => (

@@ -50,8 +50,8 @@ export function HeadlineReveal() {
       <div ref={eyebrow} className="xa-hl-kicker">
         <span><b>svg-scroll-draw</b> {SELF.version}</span>
       </div>
-      <h2 ref={line1} className="xa-hl-line">Build scroll animations.</h2>
-      <h2 ref={line2} className="xa-hl-line is-a">Without GSAP.</h2>
+      <h2 ref={line1} className="xa-hl-line">Build scroll animations</h2>
+      <h2 ref={line2} className="xa-hl-line is-a">Without GSAP</h2>
       <p ref={desc} className="xa-hl-desc">0 deps · MIT · {SELF.gzipKb} KB gzipped</p>
     </div>
   );

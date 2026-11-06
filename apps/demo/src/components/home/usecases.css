@@ -110,7 +110,7 @@
   color: var(--fg);
 }
 .home .uc-desc {
-  margin: 6px 0 0;
+  margin: 8px 0 0;
   font-size: 14px;
   line-height: 1.5;
   color: var(--fg-2);

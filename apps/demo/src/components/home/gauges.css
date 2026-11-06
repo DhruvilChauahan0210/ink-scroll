@@ -50,7 +50,7 @@
 .home .ga-code {
   display: block;
   margin-top: clamp(18px, 3vw, 28px);
-  padding-top: 14px;
+  padding-top: 16px;
   border-top: 1px solid var(--line);
   font-family: var(--mono);
   font-size: 11.5px;
@@ -80,14 +80,14 @@
 .home .ga-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  row-gap: 30px;
+  row-gap: 32px;
 }
 
 /* Phone first: the dials two by two, the third centred under the pair. */
 .home .ga-grid-dials {
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  column-gap: 10px;
-  row-gap: 26px;
+  column-gap: 8px;
+  row-gap: 24px;
 }
 .home .ga-grid-dials .ga-fig-gauge:nth-child(3) {
   grid-column: 1 / -1;
@@ -245,7 +245,7 @@
 .home .ga-cap {
   display: grid;
   justify-items: center;
-  gap: 3px;
+  gap: 4px;
   margin-top: 8px;
   font-family: var(--mono);
   text-align: center;
@@ -364,7 +364,7 @@
   .home .ga-code { margin-top: 0; }
 
   .home .ga-art { margin-block: 0; }
-  .home .ga-fig-gauge .ga-cap { margin-top: 10px; }
+  .home .ga-fig-gauge .ga-cap { margin-top: 8px; }
   .home .ga-lead,
   .home .ga-notes { visibility: visible; }
 

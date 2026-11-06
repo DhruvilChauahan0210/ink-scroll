@@ -6,7 +6,7 @@
 .site .ex-head .pg-title { max-width: 11ch; }
 .site .ex-dim { color: var(--fg-3); }
 .site .ex-head-r .pg-lede { margin-top: 0; }
-.site .ex-filters { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 8px; }
+.site .ex-filters { margin-top: 24px; display: flex; flex-wrap: wrap; gap: 8px; }
 .site .ex-head .pg-facts { max-width: none; }
 
 .site .ex-list { padding: 0 max(var(--gutter), calc((100% - 1560px) / 2)); }
@@ -58,8 +58,8 @@
 .site .ex-crumbs [aria-current] { color: var(--fg-2); }
 .site .ex-detail .pg-title { max-width: 18ch; font-size: clamp(38px, 5.4vw, 88px); }
 .site .ex-rel { padding: clamp(40px, 5vw, 80px) max(var(--gutter), calc((100% - 1560px) / 2)); border-top: 1px solid var(--line); }
-.site .ex-rel-h { margin: 0 0 18px; font: 500 12px/1.4 var(--mono); letter-spacing: 0.02em; color: var(--fg-3); }
-.site .ex-rel-note { margin: 18px 0 0; max-width: 64ch; font-size: 14px; line-height: 1.6; color: var(--fg-2); }
+.site .ex-rel-h { margin: 0 0 16px; font: 500 12px/1.4 var(--mono); letter-spacing: 0.02em; color: var(--fg-3); }
+.site .ex-rel-note { margin: 16px 0 0; max-width: 64ch; font-size: 14px; line-height: 1.6; color: var(--fg-2); }
 
 /* ── The catalogue ───────────────────────────────────────────────────── */
 
@@ -88,7 +88,7 @@
   text-transform: uppercase;
   color: var(--fg-3);
 }
-.site .ex-card-cap > * { display: flex; align-items: center; padding: 11px 14px; min-width: 0; }
+.site .ex-card-cap > * { display: flex; align-items: center; padding: 12px 16px; min-width: 0; }
 .site .ex-card-cap > * + * { border-left: 1px solid var(--line); }
 .site .ex-card-n { color: var(--accent); letter-spacing: 0.06em; flex: none; }
 .site .ex-card-tag { flex: 1; text-transform: none; letter-spacing: 0.02em; color: var(--fg-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block !important; line-height: 1.6 !important; padding-block: 8px !important; }
@@ -107,7 +107,7 @@
 }
 .site .ex-card-plate > * { width: 100%; max-width: 580px; }
 .site .ex-card-plate .ink-svg, .site .ex-card-plate .ink-art .uc-svg { max-height: 360px; }
-.site .ex-card-foot { padding: 22px clamp(16px, 2vw, 26px) 20px; display: grid; gap: 8px; }
+.site .ex-card-foot { padding: 24px clamp(16px, 2vw, 26px) 20px; display: grid; gap: 8px; }
 .site .ex-card-t { margin: 0; font-size: clamp(22px, 2vw, 30px); font-weight: 500; line-height: 1.1; letter-spacing: -0.035em; color: var(--fg); }
 .site .ex-card-d { margin: 0; max-width: 60ch; font-size: 14.5px; line-height: 1.6; color: var(--fg-2); }
 .site .ex-code { margin-top: 8px; border-top: 1px solid var(--line); }
@@ -129,7 +129,7 @@
   display: grid;
   place-items: center;
   width: 18px;
-  height: 18px;
+  height: 16px;
   border: 1px solid var(--line-2);
   border-radius: 50%;
   font-size: 12px;
@@ -166,7 +166,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  height: 42px;
+  height: 40px;
   padding: 0 20px;
   border-radius: 999px;
   background: #fff;
@@ -183,7 +183,7 @@
 
 /* Name and the one button, then the description. */
 .site .ex-card-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; }
-.site .ex-card-k { margin: 0 0 6px; font: 500 10.5px/1.4 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-3); }
+.site .ex-card-k { margin: 0 0 8px; font: 500 10.5px/1.4 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-3); }
 .site .ex-card-head .ex-card-t { margin: 0; }
 .site .sx-live {
   flex: none;
@@ -191,7 +191,7 @@
   align-items: center;
   gap: 8px;
   height: 36px;
-  padding: 0 15px 0 17px;
+  padding: 0 16px 0 16px;
   border-radius: 999px;
   border: 1px solid var(--fg);
   background: var(--fg);
@@ -205,5 +205,5 @@
 .site .ex-card.is-site .ex-card-foot { padding-top: 20px; }
 
 /* On an example's own page. */
-.site .sx-detail { display: grid; gap: 18px; }
+.site .sx-detail { display: grid; gap: 16px; }
 .site .sx-detail .sx-media { border: 1px solid var(--line-2); }

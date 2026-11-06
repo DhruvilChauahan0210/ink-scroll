@@ -245,7 +245,7 @@
 }
 
 .home .tk-desc {
-  margin-top: 6px;
+  margin-top: 8px;
   font-family: var(--sans);
   font-size: 15px;
   line-height: 1.4;
@@ -281,7 +281,7 @@
 
 .home .tk-end-title {
   display: block;
-  margin-top: 14px;
+  margin-top: 16px;
   font-family: var(--sans);
   font-weight: 500;
   font-size: clamp(28px, 3vw, 48px);
@@ -317,7 +317,7 @@
   display: grid;
   grid-template-columns: 14ch 1fr;
   gap: 12px;
-  padding: 9px 0;
+  padding: 8px 0;
   border-bottom: 1px solid var(--line);
   font-family: var(--mono);
   font-size: 11.5px;
@@ -342,7 +342,7 @@
   display: grid;
   grid-template-columns: 1fr auto;
   align-items: start;
-  gap: 18px;
+  gap: 16px;
   font-family: var(--mono);
   font-size: 11px;
   letter-spacing: 0.04em;
@@ -391,7 +391,7 @@
   transition: background-color 0.4s var(--ease);
 }
 .home .tk-st b {
-  margin-top: 6px;
+  margin-top: 8px;
   font-weight: 400;
   font-size: 10px;
   line-height: 1;
@@ -431,7 +431,7 @@
   .home .tk-code {
     display: block;
     margin-top: clamp(18px, 3svh, 36px);
-    padding-top: 14px;
+    padding-top: 16px;
     border-top: 1px solid var(--line);
     font-family: var(--mono);
     font-size: 12px;

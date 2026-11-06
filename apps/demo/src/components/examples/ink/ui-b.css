@@ -34,7 +34,7 @@
   color: var(--fg-3);
 }
 .home .xb-rv-title {
-  margin: 10px 0 18px;
+  margin: 8px 0 16px;
   font: 500 22px/1.12 var(--sans);
   letter-spacing: -0.035em;
   color: var(--fg);
@@ -69,9 +69,9 @@
   display: grid;
   grid-template-columns: 30px minmax(0, 1fr) 20px;
   grid-template-areas: 'n name icon' '. body icon';
-  column-gap: 10px;
-  row-gap: 3px;
-  padding: 13px 2px 14px 0;
+  column-gap: 8px;
+  row-gap: 4px;
+  padding: 12px 2px 16px 0;
 }
 .home .xb-rv-n {
   grid-area: n;
@@ -100,7 +100,7 @@
 }
 
 @container (min-width: 500px) {
-  .home .xb-rv-title { font-size: 26px; margin-bottom: 22px; }
+  .home .xb-rv-title { font-size: 26px; margin-bottom: 24px; }
   .home .xb-rv-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     border-left: 1px solid var(--line);
@@ -110,10 +110,10 @@
     grid-template-columns: minmax(0, 1fr) auto;
     grid-template-areas: 'n icon' 'name name' 'body body';
     row-gap: 0;
-    padding: 14px 16px 18px;
+    padding: 16px 16px 16px;
   }
-  .home .xb-rv-name { margin-top: 26px; }
-  .home .xb-rv-body { margin-top: 5px; font-size: 14px; }
+  .home .xb-rv-name { margin-top: 24px; }
+  .home .xb-rv-body { margin-top: 4px; font-size: 14px; }
 }
 
 /* ── scrollPin — a product walkthrough in its own scroll area ───────────── */
@@ -138,7 +138,7 @@
   color: var(--fg-3);
   white-space: nowrap;
 }
-.home .xb-pin-dots { display: inline-flex; gap: 5px; }
+.home .xb-pin-dots { display: inline-flex; gap: 4px; }
 .home .xb-pin-dots i { width: 7px; height: 7px; border: 1px solid var(--line-2); border-radius: 50%; }
 .home .xb-pin-url { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; letter-spacing: 0.02em; }
 .home .xb-pin-hint {
@@ -163,7 +163,7 @@
   display: grid;
   gap: 4px 12px;
   align-content: center;
-  padding: 0 14px;
+  padding: 0 16px;
   grid-template-columns: minmax(0, 1fr) auto;
   grid-template-areas: 'label hint' 'lede lede';
 }
@@ -174,7 +174,7 @@
 .home .xb-pin-outro {
   display: grid;
   gap: 4px;
-  padding: 18px 14px 22px;
+  padding: 16px 16px 24px;
   border-top: 1px solid var(--fg-3);
 }
 .home .xb-pin-specs { margin: 12px 0 0; border-top: 1px solid var(--line-2); }
@@ -183,7 +183,7 @@
   grid-template-columns: 84px minmax(0, 1fr);
   gap: 12px;
   align-items: baseline;
-  padding: 9px 0;
+  padding: 8px 0;
   border-bottom: 1px solid var(--line);
 }
 .home .xb-pin-specs dt {
@@ -210,8 +210,8 @@
   grid-template-columns: 112px minmax(0, 1fr);
   grid-template-rows: auto 1fr auto;
   grid-template-areas: 'art meta' 'art .' 'art foot';
-  column-gap: 14px;
-  padding: 12px 14px;
+  column-gap: 16px;
+  padding: 12px 16px;
   background: var(--panel);
   border-bottom: 1px solid var(--line-2);
 }
@@ -221,14 +221,14 @@
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 .home .xb-pin-state {
   flex: none;
   display: inline-flex;
   align-items: center;
   height: 20px;
-  padding: 0 9px;
+  padding: 0 8px;
   border: 1px solid var(--line-2);
   border-radius: 999px;
   font: 500 9.5px/1 var(--mono);
@@ -253,7 +253,7 @@
 .home .xb-pin-svg[data-part='0'] .xb-pin-p0 .xb-ink,
 .home .xb-pin-svg[data-part='1'] .xb-pin-p1 .xb-ink,
 .home .xb-pin-svg[data-part='2'] .xb-pin-p2 .xb-ink { stroke: var(--accent); }
-.home .xb-pin-foot { grid-area: foot; display: grid; gap: 7px; min-width: 0; }
+.home .xb-pin-foot { grid-area: foot; display: grid; gap: 8px; min-width: 0; }
 .home .xb-pin-cb {
   font: 400 10.5px/1.2 var(--mono);
   color: var(--fg);
@@ -262,7 +262,7 @@
   text-overflow: ellipsis;
 }
 .home .xb-pin-cb-k { letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-3); }
-.home .xb-pin-prog { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 10px; }
+.home .xb-pin-prog { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px; }
 .home .xb-pin-rule { position: relative; height: 9px; }
 .home .xb-pin-rule::before {
   content: '';
@@ -292,8 +292,8 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 6px;
-  padding: 18px 14px;
+  gap: 8px;
+  padding: 16px 16px;
   border-bottom: 1px solid var(--line);
 }
 .home .xb-pin-feat:last-child { border-bottom: 0; }
@@ -332,14 +332,14 @@
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: auto minmax(0, 1fr) auto;
     grid-template-areas: 'meta' 'art' 'foot';
-    row-gap: 10px;
-    padding: 16px 18px;
+    row-gap: 8px;
+    padding: 16px 16px;
     border-bottom: 0;
     border-right: 1px solid var(--line);
   }
   .home .xb-pin-svg { max-width: 240px; }
   .home .xb-pin-list { flex: 1; min-width: 0; }
-  .home .xb-pin-feat { height: 220px; padding: 0 22px; }
+  .home .xb-pin-feat { height: 220px; padding: 0 24px; }
   .home .xb-pin-ft { font-size: 21px; }
 }
 
@@ -351,7 +351,7 @@
   justify-content: space-between;
   align-items: flex-end;
   gap: 16px;
-  padding-bottom: 14px;
+  padding-bottom: 16px;
   border-bottom: 1px solid var(--fg-3);
 }
 .home .xb-sn-title {
@@ -396,13 +396,13 @@
   scroll-snap-align: start;
   display: flex;
   flex-direction: column;
-  padding: 16px 16px 6px;
+  padding: 16px 16px 8px;
   border: 1px solid var(--line-2);
   border-radius: 2px;
   transition: border-color 0.35s var(--ease);
 }
 .home .xb-sn-card.is-on { border-color: var(--fg-3); }
-.home .xb-sn-top { display: flex; align-items: center; gap: 10px; min-height: 22px; }
+.home .xb-sn-top { display: flex; align-items: center; gap: 8px; min-height: 24px; }
 .home .xb-sn-n {
   font: 500 10.5px/1 var(--mono);
   letter-spacing: 0.06em;
@@ -428,7 +428,7 @@
   white-space: nowrap;
 }
 .home .xb-sn-price {
-  margin: 22px 0 0;
+  margin: 24px 0 0;
   font: 500 42px/1 var(--sans);
   letter-spacing: -0.045em;
   font-variant-numeric: tabular-nums;
@@ -440,13 +440,13 @@
   letter-spacing: 0.04em;
   color: var(--fg-3);
 }
-.home .xb-sn-note { margin: 10px 0 16px; font: 400 14px/1.5 var(--sans); color: var(--fg-2); }
+.home .xb-sn-note { margin: 8px 0 16px; font: 400 14px/1.5 var(--sans); color: var(--fg-2); }
 .home .xb-sn-list { list-style: none; margin: auto 0 0; padding: 0; border-top: 1px solid var(--line); }
 .home .xb-sn-list li {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 9px 0;
+  gap: 8px;
+  padding: 8px 0;
   font: 400 13.5px/1.3 var(--sans);
   color: var(--fg-2);
 }
@@ -475,8 +475,8 @@
   transition: color 0.2s, background-color 0.2s;
 }
 .home .xb-sn-dot {
-  height: 30px;
-  padding: 0 10px;
+  height: 32px;
+  padding: 0 8px;
   font: 500 10.5px/1 var(--mono);
   letter-spacing: 0.06em;
 }
@@ -493,7 +493,7 @@
   transition: transform 0.35s var(--ease);
 }
 .home .xb-sn-dot[aria-current='true']::after { transform: scaleX(1); }
-.home .xb-sn-arrows { display: inline-flex; gap: 6px; }
+.home .xb-sn-arrows { display: inline-flex; gap: 8px; }
 .home .xb-sn-arrow {
   display: grid;
   place-items: center;
@@ -511,7 +511,7 @@
 
 @container (min-width: 480px) {
   .home .xb-sn-title { font-size: 26px; }
-  .home .xb-sn-card { flex-basis: 74%; padding: 18px 20px 8px; }
+  .home .xb-sn-card { flex-basis: 74%; padding: 16px 20px 8px; }
   .home .xb-sn-price { font-size: 48px; }
 }
 
@@ -530,7 +530,7 @@
   justify-content: space-between;
   align-items: baseline;
   gap: 4px 16px;
-  padding-bottom: 10px;
+  padding-bottom: 8px;
   border-bottom: 1px solid var(--fg-3);
 }
 .home .xb-vd-tc {
@@ -540,7 +540,7 @@
 }
 .home .xb-vd-tc span { color: var(--fg); }
 
-.home .xb-vd-stage { display: grid; gap: 14px; padding: 16px 0 14px; }
+.home .xb-vd-stage { display: grid; gap: 16px; padding: 16px 0 16px; }
 .home .xb-vd-svg {
   display: block;
   width: 100%;
@@ -596,7 +596,7 @@
   grid-template-areas: 'b name' 'b spec';
   column-gap: 8px;
   row-gap: 2px;
-  padding: 9px 0;
+  padding: 8px 0;
   border-bottom: 1px solid var(--line);
   opacity: calc(0.3 + 0.7 * clamp(0, calc((var(--k) - 0.65) * 2.9), 1));
 }
@@ -660,7 +660,7 @@
     grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
     align-items: center;
     gap: 28px;
-    padding: 20px 0 18px;
+    padding: 20px 0 16px;
   }
   .home .xb-vd-svg { max-width: 250px; }
 }

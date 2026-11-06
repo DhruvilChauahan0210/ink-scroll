@@ -37,10 +37,10 @@
   border-bottom: 1px solid var(--line);
 }
 .site .pg-kicker {
-  margin: 0 0 18px;
+  margin: 0 0 16px;
   display: flex;
   flex-wrap: wrap;
-  gap: 6px 18px;
+  gap: 8px 16px;
   font: 500 12px/1.4 var(--mono);
   letter-spacing: 0.02em;
   color: var(--fg-3);
@@ -64,7 +64,7 @@
   line-height: 1.6;
   color: var(--fg-2);
 }
-.site .pg-actions { margin-top: clamp(22px, 2.6vw, 32px); display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.site .pg-actions { margin-top: clamp(22px, 2.6vw, 32px); display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 
 /* A row of real figures under a page title, in hairline cells. */
 .site .pg-facts {
@@ -77,7 +77,7 @@
 }
 @media (min-width: 760px) { .site .pg-facts { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 .site .pg-facts > div {
-  padding: 14px 16px 16px;
+  padding: 16px 16px 16px;
   border-right: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
 }
@@ -101,14 +101,14 @@
   border-bottom: 1px solid var(--line);
   background: var(--bg-2);
 }
-.site .code-head > span { display: flex; align-items: center; padding: 7px 14px; min-width: 0; }
+.site .code-head > span { display: flex; align-items: center; padding: 8px 16px; min-width: 0; }
 .site .code-file { font: 500 11px/1.4 var(--mono); letter-spacing: 0.04em; color: var(--fg-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .site .code-meta, .site .code-copy { border-left: 1px solid var(--line); }
 .site .code-meta { font: 500 10px/1.4 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-3); }
 .site .code-copy { padding: 4px 8px !important; }
 .site .code-body {
   margin: 0;
-  padding: 14px 20px 16px;
+  padding: 16px 20px 16px;
   overflow-x: auto;
   font: 400 12.5px/1.8 var(--mono);
   color: var(--fg);
@@ -146,7 +146,7 @@
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  padding: 8px 14px;
+  padding: 8px 16px;
   border-bottom: 1px solid var(--line-2);
   background: var(--bg-2);
   font: 500 10.5px/1.4 var(--mono);
@@ -189,7 +189,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 13px;
+  padding: 8px 12px;
   border: 1px solid var(--line-2);
   border-radius: 999px;
   background: transparent;
@@ -212,7 +212,7 @@
   grid-template-columns: 56px minmax(0, 1fr) auto;
   gap: 16px;
   align-items: baseline;
-  padding: 18px 0;
+  padding: 16px 0;
   border-bottom: 1px solid var(--line);
   transition: background-color 0.2s;
 }

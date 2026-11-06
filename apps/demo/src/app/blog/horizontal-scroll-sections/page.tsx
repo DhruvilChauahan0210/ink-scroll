@@ -65,7 +65,7 @@ export default function Page() {
       slug="horizontal-scroll-sections"
       jsonLd={articleJsonLd}
       tags={['scrollHorizontal', 'svg-scroll-draw/horizontal', 'no GSAP']}
-      title={<>Horizontal scroll sections without GSAP.</>}
+      title={<>Horizontal scroll sections without GSAP</>}
       lede={
         <>
           Apple does it. Stripe does it. Linear does it. Vertical scroll drives horizontal movement, and

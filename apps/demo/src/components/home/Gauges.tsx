@@ -479,7 +479,7 @@ export function Gauges({ unitTests, browserTests, gzipKb, budgetKb }: Props) {
           </span>
         </p>
         <h2 className="ga-title" id="ga-title">
-          Tested in real browsers, not just in theory.
+          Tested in real browsers, not just in theory
         </h2>
         {/* Broken like real code: one key per line on a phone. */}
         <code className="ga-code">

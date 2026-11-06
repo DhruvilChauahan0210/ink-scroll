@@ -219,7 +219,7 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 /* The GitHub button's star: pencil until the sheet's last stroke lands, then
@@ -229,7 +229,7 @@
 .home .so-star-pencil { stroke: var(--line-2); }
 .home .so-star-ink { stroke: var(--accent); stroke-dasharray: 1; stroke-dashoffset: 1; }
 .home .so-star-n {
-  padding-left: 10px;
+  padding-left: 8px;
   border-left: 1px solid var(--line-2);
   color: var(--fg-2);
   font-variant-numeric: tabular-nums;
@@ -302,7 +302,7 @@
 .home .so-pl-a {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   width: 100%;
   height: 100%;
   padding: 0 12px;
@@ -346,7 +346,7 @@
   display: grid;
   grid-template-columns: var(--so-split) minmax(0, 1fr);
   align-items: center;
-  min-height: 38px;
+  min-height: 40px;
 }
 .home .so-tb-k {
   display: flex;
@@ -360,7 +360,7 @@
 }
 .home .so-tb-v {
   margin: 0;
-  padding: 10px 12px;
+  padding: 8px 12px;
   font: 500 12px/1.35 var(--mono);
   color: var(--fg);
   min-width: 0;
@@ -464,7 +464,7 @@
 .home .so-cn-h {
   position: relative;
   margin: 0 0 12px;
-  padding-bottom: 9px;
+  padding-bottom: 8px;
   font-size: 10px;
   line-height: 1;
   letter-spacing: 0.16em;
@@ -473,7 +473,7 @@
 }
 .home .so-cn-list {
   display: grid;
-  gap: 6px;
+  gap: 8px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -497,7 +497,7 @@
   align-self: center;
   width: 38px;
   height: 9px;
-  margin-right: 14px;
+  margin-right: 16px;
 }
 
 .home .so-scale {
@@ -505,14 +505,14 @@
   flex: none;
   align-self: flex-end;
   width: 100px;
-  margin: 0 0 22px;
+  margin: 0 0 24px;
   font: 500 9px/1 var(--mono);
   letter-spacing: 0.08em;
   color: var(--fg-3);
 }
 .home .so-scale-t {
   display: block;
-  margin-bottom: 9px;
+  margin-bottom: 8px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
@@ -593,10 +593,10 @@
   .home .so-parts::after,
   .home .so-pl-close { display: none; }
   .home .so-pl-col.so-pl-no { display: grid; }
-  .home .so-pl-a { font-size: 13px; padding: 0 10px; }
-  .home .so-pl-h { padding: 0 10px; }
+  .home .so-pl-a { font-size: 13px; padding: 0 8px; }
+  .home .so-pl-h { padding: 0 8px; }
   .home .so-pl-col.so-pl-no .so-pl-h,
-  .home .so-pl-list > li.so-pl-num { padding: 0 0 0 14px; }
+  .home .so-pl-list > li.so-pl-num { padding: 0 0 0 16px; }
 
   /* As tall as the parts list, so the two tables share a top edge; the
      first row takes the header's height on top of its own. */
@@ -612,7 +612,7 @@
     justify-content: space-between;
     align-items: stretch;
     min-height: 0;
-    padding: 7px 12px 6px;
+    padding: 8px 12px 8px;
   }
   .home .so-tb-k { padding: 0; font-size: 9px; line-height: 1; }
   .home .so-tb-v { padding: 0; font-size: 12px; line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -643,7 +643,7 @@
 /* Short laptop screens: tighter tables, so the finished sheet still fits. */
 @media (min-width: 900px) and (max-height: 880px) {
   .home .so-stage { --so-hd: 28px; --so-row: 34px; --so-band: 24px; --so-plate: 86svh; }
-  .home .so-tb-cell { padding: 6px 10px 5px; }
+  .home .so-tb-cell { padding: 8px 8px 4px; }
   .home .so-tb-name { font-size: 22px; }
 }
 
@@ -664,7 +664,7 @@
 @media (min-width: 900px) and (max-height: 800px) {
   .home .so-stage { --so-hd: 26px; --so-row: 32px; --so-plate: 80svh; }
   .home .so-head { padding-top: 8px; }
-  .home .so-cta { margin-top: 18px; }
+  .home .so-cta { margin-top: 16px; }
 }
 @media (min-width: 900px) and (max-height: 740px) {
   .home .so-stage { --so-plate: 74svh; }
