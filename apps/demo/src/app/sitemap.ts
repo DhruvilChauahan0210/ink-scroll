@@ -11,10 +11,10 @@ const SITE_URL = "https://svg-scroll-draw.vercel.app";
 // Pages generated from data share one date per group: the last commit to the
 // template, its component or its data file. `npm run sitemap:dates` rewrites
 // these alongside the literal entries below — never type them by hand.
-const FRAMEWORK_PAGES_DATE = "2026-11-06";
-const VERSUS_PAGES_DATE = "2026-11-04";
-const EXAMPLE_PAGES_DATE = "2026-11-06";
-const GUIDE_PAGES_DATE = "2026-11-04";
+const FRAMEWORK_PAGES_DATE = "2026-11-07";
+const VERSUS_PAGES_DATE = "2026-11-07";
+const EXAMPLE_PAGES_DATE = "2026-11-07";
+const GUIDE_PAGES_DATE = "2026-11-07";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
@@ -27,25 +27,25 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${SITE_URL}/docs`,
-      lastModified: new Date("2026-11-06"),
+      lastModified: new Date("2026-11-07"),
       changeFrequency: "weekly",
       priority: 0.9,
     },
     {
       url: `${SITE_URL}/examples`,
-      lastModified: new Date("2026-11-05"),
+      lastModified: new Date("2026-11-07"),
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
       url: `${SITE_URL}/blocks`,
-      lastModified: new Date("2026-11-06"),
+      lastModified: new Date("2026-11-07"),
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
       url: `${SITE_URL}/playground`,
-      lastModified: new Date("2026-11-04"),
+      lastModified: new Date("2026-11-07"),
       changeFrequency: "weekly",
       priority: 0.7,
     },
@@ -59,13 +59,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // ── Framework landing pages ─────────────────────────────────────────────
     {
       url: `${SITE_URL}/react-scroll-animation`,
-      lastModified: new Date("2026-11-06"),
+      lastModified: new Date("2026-11-07"),
       changeFrequency: "monthly",
       priority: 0.9,
     },
     {
       url: `${SITE_URL}/nextjs-scroll-animation`,
-      lastModified: new Date("2026-11-06"),
+      lastModified: new Date("2026-11-07"),
       changeFrequency: "monthly",
       priority: 0.9,
     },
@@ -81,19 +81,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // ── Comparison pages ────────────────────────────────────────────────────
     {
       url: `${SITE_URL}/vs-gsap`,
-      lastModified: new Date("2026-11-04"),
+      lastModified: new Date("2026-11-07"),
       changeFrequency: "monthly",
       priority: 0.9,
     },
     {
       url: `${SITE_URL}/vs-aos`,
-      lastModified: new Date("2026-11-04"),
+      lastModified: new Date("2026-11-07"),
       changeFrequency: "monthly",
       priority: 0.9,
     },
     {
       url: `${SITE_URL}/vs-framer-motion`,
-      lastModified: new Date("2026-11-04"),
+      lastModified: new Date("2026-11-07"),
       changeFrequency: "monthly",
       priority: 0.9,
     },
@@ -110,7 +110,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // ── Migration guides (AOS / ScrollReveal / vivus / GSAP ScrollTrigger) ──
     {
       url: `${SITE_URL}/guides`,
-      lastModified: new Date("2026-11-04"),
+      lastModified: new Date("2026-11-07"),
       changeFrequency: "monthly" as const,
       priority: 0.8,
     },
@@ -130,7 +130,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })),
     {
       url: `${SITE_URL}/lenis-scroll-animation`,
-      lastModified: new Date("2026-11-04"),
+      lastModified: new Date("2026-11-07"),
       changeFrequency: "monthly" as const,
       priority: 0.8,
     },
@@ -138,7 +138,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // ── Blog index ──────────────────────────────────────────────────────────
     {
       url: `${SITE_URL}/blog`,
-      lastModified: new Date("2026-11-04"),
+      lastModified: new Date("2026-11-07"),
       changeFrequency: "weekly",
       priority: 0.7,
     },
@@ -146,7 +146,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // ── Blog posts ──────────────────────────────────────────────────────────
     {
       url: `${SITE_URL}/blog/replace-gsap-scrolltrigger`,
-      lastModified: new Date("2026-11-01"),
+      lastModified: new Date("2026-11-07"),
       changeFrequency: "monthly",
       priority: 0.9,
     },
@@ -158,73 +158,73 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${SITE_URL}/blog/replace-aos-scrollreveal`,
-      lastModified: new Date("2026-11-01"),
+      lastModified: new Date("2026-11-07"),
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
       url: `${SITE_URL}/blog/reduced-motion-scroll-animations`,
-      lastModified: new Date("2026-11-06"),
+      lastModified: new Date("2026-11-07"),
       changeFrequency: "monthly",
       priority: 0.7,
     },
     {
       url: `${SITE_URL}/blog/accessible-split-text-animation`,
-      lastModified: new Date("2026-11-06"),
+      lastModified: new Date("2026-11-07"),
       changeFrequency: "monthly",
       priority: 0.7,
     },
     {
       url: `${SITE_URL}/blog/complete-guide-scroll-animations-2026`,
-      lastModified: new Date("2026-11-06"),
+      lastModified: new Date("2026-11-07"),
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
       url: `${SITE_URL}/blog/native-css-svg-scroll-animations`,
-      lastModified: new Date("2026-11-01"),
+      lastModified: new Date("2026-11-07"),
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
       url: `${SITE_URL}/blog/scroll-animation-performance`,
-      lastModified: new Date("2026-11-01"),
+      lastModified: new Date("2026-11-07"),
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
       url: `${SITE_URL}/blog/horizontal-scroll-sections`,
-      lastModified: new Date("2026-11-06"),
+      lastModified: new Date("2026-11-07"),
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
       url: `${SITE_URL}/blog/scroll-pin-without-gsap`,
-      lastModified: new Date("2026-11-06"),
+      lastModified: new Date("2026-11-07"),
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
       url: `${SITE_URL}/blog/5-patterns-under-10-lines`,
-      lastModified: new Date("2026-11-01"),
+      lastModified: new Date("2026-11-07"),
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
       url: `${SITE_URL}/blog/scroll-animation-groups`,
-      lastModified: new Date("2026-11-01"),
+      lastModified: new Date("2026-11-07"),
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
       url: `${SITE_URL}/blog/scroll-path-morphing`,
-      lastModified: new Date("2026-11-01"),
+      lastModified: new Date("2026-11-07"),
       changeFrequency: "monthly",
       priority: 0.7,
     },
     {
       url: `${SITE_URL}/blog/vue-svelte-solid-v2`,
-      lastModified: new Date("2026-11-01"),
+      lastModified: new Date("2026-11-07"),
       changeFrequency: "monthly",
       priority: 0.7,
     },

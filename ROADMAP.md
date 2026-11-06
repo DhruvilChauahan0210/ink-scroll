@@ -190,6 +190,7 @@ of examining a single API in a real browser.
 - [x] Every page passes axe (WCAG 2.1 A/AA) and every internal link resolves — `test-a11y.mjs`, in CI (2026-11-06)
 - [x] Every page gives a crawler a full set: title, description, canonical, one h1, preview image, JSON-LD, two or more inbound links — `test-seo.mjs`, in CI (2026-11-06)
 - [x] ~~`/docs` as server-rendered content with client islands~~ — tried 2026-11-06 and reverted: as a Server Component with a client sidebar it shipped 27 KB less JS but 41 KB more HTML (React's server payload repeats the content), and measured the same main-thread work (script 193 → 188 ms, all tasks 895 → 939 ms at CPU 4×, median of 7) with LCP the same or slightly worse. The script time is React, the router, the drawings and the copy buttons, not the content
+- [x] No AI-looking UI by heydamir/unslop's rules: site, blocks and showcase (branch `fix/unslop-polish`, 2026-11-07)
 - [ ] Bing Webmaster Tools (owner): add and verify the site — Bing refused IndexNow with 403 "UserForbiddedToAccessSite" from the third run on (2026-11-06; the workflow now warns instead of failing) — then watch submissions there
 - [x] `/nextjs-scroll-animation` (position 24, the most impressions after home): full App Router example, FAQ, more internal links
 - [x] Ship `"use client"` on `svg-scroll-draw/react` (as the drop-in hooks already do) so Server Components can render `<ScrollDraw>` directly (2.16.1)

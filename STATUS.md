@@ -174,7 +174,15 @@ at all.
 - [ ] Owner: set `GITHUB_TOKEN` on Vercel (a fine-grained token with read-only access to public repositories and no other permissions is enough)
 - [x] Merged into `feat/homepage-redesign` and pushed (2026-11-06)
 
-### 2.22.0 — reduced motion turned on mid-visit applies at once (2026-11-06; in the working tree)
+### Unslop (2026-11-07; site, blocks and showcase; branch `fix/unslop-polish`)
+
+- [x] heydamir/unslop audit: 13 of its 59 signs on the site ("light slop"); every one fixed in polish mode (spacing, nav surface, emoji, copy, labels, italic, radius, looping glow)
+- [x] Blocks in React, Vue and Svelte: sentence-case eyebrows, weight 500, concrete default copy; `public/r` regenerated
+- [x] Showcase: "New" pills (10), gradient headlines (4), unverifiable "Trusted by" counts (3), coloured glows (19), caps and tracking
+- [x] test-blocks, test-seo, test-a11y (0 violations), test-recipes, Vue and Svelte blocks pass
+- [ ] Look at the Vercel preview, then merge into `feat/homepage-redesign` and `main`
+
+### 2.22.0 — reduced motion turned on mid-visit applies at once (2026-11-06; pushed in `66af2b5`)
 
 - [x] Every engine but the drop-ins follows `prefers-reduced-motion` turned on while the page is open: `core/motion-live.ts` destroys the instance and rebuilds it through the start-up reduced branch behind the same object (draw, animate — reveal, parallax, groups, horizontal with `respectReducedMotion: true` — text, counter); video and `Cinematic` finish in place; `useScrollDrawProgress` reports 1
 - [x] One way: turning it off leaves everything finished until the next load; snap and the timeline's loop still follow both ways

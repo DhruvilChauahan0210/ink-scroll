@@ -8,6 +8,25 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### Site
 
+- **Unslopped, by heydamir/unslop's rules** (Damir Sokolovsky's skill, CC BY
+  4.0), on branch `fix/unslop-polish`. Its audit rated the site "light slop"
+  (13 of its 59 signs), so the passes ran in polish mode: palette, type and
+  layout kept, every sign it found fixed. Spacing: 633 declarations onto the
+  4px grid. Color: the frosted-glass nav and More panel are a plain surface
+  with a hairline. Icons: no emoji. Copy: no pill badge above the homepage
+  headline (it called long-shipped hooks "New in v2.22.0"), no exclamation
+  marks, no "seamlessly", short placeholders, and 60 headlines without a
+  final period. Type: no uppercase labels with wide tracking (171 rules), no
+  negative tracking on small text, shared labels in sentence case, emphasis
+  by colour instead of italic. Details: buttons, chips and tabs 8px, tags 4px,
+  instead of pills. Motion: the stack diagram's glowing pulse no longer loops.
+  The copy-paste blocks get the same type and copy passes in React, Vue and
+  Svelte. The 23 showcase sites lose their "New" pills, gradient headlines,
+  "Trusted by 48,000 teams" lines, coloured glows and uppercase labels.
+  `scripts/find-lowercase-labels.mjs` lists labels still written in
+  lowercase, page by page. Checked: typecheck, lint, test-blocks, test-seo,
+  test-a11y (66 pages, 0 violations), test-recipes, Vue and Svelte blocks.
+
 - **New post: Reduced motion for scroll animations, effect by effect**
   (`/blog/reduced-motion-scroll-animations`). What `prefers-reduced-motion`
   should do to each kind of scroll effect — reveals and drawings finish at
