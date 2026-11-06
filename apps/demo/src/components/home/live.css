@@ -112,6 +112,24 @@
   color: var(--fg-3);
 }
 .home .lv-chart-head b { font-weight: 500; color: var(--fg); }
+/* The range switch reads as part of the caption: the current one in ink,
+   underlined in the accent; the other muted until hovered. */
+.home .lv-span { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+.home .lv-ranges { display: inline-flex; gap: 14px; }
+.home .lv-ranges button {
+  padding: 4px 0;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  background: none;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: var(--fg-3);
+  cursor: pointer;
+  transition: color 0.2s var(--ease), border-color 0.2s var(--ease);
+}
+.home .lv-ranges button:hover { color: var(--fg-2); }
+.home .lv-ranges button[aria-pressed='true'] { color: var(--fg); border-bottom-color: var(--accent); cursor: default; }
 .home .lv-plot { position: relative; margin-top: 14px; }
 .home .lv-plot svg { display: block; width: 100%; height: auto; overflow: visible; }
 .home .lv-grid-line { fill: none; stroke: var(--line); stroke-width: 1; }

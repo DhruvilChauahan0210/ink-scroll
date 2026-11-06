@@ -22,6 +22,8 @@ export type Spark = {
 };
 
 export type Chart = {
+  /** What the plot covers: "last 30 days", "all time". */
+  span: string;
   wide: Spark;
   narrow: Spark;
   max: number;
@@ -158,14 +160,21 @@ function Plot({ s, chart, pkg }: { s: Spark; chart: Chart; pkg: string }) {
   );
 }
 
-export function LiveBoard({ cells, chart, checked, repo, pkg }: {
+type Range = 'all' | 'month';
+const RANGES: [Range, string][] = [['month', 'last 30 days'], ['all', 'all time']];
+
+export function LiveBoard({ cells, charts, checked, repo, pkg }: {
   cells: LiveCell[];
-  chart: Chart | null;
+  /** Every day since the first publish, and the last 30; either can be missing. */
+  charts: Record<Range, Chart | null>;
   checked: string | null;
   repo: string;
   pkg: string;
 }) {
   const narrow = useSyncExternalStore(subscribeNarrow, isNarrow, () => false);
+  const [range, setRange] = useState<Range>('all');
+  const chart = charts[range] ?? charts.all ?? charts.month;
+  const both = Boolean(charts.all && charts.month);
   const fig = useRef<HTMLElement>(null);
   // The fill and the labels wait for the line: they key off its progress.
   const onProgress = useCallback((p: number) => {
@@ -200,10 +209,23 @@ export function LiveBoard({ cells, chart, checked, repo, pkg }: {
       {chart && (
         <figure className="lv-chart" ref={fig}>
           <figcaption className="lv-chart-head">
-            <span>npm downloads · last 30 days</span>
-            <span><b>{chart.total.toLocaleString('en-US')}</b> total · peak <b>{chart.peak.value}</b> on {chart.peak.day}</span>
+            <span className="lv-span">
+              npm downloads ·{' '}
+              {both ? (
+                <span className="lv-ranges" role="group" aria-label="Range">
+                  {RANGES.map(([r, name]) => (
+                    <button key={r} type="button" aria-pressed={r === range} onClick={() => setRange(r)}>{name}</button>
+                  ))}
+                </span>
+              ) : chart.span}
+            </span>
+            {/* Says the new figures when the range changes. */}
+            <span aria-live="polite">
+              <b>{chart.total.toLocaleString('en-US')}</b> total · peak <b>{chart.peak.value}</b> on {chart.peak.day}
+            </span>
           </figcaption>
-          <ScrollDraw key={narrow ? 'n' : 'w'} className="lv-plot" selector=".lv-line"
+          {/* Keyed by plate and range: a new set of days is a new line for the library to ink. */}
+          <ScrollDraw key={`${narrow ? 'n' : 'w'}-${chart.span}`} className="lv-plot" selector=".lv-line"
             trigger={{ start: 'top 85%', end: 'top 35%' }} easing="ease-in-out" onProgress={onProgress}>
             <Plot s={narrow ? chart.narrow : chart.wide} chart={chart} pkg={pkg} />
           </ScrollDraw>

@@ -167,8 +167,9 @@ at all.
 
 - [x] Fixed: the four GitHub cards showed "—" after a refused hourly refresh (Next refetches a stale `fetch` in the foreground during regeneration and caches only 200s). Each figure is an `unstable_cache` entry in `apps/demo/src/lib/live-data.ts` that keeps its last good value; `/api/stars` shares it. Replayed on a production build with GitHub unreachable: old code four "—", new code 8 / 0 / 2
 - [x] `GITHUB_TOKEN` used when set (bearer, never in a cache key); refusals logged with status and "rate limit reached"
-- [x] "npm / all time": summed a year at a time from the registry's `time.created`; grid is four to a row, one row per source
-- [x] 30-day chart: hover / tap / keyboard read-out of each day (date, downloads, ring, inked rule), a slider to assistive technology; checked in Chromium with Playwright (hover, keys, touch, no layout shift) and axe with the read-out open in both themes
+- [x] "npm / all time": every day since the registry's `time.created`, a year at a time, summed; grid is four to a row, one row per source
+- [x] The chart opens on all time (every day since the first publish) with a "last 30 days / all time" switch (`aria-pressed` buttons, total announced, no layout shift on a phone)
+- [x] Chart: hover / tap / keyboard read-out of each day (date, downloads, ring, inked rule), a slider to assistive technology; checked in Chromium with Playwright (hover, keys, touch, no layout shift) and axe with the read-out open in both themes
 - [ ] Owner: set `GITHUB_TOKEN` on Vercel (a fine-grained token with read-only access to public repositories and no other permissions is enough)
 - [ ] Released
 

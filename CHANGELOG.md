@@ -27,15 +27,19 @@ All notable changes to `svg-scroll-draw` are documented here.
   never once been fetched. A refused call is logged with its status (and
   "rate limit reached" when GitHub says so). `GITHUB_TOKEN`, when set, is sent
   as a bearer token (5,000 calls an hour); it is not part of any cache key.
-- **Lifetime npm downloads.** A seventh figure, "npm / all time", sums
-  `api.npmjs.org/downloads/point/<from>:<to>` a year at a time from the first
-  publish (`time.created` in the registry, fetched once and kept: the document
-  is ~300 KB). npm answers at most 18 months per request and silently drops
-  the oldest days of a longer range, so each answer must start on the day
-  asked for. Refreshed hourly with the rest. The figures now sit four to a
-  row, one row per source (GitHub, then npm, the last widened); seven in one
-  row left "12h ago" no room at 1280 px.
-- **The 30-day chart reads out each day.** Hover, a tap, or the arrow keys on
+- **Lifetime npm downloads, as a figure and as the chart.** Every day since
+  the first publish (`time.created` in the registry, fetched once and kept:
+  the document is ~300 KB) comes from `api.npmjs.org/downloads/range`, a year
+  at a time: npm answers at most 18 months per request and silently drops the
+  oldest days of a longer range, so each answer must start on the day asked
+  for. Today is left out (npm has no count for it yet). A seventh figure,
+  "npm / all time", is their sum, and the chart now opens on all of them
+  ("May 25, 2026" → yesterday), with a switch in its caption back to the last
+  30 days; the switch is two `aria-pressed` buttons and the new total is
+  announced. Refreshed hourly with the rest. The figures sit four to a row,
+  one row per source (GitHub, then npm, the last widened); seven in one row
+  left "12h ago" no room at 1280 px.
+- **The chart reads out each day.** Hover, a tap, or the arrow keys on
   the focused chart show that day's date and downloads beside the line, a ring
   on the line and a rule inked up from the base, with the peak label faded
   while you read. The chart is a slider to assistive technology ("Downloads by

@@ -80,13 +80,13 @@ const point = (period: 'last-week' | 'last-month') =>
 export const getWeek = point('last-week');
 export const getMonth = point('last-month');
 
+const isDays = (days: unknown): days is Day[] =>
+  Array.isArray(days) && days.every((d) => typeof d?.day === 'string' && typeof d?.downloads === 'number');
+
 export const getDays = keep('npm-days', async (): Promise<Got<Day[]>> => {
   const got = await getJSON<{ downloads?: unknown }>(`https://api.npmjs.org/downloads/range/last-month/${NPM_PKG}`);
-  const days = got.data.downloads;
-  if (!Array.isArray(days) || !days.every((d) => typeof d?.day === 'string' && typeof d?.downloads === 'number')) {
-    throw new Error('api.npmjs.org: no daily counts');
-  }
-  return { data: days as Day[], at: got.at };
+  if (!isDays(got.data.downloads)) throw new Error('api.npmjs.org: no daily counts');
+  return { data: got.data.downloads, at: got.at };
 });
 
 /** The first publish, from the registry. It never changes, so it is fetched once (the document is ~300 KB). */
@@ -101,26 +101,28 @@ const DAY = 86_400_000;
 const iso = (ms: number) => new Date(ms).toISOString().slice(0, 10);
 
 /**
- * Every download from `since` to today. npm answers at most 18 months per
- * request and quietly drops the oldest days of a longer range, so it is asked a
- * year at a time, and an answer that starts on another day is refused.
+ * Every day from `since` to yesterday (npm has no count for today yet). npm
+ * answers at most 18 months per request and quietly drops the oldest days of a
+ * longer range, so it is asked a year at a time, and an answer that starts on
+ * another day is refused.
  */
-const getTotalSince = keep('npm-total', async (since: string): Promise<Got<number>> => {
-  const end = Date.parse(`${iso(Date.now())}T00:00:00Z`);
+const getHistorySince = keep('npm-history', async (since: string): Promise<Got<Day[]>> => {
+  const end = Date.parse(`${iso(Date.now())}T00:00:00Z`) - DAY;
   const spans: [string, string][] = [];
   for (let a = Date.parse(`${since}T00:00:00Z`); a <= end; a += 365 * DAY) spans.push([iso(a), iso(Math.min(a + 364 * DAY, end))]);
+  if (!spans.length) return { data: [], at: Date.now() };
   const answers = await Promise.all(
     spans.map(async ([from, to]) => {
-      const got = await getJSON<{ downloads?: unknown; start?: unknown }>(`https://api.npmjs.org/downloads/point/${from}:${to}/${NPM_PKG}`);
-      if (typeof got.data.downloads !== 'number' || got.data.start !== from) throw new Error(`api.npmjs.org: no count for ${from}:${to}`);
-      return { n: got.data.downloads, at: got.at };
+      const got = await getJSON<{ downloads?: unknown; start?: unknown }>(`https://api.npmjs.org/downloads/range/${from}:${to}/${NPM_PKG}`);
+      if (got.data.start !== from || !isDays(got.data.downloads)) throw new Error(`api.npmjs.org: no daily counts for ${from}:${to}`);
+      return { days: got.data.downloads, at: got.at };
     }),
   );
-  return { data: answers.reduce((s, x) => s + x.n, 0), at: Math.min(...answers.map((x) => x.at)) };
+  return { data: answers.flatMap((x) => x.days), at: Math.min(...answers.map((x) => x.at)) };
 });
 
-/** Lifetime npm downloads: summed from the first publish, refreshed hourly like the rest. */
-export async function getLifetime(): Promise<Got<number> | null> {
+/** Every day since the first publish, refreshed hourly like the rest: the lifetime figure and the all-time chart. */
+export async function getHistory(): Promise<Got<Day[]> | null> {
   const created = await getCreated();
-  return created ? getTotalSince(created.data) : null;
+  return created ? getHistorySince(created.data) : null;
 }

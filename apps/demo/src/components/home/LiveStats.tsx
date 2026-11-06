@@ -1,10 +1,10 @@
-import { LiveBoard, type LiveCell, type Spark } from './LiveBoard';
-import { GH_REPO, NPM_PKG, getDays, getLifetime, getMonth, getRepo, getWeek, type Day } from '@/lib/live-data';
+import { LiveBoard, type Chart, type LiveCell, type Spark } from './LiveBoard';
+import { GH_REPO, NPM_PKG, getDays, getHistory, getMonth, getRepo, getWeek, type Day } from '@/lib/live-data';
 
 /**
  * Chapter 09 — the project, counted live: GitHub and npm numbers, refreshed
  * hourly (ISR), and the last 30 days of npm downloads drawn as a line the
- * library inks as you scroll. A server component: the fetches run on the
+ * library inks as you scroll, or every day since the first publish. A server component: the fetches run on the
  * server and the page is regenerated at most once an hour.
  *
  * Each figure is cached on its own (lib/live-data), and a refused refresh
@@ -29,8 +29,8 @@ function fmt(n: number): string {
 }
 
 const f = (n: number) => n.toFixed(1);
-const day = (iso: string, weekday?: 'short') =>
-  new Date(`${iso}T00:00:00Z`).toLocaleDateString('en-US', { weekday, month: 'short', day: 'numeric', timeZone: 'UTC' });
+const day = (iso: string, weekday?: 'short', year?: 'numeric') =>
+  new Date(`${iso}T00:00:00Z`).toLocaleDateString('en-US', { weekday, year, month: 'short', day: 'numeric', timeZone: 'UTC' });
 const stamp = (ms: number) =>
   `${new Date(ms).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'UTC' })} UTC`;
 
@@ -66,8 +66,29 @@ function spark(days: Day[], box: Box): Spark {
   };
 }
 
+/**
+ * The plot of `days` (oldest first), in both plates, or null with fewer than
+ * two. `dated` puts the year on the first day's label (the all-time plot).
+ */
+function plot(days: Day[], span: string, dated = false): Chart | null {
+  if (days.length < 2) return null;
+  const peak = days.reduce((a, x) => (x.downloads > a.downloads ? x : a), days[0]);
+  return {
+    span,
+    wide: spark(days, WIDE),
+    narrow: spark(days, NARROW),
+    max: Math.max(1, peak.downloads),
+    peak: { value: peak.downloads, day: day(peak.day) },
+    total: days.reduce((s, x) => s + x.downloads, 0),
+    from: day(days[0].day, undefined, dated ? 'numeric' : undefined),
+    to: day(days[days.length - 1].day),
+    days: days.map((x) => ({ label: day(x.day, 'short'), value: x.downloads })),
+  };
+}
+
 export async function LiveStats() {
-  const [gh, week, month, total, range] = await Promise.all([getRepo(), getWeek(), getMonth(), getLifetime(), getDays()]);
+  const [gh, week, month, history, range] = await Promise.all([getRepo(), getWeek(), getMonth(), getHistory(), getDays()]);
+  const total = history && { data: history.data.reduce((s, x) => s + x.downloads, 0), at: history.at };
 
   const g = gh?.data;
   const n = (x: { data: number } | null) => (x ? fmt(x.data) : '—');
@@ -81,26 +102,10 @@ export async function LiveStats() {
     { icon: 'sum', value: n(total), label: 'npm / all time', source: 'npm' },
   ];
 
-  const fetched = [gh, week, month, total, range].filter((x) => x !== null).map((x) => x.at);
+  const fetched = [gh, week, month, history, range].filter((x) => x !== null).map((x) => x.at);
   const checked = fetched.length ? stamp(Math.min(...fetched)) : null;
 
-  const days = range?.data ?? [];
-  const chart =
-    days.length >= 2
-      ? (() => {
-          const peak = days.reduce((a, x) => (x.downloads > a.downloads ? x : a), days[0]);
-          return {
-            wide: spark(days, WIDE),
-            narrow: spark(days, NARROW),
-            max: Math.max(1, peak.downloads),
-            peak: { value: peak.downloads, day: day(peak.day) },
-            total: days.reduce((s, x) => s + x.downloads, 0),
-            from: day(days[0].day),
-            to: day(days[days.length - 1].day),
-            days: days.map((x) => ({ label: day(x.day, 'short'), value: x.downloads })),
-          };
-        })()
-      : null;
+  const charts = { all: plot(history?.data ?? [], 'all time', true), month: plot(range?.data ?? [], 'last 30 days') };
 
-  return <LiveBoard cells={cells} chart={chart} checked={checked} repo={GH_REPO} pkg={NPM_PKG} />;
+  return <LiveBoard cells={cells} charts={charts} checked={checked} repo={GH_REPO} pkg={NPM_PKG} />;
 }
