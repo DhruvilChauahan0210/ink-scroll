@@ -58,7 +58,7 @@ export interface ReadingProgressProps {
 let {
   children,
   kicker = 'Field notes',
-  title = 'We close on Wednesdays now. Here is what changed.',
+  title = 'We close on Wednesdays now, and here is what changed',
   byline = 'The bakery on Kessel Street · 2 min read',
   as: heading = 'h2',
   accent = '#ff90e8',
@@ -153,12 +153,12 @@ $effect(() => {
   </div>
 
   <header>
-    <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">
+    <p class="font-mono text-xs text-neutral-500 dark:text-neutral-400">
       {kicker}
     </p>
     <svelte:element
       this={heading}
-      class="mt-3 text-4xl font-bold tracking-tight text-neutral-950 text-balance sm:text-5xl dark:text-neutral-50"
+      class="mt-3 text-4xl font-medium tracking-tight text-neutral-950 text-balance sm:text-5xl dark:text-neutral-50"
     >
       {title}
     </svelte:element>

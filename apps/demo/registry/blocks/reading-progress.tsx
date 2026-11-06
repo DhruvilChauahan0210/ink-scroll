@@ -55,7 +55,7 @@ export interface ReadingProgressProps {
 export function ReadingProgress({
   children,
   kicker = 'Field notes',
-  title = 'We close on Wednesdays now. Here is what changed.',
+  title = 'We close on Wednesdays now, and here is what changed',
   byline = 'The bakery on Kessel Street · 2 min read',
   as: Heading = 'h2',
   accent = '#ff90e8',
@@ -141,10 +141,10 @@ export function ReadingProgress({
       </div>
 
       <header>
-        <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">
+        <p className="font-mono text-xs text-neutral-500 dark:text-neutral-400">
           {kicker}
         </p>
-        <Heading className="mt-3 text-4xl font-bold tracking-tight text-neutral-950 text-balance sm:text-5xl dark:text-neutral-50">
+        <Heading className="mt-3 text-4xl font-medium tracking-tight text-neutral-950 text-balance sm:text-5xl dark:text-neutral-50">
           {title}
         </Heading>
         <p className="mt-4 text-sm text-neutral-500 dark:text-neutral-400">{byline}</p>

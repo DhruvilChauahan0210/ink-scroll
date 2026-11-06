@@ -60,7 +60,7 @@ const TRIGGER = { start: 'top 85%', end: 'top 30%' };
       className,
     ]"
   >
-    <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">{{ label }}</p>
+    <p class="font-mono text-xs text-neutral-500 dark:text-neutral-400">{{ label }}</p>
 
     <!-- `once` keeps the ink on the page after it has drawn. `stagger` starts the
          underline a beat after the signature, so the two read as one gesture. -->

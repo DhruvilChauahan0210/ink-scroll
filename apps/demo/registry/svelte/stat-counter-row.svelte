@@ -53,14 +53,14 @@
   import { scrollCounterAction } from 'svg-scroll-draw/svelte';
 
   let {
-    eyebrow = 'Sample numbers. Swap in your own.',
+    eyebrow = 'Sample numbers, swap in your own',
     stats = DEFAULT_STATS,
     className = '',
   }: StatCounterRowProps = $props();
 </script>
 
 <section class="mx-auto w-full max-w-5xl {className}">
-  <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">
+  <p class="font-mono text-xs text-neutral-500 dark:text-neutral-400">
     {eyebrow}
   </p>
 
@@ -74,7 +74,7 @@
 
       <div class="flex flex-col-reverse gap-2 bg-white p-6 sm:p-8 dark:bg-neutral-950">
         <dt class="text-sm text-neutral-600 dark:text-neutral-400">{stat.label}</dt>
-        <dd class="text-4xl font-bold tracking-tight text-neutral-950 tabular-nums sm:text-5xl dark:text-neutral-50">
+        <dd class="text-4xl font-medium tracking-tight text-neutral-950 tabular-nums sm:text-5xl dark:text-neutral-50">
           <span class="sr-only">{final}</span>
           <!-- Both cells of the inline-grid share one grid area: the invisible
                final value holds the width, the counter paints over it. The

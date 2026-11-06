@@ -44,7 +44,7 @@ const DEFAULT_STEPS: FeatureStep[] = [
 
 export function StickyFeature({
   eyebrow = 'How it works',
-  heading = 'Four steps from idea to motion.',
+  heading = 'Four steps from idea to motion',
   intro = 'The panel stays put while the steps scroll by.',
   steps = DEFAULT_STEPS,
   className = '',
@@ -104,10 +104,10 @@ export function StickyFeature({
     <section className={`mx-auto grid w-full max-w-5xl gap-10 md:grid-cols-2 md:gap-16 ${className}`}>
       {/* Pinned panel */}
       <div className="md:sticky md:top-24 md:self-start">
-        <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">
+        <p className="font-mono text-xs text-neutral-500 dark:text-neutral-400">
           {eyebrow}
         </p>
-        <h2 className="mt-3 text-3xl font-bold tracking-tight text-neutral-950 sm:text-4xl dark:text-neutral-50">
+        <h2 className="mt-3 text-3xl font-medium tracking-tight text-neutral-950 sm:text-4xl dark:text-neutral-50">
           {heading}
         </h2>
         <p className="mt-3 text-neutral-600 dark:text-neutral-400">{intro}</p>

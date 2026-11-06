@@ -101,7 +101,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
 
 export function PinnedFeatureTour({
   eyebrow = 'How it works',
-  heading = 'From the farm to your door in a week.',
+  heading = 'From the farm to your door in a week',
   features = DEFAULT_FEATURES,
   headerOffset = 64,
   className = '',
@@ -152,10 +152,10 @@ export function PinnedFeatureTour({
 
   return (
     <section className={`mx-auto w-full max-w-5xl ${className}`}>
-      <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">
+      <p className="font-mono text-xs text-neutral-500 dark:text-neutral-400">
         {eyebrow}
       </p>
-      <h2 className="mt-3 text-3xl font-bold tracking-tight text-neutral-950 sm:text-4xl dark:text-neutral-50">
+      <h2 className="mt-3 text-3xl font-medium tracking-tight text-neutral-950 sm:text-4xl dark:text-neutral-50">
         {heading}
       </h2>
 
@@ -208,7 +208,7 @@ export function PinnedFeatureTour({
                   }`}
                 >
                   <span className="flex items-center gap-2 font-mono text-xs">
-                    <span className={`inline-flex h-7 w-7 items-center justify-center rounded-full font-bold transition-colors duration-300 motion-reduce:transition-none ${i === current ? 'bg-[#ff90e8] text-neutral-950' : 'bg-neutral-200 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300'}`}>
+                    <span className={`inline-flex h-7 w-7 items-center justify-center rounded-full font-medium transition-colors duration-300 motion-reduce:transition-none ${i === current ? 'bg-[#ff90e8] text-neutral-950' : 'bg-neutral-200 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300'}`}>
                       {pad(i + 1)}
                     </span>
                     {/* With one feature on screen, say how many there are. */}

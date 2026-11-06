@@ -45,13 +45,13 @@ function formatNumber(n: number, decimals: number): string {
 }
 
 export function StatCounterRow({
-  eyebrow = 'Sample numbers. Swap in your own.',
+  eyebrow = 'Sample numbers, swap in your own',
   stats = DEFAULT_STATS,
   className = '',
 }: StatCounterRowProps) {
   return (
     <section className={`mx-auto w-full max-w-5xl ${className}`}>
-      <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">
+      <p className="font-mono text-xs text-neutral-500 dark:text-neutral-400">
         {eyebrow}
       </p>
 
@@ -63,7 +63,7 @@ export function StatCounterRow({
           return (
             <div key={stat.label} className="flex flex-col-reverse gap-2 bg-white p-6 sm:p-8 dark:bg-neutral-950">
               <dt className="text-sm text-neutral-600 dark:text-neutral-400">{stat.label}</dt>
-              <dd className="text-4xl font-bold tracking-tight text-neutral-950 tabular-nums sm:text-5xl dark:text-neutral-50">
+              <dd className="text-4xl font-medium tracking-tight text-neutral-950 tabular-nums sm:text-5xl dark:text-neutral-50">
                 <span className="sr-only">{final}</span>
                 <span aria-hidden="true" className="inline-flex items-baseline">
                   {stat.prefix}

@@ -32,8 +32,8 @@ export interface HeadlineTextRevealProps {
 }
 
 export function HeadlineTextReveal({
-  eyebrow = 'Introducing',
-  headline = 'Make every scroll feel like the page is paying attention.',
+  eyebrow = 'Single-origin coffee',
+  headline = 'Coffee from three farms, roasted the week you drink it',
   subline = 'Words arrive in reading order, at the pace the reader sets with their own scroll.',
   as = 'h2',
   trigger = { start: 'top 90%', end: 'top 35%' },
@@ -41,7 +41,7 @@ export function HeadlineTextReveal({
 }: HeadlineTextRevealProps) {
   return (
     <section className={`mx-auto w-full max-w-4xl text-center ${className}`}>
-      <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">
+      <p className="font-mono text-xs text-neutral-500 dark:text-neutral-400">
         {eyebrow}
       </p>
 
@@ -56,7 +56,7 @@ export function HeadlineTextReveal({
         easing="ease-out"
         once
         trigger={trigger}
-        className="mt-4 text-[clamp(2.25rem,6vw,4.5rem)] font-extrabold leading-[0.95] tracking-tight text-neutral-950 text-balance dark:text-neutral-50"
+        className="mt-4 text-[clamp(2.25rem,6vw,4.5rem)] font-medium leading-[0.95] tracking-tight text-neutral-950 text-balance dark:text-neutral-50"
       >
         {headline}
       </ScrollText>

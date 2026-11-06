@@ -50,7 +50,7 @@
 <figure
   class="mx-auto w-full max-w-xl rounded-2xl border border-neutral-200 bg-white p-6 sm:p-8 dark:border-neutral-800 dark:bg-neutral-950 {className}"
 >
-  <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">
+  <p class="font-mono text-xs text-neutral-500 dark:text-neutral-400">
     {label}
   </p>
 

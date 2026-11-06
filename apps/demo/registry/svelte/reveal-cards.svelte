@@ -39,7 +39,7 @@
 
   let {
     eyebrow = 'Features',
-    heading = 'Everything moves when it should.',
+    heading = 'Everything moves when it should',
     cards = DEFAULT_CARDS,
     className = '',
   }: RevealCardsProps = $props();
@@ -70,10 +70,10 @@
 </script>
 
 <section class="mx-auto w-full max-w-5xl {className}">
-  <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">
+  <p class="font-mono text-xs text-neutral-500 dark:text-neutral-400">
     {eyebrow}
   </p>
-  <h2 class="mt-3 text-3xl font-bold tracking-tight text-neutral-950 sm:text-4xl dark:text-neutral-50">
+  <h2 class="mt-3 text-3xl font-medium tracking-tight text-neutral-950 sm:text-4xl dark:text-neutral-50">
     {heading}
   </h2>
 
@@ -84,7 +84,7 @@
         class="rounded-2xl border border-neutral-200 bg-white p-6 dark:border-neutral-800 dark:bg-neutral-950"
       >
         <span
-          class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#ff90e8] font-mono text-xs font-bold text-neutral-950"
+          class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#ff90e8] font-mono text-xs font-medium text-neutral-950"
         >
           {String(i + 1).padStart(2, '0')}
         </span>
