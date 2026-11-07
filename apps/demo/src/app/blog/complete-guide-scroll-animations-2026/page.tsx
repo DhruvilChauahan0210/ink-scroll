@@ -79,7 +79,7 @@ export default function CompletGuidePage() {
     <BlogArticle
       slug="complete-guide-scroll-animations-2026"
       jsonLd={articleJsonLd}
-      tags={['Cornerstone', 'every pattern', 'copy-paste code']}
+      tags={['Cornerstone', 'Every pattern', 'Copy-paste code']}
       title={<>The complete guide to scroll animations in 2026</>}
       lede={
         <>
@@ -340,7 +340,7 @@ scrollAnimate('#section', {
         </p>
       </Section>
 
-      <Section id="all-apis" k="parts list" title="One library, all patterns" toc="All patterns, one table">
+      <Section id="all-apis" k="Parts list" title="One library, all patterns" toc="All patterns, one table">
         <Table
           head={['API', 'Import from', 'Pattern']}
           rows={PATTERNS.map((p, i) => [

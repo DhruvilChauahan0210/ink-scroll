@@ -2095,7 +2095,7 @@ inst.destroy();  // cleanup`}
                     ['distance',             'number',                    'track − stage', 'Total horizontal travel in px. Defaults to the track’s width minus the content box of its sticky stage (or, without one, the scroll container’s or the viewport’s width, scrollbar left out), and is measured again when the layout changes (2.18.1). A number you pass is used as given.'],
                     ['trigger',              'TriggerConfig',             '{ start: "top top", end: "bottom bottom" }', 'Scroll window the travel is mapped across.'],
                     ['easing',               'EasingName | fn',           '"linear"',      'Easing for the movement. Linear gives the scrub feel.'],
-                    ['triggerElement',       'string | Element',          'sticky parent', 'Element whose height defines the scroll window. Defaults to the container of the track’s nearest position:sticky ancestor — the element that actually holds the scroll room. A sticky-pinned track is only one viewport tall, so measuring against it would give a zero-length window and no movement.'],
+                    ['triggerElement',       'string | Element',          'Sticky parent', 'Element whose height defines the scroll window. Defaults to the container of the track’s nearest position:sticky ancestor — the element that actually holds the scroll room. A sticky-pinned track is only one viewport tall, so measuring against it would give a zero-length window and no movement.'],
                     ['respectReducedMotion', 'boolean',                   'false',         'Unlike other APIs here, defaults to false. The transform is scroll-linked scrubbing — it advances only as the user scrolls — and holding a final state instead would leave every panel but one unreachable inside the sticky container. Set true if you have a non-transform fallback; the strip then also holds still if the reader turns reduced motion on mid-visit.'],
                     ['scrollContainer',      'string | Element',          'window',        'Custom scroll container.'],
                     ['onProgress',           '(p: number) => void',       '—',             'Fires every frame with 0–1 progress through the window.'],
@@ -2477,7 +2477,7 @@ import { ScrollAnimate } from 'svg-scroll-draw/react';
                     ['axis', '"x" | "y"', '"y"', 'Scroll axis.'],
                     ['native', 'boolean', 'true', 'Use CSS animation-timeline: view() fast path when eligible.'],
                     ['respectReducedMotion', 'boolean', 'true', 'Honour prefers-reduced-motion by applying the final state instead of animating, also when the reader turns it on while the page is open (2.22.0+). Set false only for scroll-linked scrubbing, which advances 1:1 with the user’s own scrolling rather than playing on its own.'],
-                    ['triggerElement', 'Element', 'the animated element', 'Measure the trigger window from a different element. Needed when the animated element cannot supply the scroll length itself — a position:sticky element is only one viewport tall, so its window collapses to zero. Setting this disables the native CSS fast path, which can only measure its own subject.'],
+                    ['triggerElement', 'Element', 'The animated element', 'Measure the trigger window from a different element. Needed when the animated element cannot supply the scroll length itself — a position:sticky element is only one viewport tall, so its window collapses to zero. Setting this disables the native CSS fast path, which can only measure its own subject.'],
                     ['onProgress',   '(n) => void', '—', 'Called as the scroll moves, with alpha 0–1 (the first path’s, under stagger).'],
                     ['onComplete',   '() => void', '—', 'Fires when alpha reaches 1.'],
                     ['onEnter',      '() => void', '—', 'Fires when scroll enters the trigger zone (scrolling forward). Forces JS engine.'],
@@ -2579,7 +2579,7 @@ import { ScrollVideo } from 'svg-scroll-draw/react';
               53.6 ms. Serve the file from a server that answers Range requests, or it will not seek at all, and add{' '}
               <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">muted playsinline preload=&quot;auto&quot;</code>.
               The whole pinned-film build is the{' '}
-              <Link href="/examples/scroll-video" className="underline underline-offset-2">scroll-video recipe</Link>.
+              <Link href="/examples/scroll-video" className="underline underline-offset-2">Scroll-video recipe</Link>.
             </p>
           </DocSection>
 

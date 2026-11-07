@@ -68,7 +68,7 @@ html:has(.hy) body { background: #f4f2ec; }
 .hy-cover-meta { margin: 16px 0 0; font: 12.5px var(--mono); color: var(--mut); }
 
 .hy-books { position: relative; justify-self: center; width: min(390px, 100%); padding: 24px 40px 40px 0; }
-.hy-book { position: relative; z-index: 1; display: flex; flex-direction: column; aspect-ratio: 210 / 297; padding: 24px 24px 24px; background: linear-gradient(transparent, transparent), linear-gradient(170deg, #12304b, #0a1d2f 70%); color: #e9e2d0; box-shadow: 0 2px 0 rgba(255, 255, 255, 0.06) inset, 0 1px 2px rgba(12, 34, 54, 0.2), 0 30px 60px -28px rgba(12, 34, 54, 0.55), 0 60px 90px -60px rgba(12, 34, 54, 0.5); }
+.hy-book { position: relative; z-index: 1; display: flex; flex-direction: column; aspect-ratio: 210 / 297; padding: 24px 24px 24px; background: linear-gradient(170deg, #12304b, #0a1d2f 70%); color: #e9e2d0; box-shadow: 0 2px 0 rgba(255, 255, 255, 0.06) inset, 0 1px 2px rgba(12, 34, 54, 0.2), 0 30px 60px -28px rgba(12, 34, 54, 0.55), 0 60px 90px -60px rgba(12, 34, 54, 0.5); }
 .hy-book::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 9px; background: linear-gradient(90deg, rgba(0, 0, 0, 0.35), rgba(255, 255, 255, 0.06) 60%, transparent); }
 .hy-book::after { content: ''; position: absolute; inset: 12px; border: 1px solid rgba(217, 181, 108, 0.32); pointer-events: none; }
 .hy-book-top { display: flex; align-items: center; gap: 8px; font: 600 10.5px var(--sans); letter-spacing: 0; color: #cdbf9c; }

@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     'vue scroll animation',
     'vue 3 scroll animate',
     'useScrollAnimate vue',
-    'svelte scroll animation',
+    'Svelte scroll animation',
     'svelte scroll animate action',
     'scrollTextAction svelte',
     'solid scroll animation',
@@ -76,7 +76,7 @@ const SUBPATHS = [...new Set(SUMMARY.map(([, , imp]) => imp))];
  */
 const WRAPPERS: WrapperRow[] = [
   { fw: 'Vue 3', from: 'svg-scroll-draw/vue', write: 'useScrollAnimate(opts)', gives: 'a ref, bound with :ref', start: 'onMounted', stop: 'onUnmounted' },
-  { fw: 'Svelte', from: 'svg-scroll-draw/svelte', write: 'use:scrollAnimate={opts}', gives: 'an action (node, opts)', start: 'on mount', stop: 'destroy()', update: 'update()' },
+  { fw: 'Svelte', from: 'svg-scroll-draw/svelte', write: 'use:scrollAnimate={opts}', gives: 'an action (node, opts)', start: 'On mount', stop: 'destroy()', update: 'update()' },
   { fw: 'Solid.js', from: 'svg-scroll-draw/solid', write: 'useScrollAnimate(opts)', gives: 'a ref setter', start: 'onMount', stop: 'onCleanup' },
   { fw: 'Astro', from: 'svg-scroll-draw/astro', write: 'data-scroll-animate', gives: 'read by initAll()', start: 'initAll()', stop: 'destroy()' },
 ];

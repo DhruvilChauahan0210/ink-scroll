@@ -24,7 +24,7 @@ function swapRows(key: string): SwapRow[] {
     { k: 'version', before: `${c.version}${c.lastPublish ? ` · ${c.lastPublish.slice(0, 4)}` : ''}`, after: `${SELF.version} · maintained` },
     { k: 'licence', before: c.license, after: 'MIT' },
     { k: 'gzip', before: `${c.gzipKb.toFixed(1)} KB`, after: `${SELF_ENTRIES[key].toFixed(1)} KB` },
-    { k: 'in React', before: 'your own effect', after: HOOK[key] ?? 'hook' },
+    { k: 'in React', before: 'Your own effect', after: HOOK[key] ?? 'hook' },
   ];
 }
 
@@ -103,7 +103,7 @@ export function GuidePage({ slug }: { slug: string }) {
 
           {/* ── 01 The problem ─────────────────────────────── */}
           <section className="gd-sec" aria-labelledby="gd-problem">
-            <Head n={1} k="the problem" id="gd-problem">What goes wrong with the usual setup</Head>
+            <Head n={1} k="The problem" id="gd-problem">What goes wrong with the usual setup</Head>
             <ol className="gd-notes">
               {g.problems.map((p, i) => (
                 <li key={p}><span className="gd-notes-n">{i + 1}</span><span>{p}</span></li>
@@ -160,7 +160,7 @@ export function GuidePage({ slug }: { slug: string }) {
 
           {/* ── 05 More guides ─────────────────────────────── */}
           <section className="gd-sec" aria-labelledby="gd-more">
-            <Head n={5} k="more guides" id="gd-more">More migration guides</Head>
+            <Head n={5} k="More guides" id="gd-more">More migration guides</Head>
             <div className="ex-rel-list">
               {others.map((o) => (
                 <Link key={o.slug} href={`/guides/${o.slug}`} className="ex-rel-row">

@@ -35,7 +35,7 @@ function points(d: string): [number, number][] {
 }
 
 const FRAMES: { t: number; k: string }[] = [
-  { t: 0, k: 'source d' },
+  { t: 0, k: 'Source d' },
   { t: 0.5, k: 'morphPath()' },
   { t: 1, k: 'morphTo' },
 ];
@@ -106,8 +106,8 @@ export function MorphFigure() {
         ))}
       </div>
       <p className="mf-key">
-        <span><i className="is-num" aria-hidden="true" />numbers pair up by position</span>
-        <span><i className="is-cmd" aria-hidden="true" />letters come from the source only</span>
+        <span><i className="is-num" aria-hidden="true" />Numbers pair up by position</span>
+        <span><i className="is-cmd" aria-hidden="true" />Letters come from the source only</span>
       </p>
     </ScrollDraw>
   );

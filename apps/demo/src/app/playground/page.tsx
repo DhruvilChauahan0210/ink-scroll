@@ -89,7 +89,7 @@ const PARTS: { group: string; rows: { control: string; prop: string; range: stri
       { control: 'Stroke width', prop: 'strokeWidth', range: '[from, to]', href: '/docs#visual' },
       { control: 'Fill opacity', prop: 'fillOpacity', range: '[from, to]', href: '/docs#visual' },
       { control: 'Clip reveal', prop: 'clip', range: 'left · right · top · bottom · center', href: '/docs#visual' },
-      { control: 'Path morph', prop: 'morphTo', range: 'a target d with the same numeric tokens', href: '/docs#visual' },
+      { control: 'Path morph', prop: 'morphTo', range: 'A target d with the same numeric tokens', href: '/docs#visual' },
     ],
   },
   {
@@ -97,7 +97,7 @@ const PARTS: { group: string; rows: { control: string; prop: string; range: stri
     rows: [
       { control: 'Fade Slide … Color Shift', prop: 'scrollAnimate()', range: 'opacity · transform · background-color · color', href: '/docs#scroll-animate' },
       { control: 'Word, Char, Line', prop: 'scrollText()', range: 'split words · chars · lines, stagger 0 – 0.1', href: '/docs#scroll-text' },
-      { control: 'Revenue, Users', prop: 'scrollCounter()', range: 'to, format, easing', href: '/docs#scroll-counter' },
+      { control: 'Revenue, Users', prop: 'scrollCounter()', range: 'To, format, easing', href: '/docs#scroll-counter' },
     ],
   },
 ];
@@ -180,7 +180,7 @@ export default function PlaygroundPage() {
 
           {/* ── 02 Every control is a prop ──────────────────── */}
           <section className="pl-sec" aria-labelledby="pl-parts">
-            <Head n={2} k="parts list" id="pl-parts">Every control is a prop</Head>
+            <Head n={2} k="Parts list" id="pl-parts">Every control is a prop</Head>
             <p className="pl-p">
               The options panel is the component&apos;s props, laid out. Each control below maps to an option
               you can pass yourself, with the range the bench lets you try.
@@ -190,7 +190,7 @@ export default function PlaygroundPage() {
                 <span />
                 <span>control</span>
                 <span>prop</span>
-                <span>on the bench</span>
+                <span>On the bench</span>
                 <span />
               </div>
               {PARTS.map((g, gi) => (
@@ -212,7 +212,7 @@ export default function PlaygroundPage() {
 
           {/* ── 03 Keep going ────────────────────────────────── */}
           <section className="pl-sec" aria-labelledby="pl-more">
-            <Head n={3} k="keep going" id="pl-more">Take it further</Head>
+            <Head n={3} k="Keep going" id="pl-more">Take it further</Head>
             <div className="ex-rel-list">
               {MORE.map((m, i) => (
                 <Link key={m.href} href={m.href} className="ex-rel-row">

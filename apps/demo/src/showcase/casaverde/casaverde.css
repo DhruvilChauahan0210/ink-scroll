@@ -60,7 +60,7 @@ html:has(.cv) body { background: #fbf7ef; }
 .cv-bar { display: flex; align-items: center; gap: 12px; margin-top: 16px; }
 .cv-dots { display: flex; align-items: center; }
 .cv-dot { display: grid; place-items: center; height: 28px; padding: 0 4px; border: 0; background: none; cursor: pointer; }
-.cv-dot::before { content: ''; width: 8px; height: 8px; border-radius: 999px; background: #d5c9b4; transition: width 0.35s, background-color 0.35s; }
+.cv-dot::before { content: ''; width: 8px; height: 8px; border-radius: 999px; background: #d5c9b4; transition: background-color 0.35s; }
 .cv-dot:hover::before { background: #b9ab92; }
 .cv-dot.on::before { width: 26px; background: var(--accent); }
 .cv-count { margin: 0 8px 0 auto; font: 400 24px/1 var(--head); font-variant-numeric: tabular-nums; white-space: nowrap; }

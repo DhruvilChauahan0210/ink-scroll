@@ -148,7 +148,7 @@ const heading = useScrollText({ split: 'words', stagger: 0.05 });
     description:
       `Scroll animations for Svelte using native actions. use:scrollDraw adds no wrapper element and no extra component. ${KB} KB for every API, zero dependencies.`,
     keywords: [
-      'svelte scroll animation',
+      'Svelte scroll animation',
       'svelte animate on scroll',
       'use:scrollDraw',
       'svelte scroll reveal',
@@ -441,7 +441,7 @@ export class StatsComponent implements AfterViewInit, OnDestroy {
     description:
       'Add scroll animation to Astro with a data attribute and one init call. No framework island, no hydration directive — your components stay server-rendered.',
     keywords: [
-      'astro scroll animation',
+      'Astro scroll animation',
       'astro animate on scroll',
       'astro svg animation',
       'zero js scroll animation',

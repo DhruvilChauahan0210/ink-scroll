@@ -81,7 +81,7 @@ export function ReleaseChart({ bars }: { bars: ChartBar[] }) {
       </div>
       <figcaption className="rc-cap">
         <span>Fig. 1 — entries per release, oldest → newest</span>
-        <span className="rc-key"><i className="is-rest" />added, tests, site</span>
+        <span className="rc-key"><i className="is-rest" />Added, tests, site</span>
         <span className="rc-key"><i className="is-fix" />fixed · {fixTotal}</span>
       </figcaption>
     </figure>

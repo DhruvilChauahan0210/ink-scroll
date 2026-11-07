@@ -51,7 +51,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${SITE_URL}/changelog`,
-      lastModified: new Date("2026-11-06"),
+      lastModified: new Date("2026-11-07"),
       changeFrequency: "monthly",
       priority: 0.5,
     },

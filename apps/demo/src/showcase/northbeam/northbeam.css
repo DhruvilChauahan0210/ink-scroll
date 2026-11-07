@@ -46,7 +46,7 @@ html:has(.nb) body { background: #06080a; }
 
 /* ── Hero ─────────────────────────────────────────────────────────────── */
 .nb-hero { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; padding: clamp(48px, 6.5vw, 92px) var(--pad) clamp(56px, 7vw, 96px); text-align: center; isolation: isolate; }
-.nb-hero::before { content: ''; position: absolute; inset: 0 0 auto; height: 900px; z-index: -1; background: linear-gradient(transparent, transparent), linear-gradient(transparent, transparent); }
+.nb-hero::before { content: ''; position: absolute; inset: 0 0 auto; height: 900px; z-index: -1; background: none; }
 .nb-hero::after { content: ''; position: absolute; inset: 0 0 auto; height: 760px; z-index: -1; background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px); background-size: 64px 64px; background-position: center top; -webkit-mask-image: radial-gradient(60% 70% at 50% 0%, #000 20%, transparent 75%); mask-image: radial-gradient(60% 70% at 50% 0%, #000 20%, transparent 75%); opacity: 0.55; }
 
 /* The trace console */
@@ -209,7 +209,7 @@ html:has(.nb) body { background: #06080a; }
 .nb-conts dd { display: grid; gap: 2px; margin: 8px 0 0; font-size: 12.5px; color: var(--mut); }
 .nb-conts dd b { font: 600 24px/1 var(--head); letter-spacing: -0.03em; color: var(--fg); }
 .nb-conts dd span { font: 11px var(--mono); color: var(--teal); }
-.nb-map-card { position: relative; display: flex; flex-direction: column; justify-content: space-between; padding: clamp(14px, 2.4vw, 30px); border-radius: 14px; border: 1px solid var(--line-2); background: linear-gradient(transparent, transparent), var(--panel); }
+.nb-map-card { position: relative; display: flex; flex-direction: column; justify-content: space-between; padding: clamp(14px, 2.4vw, 30px); border-radius: 14px; border: 1px solid var(--line-2); background: var(--panel); }
 .nb-map { position: relative; }
 .nb-map svg { display: block; width: 100%; height: auto; }
 .nb-land { fill: none; stroke: #354352; stroke-width: 5; stroke-linecap: round; }
@@ -346,7 +346,7 @@ html:has(.nb) body { background: #06080a; }
 .nb-fw-f { display: flex; justify-content: space-between; gap: 8px; font: 11px var(--mono); color: var(--dim); }
 
 /* Customer story */
-.nb-story { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.7fr); gap: clamp(36px, 6vw, 96px); align-items: center; background: linear-gradient(transparent, transparent); }
+.nb-story { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.7fr); gap: clamp(36px, 6vw, 96px); align-items: center; background: none; }
 .nb-story figure { margin: 0; }
 .nb-story-logo { margin-bottom: 24px; color: var(--fg); }
 .nb-story blockquote { margin: 0; font: 500 clamp(22px, 2.5vw, 34px)/1.32 var(--head); letter-spacing: -0.025em; text-wrap: pretty; }
@@ -390,7 +390,7 @@ html:has(.nb) body { background: #06080a; }
 
 /* Final CTA */
 .nb-final { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; padding: clamp(80px, 10vw, 140px) var(--pad); border-top: 1px solid var(--line); text-align: center; isolation: isolate; overflow: hidden; }
-.nb-final::before { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(transparent, transparent), linear-gradient(transparent, transparent); }
+.nb-final::before { content: ''; position: absolute; inset: 0; z-index: -1; background: none; }
 .nb-final::after { content: ''; position: absolute; inset: 0; z-index: -1; background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px); background-size: 64px 64px; background-position: center bottom; -webkit-mask-image: radial-gradient(50% 70% at 50% 100%, #000 10%, transparent 75%); mask-image: radial-gradient(50% 70% at 50% 100%, #000 10%, transparent 75%); opacity: 0.6; }
 
 /* Site map */

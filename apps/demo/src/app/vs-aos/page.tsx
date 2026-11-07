@@ -335,7 +335,7 @@ ScrollReveal({ distance: '40px' }).reveal('.card', { interval: 80 });` },
 
             {/* ── 06 More comparisons ────────────────────────── */}
             <section className="h2h-sec" aria-labelledby="vs-more">
-              <Head n={6} k="the set" id="vs-more">More comparisons.</Head>
+              <Head n={6} k="The set" id="vs-more">More comparisons.</Head>
               <OtherSheets current="/vs-aos" />
             </section>
           </div>

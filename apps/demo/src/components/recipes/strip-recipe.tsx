@@ -57,7 +57,7 @@ export const STRIP_RECIPE: RecipeDef = {
           <C>clip</C>, not <C>hidden</C>: step 5 is why.
         </>
       ),
-      caption: 'the three boxes',
+      caption: 'The three boxes',
       figure: <FigLayers />,
     },
     {
@@ -79,7 +79,7 @@ useEffect(() => {
   const strip = scrollHorizontal(track.current);
   return () => strip.destroy();
 }, []);`,
-      caption: 'what the track is moved by',
+      caption: 'What the track is moved by',
       figure: <FigTravel />,
     },
     {
@@ -132,7 +132,7 @@ ro.observe(st);`,
     }
   },
 });`,
-      caption: 'where the count changes',
+      caption: 'Where the count changes',
       figure: <FigCount />,
     },
     {

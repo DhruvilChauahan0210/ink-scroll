@@ -177,7 +177,7 @@ export default function Page() {
           </header>
 
           <div className="stk-body">
-            <Toc label="on this page" items={TOC} />
+            <Toc label="On this page" items={TOC} />
             <div className="stk-main">
 
               {/* ── 01 Lenis v2 ───────────────────────────────── */}
@@ -200,7 +200,7 @@ export default function Page() {
               </Sec>
 
               {/* ── 03 The trade-off ──────────────────────────── */}
-              <Sec n={3} k="the trade-off" id="trade-off" title="The one trade-off">
+              <Sec n={3} k="The trade-off" id="trade-off" title="The one trade-off">
                 <p className="stk-p">
                   Worth knowing before you commit: the native CSS fast path does not survive a virtual scroll value.
                   A CSS <C>view-timeline</C> reads real scroll position, so when Lenis v1 is driving, affected animations

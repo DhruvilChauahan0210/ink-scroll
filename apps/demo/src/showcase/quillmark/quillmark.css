@@ -50,7 +50,7 @@ html:has(.qm) body { background: #f7f5f0; }
 .qm-proof-l small { font-size: 13px; color: var(--mut); }
 
 .qm-stage { position: relative; min-width: 0; }
-.qm-stage::before { content: ''; position: absolute; inset: -8% -12% -10% 4%; z-index: 0; border-radius: 40px; background: linear-gradient(transparent, transparent); pointer-events: none; }
+.qm-stage::before { content: ''; position: absolute; inset: -8% -12% -10% 4%; z-index: 0; border-radius: 40px; background: none; pointer-events: none; }
 .qm-room { position: relative; z-index: 1; overflow: hidden; border-radius: 16px; background: #fff; border: 1px solid #ddd6c8; box-shadow: 0 2px 4px rgba(20, 33, 61, 0.04), 0 50px 100px -40px rgba(20, 33, 61, 0.42); }
 .qm-room-bar { display: flex; align-items: center; gap: 12px; height: 56px; padding: 0 16px 0 16px; border-bottom: 1px solid var(--line); background: #fff; }
 .qm-room-t { display: grid; min-width: 0; line-height: 1.25; }
@@ -420,7 +420,7 @@ html:has(.qm) body { background: #f7f5f0; }
 /* ── Closing call ──────────────────────────────────────────────────────── */
 .qm-cta { padding: 0 var(--pad) clamp(72px, 9vw, 120px); background: #fbfaf7; }
 .qm-cta-in { position: relative; overflow: hidden; max-width: 1240px; margin: 0 auto; padding: clamp(48px, 7vw, 96px) clamp(24px, 6vw, 88px); border-radius: 28px; background: #14213d; color: #fff; text-align: center; }
-.qm-cta-in::before { content: ''; position: absolute; inset: auto -10% -60% -10%; height: 120%; background: linear-gradient(transparent, transparent); pointer-events: none; }
+.qm-cta-in::before { content: ''; position: absolute; inset: auto -10% -60% -10%; height: 120%; background: none; pointer-events: none; }
 .qm-cta-in > * { position: relative; }
 .qm-cta h2 { margin: 0 auto; max-width: 20ch; font: 500 clamp(32px, 4vw, 56px)/1.06 var(--head); letter-spacing: -0.025em; text-wrap: balance; }
 .qm-cta p { margin: 16px auto 0; max-width: 52ch; font-size: 16.5px; line-height: 1.6; color: #b9c0d4; }

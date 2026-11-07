@@ -55,11 +55,12 @@ export async function ogImage({ kicker, title, sub }: OgCard) {
     font('GeistMono-500.ttf'),
   ]);
 
-  const mono = { fontFamily: 'Geist Mono', letterSpacing: '0.14em', textTransform: 'uppercase' as const };
+  // Sentence case at normal tracking (heydamir/unslop): no uppercase labels.
+  const mono = { fontFamily: 'Geist Mono', letterSpacing: 0 };
   const stats: [string, string][] = [
-    [`${SELF.gzipKb} KB`, 'gzipped'],
-    ['0', 'dependencies'],
-    [String(UNIT_TESTS), 'unit tests'],
+    [`${SELF.gzipKb} KB`, 'Gzipped'],
+    ['0', 'Dependencies'],
+    [String(UNIT_TESTS), 'Unit tests'],
   ];
 
   return new ImageResponse(
@@ -123,8 +124,6 @@ export async function ogImage({ kicker, title, sub }: OgCard) {
                 ...mono,
                 fontSize: 15,
                 color: C.fg2,
-                letterSpacing: '0.06em',
-                textTransform: 'none',
                 border: `1px solid ${C.line2}`,
                 borderRadius: 8,
                 padding: '4px 10px',
@@ -146,7 +145,7 @@ export async function ogImage({ kicker, title, sub }: OgCard) {
               fontSize: titleSize(title),
               fontWeight: 500,
               lineHeight: 1.04,
-              letterSpacing: '-0.04em',
+              letterSpacing: '-0.03em',
               color: C.fg,
             }}
           >

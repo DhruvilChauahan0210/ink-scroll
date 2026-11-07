@@ -51,7 +51,7 @@ html:has(.gl) body { background: #f5f3ea; }
 .gl-cover figcaption { position: relative; margin-top: 24px; font-size: 13px; color: var(--mut); text-align: center; }
 
 /* ── The year in numbers ──────────────────────────────────────────────── */
-.gl-figs { position: relative; padding: clamp(56px, 7vw, 96px) var(--pad); background: linear-gradient(transparent, transparent), var(--deep); color: #f1efe2; }
+.gl-figs { position: relative; padding: clamp(56px, 7vw, 96px) var(--pad); background: var(--deep); color: #f1efe2; }
 .gl-figs-h { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 24px; padding-bottom: 24px; border-bottom: 1px solid rgba(241, 239, 226, 0.18); }
 .gl-figs-h .gl-kick { margin: 0; }
 .gl-figs-note { margin: 0; font: 12.5px var(--mono); color: rgba(241, 239, 226, 0.55); }
@@ -66,7 +66,7 @@ html:has(.gl) body { background: #f5f3ea; }
 .gl-years { display: flex; align-items: flex-end; gap: 4px; height: 40px; }
 .gl-years i { position: relative; width: 13px; border-radius: 2px 2px 0 0; background: rgba(217, 240, 200, 0.28); }
 .gl-years i:last-child { background: #a7d983; }
-.gl-years em { position: absolute; left: 50%; bottom: -15px; transform: translateX(-50%); font: 9px var(--mono); font-style: normal; color: rgba(241, 239, 226, 0.45); }
+.gl-years em { position: absolute; left: 50%; bottom: -15px; transform: translateX(-50%); font: 9px var(--mono); font-style: normal; color: rgba(241, 239, 226, 0.53); }
 .gl-years { margin-bottom: 16px; }
 .gl-dots { display: grid; grid-template-columns: repeat(16, 5px); gap: 4px; }
 .gl-dots i { width: 5px; height: 5px; border-radius: 1px; background: rgba(217, 240, 200, 0.3); }
@@ -226,7 +226,7 @@ html:has(.gl) body { background: #f5f3ea; }
 .gl-docs em { margin-left: auto; font: 12px var(--mono); font-style: normal; color: var(--mut); }
 
 /* Donate */
-.gl-give { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 440px); gap: clamp(36px, 6vw, 96px); align-items: center; padding: clamp(72px, 9vw, 120px) var(--pad); background: linear-gradient(transparent, transparent), var(--deep); color: #f1efe2; }
+.gl-give { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 440px); gap: clamp(36px, 6vw, 96px); align-items: center; padding: clamp(72px, 9vw, 120px) var(--pad); background: var(--deep); color: #f1efe2; }
 .gl-give .gl-lede { color: rgba(241, 239, 226, 0.72); }
 .gl-give-list { display: grid; gap: 0; max-width: 520px; margin: 32px 0 0; padding: 0; list-style: none; border-top: 1px solid rgba(241, 239, 226, 0.16); }
 .gl-give-list li { display: grid; grid-template-columns: 128px minmax(0, 1fr); gap: 16px; align-items: baseline; padding: 16px 0; border-bottom: 1px solid rgba(241, 239, 226, 0.16); font-size: 15px; color: rgba(241, 239, 226, 0.8); }

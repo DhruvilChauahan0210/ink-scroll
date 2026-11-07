@@ -73,7 +73,7 @@ export const RECIPES: Record<RecipeSlug, RecipeDef> = {
   <path className="logo-line logo-bean" d={BEAN} />
   <path className="logo-line logo-crease" d={CREASE} />
 </svg>`,
-        caption: 'two layers',
+        caption: 'Two layers',
         figure: <FigLayers />,
       },
       {
@@ -89,7 +89,7 @@ export const RECIPES: Record<RecipeSlug, RecipeDef> = {
         code: `<ScrollDraw selector=".logo-line">
   <svg viewBox="0 0 200 200">…</svg>
 </ScrollDraw>`,
-        caption: 'the selector',
+        caption: 'The selector',
         figure: <FigSelector />,
       },
       {
@@ -109,7 +109,7 @@ export const RECIPES: Record<RecipeSlug, RecipeDef> = {
   easing="ease-out"
   stagger={0.12}
 >`,
-        caption: 'when each stroke draws',
+        caption: 'When each stroke draws',
         figure: <FigStagger />,
       },
       {
@@ -140,7 +140,7 @@ export const RECIPES: Record<RecipeSlug, RecipeDef> = {
             <C>onComplete</C> straight away, so the colour still arrives.
           </>
         ),
-        caption: 'the hand-off',
+        caption: 'The hand-off',
         figure: <FigFlood />,
       },
     ],
@@ -226,7 +226,7 @@ export const RECIPES: Record<RecipeSlug, RecipeDef> = {
 
 <div ref={stage} className="tour-stage"
   style={{ '--header': \`\${HEADER}px\` }}>`,
-        caption: 'one screen',
+        caption: 'One screen',
         figure: <FigStage />,
       },
       {
@@ -264,7 +264,7 @@ return () => pin.destroy();`,
   const i = Math.min(n - 1, Math.floor(p * n));
   setActive(i);
 }`,
-        caption: 'progress, in thirds',
+        caption: 'Progress, in thirds',
         figure: <FigThirds />,
       },
       {
@@ -290,7 +290,7 @@ drawings.forEach((d, j) =>
             features keep working: pinning is not motion.
           </>
         ),
-        caption: 'a third each',
+        caption: 'A third each',
         figure: <FigThirdsDrawn />,
       },
     ],
@@ -383,7 +383,7 @@ drawings.forEach((d, j) =>
     {unit}
   </span>
 </dd>`,
-        caption: 'three copies',
+        caption: 'Three copies',
         figure: <FigThreeCopies />,
       },
       {
@@ -405,7 +405,7 @@ drawings.forEach((d, j) =>
 .stat-hold, .stat-run { grid-row: 1; grid-column: 1; }
 .stat-hold { visibility: hidden; }
 .stat-run { justify-self: end; }`,
-        caption: 'held width',
+        caption: 'Held width',
         figure: <FigWidth />,
       },
       {
@@ -424,7 +424,7 @@ drawings.forEach((d, j) =>
 });
 
 scrollCounter(el, { to: value, format: (n) => nf.format(n) });`,
-        caption: 'raw in, formatted out',
+        caption: 'Raw in, formatted out',
         figure: <FigFormat />,
       },
       {
@@ -450,7 +450,7 @@ scrollCounter(el, { to: value, format: (n) => nf.format(n) });`,
             scrolls back. Under reduced motion the final value is written at once.
           </>
         ),
-        caption: 'a reachable end',
+        caption: 'A reachable end',
         figure: <FigReach />,
       },
     ],
@@ -537,7 +537,7 @@ scrollCounter(el, { to: value, format: (n) => nf.format(n) });`,
         ),
         code: `ffmpeg -i film.mov -an -c:v libvpx -cpu-used 1 -pix_fmt yuv420p \\
   -g 3 -auto-alt-ref 0 -b:v 2400k -crf 4 -qmin 0 -qmax 26 film.webm`,
-        caption: 'what a seek costs',
+        caption: 'What a seek costs',
         figure: <FigKeyframes />,
       },
       {
@@ -558,7 +558,7 @@ scrollCounter(el, { to: value, format: (n) => nf.format(n) });`,
   height: 100vh;
   height: 100svh;
 }`,
-        caption: 'track and stage',
+        caption: 'Track and stage',
         figure: <FigTrack />,
       },
       {
@@ -579,7 +579,7 @@ scrollCounter(el, { to: value, format: (n) => nf.format(n) });`,
 });
 
 return () => film.destroy();`,
-        caption: 'which box sets the window',
+        caption: 'Which box sets the window',
         figure: <FigMeasure />,
       },
       {
@@ -606,7 +606,7 @@ const chapterAt = (p) =>
             shows all of them instead.
           </>
         ),
-        caption: 'chapters on the film',
+        caption: 'Chapters on the film',
         figure: <FigChapters />,
       },
     ],

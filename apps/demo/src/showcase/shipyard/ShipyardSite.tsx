@@ -177,7 +177,7 @@ function Chain() {
               </li>
             ))}
           </ol>
-          <div className="sy-rc-bar"><i style={{ width: `${(done / STAGES.length) * 100}%` }} /></div>
+          <div className="sy-rc-bar"><i style={{ transform: `scaleX(${done / STAGES.length})` }} /></div>
           <div className="sy-rc-foot"><span>Elapsed</span><b>{done ? fmt(Math.round(elapsed * 10) / 10) : '0s'}</b></div>
         </div>
       </div>

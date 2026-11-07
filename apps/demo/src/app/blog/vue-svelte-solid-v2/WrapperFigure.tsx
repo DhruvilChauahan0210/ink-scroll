@@ -35,7 +35,7 @@ export function WrapperFigure({ rows }: { rows: WrapperRow[] }) {
   return (
     <ScrollDraw className="wf" selector=".wf-ink" autoplay duration={700} delay={300} stagger={0.1} easing="ease-out" once>
       <p className="wf-hd">
-        <span>you write</span>
+        <span>You write</span>
         <span>engine: created → destroyed</span>
       </p>
       <ol className="wf-list">
@@ -74,7 +74,7 @@ export function WrapperFigure({ rows }: { rows: WrapperRow[] }) {
         ))}
       </ol>
       <p className="wf-foot">
-        <span>every bar</span> is one call to <code>createAnimateEngine(el, options)</code> — the same engine the plain{' '}
+        <span>Every bar</span> is one call to <code>createAnimateEngine(el, options)</code> — the same engine the plain{' '}
         <code>scrollAnimate()</code> runs
       </p>
     </ScrollDraw>

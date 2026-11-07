@@ -20,7 +20,7 @@ html:has(.lu) body { background: #0b0b0c; }
 .lu .sk-hero.has-art { grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr); padding-bottom: clamp(40px, 5vw, 72px); }
 .lu-price { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin-top: 24px; font-size: 14.5px; color: var(--mut); }
 .lu-price b { font: 500 32px/1 var(--head); letter-spacing: -0.02em; color: var(--fg); }
-.lu-hero-cam { padding: 5% 0 3%; background: linear-gradient(transparent, transparent); }
+.lu-hero-cam { padding: 5% 0 3%; background: none; }
 .lu-hero-note { margin: 8px 0 0; text-align: center; font: 12px var(--mono); color: var(--mut); }
 
 .lu-facts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; margin: 0; padding: 0 var(--pad) clamp(56px, 7vw, 96px); list-style: none; }
@@ -65,8 +65,8 @@ html:has(.lu) body { background: #0b0b0c; }
 
 .lu-stage-body { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1.75fr) minmax(0, 1fr); gap: clamp(28px, 4vw, 72px); align-items: center; }
 .lu-cam-col { min-width: 0; }
-.lu-cam { position: relative; max-width: min(100%, calc((100svh - var(--lu-nav, 67px) - 230px) * 2.3125)); margin: 0 auto; background: linear-gradient(transparent, transparent); }
-.lu-zoom { position: relative; transform-origin: calc((var(--fx) - 30) * 100% / 740) calc((var(--fy) - 84) * 100% / 320); transition: transform-origin 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.lu-cam { position: relative; max-width: min(100%, calc((100svh - var(--lu-nav, 67px) - 230px) * 2.3125)); margin: 0 auto; background: none; }
+.lu-zoom { position: relative; container-type: inline-size; transform-origin: calc((var(--fx) - 30) * 100% / 740) calc((var(--fy) - 84) * 100% / 320); transition: transform-origin 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1); }
 
 /* The focus frame and its tag glide to the part being described */
 .lu-af { fill: none; stroke: var(--accent); stroke-width: 3; stroke-linecap: square; transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1); }
@@ -74,7 +74,7 @@ html:has(.lu) body { background: #0b0b0c; }
 .lu-af-tr { transform: translate(calc((var(--fx) + var(--fw) / 2) * 1px), calc((var(--fy) - var(--fh) / 2) * 1px)); }
 .lu-af-bl { transform: translate(calc((var(--fx) - var(--fw) / 2) * 1px), calc((var(--fy) + var(--fh) / 2) * 1px)); }
 .lu-af-br { transform: translate(calc((var(--fx) + var(--fw) / 2) * 1px), calc((var(--fy) + var(--fh) / 2) * 1px)); }
-.lu-tag { position: absolute; left: calc((var(--fx) - var(--fw) / 2 - 30) * 100% / 740); top: calc((var(--fy) - var(--fh) / 2 - 84) * 100% / 320); transform: translateY(calc(-100% - 6px)); padding: 4px 8px; border-radius: 3px; background: var(--accent); color: var(--accent-fg); font: 600 11px/1 var(--mono); letter-spacing: 0; white-space: nowrap; pointer-events: none; transition: left 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), top 0.7s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.lu-tag { position: absolute; left: 0; top: 0; transform: translate(calc((var(--fx) - var(--fw) / 2 - 30) * 100cqw / 740), calc((var(--fy) - var(--fh) / 2 - 84) * 100cqw / 740 - 100% - 6px)); padding: 4px 8px; border-radius: 3px; background: var(--accent); color: var(--accent-fg); font: 600 11px/1 var(--mono); letter-spacing: 0; white-space: nowrap; pointer-events: none; transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1); }
 
 /* The x-ray of each part draws in when its feature is on */
 .lu-x { opacity: 0; transition: opacity 0.45s ease; }
@@ -124,50 +124,13 @@ html:has(.lu) body { background: #0b0b0c; }
 .lu-tile figcaption span { font: 11px/1.35 var(--mono); color: rgba(243, 241, 236, 0.75); }
 
 .s-golden {
-  background:
-    linear-gradient(transparent, transparent) ,
-    linear-gradient(transparent, transparent),
-    linear-gradient(transparent, transparent),
-    linear-gradient(transparent, transparent),
-    linear-gradient(#1c1316 0 0) 0 100% / 100% 14% no-repeat,
-    linear-gradient(#1c1316 0 0) 2% 100% / 15% 27% no-repeat,
-    linear-gradient(#1c1316 0 0) 19% 100% / 10% 35% no-repeat,
-    linear-gradient(#1c1316 0 0) 31% 100% / 14% 24% no-repeat,
-    linear-gradient(#1c1316 0 0) 47.5% 100% / 5% 44% no-repeat,
-    linear-gradient(#1c1316 0 0) 47.9% 100% / 1.2% 54% no-repeat,
-    linear-gradient(#1c1316 0 0) 62% 100% / 16% 31% no-repeat,
-    linear-gradient(#1c1316 0 0) 82% 100% / 11% 22% no-repeat,
-    linear-gradient(#1c1316 0 0) 100% 100% / 9% 33% no-repeat,
-    linear-gradient(transparent, transparent),
-    linear-gradient(transparent, transparent),
-    linear-gradient(180deg, #2a2047 0%, #5f3567 28%, #c0566b 52%, #ef8d58 72%, #f8be7a 88%);
+  background: linear-gradient(#1c1316 0 0) 0 100% / 100% 14% no-repeat, linear-gradient(#1c1316 0 0) 2% 100% / 15% 27% no-repeat, linear-gradient(#1c1316 0 0) 19% 100% / 10% 35% no-repeat, linear-gradient(#1c1316 0 0) 31% 100% / 14% 24% no-repeat, linear-gradient(#1c1316 0 0) 47.5% 100% / 5% 44% no-repeat, linear-gradient(#1c1316 0 0) 47.9% 100% / 1.2% 54% no-repeat, linear-gradient(#1c1316 0 0) 62% 100% / 16% 31% no-repeat, linear-gradient(#1c1316 0 0) 82% 100% / 11% 22% no-repeat, linear-gradient(#1c1316 0 0) 100% 100% / 9% 33% no-repeat, linear-gradient(180deg, #2a2047 0%, #5f3567 28%, #c0566b 52%, #ef8d58 72%, #f8be7a 88%);
 }
 .s-harbour {
-  background:
-    linear-gradient(rgba(255, 196, 120, 0.7), transparent) 16% 100% / 1.4% 36% no-repeat,
-    linear-gradient(rgba(255, 220, 150, 0.6), transparent) 38% 100% / 1% 34% no-repeat,
-    linear-gradient(rgba(150, 210, 255, 0.55), transparent) 61% 100% / 1% 33% no-repeat,
-    linear-gradient(rgba(255, 186, 110, 0.6), transparent) 84% 100% / 1.6% 36% no-repeat,
-    repeating-linear-gradient(180deg, rgba(160, 200, 255, 0.08) 0 1px, transparent 1px 7px) 0 100% / 100% 36% no-repeat,
-    linear-gradient(#0e2340, #070f1c) 0 100% / 100% 36% no-repeat,
-    linear-gradient(transparent, transparent) 0 62.5% / 4.6cqw 2cqw repeat-x,
-    linear-gradient(#0a1424 0 0) 0 63% / 100% 5% no-repeat,
-    linear-gradient(#0a1424 0 0) 70% 59% / 0.8% 22% no-repeat,
-    linear-gradient(#0a1424 0 0) 88% 59% / 0.8% 22% no-repeat,
-    linear-gradient(#0a1424 0 0) 100% 58.4% / 46% 1.2% no-repeat,
-    linear-gradient(180deg, #0b1838 0%, #1c3a78 40%, #4c78ad 56%, #9fb3c8 63%);
+  background: linear-gradient(rgba(255, 196, 120, 0.7), transparent) 16% 100% / 1.4% 36% no-repeat, linear-gradient(rgba(255, 220, 150, 0.6), transparent) 38% 100% / 1% 34% no-repeat, linear-gradient(rgba(150, 210, 255, 0.55), transparent) 61% 100% / 1% 33% no-repeat, linear-gradient(rgba(255, 186, 110, 0.6), transparent) 84% 100% / 1.6% 36% no-repeat, repeating-linear-gradient(180deg, rgba(160, 200, 255, 0.08) 0 1px, transparent 1px 7px) 0 100% / 100% 36% no-repeat, linear-gradient(#0e2340, #070f1c) 0 100% / 100% 36% no-repeat, linear-gradient(#0a1424 0 0) 0 63% / 100% 5% no-repeat, linear-gradient(#0a1424 0 0) 70% 59% / 0.8% 22% no-repeat, linear-gradient(#0a1424 0 0) 88% 59% / 0.8% 22% no-repeat, linear-gradient(#0a1424 0 0) 100% 58.4% / 46% 1.2% no-repeat, linear-gradient(180deg, #0b1838 0%, #1c3a78 40%, #4c78ad 56%, #9fb3c8 63%);
 }
 .s-bokeh {
-  background:
-    linear-gradient(transparent, transparent),
-    linear-gradient(transparent, transparent),
-    linear-gradient(transparent, transparent),
-    linear-gradient(transparent, transparent),
-    linear-gradient(transparent, transparent),
-    linear-gradient(transparent, transparent),
-    linear-gradient(transparent, transparent),
-    linear-gradient(transparent, transparent),
-    linear-gradient(165deg, #150f1d, #1e1424 45%, #0b0d15);
+  background: linear-gradient(165deg, #150f1d, #1e1424 45%, #0b0d15);
   background-blend-mode: screen;
 }
 .s-fog {
@@ -192,13 +155,7 @@ html:has(.lu) body { background: #0b0b0c; }
     linear-gradient(180deg, #2a2a2a 0 16%, #8a8a86 16% 54%, #e6e5e0 54%);
 }
 .s-dunes {
-  background:
-    linear-gradient(transparent, transparent),
-    linear-gradient(transparent, transparent),
-    linear-gradient(transparent, transparent),
-    linear-gradient(transparent, transparent),
-    radial-gradient(circle 3cqw at 82% 18%, #fffdf2 0 50%, rgba(255, 253, 242, 0.3) 75%, transparent),
-    linear-gradient(180deg, #2f6fb6 0%, #77afe0 45%, #cfe3ef 64%, #f2e2c4 70%);
+  background: radial-gradient(circle 3cqw at 82% 18%, #fffdf2 0 50%, rgba(255, 253, 242, 0.3) 75%, transparent), linear-gradient(180deg, #2f6fb6 0%, #77afe0 45%, #cfe3ef 64%, #f2e2c4 70%);
 }
 
 /* ── Specs ── */

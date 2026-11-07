@@ -116,7 +116,7 @@ export function Recipe({ recipe, files }: { recipe: RecipeDef; files: RecipeFile
       </section>
 
       <section className="rc-sec" aria-labelledby="rc-file">
-        <Head n={2} k="the whole file" id="rc-file">The complete component</Head>
+        <Head n={2} k="The whole file" id="rc-file">The complete component</Head>
         <RecipeFiles recipe={recipe} files={files} />
       </section>
 

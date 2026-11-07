@@ -268,11 +268,11 @@ export default function ReactScrollAnimationPage() {
         </header>
 
         <div className="stk-body">
-          <Toc label="on this page" items={TOC} />
+          <Toc label="On this page" items={TOC} />
           <div className="stk-main">
 
             {/* ── 01 The answer ─────────────────────────────── */}
-            <Sec n={1} k="the answer" id="answer" title="Fade anything up, in one component">
+            <Sec n={1} k="The answer" id="answer" title="Fade anything up, in one component">
               <p className="stk-p">
                 The copy-paste answer: a client component that wraps its children in <C>ScrollAnimate</C> and
                 plays once. Use it anywhere, including inside a Server Component page.
@@ -328,7 +328,7 @@ export default function ReactScrollAnimationPage() {
             </Sec>
 
             {/* ── 05 Drop it in ─────────────────────────────── */}
-            <Sec n={5} k="drop it in" id="drop-in" title="Drop-in for React + Next.js">
+            <Sec n={5} k="Drop it in" id="drop-in" title="Drop-in for React + Next.js">
               <dl className="stk-close-specs">
                 <div><dt>Licence</dt><dd>MIT</dd></div>
                 <div><dt>Dependencies</dt><dd>Zero</dd></div>

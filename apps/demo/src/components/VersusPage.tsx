@@ -25,14 +25,14 @@ function sizeBars(v: Versus, them: Competitor): SizeBar[] {
     { label: `svg-scroll-draw ${SELF.version}`, sub: 'every API, main entry', kb: SELF.gzipKb, ours: true },
   ];
   if (v.competitorKey === 'vivus') {
-    bars.push({ label: 'svg-scroll-draw/vivus', sub: 'the drop-in entry on its own', kb: SELF_ENTRIES.vivus, ours: true });
+    bars.push({ label: 'svg-scroll-draw/vivus', sub: 'The drop-in entry on its own', kb: SELF_ENTRIES.vivus, ours: true });
   }
   bars.push({ label: `${them.name} ${them.version}`, sub: them.gzipKb < SELF.gzipKb ? `smaller than our main entry · ${them.license}` : them.license, kb: them.gzipKb });
   if (v.competitorKey === 'scrollmagic') {
     const gsap = COMPETITORS.gsapScroll;
     bars.push({
       label: `scrollmagic + ${gsap.label.toLowerCase()}`,
-      sub: 'what it takes to animate anything',
+      sub: 'What it takes to animate anything',
       kb: Math.round((them.gzipKb + gsap.gzipKb) * 10) / 10,
     });
   }
@@ -61,7 +61,7 @@ function Mark({ val }: { val: VersusRow['us'] }) {
     return (
       <span className="vs-m is-part">
         <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 9.5 C4.5 5.5 6.5 5.5 8 8 S11.5 10.5 13.5 6.5" className="cmp-ink" stroke="currentColor" /></svg>
-        <span className="sr-only">partial</span>
+        <span className="sr-only">Partial</span>
       </span>
     );
   }
@@ -193,7 +193,7 @@ export function VersusPage({ slug }: { slug: string }) {
                   <span role="columnheader">Package</span>
                   <span role="columnheader">Version</span>
                   <span role="columnheader">Licence</span>
-                  <span role="columnheader">last publish</span>
+                  <span role="columnheader">Last publish</span>
                   <span role="columnheader">gzip</span>
                 </div>
                 {provenance.map((p, i) => (
@@ -251,7 +251,7 @@ export function VersusPage({ slug }: { slug: string }) {
               <p className="cmp-small vs-legend">
                 <span><Mark val={true} /> Supported</span>
                 <span><Mark val={false} /> Not supported</span>
-                <span><Mark val="partial" /> partial or requires extra work</span>
+                <span><Mark val="partial" /> Partial or requires extra work</span>
                 <span>Checked against {them.name} {them.version}.</span>
               </p>
             </section>
@@ -290,7 +290,7 @@ export function VersusPage({ slug }: { slug: string }) {
 
             {/* ── 05 Other comparisons ───────────────────────── */}
             <section className="cmp-sec" aria-labelledby="vs-more">
-              <Head n={5} k="other comparisons" id="vs-more">Other comparisons</Head>
+              <Head n={5} k="Other comparisons" id="vs-more">Other comparisons</Head>
               <div className="ex-rel-list">
                 {others.map((o, i) => (
                   <Link key={o.href} href={o.href} className="ex-rel-row">

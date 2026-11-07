@@ -69,7 +69,7 @@ export function Legend({ children }: { children?: ReactNode }) {
     <p className="h2h-legend">
       <span><Glyph v={true} /> Supported</span>
       <span><Glyph v={false} /> Not supported</span>
-      <span><Glyph v="partial" /> partial or extra setup</span>
+      <span><Glyph v="partial" /> Partial or extra setup</span>
       {children && <span className="h2h-legend-x">{children}</span>}
     </p>
   );
@@ -270,7 +270,7 @@ export function Closing({ n, title, children, actions }: { n: number; title: str
     <section className="h2h-end" aria-labelledby="h2h-end">
       <div className="tb h2h-tb">
         <span className="tb-n">{pad(n)}</span>
-        <span>verdict</span>
+        <span>Verdict</span>
       </div>
       <div className="h2h-end-in">
         <h2 id="h2h-end" className="h2h-end-t">{title}</h2>

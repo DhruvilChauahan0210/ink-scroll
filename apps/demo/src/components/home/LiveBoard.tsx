@@ -22,7 +22,7 @@ export type Spark = {
 };
 
 export type Chart = {
-  /** What the plot covers: "last 30 days", "all time". */
+  /** What the plot covers: "last 30 days", "All time". */
   span: string;
   wide: Spark;
   narrow: Spark;
@@ -161,7 +161,7 @@ function Plot({ s, chart, pkg }: { s: Spark; chart: Chart; pkg: string }) {
 }
 
 type Range = 'all' | 'month';
-const RANGES: [Range, string][] = [['month', 'last 30 days'], ['all', 'all time']];
+const RANGES: [Range, string][] = [['month', 'last 30 days'], ['all', 'All time']];
 
 export function LiveBoard({ cells, charts, checked, repo, pkg }: {
   cells: LiveCell[];

@@ -102,7 +102,7 @@ export default function Page() {
     <BlogArticle
       slug="reduced-motion-scroll-animations"
       jsonLd={articleJsonLd}
-      tags={['prefers-reduced-motion', 'accessibility', 'scroll effects']}
+      tags={['prefers-reduced-motion', 'accessibility', 'Scroll effects']}
       title={<>Reduced motion for scroll animations, effect by effect</>}
       lede={
         <>

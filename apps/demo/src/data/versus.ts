@@ -251,7 +251,7 @@ export const VERSUS: Versus[] = [
       { feature: 'Text split + stagger', us: true, them: false },
       { feature: 'Number counters', us: true, them: false },
       { feature: 'Video scrub', us: true, them: false },
-      { feature: 'Pin / sticky sections', us: true, them: 'partial', note: 'data-scroll-sticky covers the basic case' },
+      { feature: 'Pin / sticky sections', us: true, them: 'partial', note: 'Data-scroll-sticky covers the basic case' },
       { feature: 'Parallax', us: true, them: true },
       { feature: 'Horizontal scroll sections', us: true, them: true },
       { feature: 'Config in HTML attributes', us: false, them: true, note: 'A genuine preference difference, not a defect either way' },

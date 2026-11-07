@@ -403,7 +403,7 @@ export function Annotate() {
                 svg-scroll-draw is <Mk k="kb" lit={shown}>10&nbsp;KB</Mk> gzipped with <Mk k="deps" lit={shown}>zero dependencies</Mk>. It
                 draws on the browser’s <Mk k="native" lit={shown}>native scroll timeline</Mk> where one exists and falls back
                 to <Mk k="frame" lit={shown}>a frame loop</Mk> where it doesn’t — and it is <Mk k="mit" lit={shown}>MIT</Mk>, so it
-                is <Mk k="yours" lit={shown}>yours</Mk>.
+                is <Mk k="yours" lit={shown}>Yours</Mk>.
               </p>
             </div>
           </div>

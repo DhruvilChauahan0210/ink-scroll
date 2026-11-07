@@ -108,8 +108,8 @@ export default function Page() {
                 note: AOS.license,
                 parts: aosParts(),
                 setup: [
-                  { name: 'data-aos="…"', note: 'on every element' },
-                  { name: 'AOS.init()', note: 'before anything moves' },
+                  { name: 'data-aos="…"', note: 'On every element' },
+                  { name: 'AOS.init()', note: 'Before anything moves' },
                 ],
               },
               {
@@ -122,7 +122,7 @@ export default function Page() {
                 title: 'svg-scroll-draw/reveal',
                 note: SELF.license,
                 parts: [{ name: 'scrollReveal', kb: SELF_ENTRIES.reveal }],
-                setup: [{ name: "scrollReveal('.card')", note: 'one call, no markup' }],
+                setup: [{ name: "scrollReveal('.card')", note: 'One call, no markup' }],
                 self: true,
               },
             ]}

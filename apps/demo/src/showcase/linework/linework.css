@@ -112,7 +112,7 @@ html:has(.lw) body { background: #f5f2eb; }
 .lw-bottle-label .lw-p-cellar path { stroke-width: 3.4; }
 
 /* 2 · Northbeam — the mark on a business card */
-.lw-st-card { background: linear-gradient(transparent, transparent), #070b0f; }
+.lw-st-card { background: #070b0f; }
 .lw-cards { container-type: inline-size; position: relative; width: min(82%, 400px); aspect-ratio: 85 / 55; margin-top: 32px; }
 .lw-card { position: absolute; inset: 0; border-radius: 10px; }
 .lw-card-back { display: flex; flex-direction: column; padding: 7cqw 7cqw 6cqw; background: #e6edf3; color: #070b0f; transform: translate(8%, -30%) rotate(7deg); box-shadow: 0 30px 50px -24px rgba(0, 0, 0, 0.7); font-size: 3.7cqw; }

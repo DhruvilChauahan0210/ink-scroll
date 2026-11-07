@@ -40,16 +40,16 @@ export function Hero({ gzipKb, unitTests, browserTests }: Props) {
               <Link href="/docs" className="btn btn-solid" data-magnetic>Get started</Link>
             </div>
             <dl className="he-stats">
-              <div><dt>gzipped</dt><dd>{gzipKb}<small> KB</small></dd></div>
-              <div><dt>dependencies</dt><dd>0</dd></div>
-              <div><dt>unit tests</dt><dd>{unitTests}</dd></div>
-              <div><dt>browser tests</dt><dd>{browserTests}<small> ×3</small></dd></div>
+              <div><dt>Gzipped</dt><dd>{gzipKb}<small> KB</small></dd></div>
+              <div><dt>Dependencies</dt><dd>0</dd></div>
+              <div><dt>Unit tests</dt><dd>{unitTests}</dd></div>
+              <div><dt>Browser tests</dt><dd>{browserTests}<small> ×3</small></dd></div>
             </dl>
           </div>
           <PenDrawing stageSelector=".he" className="he-art" />
         </div>
         <div className="he-foot" aria-label="Works with">
-          <span className="he-foot-k">works with</span>
+          <span className="he-foot-k">Works with</span>
           {STRIP.map(([n, href]) =>
             href ? (
               <Link key={n} href={href} className="he-foot-a">

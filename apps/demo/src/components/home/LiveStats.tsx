@@ -105,7 +105,7 @@ export async function LiveStats() {
   const fetched = [gh, week, month, history, range].filter((x) => x !== null).map((x) => x.at);
   const checked = fetched.length ? stamp(Math.min(...fetched)) : null;
 
-  const charts = { all: plot(history?.data ?? [], 'all time', true), month: plot(range?.data ?? [], 'last 30 days') };
+  const charts = { all: plot(history?.data ?? [], 'All time', true), month: plot(range?.data ?? [], 'last 30 days') };
 
   return <LiveBoard cells={cells} charts={charts} checked={checked} repo={GH_REPO} pkg={NPM_PKG} />;
 }

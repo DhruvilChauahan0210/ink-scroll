@@ -186,7 +186,7 @@ export const EXAMPLE_SEO: Record<string, ExampleSeo> = {
     intro:
       'Svelte actions are the right primitive for this — no wrapper component, no extra element in the DOM, just use:scrollDraw on the node you want animated. This example animates a reactive store graph with spring easing, and reaches for createScrollDraw when the instance itself needs handling. Cleanup is automatic through the action lifecycle.',
     keywords: [
-      'svelte scroll animation',
+      'Svelte scroll animation',
       'svelte scroll animate action',
       'use:scrollDraw svelte',
       'svelte svg animation',
@@ -411,7 +411,7 @@ export const EXAMPLE_SEO: Record<string, ExampleSeo> = {
       'Scroll-scrubbed video is the Apple product-page effect: the reader controls playback with the scroll wheel. Mechanically it is just video.currentTime driven by scroll progress, and the parts that are actually fiddly are preloading enough of the file to scrub without stalling and handling browsers that need Range requests. scrollVideo covers those.',
     keywords: [
       'scroll video scrub',
-      'video scrubbing on scroll',
+      'Video scrubbing on scroll',
       'apple scroll video effect',
       'scrollVideo',
       'control video with scroll',
@@ -472,7 +472,7 @@ export const EXAMPLE_SEO: Record<string, ExampleSeo> = {
     intro:
       'Most scroll animations want the same handful of option combinations, and getting there means learning the whole option surface first. A preset is shorthand for two to four of those options, so { preset: "sketch" } is a complete setup. They are not a lock-in: anything you pass alongside a preset overrides it, so a preset is a starting point rather than a mode.',
     keywords: [
-      'scroll animation presets',
+      'Scroll animation presets',
       'one line scroll animation',
       'animation preset library',
       'sketch animation preset',
@@ -492,7 +492,7 @@ export const EXAMPLE_SEO: Record<string, ExampleSeo> = {
     intro:
       'Astro’s whole premise is shipping no JavaScript unless you ask for it, so a component wrapper that forces hydration would defeat the point. Here the markup stays a server component: mark elements with data-scroll-draw, pass options as a JSON attribute, and call initScrollDraw() once from a client script. One small script for the whole page, no island per animation.',
     keywords: [
-      'astro scroll animation',
+      'Astro scroll animation',
       'astro svg animation',
       'zero js scroll animation',
       'astro animation library',

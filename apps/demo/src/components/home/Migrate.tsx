@@ -193,7 +193,7 @@ export function Migrate() {
       >
         <div ref={stage} className="mg-pair-in">
           <Window lib={lib} side="before" />
-          <div className="mg-eq" aria-hidden="true"><span>=</span><small>same page</small></div>
+          <div className="mg-eq" aria-hidden="true"><span>=</span><small>Same page</small></div>
           <Window lib={lib} side="after" />
         </div>
       </ScrollDraw>

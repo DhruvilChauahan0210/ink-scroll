@@ -159,7 +159,7 @@ html:has(.ts) body { background: #ffffff; }
 .ts-val { font-size: 14px; }
 
 /* ── Enterprise ───────────────────────────────────────────────────────── */
-.ts-ent { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: clamp(40px, 5vw, 80px); align-items: center; margin: 0 clamp(0px, 2vw, 24px); padding: clamp(64px, 8vw, 112px) var(--pad); border-radius: clamp(0px, 2vw, 24px); background: linear-gradient(transparent, transparent), #121216; color: #f2f2f4; }
+.ts-ent { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: clamp(40px, 5vw, 80px); align-items: center; margin: 0 clamp(0px, 2vw, 24px); padding: clamp(64px, 8vw, 112px) var(--pad); border-radius: clamp(0px, 2vw, 24px); background: #121216; color: #f2f2f4; }
 .ts-ent .ts-h2 { color: #fff; }
 .ts-ent-list { display: grid; gap: 16px; margin: 32px 0 0; padding: 0; list-style: none; }
 .ts-ent-list li { display: grid; gap: 4px; padding-left: 16px; border-left: 2px solid rgba(159, 180, 255, 0.35); font-size: 15px; line-height: 1.5; color: #a9a9b3; }

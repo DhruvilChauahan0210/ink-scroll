@@ -236,9 +236,9 @@ export default function VsFramerMotionPage() {
                 step={5}
                 self={SELF.gzipKb}
                 rows={[
-                  { name: 'svg-scroll-draw/reveal', note: 'what the fade-in below imports', kb: SELF_ENTRIES.reveal, ours: true, badge: 'one entry' },
+                  { name: 'svg-scroll-draw/reveal', note: 'What the fade-in below imports', kb: SELF_ENTRIES.reveal, ours: true, badge: 'One entry' },
                   { name: 'svg-scroll-draw', note: `${SELF.version} · every API`, kb: SELF.gzipKb, ours: true, badge: 'yours' },
-                  { name: 'Framer Motion', note: `framer-motion ${FM.version}`, kb: FM.gzipKb, badge: 'cjs entry' },
+                  { name: 'Framer Motion', note: `framer-motion ${FM.version}`, kb: FM.gzipKb, badge: 'Cjs entry' },
                 ]}
                 dim={{ from: SELF.gzipKb, to: FM.gzipKb, title: 'Difference', label: `Δ ${(FM.gzipKb - SELF.gzipKb).toFixed(1)} KB` }}
                 caption={`fig. 2 — the weigh-in, to scale · ${RATIO}× the bytes at the CJS entry`}
@@ -271,14 +271,14 @@ export default function VsFramerMotionPage() {
                 </div>
                 <div className="cs-grid cs-2">
                   <div className="cs-col is-ours">
-                    <p className="cs-who"><span>svg-scroll-draw</span><span className="cs-lines">the call</span></p>
+                    <p className="cs-who"><span>svg-scroll-draw</span><span className="cs-lines">The call</span></p>
                     <CodeBox file="app.js">{`import { scrollProgress } from 'svg-scroll-draw/progress';
 
 // Set --scroll-progress (0→1) and --scroll-progress-eased on the element
 scrollProgress('#hero', { easing: 'ease-in-out' });`}</CodeBox>
                   </div>
                   <div className="cs-col is-ours">
-                    <p className="cs-who"><span>styles.css</span><span className="cs-lines">the binding</span></p>
+                    <p className="cs-who"><span>styles.css</span><span className="cs-lines">The binding</span></p>
                     <CodeBox file="styles.css">{`#hero {
   /* Drive CSS animations directly from the scroll variable */
   opacity: calc(var(--scroll-progress-eased));
@@ -303,13 +303,13 @@ scrollProgress('#hero', { easing: 'ease-in-out' });`}</CodeBox>
 
             {/* ── 04 When Framer Motion wins ─────────────────── */}
             <section className="h2h-sec" aria-labelledby="vs-when">
-              <Head n={4} k="their side" id="vs-when">When Framer Motion is the right call.</Head>
+              <Head n={4} k="Their side" id="vs-when">When Framer Motion is the right call.</Head>
               <Calls items={WHEN_FM} />
             </section>
 
             {/* ── 05 More comparisons ────────────────────────── */}
             <section className="h2h-sec" aria-labelledby="vs-more">
-              <Head n={5} k="the set" id="vs-more">More comparisons.</Head>
+              <Head n={5} k="The set" id="vs-more">More comparisons.</Head>
               <OtherSheets current="/vs-framer-motion" />
             </section>
           </div>

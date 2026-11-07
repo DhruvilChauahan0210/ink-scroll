@@ -42,7 +42,7 @@ html:has(.pb) body { background: #faf9f7; }
 
 /* ── Hero ─────────────────────────────────────────────────────────────── */
 .pb-hero { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; padding: clamp(48px, 6vw, 88px) var(--pad) clamp(40px, 5vw, 72px); text-align: center; }
-.pb-hero::before { content: ''; position: absolute; inset: 0 0 auto; height: 640px; background: linear-gradient(transparent, transparent), linear-gradient(var(--line) 1px, transparent 1px) 0 0 / 56px 56px, linear-gradient(90deg, var(--line) 1px, transparent 1px) 0 0 / 56px 56px; -webkit-mask: radial-gradient(70% 80% at 50% 0%, #000 30%, transparent 75%); mask: radial-gradient(70% 80% at 50% 0%, #000 30%, transparent 75%); opacity: 0.7; pointer-events: none; }
+.pb-hero::before { content: ''; position: absolute; inset: 0 0 auto; height: 640px; background: linear-gradient(var(--line) 1px, transparent 1px) 0 0 / 56px 56px, linear-gradient(90deg, var(--line) 1px, transparent 1px) 0 0 / 56px 56px; -webkit-mask: radial-gradient(70% 80% at 50% 0%, #000 30%, transparent 75%); mask: radial-gradient(70% 80% at 50% 0%, #000 30%, transparent 75%); opacity: 0.7; pointer-events: none; }
 .pb-hero > * { position: relative; }
 .pb-hero .pb-lede { margin-inline: auto; }
 .pb-hero .pb-ctas { justify-content: center; }
@@ -340,7 +340,7 @@ html:has(.pb) body { background: #faf9f7; }
 .pb-sec-trust span + span { border-left: 1px solid var(--line); }
 .pb-sec-trust b { font-size: 15px; }
 .pb-sec-trust small { font-size: 12.5px; color: var(--mut); }
-.pb-cta { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 28px 48px; margin: clamp(56px, 7vw, 96px) var(--pad); padding: clamp(32px, 5vw, 64px); border-radius: 28px; background: linear-gradient(transparent, transparent), var(--fg); color: #fff; }
+.pb-cta { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 28px 48px; margin: clamp(56px, 7vw, 96px) var(--pad); padding: clamp(32px, 5vw, 64px); border-radius: 28px; background: var(--fg); color: #fff; }
 .pb-cta .pb-h2 { max-width: 15ch; }
 .pb-cta p { margin: 16px 0 0; max-width: 48ch; font-size: 16.5px; line-height: 1.55; color: #b9b5c0; }
 .pb-cta .pb-ctas { margin: 0; }

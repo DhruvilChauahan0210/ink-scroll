@@ -657,7 +657,7 @@ const isIso = (d: string) => /^\d{4}-\d{2}-\d{2}$/.test(d);
 
 /** What each era of the log was, by major version. */
 const ERAS: Record<string, string> = {
-  '2': 'scroll animation platform',
+  '2': 'Scroll animation platform',
   '1': 'the SVG draw library',
   '0': 'before 1.0',
 };
@@ -777,7 +777,7 @@ export default function ChangelogPage() {
 
         {/* ── Sheet index: every release, by era ─────────── */}
         <nav className="cl-index" aria-label="Releases by major version">
-          <p className="cl-index-h"><span>sheet index</span><span>{RELEASES.length} releases</span></p>
+          <p className="cl-index-h"><span>Sheet index</span><span>{RELEASES.length} releases</span></p>
           {eras.map(({ m, list }) => {
             const from = list[list.length - 1].date;
             const to = list[0].date;

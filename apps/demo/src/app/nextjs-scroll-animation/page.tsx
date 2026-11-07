@@ -358,11 +358,11 @@ export default function NextjsScrollAnimationPage() {
         </header>
 
         <div className="stk-body">
-          <Toc label="on this page" items={TOC} />
+          <Toc label="On this page" items={TOC} />
           <div className="stk-main">
 
             {/* ── 01 The answer ─────────────────────────────── */}
-            <Sec n={1} k="the answer" id="answer" title="Render it from a Server Component">
+            <Sec n={1} k="The answer" id="answer" title="Render it from a Server Component">
               <p className="stk-p">
                 The components in <C>svg-scroll-draw/react</C> carry <C>&apos;use client&apos;</C> (from v2.16.1), so
                 a Server Component renders them directly: your markup is server-rendered, and the animation starts in
@@ -385,7 +385,7 @@ export default function NextjsScrollAnimationPage() {
             </Sec>
 
             {/* ── 02 A complete App Router example ──────────── */}
-            <Sec n={2} k="copy the whole thing" id="example" title="A complete App Router example">
+            <Sec n={2} k="Copy the whole thing" id="example" title="A complete App Router example">
               <p className="stk-p">
                 The smallest project that shows the split: one client file holds every animated part, and the page
                 stays a Server Component that fetches its data. Install, add these files, run <C>next dev</C>.
@@ -467,7 +467,7 @@ export default function NextjsScrollAnimationPage() {
             </Sec>
 
             {/* ── 06 Built for Next.js ──────────────────────── */}
-            <Sec n={6} k="drop it in" id="built-for-next" title="Built for Next.js">
+            <Sec n={6} k="Drop it in" id="built-for-next" title="Built for Next.js">
               <dl className="stk-close-specs">
                 <div><dt>SSR</dt><dd>Safe by default</dd></div>
                 <div><dt>Router</dt><dd>App Router ready</dd></div>

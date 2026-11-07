@@ -353,7 +353,7 @@ html:has(.tw) body { background: #f4efe6; }
 
 /* Sign-up */
 .tw-final { padding: 0 var(--wrap) clamp(72px, 9vw, 120px); }
-.tw-final-in { position: relative; overflow: hidden; display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; padding: clamp(48px, 7vw, 96px) clamp(20px, 4vw, 48px); border-radius: 24px; text-align: center; color: #f8f3ea; background: linear-gradient(transparent, transparent), linear-gradient(180deg, #33536a, #12293a 70%); }
+.tw-final-in { position: relative; overflow: hidden; display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; padding: clamp(48px, 7vw, 96px) clamp(20px, 4vw, 48px); border-radius: 24px; text-align: center; color: #f8f3ea; background: linear-gradient(180deg, #33536a, #12293a 70%); }
 .tw-final-in::after { content: ''; position: absolute; inset: auto 0 0; height: 42%; background: repeating-linear-gradient(transparent 0 11px, rgba(255, 255, 255, 0.07) 11px 12px); pointer-events: none; }
 .tw-final .tw-p { margin-inline: auto; color: rgba(248, 243, 234, 0.75); }
 .tw-news { position: relative; z-index: 1; display: flex; gap: 8px; width: min(460px, 100%); margin-top: 28px; padding: 8px; border-radius: 8px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); }

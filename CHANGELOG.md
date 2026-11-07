@@ -28,6 +28,19 @@ All notable changes to `svg-scroll-draw` are documented here.
   live-state loops in product mock-ups (recording dots, spinners, carets)
   stay. `scripts/test-showcase.mjs` opens every showcase site for errors and
   colour contrast, and runs in CI next to test-a11y.
+- **The last unslop leftovers.** Three showcase animations moved off layout
+  properties: Shipyard's run bar scales on X instead of growing its width,
+  Lumen's feature tag moves with translate in container units instead of
+  left/top, Casaverde's active dot changes width without animating it. 36
+  transparent placeholder layers left by the wash removal are gone. The share
+  cards drop their uppercase labels and wide tracking (sentence case, title
+  tracking -0.03em). 136 English labels that were data strings, not JSX text,
+  are sentence case ("On this page", "Worth knowing", "The problem", "Last
+  publish"); code, option names, package names and the path-style breadcrumb
+  stay lowercase (find-lowercase-labels: 908 → 802 distinct, the rest code or
+  paths). Two contrast failures that surfaced on a new day are fixed:
+  Greenline's chart years and Stride's "Missed" day (Stride derives it from
+  today's date).
 - **Every showcase site passes WCAG AA colour contrast.** The 23 demo sites
   were never checked (they are not in the sitemap) and carried 708 failing
   elements. Fixed at the colour, not the element: 71 muted text colours moved

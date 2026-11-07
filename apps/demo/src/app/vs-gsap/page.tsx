@@ -363,9 +363,9 @@ export default function VsGsapPage() {
                 rows={[
                   { name: OURS, note: `${SELF.version} · every API`, kb: SELF.gzipKb, ours: true, badge: 'yours' },
                   { name: 'GSAP core', note: `gsap ${COMPETITORS.gsapCore.version}`, kb: CORE_KB },
-                  { name: '+ ScrollTrigger', note: `GSAP + ScrollTrigger · +${SCROLLTRIGGER_KB} KB`, kb: COMPETITORS.gsapScroll.gzipKb, from: CORE_KB, badge: 'common setup' },
-                  { name: '+ DrawSVGPlugin', note: `+${DRAWSVG_KB} KB`, kb: COMPETITORS.gsapStack.gzipKb, from: COMPETITORS.gsapScroll.gzipKb, badge: 'same job as us' },
-                  { name: '+ SplitText', note: `+${SPLITTEXT_KB} KB`, kb: Number(GSAP_FULL_SUITE_KB), from: COMPETITORS.gsapStack.gzipKb, badge: 'full suite' },
+                  { name: '+ ScrollTrigger', note: `GSAP + ScrollTrigger · +${SCROLLTRIGGER_KB} KB`, kb: COMPETITORS.gsapScroll.gzipKb, from: CORE_KB, badge: 'Common setup' },
+                  { name: '+ DrawSVGPlugin', note: `+${DRAWSVG_KB} KB`, kb: COMPETITORS.gsapStack.gzipKb, from: COMPETITORS.gsapScroll.gzipKb, badge: 'Same job as us' },
+                  { name: '+ SplitText', note: `+${SPLITTEXT_KB} KB`, kb: Number(GSAP_FULL_SUITE_KB), from: COMPETITORS.gsapStack.gzipKb, badge: 'Full suite' },
                 ]}
                 dim={{ from: SELF.gzipKb, to: COMPETITORS.gsapStack.gzipKb, title: 'Same job, difference', label: `Δ ${DELTA_KB} KB` }}
                 caption={`fig. 2 — the weigh-in, to scale · ${RATIO_STACK}× the bytes for the same job`}
@@ -445,7 +445,7 @@ export default function VsGsapPage() {
 
             {/* ── 05 Why GSAP wins (honest) ──────────────────── */}
             <section id="when-gsap" className="h2h-sec" aria-labelledby="when-gsap-h">
-              <Head n={5} k="their side" id="when-gsap-h">When GSAP is still the right call.</Head>
+              <Head n={5} k="Their side" id="when-gsap-h">When GSAP is still the right call.</Head>
               <p className="h2h-p">
                 We&#39;re being honest here. GSAP has 15 years of production hardening and some features we don&#39;t have yet:
               </p>
@@ -454,7 +454,7 @@ export default function VsGsapPage() {
 
             {/* ── 06 More comparisons ────────────────────────── */}
             <section className="h2h-sec" aria-labelledby="vs-more">
-              <Head n={6} k="the set" id="vs-more">More comparisons.</Head>
+              <Head n={6} k="The set" id="vs-more">More comparisons.</Head>
               <OtherSheets current="/vs-gsap" />
             </section>
           </div>

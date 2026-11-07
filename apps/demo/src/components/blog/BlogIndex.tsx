@@ -25,7 +25,7 @@ export function TopicKey({ topics, total, active, onPick }: {
   const rows = [{ tag: 'All', posts: topics.reduce((s, t) => s + t.posts, 0), minutes: total }, ...topics];
   return (
     <figure className="bl-key">
-      <div className="bl-key-hd" aria-hidden="true"><span>topic</span><span>posts</span><span>reading, to scale</span></div>
+      <div className="bl-key-hd" aria-hidden="true"><span>topic</span><span>posts</span><span>Reading, to scale</span></div>
       <ScrollDraw className="bl-key-rows" selector=".bl-key-ink" autoplay duration={700} delay={300} stagger={0.07} easing="ease-out" once>
         {rows.map((t) => {
           const on = active === t.tag;

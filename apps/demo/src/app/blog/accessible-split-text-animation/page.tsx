@@ -98,7 +98,7 @@ export default function Page() {
     <BlogArticle
       slug="accessible-split-text-animation"
       jsonLd={articleJsonLd}
-      tags={['scrollText', 'ARIA', 'screen readers']}
+      tags={['scrollText', 'ARIA', 'Screen readers']}
       title={<>Split-text animation a screen reader can read</>}
       lede={
         <>
@@ -169,8 +169,8 @@ export default function Page() {
           A screen reader reads it as part of the paragraph, whatever element the paragraph is.
         </p>
         <Compare
-          before={{ label: 'a label the paragraph may not have', file: 'before.html', code: USUAL }}
-          after={{ label: 'text every role reads', file: 'after.html', code: FIXED }}
+          before={{ label: 'A label the paragraph may not have', file: 'before.html', code: USUAL }}
+          after={{ label: 'Text every role reads', file: 'after.html', code: FIXED }}
         />
         <p>The whole splitter, with the copy built in:</p>
         <Code file="split-words.js">{SPLITTER}</Code>

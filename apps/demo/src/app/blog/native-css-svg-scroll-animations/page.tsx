@@ -112,7 +112,7 @@ export default function Page() {
     <BlogArticle
       slug="native-css-svg-scroll-animations"
       jsonLd={jsonLd}
-      tags={['animation-timeline', 'view()', 'scroll timeline']}
+      tags={['animation-timeline', 'view()', 'Scroll timeline']}
       title={<>Zero-JS SVG scroll animations</>}
       lede={
         <>

@@ -206,7 +206,7 @@ html:has(.an) body { background: #f1efea; }
 .an-sw-slate i { background: radial-gradient(120% 80% at 30% 20%, rgba(255, 255, 255, 0.08), transparent 60%), repeating-linear-gradient(176deg, transparent 0 9px, rgba(255, 255, 255, 0.04) 9px 10px), linear-gradient(135deg, #51575c, #383d42); }
 .an-sw-wool i { background: repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.07) 0 2px, transparent 2px 4px), repeating-linear-gradient(-45deg, rgba(0, 0, 0, 0.07) 0 2px, transparent 2px 4px), #8b8d84; }
 .an-sw-brass i { background: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.09) 0 1px, transparent 1px 3px), linear-gradient(115deg, #9e7d3a, #e2c98d 42%, #b8934c 62%, #8a6d33); }
-.an-sw-lime i { background: linear-gradient(transparent, transparent), linear-gradient(transparent, transparent), #ece6da; }
+.an-sw-lime i { background: #ece6da; }
 
 /* ── Recognition ────────────────────────────────────────────────────────── */
 .an-rec { background: #1b1a18; color: #ece8e0; }

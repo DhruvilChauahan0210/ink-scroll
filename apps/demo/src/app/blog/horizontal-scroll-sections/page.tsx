@@ -107,7 +107,7 @@ export default function Page() {
         <StripSteps fig={2} />
       </Section>
 
-      <Section id="files" k="the whole file" title="The complete component">
+      <Section id="files" k="The whole file" title="The complete component">
         <StripFiles files={files} fig={3} />
       </Section>
 

@@ -34,7 +34,7 @@ export function PlaygroundPlot() {
                 <i style={{ width: `${p * 100}%` }} />
                 <b style={{ left: `${p * 100}%` }} />
               </div>
-              <div className="pl-fr-v"><span>drawn</span><b>{Math.round(drawn * 100)}%</b></div>
+              <div className="pl-fr-v"><span>Drawn</span><b>{Math.round(drawn * 100)}%</b></div>
             </div>
           );
         })}

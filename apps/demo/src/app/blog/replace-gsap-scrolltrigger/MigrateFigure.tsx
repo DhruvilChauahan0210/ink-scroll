@@ -54,8 +54,8 @@ export function MigrateFigure({ rows, weights }: { rows: MigrateRow[]; weights: 
 
       <div className="rg-w">
         <p className="rg-hd">
-          <span>weight on the page</span>
-          <span>gzipped</span>
+          <span>Weight on the page</span>
+          <span>Gzipped</span>
         </p>
         {weights.map((w) => (
           <div key={w.label} className={`rg-wrow${w.self ? ' is-self' : ''}`}>

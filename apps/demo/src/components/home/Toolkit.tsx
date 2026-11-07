@@ -281,7 +281,7 @@ export function Toolkit() {
               </span>
             </code>
             <p className="tk-hint" aria-hidden="true">
-              <span>keep scrolling, the sheet runs sideways</span>
+              <span>Keep scrolling, the sheet runs sideways</span>
               <svg viewBox="0 0 40 10" className="tk-hint-arrow">
                 <path d="M0 5H38M33 1.5L38 5L33 8.5" />
               </svg>
@@ -318,15 +318,15 @@ export function Toolkit() {
               </span>
               <span className="tk-block" aria-hidden="true">
                 <span className="tk-block-r">
-                  <span>instruments</span>
+                  <span>Instruments</span>
                   <span>{pad2(N)}</span>
                 </span>
                 <span className="tk-block-r">
-                  <span>one shape</span>
+                  <span>One shape</span>
                   <span>{METHODS.length} methods</span>
                 </span>
                 <span className="tk-block-r">
-                  <span>drawn with</span>
+                  <span>Drawn with</span>
                   <span>scrollDraw · speed {SPEED}</span>
                 </span>
                 <span className="tk-block-r">

@@ -169,7 +169,7 @@ const jsonLd = {
 };
 
 /** The one command for a block, in a title strip: what it is, the line, copy. */
-function InstallCommand({ cmd, k = 'shadcn cli' }: { cmd: string; k?: string }) {
+function InstallCommand({ cmd, k = 'shadcn CLI' }: { cmd: string; k?: string }) {
   return (
     <div className="bk-cmd">
       <span className="bk-cmd-k">{k}</span>
@@ -309,7 +309,7 @@ export default function BlocksPage() {
         {/* ── Manual install + more ───────────────────────── */}
         <section className="bk-manual" aria-labelledby="bk-manual-title">
           <div className="bk-manual-l">
-            <Strip n={pad(BLOCKS.length + 1)}><span>manual install</span></Strip>
+            <Strip n={pad(BLOCKS.length + 1)}><span>Manual install</span></Strip>
             <h2 id="bk-manual-title" className="bk-h2">Without the shadcn CLI</h2>
             <p className="bk-desc">
               Install the package, then paste a block&apos;s source into{' '}

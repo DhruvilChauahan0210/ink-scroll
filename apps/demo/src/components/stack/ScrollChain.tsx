@@ -15,11 +15,11 @@ type Row = { k: string; v2: Cell; v1: Cell };
 
 const ROWS: Row[] = [
   { k: 'input', v2: { v: 'wheel · touch' }, v1: { v: 'wheel · touch' } },
-  { k: 'smooth', v2: { v: 'lenis.raf(time)', note: 'eases the scroll' }, v1: { v: 'lenis.raf(time)', note: 'eases a virtual value' } },
+  { k: 'smooth', v2: { v: 'lenis.raf(time)', note: 'Eases the scroll' }, v1: { v: 'lenis.raf(time)', note: 'Eases a virtual value' } },
   { k: 'native', v2: { v: 'window.scrollY', note: 'patched by Lenis' }, v1: { v: 'window.scrollY', note: 'never updated — stale', kind: 'stale' } },
-  { k: 'adapter', v2: { v: 'none', note: 'nothing to add', kind: 'none' }, v1: { v: 'createLenisAdapter(lenis)', note: 'patches scrollY, restores on destroy', kind: 'fix' } },
-  { k: 'engine', v2: { v: 'scrollDraw()', note: 'reads the right value' }, v1: { v: 'scrollDraw()', note: 'reads the patched value' } },
-  { k: 'result', v2: { v: 'the path draws', note: 'in step with the eased scroll' }, v1: { v: 'the path draws', note: 'in step, once the adapter is in' } },
+  { k: 'adapter', v2: { v: 'none', note: 'Nothing to add', kind: 'none' }, v1: { v: 'createLenisAdapter(lenis)', note: 'patches scrollY, restores on destroy', kind: 'fix' } },
+  { k: 'engine', v2: { v: 'scrollDraw()', note: 'Reads the right value' }, v1: { v: 'scrollDraw()', note: 'Reads the patched value' } },
+  { k: 'result', v2: { v: 'the path draws', note: 'In step with the eased scroll' }, v1: { v: 'the path draws', note: 'In step, once the adapter is in' } },
 ];
 
 function Arrow() {

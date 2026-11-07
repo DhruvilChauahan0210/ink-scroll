@@ -68,7 +68,7 @@ export default function ScrollPerformancePage() {
     <BlogArticle
       slug="scroll-animation-performance"
       jsonLd={articleJsonLd}
-      tags={['animation-timeline', 'scroll timeline', 'rAF']}
+      tags={['animation-timeline', 'Scroll timeline', 'rAF']}
       title={<>Scroll animation performance: native CSS vs JavaScript</>}
       lede={
         <>
@@ -94,7 +94,7 @@ export default function ScrollPerformancePage() {
         { href: '/docs', label: 'API Reference', blurb: 'Every option of every API.' },
       ]}
     >
-      <Section id="js-listeners" k="the problem" title="The problem with JS scroll listeners">
+      <Section id="js-listeners" k="The problem" title="The problem with JS scroll listeners">
         <p>
           Traditional scroll animation libraries work by listening to the scroll event, reading the scroll position, and then
           updating element styles in response. This runs on the main thread, competing with layout, paint, and user input.

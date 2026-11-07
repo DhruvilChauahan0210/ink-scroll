@@ -19,10 +19,11 @@
   headlines), colour (gradients, washes, glass), type (weights, italics,
   tracking), radius and one easing, every site.
 - Left on purpose: Lumen's sunset sky (its scene, a moment); the live-state
-  loops in product mock-ups; three width/left transitions on progress fills
-  and a map marker, set from JS (a transform rewrite needs component changes);
-  lowercase mono labels that are code, paths or data
-  (`scripts/find-lowercase-labels.mjs` lists them); share-card images.
+  loops in product mock-ups; lowercase labels that are code, option or
+  package names, or the path-style breadcrumb (`find-lowercase-labels.mjs`
+  lists 802 distinct, the English ones done).
+- Stride's calendar derives "missed" days from today's date, so its content,
+  and what test-showcase measures, changes from day to day.
 - Showcase contrast: all 708 old failures fixed (text colours to the nearest
   passing shade of the same hue, white-on-accent buttons darkened, opacity
   dims raised); `test-showcase.mjs` runs in CI with 0 problems. Lesson: a

@@ -13,7 +13,7 @@ type Lane = { name: string; blocks: Block[]; idle?: string };
 /** Where the work sits inside one frame (0 → 1 of the frame). Schematic, repeated every frame. */
 const JS_ENGINE: Lane[] = [
   {
-    name: 'main thread',
+    name: 'Main thread',
     blocks: [
       { at: 0.05, to: 0.3, kind: 'script' },
       { at: 0.3, to: 0.47, kind: 'style' },
@@ -23,13 +23,13 @@ const JS_ENGINE: Lane[] = [
 ];
 
 const NATIVE: Lane[] = [
-  { name: 'main thread', blocks: [], idle: 'no listener, no rAF, no style writes' },
+  { name: 'Main thread', blocks: [], idle: 'no listener, no rAF, no style writes' },
   { name: 'compositor', blocks: [{ at: 0.05, to: 0.22, kind: 'composite' }] },
 ];
 
 const LEGEND: { kind: Block['kind']; label: string }[] = [
   { kind: 'script', label: 'rAF callback — read scroll, el.style.setProperty()' },
-  { kind: 'style', label: 'style recalc' },
+  { kind: 'style', label: 'Style recalc' },
   { kind: 'composite', label: 'animate opacity / transform + composite' },
 ];
 
@@ -74,7 +74,7 @@ export function ThreadFigure() {
   return (
     <ScrollDraw className="tf" selector=".tf-ink" autoplay duration={650} delay={300} stagger={0.05} easing="ease-out" once>
       <div className="tf-axis" aria-hidden="true">
-        <span className="tf-name">time, ms</span>
+        <span className="tf-name">Time, ms</span>
         <span className="tf-ticks">
           {ticks.map((i) => (
             <span key={i} style={{ left: `${(i / FRAMES) * 100}%` }}>{(i * FRAME_MS).toFixed(1)}</span>
@@ -87,7 +87,7 @@ export function ThreadFigure() {
         {JS_ENGINE.map((l) => <Track key={l.name} lane={l} />)}
       </div>
       <div className="tf-grp is-native">
-        <p className="tf-hd"><span>native path</span><span>animation-timeline: view()</span></p>
+        <p className="tf-hd"><span>Native path</span><span>animation-timeline: view()</span></p>
         {NATIVE.map((l) => <Track key={l.name} lane={l} />)}
       </div>
 
