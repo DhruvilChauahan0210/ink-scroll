@@ -470,7 +470,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.65.0",
-    "@types/react": "^18.0.0",
+    "@types/react": "^19.3.0",
     "@vitest/coverage-v8": "^2.0.0",
     "esbuild": "^0.28.2",
     "jsdom": "^25.0.0",
