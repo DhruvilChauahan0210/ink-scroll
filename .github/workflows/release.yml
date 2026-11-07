@@ -9,8 +9,8 @@ name: Release
 #   1. bump "version" in packages/svg-scroll-draw/package.json
 #   2. move the CHANGELOG [Unreleased] section under the new version
 #   3. commit, then: git tag v2.10.0 <sha> && git push origin v2.10.0
-#      One tag at a time: npm makes whichever version publishes last `latest`,
-#      so push the next tag only once the previous version is on npm.
+#      Several tags at once are safe: only the newest takes npm's `latest` and
+#      GitHub's latest release (see "Decide the dist-tag" below).
 #
 # Authenticates with npm's trusted publishing: npm trusts this workflow
 # (DhruvilChauahan0210/ink-scroll, release.yml; package Settings -> Trusted
@@ -111,10 +111,28 @@ jobs:
       - name: Use npm 11
         run: npm install -g npm@11 && npm --version
 
+      # Only the newest version takes `latest`. On 2026-11-07 four tags pushed
+      # within two minutes ran at once (the concurrency group above is per tag),
+      # npm processed 2.23.0 before 2.21.0 and 2.22.0, and `latest` ended on
+      # 2.22.0, on npm and on GitHub. A single repo-wide group would not help:
+      # GitHub keeps one pending run per group and cancels the rest, which would
+      # drop releases. So each run decides here, at publish time, against every
+      # release tag (fetched again: a newer one may have been pushed after this
+      # run checked out) and npm's current `latest`. An older version publishes
+      # as `previous`, a prerelease as `next`. Runs on a dry run too.
+      - name: Decide the dist-tag
+        id: disttag
+        run: |
+          node scripts/release-dist-tag.mjs --self-test
+          git fetch --force --tags --quiet origin
+          VERSION=$(node -p "require('./packages/svg-scroll-draw/package.json').version")
+          NPM_LATEST=$(npm view svg-scroll-draw dist-tags.latest 2>/dev/null || true)
+          node scripts/release-dist-tag.mjs "$VERSION" "$NPM_LATEST" $(git tag --list 'v*' | sed 's/^v//') | tee -a "$GITHUB_OUTPUT"
+
       - name: Publish to npm with provenance
         if: startsWith(github.ref, 'refs/tags/v') && inputs.dry_run != true
         # Trusted publishing signs the provenance statement by itself.
-        run: npm publish --access public
+        run: npm publish --access public --tag "${{ steps.disttag.outputs.tag }}"
         working-directory: packages/svg-scroll-draw
 
       - name: Dry run summary
@@ -131,6 +149,9 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           generate_release_notes: true
+          # The same decision as npm's dist-tag: only the newest is GitHub's latest.
+          make_latest: ${{ steps.disttag.outputs.latest }}
+          prerelease: ${{ steps.disttag.outputs.prerelease }}
           body: |
             Published to npm with [provenance](https://docs.npmjs.com/generating-provenance-statements).
             Verify with `npm audit signatures`.

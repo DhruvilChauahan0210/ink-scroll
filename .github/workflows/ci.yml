@@ -83,6 +83,11 @@ jobs:
         run: node scripts/mutation-check.mjs --anchors
         working-directory: packages/svg-scroll-draw
 
+      # The rule release.yml uses to give only the newest version npm's
+      # `latest`: a broken script should fail here, not on release day.
+      - name: Check the release dist-tag rule
+        run: node scripts/release-dist-tag.mjs --self-test
+
       # Fails if the test/example counts quoted in the README or demo drift
       # from the real numbers.
       - name: Check doc claims

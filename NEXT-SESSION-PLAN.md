@@ -4,7 +4,7 @@
 
 ---
 
-## 2.23.0 and the unslop post (2026-11-07, not pushed)
+## 2.23.0 and the unslop post (2026-11-07) — published
 
 - The drop-ins listen too: AOS in `init()` (module state), ScrollReveal in the
   factory (`motionReduced`, cleared by `destroy()`), vivus per instance
@@ -14,8 +14,14 @@
   59, corrected).
 - Full mutation run (all 92 before this release's three) ran in a separate
   worktree with `E2E_PORT=4273` so it could not touch this checkout.
-- **Owner:** tags in order, each once npm shows the one before: `v2.20.1`,
-  `v2.21.0`, `v2.22.0` (`66af2b5`), then `v2.23.0` on its release commit.
+- Released 2026-11-07: v2.20.1, v2.21.0, v2.22.0, v2.23.0 (`bd31fe2`), all on
+  npm. They were pushed within two minutes, npm processed 2.23.0 before
+  2.21.0/2.22.0, and `latest` ended on 2.22.0; the owner ran `npm dist-tag add
+  svg-scroll-draw@2.23.0 latest` (after `npm login`; the old token had expired,
+  and dist-tag asks for a browser 2FA approval) and set v2.23.0 as GitHub's
+  latest release. release.yml now decides the dist-tag itself
+  (`scripts/release-dist-tag.mjs`), so tags pushed together are safe.
+- Full mutation run: 92/92 caught, in a separate worktree on E2E_PORT=4273.
 
 ## Unslop (2026-11-07) — merged and deployed
 
@@ -144,8 +150,7 @@
   cuts off at its centre.
 - **Speed:** all pages were already "good"; Syne is no longer preloaded (fonts
   86 → 52 KB). `/docs` as a Server Component was tried 2026-11-06 and reverted: as a Server Component with a client sidebar it shipped 27 KB less JS but 41 KB more HTML (React's server payload repeats the content), and measured the same main-thread work (script 193 → 188 ms, all tasks 895 → 939 ms at CPU 4×, median of 7) with LCP the same or slightly worse. The script time is React, the router, the drawings and the copy buttons, not the content. Don't redo it without a new reason.
-- **Owner:** tag `v2.20.1` (on `975dce6`), then `v2.21.0` after this is pushed,
-  one at a time.
+- Tagged and published 2026-11-07 (`v2.20.1` on `975dce6`, `v2.21.0` on `140ae6c`).
 
 ## IndexNow and true sitemap dates (2026-11-06, pushed in `975dce6`)
 

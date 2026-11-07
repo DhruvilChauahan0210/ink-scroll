@@ -6,6 +6,20 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ## [Unreleased]
 
+### CI
+
+- **Only the newest release takes `latest`.** On 2026-11-07 the tags v2.20.1,
+  v2.21.0, v2.22.0 and v2.23.0 were pushed within two minutes; release.yml ran
+  all four at once (its concurrency group is per tag), npm processed 2.23.0
+  before 2.21.0 and 2.22.0, and `latest` ended on 2.22.0 on npm and on GitHub
+  until both were set by hand. Each run now decides its dist-tag at publish
+  time (`scripts/release-dist-tag.mjs`), against every release tag, fetched
+  again, and npm's current `latest`: the newest stable version takes `latest`,
+  an older one `previous`, a prerelease `next`, and GitHub's latest release
+  follows the same decision. A repo-wide concurrency group would not have
+  helped: GitHub keeps one pending run per group and cancels the others. The
+  rule's ten cases (the race among them) run in `verify` and CI.
+
 ### Site
 
 - **New post: Unslopping a site** (`/blog/unslop-ai-looking-ui`). How this site,

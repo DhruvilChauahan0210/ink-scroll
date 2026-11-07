@@ -1,6 +1,6 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **2.22.0** — in the working tree (reduced motion followed live). 2.21.0 is pushed (`140ae6c`), not tagged; 2.20.1 is pushed (`975dce6`), not tagged either; 2.20.0 is the latest published (`v2.20.0` on `972d705`, the first through npm's trusted publishing)
+> Current version: **2.23.0** — published 2026-11-07 (`v2.23.0` on `bd31fe2`, npm `latest`), with 2.20.1, 2.21.0 and 2.22.0 published the same day; every release through trusted publishing
 > Tests: **709 unit** across 37 suites · **240 browser tests** per engine (720 runs
 > across Chromium/Firefox/WebKit) · **92 mutations**, each caught by the one test
 > named for it · **91.5% line coverage** (gate 90/90/82/82)
@@ -174,12 +174,13 @@ at all.
 - [ ] Owner: set `GITHUB_TOKEN` on Vercel (a fine-grained token with read-only access to public repositories and no other permissions is enough)
 - [x] Merged into `feat/homepage-redesign` and pushed (2026-11-06)
 
-### 2.23.0 — the drop-ins follow reduced motion live (2026-11-07; in the working tree)
+### 2.23.0 — the drop-ins follow reduced motion live (2026-11-07; published, `v2.23.0` on `bd31fe2`)
 
 - [x] `aos`, `scrollreveal` and `vivus` follow reduced motion turned on mid-visit (one way, listener removed by `destroy()`); vivus ends a drawing mid-play
 - [x] Browser tests ×3 engines, three mutations (95); sizes +0.14 KB each, aos budget 3.3
 - [x] Post `/blog/unslop-ai-looking-ui`
-- [ ] Released
+- [x] Released: 2.20.1, 2.21.0, 2.22.0 and 2.23.0 all on npm (2026-11-07); `latest` and GitHub's latest release set to 2.23.0 by hand after the race (see release.yml's dist-tag rule)
+- [x] Full mutation run: 92/92 caught (plus the three new, 95)
 
 ### Unslop (2026-11-07; site, blocks and showcase; branch `fix/unslop-polish`)
 
