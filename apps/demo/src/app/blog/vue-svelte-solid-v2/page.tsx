@@ -446,7 +446,7 @@ export default defineNuxtPlugin((nuxtApp) => {
 
       <Closing
         title="One install, every framework"
-        lede="Each wrapper is a subpath of the same package — import the one your app uses."
+        lede="Each wrapper is a subpath of the same package — import the one your app uses"
         links={[
           { href: '/docs#v2-vue', label: 'Full API docs →' },
           { href: '/examples', label: 'See live examples →' },

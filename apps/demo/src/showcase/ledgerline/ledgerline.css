@@ -65,10 +65,6 @@ html:has(.ll) body { background: #0b0d12; }
 .ll-hero > * { position: relative; }
 .ll-glow { position: absolute !important; inset: 0 0 auto; height: 1100px; pointer-events: none; background: none; }
 .ll-glow::after { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px); background-size: 56px 56px; -webkit-mask-image: radial-gradient(60% 46% at 50% 18%, #000, transparent 75%); mask-image: radial-gradient(60% 46% at 50% 18%, #000, transparent 75%); }
-.ll-proof { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 28px; margin: 28px 0 0; padding: 0; list-style: none; font-size: 13.5px; color: var(--mut); }
-.ll-proof li { display: inline-flex; align-items: center; gap: 8px; }
-.ll-proof .ll-ic { width: 15px; height: 15px; color: var(--mint); stroke-width: 2; }
-.ll-proof b { color: var(--fg); font-weight: 600; }
 .ll-shot { width: 100%; max-width: 1200px; margin-top: clamp(44px, 5vw, 60px); text-align: left; scroll-margin-top: 80px; }
 
 /* ── The dashboard ────────────────────────────────────────────────────── */
@@ -584,7 +580,6 @@ html:has(.ll) body { background: #0b0d12; }
   .ll-short { display: inline; }
   .ll-nav { gap: 16px; }
   .ll-h1 { font-size: clamp(38px, 11vw, 48px); }
-  .ll-proof { gap: 8px 16px; font-size: 13px; }
   .ll-shot { margin-top: 36px; }
   .ll-dash { --ph: 170px; border-radius: 12px; }
   .ll-app-top { gap: 8px; padding: 0 8px 0 8px; }

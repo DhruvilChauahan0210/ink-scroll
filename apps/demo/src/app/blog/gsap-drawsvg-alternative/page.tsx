@@ -380,7 +380,7 @@ scrollDraw('#hero', {
 
       <Closing
         title="Ready to make the switch?"
-        lede="One install. No membership. Works in every framework."
+        lede="One install, no membership, and it works in every framework"
         links={[
           { href: '/playground', label: 'Try the Playground →' },
           { href: '/examples', label: 'See the examples →' },

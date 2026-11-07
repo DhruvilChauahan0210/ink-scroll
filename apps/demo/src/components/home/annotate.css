@@ -159,7 +159,7 @@
 
 .home .an-code {
   display: block;
-  margin: clamp(2px, 1svh, 10px) 0 0;
+  margin: clamp(2px, 1svh, 8px) 0 0;
   padding-top: 12px;
   border-top: 1px solid var(--line);
   font-family: var(--mono);

@@ -95,27 +95,11 @@ input[type="range"]:active::-webkit-slider-thumb { transform: scale(0.95); }
   background-size: 28px 28px;
 }
 
-/* Marquee */
-@keyframes marquee {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
-}
-.animate-marquee {
-  animation: marquee 28s linear infinite;
-  will-change: transform;
-}
-
 /* ── Reduced motion ───────────────────────────────────────────────────────
-   A library whose own API respects prefers-reduced-motion has no business
-   running an infinite marquee at a visitor who asked for
-   stillness. Decorative, continuous motion stops; the scroll demos stay, since
-   they *are* the product and are driven by the user's own scrolling.          */
+   Decorative, continuous motion stops for a visitor who asked for stillness;
+   the scroll demos stay, since they *are* the product and are driven by the
+   user's own scrolling.                                                      */
 @media (prefers-reduced-motion: reduce) {
-  .animate-marquee,
-  .animate-pulse {
-    animation: none !important;
-  }
-
   /* Anything left that transitions or animates gets cut to a single frame
      rather than removed outright, so state changes still read as changes. */
   *,

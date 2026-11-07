@@ -16,7 +16,7 @@
   /* The plate's width cap on desktop; the kicker and the flanks are measured off it. */
   --so-plate: 92svh;
   position: relative;
-  padding: clamp(72px, 9vw, 150px) var(--gutter) var(--so-bottom);
+  padding: clamp(72px, 9vw, 152px) var(--gutter) var(--so-bottom);
   border-top: 1px solid var(--line);
 }
 
@@ -147,7 +147,7 @@
   position: relative;
   width: 100%;
   overflow: hidden;
-  margin-top: clamp(6px, 1.6svh, 18px);
+  margin-top: clamp(8px, 1.6svh, 16px);
 }
 .home .so-plate {
   position: relative;
@@ -201,7 +201,7 @@
 .home .so-dim { font-size: 22px; }
 
 .home .so-title {
-  margin: clamp(8px, 1.6svh, 18px) 0 0;
+  margin: clamp(8px, 1.6svh, 16px) 0 0;
   max-width: 24ch;
   font-family: var(--sans);
   font-weight: 500;

@@ -755,7 +755,7 @@ export default function ChangelogPage() {
             <h1 className="pg-title">Changelog</h1>
             <p className="pg-lede">
               Every release of <code className="cl-code">svg-scroll-draw</code>, newest first — what each version
-              added, what it fixed and how it was tested, as it was written at the time.
+              added, what it fixed and how it was tested, as it was written at the time
             </p>
             <div className="pg-actions">
               <a href={`${GH}/blob/main/CHANGELOG.md`} target="_blank" rel="noopener noreferrer" className="btn btn-solid" data-magnetic>

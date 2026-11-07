@@ -260,7 +260,7 @@ function HeroShape() {
 
       <Closing
         title="Try it in the Playground"
-        lede={<>Paste any two compatible SVG paths and set <code>morphTo</code> to see it live.</>}
+        lede={<>Paste any two compatible SVG paths and set <code>morphTo</code> to see it live</>}
         links={[{ href: '/playground', label: 'Playground →' }]}
       />
     </BlogArticle>

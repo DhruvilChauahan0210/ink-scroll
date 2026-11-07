@@ -152,7 +152,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${SITE_URL}/blog/gsap-drawsvg-alternative`,
-      lastModified: new Date("2026-11-01"),
+      lastModified: new Date("2026-11-07"),
       changeFrequency: "monthly",
       priority: 0.9,
     },

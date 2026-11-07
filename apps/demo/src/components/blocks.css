@@ -86,7 +86,7 @@ html:has(.site .blocks) { scroll-behavior: smooth; }
   border-bottom: 1px solid var(--line);
   scroll-margin-top: calc(var(--nav-h) + 8px);
 }
-.site .bk-top { display: grid; gap: clamp(22px, 3vw, 56px); align-items: end; margin-bottom: clamp(24px, 3vw, 40px); }
+.site .bk-top { display: grid; gap: clamp(24px, 3vw, 56px); align-items: end; margin-bottom: clamp(24px, 3vw, 40px); }
 @media (min-width: 1000px) { .site .bk-top { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); } }
 .site .bk-copy, .site .bk-install { min-width: 0; }
 .site .bk-tb-name { text-transform: none; letter-spacing: 0; color: var(--fg-2); }

@@ -189,7 +189,7 @@ html:has(.site .ba), html:has(.site .bl) { scroll-behavior: smooth; }
 .site .ba-toc-a:hover span { color: var(--accent); }
 
 /* Sections */
-.site .ba-sec { padding: clamp(36px, 3.8vw, 58px) 0; border-bottom: 1px solid var(--line); }
+.site .ba-sec { padding: clamp(36px, 3.8vw, 56px) 0; border-bottom: 1px solid var(--line); }
 .site .ba-sec h2 { scroll-margin-top: calc(var(--nav-h) + 90px); }
 .site .ba-tb { margin-bottom: 16px; }
 /* Section labels are often API names (onProgress, scrollSnap): keep their case. */

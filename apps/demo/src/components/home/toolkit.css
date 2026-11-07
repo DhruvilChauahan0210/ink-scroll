@@ -29,7 +29,7 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: clamp(14px, 2.6svh, 28px);
+  gap: clamp(16px, 2.6svh, 28px);
 }
 
 .home .tk-head {
@@ -68,7 +68,7 @@
 }
 
 .home .tk-lede {
-  margin: clamp(8px, 1.4svh, 18px) 0 0;
+  margin: clamp(8px, 1.4svh, 16px) 0 0;
   font-family: var(--sans);
   font-size: 15px;
   line-height: 1.45;
@@ -202,7 +202,7 @@
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  margin-top: clamp(10px, 2svh, 22px);
+  margin-top: clamp(8px, 2svh, 24px);
   padding-top: 12px;
   border-top: 1px solid var(--line);
   font-family: var(--mono);
@@ -235,7 +235,7 @@
 .home .tk-card.is-inked .tk-strokes-n { color: var(--fg-2); }
 
 .home .tk-name {
-  margin-top: clamp(6px, 1.2svh, 12px);
+  margin-top: clamp(8px, 1.2svh, 12px);
   font-family: var(--sans);
   font-weight: 500;
   font-size: clamp(24px, 2.2vw, 34px);
@@ -254,7 +254,7 @@
 }
 
 .home .tk-entry {
-  margin-top: clamp(8px, 1.4svh, 14px);
+  margin-top: clamp(8px, 1.4svh, 16px);
   font-family: var(--mono);
   font-size: 11.5px;
   color: var(--fg-3);
@@ -310,7 +310,7 @@
 
 .home .tk-block {
   display: block;
-  margin-top: clamp(18px, 3svh, 32px);
+  margin-top: clamp(16px, 3svh, 32px);
   border-top: 1px solid var(--line-2);
 }
 .home .tk-block-r {
@@ -429,7 +429,7 @@
 
   .home .tk-code {
     display: block;
-    margin-top: clamp(18px, 3svh, 36px);
+    margin-top: clamp(16px, 3svh, 36px);
     padding-top: 16px;
     border-top: 1px solid var(--line);
     font-family: var(--mono);
@@ -454,7 +454,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    margin: clamp(18px, 3svh, 32px) 0 0;
+    margin: clamp(16px, 3svh, 32px) 0 0;
     font-family: var(--mono);
     font-size: 11px;
     letter-spacing: 0;

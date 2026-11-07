@@ -122,7 +122,7 @@ function Hero() {
           <a className="qm-btn qm-btn-ghost" href="#how">See how it works</a>
         </div>
         <div className="qm-proof">
-          <span className="qm-stars" aria-label="4.9 out of 5"><i /><i /><i /><i /><i /><b>4.9</b><small>1,200 reviews</small></span>
+          <span className="qm-stars"><b>4.9</b><small>from 1,200 reviews</small></span>
           <span className="qm-proof-l"><Ico n="seal" s={20} /><span><b>Legally binding</b><small>eIDAS · ESIGN · UETA</small></span></span>
         </div>
       </div>

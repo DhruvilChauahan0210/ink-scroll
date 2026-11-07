@@ -147,7 +147,7 @@
 .home .cal-steps {
   position: relative;
   list-style: none;
-  margin: clamp(14px, 2.4svh, 36px) 0 0;
+  margin: clamp(16px, 2.4svh, 36px) 0 0;
   padding: 0;
 }
 
@@ -177,7 +177,7 @@
 
 .home .cal-code {
   display: block;
-  margin-top: clamp(10px, 2svh, 32px);
+  margin-top: clamp(8px, 2svh, 32px);
   padding-top: 16px;
   border-top: 1px solid var(--line);
   font-family: var(--mono);

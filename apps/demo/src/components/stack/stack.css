@@ -16,7 +16,7 @@
 
 /* The short version, under the lede. */
 .site .stk-short {
-  margin: clamp(22px, 2.6vw, 30px) 0 0;
+  margin: clamp(24px, 2.6vw, 32px) 0 0;
   max-width: 60ch;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);

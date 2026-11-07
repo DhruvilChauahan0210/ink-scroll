@@ -154,7 +154,7 @@ export function StickyFeaturePanel() {
         <div className="xb-pin-intro">
           <span className="xb-label">Overview</span>
           <span className="xb-pin-hint" aria-hidden="true">scroll inside ↓</span>
-          <span className="xb-pin-lede">Small enough to carry everywhere.</span>
+          <span className="xb-pin-lede">Small enough to carry everywhere</span>
         </div>
 
         <div ref={trackRef} className="xb-pin-track">

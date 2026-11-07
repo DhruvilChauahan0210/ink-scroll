@@ -15,6 +15,8 @@
   normal tracking, emphasis by colour, radius by size, the stack pulse runs
   once; blocks (eyebrows, weight 500, copy); showcase ("New" pills, gradient
   headlines, unverifiable "Trusted by" counts, coloured glows, caps).
+- Final pass (branch `fix/unslop-final`): clamp() bounds, dead marquee CSS,
+  caption periods, fragment ledes, hero proof rows; checked by eye.
 - Showcase in full (second round, same branch): spacing, copy (144
   headlines), colour (gradients, washes, glass), type (weights, italics,
   tracking), radius and one easing, every site.

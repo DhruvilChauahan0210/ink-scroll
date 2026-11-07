@@ -58,13 +58,13 @@
   max-width: 14ch;
 }
 .site .pg-lede {
-  margin: clamp(18px, 2vw, 26px) 0 0;
+  margin: clamp(16px, 2vw, 24px) 0 0;
   max-width: 54ch;
   font-size: clamp(15px, 1.2vw, 18px);
   line-height: 1.6;
   color: var(--fg-2);
 }
-.site .pg-actions { margin-top: clamp(22px, 2.6vw, 32px); display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.site .pg-actions { margin-top: clamp(24px, 2.6vw, 32px); display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 
 /* A row of real figures under a page title, in hairline cells. */
 .site .pg-facts {
@@ -159,7 +159,7 @@
   align-items: center;
   justify-content: center;
   min-height: 300px;
-  padding: clamp(18px, 2.6vw, 36px);
+  padding: clamp(16px, 2.6vw, 36px);
   overflow: hidden;
   background: var(--panel);
   color: var(--fg);

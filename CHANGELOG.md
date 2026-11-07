@@ -28,6 +28,19 @@ All notable changes to `svg-scroll-draw` are documented here.
   live-state loops in product mock-ups (recording dots, spinners, carets)
   stay. `scripts/test-showcase.mjs` opens every showcase site for errors and
   colour contrast, and runs in CI next to test-a11y.
+- **Unslop, final pass and a look by eye.** 52 clamp()/min()/max() spacing
+  bounds snapped to the 4px grid (the first pass skipped them); the unused
+  marquee animation and its reduced-motion override removed; the logo scene's
+  bag badge 600 instead of 700; the finale label's tracking 0. Nine
+  one-sentence subheads and captions lose their final period (the homepage
+  line, the toolkit lede, five end-of-post blurbs); two fragment ledes ("One
+  install. No membership. Works in every framework.", "Copy-paste scroll
+  blocks. MIT. …") are sentences now. Looking at the pages turned up the one
+  sign the scan cannot see: proof rows under hero buttons. Ledgerline's three
+  claim chips (1,900 teams, $2.4B reconciled, SOC 2) are gone, and Parcelry's,
+  Quillmark's and Stride's hero ratings lose their star icons and keep the
+  sourced figure. Checked by eye at 1440 and 375: home, docs, blocks, Relay,
+  Northbeam, Ledgerline.
 - **The last unslop leftovers.** Three showcase animations moved off layout
   properties: Shipyard's run bar scales on X instead of growing its width,
   Lumen's feature tag moves with translate in container units instead of

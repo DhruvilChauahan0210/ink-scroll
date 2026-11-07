@@ -190,9 +190,9 @@ html:has(.site .vf) { scroll-behavior: smooth; }
   text-wrap: balance;
   max-width: 15ch;
 }
-.site .vf-phase-b { margin: clamp(18px, 2vw, 26px) 0 0; max-width: 68ch; font-size: clamp(15px, 1.15vw, 17px); line-height: 1.65; color: var(--fg-2); }
+.site .vf-phase-b { margin: clamp(16px, 2vw, 24px) 0 0; max-width: 68ch; font-size: clamp(15px, 1.15vw, 17px); line-height: 1.65; color: var(--fg-2); }
 .site .vf-phase-facts {
-  margin: clamp(26px, 3vw, 40px) 0 0;
+  margin: clamp(24px, 3vw, 40px) 0 0;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   border-top: 1px solid var(--line-2);
@@ -218,7 +218,7 @@ html:has(.site .vf) { scroll-behavior: smooth; }
   text-wrap: balance;
   max-width: 22ch;
 }
-.site .vf-lede { margin: 0 0 clamp(24px, 2.6vw, 34px); max-width: 66ch; font-size: 15.5px; line-height: 1.7; color: var(--fg-2); }
+.site .vf-lede { margin: 0 0 clamp(24px, 2.6vw, 32px); max-width: 66ch; font-size: 15.5px; line-height: 1.7; color: var(--fg-2); }
 
 /* The proof, mounted as a figure. */
 .site .vf-fig { margin: 0; border: 1px solid var(--line-2); min-width: 0; }

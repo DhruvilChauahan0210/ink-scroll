@@ -61,7 +61,7 @@
   display: grid;
   align-content: start;
   gap: 8px;
-  padding: clamp(18px, 2vw, 26px) clamp(16px, 1.6vw, 24px) clamp(20px, 2.2vw, 28px);
+  padding: clamp(16px, 2vw, 24px) clamp(16px, 1.6vw, 24px) clamp(20px, 2.2vw, 28px);
   border-right: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
   transition: background-color 0.3s var(--ease);

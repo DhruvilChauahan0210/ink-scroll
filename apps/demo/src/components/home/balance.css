@@ -352,8 +352,8 @@
 
   .home .bal-cards {
     position: relative;
-    gap: clamp(14px, 2.2svh, 24px);
-    margin-top: clamp(18px, 3svh, 36px);
+    gap: clamp(16px, 2.2svh, 24px);
+    margin-top: clamp(16px, 3svh, 36px);
   }
 
   /* Chapter 02's hairline rail, filling with the stage's progress. */
@@ -382,7 +382,7 @@
   }
 
   .home .bal-note-copy {
-    margin-top: clamp(14px, 2.4svh, 28px);
+    margin-top: clamp(16px, 2.4svh, 28px);
     font-size: 13px;
   }
 }

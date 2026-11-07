@@ -46,7 +46,7 @@
 .home .fin-dot { fill: var(--fg); }
 .home .fin-label {
   font: 500 24px/1 var(--mono);
-  letter-spacing: 0.06em;
+  letter-spacing: 0;
   fill: var(--fg);
 }
 .home .fin-note { font-size: 19px; fill: var(--fg-3); letter-spacing: 0; }

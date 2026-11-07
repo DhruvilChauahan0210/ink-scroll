@@ -229,7 +229,6 @@ export function StrideSite() {
           <p className="st-lede">Stride builds a plan around your week, coaches you in your ear while you run, and draws every route and climb when you get home. From your first 5K to your next marathon.</p>
           <Badges />
           <div className="st-rating">
-            <span className="st-stars"><Star /><Star /><Star /><Star /><Star /></span>
             <span><b>4.9</b> from 38,400 ratings</span>
             <span className="st-dot" />
             <span><b>1.2 M</b> runners</span>

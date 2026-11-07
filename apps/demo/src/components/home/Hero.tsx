@@ -33,7 +33,7 @@ export function Hero({ gzipKb, unitTests, browserTests }: Props) {
             <h1 className="he-title">The scroll animation library that draws</h1>
             <p className="he-sub">
               Paths, text, pins and video — inked by scroll on the browser’s own timeline, with a frame loop
-              wherever it has none.
+              wherever it has none
             </p>
             <div className="he-cta">
               <CopyCommand />

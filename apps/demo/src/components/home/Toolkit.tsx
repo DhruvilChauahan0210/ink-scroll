@@ -263,7 +263,7 @@ export function Toolkit() {
             <h2 className="tk-title" id="tk-title">
               Eight instruments, one instance shape
             </h2>
-            <p className="tk-lede">destroy, replay, pause, resume, seek, getProgress — learn one, know them all.</p>
+            <p className="tk-lede">destroy, replay, pause, resume, seek, getProgress — learn one, know them all</p>
             <code className="tk-code">
               {/* scrollText, not scrollPin: the pin and snap instances have
                   their own smaller shapes, and this line has to be true. */}

@@ -9,7 +9,7 @@
   grid-template-columns: minmax(0, 1fr);
   grid-template-areas: 'copy' 'art' 'code';
   row-gap: clamp(28px, 6vw, 56px);
-  padding: clamp(96px, 12vw, 190px) var(--gutter);
+  padding: clamp(96px, 12vw, 192px) var(--gutter);
 }
 
 /* ── The copy ────────────────────────────────────────────────────────────── */
@@ -51,7 +51,7 @@
 }
 
 .home .st-lede {
-  margin: clamp(14px, 2svh, 22px) 0 0;
+  margin: clamp(16px, 2svh, 24px) 0 0;
   max-width: 42ch;
   font-family: var(--sans);
   font-size: 15px;
@@ -64,7 +64,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: clamp(18px, 2.6svh, 28px);
+  margin-top: clamp(16px, 2.6svh, 28px);
 }
 /* A phone fits both on one line with a little less padding. */
 @media (max-width: 420px) {

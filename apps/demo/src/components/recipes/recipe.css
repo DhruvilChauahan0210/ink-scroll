@@ -37,7 +37,7 @@
   color: var(--fg-3);
 }
 .site .rc-fig-n { color: var(--fg); }
-.site .rc-fig-body { padding: clamp(18px, 2.4vw, 28px); background: var(--panel); }
+.site .rc-fig-body { padding: clamp(16px, 2.4vw, 28px); background: var(--panel); }
 
 /* ── The figures' own drawing: pencil is planned, ink is drawn ── */
 .site .rf-svg { display: block; width: 100%; height: auto; overflow: visible; }

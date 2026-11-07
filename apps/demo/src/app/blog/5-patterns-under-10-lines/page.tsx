@@ -207,7 +207,7 @@ console.log(PRESETS.cinematic);
 
       <Closing
         title="Try the presets live"
-        lede="Open the Playground, select a preset from the Motion tab, and see the effect instantly."
+        lede="Open the Playground, select a preset from the Motion tab, and see the effect instantly"
         links={[
           { href: '/playground', label: 'Playground →' },
           { href: '/examples', label: 'Examples →' },

@@ -364,7 +364,7 @@ export function ParcelrySite() {
           <p className="pc-lede">Book by 19:30 and a rider collects within 30 minutes, then takes it straight to the door — no depot, no van, no “out for delivery” black box. You watch every turn live.</p>
           <Booking />
           <ul className="pc-trust">
-            <li><span className="pc-stars"><Star /><Star /><Star /><Star /><Star /></span><b>4.9</b> from 8,214 reviews</li>
+            <li><b>4.9</b> from 8,214 reviews</li>
             <li><b>98.6%</b> on time</li>
             <li><b>100%</b> electric cargo bikes</li>
           </ul>

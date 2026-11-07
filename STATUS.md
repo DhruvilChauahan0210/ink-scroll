@@ -180,6 +180,7 @@ at all.
 - [x] Blocks in React, Vue and Svelte: sentence-case eyebrows, weight 500, concrete default copy; `public/r` regenerated
 - [x] Showcase, every pass: "New" pills (10), gradient headlines (4), unverifiable "Trusted by" counts (3), coloured glows (19), washes (58), hue gradients (4), glass (19), weights (209), italics (60), headline periods (144), pills (98), spacing (2,145), caps and tracking
 - [x] `scripts/test-showcase.mjs`: every showcase site loads with no errors; colour contrast no worse anywhere (708 → 687 failing nodes)
+- [x] Final pass: clamp() spacing on the grid (52), dead marquee CSS, subhead/caption periods (9), two fragment ledes, hero claim chips and star rows (4 showcase sites); pages checked by eye at desktop and phone width
 - [x] Last leftovers: three showcase animations on transforms (no width/left/top transitions left), 36 placeholder layers removed, share cards in sentence case, 136 English data labels sentence-cased
 - [x] Showcase colour contrast: 708 failing elements fixed at the colour (71 text colours, 8 accent buttons, 4 opacity dims, one specificity bug); test-showcase in CI, 0 problems
 - [x] test-blocks, test-seo, test-a11y (0 violations), test-recipes, Vue and Svelte blocks pass

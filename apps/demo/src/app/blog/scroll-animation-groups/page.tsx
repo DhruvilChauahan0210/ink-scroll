@@ -326,7 +326,7 @@ scrollAnimateSequence(
 
       <Closing
         title="See a group run"
-        lede="The live example animates a whole grid from one call; the docs list every option it takes."
+        lede="The live example animates a whole grid from one call; the docs list every option it takes"
         links={[
           { href: '/examples#scroll-animate-group', label: 'See live example →' },
           { href: '/docs#scroll-animate', label: 'Full API docs →' },

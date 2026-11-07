@@ -66,7 +66,7 @@ export default function BlogPage() {
               <h1 className="pg-title bl-title">Guides &amp; comparisons</h1>
               <p className="pg-lede">
                 Guides, comparisons, and deep-dives on scroll-driven SVG animation — svg-scroll-draw vs GSAP,
-                migration guides, and more.
+                migration guides, and more
               </p>
               <dl className="pg-facts bl-facts">
                 <div><dt>Posts</dt><dd>{POSTS.length}</dd></div>

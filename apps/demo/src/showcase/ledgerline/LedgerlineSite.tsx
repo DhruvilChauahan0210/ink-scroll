@@ -265,11 +265,6 @@ export function LedgerlineSite() {
           <a className="ll-btn" href="#pricing">Start free — 14 days</a>
           <a className="ll-btn ll-btn-ghost" href="#customers">Book a demo</a>
         </div>
-        <ul className="ll-proof">
-          <li>{I.check}<span><b>1,900</b> subscription teams</span></li>
-          <li>{I.check}<span><b>$2.4B</b> of ARR reconciled</span></li>
-          <li className="ll-hide-s">{I.lock}<span>SOC 2 Type II · read-only keys</span></li>
-        </ul>
         <div className="ll-shot" id="product">
           <Dashboard />
         </div>

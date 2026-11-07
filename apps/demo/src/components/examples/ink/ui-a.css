@@ -172,7 +172,7 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  margin-bottom: clamp(18px, 5cqi, 28px);
+  margin-bottom: clamp(16px, 5cqi, 28px);
   font: 500 10.5px/1.4 var(--mono);
   letter-spacing: 0;
   color: var(--fg-3);
@@ -194,7 +194,7 @@
 }
 .home .xa-hl-line.is-a { color: var(--accent); }
 .home .xa-hl-desc {
-  margin: clamp(22px, 5.5cqi, 32px) 0 0;
+  margin: clamp(24px, 5.5cqi, 32px) 0 0;
   padding-top: 16px;
   border-top: 1px solid var(--line);
   font: 500 11px/1.6 var(--mono);

@@ -428,7 +428,7 @@ html:not(.dark) .home .hs-nib-core { fill: var(--accent); }
 
 /* ── Sections ─────────────────────────────────────────────────────────── */
 
-.home .sec { position: relative; padding: clamp(96px, 12vw, 190px) var(--gutter); }
+.home .sec { position: relative; padding: clamp(96px, 12vw, 192px) var(--gutter); }
 .home .sec + .sec { border-top: 1px solid var(--line); }
 .home .sec-head { display: grid; gap: 24px; margin-bottom: clamp(40px, 5.5vw, 84px); }
 .home .sec-head .label { padding-top: 8px; }

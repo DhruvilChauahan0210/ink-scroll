@@ -20,7 +20,7 @@ html:has(.site .cl) { scroll-behavior: smooth; }
 @media (min-width: 1100px) { .site .cl-head { grid-template-columns: minmax(0, 1fr) minmax(0, 0.95fr); } }
 
 .site .rc { margin: 0; min-width: 0; }
-.site .rc-plate { padding: clamp(14px, 2vw, 26px) clamp(10px, 1.6vw, 22px) clamp(8px, 1vw, 14px); border: 1px solid var(--line-2); background: var(--panel); }
+.site .rc-plate { padding: clamp(16px, 2vw, 24px) clamp(8px, 1.6vw, 24px) clamp(8px, 1vw, 16px); border: 1px solid var(--line-2); background: var(--panel); }
 .site .rc-draw { display: block; }
 .site .rc-svg { display: block; width: 100%; height: auto; overflow: visible; }
 .site .rc-pencil path { fill: none; stroke-width: 1; }
@@ -199,7 +199,7 @@ html:has(.site .cl) { scroll-behavior: smooth; }
 .site .cl-break-run { flex: 1; min-width: 0; height: 20px; overflow: visible; }
 .site .cl-break-zig { flex: none; width: 44px; height: 20px; overflow: visible; }
 .site .cl-break-ink { fill: none; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
-.site .cl-shift-in { display: grid; gap: 16px; margin-top: clamp(26px, 3vw, 40px); }
+.site .cl-shift-in { display: grid; gap: 16px; margin-top: clamp(24px, 3vw, 40px); }
 .site .cl-shift-meta { min-width: 0; }
 .site .cl-shift-h {
   margin: 12px 0 0;

@@ -212,7 +212,7 @@ export default function BlocksPage() {
               Scroll blocks you <span className="bk-dim">copy, not install</span>
             </h1>
             <p className="pg-lede">
-              Copy-paste scroll blocks. MIT. Built on svg-scroll-draw, {SELF.gzipKb} KB. Each block is one
+              Copy-paste scroll blocks under MIT, built on svg-scroll-draw ({SELF.gzipKb} KB). Each block is one
               React + Tailwind file that lands in your project. Add it with the shadcn CLI, or open the source
               and paste it in. The only package it needs is <code className="bk-code">{dep}</code>. Visitors who
               ask for reduced motion see the finished state.
