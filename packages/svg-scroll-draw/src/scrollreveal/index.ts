@@ -24,6 +24,7 @@
  *     is cleaned; ScrollReveal leaves it.
  */
 import { prefersReducedMotion } from '../core/motion';
+import { watchReducedMotion } from '../core/motion-watch';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -350,6 +351,9 @@ let store = { containers: {} as Record<number, Container>, elements: {} as Recor
 let pristine = true;
 let initTimer: ReturnType<typeof setTimeout> | null = null;
 let frame = 0;
+/** Reduced motion turned on mid-visit: one way, until destroy() (core/motion-live). */
+let motionReduced = false;
+let unwatchMotion: (() => void) | null = null;
 let staleFrame = false;
 let uid = 0;
 const nextId = (): number => uid++;
@@ -555,7 +559,7 @@ function rinse(): void {
 function initialize(): void {
   initTimer = null;
   rinse();
-  const reduced = prefersReducedMotion();
+  const reduced = motionReduced || prefersReducedMotion();
   for (const item of Object.values(store.elements)) {
     const s = item.styles;
     if (reduced) {
@@ -570,7 +574,16 @@ function initialize(): void {
       apply(item.node, join(s.inline.generated, s.opacity.generated, s.transform.initial));
     }
   }
-  if (reduced) return;
+  if (reduced) {
+    // Nothing moves any more: no scroll handling (a no-op on a first run).
+    for (const c of Object.values(store.containers)) {
+      listenTarget(c).removeEventListener('scroll', delegate);
+      listenTarget(c).removeEventListener('resize', delegate);
+    }
+    if (frame) cancelAnimationFrame(frame);
+    frame = 0;
+    return;
+  }
   for (const c of Object.values(store.containers)) {
     listenTarget(c).addEventListener('scroll', delegate);
     listenTarget(c).addEventListener('resize', delegate);
@@ -677,6 +690,9 @@ function destroy(): void {
   if (frame) cancelAnimationFrame(frame);
   frame = 0;
   store = { containers: {}, elements: {}, history: [], sequences: {} };
+  unwatchMotion?.();
+  unwatchMotion = null;
+  motionReduced = false;
 }
 
 /** Run every past reveal() again, for content added to the page since. */
@@ -727,6 +743,18 @@ function ScrollRevealFactory(options: ScrollRevealOptions = {}): ScrollRevealIns
     return failure();
   }
   mount();
+
+  // Reduced motion turned on while the page is open: every element in its
+  // final state at once, as a page loaded under it would show (core/motion-live).
+  if (!unwatchMotion && !motionReduced && !prefersReducedMotion()) {
+    unwatchMotion = watchReducedMotion((r) => {
+      if (!r) return;
+      unwatchMotion?.();
+      unwatchMotion = null;
+      motionReduced = true;
+      initialize();
+    });
+  }
 
   if (!instance) {
     instance = {

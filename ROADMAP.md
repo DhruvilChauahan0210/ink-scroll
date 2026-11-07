@@ -145,7 +145,7 @@ of examining a single API in a real browser.
 - [x] Mutation harness proving each new test fails against a deliberately broken build (92 mutations; `--anchors` in verify and CI)
 - [x] A staggered drawing finishes (2.19.1): followed off screen until its last window ends, and fitted to the page's end where the page is too short
 - [x] `scrollPin` `pinDistance: '150vh'` (2.20.0), measured as CSS's vh: follows rotation, not a phone's address bar; numbers stay pixels
-- [x] Reduced motion turned on mid-visit applies at once in every engine but the drop-ins (2.22.0): each finishes as a page loaded under it would, one way only
+- [x] Reduced motion turned on mid-visit applies at once in every engine (2.22.0), the drop-ins included (2.23.0): each finishes as a page loaded under it would, one way only
 - [x] `scrollHorizontal` — reduced-motion decision (keeps scrubbing), the zero-length-trigger fix, and browser tests
 - [x] Browser tests for Group / Sequence / Timeline and `Cinematic` — found and fixed the sequence cursor walking off the end (a finished sequence reported 0%)
 - [x] Parity test for `scrollAnimate`'s own native CSS fast path — found and fixed both fast paths running the CSS *keyword* instead of this library's easing curve, up to 0.069 apart. Priority 1 is complete: 118 browser tests per engine

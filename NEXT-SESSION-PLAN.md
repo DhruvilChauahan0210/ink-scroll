@@ -4,11 +4,24 @@
 
 ---
 
-## Unslop (2026-11-07) — branch `fix/unslop-polish`, not merged
+## 2.23.0 and the unslop post (2026-11-07, not pushed)
+
+- The drop-ins listen too: AOS in `init()` (module state), ScrollReveal in the
+  factory (`motionReduced`, cleared by `destroy()`), vivus per instance
+  (`endNow()`, shared with `play()`'s reduced branch). Browser tests and three
+  mutations; aos budget 3.3.
+- Post `/blog/unslop-ai-looking-ui` (unslop has 60 signs; earlier notes said
+  59, corrected).
+- Full mutation run (all 92 before this release's three) ran in a separate
+  worktree with `E2E_PORT=4273` so it could not touch this checkout.
+- **Owner:** tags in order, each once npm shows the one before: `v2.20.1`,
+  `v2.21.0`, `v2.22.0` (`66af2b5`), then `v2.23.0` on its release commit.
+
+## Unslop (2026-11-07) — merged and deployed
 
 - Rubric: heydamir/unslop (`skills/unslop/references/signs.md`, `SKILL.md`,
   `tokens.md`), read from GitHub; its scripts were not run (snapshot and
-  story video are not needed with the code at hand). Audit: 13 of 59 signs on
+  story video are not needed with the code at hand). Audit: 13 of 60 signs on
   the site, "light slop", so polish mode.
 - Done: spacing on the 4px grid, plain nav surface, no emoji, copy (badge,
   `!`, hype words, placeholders, headline periods), sentence-case labels at

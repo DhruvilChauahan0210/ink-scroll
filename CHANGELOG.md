@@ -8,9 +8,16 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### Site
 
+- **New post: Unslopping a site** (`/blog/unslop-ai-looking-ui`). How this site,
+  its blocks and its 23 demo sites were checked against heydamir/unslop's 60
+  signs of AI-looking UI: the 13 the main site had, each pass and its rule (the
+  4px snap, sentence case uncovered by removing a transform, radius by size),
+  the loud signs on the demos, and the contrast lessons (lighter weights move
+  the large-text threshold, a colour lives on more than one background,
+  opacity cannot pass). In the index, RSS, sitemap and related links.
 - **Unslopped, by heydamir/unslop's rules** (Damir Sokolovsky's skill, CC BY
   4.0), on branch `fix/unslop-polish`. Its audit rated the site "light slop"
-  (13 of its 59 signs), so the passes ran in polish mode: palette, type and
+  (13 of its 60 signs), so the passes ran in polish mode: palette, type and
   layout kept, every sign it found fixed. Spacing: 633 declarations onto the
   4px grid. Color: the frosted-glass nav and More panel are a plain surface
   with a hairline. Icons: no emoji. Copy: no pill badge above the homepage
@@ -627,6 +634,33 @@ All notable changes to `svg-scroll-draw` are documented here.
   allowed, followed by `check-jsx-text` and `check-nav`.
 
 ---
+
+## [2.23.0] — 2026-11-07
+
+### Changed
+
+- **The drop-ins follow reduced motion turned on mid-visit too.** 2.22.0 left
+  the AOS, ScrollReveal and vivus drop-ins reading `prefers-reduced-motion`
+  once, as the libraries they replace do. Now `svg-scroll-draw/aos` shows every
+  `[data-aos]` element at once with no transition, `svg-scroll-draw/scrollreveal`
+  puts every revealed element in its final state and stops listening to the
+  scroll, and a vivus drawing mid-play ends on its last frame and calls back
+  once, as `play()` already did under reduced motion. One way, as in every
+  engine: turned off again, what is shown stays until the next load. Each
+  listener goes with `destroy()`.
+
+### Size
+
+- About +0.14 KB on each drop-in entry: aos 3.08 → 3.22 KB, scrollreveal
+  4.53 → 4.69, vivus 4.03 → 4.17 (their React hooks the same). The aos budget
+  moves to 3.3.
+
+### Tests
+
+- A browser test per drop-in in Chromium, Firefox and WebKit turns reduced
+  motion on after load (vivus: mid-play) and expects the final state with no
+  transition (vivus: every drawing at its end, each callback once). Three
+  mutations, all caught (95 in all).
 
 ## [2.22.0] — 2026-11-06
 

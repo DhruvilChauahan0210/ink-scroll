@@ -19,6 +19,7 @@
  * jumps straight to the end it was heading for and still fires its callbacks.
  */
 import { prefersReducedMotion } from '../core/motion';
+import { watchReducedMotion } from '../core/motion-watch';
 import { warn } from '../core/env';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -198,12 +199,30 @@ export class Vivus {
   private instanceCallback: VivusCallback | null = null;
   private mustRecalcScale: number | null = null;
   private viewportListener: (() => void) | null = null;
+  private unwatchMotion: () => void = () => {};
 
   constructor(element: string | Element, options?: VivusOptions, callback?: VivusCallback) {
     this.setElement(element, options);
     this.setOptions(options);
     this.setCallback(callback);
     if (this.isReady) this.init();
+    // play() reads the preference each time it runs; this covers a drawing that
+    // is mid-play when the reader turns reduced motion on: it ends at once, as
+    // play() would have ended it (core/motion-live).
+    this.unwatchMotion = watchReducedMotion((r) => {
+      if (r && this.handle) this.endNow();
+    });
+  }
+
+  /** The exact end (or start, playing backwards), the callbacks, as under reduced motion. */
+  private endNow(): void {
+    this.stop();
+    // The exact end frame: setFrameProgress(1) rounds, and a scenario's frame
+    // length can be fractional, which would leave getStatus() at 'progress'.
+    this.currentFrame = this.speed < 0 ? 0 : this.frameLength;
+    this.trace();
+    if (this.speed > 0 && this.selfDestroy) this.destroy();
+    this.finished();
   }
 
   private setElement(element: string | Element, options?: VivusOptions): void {
@@ -523,13 +542,7 @@ export class Vivus {
     this.speed = (s as number) || 1;
 
     if (prefersReducedMotion()) {
-      this.stop();
-      // The exact end frame: setFrameProgress(1) rounds, and a scenario's frame
-      // length can be fractional, which would leave getStatus() at 'progress'.
-      this.currentFrame = this.speed < 0 ? 0 : this.frameLength;
-      this.trace();
-      if (this.speed > 0 && this.selfDestroy) this.destroy();
-      this.finished();
+      this.endNow();
       return this;
     }
     if (!this.handle) this.draw();
@@ -547,6 +560,7 @@ export class Vivus {
   /** Stop and remove every dash style vivus set. */
   destroy(): void {
     this.stop();
+    this.unwatchMotion();
     if (this.viewportListener) {
       window.removeEventListener('scroll', this.viewportListener);
       this.viewportListener = null;

@@ -895,6 +895,33 @@ const MUTATIONS = [
     spec: 'motion-live',
     grep: 'replay\\(\\) is ignored',
   },
+  {
+    id: 'reduced-live/aos',
+    what: 'the AOS drop-in ignores reduced motion turned on after init(), so hidden elements stay hidden',
+    file: 'src/aos/index.ts',
+    from: '      if (!r) return;\n      unwatchMotion?.();\n      unwatchMotion = null;\n      reduced = true;\n      if (!started) return;',
+    to: '      if (r) return;\n      unwatchMotion?.();\n      unwatchMotion = null;\n      reduced = true;\n      if (!started) return;',
+    spec: 'aos',
+    grep: 'reduced motion turned on after load shows everything at once',
+  },
+  {
+    id: 'reduced-live/scrollreveal',
+    what: 'the ScrollReveal drop-in notes reduced motion turned on but never applies it, so hidden elements stay hidden',
+    file: 'src/scrollreveal/index.ts',
+    from: '      motionReduced = true;\n      initialize();',
+    to: '      motionReduced = true;',
+    spec: 'scrollreveal',
+    grep: 'reduced motion turned on after load shows every element at once',
+  },
+  {
+    id: 'reduced-live/vivus',
+    what: 'the vivus drop-in keeps drawing after reduced motion is turned on mid-play',
+    file: 'src/vivus/index.ts',
+    from: '      if (r && this.handle) this.endNow();',
+    to: '      if (r && this.handle) void 0;',
+    spec: 'vivus',
+    grep: 'reduced motion turned on mid-play ends every drawing',
+  },
 ];
 
 const args = process.argv.slice(2);

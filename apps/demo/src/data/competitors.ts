@@ -51,7 +51,7 @@ export const MEASURED_ON = '2026-08-14';
 export const SELF: Competitor = {
   name: 'svg-scroll-draw',
   label: 'svg-scroll-draw (all APIs)',
-  version: '2.22.0',
+  version: '2.23.0',
   license: 'MIT',
   gzipKb: 11.7,
   lastPublish: '2026-08-14',
@@ -67,11 +67,11 @@ export const SELF_ENTRIES: Record<string, number> = {
   pin: 1.6,
   snap: 1.9,
   // The AOS drop-in, its stylesheet included (`svg-scroll-draw/aos`).
-  aos: 3.1,
+  aos: 3.2,
   // The ScrollReveal drop-in (`svg-scroll-draw/scrollreveal`).
-  scrollreveal: 4.5,
+  scrollreveal: 4.7,
   // The vivus drop-in (`svg-scroll-draw/vivus`).
-  vivus: 4.0,
+  vivus: 4.2,
   text: 3.4,
   // Each framework landing quotes its own entry, wrapper and engines included.
   vue: 13.2,

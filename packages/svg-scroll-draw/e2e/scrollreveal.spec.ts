@@ -95,3 +95,20 @@ test('reduced motion shows every element in its final state, with no transition'
     expect(row.style, id).not.toContain('opacity: 0;');
   }
 });
+
+test('reduced motion turned on after load shows every element at once (2.23.0)', async ({ page }) => {
+  await openFixture(page, 'sr-ours.html');
+  await page.waitForTimeout(100);
+  const before = await call<Row>(page, 'read');
+  expect(Object.values(before).some((r) => r.style?.includes('opacity: 0;')), 'nothing was hidden below the fold').toBe(true);
+
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.waitForTimeout(50);
+
+  const rows = await call<Row>(page, 'read');
+  for (const [id, row] of Object.entries(rows)) {
+    expect(row.style, `${id} should be visible with no transition`).toContain('visibility: visible');
+    expect(row.style, id).toContain('transition: none');
+    expect(row.style, id).not.toContain('opacity: 0;');
+  }
+});

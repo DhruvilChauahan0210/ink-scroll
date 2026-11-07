@@ -163,6 +163,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
+      url: `${SITE_URL}/blog/unslop-ai-looking-ui`,
+      lastModified: new Date("2026-11-07"),
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
       url: `${SITE_URL}/blog/reduced-motion-scroll-animations`,
       lastModified: new Date("2026-11-07"),
       changeFrequency: "monthly",

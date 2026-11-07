@@ -114,3 +114,17 @@ test('reduced motion shows everything in its final state, with no transition', a
   expect(styles['fade-up'].opacity).toBe('1');
   expect(styles['zoom-offset'].opacity).toBe('1');
 });
+
+test('reduced motion turned on after load shows everything at once (2.23.0)', async ({ page }) => {
+  await open(page, 'aos-ours.html', {});
+  const before = await call<Flags>(page, 'read');
+  expect(Object.values(before).some((v) => !v), `nothing was hidden below the fold: ${table([before])}`).toBe(true);
+
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
+
+  const after = await call<Flags>(page, 'read');
+  expect(Object.values(after).every(Boolean), table([after])).toBe(true);
+  const styles = await call<Styles>(page, 'styles');
+  expect(styles['fade-up'].opacity).toBe('1');
+});

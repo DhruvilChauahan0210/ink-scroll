@@ -421,7 +421,7 @@ WebKit and fails if any element differs at any scroll stop. AOS 3's `mirror`, `a
 
 Differences, on purpose:
 
-- `prefers-reduced-motion: reduce` shows every element in its final state, with no transition.
+- `prefers-reduced-motion: reduce` shows every element in its final state, with no transition, also when the reader turns it on while the page is open.
 - `disable: 'phone' | 'tablet' | 'mobile'` checks the viewport width, not the user agent.
 - Trigger positions are re-measured on `load`, so images that finish late do not shift them.
 - `AOS.destroy()` stops everything, for single-page apps that unmount the page.
@@ -476,7 +476,7 @@ Differences, on purpose:
 
 - Nothing happens on import. ScrollReveal adds the `sr` class and `body { height: 100% }` as soon as its
   script loads; this does both on the first `ScrollReveal()` call, keeping the import SSR-safe.
-- `prefers-reduced-motion: reduce` shows every element in its final state, with no transition.
+- `prefers-reduced-motion: reduce` shows every element in its final state, with no transition, also when the reader turns it on while the page is open.
 
 ---
 
@@ -521,7 +521,7 @@ in 0.4.6. Shapes become `<path>`s with the same `d` strings, and dashes get the 
 suite runs vivus 0.4.6 beside it across nine configurations and requires the SVG markup to match exactly
 at every point of the animation. Like vivus, the clock is the animation frame.
 
-One difference, on purpose: under `prefers-reduced-motion: reduce`, `play()` jumps to the end and still
+One difference, on purpose: under `prefers-reduced-motion: reduce` (including when it is turned on mid-play), `play()` jumps to the end and still
 fires its callbacks. When you want the stroke to follow the scroll instead of a clock, use
 [`scrollDraw`](#scrolldraw--svg-path-drawing-v1-api-unchanged) from the same package.
 
@@ -637,9 +637,9 @@ devtools.highlight('#my-element'); // outline for 2 seconds
 | `svg-scroll-draw/reveal` | 5.8 KB |
 | `svg-scroll-draw/text` | 3.4 KB |
 | `svg-scroll-draw/video` | 2.8 KB |
-| `svg-scroll-draw/scrollreveal` | 4.5 KB |
-| `svg-scroll-draw/vivus` | 4.0 KB |
-| `svg-scroll-draw/aos` (styles included) | 3.1 KB |
+| `svg-scroll-draw/scrollreveal` | 4.7 KB |
+| `svg-scroll-draw/vivus` | 4.2 KB |
+| `svg-scroll-draw/aos` (styles included) | 3.2 KB |
 | `svg-scroll-draw/snap` | 1.9 KB |
 | `svg-scroll-draw/devtools` | 1.8 KB (dev only) |
 | `svg-scroll-draw/pin` | 1.6 KB |

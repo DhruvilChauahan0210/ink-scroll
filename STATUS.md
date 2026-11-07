@@ -1,7 +1,7 @@
 # Project Status — svg-scroll-draw
 
 > Current version: **2.22.0** — in the working tree (reduced motion followed live). 2.21.0 is pushed (`140ae6c`), not tagged; 2.20.1 is pushed (`975dce6`), not tagged either; 2.20.0 is the latest published (`v2.20.0` on `972d705`, the first through npm's trusted publishing)
-> Tests: **709 unit** across 37 suites · **237 browser tests** per engine (711 runs
+> Tests: **709 unit** across 37 suites · **240 browser tests** per engine (720 runs
 > across Chromium/Firefox/WebKit) · **92 mutations**, each caught by the one test
 > named for it · **91.5% line coverage** (gate 90/90/82/82)
 > Bundle: **11.7 KB gzipped** (main entry as shipped files, chunks included; per-API entries from 0.2 KB) · zero runtime dependencies
@@ -53,7 +53,7 @@
 - [x] Initial state fix — `createAnimateEngine` and `scrollCounter` now apply correct alpha immediately on init (no flash before IO fires)
 
 ### Browser tests (Phase 2, `packages/svg-scroll-draw/e2e`)
-237 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
+240 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
 `helpers.ts` (deterministic sweep — scroll to a fixed offset, wait two frames,
 read) and `fixtures/_probe.mjs` (parsing stays in the page, so specs assert on
 numbers).
@@ -174,9 +174,16 @@ at all.
 - [ ] Owner: set `GITHUB_TOKEN` on Vercel (a fine-grained token with read-only access to public repositories and no other permissions is enough)
 - [x] Merged into `feat/homepage-redesign` and pushed (2026-11-06)
 
+### 2.23.0 — the drop-ins follow reduced motion live (2026-11-07; in the working tree)
+
+- [x] `aos`, `scrollreveal` and `vivus` follow reduced motion turned on mid-visit (one way, listener removed by `destroy()`); vivus ends a drawing mid-play
+- [x] Browser tests ×3 engines, three mutations (95); sizes +0.14 KB each, aos budget 3.3
+- [x] Post `/blog/unslop-ai-looking-ui`
+- [ ] Released
+
 ### Unslop (2026-11-07; site, blocks and showcase; branch `fix/unslop-polish`)
 
-- [x] heydamir/unslop audit: 13 of its 59 signs on the site ("light slop"); every one fixed in polish mode (spacing, nav surface, emoji, copy, labels, italic, radius, looping glow)
+- [x] heydamir/unslop audit: 13 of its 60 signs on the site ("light slop"); every one fixed in polish mode (spacing, nav surface, emoji, copy, labels, italic, radius, looping glow)
 - [x] Blocks in React, Vue and Svelte: sentence-case eyebrows, weight 500, concrete default copy; `public/r` regenerated
 - [x] Showcase, every pass: "New" pills (10), gradient headlines (4), unverifiable "Trusted by" counts (3), coloured glows (19), washes (58), hue gradients (4), glass (19), weights (209), italics (60), headline periods (144), pills (98), spacing (2,145), caps and tracking
 - [x] `scripts/test-showcase.mjs`: every showcase site loads with no errors; colour contrast no worse anywhere (708 → 687 failing nodes)

@@ -19,6 +19,17 @@ export type BlogPost = {
 
 export const POSTS: BlogPost[] = [
   {
+    slug: 'unslop-ai-looking-ui',
+    title: 'Unslopping a site: 13 signs of AI-looking UI, fixed',
+    description:
+      'We checked this site against heydamir/unslop’s 60 signs of AI-looking UI: the 13 we had, how each was fixed, and what changing colours taught us about contrast.',
+    tag: 'Design',
+    tagColor: '#0ea5e9',
+    readTime: '7 min read',
+    date: 'November 2026',
+    published: '2026-11-07',
+  },
+  {
     slug: 'reduced-motion-scroll-animations',
     title: 'Reduced motion for scroll animations, effect by effect',
     description:

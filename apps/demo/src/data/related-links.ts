@@ -29,16 +29,25 @@ export const RELATED_BY_POST: Record<string, RelatedLinks> = {
       { href: '/vs-gsap', label: 'svg-scroll-draw vs GSAP', blurb: 'Measured sizes and where GSAP is still the better call.' },
     ],
   },
+  'unslop-ai-looking-ui': {
+    examples: ['scroll-reveal', 'scroll-text'],
+    pages: [
+      { href: '/blocks', label: 'Scroll blocks', blurb: 'The copy-paste blocks, after the same passes.' },
+      { href: '/blog/reduced-motion-scroll-animations', label: 'Reduced motion, effect by effect', blurb: 'What each scroll effect should do when a reader asks for less motion.' },
+    ],
+  },
   'reduced-motion-scroll-animations': {
     examples: ['scroll-reveal', 'scroll-snap', 'scroll-video'],
     pages: [
       { href: '/blog/horizontal-scroll-sections', label: 'Horizontal scroll sections', blurb: 'The strip that keeps scrubbing under reduced motion, built step by step.' },
+      { href: '/blog/unslop-ai-looking-ui', label: 'Unslopping a site', blurb: 'Thirteen signs of AI-looking UI on this site, and how each was fixed.' },
     ],
   },
   'accessible-split-text-animation': {
     examples: ['scroll-text', 'scroll-text-lines'],
     pages: [
       { href: '/react-scroll-animation', label: 'React scroll animation', blurb: 'scrollText and the rest as React components and hooks.' },
+      { href: '/blog/unslop-ai-looking-ui', label: 'Unslopping a site', blurb: 'The design audit that came after the accessibility one.' },
     ],
   },
   'horizontal-scroll-sections': {

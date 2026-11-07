@@ -57,6 +57,10 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
  * text 3.17 -> 3.41; the single-file CDN build, no chunk overhead, +0.22).
  * The helper has a file of its own so snap and the timeline, which only
  * listen, do not carry it. Same rule.
+ *
+ * 2.23.0 moved the drop-ins up about 0.14 KB each: AOS, ScrollReveal and vivus
+ * listen for reduced motion turned on mid-visit too (core/motion-watch). Only
+ * aos crossed its budget (3.22).
  */
 const BUDGETS_KB = {
   '.':              11.8,
@@ -74,7 +78,8 @@ const BUDGETS_KB = {
   'web-component':   7.9,
   reveal:            5.8,
   // The AOS drop-in, stylesheet included (AOS itself is 6.7 KB with aos.css).
-  aos:               3.2,
+  // 3.08 -> 3.22 in 2.23.0: it follows reduced motion turned on mid-visit.
+  aos:               3.3,
   'cdn-aos':         3.4,
   // The ScrollReveal drop-in (ScrollReveal 4.0.9 itself is 5.6 KB).
   scrollreveal:      4.9,

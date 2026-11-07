@@ -209,7 +209,7 @@ export default function Page() {
           snapping, the horizontal strip and the timeline, and unit tests for the path drawing at start-up.
         </p>
         <p>
-          Since 2.22.0 every effect also follows the setting live, the way the section above describes. Turned
+          Since 2.22.0 every effect also follows the setting live (2.23.0 for the AOS, ScrollReveal and vivus drop-ins), the way the section above describes. Turned
           on mid-visit, each one finishes at once, exactly as a page loaded under reduced motion shows it, and
           fires <code>onComplete</code> once if it had not finished. Turned off again, what finished stays
           finished until the next load; snapping and the timeline’s loop, which hide nothing either way, follow

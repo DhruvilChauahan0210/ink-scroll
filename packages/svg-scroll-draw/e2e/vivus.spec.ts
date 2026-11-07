@@ -123,3 +123,19 @@ test('reduced motion: play() jumps to the end and still calls back', async ({ pa
   const done = await call<Record<string, number>>(page, 'done');
   expect(Object.values(done).every((n) => n === 1)).toBe(true);
 });
+
+test('reduced motion turned on mid-play ends every drawing and calls back once (2.23.0)', async ({ page }) => {
+  await open(page, 'vivus-ours.html');
+  await call(page, 'play', 0.05); // slow enough to still be drawing
+  await page.waitForTimeout(150);
+  const mid = await call<{ all: string[] }>(page, 'status');
+  expect(mid.all.every((s) => s === 'progress'), `not mid-play: ${mid.all.join()}`).toBe(true);
+
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.waitForTimeout(50);
+
+  const status = await call<{ all: string[] }>(page, 'status');
+  expect(status.all.every((s) => s === 'end'), status.all.join()).toBe(true);
+  const done = await call<Record<string, number>>(page, 'done');
+  expect(Object.values(done).every((n) => n === 1), JSON.stringify(done)).toBe(true);
+});

@@ -55,6 +55,15 @@ const KINDS: { k: Kind; label: string }[] = [
  */
 const RELEASES: Release[] = [
   {
+    version: '2.23.0',
+    title: 'The drop-ins follow reduced motion live',
+    date: '2026-11-07',
+    items: [
+      { type: 'new', text: 'The AOS, ScrollReveal and vivus drop-ins follow prefers-reduced-motion turned on while the page is open: every element shows at once with no transition, and a vivus drawing mid-play ends on its last frame and calls back once. One way, as in every engine; each listener goes with destroy().' },
+      { type: 'test', text: 'A browser test per drop-in in three engines turns reduced motion on after load; three mutations (95 in all). About +0.14 KB per drop-in; aos is 3.2 KB.' },
+    ],
+  },
+  {
     version: '2.22.0',
     title: 'Reduced motion turned on mid-visit applies at once',
     date: '2026-11-06',

@@ -10,9 +10,10 @@
  *  2. The preference was read once at construction with no listener, so toggling
  *     the OS setting did nothing until a reload.
  *
- * The listener lives in ./motion-watch, not here: the drop-ins read the
- * preference but never subscribe, and the chunked ESM build shares code a whole
- * file at a time, so in one file they would carry the listener too.
+ * The listener lives in ./motion-watch, not here, and the rebuild in
+ * ./motion-live: the chunked ESM build shares code a whole file at a time, so an
+ * entry carries only the parts it uses. Since 2.23.0 every engine listens, the
+ * drop-ins included.
  */
 
 /** Whether the user has asked for reduced motion right now. */

@@ -36,7 +36,7 @@ Works in **React · Next.js · Vue 3 · Svelte · Solid · Angular · Nuxt · As
 - **Group / Sequence / Timeline APIs** — animate multiple containers simultaneously, one-after-another, or on independent scroll windows with `loop` for auto-looping after scroll completion
 - **CSS custom property** — `--scroll-draw-progress` is set on every frame so you can drive any CSS animation without a callback
 - **709 tests across 37 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
-- **237 browser tests on top of those**, run against Chromium, Firefox and WebKit in CI. The unit suite runs in jsdom, where `getTotalLength` is stubbed and `IntersectionObserver` is faked — it can check the engine's arithmetic but nothing about real browser behaviour. Both counts are derived from the suites themselves and enforced in CI, so neither can quietly drift out of date
+- **240 browser tests on top of those**, run against Chromium, Firefox and WebKit in CI. The unit suite runs in jsdom, where `getTotalLength` is stubbed and `IntersectionObserver` is faked — it can check the engine's arithmetic but nothing about real browser behaviour. Both counts are derived from the suites themselves and enforced in CI, so neither can quietly drift out of date
 
 ---
 
@@ -685,7 +685,7 @@ WebKit and fails if any element differs at any scroll stop. AOS 3's `mirror`, `a
 
 Differences, on purpose:
 
-- `prefers-reduced-motion: reduce` shows every element in its final state, with no transition.
+- `prefers-reduced-motion: reduce` shows every element in its final state, with no transition, also when the reader turns it on while the page is open.
 - `disable: 'phone' | 'tablet' | 'mobile'` checks the viewport width, not the user agent.
 - Trigger positions are re-measured on `load`, so images that finish late do not shift them.
 - `AOS.destroy()` stops everything, for single-page apps that unmount the page.
@@ -740,7 +740,7 @@ Differences, on purpose:
 
 - Nothing happens on import. ScrollReveal adds the `sr` class and `body { height: 100% }` as soon as its
   script loads; this does both on the first `ScrollReveal()` call, keeping the import SSR-safe.
-- `prefers-reduced-motion: reduce` shows every element in its final state, with no transition.
+- `prefers-reduced-motion: reduce` shows every element in its final state, with no transition, also when the reader turns it on while the page is open.
 
 ---
 
@@ -785,7 +785,7 @@ in 0.4.6. Shapes become `<path>`s with the same `d` strings, and dashes get the 
 suite runs vivus 0.4.6 beside it across nine configurations and requires the SVG markup to match exactly
 at every point of the animation. Like vivus, the clock is the animation frame.
 
-One difference, on purpose: under `prefers-reduced-motion: reduce`, `play()` jumps to the end and still
+One difference, on purpose: under `prefers-reduced-motion: reduce` (including when it is turned on mid-play), `play()` jumps to the end and still
 fires its callbacks. When you want the stroke to follow the scroll instead of a clock, use
 [`scrollDraw`](#quick-start) from the same package.
 
@@ -815,17 +815,17 @@ outgrows its budget.
 | `svg-scroll-draw/web-component`      | 21.8 KB | **7.8 KB** |
 | `svg-scroll-draw/reveal`             | 14.1 KB | **5.8 KB** |
 | `svg-scroll-draw/horizontal`         | 14.4 KB | **5.7 KB** |
-| `svg-scroll-draw/scrollreveal/react` | 11.7 KB | **4.7 KB** |
-| `svg-scroll-draw/scrollreveal`       | 11.4 KB | **4.5 KB** |
-| `dist/cdn/scrollreveal.global.js`    | 11.1 KB | **4.5 KB** |
-| `svg-scroll-draw/vivus/react`        | 11.5 KB | **4.2 KB** |
+| `svg-scroll-draw/scrollreveal/react` | 12.3 KB | **4.8 KB** |
+| `svg-scroll-draw/scrollreveal`       | 12.1 KB | **4.7 KB** |
+| `dist/cdn/scrollreveal.global.js`    | 11.7 KB | **4.6 KB** |
+| `svg-scroll-draw/vivus/react`        | 12.0 KB | **4.3 KB** |
+| `svg-scroll-draw/vivus`              | 11.7 KB | **4.2 KB** |
 | `svg-scroll-draw/timeline`           | 9.8 KB | **4.1 KB** |
-| `svg-scroll-draw/vivus`              | 11.2 KB | **4.0 KB** |
-| `dist/cdn/vivus.global.js`           | 10.7 KB | **3.8 KB** |
+| `dist/cdn/vivus.global.js`           | 11.1 KB | **3.9 KB** |
 | `svg-scroll-draw/text`               | 8.2 KB | **3.4 KB** |
-| `svg-scroll-draw/aos/react`          | 8.6 KB | **3.2 KB** |
-| `dist/cdn/aos.global.js`             | 8.3 KB | **3.1 KB** |
-| `svg-scroll-draw/aos`                | 8.3 KB | **3.1 KB** |
+| `svg-scroll-draw/aos/react`          | 9.2 KB | **3.4 KB** |
+| `svg-scroll-draw/aos`                | 8.9 KB | **3.2 KB** |
+| `dist/cdn/aos.global.js`             | 8.7 KB | **3.2 KB** |
 | `svg-scroll-draw/video`              | 6.3 KB | **2.8 KB** |
 | `svg-scroll-draw/progress`           | 5.5 KB | **2.4 KB** |
 | `svg-scroll-draw/cinematic`          | 5.2 KB | **2.3 KB** |

@@ -20,6 +20,7 @@
  *   - `destroy()` exists, for single-page apps.
  */
 import { prefersReducedMotion } from '../core/motion';
+import { watchReducedMotion } from '../core/motion-watch';
 import { warn } from '../core/env';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -169,6 +170,7 @@ let resizeTimer: ReturnType<typeof setTimeout> | undefined;
 let observer: MutationObserver | null = null;
 let startListener: { target: EventTarget; type: string; fn: () => void } | null = null;
 let reduced = false;
+let unwatchMotion: (() => void) | null = null;
 
 const hasDom = (): boolean => typeof window !== 'undefined' && typeof document !== 'undefined';
 
@@ -384,6 +386,20 @@ export function init(options: AOSOptions = {}): HTMLElement[] {
     return [];
   }
   reduced = prefersReducedMotion();
+  // Turned on while the page is open, reduced motion shows everything at once,
+  // as a page loaded under it would. One way, as in every engine
+  // (core/motion-live): turned off again, what is shown stays.
+  if (!reduced) {
+    unwatchMotion = watchReducedMotion((r) => {
+      if (!r) return;
+      unwatchMotion?.();
+      unwatchMotion = null;
+      reduced = true;
+      if (!started) return;
+      for (const it of items) it.node.setAttribute('data-aos-instant', '');
+      apply();
+    });
+  }
   injectStyles();
 
   const ready = document.readyState !== 'loading';
@@ -434,6 +450,8 @@ export function destroy(): void {
   window.removeEventListener('load', onLoad);
   observer?.disconnect();
   observer = null;
+  unwatchMotion?.();
+  unwatchMotion = null;
   for (const it of items) it.node.removeAttribute('data-aos-instant');
   items = [];
   started = false;
