@@ -4,10 +4,10 @@
 html:has(.ry) body { background: #fcfbff; }
 
 .ry {
-  --bg: #fcfbff; --bg-2: #f5f2fc; --fg: #17132b; --mut: #5f5a73; --dim: #8a85a0;
+  --bg: #fcfbff; --bg-2: #f5f2fc; --fg: #17132b; --mut: #5f5a73; --dim: #6e6a80;
   --line: #ebe7f3; --line-2: #ddd7ea; --card: #fff;
-  --accent: #6d4aff; --accent-fg: #fff; --soft: #f0ebff;
-  --side: #221a48; --chrome: #1a1438; --ok: #1fa971; --red: #e5484d;
+  --accent: #6947f5; --accent-fg: #fff; --soft: #f0ebff;
+  --side: #221a48; --chrome: #1a1438; --ok: #1fa971; --red: #ce4145;
   --serif: ui-serif, 'Iowan Old Style', Georgia, serif;
   --radius: 12px;
   overflow-x: clip;
@@ -235,13 +235,13 @@ html:has(.ry) body { background: #fcfbff; }
 .ry-notes { padding: 16px 16px; border-left: 1px solid rgba(255, 255, 255, 0.08); background: #1b1538; font-size: 12.5px; }
 .ry-notes-h { display: flex; justify-content: space-between; align-items: center; margin: 0 0 16px; font-size: 13.5px; }
 .ry-notes-h span { padding: 2px 8px; border-radius: 8px; background: rgba(52, 211, 153, 0.15); color: #34d399; font-size: 11px; font-weight: 600; }
-.ry-notes-s > p { margin: 0 0 8px; font-size: 11px; font-weight: 600; letter-spacing: 0; color: rgba(255, 255, 255, 0.45); }
+.ry-notes-s > p { margin: 0 0 8px; font-size: 11px; font-weight: 600; letter-spacing: 0; color: rgba(255, 255, 255, 0.47); }
 .ry-notes-s ul { display: grid; gap: 8px; margin: 0 0 16px; padding: 0; list-style: none; }
 .ry-notes-s li { position: relative; padding-left: 16px; line-height: 1.45; color: rgba(255, 255, 255, 0.85); }
 .ry-notes-s li::before { content: ''; position: absolute; left: 2px; top: 7px; width: 5px; height: 5px; border-radius: 50%; background: #a78bfa; }
 .ry-notes-s li.todo::before { left: 0; top: 3.5px; width: 9px; height: 9px; border-radius: 3px; border: 1.5px solid rgba(255, 255, 255, 0.4); background: transparent; }
 .ry-notes-s li b { font-weight: 600; color: #fff; }
-.ry-notes-f { margin: 2px 0 0; font-size: 11.5px; color: rgba(255, 255, 255, 0.45); }
+.ry-notes-f { margin: 2px 0 0; font-size: 11.5px; color: rgba(255, 255, 255, 0.47); }
 .ry-hd-bar { display: flex; justify-content: center; gap: 8px; padding: 12px; border-top: 1px solid rgba(255, 255, 255, 0.08); }
 .ry-hb { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; background: rgba(255, 255, 255, 0.1); }
 .ry-hb.on { background: #fff; color: #17122e; }

@@ -134,17 +134,19 @@ jobs:
       - name: Build the demo
         run: npm run build -w demo
 
-      # One server for all three: the blocks on /blocks; every sitemap page
+      # One server for all four: the blocks on /blocks; every sitemap page
       # through axe (WCAG 2.1 A and AA) and every internal link and #anchor;
-      # and what a crawler reads on each (title, description, canonical, h1,
-      # preview image, JSON-LD, inbound links).
-      - name: Blocks work on /blocks, and every page passes axe, its links and the SEO check
+      # what a crawler reads on each (title, description, canonical, h1,
+      # preview image, JSON-LD, inbound links); and the showcase sites, which
+      # the sitemap leaves out, for page errors and colour contrast.
+      - name: Blocks work on /blocks, every page passes axe, its links and the SEO check, and the showcase sites pass contrast
         run: |
           npx next start -p 3100 &
           for i in $(seq 1 60); do curl -sf http://localhost:3100/blocks > /dev/null && break; sleep 1; done
           BASE_URL=http://localhost:3100 node scripts/test-blocks.mjs
           BASE_URL=http://localhost:3100 node scripts/test-a11y.mjs
           BASE_URL=http://localhost:3100 node scripts/test-seo.mjs
+          BASE_URL=http://localhost:3100 node scripts/test-showcase.mjs
         working-directory: apps/demo
 
       - uses: actions/upload-artifact@v7

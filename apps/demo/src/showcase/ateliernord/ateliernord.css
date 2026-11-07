@@ -5,7 +5,7 @@
 html:has(.an) body { background: #f1efea; }
 
 .an {
-  --bg: #f1efea; --bg-2: #e7e3db; --fg: #1b1a18; --mut: #6f6b64; --line: #d6d1c7; --card: #fbfaf7;
+  --bg: #f1efea; --bg-2: #e7e3db; --fg: #1b1a18; --mut: #66625c; --line: #d6d1c7; --card: #fbfaf7;
   --accent: #8a5a3b; --accent-fg: #fff;
   --paper: #fbfaf6; --ink2: #3b3934; --live: #d9662b;
   --head: var(--font-geist-sans), system-ui, sans-serif;
@@ -220,7 +220,7 @@ html:has(.an) body { background: #f1efea; }
 .an-thumb { width: 84px; height: 56px; }
 .an-res { justify-self: end; font: 500 11.5px var(--mono); letter-spacing: 0; }
 .an-res.is-winner { color: #e2ad84; }
-.an-res.is-shortlist, .an-res.is-mention { color: rgba(236, 232, 224, 0.5); }
+.an-res.is-shortlist, .an-res.is-mention { color: rgba(236, 232, 224, 0.52); }
 .an-press { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); row-gap: 20px; align-items: center; margin-top: clamp(56px, 7vw, 96px); }
 .an-press .an-label { grid-column: 1 / 4; }
 .an-press > div { grid-column: 4 / 13; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 24px 36px; color: rgba(236, 232, 224, 0.72); }

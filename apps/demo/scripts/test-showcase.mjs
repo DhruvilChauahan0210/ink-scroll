@@ -8,9 +8,9 @@
  * the unslop pass (gradients, glows, glass, weights), and contrast is what a
  * changed background breaks first.
  *
- * Not in CI yet: the sites carried 708 contrast failures before the unslop pass
- * (687 after it, none new), from muted greys that were never checked. Fix those
- * first, then wire this in.
+ * The sites carried 708 contrast failures when this was first run (muted greys
+ * never checked, white on light accent buttons, text dimmed by opacity); all
+ * were fixed before it went into CI, next to test-a11y.
  *
  *   BASE_URL=http://localhost:3200 node scripts/test-showcase.mjs
  *   ... --report      list everything and exit 0 (for triage)

@@ -225,7 +225,7 @@ const WORK: { id: string; preset: PresetName; client: string; title: string; yea
 const LAYERS = [
   { n: 'sun', c: '#e2a93b', s: 0, e: 38, k: [0, 34] },
   { n: 'gulls', c: '#7fa7c4', s: 22, e: 100, k: [22, 58, 96] },
-  { n: 'lighthouse_beam', c: '#e8471c', s: 36, e: 100, k: [36, 64, 92] },
+  { n: 'lighthouse_beam', c: '#c53c18', s: 36, e: 100, k: [36, 64, 92] },
   { n: 'sail_main', c: '#3f8a63', s: 18, e: 64, k: [18, 41, 64] },
   { n: 'boat', c: '#3f8a63', s: 8, e: 92, k: [8, 50, 92] },
   { n: 'waves_front', c: '#4c72b0', s: 0, e: 100, k: [0, 25, 50, 75, 100] },

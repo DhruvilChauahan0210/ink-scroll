@@ -4,7 +4,7 @@
 html:has(.fn) body { background: #f3efe4; }
 
 .fn {
-  --bg: #f3efe4; --bg-2: #ebe5d5; --fg: #1f2a20; --mut: #676b60; --line: #d9d1bd; --card: #fbf8ef;
+  --bg: #f3efe4; --bg-2: #ebe5d5; --fg: #1f2a20; --mut: #62665b; --line: #d9d1bd; --card: #fbf8ef;
   --accent: #2f5a37; --accent-fg: #fbf8ef;
   --moss: #3b6741; --moss-2: #5f8a62; --rust: #8f5a2c; --forest: #1d3123; --sheet: #fbf8ef;
   --serif: ui-serif, 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
@@ -91,7 +91,7 @@ html:has(.fn) body { background: #f3efe4; }
 .fn-label .fn-label-n { font: 400 17px/1.25 var(--serif); color: var(--fg); }
 .fn-label dl { display: grid; gap: 4px; margin: 8px 0 0; padding-top: 8px; border-top: 1px dashed #d8cfb8; }
 .fn-label dl div { display: grid; grid-template-columns: 62px minmax(0, 1fr); gap: 8px; }
-.fn-label dt { color: #8a8d82; }
+.fn-label dt { color: #71746b; }
 .fn-label dd { margin: 0; color: var(--fg); }
 .fn-scale { position: absolute; left: clamp(28px, 4vw, 52px); bottom: clamp(20px, 3vw, 30px); display: flex; align-items: center; gap: 8px; font: 500 11px var(--sans); color: var(--mut); }
 .fn-scale i { display: block; width: 64px; height: 6px; border: 1px solid #6b6a5f; border-top: 0; }

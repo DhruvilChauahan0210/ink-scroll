@@ -32,7 +32,7 @@ html:has(.au) body { background: #0a0a0a; }
 
 .au-side h2 { margin: 0 0 28px; font: 500 clamp(24px, 2.2vw, 32px)/1.12 var(--head); letter-spacing: -0.03em; text-wrap: balance; }
 .au-parts { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
-.au-parts li { display: grid; grid-template-columns: 24px minmax(0, 1fr); column-gap: 12px; padding: 8px 0; border-top: 1px solid var(--line); opacity: 0.32; transition: opacity 0.35s; }
+.au-parts li { display: grid; grid-template-columns: 24px minmax(0, 1fr); column-gap: 12px; padding: 8px 0; border-top: 1px solid var(--line); opacity: 0.9; transition: opacity 0.35s; }
 .au-parts li.is-on { opacity: 1; }
 .au-parts i, .au-pin { display: grid; place-items: center; width: 22px; height: 24px; border-radius: 50%; font: 600 11.5px/1 var(--body); font-style: normal; font-variant-numeric: tabular-nums; }
 .au-parts i { grid-row: span 2; margin-top: 1px; border: 1px solid #3a3631; color: var(--mut); transition: background-color 0.35s, color 0.35s, border-color 0.35s; }

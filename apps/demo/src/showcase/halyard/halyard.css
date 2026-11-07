@@ -7,7 +7,7 @@ html:has(.hy) body { background: #f4f2ec; }
 .hy {
   --bg: #f4f2ec; --bg-2: #ebe8df; --fg: #0c2236; --mut: #5b6672; --line: #d9d5ca; --card: #fff;
   --accent: #0c2236; --accent-fg: #f4f2ec;
-  --ink: #0c2236; --ink-2: #1f3c57; --sea: #4a7a96; --fog: #a9b8c2; --brass: #a8772a; --brass-2: #d9b56c;
+  --ink: #0c2236; --ink-2: #1f3c57; --sea: #4a7a96; --fog: #a9b8c2; --brass: #835d21; --brass-2: #d9b56c;
   --pos: #23744a; --hair: #e6e2d8;
   --serif: ui-serif, 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
   --sans: var(--font-geist-sans), system-ui, sans-serif;
@@ -170,15 +170,15 @@ html:has(.hy) body { background: #f4f2ec; }
 .hy-plot svg { display: block; width: 100%; height: auto; overflow: visible; }
 .hy-gl { fill: none; stroke: #e8e5dc; stroke-width: 1; }
 .hy-base { fill: none; stroke: var(--ink); stroke-width: 1.5; }
-.hy-tick { font: 500 12px var(--sans); fill: #8a929b; }
+.hy-tick { font: 500 12px var(--sans); fill: #6e757c; }
 .hy-py { fill: #cdd5dc; }
 .hy-bar { fill: none; stroke: var(--ink); stroke-width: 52; stroke-linecap: butt; }
 .hy-bar.is-key { stroke: var(--brass); }
 .hy-val { font: 600 13.5px var(--sans); fill: #fff; font-variant-numeric: tabular-nums; }
 .hy-q { font: 600 14px var(--sans); fill: var(--ink); }
-.hy-qm { font: 500 12px var(--sans); fill: #8a929b; }
+.hy-qm { font: 500 12px var(--sans); fill: #6e757c; }
 .hy-trend-line { fill: none; stroke: var(--brass); stroke-width: 2.2; stroke-linecap: round; }
-.hy-chart-foot { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-top: 8px; padding-top: 16px; border-top: 1px solid var(--hair); font-size: 12px; line-height: 1.5; color: #8a929b; }
+.hy-chart-foot { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-top: 8px; padding-top: 16px; border-top: 1px solid var(--hair); font-size: 12px; line-height: 1.5; color: #6e757c; }
 .hy-chart-total { flex: none; font-size: 13px; color: var(--mut); }
 .hy-chart-total b { color: var(--ink); font-weight: 600; }
 .hy-chart-total em { margin-left: 4px; color: var(--pos); font-weight: 600; }
@@ -359,7 +359,7 @@ html:has(.hy) body { background: #f4f2ec; }
 .hy-date em { font: 600 10.5px var(--sans); letter-spacing: 0; color: var(--mut); }
 .hy-cal-t { display: grid; gap: 2px; font-size: 14.5px; line-height: 1.35; }
 .hy-cal-t em { font-size: 12.5px; color: var(--mut); }
-.hy-cal li.is-past { opacity: 0.6; }
+.hy-cal li.is-past { opacity: 0.9; }
 .hy-cal li.is-past .hy-date { border-top-color: var(--brass); }
 .hy-cal-add { display: inline-block; margin-top: 12px; font-size: 13.5px; font-weight: 600; text-decoration: underline; text-decoration-color: var(--brass-2); text-decoration-thickness: 2px; text-underline-offset: 4px; }
 .hy-ir { margin-top: 24px; padding-top: 24px; border-top: 2px solid var(--ink); font-size: 14px; }

@@ -23,9 +23,12 @@
   and a map marker, set from JS (a transform rewrite needs component changes);
   lowercase mono labels that are code, paths or data
   (`scripts/find-lowercase-labels.mjs` lists them); share-card images.
-- Showcase contrast debt: `scripts/test-showcase.mjs --report` lists 687
-  failing nodes on 22 sites (708 before unslop, none new). Not in CI until
-  fixed.
+- Showcase contrast: all 708 old failures fixed (text colours to the nearest
+  passing shade of the same hue, white-on-accent buttons darkened, opacity
+  dims raised); `test-showcase.mjs` runs in CI with 0 problems. Lesson: a
+  colour changed site-wide must be checked on every background it is used on,
+  not only where it failed (Shipyard's grey failed on one light pill and was
+  darkened everywhere, breaking 68 dark-background uses until restored).
 - Screens could not be screenshotted at the end (display asleep): look at
   /, /docs, a blog post, /blocks and two showcase sites on the Vercel preview
   before merging.

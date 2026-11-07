@@ -66,8 +66,8 @@ export const Avatar = ({ i, c }: { i: string; c: string }) => (
 );
 
 export const ADA = '#2445d6';
-export const TOMAS = '#c46a0c';
-export const CC = '#6b7385';
+export const TOMAS = '#9f560a';
+export const CC = '#606878';
 
 /* ── The editor ────────────────────────────────────────────────────────── */
 

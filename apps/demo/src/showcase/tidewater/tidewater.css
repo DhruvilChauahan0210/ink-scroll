@@ -5,9 +5,9 @@
 html:has(.tw) body { background: #f4efe6; }
 
 .tw {
-  --bg: #f4efe6; --bg-2: #ece5d7; --fg: #12293a; --mut: #5b6a72; --line: #ddd3c2; --card: #fbf8f2;
+  --bg: #f4efe6; --bg-2: #ece5d7; --fg: #12293a; --mut: #58676f; --line: #ddd3c2; --card: #fbf8f2;
   --accent: #12293a; --accent-fg: #f8f3ea; --radius: 14px;
-  --ink: #12293a; --ink-2: #2b4455; --signal: #c4513a; --sea: #2f6f86; --sand: #e7d3a8; --ok: #2c7a58;
+  --ink: #12293a; --ink-2: #2b4455; --signal: #a74531; --sea: #2e6c82; --sand: #e7d3a8; --ok: #2c7a58;
   --serif: ui-serif, 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
   --head: var(--serif);
   --wrap: max(var(--pad), calc((100% - 1200px) / 2));
@@ -104,7 +104,7 @@ html:has(.tw) body { background: #f4efe6; }
 .tw-scene svg .beam { fill: rgba(255, 236, 190, 0.22); stroke: none; }
 .tw-scene svg .tower { fill: #f4efe6; stroke: none; }
 .tw-scene svg .lamp { fill: #ffd98a; stroke: none; filter: none; }
-.s-noon { --sky1: #cfe2e7; --sky2: #eef1ea; --land: #7c9c86; --sea1: #7fb1bc; --sea2: #2f6f86; --sun: rgba(255, 252, 240, 0.9); --suny: 18%; --sunx: 80%; }
+.s-noon { --sky1: #cfe2e7; --sky2: #eef1ea; --land: #7c9c86; --sea1: #7fb1bc; --sea2: #2e6c82; --sun: rgba(255, 252, 240, 0.9); --suny: 18%; --sunx: 80%; }
 .s-blue { --sky1: #c9dbe3; --sky2: #e6ecea; --land: #56767c; --sea1: #5d93a5; --sea2: #1f4f66; --sun: rgba(255, 255, 255, 0); }
 .s-dusk { --sky1: #9c9fbd; --sky2: #f0ad83; --land: #4d5872; --sea1: #9a8fa4; --sea2: #394866; --sun: rgba(255, 214, 160, 0.95); --sunx: 30%; --suny: 58%; }
 .s-night { --sky1: #0c1c2e; --sky2: #2a4560; --land: #0f2132; --sea1: #20364a; --sea2: #0b1826; --sun: rgba(246, 240, 220, 0.95); --sunx: 78%; --suny: 22%; --ink-art: #e9e2d2; --fill-art: #213a52; }
@@ -326,7 +326,7 @@ html:has(.tw) body { background: #f4efe6; }
 .ch-coast { fill: none; stroke: #7a6a4c; stroke-width: 1.3; }
 .ch-chan { fill: none; stroke: #b07b8f; stroke-width: 1.2; stroke-dasharray: 8 5; }
 .ch-buoy { stroke: #fff; stroke-width: 1.5; }
-.ch-buoy.r { fill: #c4513a; }
+.ch-buoy.r { fill: #a74531; }
 .ch-buoy.g { fill: #2c7a58; }
 .ch-sound { font: 500 10.5px var(--serif); fill: #5f7f86; }
 .ch-name { font: 600 11px var(--font-geist-sans), sans-serif; letter-spacing: 0; fill: #6a5a3c; text-anchor: start; }

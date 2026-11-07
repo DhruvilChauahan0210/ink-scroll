@@ -67,7 +67,7 @@ html:has(.mc) body { background: #f6f4ee; }
 .mc-app-search { display: grid; place-items: center; width: 30px; height: 32px; border-radius: 50%; background: rgba(255, 255, 255, 0.1); }
 .mc-acct { display: grid; gap: 2px; padding: 16px 20px 8px; background: var(--forest); color: #fff; }
 .mc-acct-l { font-size: 11.5px; color: rgba(255, 255, 255, 0.66); }
-.mc-acct-l em { margin-left: 8px; font: 500 10.5px var(--mono); font-style: normal; color: rgba(255, 255, 255, 0.45); }
+.mc-acct-l em { margin-left: 8px; font: 500 10.5px var(--mono); font-style: normal; color: rgba(255, 255, 255, 0.49); }
 .mc-acct strong { font-size: 36px; font-weight: 600; letter-spacing: -0.03em; line-height: 1.1; }
 .mc-acct strong small { font-size: 20px; color: rgba(255, 255, 255, 0.62); }
 .mc-acct-in { justify-self: start; margin-top: 4px; padding: 4px 8px; border-radius: 8px; background: rgba(69, 221, 156, 0.16); color: var(--mint); font-size: 11px; font-weight: 600; }
@@ -93,7 +93,7 @@ html:has(.mc) body { background: #f6f4ee; }
 .mc-tx-n small { font-size: 10.5px; color: var(--mut); }
 .mc-tx-a { font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
 .mc-tx-a.in { color: var(--deep); }
-.mc-tabs { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; display: grid; grid-template-columns: repeat(5, 1fr); padding: 8px 8px 24px; background: rgba(255, 255, 255, 0.94); border-top: 1px solid #e9ece6; color: #8c978f; font-size: 9.5px; text-align: center; }
+.mc-tabs { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; display: grid; grid-template-columns: repeat(5, 1fr); padding: 8px 8px 24px; background: rgba(255, 255, 255, 0.94); border-top: 1px solid #e9ece6; color: #6d7670; font-size: 9.5px; text-align: center; }
 .mc-tabs span { display: grid; justify-items: center; gap: 4px; }
 .mc-tabs span.on { color: var(--forest); font-weight: 600; }
 .mc-home-bar { position: absolute; z-index: 3; left: 50%; bottom: 7px; width: 110px; height: 4px; margin-left: -55px; border-radius: 3px; background: #111; }

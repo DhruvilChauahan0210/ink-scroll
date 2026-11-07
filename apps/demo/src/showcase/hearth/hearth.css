@@ -7,7 +7,7 @@ html:has(.hf) body { background: #f4efe6; }
   --bg-2: #ece5d8;
   --card: #fffcf6;
   --fg: #1f2421;
-  --mut: #6b6a61;
+  --mut: #66655c;
   --line: #e0d8ca;
   --green: #2f4a3a;
   --green-2: #dfe8e0;
@@ -113,20 +113,20 @@ html:has(.hf) body { background: #f4efe6; }
 .hf-labels li:last-child { transform: translateX(-70%); }
 .hf-labels b { font-size: 15.5px; font-weight: 600; color: var(--mut); }
 .hf-labels span { font-size: 13.5px; color: var(--mut); font-variant-numeric: tabular-nums; }
-.hf-labels small { font-size: 12.5px; color: #96938a; }
+.hf-labels small { font-size: 12.5px; color: #74716a; }
 .hf-labels li.is-done b, .hf-labels li.is-now b { color: var(--fg); }
 .hf-labels li.is-now span { color: var(--green); font-weight: 600; }
 
 .hf-track { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr) minmax(0, 1.15fr); gap: 16px; margin-top: 16px; }
 .hf-track > article { padding: clamp(20px, 2.2vw, 28px); border-radius: 18px; background: var(--card); border: 1px solid var(--line); }
 .hf-eta { display: flex; flex-direction: column; background: var(--green) !important; border-color: var(--green) !important; color: #eef2ec; }
-.hf-eta .hf-card-k { color: #a9bcaa; }
+.hf-eta .hf-card-k { color: #bfcdbf; }
 .hf-eta-day { margin: 0; font: 500 30px/1.1 var(--serif); letter-spacing: -0.02em; }
 .hf-eta-win { margin: 8px 0 0; font: 500 44px/1 var(--font-geist-sans), sans-serif; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
 .hf-eta-bar { position: relative; height: 6px; margin: 24px 0 8px; border-radius: 3px; background: rgba(255, 255, 255, 0.16); }
 .hf-eta-bar i { position: absolute; inset: 0 auto 0 0; border-radius: 3px; background: #cfe0c9; }
 .hf-eta-bar b { position: absolute; top: 50%; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 5px rgba(207, 224, 201, 0.25); }
-.hf-eta-km { display: flex; justify-content: space-between; margin: 0 0 24px; font-size: 12.5px; color: #a9bcaa; font-variant-numeric: tabular-nums; }
+.hf-eta-km { display: flex; justify-content: space-between; margin: 0 0 24px; font-size: 12.5px; color: #bfcdbf; font-variant-numeric: tabular-nums; }
 .hf-eta-note { margin: auto 0 0; padding-top: 16px; border-top: 1px solid rgba(255, 255, 255, 0.14); font-size: 13.5px; line-height: 1.5; color: #cdd8cc; }
 .hf-courier-h { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
 .hf-courier-h span:last-child { display: grid; gap: 2px; }
@@ -282,7 +282,7 @@ html:has(.hf) body { background: #f4efe6; }
 .hf-who { justify-content: flex-start; }
 .hf-who i { display: grid; place-items: center; width: 34px; height: 32px; border-radius: 50%; background: #e3cbb8; color: #5a3a28; font: 600 16px var(--serif); }
 .hf-who span { display: grid; gap: 1px; }
-.hf-who small { color: #a9bcaa; }
+.hf-who small { color: #bfcdbf; }
 
 /* ── Footer ───────────────────────────────────────────────────────────── */
 .hf-foot { padding: clamp(48px, 6vw, 80px) var(--pad) 104px; background: var(--bg); font-size: 14px; color: var(--mut); }

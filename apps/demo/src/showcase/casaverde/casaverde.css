@@ -4,7 +4,7 @@ html:has(.cv) body { background: #fbf7ef; }
 
 .cv {
   --bg: #fbf7ef; --bg-2: #f3ebdd; --fg: #1d2b24; --mut: #696a5d; --line: #e7ddcb; --card: #fffdf8;
-  --accent: #1f5c4a; --accent-fg: #fff; --terra: #bd5536; --sepia: #3b2f25;
+  --accent: #1f5c4a; --accent-fg: #fff; --terra: #a84c30; --sepia: #3b2f25;
   --head: 'Didot', 'Bodoni 72', 'Bodoni MT', ui-serif, Georgia, serif;
   --radius: 18px;
 }

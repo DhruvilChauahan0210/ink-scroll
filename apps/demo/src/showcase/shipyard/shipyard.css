@@ -4,7 +4,7 @@
 html:has(.sy) body { background: #0a0a0c; }
 
 .sy {
-  --bg: #0a0a0c; --bg-2: #0f0f12; --fg: #ededf0; --mut: #8f8f9a; --dim: #66666f;
+  --bg: #0a0a0c; --bg-2: #0f0f12; --fg: #ededf0; --mut: #8f8f9a; --dim: #85858c;
   --line: #1f1f25; --line-2: #2a2a32; --card: #111114;
   --accent: #ffb224; --accent-fg: #1b1300;
   --ok: #3dd68c; --blue: #52a8ff; --violet: #c49bff; --red: #ff6369;
@@ -120,7 +120,7 @@ html:has(.sy) body { background: #0a0a0c; }
 .sy-lines { margin: 0; padding: 8px 0; list-style: none; font: 12.5px/1.8 var(--mono); }
 .sy-lines li { display: flex; gap: 16px; padding: 0 16px; white-space: nowrap; }
 .sy-ln { flex: none; width: 16px; text-align: right; color: #3a3a43; }
-.sy-lines time { flex: none; color: #4c4c56; }
+.sy-lines time { flex: none; color: #808087; }
 .sy-lt { min-width: 0; overflow: hidden; text-overflow: ellipsis; color: #b4b4bf; }
 .sy-lines b { font-weight: 500; }
 .sy-lines .is-cmd .sy-lt { color: var(--fg); }
@@ -270,7 +270,7 @@ html:has(.sy) body { background: #0a0a0c; }
 .y-k { color: #ffcf70; }
 .y-s { color: #8fe0b0; }
 .y-n, .y-b { color: var(--violet); }
-.y-c { color: #5c5c68; font-style: normal; }
+.y-c { color: #7b7b85; font-style: normal; }
 .sy-ed-foot { display: flex; justify-content: space-between; gap: 12px; padding: 8px 16px; border-top: 1px solid var(--line); background: #0f0f12; font: 11.5px var(--mono); color: var(--dim); }
 .sy-ed-foot span { display: inline-flex; align-items: center; gap: 8px; }
 
@@ -280,7 +280,7 @@ html:has(.sy) body { background: #0a0a0c; }
 .sy-pr-h { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 17px; }
 .sy-pr-h b { font-weight: 600; letter-spacing: -0.01em; }
 .sy-pr-n { color: var(--mut); }
-.sy-pr-state { padding: 4px 8px; border-radius: 4px; background: #1f9d5c; color: #fff; font-size: 12.5px; font-weight: 600; }
+.sy-pr-state { padding: 4px 8px; border-radius: 4px; background: #1a854e; color: #fff; font-size: 12.5px; font-weight: 600; }
 .sy-pr-sub { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 8px 0 20px; font-size: 13px; line-height: 1.6; color: var(--mut); }
 .sy-cmt { display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 12px; }
 .sy-cmt-av { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #ffc53d, #ff7a1a); }
@@ -301,7 +301,7 @@ html:has(.sy) body { background: #0a0a0c; }
 .sy-checks { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; margin-top: 16px; padding: 16px 16px; border-radius: 10px; border: 1px solid rgba(61, 214, 140, 0.28); background: rgba(61, 214, 140, 0.05); }
 .sy-checks p { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0; font-size: 13.5px; }
 .sy-checks p span { color: var(--mut); }
-.sy-merge { display: inline-flex; align-items: center; height: 32px; padding: 0 16px; border-radius: 7px; background: #1f9d5c; color: #fff; font-size: 13px; font-weight: 600; white-space: nowrap; }
+.sy-merge { display: inline-flex; align-items: center; height: 32px; padding: 0 16px; border-radius: 7px; background: #1a854e; color: #fff; font-size: 13px; font-weight: 600; white-space: nowrap; }
 
 .sy-browser { position: relative; overflow: hidden; border-radius: 14px; border: 1px solid var(--line-2); background: #0f0f12; box-shadow: 0 40px 80px -40px #000; }
 .sy-br-bar { display: flex; align-items: center; gap: 16px; height: 40px; padding: 0 16px; border-bottom: 1px solid var(--line); }
@@ -311,7 +311,7 @@ html:has(.sy) body { background: #0a0a0c; }
 .sy-store-nav b { margin-right: auto; font: 600 17px var(--font-syne), sans-serif; letter-spacing: 0; color: #1d1a16; }
 .sy-store-bag { padding: 4px 8px; border-radius: 8px; border: 1px solid #d9d0c1; color: #1d1a16; }
 .sy-store-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr); gap: 16px; align-items: center; margin-top: 16px; padding: 16px; border-radius: 10px; background: #e9e1d3; }
-.sy-store-hero p { margin: 0; font-size: 10.5px; font-weight: 600; letter-spacing: 0; color: #8a7f6e; }
+.sy-store-hero p { margin: 0; font-size: 10.5px; font-weight: 600; letter-spacing: 0; color: #696154; }
 .sy-store-hero b { display: block; margin: 8px 0 16px; font: 600 21px/1.15 var(--serif); }
 .sy-store-btn { display: inline-block; padding: 8px 12px; border-radius: 8px; background: #1d1a16; color: #f5f1ea; font-size: 11.5px; font-weight: 600; }
 .sy-ph { display: block; border-radius: 8px; }
@@ -331,7 +331,7 @@ html:has(.sy) body { background: #0a0a0c; }
 .sy-pin-2 { right: 18%; bottom: 112px; }
 .sy-toolbar { position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%); display: flex; align-items: center; gap: 12px; padding: 8px 8px 8px 8px; border-radius: 8px; border: 1px solid #2c2c35; background: #111114; color: var(--fg); font-size: 12.5px; white-space: nowrap; box-shadow: 0 14px 30px -10px rgba(0, 0, 0, 0.6); }
 .sy-toolbar > span:not(.sy-mark) { color: var(--mut); }
-.sy-toolbar > .sy-tb-s { padding: 4px 12px; border-radius: 8px; background: var(--fg); color: #0a0a0c; font-weight: 600; }
+.sy-toolbar > span.sy-tb-s { padding: 4px 12px; border-radius: 8px; background: var(--fg); color: #0a0a0c; font-weight: 600; }
 
 /* ── Bento ────────────────────────────────────────────────────────────── */
 .sy-bento { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }

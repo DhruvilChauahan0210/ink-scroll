@@ -27,7 +27,20 @@ All notable changes to `svg-scroll-draw` are documented here.
   2,145 spacing values on the 4px grid. Lumen's sunset sky (its scene) and the
   live-state loops in product mock-ups (recording dots, spinners, carets)
   stay. `scripts/test-showcase.mjs` opens every showcase site for errors and
-  colour contrast: no new failures (708 old ones before, 687 after).
+  colour contrast, and runs in CI next to test-a11y.
+- **Every showcase site passes WCAG AA colour contrast.** The 23 demo sites
+  were never checked (they are not in the sitemap) and carried 708 failing
+  elements. Fixed at the colour, not the element: 71 muted text colours moved
+  to the nearest shade of the same hue that clears 4.5:1 on every background
+  it sits on (Ledgerline's slate on near-black, Statusline's two greys on
+  white, Northbeam's, Relay's and Shipyard's greys among them); eight accent
+  buttons with white text darkened until the white clears it (Parcelry's and
+  Plugboard's orange, Relay's red, Greenline's, Halyard's and Linework's
+  rust, Shipyard's and Stride's green), Tessera's amber avatar given dark
+  text instead; inactive states dimmed by opacity raised to the lowest value
+  that reads (Folio 0.73, Stride 0.8, Aural and Halyard 0.9); Shipyard's
+  Share pill had grey text on a light pill because a more specific rule beat
+  its own.
   `scripts/find-lowercase-labels.mjs` lists labels still written in
   lowercase, page by page. Checked: typecheck, lint, test-blocks, test-seo,
   test-a11y (66 pages, 0 violations), test-recipes, Vue and Svelte blocks.

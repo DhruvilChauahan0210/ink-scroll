@@ -4,9 +4,9 @@
 html:has(.fo) body { background: #ffffff; }
 
 .fo {
-  --bg: #ffffff; --bg-2: #f6f5f1; --fg: #17171a; --mut: #67676f; --line: #e8e7e2; --card: #fff;
+  --bg: #ffffff; --bg-2: #f6f5f1; --fg: #17171a; --mut: #5d5d64; --line: #e8e7e2; --card: #fff;
   --accent: #17171a; --accent-fg: #fff;
-  --hi: #ffd84d; --hi-soft: #fff3bf; --link: #b4540a; --ok: #1d8a5a;
+  --hi: #ffd84d; --hi-soft: #fff3bf; --link: #b4540a; --ok: #1c8456;
   --serif: ui-serif, 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
   --mono: var(--font-geist-mono), ui-monospace, monospace;
   --radius: 14px;
@@ -93,7 +93,7 @@ html:has(.fo) body { background: #ffffff; }
 .fo-pop .on { background: var(--hi-soft); font-weight: 600; }
 .fo-pop .fo-pop-new { color: var(--mut); }
 .fo-viz-focus { display: grid; align-content: center; gap: 8px; font: 13.5px/1.4 var(--serif); }
-.fo-viz-focus .dim { opacity: 0.22; }
+.fo-viz-focus .dim { opacity: 0.73; }
 .fo-viz-focus kbd { position: absolute; bottom: 12px; right: 12px; }
 .fo .fo-viz-focus p:last-of-type { padding-right: 60px; }
 .fo-viz-search { display: grid; align-content: start; gap: 8px; }

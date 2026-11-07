@@ -8,7 +8,7 @@ import { ScrollDraw } from 'svg-scroll-draw/react';
 export const Mark = ({ size = 26 }: { size?: number }) => (
   <svg className="pb-mark" viewBox="0 0 32 32" width={size} height={size} aria-hidden="true">
     <rect width="32" height="32" rx="9" fill="#16141c" />
-    <rect x="7" y="7" width="18" height="18" rx="5.5" fill="#ff5a36" />
+    <rect x="7" y="7" width="18" height="18" rx="5.5" fill="#c4452a" />
     <rect x="11.6" y="11" width="2.8" height="7" rx="1.4" fill="#fff" />
     <rect x="17.6" y="11" width="2.8" height="7" rx="1.4" fill="#fff" />
     <circle cx="16" cy="21.4" r="1.5" fill="#fff" />
@@ -40,7 +40,7 @@ export type GlyphKey = keyof typeof GLYPH;
 export const APPCOLOR: Record<GlyphKey, string> = {
   paygrid: '#12a150', quillmark: '#2445d6', ledgerline: '#5146e5', inkbox: '#d6246e', calla: '#7c3aed', formwell: '#0891b2',
   sheetly: '#13804a', parcelry: '#ea580c', hearth: '#3b6b50', relay: '#0b84d8', tessera: '#1f6fd0', mint: '#0c7a54',
-  ai: '#16141c', filter: '#6b6876', paths: '#ff5a36', webhook: '#c2410c', clock: '#6b6876',
+  ai: '#16141c', filter: '#6b6876', paths: '#c4452a', webhook: '#c2410c', clock: '#6b6876',
 };
 
 export function AppIcon({ g, size = 40, className = '' }: { g: GlyphKey; size?: number; className?: string }) {

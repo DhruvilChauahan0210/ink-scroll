@@ -180,7 +180,7 @@ at all.
 - [x] Blocks in React, Vue and Svelte: sentence-case eyebrows, weight 500, concrete default copy; `public/r` regenerated
 - [x] Showcase, every pass: "New" pills (10), gradient headlines (4), unverifiable "Trusted by" counts (3), coloured glows (19), washes (58), hue gradients (4), glass (19), weights (209), italics (60), headline periods (144), pills (98), spacing (2,145), caps and tracking
 - [x] `scripts/test-showcase.mjs`: every showcase site loads with no errors; colour contrast no worse anywhere (708 → 687 failing nodes)
-- [ ] Showcase colour contrast: 687 failing nodes from muted greys that were never checked; fix, then put test-showcase in CI
+- [x] Showcase colour contrast: 708 failing elements fixed at the colour (71 text colours, 8 accent buttons, 4 opacity dims, one specificity bug); test-showcase in CI, 0 problems
 - [x] test-blocks, test-seo, test-a11y (0 violations), test-recipes, Vue and Svelte blocks pass
 - [ ] Look at the Vercel preview, then merge into `feat/homepage-redesign` and `main`
 

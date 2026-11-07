@@ -42,7 +42,7 @@ const TRAIL: { at: string; who: string; c: string; i: string; what: string; meta
   { at: '10:02:41', who: 'Ada Park', i: 'AP', c: ADA, ic: 'pen', what: 'Signed page 3 and initialled pages 1 and 2', meta: '3 fields · 1 min 48 s on the signing page' },
   { at: '10:02:43', who: 'Quillmark', i: 'Q', c: '#14213d', ic: 'mail', what: 'Emailed Tomás Reis: it’s his turn to sign' },
   { at: '10:14:57', who: 'Tomás Reis', i: 'TR', c: TOMAS, ic: 'pen', what: 'Countersigned as landlord', meta: 'Mac · Chrome · Porto, PT · 94.63.188.40' },
-  { at: '10:15:22', who: 'Quillmark', i: 'Q', c: '#1f8a5b', ic: 'lock', what: 'Sealed the PDF and sent copies to all three', meta: 'SHA-256 1f3a…9c0e · RFC 3161 timestamp' },
+  { at: '10:15:22', who: 'Quillmark', i: 'Q', c: '#1b784f', ic: 'lock', what: 'Sealed the PDF and sent copies to all three', meta: 'SHA-256 1f3a…9c0e · RFC 3161 timestamp' },
 ];
 
 const CUSTOMERS = ['Harbour Lettings', 'Studio Ortega', 'Fenwick & Bray', 'Brightwell', 'Atlas Rooms', 'Norte Notários'];
@@ -86,12 +86,12 @@ const TEMPLATES: { n: string; tag: string; meta: string; used: string; title: st
 ];
 
 const INTEGRATIONS = [
-  ['GD', 'Google Drive', 'File every sealed PDF in the client’s folder', '#1f8a5b'],
+  ['GD', 'Google Drive', 'File every sealed PDF in the client’s folder', '#1b784f'],
   ['OD', 'OneDrive', 'Send from Word without leaving it', '#2445d6'],
   ['SL', 'Slack', 'Hear the moment a contract is signed', '#7a3fb0'],
-  ['HS', 'HubSpot', 'Send from a deal, close it on signature', '#c4500c'],
+  ['HS', 'HubSpot', 'Send from a deal, close it on signature', '#b0480b'],
   ['XR', 'Xero', 'Raise the first invoice when the SOW is signed', '#0e7490'],
-  ['ZP', 'Zapier', 'Connect 6,000 other apps, no code', '#b45309'],
+  ['ZP', 'Zapier', 'Connect 6,000 other apps, no code', '#a94e08'],
 ];
 
 const TIERS = [

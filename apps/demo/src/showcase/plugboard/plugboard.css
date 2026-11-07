@@ -6,7 +6,7 @@ html:has(.pb) body { background: #faf9f7; }
 
 .pb {
   --bg: #faf9f7; --bg-2: #f3f1ed; --fg: #16141c; --mut: #67646f; --line: #e6e3de; --card: #fff;
-  --accent: #ff5a36; --accent-fg: #fff; --accent-soft: #fff0ea;
+  --accent: #c4452a; --accent-fg: #fff; --accent-soft: #fff0ea;
   --ok: #16a34a; --warn: #d97706;
   --mono: var(--font-geist-mono), ui-monospace, monospace;
   --radius: 14px;
@@ -170,7 +170,7 @@ html:has(.pb) body { background: #faf9f7; }
 .pb-dir { border-top: 1px solid var(--line); background: #fff; }
 .pb-dir-ui { padding: clamp(14px, 2vw, 22px); border-radius: 22px; background: var(--bg); box-shadow: inset 0 0 0 1px var(--line); }
 .pb-dir-top { display: flex; gap: 8px; }
-.pb-search { display: flex; flex: 1; align-items: center; gap: 8px; min-width: 0; height: 48px; padding: 0 12px 0 16px; border-radius: 12px; background: #fff; box-shadow: inset 0 0 0 1px var(--line), 0 1px 2px rgba(22, 20, 28, 0.04); font-size: 15px; color: #8d8994; }
+.pb-search { display: flex; flex: 1; align-items: center; gap: 8px; min-width: 0; height: 48px; padding: 0 12px 0 16px; border-radius: 12px; background: #fff; box-shadow: inset 0 0 0 1px var(--line), 0 1px 2px rgba(22, 20, 28, 0.04); font-size: 15px; color: #76737c; }
 .pb-search svg { flex: none; width: 18px; height: 16px; fill: none; stroke: var(--fg); stroke-width: 1.8; stroke-linecap: round; }
 .pb-search kbd { margin-left: auto; }
 .pb-sort { display: flex; align-items: center; gap: 8px; height: 48px; padding: 0 16px; border-radius: 12px; background: #fff; box-shadow: inset 0 0 0 1px var(--line); font-size: 14px; font-weight: 500; white-space: nowrap; }

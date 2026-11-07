@@ -15,6 +15,7 @@
     "test:blocks": "node scripts/test-blocks.mjs",
     "test:a11y": "node scripts/test-a11y.mjs",
     "test:seo": "node scripts/test-seo.mjs",
+    "test:showcase": "node scripts/test-showcase.mjs",
     "test:vue-blocks": "node scripts/test-vue-blocks.mjs",
     "test:svelte-blocks": "node scripts/test-svelte-blocks.mjs"
   },

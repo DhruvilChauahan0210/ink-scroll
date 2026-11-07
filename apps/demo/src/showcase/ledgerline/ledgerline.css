@@ -7,7 +7,7 @@ html:has(.ll) body { background: #0b0d12; }
 
 .ll {
   --bg: #0b0d12; --bg-2: #0f1218; --card: #12151d; --card-2: #181c26;
-  --line: #212634; --line-2: #2c3243; --fg: #e8eaf1; --mut: #8b91a3; --dim: #5f6578;
+  --line: #212634; --line-2: #2c3243; --fg: #e8eaf1; --mut: #8b91a3; --dim: #7c8190;
   --ind: #7c8cff; --ind-2: #a3aeff; --mint: #34d399; --amber: #f5b454; --rose: #fb7185;
   --mv-n: #7c8cff; --mv-e: #34d399; --mv-c: #f5b454; --mv-x: #fb7185;
   --mono: var(--font-geist-mono), ui-monospace, monospace;

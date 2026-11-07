@@ -6,7 +6,7 @@ html:has(.gl) body { background: #f5f3ea; }
 .gl {
   --bg: #f5f3ea; --bg-2: #ecebdf; --fg: #13261b; --mut: #5b685d; --line: #dbd9c9; --card: #fffdf7;
   --accent: #1f5a3a; --accent-fg: #fff; --radius: 14px;
-  --forest: #173d28; --deep: #102b1c; --leaf: #6fae6a; --mint: #d9f0c8; --clay: #b8693a;
+  --forest: #173d28; --deep: #102b1c; --leaf: #6fae6a; --mint: #d9f0c8; --clay: #a96135;
   --head: ui-serif, 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
   --mono: var(--font-geist-mono), ui-monospace, monospace;
   overflow-x: clip;
@@ -140,7 +140,7 @@ html:has(.gl) body { background: #f5f3ea; }
 .gl-deltas div:nth-child(even) { padding-left: 20px; border-left: 1px solid var(--line); }
 .gl-deltas dt { font-size: 12.5px; color: var(--mut); }
 .gl-deltas dd { display: flex; align-items: baseline; gap: 8px; margin: 4px 0 0; font: 500 32px/1 var(--head); letter-spacing: -0.02em; color: var(--accent); }
-.gl-deltas s { font-size: 17px; color: #9a8a74; text-decoration-color: rgba(154, 138, 116, 0.6); }
+.gl-deltas s { font-size: 17px; color: #726656; text-decoration-color: rgba(154, 138, 116, 0.6); }
 .gl-deltas s::after { content: ' →'; text-decoration: none; display: inline-block; margin-left: 8px; color: #b5ad9b; }
 .gl-ba { margin: 0; }
 .gl-ba-frame { position: relative; overflow: hidden; aspect-ratio: 2.25 / 1; border-radius: 18px; background: #e7d5b1; box-shadow: 0 30px 60px -44px rgba(19, 38, 27, 0.6); }
@@ -154,7 +154,7 @@ html:has(.gl) body { background: #f5f3ea; }
 .gl-ba-handle i { position: absolute; top: 50%; left: 50%; display: grid; place-items: center; width: 46px; height: 48px; margin: -23px 0 0 -23px; border-radius: 50%; background: #fff; color: var(--forest); font: 600 15px var(--font-geist-sans), sans-serif; font-style: normal; letter-spacing: 0; box-shadow: 0 8px 22px -6px rgba(19, 38, 27, 0.45); }
 .gl-ba-frame input { position: absolute; inset: 0; z-index: 3; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: ew-resize; }
 .gl-ba figcaption { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; margin-top: 16px; font-size: 13.5px; color: var(--mut); }
-.gl-ba-cred { font: 12px var(--mono); color: #8c9486; }
+.gl-ba-cred { font: 12px var(--mono); color: #63695f; }
 
 /* Species */
 .gl-species { display: grid; grid-template-columns: minmax(0, 0.78fr) minmax(0, 1.5fr); gap: clamp(32px, 5vw, 80px); align-items: start; }
@@ -249,7 +249,7 @@ html:has(.gl) body { background: #f5f3ea; }
 .gl-check i { flex: none; width: 18px; height: 16px; border-radius: 5px; box-shadow: inset 0 0 0 1.5px #b9bdac; background: #fff; }
 .gl-give-btn { display: flex; align-items: center; justify-content: center; height: 56px; margin-top: 16px; border-radius: 14px; background: var(--clay); color: #fff; font-size: 16.5px; font-weight: 600; }
 .gl-give-meta { display: grid; gap: 4px; margin: 16px 0 0; font-size: 12.5px; color: var(--mut); text-align: center; }
-.gl-give-meta span { color: #8c9486; }
+.gl-give-meta span { color: #63695f; }
 
 /* Partners */
 .gl-partners { padding: clamp(48px, 6vw, 72px) var(--pad) clamp(56px, 7vw, 88px); text-align: center; }
