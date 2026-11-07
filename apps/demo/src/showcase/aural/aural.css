@@ -7,13 +7,13 @@ html:has(.au) body { background: #0a0a0a; }
   --accent: #d6c19c; --accent-fg: #17130c; --radius: 18px;
 }
 .au .sk-brand { font-size: 15px; font-weight: 500; letter-spacing: 0; }
-.au .sk-btn { border-radius: 999px; }
+.au .sk-btn { border-radius: 8px; }
 .au .sk-btn-ghost { border-color: #34312d; }
 .au .sk-kick { font-weight: 500; letter-spacing: 0; }
-.au .sk-h1 { font-weight: 500; letter-spacing: -0.045em; }
-.au .sk-h2 { font-weight: 500; letter-spacing: -0.035em; }
+.au .sk-h1 { font-weight: 500; letter-spacing: -0.03em; }
+.au .sk-h2 { font-weight: 500; letter-spacing: -0.03em; }
 .au .sk-hero { padding-bottom: clamp(20px, 3vw, 48px); }
-.au-price { display: block; margin-top: 18px; font-size: 22px; font-weight: 500; letter-spacing: -0.01em; color: var(--fg); }
+.au-price { display: block; margin-top: 16px; font-size: 22px; font-weight: 500; letter-spacing: -0.01em; color: var(--fg); }
 
 /* A held frame of the film */
 .au-still { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; background: #0a0a0a; }
@@ -32,9 +32,9 @@ html:has(.au) body { background: #0a0a0a; }
 
 .au-side h2 { margin: 0 0 28px; font: 500 clamp(24px, 2.2vw, 32px)/1.12 var(--head); letter-spacing: -0.03em; text-wrap: balance; }
 .au-parts { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
-.au-parts li { display: grid; grid-template-columns: 24px minmax(0, 1fr); column-gap: 12px; padding: 9px 0; border-top: 1px solid var(--line); opacity: 0.32; transition: opacity 0.35s; }
+.au-parts li { display: grid; grid-template-columns: 24px minmax(0, 1fr); column-gap: 12px; padding: 8px 0; border-top: 1px solid var(--line); opacity: 0.32; transition: opacity 0.35s; }
 .au-parts li.is-on { opacity: 1; }
-.au-parts i, .au-pin { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; font: 600 11.5px/1 var(--body); font-style: normal; font-variant-numeric: tabular-nums; }
+.au-parts i, .au-pin { display: grid; place-items: center; width: 22px; height: 24px; border-radius: 50%; font: 600 11.5px/1 var(--body); font-style: normal; font-variant-numeric: tabular-nums; }
 .au-parts i { grid-row: span 2; margin-top: 1px; border: 1px solid #3a3631; color: var(--mut); transition: background-color 0.35s, color 0.35s, border-color 0.35s; }
 .au-parts li.is-on i { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
 .au-parts b { font-size: 14.5px; font-weight: 600; }
@@ -60,7 +60,7 @@ html:has(.au) body { background: #0a0a0a; }
 }
 .au-pin.is-on { opacity: 1; transform: none; }
 
-.au-rail { position: relative; height: 1px; margin: 26px 0 30px; background: var(--line); }
+.au-rail { position: relative; height: 1px; margin: 24px 0 32px; background: var(--line); }
 .au-rail-fill { position: absolute; inset: 0; background: var(--accent); transform-origin: left; transform: scaleX(var(--p)); }
 .au-rail span { position: absolute; top: 10px; font-size: 11px; font-weight: 500; letter-spacing: 0; white-space: nowrap; color: var(--mut); }
 
@@ -71,23 +71,23 @@ html:has(.au) body { background: #0a0a0a; }
 
 /* ── Specs ─────────────────────────────────────────────────────────────── */
 .au-specs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: var(--line); }
-.au-spec { display: grid; align-content: start; gap: 10px; padding: clamp(22px, 2.6vw, 36px); background: var(--bg); }
+.au-spec { display: grid; align-content: start; gap: 8px; padding: clamp(22px, 2.6vw, 36px); background: var(--bg); }
 .au-spec span { font-size: 12.5px; font-weight: 500; letter-spacing: 0; color: var(--mut); }
-.au-spec b { font: 400 clamp(36px, 3.6vw, 52px)/1 var(--head); letter-spacing: -0.04em; color: var(--accent); }
+.au-spec b { font: 400 clamp(36px, 3.6vw, 52px)/1 var(--head); letter-spacing: -0.03em; color: var(--accent); }
 .au-spec p { margin: 4px 0 0; max-width: 34ch; font-size: 15px; line-height: 1.6; color: var(--mut); }
 
 /* ── Colourways ────────────────────────────────────────────────────────── */
 .au .sk-alt { background: #0a0a0a; }
 .au-colours { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: clamp(24px, 4vw, 64px); align-items: center; }
-.au-swatches { display: grid; gap: 10px; }
+.au-swatches { display: grid; gap: 8px; }
 .au-swatches button {
-  display: grid; grid-template-columns: 36px minmax(0, 1fr); column-gap: 14px; align-items: center;
-  padding: 14px 16px; border: 1px solid var(--line); border-radius: 14px; background: transparent;
+  display: grid; grid-template-columns: 36px minmax(0, 1fr); column-gap: 16px; align-items: center;
+  padding: 16px 16px; border: 1px solid var(--line); border-radius: 14px; background: transparent;
   color: var(--fg); font: inherit; text-align: left; cursor: pointer; transition: border-color 0.25s, background-color 0.25s;
 }
 .au-swatches button:hover { border-color: #3a3631; }
 .au-swatches button.is-on { border-color: var(--accent); background: #13120f; }
-.au-swatches i, .au-buy-pick i { width: 30px; height: 30px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--sw) 55%, #fff), var(--sw) 55%, color-mix(in srgb, var(--sw) 70%, #000)); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12); }
+.au-swatches i, .au-buy-pick i { width: 30px; height: 32px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--sw) 55%, #fff), var(--sw) 55%, color-mix(in srgb, var(--sw) 70%, #000)); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12); }
 .au-swatches i { grid-row: span 2; }
 .au-swatches b { font-size: 15.5px; font-weight: 600; }
 .au-swatches span { font-size: 13.5px; color: var(--mut); }
@@ -96,25 +96,25 @@ html:has(.au) body { background: #0a0a0a; }
 .au-buy { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 16px; }
 .au-buy-box, .au-box { padding: clamp(24px, 3vw, 40px); border: 1px solid var(--line); border-radius: var(--radius); background: var(--card); }
 .au-buy-price { margin: 0; font-size: 15px; color: var(--mut); }
-.au-buy-price b { display: block; margin-bottom: 6px; font: 500 clamp(44px, 4.4vw, 60px)/1 var(--head); letter-spacing: -0.04em; color: var(--fg); }
-.au-buy-pick { display: flex; align-items: center; gap: 12px; margin: 22px 0 24px; font-size: 15px; }
-.au-buy-pick i { flex: none; width: 22px; height: 22px; }
+.au-buy-price b { display: block; margin-bottom: 8px; font: 500 clamp(44px, 4.4vw, 60px)/1 var(--head); letter-spacing: -0.03em; color: var(--fg); }
+.au-buy-pick { display: flex; align-items: center; gap: 12px; margin: 24px 0 24px; font-size: 15px; }
+.au-buy-pick i { flex: none; width: 22px; height: 24px; }
 .au-buy-box .sk-btn { width: 100%; max-width: 360px; }
-.au-buy ul { display: grid; gap: 10px; margin: 22px 0 0; padding: 0; list-style: none; font-size: 14.5px; color: var(--mut); }
-.au-buy-box li::before { content: '—'; margin-right: 10px; color: var(--accent); }
+.au-buy ul { display: grid; gap: 8px; margin: 24px 0 0; padding: 0; list-style: none; font-size: 14.5px; color: var(--mut); }
+.au-buy-box li::before { content: '—'; margin-right: 8px; color: var(--accent); }
 .au-box h3 { margin: 0; font: 500 20px var(--head); }
-.au-box li { padding-bottom: 10px; border-bottom: 1px solid var(--line); color: var(--fg); }
+.au-box li { padding-bottom: 8px; border-bottom: 1px solid var(--line); color: var(--fg); }
 .au-box li:last-child { border-bottom: 0; }
 
 @media (max-width: 900px) {
   /* one column: the heading, the film (a little closer, the sides cropped), then the newest part */
-  .au-stage { grid-template-columns: minmax(0, 1fr); align-content: center; gap: 14px; padding: 76px 0 70px; }
+  .au-stage { grid-template-columns: minmax(0, 1fr); align-content: center; gap: 16px; padding: 76px 0 72px; }
   .au-side { display: contents; }
   .au-side .sk-kick { margin: 0 var(--pad) -6px; }
   .au-side h2 { margin: 0 var(--pad); font-size: 24px; }
   .au-frame { order: 1; width: 130%; margin-left: -15%; }
   .au-parts { order: 2; display: grid; margin: 0 var(--pad); min-height: 64px; }
-  .au-rail { order: 3; margin: 2px var(--pad) 18px; }
+  .au-rail { order: 3; margin: 2px var(--pad) 16px; }
   .au-parts li, .au-parts li.is-on { grid-area: 1 / 1; align-content: start; border-top: 0; padding: 0; opacity: 0; transform: translateY(6px); transition: opacity 0.3s, transform 0.3s; }
   .au-parts li.is-new { opacity: 1; transform: none; }
   .no-film .au-parts li { position: static; grid-area: auto; opacity: 1; transform: none; }

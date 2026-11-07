@@ -148,7 +148,7 @@ export function AteliernordSite() {
           <p className="an-label">(01) Practice</p>
           <h2 className="an-state">
             <span className="an-l1">We design rooms</span>
-            <span className="an-l2">people stay in.</span>
+            <span className="an-l2">people stay in</span>
           </h2>
           <div className="an-state-foot">
             <div className="an-state-l">

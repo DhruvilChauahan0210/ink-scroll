@@ -236,7 +236,7 @@ export function HearthSite() {
               <Check />
               <span><b>Order confirmed</b><small>#HF-20481 · placed Mon 3 Nov</small></span>
             </div>
-            <h1 className="hf-h1">Thank you, Ada.</h1>
+            <h1 className="hf-h1">Thank you, Ada</h1>
             <p className="hf-lede">Your parcel left our Porto studio on Tuesday evening and is on the A1 to Lisbon with CTT. It reaches Rua das Flores on <b>Thursday 6 November, between 10:00 and 12:00</b>.</p>
             <div className="hf-ctas">
               <a className="hf-btn" href="#journey">Track your parcel</a>
@@ -261,7 +261,7 @@ export function HearthSite() {
             <header className="hf-head">
               <div>
                 <p className="hf-kick"><span className="hf-live" />Live · updated 2 min ago</p>
-                <h2 className="hf-h2" id="hf-journey-h">On the road to Lisbon.</h2>
+                <h2 className="hf-h2" id="hf-journey-h">On the road to Lisbon</h2>
               </div>
               <p className="hf-head-lede">Packed and collected on Tuesday, it left the CTT hub in Maia at 07:15 this morning. Next stop: the Lisbon sorting centre, then a van to your door.</p>
             </header>
@@ -303,7 +303,7 @@ export function HearthSite() {
         </section>
 
         {/* ── The order: each product's drawing inks in as its card arrives ── */}
-        <Sec id="items" kick="In your parcel" title="Three things, four pieces." lede="Each one made in small batches in the north of Portugal, and drawn here to size so you know where it’ll go before it arrives.">
+        <Sec id="items" kick="In your parcel" title="Three things, four pieces" lede="Each one made in small batches in the north of Portugal, and drawn here to size so you know where it’ll go before it arrives.">
           <div className="hf-grid">
             {ITEMS.map((it) => (
               <article key={it.name} className={`hf-card tone-${it.tone}`}>
@@ -335,7 +335,7 @@ export function HearthSite() {
         </Sec>
 
         {/* ── Order summary and payment ── */}
-        <Sec id="summary" kick="Order summary" title="€148.00, all in." tone="alt">
+        <Sec id="summary" kick="Order summary" title="€148.00, all in" tone="alt">
           <div className="hf-sum">
             <div className="hf-receipt">
               <p className="hf-receipt-h"><b>Order #HF-20481</b><span>Mon 3 Nov 2026, 14:02</span></p>
@@ -380,7 +380,7 @@ export function HearthSite() {
         </Sec>
 
         {/* ── Delivery details with a map snippet ── */}
-        <Sec id="delivery" kick="Delivery" title="Rua das Flores, Thursday morning." lede="Change any of this until 20:00 tonight — after that the van’s loaded.">
+        <Sec id="delivery" kick="Delivery" title="Rua das Flores, Thursday morning" lede="Change any of this until 20:00 tonight — after that the van’s loaded.">
           <div className="hf-deliv">
             <div className="hf-map-card">
               <MapSnippet />
@@ -411,7 +411,7 @@ export function HearthSite() {
         </Sec>
 
         {/* ── While you wait: care ── */}
-        <Sec id="care" kick="While you wait" title="How to look after them." lede="Three short notes from the people who made your things. They’re in the box too, printed on seed paper." tone="alt">
+        <Sec id="care" kick="While you wait" title="How to look after them" lede="Three short notes from the people who made your things. They’re in the box too, printed on seed paper." tone="alt">
           <div className="hf-care">
             <article>
               <div className="hf-care-viz hf-care-mug" aria-hidden="true">
@@ -455,7 +455,7 @@ export function HearthSite() {
         </Sec>
 
         {/* ── Recommended ── */}
-        <Sec id="recs" kick="Goes with what you bought" title="Picked for your table." aside={<a className="hf-link hf-head-link" href="#recs">Shop all kitchen →</a>}>
+        <Sec id="recs" kick="Goes with what you bought" title="Picked for your table" aside={<a className="hf-link hf-head-link" href="#recs">Shop all kitchen →</a>}>
           <div className="hf-recs">
             {RECS.map((r) => (
               <article key={r.n + r.v} className="hf-rec">

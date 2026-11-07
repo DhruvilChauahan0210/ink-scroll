@@ -201,13 +201,13 @@ export function FolioSite() {
       <Hero
         center
         kicker="Folio 4.0 is out"
-        title={<>Folio 4. Notes that <span className="fo-hl">find each other.</span></>}
+        title={<>Folio 4, notes that <span className="fo-hl">find each other</span></>}
         lede="Our biggest update since 1.0. Link any note to any other and see what links back, write in a quieter Focus mode, and search inside PDFs, scans and your own handwriting. Free for everyone on Folio."
         actions={['Download Folio 4', 'Read the release notes']}
         art={<Editor />}
       />
 
-      <Sec kicker="What’s new" title="Six big things in Folio 4." lede="A year of work, shaped by 2,400 replies to last spring’s survey. Here is what changes the moment you update.">
+      <Sec kicker="What’s new" title="Six big things in Folio 4" lede="A year of work, shaped by 2,400 replies to last spring’s survey. Here is what changes the moment you update.">
         <div className="sk-grid3 fo-features">
           {FEATURES.map((f) => (
             <article key={f.t} className="sk-card fo-feature">
@@ -223,7 +223,7 @@ export function FolioSite() {
         <div className="fo-sync">
           <div className="fo-sync-copy">
             <p className="sk-kick">Rebuilt sync</p>
-            <h2 className="sk-h2">Two devices, one note, no conflicted copies.</h2>
+            <h2 className="sk-h2">Two devices, one note, no conflicted copies</h2>
             <p className="sk-lede">Edit the same note on a laptop on the plane and an iPad on the train. When they reconnect, Folio 4 merges the changes paragraph by paragraph instead of saving a second copy — and it’s end-to-end encrypted.</p>
           </div>
           <ol className="fo-steps">
@@ -267,7 +267,7 @@ export function FolioSite() {
       <Sec tone="ink" center>
         <div className="fo-cta">
           <span className="fo-icon"><Mark size={72} /></span>
-          <h2 className="sk-h2">Folio 4 is a free update.</h2>
+          <h2 className="sk-h2">Folio 4 is a free update</h2>
           <p className="sk-lede">Already on Folio? It updates itself tonight. New here? Everything on this page is in the free plan, up to 1,000 notes.</p>
           <div className="sk-ctas">
             <a className="sk-btn" href="#top">Download for Mac</a>

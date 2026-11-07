@@ -43,7 +43,7 @@ export function Movements() {
     <section className="ll-sec ll-split" id="movements">
       <div className="ll-copy">
         <p className="ll-kick">MRR movements</p>
-        <h2 className="ll-h2">Know why MRR moved, not just that it did.</h2>
+        <h2 className="ll-h2">Know why MRR moved, not just that it did</h2>
         <p className="ll-body">Every change to every subscription is sorted into new, expansion, contraction or churn the moment it lands in billing — proration, refunds, pauses and plan swaps included — so the bridge from opening to closing MRR always adds up.</p>
         <ul className="ll-points">
           <li><b>Click any bar</b><span>to see the customers and invoices inside it.</span></li>
@@ -117,7 +117,7 @@ export function Cohorts() {
     <section className="ll-sec" id="cohorts">
       <div className="ll-head">
         <p className="ll-kick">Cohorts</p>
-        <h2 className="ll-h2">See which months your churn really comes from.</h2>
+        <h2 className="ll-h2">See which months your churn really comes from</h2>
         <p className="ll-body">Every signup month becomes a cohort you can follow for a year. Ledgerline lines them up, so a bad onboarding month stands out long before it shows in MRR.</p>
       </div>
 
@@ -202,7 +202,7 @@ export function Forecast() {
     <section className="ll-sec" id="forecast">
       <div className="ll-head">
         <p className="ll-kick">Forecasts</p>
-        <h2 className="ll-h2">A forecast you can put in front of your board.</h2>
+        <h2 className="ll-h2">A forecast you can put in front of your board</h2>
         <p className="ll-body">Six months ahead from your own expansion, contraction and churn, with an honest interval that widens the further out you look. Change an assumption and every chart that depends on it follows.</p>
       </div>
 
@@ -289,7 +289,7 @@ export function Glossary() {
     <section className="ll-sec ll-gloss" id="metrics">
       <div className="ll-head ll-center">
         <p className="ll-kick">Metric glossary</p>
-        <h2 className="ll-h2">Forty metrics, one definition each.</h2>
+        <h2 className="ll-h2">Forty metrics, one definition each</h2>
         <p className="ll-body">Every number in Ledgerline opens to its formula and the invoices behind it. These are the ones a board asks about — shown here for Lumenstack in December.</p>
       </div>
 

@@ -153,7 +153,7 @@ export function GreenlineSite() {
         <section className="gl-hero">
           <div className="gl-hero-copy">
             <p className="gl-kick"><span>Impact report 2026</span>Published 28 October</p>
-            <h1 className="gl-h1">A year of putting forests back.</h1>
+            <h1 className="gl-h1">A year of putting forests back</h1>
             <p className="gl-lede">With 48,000 supporters we restored native forest and mangrove in Kenya, Brazil, Madagascar and Portugal. Here is every number we’re proud of, the two we aren’t, and how each one was checked.</p>
             <div className="gl-ctas">
               <a className="gl-btn" href="#figures">Read the report</a>
@@ -209,7 +209,7 @@ export function GreenlineSite() {
           <div className="gl-sec-h is-wide">
             <div>
               <p className="gl-kick">Where we work</p>
-              <h2 className="gl-h2">Four landscapes. One way of doing it.</h2>
+              <h2 className="gl-h2">Four landscapes, one way of doing it</h2>
             </div>
             <p className="gl-lede">We only plant where a local organisation asked us to, on land its community controls, and we stay for at least ten years. Every plot is mapped, numbered and surveyed.</p>
           </div>
@@ -250,7 +250,7 @@ export function GreenlineSite() {
           <div className="gl-split">
             <div className="gl-sec-h">
               <p className="gl-kick">One plot, up close</p>
-              <h2 className="gl-h2">What 43 months does to a hillside.</h2>
+              <h2 className="gl-h2">What 43 months does to a hillside</h2>
               <p className="gl-lede">K-14 was grazed bare and burned for charcoal. We fenced it with the village, planted 11,820 seedlings in the 2024 long rains and weeded it by hand for three seasons.</p>
             </div>
             <dl className="gl-deltas">
@@ -268,7 +268,7 @@ export function GreenlineSite() {
           <div className="gl-species">
             <div className="gl-sec-h">
               <p className="gl-kick">What we planted</p>
-              <h2 className="gl-h2">312 native species. No monocultures, no eucalyptus.</h2>
+              <h2 className="gl-h2">312 native species, no monocultures, no eucalyptus</h2>
               <p className="gl-lede">Each site’s mix is chosen with local botanists: trees that fix nitrogen go in first, canopy and fruit trees follow. These eight made up 60% of everything planted this year.</p>
             </div>
             <div className="gl-table" role="table" aria-label="Most-planted species in 2026">
@@ -293,7 +293,7 @@ export function GreenlineSite() {
           </figure>
           <div className="gl-story-copy">
             <p className="gl-kick">Field story · Kasigau, Kenya</p>
-            <h2 className="gl-h2">The nursery that runs on seed from the hill.</h2>
+            <h2 className="gl-h2">The nursery that runs on seed from the hill</h2>
             <p className="gl-byline">Words by Tom Okafor · 6 min read</p>
             <p>Every seedling planted on the Kasigau slopes started as a seed picked up within twenty kilometres of the nursery. It’s slower than buying stock in, and it is the main reason two-year survival here climbed from 64% to 88%: trees grown from local seed already know the drought.</p>
             <blockquote>
@@ -310,7 +310,7 @@ export function GreenlineSite() {
           <div className="gl-money">
             <div>
               <p className="gl-kick">Where your money went</p>
-              <h2 className="gl-h2">96 cents of every euro reached the ground.</h2>
+              <h2 className="gl-h2">96 cents of every euro reached the ground</h2>
               <p className="gl-lede">We spent €12.4m in 2026. This is all of it, by what it paid for.</p>
               <div className="gl-spend">
                 {SPEND.map((s, i) => (
@@ -354,7 +354,7 @@ export function GreenlineSite() {
         <section className="gl-give" id="donate">
           <div className="gl-give-copy">
             <p className="gl-kick is-light">2027 starts with the long rains</p>
-            <h2 className="gl-h2">Help us plant 1.6 million more.</h2>
+            <h2 className="gl-h2">Help us plant 1.6 million more</h2>
             <p className="gl-lede">Next year we open a fifth landscape, in Malawi’s Shire Highlands, and double the Menabe mangroves. Monthly gifts let us hire crews before the rains, not after.</p>
             <ul className="gl-give-list">
               <li><b>€5</b>one tree, grown, planted and looked after for three years</li>

@@ -115,7 +115,7 @@ function Hero() {
   return (
     <section className="qm-hero">
       <div className="qm-hero-copy">
-        <h1 className="qm-h1">Contracts signed before the coffee cools.</h1>
+        <h1 className="qm-h1">Contracts signed before the coffee cools</h1>
         <p className="qm-lede">Send a lease, an NDA or a statement of work in under a minute. Your client signs on their phone — no account, no app — and you get a sealed PDF with an audit trail a court will accept.</p>
         <div className="qm-ctas">
           <a className="qm-btn" href="#pricing">Send your first contract</a>
@@ -229,7 +229,7 @@ function Steps() {
       <div className="qm-in">
         <div className="qm-head">
           <p className="qm-kick">How it works</p>
-          <h2 className="qm-h2">From draft to signed in three steps.</h2>
+          <h2 className="qm-h2">From draft to signed in three steps</h2>
           <p className="qm-sub">Most contracts go out in under a minute. The signing takes your client less time than reading this page.</p>
         </div>
         <ScrollDraw className="qm-steps" selector=".qm-step-ink" trigger={{ start: 'top 85%', end: 'top 45%' }} stagger={0.12} easing="ease-out" once>
@@ -260,7 +260,7 @@ function EditorSec() {
         <div className="qm-head qm-head-row">
           <div>
             <p className="qm-kick">The editor</p>
-            <h2 className="qm-h2">Drop in the PDF. Quillmark finds every line that needs a name.</h2>
+            <h2 className="qm-h2">Drop in the PDF, Quillmark finds every line that needs a name</h2>
           </div>
           <ul className="qm-ticks">
             <li><Ico n="check" s={16} />Signature lines found by reading the words around them</li>
@@ -280,7 +280,7 @@ function Signer() {
       <div className="qm-in qm-signer">
         <div className="qm-signer-copy">
           <p className="qm-kick">For your clients</p>
-          <h2 className="qm-h2">They sign on their phone, on the bus, in under two minutes.</h2>
+          <h2 className="qm-h2">They sign on their phone, on the bus, in under two minutes</h2>
           <ul className="qm-feats">
             {SIGNER_FEATURES.map(([k, t, d]) => (
               <li key={t}><span className="qm-feat-i"><Ico n={k} s={18} /></span><span><b>{t}</b><span>{d}</span></span></li>
@@ -312,7 +312,7 @@ function Trail() {
       <div className="qm-in qm-trail-sec">
         <div className="qm-trail-copy">
           <p className="qm-kick">Audit trail</p>
-          <h2 className="qm-h2">Every view, signature and seal, on the record.</h2>
+          <h2 className="qm-h2">Every view, signature and seal, on the record</h2>
           <p className="qm-sub">Each document carries a tamper-evident log: who opened it, from where, how they proved who they are, and the hash of the sealed file. Hand the certificate to a court, an auditor or a nervous client.</p>
           <Certificate />
         </div>
@@ -345,7 +345,7 @@ function Security() {
       <div className="qm-in">
         <div className="qm-head">
           <p className="qm-kick">Security and compliance</p>
-          <h2 className="qm-h2">Binding in court. Boring to audit.</h2>
+          <h2 className="qm-h2">Binding in court, boring to audit</h2>
           <p className="qm-sub">Quillmark signatures hold up under the laws your clients sign under, and the reports your auditor asks for are one click away in the trust centre.</p>
         </div>
         <ul className="qm-seals">
@@ -370,7 +370,7 @@ function Templates() {
         <div className="qm-head qm-head-row">
           <div>
             <p className="qm-kick">Templates</p>
-            <h2 className="qm-h2">Start from a contract your lawyer already likes.</h2>
+            <h2 className="qm-h2">Start from a contract your lawyer already likes</h2>
           </div>
           <div className="qm-filter" aria-hidden="true"><span className="on">All</span><span>Property</span><span>Agencies</span><span>Legal</span><span>HR</span></div>
         </div>
@@ -397,7 +397,7 @@ function Integrations() {
       <div className="qm-in qm-int">
         <div>
           <p className="qm-kick">Integrations and API</p>
-          <h2 className="qm-h2">Send from where the contract already lives.</h2>
+          <h2 className="qm-h2">Send from where the contract already lives</h2>
           <ul className="qm-apps">
             {INTEGRATIONS.map(([m, n, d, t]) => (
               <li key={n}><span className="qm-app-m" style={{ '--t': t } as CSSProperties}>{m}</span><span><b>{n}</b><small>{d}</small></span></li>
@@ -450,7 +450,7 @@ function Pricing() {
       <div className="qm-in">
         <div className="qm-head qm-center">
           <p className="qm-kick">Pricing</p>
-          <h2 className="qm-h2">Simple pricing. Unlimited signers on every plan.</h2>
+          <h2 className="qm-h2">Simple pricing, unlimited signers on every plan</h2>
           <div className="qm-bill" aria-hidden="true"><span>Monthly</span><span className="on">Yearly <em>2 months free</em></span></div>
         </div>
         <div className="qm-tiers">
@@ -477,7 +477,7 @@ function Faq() {
       <div className="qm-in qm-faq">
         <div>
           <p className="qm-kick">Questions</p>
-          <h2 className="qm-h2">What firms ask before they switch.</h2>
+          <h2 className="qm-h2">What firms ask before they switch</h2>
           <p className="qm-sub">Something else? Write to hello@quillmark.example — a person in Lisbon answers within the working day.</p>
         </div>
         <div className="qm-qs">
@@ -497,7 +497,7 @@ function Cta() {
   return (
     <section className="qm-cta">
       <div className="qm-cta-in">
-        <h2>Your next contract could be signed by lunch.</h2>
+        <h2>Your next contract could be signed by lunch</h2>
         <p>Fourteen days free, with every feature of Team. No card, and your first three envelopes are on us forever.</p>
         <div className="qm-ctas">
           <a className="qm-btn qm-btn-light" href="#pricing">Send your first contract</a>

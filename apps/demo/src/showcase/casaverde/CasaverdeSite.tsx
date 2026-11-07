@@ -490,7 +490,7 @@ export function CasaverdeSite() {
     >
       <Hero
         kicker="Portugal & Spain · 42 country houses"
-        title={<>Country houses, <em>chosen one by one.</em></>}
+        title={<>Country houses, <em>chosen one by one</em></>}
         lede="Farmhouses, quintas and fincas we have visited, slept in and loved — each with a local host who meets you at the gate."
         art={<div className="cv-hero-art" ref={hero} data-ink><Art id="view" w={560} h={520} scene={VIEW} label="An arched window in a whitewashed wall, looking out over hills, cypresses and the sea at sunset" /></div>}
       />
@@ -506,7 +506,7 @@ export function CasaverdeSite() {
         <p className="cv-chips" aria-label="Popular filters"><span>Private pool</span><span>Sea view</span><span>Sleeps 10+</span><span>Dogs welcome</span><span>Walk to a village</span></p>
       </div>
 
-      <Sec id="houses" kicker="Free in August · summer 2027" title={<>Six houses with <em>August</em> still open.</>} lede="Swipe through, or use the arrows. Every price is per night for the whole house, with cleaning, linen and your host included.">
+      <Sec id="houses" kicker="Free in August · summer 2027" title={<>Six houses with <em>August</em> still open</>} lede="Swipe through, or use the arrows. Every price is per night for the whole house, with cleaning, linen and your host included.">
         <div className="cv-stage">
           <div className="cv-viewer">
             <div
@@ -567,7 +567,7 @@ export function CasaverdeSite() {
         </div>
       </Sec>
 
-      <Sec tone="alt" kicker="Why stay with us" title="Fewer houses, known well.">
+      <Sec tone="alt" kicker="Why stay with us" title="Fewer houses, known well">
         <div className="cv-why">
           {WHY.map((w) => (
             <article key={w.t}>
@@ -584,7 +584,7 @@ export function CasaverdeSite() {
         who={<><b>Marta &amp; Joaquim Ferreira</b> · four stays since 2023</>}
       />
 
-      <Sec kicker="Reviews" title={<>4.96 from <em>2,140</em> stays.</>}>
+      <Sec kicker="Reviews" title={<>4.96 from <em>2,140</em> stays</>}>
         <div className="cv-reviews">
           {REVIEWS.map((r) => (
             <article key={r.who} className="cv-review">
@@ -596,7 +596,7 @@ export function CasaverdeSite() {
         </div>
       </Sec>
 
-      <Sec tone="ink" center kicker="Summer 2027" title="August books up by March." lede="Tell us who’s coming and when. Within a day, a real person sends you three houses that fit, with honest notes on each.">
+      <Sec tone="ink" center kicker="Summer 2027" title="August books up by March" lede="Tell us who’s coming and when. Within a day, a real person sends you three houses that fit, with honest notes on each.">
         <div className="cv-cta">
           <a className="sk-btn" href="#top">Plan my stay</a>
           <a className="sk-btn sk-btn-ghost" href="#houses">Browse all 42 houses</a>

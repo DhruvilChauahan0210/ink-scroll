@@ -285,7 +285,7 @@ export function FieldnotesSite() {
           </div>
           <div className="fn-sub-copy">
             <p className="fn-kick"><span>Subscribe</span>Four issues a year</p>
-            <h2 id="sub-h">Slow reading for people who walk.</h2>
+            <h2 id="sub-h">Slow reading for people who walk</h2>
             <p className="fn-sub-lede">Each issue is 160 pages on uncoated paper, sewn so it lies flat on a picnic table. Subscribers also get every essay online, the audio editions and the full archive since 2019.</p>
             <div className="fn-plans" role="radiogroup" aria-label="Choose a subscription">
               <label className="fn-plan">

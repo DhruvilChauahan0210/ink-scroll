@@ -360,7 +360,7 @@ export function ParcelrySite() {
     >
       <section className="pc-hero">
         <div className="pc-hero-copy">
-          <h1 className="pc-h1">Across Lisbon in 90&nbsp;minutes, <em>on two wheels.</em></h1>
+          <h1 className="pc-h1">Across Lisbon in 90&nbsp;minutes, <em>on two wheels</em></h1>
           <p className="pc-lede">Book by 19:30 and a rider collects within 30 minutes, then takes it straight to the door — no depot, no van, no “out for delivery” black box. You watch every turn live.</p>
           <Booking />
           <ul className="pc-trust">
@@ -380,7 +380,7 @@ export function ParcelrySite() {
       <section className="pc-sec" id="how">
         <div className="pc-head pc-head-2">
           <div><p className="pc-k">Send a parcel</p>
-          <h2 className="pc-h2">Booked in a minute. At the door within the hour.</h2></div>
+          <h2 className="pc-h2">Booked in a minute, at the door within the hour</h2></div>
           <p className="pc-sub">The same flow whether it is one envelope to a client or forty orders from your shop. Nothing goes to a depot, so nothing sits on a shelf overnight.</p>
         </div>
         <div className="pc-steps3">
@@ -408,7 +408,7 @@ export function ParcelrySite() {
         <div className="pc-split">
           <div className="pc-split-copy">
             <p className="pc-k">Pricing</p>
-            <h2 className="pc-h2">One price across the city. No surge, ever.</h2>
+            <h2 className="pc-h2">One price across the city, no surge, ever</h2>
             <p className="pc-sub">You pay by size and zone, not by the minute or the weather. Rain on a Friday at six costs the same as a Tuesday morning.</p>
             <ul className="pc-sizes">
               {SIZES.map((s) => (
@@ -428,7 +428,7 @@ export function ParcelrySite() {
       <section className="pc-sec pc-ink" id="business">
         <div className="pc-head pc-head-c">
           <p className="pc-k">Parcelry for Business</p>
-          <h2 className="pc-h2">Every delivery from every shop, on one screen.</h2>
+          <h2 className="pc-h2">Every delivery from every shop, on one screen</h2>
           <p className="pc-sub">See what is out, what is late and what came back. Book in bulk from a CSV, set standing rounds, and give your customers a tracking page with your logo on it.</p>
         </div>
         <Dashboard />
@@ -447,7 +447,7 @@ export function ParcelrySite() {
         <div className="pc-split pc-split-api">
           <div className="pc-split-copy">
             <p className="pc-k">API</p>
-            <h2 className="pc-h2">Put a bike in your checkout.</h2>
+            <h2 className="pc-h2">Put a bike in your checkout</h2>
             <p className="pc-sub">One call books a rider, prices the trip and returns a tracking link. Webhooks tell your shop the moment a parcel is picked up, delivered or needs a second try.</p>
             <ul className="pc-ticks">
               <li><Check />Live quotes at checkout, in cents, with IVA</li>
@@ -470,7 +470,7 @@ export function ParcelrySite() {
           </div>
           <div className="pc-split-copy">
             <p className="pc-k">Coverage</p>
-            <h2 className="pc-h2">All of Lisbon, and both sides of the river.</h2>
+            <h2 className="pc-h2">All of Lisbon, and both sides of the river</h2>
             <p className="pc-sub">Three hubs keep a rider within ten minutes of anywhere in Zone 1. Almada is a ride across the bridge — on the train with the bike, never in a van.</p>
             <ul className="pc-cities">
               {CITIES.map((c) => (
@@ -489,7 +489,7 @@ export function ParcelrySite() {
       <section className="pc-sec" id="riders">
         <div className="pc-head pc-head-2">
           <div><p className="pc-k">Our riders</p>
-          <h2 className="pc-h2">Employed, insured, and on the same bike every day.</h2></div>
+          <h2 className="pc-h2">Employed, insured, and on the same bike every day</h2></div>
           <p className="pc-sub">Every Parcelry rider is on a contract, paid by the hour and not by the drop. It is why they don’t run red lights — and why your parcel arrives the way it left.</p>
         </div>
         <div className="pc-riders">
@@ -528,7 +528,7 @@ export function ParcelrySite() {
 
       <section className="pc-cta">
         <div className="pc-cta-copy">
-          <h2>Your first delivery is on us.</h2>
+          <h2>Your first delivery is on us</h2>
           <p>Book a pickup now and we’ll take €9 off — enough for any Box across Lisbon. Business accounts get a month of free deliveries up to €150.</p>
           <div className="pc-cta-btns">
             <a className="sk-btn pc-btn-w" href="#top">Book a pickup</a>

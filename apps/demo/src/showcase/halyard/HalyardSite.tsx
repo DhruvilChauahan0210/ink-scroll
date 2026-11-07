@@ -144,7 +144,7 @@ export function HalyardSite() {
       <section className="hy-cover">
         <div className="hy-cover-copy">
           <p className="hy-eyebrow">Annual Report 2026 · Integrated</p>
-          <h1 className="hy-h1">A steadier year, and our strongest finish.</h1>
+          <h1 className="hy-h1">A steadier year, and our strongest finish</h1>
           <p className="hy-lede hy-lede-lg">Net revenue rose 14% to €1.87 billion and the fourth quarter was the best in our 31-year history. We opened Rotterdam–Aberdeen, kept 98.2% of 9,412 sailings on schedule and cut the carbon intensity of the fleet by another 6%.</p>
           <div className="hy-ctas">
             <a className="hy-btn" href="#downloads">
@@ -230,7 +230,7 @@ export function HalyardSite() {
 
       {/* 03 Performance — the scroll-drawn chart */}
       <section className="hy-sec" id="performance">
-        <Head n="03" k="Performance" title="Each quarter beat the same quarter of 2025." lede="Revenue grew in every quarter despite a weather-hit start. The fourth quarter — the first full one on the Aberdeen route — was the best we have ever reported." />
+        <Head n="03" k="Performance" title="Each quarter beat the same quarter of 2025" lede="Revenue grew in every quarter despite a weather-hit start. The fourth quarter — the first full one on the Aberdeen route — was the best we have ever reported." />
         <div className="hy-perf">
           <RevenueChart />
           <div className="hy-qtable">
@@ -294,7 +294,7 @@ export function HalyardSite() {
             </div>
           </div>
           <div className="hy-net-side">
-            <Head n="04" k="Network" title="Seven routes across the North Sea." lede="39 departures a week between nine ports, six of them with our own berths. Rotterdam–Aberdeen joined the network on 3 June." />
+            <Head n="04" k="Network" title="Seven routes across the North Sea" lede="39 departures a week between nine ports, six of them with our own berths. Rotterdam–Aberdeen joined the network on 3 June." />
             <table className="hy-routes">
               <thead><tr><th scope="col">Route</th><th scope="col">Per week</th><th scope="col">Crossing</th><th scope="col">2026 volume</th></tr></thead>
               <tbody>
@@ -314,7 +314,7 @@ export function HalyardSite() {
 
       {/* 05 Fleet */}
       <section className="hy-sec" id="fleet">
-        <Head n="05" k="Fleet" title="38 ships, two more on the way." lede="29 owned and 9 on charter, with an average age of 11.4 years. The core of each route below; the full list is on page 54 of the report." />
+        <Head n="05" k="Fleet" title="38 ships, two more on the way" lede="29 owned and 9 on charter, with an average age of 11.4 years. The core of each route below; the full list is on page 54 of the report." />
         <div className="hy-fleet-stats">
           <div><b>38</b><span>vessels in operation</span><div className="hy-own" aria-hidden="true"><i style={{ flexGrow: 29 }} /><i style={{ flexGrow: 9 }} /></div><em>29 owned · 9 chartered</em></div>
           <div><b>146,200</b><span>lane metres of capacity</span><em>+4,500 with Shearwater</em></div>
@@ -345,7 +345,7 @@ export function HalyardSite() {
 
       {/* 06 Sustainability */}
       <section className="hy-sec hy-dark" id="sustainability">
-        <Head n="06" k="Sustainability" title="Less carbon for every trailer we carry." lede="Our 2030 target is a 40% cut in CO₂e per cargo-tonne-kilometre against 2019. We are at −19%, ahead of the −15% interim target we set for 2026." />
+        <Head n="06" k="Sustainability" title="Less carbon for every trailer we carry" lede="Our 2030 target is a 40% cut in CO₂e per cargo-tonne-kilometre against 2019. We are at −19%, ahead of the −15% interim target we set for 2026." />
         <div className="hy-esg">
           <div className="hy-esg-card hy-esg-wide">
             <p className="hy-esg-k">CO₂e intensity, g per cargo-tonne-km</p>
@@ -408,7 +408,7 @@ export function HalyardSite() {
 
       {/* 07 Five-year summary */}
       <section className="hy-sec" id="summary">
-        <Head n="07" k="Five-year summary" title="The record, year by year." lede="€ million unless stated. 2022–2025 as reported; 2026 audited." aside={<XLink t="Download as a spreadsheet" m="XLSX · 184 KB" />} />
+        <Head n="07" k="Five-year summary" title="The record, year by year" lede="€ million unless stated. 2022–2025 as reported; 2026 audited." aside={<XLink t="Download as a spreadsheet" m="XLSX · 184 KB" />} />
         <div className="hy-tablewrap">
           <table className="hy-five">
             <thead>
@@ -431,7 +431,7 @@ export function HalyardSite() {
       <section className="hy-sec hy-tint" id="downloads">
         <div className="hy-dl">
           <div>
-            <Head n="08" k="Downloads" title="Take the report with you." />
+            <Head n="08" k="Downloads" title="Take the report with you" />
             <ul className="hy-files">
               {DOWNLOADS.map((d) => (
                 <li key={d.t} className={'main' in d ? 'is-main' : ''}>

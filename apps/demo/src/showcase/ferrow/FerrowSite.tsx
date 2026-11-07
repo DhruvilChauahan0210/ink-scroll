@@ -212,7 +212,7 @@ export function FerrowSite() {
       <section className="fr-hero" id="top">
         <div className="fr-hero-copy">
           <p className="fr-kick">Batch 412 · roasted Tuesday 28 October</p>
-          <h1 className="fr-h1">Coffee from three farms, roasted the week you drink it.</h1>
+          <h1 className="fr-h1">Coffee from three farms, roasted the week you drink it</h1>
           <p className="fr-lede">
             We buy from the same three families every year, roast in 15 kg batches in Marvila, Lisbon, and ship within a day
             of roasting. This month: a washed Yirgacheffe, a honey Tarrazú and a Pink Bourbon from Huila.
@@ -281,7 +281,7 @@ export function FerrowSite() {
         <div className="fr-sec-head fr-split">
           <div>
             <p className="fr-kick">Shop · November lots</p>
-            <h2 className="fr-h2">Four coffees on the roaster this month.</h2>
+            <h2 className="fr-h2">Four coffees on the roaster this month</h2>
           </div>
           <div className="fr-filter" role="radiogroup" aria-label="Brew method">
             {([['all', 'All coffee'], ['filter', 'Filter'], ['espresso', 'Espresso']] as const).map(([k, l]) => (
@@ -299,7 +299,7 @@ export function FerrowSite() {
       <section className="fr-sec fr-farms" id="farms">
         <div className="fr-sec-head">
           <p className="fr-kick">Our farms</p>
-          <h2 className="fr-h2">Three families. The same coffee, bought every year.</h2>
+          <h2 className="fr-h2">Three families, the same coffee, bought every year</h2>
           <p className="fr-lede">We visit at harvest, agree the price before the cherries are picked, and pay before the coffee ships. Here’s what we paid this year.</p>
         </div>
         <div className="fr-farm-grid">
@@ -336,7 +336,7 @@ export function FerrowSite() {
         <div className="fr-sec-head fr-split">
           <div>
             <p className="fr-kick">Farm to Marvila</p>
-            <h2 className="fr-h2">Every lot, traced to the roastery door.</h2>
+            <h2 className="fr-h2">Every lot, traced to the roastery door</h2>
           </div>
           <p className="fr-lede">Green coffee travels in GrainPro-lined jute, by truck to the port and by sea to Lisbon, then twenty minutes up the river to us.</p>
         </div>
@@ -376,7 +376,7 @@ export function FerrowSite() {
         <div className="fr-roast-grid">
           <div className="fr-roast-copy">
             <p className="fr-kick">How we roast</p>
-            <h2 className="fr-h2">Ten minutes and fifty-five seconds, logged every time.</h2>
+            <h2 className="fr-h2">Ten minutes and fifty-five seconds, logged every time</h2>
             <p className="fr-lede">
               Every batch is roasted to a curve and logged. This is Tuesday’s Konga: a gentle drying phase, first crack at 8:40,
               and out of the drum 2 minutes 15 seconds later, before the jasmine cooks off.
@@ -468,7 +468,7 @@ export function FerrowSite() {
         <div className="fr-sec-head fr-split">
           <div>
             <p className="fr-kick">Subscriptions</p>
-            <h2 className="fr-h2">Fresh coffee on your doorstep, the Thursday after roast day.</h2>
+            <h2 className="fr-h2">Fresh coffee on your doorstep, the Thursday after roast day</h2>
           </div>
           <p className="fr-lede">Subscribers pay €13.50 a bag instead of €16, get first pick of small lots and never pay for delivery.</p>
         </div>
@@ -479,7 +479,7 @@ export function FerrowSite() {
       <section className="fr-sec" id="brew">
         <div className="fr-sec-head">
           <p className="fr-kick">Brew guides</p>
-          <h2 className="fr-h2">The recipes we use on the bar.</h2>
+          <h2 className="fr-h2">The recipes we use on the bar</h2>
         </div>
         <div className="fr-brews">
           {BREWS.map((b) => (
@@ -531,7 +531,7 @@ export function FerrowSite() {
       <section className="fr-sec fr-visit" id="visit">
         <div className="fr-visit-copy">
           <p className="fr-kick">Visit the roastery</p>
-          <h2 className="fr-h2">Coffee at the bar, two metres from the drum.</h2>
+          <h2 className="fr-h2">Coffee at the bar, two metres from the drum</h2>
           <p className="fr-lede">A former cork warehouse in Marvila. Come for a flat white, or join the free public cupping every Saturday at 11:00 — eight seats, first come.</p>
           <ul className="fr-visit-list">
             <li><Ico d={ICONS.pin} /><span><b>Rua do Açúcar 89, 1950-010 Lisboa</b><small>6 min walk from Braço de Prata station</small></span></li>
@@ -553,7 +553,7 @@ export function FerrowSite() {
       <section className="fr-sec fr-faq" id="faq">
         <div>
           <p className="fr-kick">Questions</p>
-          <h2 className="fr-h2">Before you order.</h2>
+          <h2 className="fr-h2">Before you order</h2>
           <p className="fr-lede">Anything else? Write to hello@ferrow.example — Ada or Rui answers within a working day.</p>
         </div>
         <div className="fr-qs">

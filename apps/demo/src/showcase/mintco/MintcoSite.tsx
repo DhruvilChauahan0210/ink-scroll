@@ -135,7 +135,7 @@ export function MintcoSite() {
       <section className="mc-hero">
         <div className="mc-hero-copy">
           <p className="mc-kick">Switched in 7 working days, guaranteed</p>
-          <h1 className="mc-h1">Switch in four minutes. <em>We’ll do the other seven days.</em></h1>
+          <h1 className="mc-h1">Switch in four minutes, <em>we’ll do the other seven days</em></h1>
           <p className="mc-lede">Open a Mint account in the app, pick your old bank and a date. We move your salary, direct debits and standing orders across, close the old account and catch anything still sent to it.</p>
           <div className="mc-ctas">
             <a className="mc-btn" href="#top">Start your switch</a>
@@ -172,7 +172,7 @@ export function MintcoSite() {
       <section className="mc-sec mc-switch" id="switch">
         <div className="mc-switch-aside">
           <p className="mc-kick">How switching works</p>
-          <h2 className="mc-h2">Four steps. You do two of them, on your phone.</h2>
+          <h2 className="mc-h2">Four steps, you do two of them, on your phone</h2>
           <p className="mc-lede">The switch runs through the Current Account Switch Service, the same one every major UK bank uses. You pick the date — we handle the rest and keep you posted in the app.</p>
           <div className="mc-guarantee">
             <span className="mc-g-badge"><Icon name="shield" size={22} /></span>
@@ -212,9 +212,9 @@ export function MintcoSite() {
         <header className="mc-sec-head mc-sec-head-split">
           <div>
             <p className="mc-kick">What you’re switching to</p>
-            <h2 className="mc-h2">A current account that sorts your money before you’ve thought about it.</h2>
+            <h2 className="mc-h2">A current account that sorts your money before you’ve thought about it</h2>
           </div>
-          <p className="mc-lede">Everything below is in the free account. No paid tier to unlock pots, no fee for spending abroad, and no charge to switch — now or later.</p>
+          <p className="mc-lede">Everything below is in the free account: pots included, no fee for spending abroad, and no charge to switch, now or later.</p>
         </header>
 
         <div className="mc-bento">
@@ -319,7 +319,7 @@ export function MintcoSite() {
       <section className="mc-sec mc-save" id="savings">
         <div className="mc-save-copy">
           <p className="mc-kick">Savings</p>
-          <h2 className="mc-h2">Rates that don’t drop after the first year.</h2>
+          <h2 className="mc-h2">Rates that don’t drop after the first year</h2>
           <p className="mc-lede">Open a Savings Pot next to your current account and move money in and out instantly. Interest is calculated daily and paid on the first of the month.</p>
           <table className="mc-rates">
             <thead><tr><th>Account</th><th>Rate</th><th>Access</th></tr></thead>
@@ -376,7 +376,7 @@ export function MintcoSite() {
       <section className="mc-sec mc-faq" id="faq">
         <div>
           <p className="mc-kick">Switching questions</p>
-          <h2 className="mc-h2">The things people ask before they switch.</h2>
+          <h2 className="mc-h2">The things people ask before they switch</h2>
           <p className="mc-lede">Still unsure? Chat to us in the app, any time — the average wait is 1 minute 40 seconds.</p>
         </div>
         <div className="mc-qs">
@@ -392,7 +392,7 @@ export function MintcoSite() {
       {/* ── CTA ──────────────────────────────────────────────────────── */}
       <section className="mc-cta">
         <div className="mc-cta-copy">
-          <h2 className="mc-h2">Start today. Be switched by Thursday week.</h2>
+          <h2 className="mc-h2">Start today, be switched by Thursday week</h2>
           <p>Scan to download the app — opening an account takes about four minutes, and your sort code and account number arrive the moment you’re approved.</p>
           <div className="mc-ctas">
             <a className="mc-btn mc-btn-mint" href="#top">Open an account</a>

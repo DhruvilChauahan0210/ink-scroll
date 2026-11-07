@@ -159,7 +159,7 @@ function Chain() {
     <div className="sy-flow-grid">
       <div className="sy-flow-head">
         <p className="sy-kick">How a run works</p>
-        <h2 className="sy-h2">Four stages. Each one waits for the last to go green.</h2>
+        <h2 className="sy-h2">Four stages, each one waits for the last to go green</h2>
         <p className="sy-lede">Shipyard runs your pipeline as a chain: nothing deploys until the build is cached and every shard has passed. Scroll through run #1842 as it happened.</p>
         <div className={`sy-runcard${all ? ' is-all' : ''}`} aria-live="polite">
           <div className="sy-rc-h">
@@ -273,7 +273,7 @@ export function ShipyardSite() {
       {/* ── Hero ─────────────────────────────────────────────────────── */}
       <section className="sy-hero">
         <div className="sy-glow" aria-hidden="true" />
-        <h1 className="sy-h1">From push to production in under three minutes.</h1>
+        <h1 className="sy-h1">From push to production in under three minutes</h1>
         <p className="sy-lede sy-hero-lede">Shipyard builds only what changed, deals your tests out by how long they really take, and gives every pull request its own URL. The median pipeline on Shipyard finishes in 2m 14s.</p>
         <div className="sy-ctas">
           <a className="sk-btn" href="#top">Start building — it’s free</a>
@@ -310,7 +310,7 @@ export function ShipyardSite() {
       <section className="sy-sec sy-config">
         <div className="sy-config-copy">
           <p className="sy-kick">Pipelines as code</p>
-          <h2 className="sy-h2">One file. Every branch, shard and region.</h2>
+          <h2 className="sy-h2">One file, every branch, shard and region</h2>
           <p className="sy-lede">Your pipeline lives next to your code and is reviewed like it. Shipyard reads the rest — your lockfile, your workspace graph and fifty runs of test timings — so the file stays short.</p>
           <ul className="sy-points">
             <li><b>Affected-only builds</b><span>Shipyard walks your workspace graph and skips any package a commit can’t reach.</span></li>
@@ -329,7 +329,7 @@ export function ShipyardSite() {
       <section className="sy-sec sy-previews" id="previews">
         <div className="sy-sec-head">
           <p className="sy-kick">Preview deployments</p>
-          <h2 className="sy-h2">Every pull request gets a URL.</h2>
+          <h2 className="sy-h2">Every pull request gets a URL</h2>
           <p className="sy-lede">Review the change, not a screenshot of it. Shipyard comments a link on every pull request, keeps it up to date with each push, and tears it down when the branch merges.</p>
         </div>
         <div className="sy-prv-grid">
@@ -391,7 +391,7 @@ export function ShipyardSite() {
       <section className="sy-sec sy-bento-sec">
         <div className="sy-sec-head">
           <p className="sy-kick">The rest of the platform</p>
-          <h2 className="sy-h2">Everything a pipeline needs, nothing it doesn’t.</h2>
+          <h2 className="sy-h2">Everything a pipeline needs, nothing it doesn’t</h2>
         </div>
         <div className="sy-bento">
           <article className="sy-card sy-card-cli">
@@ -464,7 +464,7 @@ export function ShipyardSite() {
       <section className="sy-sec sy-pricing" id="pricing">
         <div className="sy-sec-head sy-center">
           <p className="sy-kick">Pricing</p>
-          <h2 className="sy-h2">Pay for build minutes, not seats.</h2>
+          <h2 className="sy-h2">Pay for build minutes, not seats</h2>
           <p className="sy-lede">Add the whole team for free. Minutes on Linux runners are billed by the second; cached tasks cost nothing.</p>
         </div>
         <div className="sy-tiers">
@@ -484,7 +484,7 @@ export function ShipyardSite() {
       {/* ── Final CTA ────────────────────────────────────────────────── */}
       <section className="sy-final">
         <div className="sy-final-in">
-          <h2 className="sy-h2">Connect a repo. Watch the first run go green.</h2>
+          <h2 className="sy-h2">Connect a repo, watch the first run go green</h2>
           <p className="sy-lede">Works with any Git host. Most teams have their existing pipeline running on Shipyard before lunch.</p>
           <div className="sy-ctas sy-center-row">
             <a className="sk-btn" href="#top">Start building — it’s free</a>

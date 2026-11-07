@@ -194,7 +194,7 @@ export function TidewaterSite() {
         <div className="tw-hero-top">
           <div>
             <p className="tw-kick">Sailing school · Falmouth, Cornwall<span className="tw-est"> · Est. 1987</span></p>
-            <h1 className="tw-h1">Learn to sail on the water <em>we grew up on.</em></h1>
+            <h1 className="tw-h1">Learn to sail on the water <em>we grew up on</em></h1>
           </div>
           <div className="tw-hero-side">
             <p className="tw-lede">Small crews, patient instructors and the sheltered water of the Carrick Roads — from your first tack to your Coastal Skipper ticket, March to October.</p>
@@ -232,7 +232,7 @@ export function TidewaterSite() {
         <div className="tw-head tw-head-row">
           <div>
             <p className="tw-kick">Courses</p>
-            <h2 className="tw-h2">Start wherever you are.</h2>
+            <h2 className="tw-h2">Start wherever you are</h2>
           </div>
           <div className="tw-filters" aria-label="Filter courses">
             {['All courses', 'Never sailed', 'Some experience', 'Skippers', 'Under 16s'].map((f, i) => <span key={f} className={i === 0 ? 'on' : ''}>{f}</span>)}
@@ -263,7 +263,7 @@ export function TidewaterSite() {
         <div className="tw-head tw-head-row">
           <div>
             <p className="tw-kick">The 2027 season</p>
-            <h2 className="tw-h2">Every course, every week, March to October.</h2>
+            <h2 className="tw-h2">Every course, every week, March to October</h2>
           </div>
           <p className="tw-p">Bookings for 2027 open on 1 November. Courses run with three or more crew — if yours doesn’t, we’ll move you for free or refund in full.</p>
         </div>
@@ -275,7 +275,7 @@ export function TidewaterSite() {
         <div className="tw-head tw-head-row">
           <div>
             <p className="tw-kick">Before you come</p>
-            <h2 className="tw-h2">Book in a minute. We watch the weather for you.</h2>
+            <h2 className="tw-h2">Book in a minute, we watch the weather for you</h2>
           </div>
           <div>
             <p className="tw-p">Pick your dates and pay a £150 deposit. The week before, your skipper sends a kit list and the plan; each evening, we check the forecast and the tide and tell you where we’re heading.</p>
@@ -295,7 +295,7 @@ export function TidewaterSite() {
       <section className="tw-sec tw-alt" id="instructors">
         <div className="tw-head">
           <p className="tw-kick">Instructors</p>
-          <h2 className="tw-h2">The people you’ll be at sea with.</h2>
+          <h2 className="tw-h2">The people you’ll be at sea with</h2>
           <p className="tw-p">Eleven RYA instructors, most of them local, all of them sailors first. Here are four — and the stretch of water each of them would take you to first.</p>
         </div>
         <div className="tw-crew">
@@ -348,7 +348,7 @@ export function TidewaterSite() {
       <section className="tw-sec tw-ink" id="membership">
         <div className="tw-head tw-head-c">
           <p className="tw-kick">Membership</p>
-          <h2 className="tw-h2">Passed your course? Keep sailing with us.</h2>
+          <h2 className="tw-h2">Passed your course? Keep sailing with us</h2>
           <p className="tw-p">Members sail the school fleet on club evenings, charter at cost on weekdays, and get first pick of next year’s courses.</p>
         </div>
         <div className="tw-tiers">
@@ -396,7 +396,7 @@ export function TidewaterSite() {
           </div>
           <div className="tw-visit-copy">
             <p className="tw-kick">Visit</p>
-            <h2 className="tw-h2">Find us on pontoon C.</h2>
+            <h2 className="tw-h2">Find us on pontoon C</h2>
             <p className="tw-p">Port Pendennis Marina, Challenger Quay, Falmouth TR11 3TF. Ten minutes’ walk from Falmouth Docks station; parking at the marina.</p>
             <dl className="tw-hours-list">
               <div><dt>Office</dt><dd>Daily 08:30 – 17:30, March to October</dd></div>
@@ -419,7 +419,7 @@ export function TidewaterSite() {
       {/* ── Sign-up ── */}
       <section className="tw-final">
         <div className="tw-final-in">
-          <h2 className="tw-h2">The 2027 season opens on 1 March.</h2>
+          <h2 className="tw-h2">The 2027 season opens on 1 March</h2>
           <p className="tw-p">One email a month: new dates, the odd last-minute place, and tide times for the weekend.</p>
           <form className="tw-news" onSubmit={(e) => e.preventDefault()}>
             <input type="email" placeholder="you@example.com" aria-label="Email address" />

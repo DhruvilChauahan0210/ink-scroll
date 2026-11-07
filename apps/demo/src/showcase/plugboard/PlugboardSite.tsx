@@ -63,7 +63,7 @@ export function PlugboardSite() {
     >
       {/* ── Hero ─────────────────────────────────────────────────────── */}
       <section className="pb-hero">
-        <h1 className="pb-h1">The busywork between your apps, <em>handled.</em></h1>
+        <h1 className="pb-h1">The busywork between your apps, <em>handled</em></h1>
         <p className="pb-lede">When an order is paid, raise the invoice. When the invoice goes out, book the courier. Plugboard connects 412 apps with flows anyone on the team can build — and shows you every run.</p>
         <div className="pb-ctas">
           <a className="pb-btn" href="#pricing">Start free</a>
@@ -91,7 +91,7 @@ export function PlugboardSite() {
         <header className="pb-head">
           <div>
             <p className="pb-kick">Integrations</p>
-            <h2 className="pb-h2">412 apps, connected in two clicks.</h2>
+            <h2 className="pb-h2">412 apps, connected in two clicks</h2>
           </div>
           <p className="pb-lede">Sign in to an app once and Plugboard keeps the connection alive — tokens refreshed, rate limits respected, failed calls retried with backoff.</p>
         </header>
@@ -132,7 +132,7 @@ export function PlugboardSite() {
       <section className="pb-sec pb-split" id="logic">
         <div className="pb-split-copy">
           <p className="pb-kick">Paths, filters and delays</p>
-          <h2 className="pb-h2">The logic lives in the flow, not in someone’s head.</h2>
+          <h2 className="pb-h2">The logic lives in the flow, not in someone’s head</h2>
           <p className="pb-lede">Send UK orders one way and export orders another. Stop a run when a field is empty. Wait fifteen minutes for a payment to clear. Every rule reads like a sentence, and every teammate can follow it.</p>
           <ul className="pb-ticks">
             <li>Up to 10 paths per step, each with its own rules</li>
@@ -162,7 +162,7 @@ export function PlugboardSite() {
       <section className="pb-sec pb-split is-flip" id="runs">
         <div className="pb-split-copy">
           <p className="pb-kick">Run history</p>
-          <h2 className="pb-h2">Every run, on the record.</h2>
+          <h2 className="pb-h2">Every run, on the record</h2>
           <p className="pb-lede">See what came in, what went out and how long each step took. When an app has a bad minute, Plugboard retries with backoff, and on Business it replays the failed step for you once the app is back.</p>
           <ul className="pb-ticks">
             <li>Inputs and outputs for every step, kept for 30 days</li>
@@ -202,7 +202,7 @@ export function PlugboardSite() {
       <section className="pb-sec pb-split" id="ai">
         <div className="pb-split-copy">
           <p className="pb-kick">AI steps</p>
-          <h2 className="pb-h2">AI that hands back fields, not paragraphs.</h2>
+          <h2 className="pb-h2">AI that hands back fields, not paragraphs</h2>
           <p className="pb-lede">Point an AI step at an email, a PDF or a form reply and name the fields you want. You get typed values the next step can use — an order number, a date, a yes or no — and a confidence score for each.</p>
         </div>
         <div className="pb-panel pb-ai" aria-hidden="true">
@@ -225,7 +225,7 @@ export function PlugboardSite() {
         <header className="pb-head">
           <div>
             <p className="pb-kick">Templates</p>
-            <h2 className="pb-h2">Start from a flow that already works.</h2>
+            <h2 className="pb-h2">Start from a flow that already works</h2>
           </div>
           <div className="pb-tabs-row" aria-hidden="true"><span className="on">Popular</span><span>Finance</span><span>Sales</span><span>Operations</span><span>Support</span></div>
         </header>
@@ -272,7 +272,7 @@ export function PlugboardSite() {
       <section className="pb-sec pb-pricing" id="pricing">
         <header className="pb-head is-center">
           <p className="pb-kick">Pricing</p>
-          <h2 className="pb-h2">Pay for the tasks you run, not the seats you fill.</h2>
+          <h2 className="pb-h2">Pay for the tasks you run, not the seats you fill</h2>
           <p className="pb-lede">A task is one step that does something — create an invoice, send a message. Triggers, filters and paths are free.</p>
           <span className="pb-bill" aria-hidden="true"><i>Monthly</i><i className="on">Yearly <em>−20%</em></i></span>
         </header>
@@ -299,7 +299,7 @@ export function PlugboardSite() {
 
       <section className="pb-cta">
         <div>
-          <h2 className="pb-h2">Your first flow is six minutes away.</h2>
+          <h2 className="pb-h2">Your first flow is six minutes away</h2>
           <p>Pick a template or start from a trigger. We’ll walk you through connecting the first two apps.</p>
         </div>
         <div className="pb-ctas">

@@ -161,7 +161,7 @@ export function RelaySite() {
     >
       {/* ── Hero ─────────────────────────────────────────────────────── */}
       <section className="ry-hero">
-        <h1 className="ry-h1">All your team’s talk. <span>None of the noise.</span></h1>
+        <h1 className="ry-h1">All your team’s talk, <span>none of the noise</span></h1>
         <p className="ry-lede ry-hero-lede">Channels for every project, threads that keep them readable, and huddles for when typing is too slow. Relay keeps the conversation next to the work — and out of your inbox.</p>
         <div className="ry-ctas">
           <a className="sk-btn" href="#top">Try Relay free</a>
@@ -184,7 +184,7 @@ export function RelaySite() {
       <section className="ry-sec ry-three" id="product">
         <div className="ry-sec-head ry-center">
           <p className="ry-kick">Why teams switch</p>
-          <h2 className="ry-h2">Three things Relay does better.</h2>
+          <h2 className="ry-h2">Three things Relay does better</h2>
           <p className="ry-lede">Most chat tools are fast. Relay is fast and calm: it keeps every conversation in its place, so you can find it later — or ignore it now.</p>
         </div>
         <div className="ry-cards">
@@ -208,7 +208,7 @@ export function RelaySite() {
       <section className="ry-sec ry-split">
         <div className="ry-split-copy">
           <p className="ry-kick">Huddles</p>
-          <h2 className="ry-h2">Talk it through. Relay takes the notes.</h2>
+          <h2 className="ry-h2">Talk it through, Relay takes the notes</h2>
           <p className="ry-lede">Start a huddle from any channel and whoever’s free drops in. Share a screen, draw on it, and hang up with the decisions and owners already posted in the channel.</p>
           <ul className="ry-list">
             <li><Tick />Live captions and notes in 18 languages</li>
@@ -256,7 +256,7 @@ export function RelaySite() {
       <section className="ry-sec ry-split ry-flip">
         <div className="ry-split-copy">
           <p className="ry-kick">Search</p>
-          <h2 className="ry-h2">The answer is already in Relay.</h2>
+          <h2 className="ry-h2">The answer is already in Relay</h2>
           <p className="ry-lede">Filter by channel, person, date or file type, then jump straight to the message in its thread. Search reads inside PDFs, canvases and huddle notes too.</p>
           <ul className="ry-list">
             <li><Tick />Results in under 300 ms, across years of history</li>
@@ -298,7 +298,7 @@ export function RelaySite() {
       <section className="ry-sec ry-bento-sec">
         <div className="ry-sec-head">
           <p className="ry-kick">And everything around it</p>
-          <h2 className="ry-h2">Built for the way teams actually work.</h2>
+          <h2 className="ry-h2">Built for the way teams actually work</h2>
         </div>
         <div className="ry-bento">
           <article className="ry-bc">
@@ -343,7 +343,7 @@ export function RelaySite() {
       <section className="ry-sec ry-ints">
         <div className="ry-ints-copy">
           <p className="ry-kick">Integrations</p>
-          <h2 className="ry-h2">Bring the rest of your tools into the conversation.</h2>
+          <h2 className="ry-h2">Bring the rest of your tools into the conversation</h2>
           <p className="ry-lede">Deploys, signatures, invoices and incidents post into the channels where people already are — and you can act on them without switching apps.</p>
           <a className="ry-more" href="#top">Browse 2,400+ apps →</a>
         </div>
@@ -362,7 +362,7 @@ export function RelaySite() {
         <div className="ry-ent-in">
           <div className="ry-ent-head">
             <p className="ry-kick">Enterprise</p>
-            <h2 className="ry-h2">Security your IT team will sign off on.</h2>
+            <h2 className="ry-h2">Security your IT team will sign off on</h2>
             <p className="ry-lede">The controls large organisations need, on by default and managed from one admin console.</p>
           </div>
           <ul className="ry-sec-grid">
@@ -382,7 +382,7 @@ export function RelaySite() {
       <section className="ry-sec ry-quotes">
         <div className="ry-sec-head ry-center">
           <p className="ry-kick">Customers</p>
-          <h2 className="ry-h2">Quieter inboxes. Faster decisions.</h2>
+          <h2 className="ry-h2">Quieter inboxes, faster decisions</h2>
         </div>
         <div className="ry-qgrid">
           {QUOTES.map((q) => (
@@ -399,7 +399,7 @@ export function RelaySite() {
       <section className="ry-sec ry-pricing" id="pricing">
         <div className="ry-sec-head ry-center">
           <p className="ry-kick">Pricing</p>
-          <h2 className="ry-h2">Free for small teams. Fair for big ones.</h2>
+          <h2 className="ry-h2">Free for small teams, fair for big ones</h2>
           <div className="ry-toggle" aria-hidden="true"><span>Monthly</span><span className="on">Yearly <em>save 17%</em></span></div>
         </div>
         <div className="ry-tiers">
@@ -420,7 +420,7 @@ export function RelaySite() {
       <section className="ry-final">
         <div className="ry-final-card">
           <Mark size={64} />
-          <h2 className="ry-h2">Give your team somewhere calmer to talk.</h2>
+          <h2 className="ry-h2">Give your team somewhere calmer to talk</h2>
           <p className="ry-lede">Set up a workspace in two minutes and invite everyone. Bring your history from email or another chat tool with one import.</p>
           <div className="ry-ctas">
             <a className="sk-btn" href="#top">Try Relay free</a>

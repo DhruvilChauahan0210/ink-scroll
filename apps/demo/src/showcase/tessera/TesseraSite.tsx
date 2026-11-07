@@ -85,7 +85,7 @@ export function TesseraSite() {
     >
       {/* ── Head + billing toggle ── */}
       <section className="ts-head">
-        <h1 className="ts-h1">One wiki for the whole company. Priced for every stage of it.</h1>
+        <h1 className="ts-h1">One wiki for the whole company, priced for every stage of it</h1>
         <p className="ts-lede">Start free with unlimited pages. Upgrade when you need permissions, history and single sign-on — every paid plan starts with 14 days free.</p>
         <div className="ts-bill" role="radiogroup" aria-label="Billing period">
           <button type="button" role="radio" aria-checked={!yearly} className={!yearly ? 'on' : undefined} onClick={() => setYearly(false)}>Monthly</button>
@@ -140,7 +140,7 @@ export function TesseraSite() {
       <section className="ts-sec ts-ai" id="ai">
         <div className="ts-ai-copy">
           <span className="ts-kick"><i>Add-on</i> Tessera AI</span>
-          <h2 className="ts-h2">Ask the wiki. Get the answer, with the page it came from.</h2>
+          <h2 className="ts-h2">Ask the wiki, get the answer, with the page it came from</h2>
           <p className="ts-body">Tessera AI reads every page your account can see — never the ones it can’t — and answers in a sentence, with citations. It drafts, summarises and translates too.</p>
           <ul className="ts-ai-list">
             <li><Check />Answers from your pages, with sources</li>
@@ -188,7 +188,7 @@ export function TesseraSite() {
       {/* ── Compare every feature ── */}
       <section className="ts-sec ts-compare" id="compare">
         <div className="ts-sec-head">
-          <h2 className="ts-h2">Compare every plan.</h2>
+          <h2 className="ts-h2">Compare every plan</h2>
           <p className="ts-body">Everything in a plan is also in the plans to its right.</p>
         </div>
         <div className="ts-pick" role="tablist" aria-label="Plan to compare">
@@ -228,7 +228,7 @@ export function TesseraSite() {
       <section className="ts-ent">
         <div className="ts-ent-copy">
           <span className="ts-kick is-light">Enterprise</span>
-          <h2 className="ts-h2">Run Tessera the way your security team wants it run.</h2>
+          <h2 className="ts-h2">Run Tessera the way your security team wants it run</h2>
           <ul className="ts-ent-list">
             <li><b>SAML SSO and SCIM</b>Provision and remove people from your identity provider.</li>
             <li><b>Audit log</b>Every view, edit, export and share, kept for as long as you need, streamed to your SIEM.</li>
@@ -268,7 +268,7 @@ export function TesseraSite() {
       {/* ── FAQ ── */}
       <section className="ts-sec ts-faq-sec">
         <div className="ts-faq-head">
-          <h2 className="ts-h2">Questions, answered.</h2>
+          <h2 className="ts-h2">Questions, answered</h2>
           <p className="ts-body">Can’t find yours? <a className="ts-link" href="#top">Ask the team</a> — a person replies, usually within the hour.</p>
         </div>
         <div className="ts-faq">
@@ -280,7 +280,7 @@ export function TesseraSite() {
 
       {/* ── Start ── */}
       <section className="ts-end">
-        <h2 className="ts-h2">Your team’s first page is a minute away.</h2>
+        <h2 className="ts-h2">Your team’s first page is a minute away</h2>
         <div className="ts-end-ctas"><a className="ts-btn is-blue" href="#top">Get Tessera free</a><a className="ts-btn is-ghost" href="#top">Request a demo</a></div>
         <div className="ts-tpls" aria-label="Templates to start from">
           {TEMPLATES.map((t) => (

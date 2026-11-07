@@ -306,7 +306,7 @@ export function NorthbeamSite() {
     >
       {/* ── Hero ── */}
       <section className="nb-hero">
-        <h1 className="nb-h1">Every request, answered from the <span>nearest city.</span></h1>
+        <h1 className="nb-h1">Every request, answered from the <span>nearest city</span></h1>
         <p className="nb-lede">Northbeam runs your functions, cache and Postgres in 62 regions. Push to git and your app is live worldwide in under a minute — with a median time to first byte of 18&nbsp;ms.</p>
         <div className="nb-ctas">
           <a className="nb-btn" href="#top">Start deploying</a>
@@ -332,7 +332,7 @@ export function NorthbeamSite() {
       <section className="nb-sec nb-split" id="deploy">
         <div className="nb-copy">
           <p className="nb-kick">Deploy</p>
-          <h2 className="nb-h2">Push to git. Live in 62 regions in 38 seconds.</h2>
+          <h2 className="nb-h2">Push to git, live in 62 regions in 38 seconds</h2>
           <p className="nb-p">Connect a repository and every push builds, migrates your database and rolls out region by region, watching error rates as it goes. If they climb, it stops and rolls back on its own.</p>
           <ul className="nb-checks">
             <li><b>Zero config</b> for Node, Bun, Deno, Python and Go</li>
@@ -363,7 +363,7 @@ export function NorthbeamSite() {
         <div className="nb-head nb-head-row">
           <div>
             <p className="nb-kick">Functions</p>
-            <h2 className="nb-h2">Write a function. We run it in every region.</h2>
+            <h2 className="nb-h2">Write a function, we run it in every region</h2>
           </div>
           <p className="nb-p">Standard Request in, Response out. Import KV, Postgres, queues and email from one SDK — no connection strings, no cold-start tuning, no YAML.</p>
         </div>
@@ -375,7 +375,7 @@ export function NorthbeamSite() {
         <div className="nb-head nb-head-row">
           <div>
             <p className="nb-kick">Network</p>
-            <h2 className="nb-h2">62 regions. Your users are never far away.</h2>
+            <h2 className="nb-h2">62 regions, your users are never far away</h2>
           </div>
           <p className="nb-p">Every region runs compute, KV and the edge cache. Twenty-one also host Postgres replicas. New this quarter: Lagos, Querétaro and Manila.</p>
         </div>
@@ -409,7 +409,7 @@ export function NorthbeamSite() {
       <section className="nb-sec" id="observe">
         <div className="nb-head nb-head-c">
           <p className="nb-kick">Observability</p>
-          <h2 className="nb-h2">Every request, traced. No agent to install.</h2>
+          <h2 className="nb-h2">Every request, traced, no agent to install</h2>
           <p className="nb-p">Requests, latency percentiles, errors and cache hits per region, with traces down to the SQL query. Kept for 30 days on Pro, exported to your own warehouse on Enterprise.</p>
         </div>
         <Dashboard />
@@ -420,7 +420,7 @@ export function NorthbeamSite() {
         <div className="nb-head nb-head-row">
           <div>
             <p className="nb-kick">Platform</p>
-            <h2 className="nb-h2">The rest of your backend, already next to your code.</h2>
+            <h2 className="nb-h2">The rest of your backend, already next to your code</h2>
           </div>
           <p className="nb-p">Postgres, KV, queues, cron, previews and a firewall come with every project. One bill, one dashboard, one place to look at 3 a.m.</p>
         </div>
@@ -453,7 +453,7 @@ export function NorthbeamSite() {
       <section className="nb-sec" id="pricing">
         <div className="nb-head nb-head-c">
           <p className="nb-kick">Pricing</p>
-          <h2 className="nb-h2">Pay for requests, not idle servers.</h2>
+          <h2 className="nb-h2">Pay for requests, not idle servers</h2>
           <p className="nb-p">Start free. Pro includes generous usage, then you pay per million requests — and you can set a hard spending cap.</p>
         </div>
         <div className="nb-tiers">
@@ -488,7 +488,7 @@ export function NorthbeamSite() {
 
       {/* ── CTA ── */}
       <section className="nb-final">
-        <h2 className="nb-h2">Ship it everywhere this afternoon.</h2>
+        <h2 className="nb-h2">Ship it everywhere this afternoon</h2>
         <p className="nb-p">Free for personal projects. No credit card, no sales call.</p>
         <div className="nb-ctas">
           <a className="nb-btn" href="#top">Start deploying</a>

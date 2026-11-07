@@ -225,7 +225,7 @@ export function StrideSite() {
     >
       <section className="st-hero">
         <div className="st-hero-copy">
-          <h1 className="st-h1">Run your best race. Remember every run.</h1>
+          <h1 className="st-h1">Run your best race, remember every run</h1>
           <p className="st-lede">Stride builds a plan around your week, coaches you in your ear while you run, and draws every route and climb when you get home. From your first 5K to your next marathon.</p>
           <Badges />
           <div className="st-rating">
@@ -262,7 +262,7 @@ export function StrideSite() {
         <div className="st-head st-head-2">
           <div>
             <p className="st-k">Run summaries</p>
-            <h2 className="st-h2">Every run, drawn back to you.</h2>
+            <h2 className="st-h2">Every run, drawn back to you</h2>
           </div>
           <p className="st-sub">Get home and Stride has already drawn it: the route across the map, the climb you felt in your legs, every split and how long you spent in each heart-rate zone.</p>
         </div>
@@ -273,7 +273,7 @@ export function StrideSite() {
         <div className="st-split">
           <div className="st-split-copy">
             <p className="st-k">Training plans</p>
-            <h2 className="st-h2">A plan that moves when life does.</h2>
+            <h2 className="st-h2">A plan that moves when life does</h2>
             <p className="st-sub">Tell Stride your race, your days and your current 5K. It builds sixteen weeks around them — and when a meeting eats Wednesday, it rebuilds the rest of the week instead of leaving a red cross on it.</p>
             <ul className="st-ticks">
               <li><Check />Plans for 5K, 10K, half and full marathon, and ultras</li>
@@ -307,7 +307,7 @@ export function StrideSite() {
         <div className="st-head st-head-2">
           <div>
             <p className="st-k">Audio coaching</p>
-            <h2 className="st-h2">A coach in your ear, on every rep.</h2>
+            <h2 className="st-h2">A coach in your ear, on every rep</h2>
           </div>
           <p className="st-sub">Cues are written by our coaches and timed to your pace, your heart rate and the hill you are on. Your music ducks for a second, never stops.</p>
         </div>
@@ -332,7 +332,7 @@ export function StrideSite() {
       <section className="st-sec st-alt" id="insights">
         <div className="st-head">
           <p className="st-k">Insights</p>
-          <h2 className="st-h2">Watch your fitness change, week by week.</h2>
+          <h2 className="st-h2">Watch your fitness change, week by week</h2>
         </div>
         <div className="st-ins">
           <article className="st-card">
@@ -373,7 +373,7 @@ export function StrideSite() {
         <div className="st-split st-split-clubs">
           <div className="st-split-copy">
             <p className="st-k">Clubs</p>
-            <h2 className="st-h2">Run together, even on the days you run alone.</h2>
+            <h2 className="st-h2">Run together, even on the days you run alone</h2>
             <p className="st-sub">Join a club for its Sunday long run, follow friends’ routes across the city, and give a high-five to the person who got out of bed at six.</p>
             <ul className="st-ticks">
               <li><Check />4,600 clubs, from track groups to parkrun regulars</li>
@@ -431,7 +431,7 @@ export function StrideSite() {
       <section className="st-sec st-alt" id="pricing">
         <div className="st-head st-head-c">
           <p className="st-k">Pricing</p>
-          <h2 className="st-h2">Free to run. Premium to train.</h2>
+          <h2 className="st-h2">Free to run, premium to train</h2>
           <p className="st-sub">Every run is tracked and drawn for free, forever. Premium adds the coach.</p>
         </div>
         <div className="st-plans">
@@ -465,7 +465,7 @@ export function StrideSite() {
         <div className="st-head st-head-2">
           <div>
             <p className="st-k">Reviews</p>
-            <h2 className="st-h2">4.9 stars from 38,400 runners.</h2>
+            <h2 className="st-h2">4.9 stars from 38,400 runners</h2>
           </div>
           <p className="st-sub">Editors’ pick in the running category, and the training app of six clubs and races across Portugal.</p>
         </div>
@@ -483,7 +483,7 @@ export function StrideSite() {
 
       <section className="st-cta">
         <div>
-          <h2>Your next run is already planned.</h2>
+          <h2>Your next run is already planned</h2>
           <p>Download Stride, tell it your race, and your first week is waiting before you lace up.</p>
           <Badges />
         </div>

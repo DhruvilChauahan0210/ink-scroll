@@ -469,7 +469,7 @@ export function LumenSite() {
     >
       <Hero
         kicker="Lumen X2 · New"
-        title="The whole day, in one pocket."
+        title="The whole day, in one pocket"
         lede={<>A 40-megapixel compact with a fixed 28 mm f/2 lens, seven stops of stabilisation and a battery that outlasts the light. Machined from magnesium and brass.<span className="lu-price"><b>$1,599</b> body and lens · ships 14 November</span></>}
         actions={['Pre-order', 'Take the tour']}
         art={<HeroCamera />}
@@ -480,11 +480,11 @@ export function LumenSite() {
         ))}
       </ul>
 
-      <Sec id="tour" kicker="Inside the X2" title="Four parts, one small camera." lede="Keep scrolling. The camera stays put while we take you through the sensor, the lens, the stabiliser and the battery.">
+      <Sec id="tour" kicker="Inside the X2" title="Four parts, one small camera" lede="Keep scrolling. The camera stays put while we take you through the sensor, the lens, the stabiliser and the battery.">
         <Tour />
       </Sec>
 
-      <Sec id="samples" tone="alt" kicker="Sample photos" title="Straight out of the X2." lede="Unedited JPEGs from a week in and around Lisbon, in three of the camera's built-in film looks.">
+      <Sec id="samples" tone="alt" kicker="Sample photos" title="Straight out of the X2" lede="Unedited JPEGs from a week in and around Lisbon, in three of the camera's built-in film looks.">
         <div className="lu-gallery">
           {SHOTS.map((x) => (
             <figure key={x.s} className="lu-tile">
@@ -496,7 +496,7 @@ export function LumenSite() {
         </div>
       </Sec>
 
-      <Sec id="specs" kicker="Tech specs" title="Lumen X2, in full.">
+      <Sec id="specs" kicker="Tech specs" title="Lumen X2, in full">
         <div className="lu-specs">
           {SPECS.map(([group, rows]) => (
             <div key={group} className="lu-spec">
@@ -511,7 +511,7 @@ export function LumenSite() {
         </div>
       </Sec>
 
-      <Sec id="buy" tone="alt" kicker="Pre-order" title="Make it yours." lede="Two finishes, one camera. Pre-orders ship from 14 November, in the order they were placed.">
+      <Sec id="buy" tone="alt" kicker="Pre-order" title="Make it yours" lede="Two finishes, one camera. Pre-orders ship from 14 November, in the order they were placed.">
         <Buy />
       </Sec>
     </Site>

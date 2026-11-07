@@ -320,7 +320,7 @@ export function LineworkSite() {
           <span>Ghent, Belgium · since 2014</span>
           <span className="lw-open"><i />Booking projects from February 2027</span>
         </div>
-        <h1 className="lw-h1">We draw brands, then <em>teach them to move.</em></h1>
+        <h1 className="lw-h1">We draw brands, then <em>teach them to move</em></h1>
         <div className="lw-hero-sub">
           <p>Linework is twenty-three illustrators, animators and designers on a canal in Ghent. We make the drawings behind labels, logos, apps and campaigns — and the motion that brings them to life on screen.</p>
           <div className="lw-hero-ctas">
@@ -355,7 +355,7 @@ export function LineworkSite() {
       <section className="lw-sec" id="work">
         <header className="lw-head">
           <span className="lw-label">(01) Selected work</span>
-          <h2 className="lw-h2">Five commissions from this year. Each one draws itself as you reach it.</h2>
+          <h2 className="lw-h2">Five commissions from this year, each one draws itself as you reach it</h2>
           <a className="lw-more" href="#work">All 48 projects <span aria-hidden="true">→</span></a>
         </header>
         <div className="lw-works">
@@ -409,7 +409,7 @@ export function LineworkSite() {
       <section className="lw-sec lw-process" id="process">
         <header className="lw-head">
           <span className="lw-label">(03) Process</span>
-          <h2 className="lw-h2">Pencil first. Then pen. Then it moves.</h2>
+          <h2 className="lw-h2">Pencil first, then pen, then it moves</h2>
         </header>
         <ol className="lw-steps">
           {STEPS.map((s, i) => (
@@ -426,7 +426,7 @@ export function LineworkSite() {
       <section className="lw-sec lw-services" id="services">
         <header className="lw-head">
           <span className="lw-label">(04) Services</span>
-          <h2 className="lw-h2">What we are asked to draw.</h2>
+          <h2 className="lw-h2">What we are asked to draw</h2>
         </header>
         <ul className="lw-svc">
           {SERVICES.map((s, i) => (

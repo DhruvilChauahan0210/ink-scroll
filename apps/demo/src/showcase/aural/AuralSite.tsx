@@ -158,7 +158,7 @@ function Film() {
       <div className="au-stage" ref={stage}>
         <div className="au-side">
           <p className="sk-kick">Inside Aural One</p>
-          <h2>Every layer, in the order we build it.</h2>
+          <h2>Every layer, in the order we build it</h2>
           <ol className="au-parts">
             {PARTS.map((part, i) => (
               <li key={part.k} ref={(el) => { rows.current[i] = el; }}>
@@ -214,7 +214,7 @@ export function AuralSite() {
     >
       <Hero
         kicker="New · Aural One"
-        title="Silence, engineered."
+        title="Silence, engineered"
         lede={<>Over-ear headphones with adaptive noise cancelling, a 40 mm beryllium-coated driver and 40 hours on a charge. <span className="au-price">$449</span></>}
         actions={['Buy Aural One', 'Watch it come apart']}
         art={<Still at={COLOURS[0].at} label="Aural One headphones in Sandstone" />}
@@ -222,7 +222,7 @@ export function AuralSite() {
 
       <Film />
 
-      <Sec kicker="Tech specs" title="Forty hours. Two hundred and fifty-four grams.">
+      <Sec kicker="Tech specs" title="Forty hours, two hundred and fifty-four grams">
         <div className="au-specs">
           {SPECS.map((s) => (
             <div key={s.k} className="au-spec">
@@ -236,7 +236,7 @@ export function AuralSite() {
 
       <Quote text="The quietest pair I have worn on a long-haul flight, and the first I forgot I had on." who="Ines Moreau, Field Audio" />
 
-      <Sec kicker="Colourways" title="Four finishes. One sound." tone="alt">
+      <Sec kicker="Colourways" title="Four finishes, one sound" tone="alt">
         <div className="au-colours">
           <Still at={c.at} label={`Aural One in ${c.n}`} />
           <div className="au-swatches" role="radiogroup" aria-label="Colourway">
@@ -258,7 +258,7 @@ export function AuralSite() {
         </div>
       </Sec>
 
-      <Sec kicker="Buy" title="Aural One." id="buy">
+      <Sec kicker="Buy" title="Aural One" id="buy">
         <div className="au-buy">
           <div className="au-buy-box">
             <p className="au-buy-price"><b>$449</b> or $37.42 a month for 12 months</p>

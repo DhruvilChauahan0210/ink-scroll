@@ -55,7 +55,7 @@ function Integrations() {
     <section className="ll-sec" id="integrations">
       <div className="ll-head">
         <p className="ll-kick">Integrations and reconciliation</p>
-        <h2 className="ll-h2">Connect billing once. Every number reconciles.</h2>
+        <h2 className="ll-h2">Connect billing once, every number reconciles</h2>
         <p className="ll-body">Ledgerline reads your billing systems with read-only keys, rebuilds every subscription as a ledger of events, and checks the result against billing every hour. When the two disagree by a cent, you hear about it first.</p>
       </div>
 
@@ -181,7 +181,7 @@ function Pricing() {
     <section className="ll-sec ll-pricing" id="pricing">
       <div className="ll-head ll-center">
         <p className="ll-kick">Pricing</p>
-        <h2 className="ll-h2">Priced by the MRR you track, not your seats.</h2>
+        <h2 className="ll-h2">Priced by the MRR you track, not your seats</h2>
         <p className="ll-body">Bring the whole finance team, the board and every founder. One flat price for each band of MRR, with every metric on every plan.</p>
       </div>
 
@@ -259,7 +259,7 @@ export function LedgerlineSite() {
 
       <section className="ll-hero" id="top">
         <div className="ll-glow" aria-hidden="true" />
-        <h1 className="ll-h1">Every dollar of MRR, accounted for.</h1>
+        <h1 className="ll-h1">Every dollar of MRR, accounted for</h1>
         <p className="ll-lede">Revenue analytics for subscription businesses. Connect billing in two minutes and Ledgerline turns every invoice, upgrade and cancellation into MRR, churn, cohorts and a forecast — reconciled to the cent, refreshed every hour.</p>
         <div className="ll-ctas">
           <a className="ll-btn" href="#pricing">Start free — 14 days</a>
@@ -297,7 +297,7 @@ export function LedgerlineSite() {
       <Pricing />
 
       <section className="ll-final">
-        <h2 className="ll-h2">Connect billing. See last year’s MRR before your coffee cools.</h2>
+        <h2 className="ll-h2">Connect billing, see last year’s MRR before your coffee cools</h2>
         <p className="ll-body">Read-only, two minutes to connect, and free under $10k of MRR. Most teams have a reconciled year of history in about six minutes.</p>
         <div className="ll-ctas">
           <a className="ll-btn" href="#pricing">Start free — 14 days</a>

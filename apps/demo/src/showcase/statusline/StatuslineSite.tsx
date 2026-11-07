@@ -285,7 +285,7 @@ function Subscribe() {
     <section className="sl-sec sl-sub" id="subscribe">
       <div className="sl-wrap sl-sub-grid">
         <div className="sl-card sl-subcard">
-          <h2>Get told before your customers notice.</h2>
+          <h2>Get told before your customers notice</h2>
           <p>The first update goes out within 10 minutes of us detecting a problem, and every update after that until it’s resolved.</p>
           <div className="sl-tabs" aria-hidden="true">
             <span className="on">{I.mail}Email</span>

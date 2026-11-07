@@ -146,3 +146,6 @@ input[type="range"]:active::-webkit-slider-thumb { transform: scale(0.95); }
 /* Emphasis by colour, not italic (heydamir/unslop, type pass). :where keeps the
    rule at zero specificity, so a component that styles its own <em> wins. */
 :where(.site, .home) :where(em, i:not([class])) { font-style: normal; color: var(--fg); }
+/* Everywhere else, the showcase sites included: emphasis by weight. A site that
+   colours its own <em> keeps the colour. */
+:where(em, i:not([class])) { font-style: normal; font-weight: 500; }
