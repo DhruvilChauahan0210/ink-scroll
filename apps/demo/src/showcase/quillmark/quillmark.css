@@ -107,7 +107,7 @@ html:has(.qm) body { background: #f7f5f0; }
 /* ── Customers + numbers ───────────────────────────────────────────────── */
 .qm-cust { max-width: calc(1240px + 2 * var(--pad)); margin: 0 auto; padding: 0 var(--pad) clamp(64px, 8vw, 104px); text-align: center; }
 .qm-cust > p { margin: 0 0 24px; font-size: 14px; color: var(--mut); }
-.qm-marks { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 16px clamp(28px, 4vw, 60px); color: #79808f; }
+.qm-marks { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 16px clamp(28px, 4vw, 60px); color: #636a7a; }
 .qm-marks span { white-space: nowrap; }
 .qm-marks .w1 { font: 600 21px var(--head); }
 .qm-marks .w2 { font-size: 13px; font-weight: 600; letter-spacing: 0; }

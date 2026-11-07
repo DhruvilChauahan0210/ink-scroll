@@ -15,10 +15,17 @@
   normal tracking, emphasis by colour, radius by size, the stack pulse runs
   once; blocks (eyebrows, weight 500, copy); showcase ("New" pills, gradient
   headlines, unverifiable "Trusted by" counts, coloured glows, caps).
-- Left on purpose: the showcase's editorial serif italics (brand type, not
-  emphasis) and its hue gradients (mostly product renders, the moments unslop
-  allows); lowercase mono labels that are code, paths or data
+- Showcase in full (second round, same branch): spacing, copy (144
+  headlines), colour (gradients, washes, glass), type (weights, italics,
+  tracking), radius and one easing, every site.
+- Left on purpose: Lumen's sunset sky (its scene, a moment); the live-state
+  loops in product mock-ups; three width/left transitions on progress fills
+  and a map marker, set from JS (a transform rewrite needs component changes);
+  lowercase mono labels that are code, paths or data
   (`scripts/find-lowercase-labels.mjs` lists them); share-card images.
+- Showcase contrast debt: `scripts/test-showcase.mjs --report` lists 687
+  failing nodes on 22 sites (708 before unslop, none new). Not in CI until
+  fixed.
 - Screens could not be screenshotted at the end (display asleep): look at
   /, /docs, a blog post, /blocks and two showcase sites on the Vercel preview
   before merging.

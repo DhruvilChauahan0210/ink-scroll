@@ -21,8 +21,13 @@ All notable changes to `svg-scroll-draw` are documented here.
   by colour instead of italic. Details: buttons, chips and tabs 8px, tags 4px,
   instead of pills. Motion: the stack diagram's glowing pulse no longer loops.
   The copy-paste blocks get the same type and copy passes in React, Vue and
-  Svelte. The 23 showcase sites lose their "New" pills, gradient headlines,
-  "Trusted by 48,000 teams" lines, coloured glows and uppercase labels.
+  Svelte. The 23 showcase sites get every pass too: no "New" pills, gradient
+  headlines, "Trusted by 48,000 teams" lines, coloured glows or washes, glass,
+  bold 700–900 or italic type, two-beat fragment headlines or pill buttons;
+  2,145 spacing values on the 4px grid. Lumen's sunset sky (its scene) and the
+  live-state loops in product mock-ups (recording dots, spinners, carets)
+  stay. `scripts/test-showcase.mjs` opens every showcase site for errors and
+  colour contrast: no new failures (708 old ones before, 687 after).
   `scripts/find-lowercase-labels.mjs` lists labels still written in
   lowercase, page by page. Checked: typecheck, lint, test-blocks, test-seo,
   test-a11y (66 pages, 0 violations), test-recipes, Vue and Svelte blocks.

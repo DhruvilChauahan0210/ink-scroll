@@ -8,7 +8,12 @@
  * the unslop pass (gradients, glows, glass, weights), and contrast is what a
  * changed background breaks first.
  *
+ * Not in CI yet: the sites carried 708 contrast failures before the unslop pass
+ * (687 after it, none new), from muted greys that were never checked. Fix those
+ * first, then wire this in.
+ *
  *   BASE_URL=http://localhost:3200 node scripts/test-showcase.mjs
+ *   ... --report      list everything and exit 0 (for triage)
  */
 import { readdirSync } from 'node:fs';
 import { createRequire } from 'node:module';
@@ -17,6 +22,7 @@ import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
 
 const BASE = (process.env.BASE_URL ?? 'http://localhost:3000').replace(/\/$/, '');
+const REPORT = process.argv.includes('--report');
 const HERE = dirname(fileURLToPath(import.meta.url));
 const AXE = createRequire(import.meta.url).resolve('axe-core/axe.min.js');
 const sites = readdirSync(join(HERE, '..', 'src', 'app', 'showcase'), { withFileTypes: true })
@@ -45,4 +51,4 @@ await browser.close();
 
 for (const p of problems) console.log(`  ${p}`);
 console.log(`\n${sites.length} showcase sites: ${problems.length} problem(s).`);
-if (problems.length) process.exit(1);
+if (!REPORT && problems.length) process.exit(1);
