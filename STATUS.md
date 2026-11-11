@@ -1,7 +1,7 @@
 # Project Status — svg-scroll-draw
 
 > Current version: **2.23.0** — published 2026-11-07 (`v2.23.0` on `bd31fe2`, npm `latest`), with 2.20.1, 2.21.0 and 2.22.0 published the same day; every release through trusted publishing
-> Tests: **709 unit** across 37 suites · **240 browser tests** per engine (720 runs
+> Tests: **714 unit** across 37 suites · **246 browser tests** per engine (738 runs
 > across Chromium/Firefox/WebKit) · **92 mutations**, each caught by the one test
 > named for it · **91.5% line coverage** (gate 90/90/82/82)
 > Bundle: **11.7 KB gzipped** (main entry as shipped files, chunks included; per-API entries from 0.2 KB) · zero runtime dependencies
@@ -49,11 +49,11 @@
 - [x] `scrollAnimateGroup` + `scrollAnimateSequence` + `scrollParallaxGroup` in `svg-scroll-draw/group`
 
 ### Testing
-- [x] 709 tests across 37 suites — `motionLive` (reduced motion turned on mid-visit, every engine and the React hook), `reactive` (the wrappers' option fingerprint and live callbacks), `directives` (the built files' "use client"), `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollText` (23)
+- [x] 714 tests across 37 suites — `motionLive` (reduced motion turned on mid-visit, every engine and the React hook), `reactive` (the wrappers' option fingerprint and live callbacks), `directives` (the built files' "use client"), `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollText` (23)
 - [x] Initial state fix — `createAnimateEngine` and `scrollCounter` now apply correct alpha immediately on init (no flash before IO fires)
 
 ### Browser tests (Phase 2, `packages/svg-scroll-draw/e2e`)
-240 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
+246 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
 `helpers.ts` (deterministic sweep — scroll to a fixed offset, wait two frames,
 read) and `fixtures/_probe.mjs` (parsing stays in the page, so specs assert on
 numbers).
@@ -220,6 +220,7 @@ at all.
 - [x] Search Console (3 months to 2026-11-09): 133 clicks, 1.89K impressions, position 10.4; impressions halved the week of 2026-11-01 (the site-wide redesign); 21 indexed, 42 "Discovered – not indexed", 8 external links
 - [x] Homepage title and description agree on the main-entry size; React, Next.js, pen drawing and `llms.txt` read `SELF.gzipKb`; `llms.txt` test counts derived
 - [x] `/vs-gsap` title and description lead with "GSAP alternative" and the measured sizes
+- [x] 2.23.2 staged (not tagged): autoplay with a stagger — seek(1) finishes every path, getProgress/onProgress span the whole run; 5 unit + 6 browser tests, 2 mutations caught
 - [x] `/svg-path-viewer`: sanitised paste (hostile SVG tested: nothing runs, nothing loads), lengths as scrollDraw measures, drawing checks, seek() preview, CSS/JS/React/SVG output; SEO and axe 70 pages, 0 problems
 - [x] `/text-animation-generator`: scrollText preview (seek/scrub), real-scroll panel, JS and React output, stagger limit warning; SEO and axe 69 pages, 0 problems
 - [x] `/aos-animation`: all 27 AOS effects live on the drop-in, attributes, easings, FAQ; SEO and axe checks 68 pages, 0 problems

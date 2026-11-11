@@ -636,6 +636,17 @@ function buildEngine(
 
   function buildAutoplay(): ScrollDrawInstance {
     const effectiveDuration = Math.max(1, duration);
+    /**
+     * The whole run: with a stagger, path i starts i × stagger × duration late,
+     * so the last one ends (n − 1) × stagger × duration after the first. seek(),
+     * getProgress(), onProgress, --scroll-draw-progress and waypoints all span
+     * this, not `duration`: covering only `duration` left seek(1) with the later
+     * paths part-drawn and getProgress() at 1 while they still drew. Without a
+     * stagger (or in clip mode) it is just `duration`.
+     */
+    const runMs = clipDirection
+      ? effectiveDuration
+      : effectiveDuration * (1 + Math.max(0, paths.length - 1) * stagger);
     let startTime    = 0;
     let pausedElapsed = 0;
     // Whether a run is currently in flight. Guards pause()/resume() against
@@ -644,6 +655,8 @@ function buildEngine(
 
     function applyAutoAlpha(elapsed: number): boolean {
       let allDone = true;
+      // How far through the whole run (see runMs).
+      const runRaw = Math.min(1, Math.max(0, elapsed / runMs));
 
       if (clipDirection) {
         const raw   = Math.min(1, Math.max(0, elapsed / effectiveDuration));
@@ -677,20 +690,20 @@ function buildEngine(
           if (morphTo && el.tagName.toLowerCase() === 'path' && originalDs[i])
             el.setAttribute('d', morphPath(originalDs[i], morphTo, alpha));
 
-          if (i === 0) {
-            // The first path is the canonical progress for the instance —
-            // without this, getProgress() stayed at 0 for the whole autoplay run.
-            currentAlpha = alpha;
-            onProgress?.(alpha);
-            (container as HTMLElement).style.setProperty('--scroll-draw-progress', String(alpha));
-          }
           if (raw < 1) allDone = false;
         });
+
+        // The instance's progress is the run's, eased like each path: the
+        // same as the one path without a stagger, and 1 only once the last
+        // path is drawn.
+        const runAlpha = easeFn(runRaw);
+        currentAlpha = runAlpha;
+        onProgress?.(runAlpha);
+        (container as HTMLElement).style.setProperty('--scroll-draw-progress', String(runAlpha));
       }
 
       if (waypoints) {
-        const globalRaw   = Math.min(1, Math.max(0, elapsed / effectiveDuration));
-        const globalAlpha = easeFn(globalRaw);
+        const globalAlpha = easeFn(runRaw);
         for (const key in waypoints) {
           const t = parseFloat(key);
           if (globalAlpha >= t && !firedWaypoints.has(t)) {
@@ -713,7 +726,7 @@ function buildEngine(
 
       if (done && !completed) {
         completed = true;
-        applyAutoAlpha(effectiveDuration * (1 + Math.max(0, paths.length - 1) * stagger));
+        applyAutoAlpha(runMs);
         onComplete?.();
         const maxRepeats = repeat === 'infinite' ? Infinity : (repeat ?? 0);
         if (repeatCount < maxRepeats) {
@@ -813,7 +826,7 @@ function buildEngine(
         const clamped = Math.min(1, Math.max(0, p));
         currentAlpha  = clamped;
         paused        = true;
-        pausedElapsed = clamped * effectiveDuration;
+        pausedElapsed = clamped * runMs;
         startTime     = performance.now() - pausedElapsed;
         cancelAnimationFrame(rafId);
         applyAutoAlpha(pausedElapsed);

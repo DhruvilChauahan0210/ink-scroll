@@ -429,8 +429,8 @@ months, 81% to the homepage; `/vs-gsap` at position 11 with 425 impressions.
    `firefox-native` into `firefox`~~ — both done in 2.19.1 (2026-11-06).
 3. **Owner:** create the `v2.10.1` GitHub release page by hand (its job lacked
    `contents: write`; from 2.10.2 the workflow creates it).
-4. **Owner:** push the `v2.23.1` tag on the release commit (docs-only: puts the
-   README with the framework and comparison links on npm).
+4. **Owner:** push the `v2.23.2` tag on its release commit (autoplay with a
+   stagger: seek(1) finishes every path). 2.23.1 is out (2026-11-11).
 5. **Owner, ~2026-11-18:** re-check Search Console for the new titles
    (`/vs-gsap` again on 2026-11-11, home, React, Next.js). Read on 2026-11-11:
    impressions halved the week of 2026-11-01, after the site-wide redesign,

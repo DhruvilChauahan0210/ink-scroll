@@ -108,6 +108,7 @@
 - ~~AOS animation gallery~~ — `/aos-animation`, 2026-11-11.
 - ~~Text animation generator~~ — `/text-animation-generator`, 2026-11-11.
 - ~~SVG path tool~~ — `/svg-path-viewer`, 2026-11-11.
+- ~~Autoplay seek/progress with a stagger~~ — fixed in 2.23.2. The no-stagger stop seen in the viewer did not reproduce in the library (e2e/autoplay.spec.ts).
 - ~~Awesome-list PRs~~ — nine opened 2026-11-11 (see STATUS); follow up on review comments.
 - The JavaScript Weekly / React Status / Frontend Focus submission forms (text in `reports/link-submissions-2026-11-11.md`); Best of JS once the repo has more stars. Only 8 external links today, and 42 pages are never crawled.
 - Request indexing for the 42 "Discovered – not indexed" pages, ~10 a day.

@@ -922,6 +922,24 @@ const MUTATIONS = [
     spec: 'vivus',
     grep: 'reduced motion turned on mid-play ends every drawing',
   },
+  {
+    id: 'autoplay-run/seek',
+    what: 'autoplay seek() spans only `duration`, so seek(1) leaves the later paths of a staggered drawing part-drawn',
+    file: 'src/core/engine.ts',
+    from: '        pausedElapsed = clamped * runMs;',
+    to: '        pausedElapsed = clamped * effectiveDuration;',
+    spec: 'autoplay',
+    grep: 'seek\\(1\\) draws every path',
+  },
+  {
+    id: 'autoplay-run/length',
+    what: 'the autoplay run is taken as `duration` again, ignoring the stagger tail, so seek() and getProgress() stop short',
+    file: 'src/core/engine.ts',
+    from: '      : effectiveDuration * (1 + Math.max(0, paths.length - 1) * stagger);',
+    to: '      : effectiveDuration;',
+    spec: 'autoplay',
+    grep: 'seek\\(0.5\\) is half the whole run',
+  },
 ];
 
 const args = process.argv.slice(2);

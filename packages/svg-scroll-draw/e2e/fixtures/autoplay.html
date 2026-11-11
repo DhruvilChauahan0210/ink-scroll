@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>An autoplay drawing below the fold</title>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+  .lead { height: 1200px; background: #eee; }
+  #art { display: block; width: 600px; height: 200px; }
+  #art path { fill: none; stroke: #234; stroke-width: 6; }
+  .tail { height: 1200px; }
+</style>
+</head>
+<body>
+<!--
+  Viewport 900x800. Three paths in a drawing that starts 1200px down, so it is
+  off screen at load and autoplay waits for it to scroll in. Linear easing.
+  ?stagger=   the stagger (default 0)
+  ?duration=  the autoplay duration in ms (default 600)
+  ?poll=1     read getProgress() into a range input every frame, as the site's
+              SVG path viewer did when a run was seen stopping part way
+-->
+<div class="lead"></div>
+<svg id="art" viewBox="0 0 600 200">
+  <path d="M20 40 H580" />
+  <path d="M20 100 H580" />
+  <path d="M20 160 H580" />
+</svg>
+<input id="slider" type="range" min="0" max="1" step="0.01" value="0" aria-label="progress">
+<div class="tail"></div>
+<script type="module">
+import { scrollDraw } from '/dist/index.mjs';
+import { publish, drawnFraction } from './_probe.mjs';
+
+const q = new URLSearchParams(location.search);
+let completes = 0;
+const progressSeen = [];
+const inst = scrollDraw('#art', {
+  autoplay: true,
+  duration: Number(q.get('duration') ?? 600),
+  stagger: Number(q.get('stagger') ?? 0),
+  easing: 'linear',
+  onProgress: (p) => progressSeen.push(p),
+  onComplete: () => { completes++; },
+});
+
+if (q.get('poll') === '1') {
+  const slider = document.getElementById('slider');
+  const loop = () => {
+    slider.value = String(inst.getProgress());
+    requestAnimationFrame(loop);
+  };
+  requestAnimationFrame(loop);
+}
+
+publish({
+  scrollTo: (y) => window.scrollTo(0, y),
+  fractions: () => [...document.querySelectorAll('#art path')].map(drawnFraction),
+  progress: () => inst.getProgress(),
+  lastProgressEvent: () => progressSeen[progressSeen.length - 1] ?? null,
+  scrollDrawProgress: () => Number(document.getElementById('art').style.getPropertyValue('--scroll-draw-progress')),
+  completes: () => completes,
+  seek: (p) => inst.seek(p),
+  call: (method) => inst[method](),
+});
+</script>
+</body>
+</html>

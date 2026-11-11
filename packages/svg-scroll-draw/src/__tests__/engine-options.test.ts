@@ -1076,6 +1076,87 @@ describe('createEngine — autoplay', () => {
   });
 });
 
+// With a stagger, path i starts i × stagger × duration late, so a run lasts
+// duration × (1 + (n − 1) × stagger). seek() and getProgress() used to cover
+// only `duration` and follow the first path: seek(1) left the later paths
+// part-drawn, and getProgress() said 1 while they were still drawing.
+describe('createEngine — autoplay with stagger', () => {
+  const three = () => [makePath(), makePath(), makePath()];
+
+  it('seek(1) finishes every path', () => {
+    const t = mockPerformanceNow();
+    const paths = three();
+    const instance = createEngine(makeContainer(paths), { autoplay: true, duration: 1000, stagger: 0.25 });
+
+    t.now = 0;
+    FakeIO.instances[0].trigger(true);
+    instance.seek(1);
+
+    expect(paths.map((p) => p.style.strokeDashoffset)).toEqual(['0', '0', '0']);
+    expect(instance.getProgress()).toBe(1);
+  });
+
+  it('seek(0.5) is half way through the whole run, not the first path', () => {
+    const t = mockPerformanceNow();
+    const paths = three();
+    // Run = 1000 × (1 + 2 × 0.5) = 2000ms. Half way is 1000ms: the first path
+    // done, the second half drawn, the third just starting.
+    const instance = createEngine(makeContainer(paths), { autoplay: true, duration: 1000, stagger: 0.5 });
+
+    t.now = 0;
+    FakeIO.instances[0].trigger(true);
+    instance.seek(0.5);
+
+    expect(paths.map((p) => Number(p.style.strokeDashoffset))).toEqual([0, 50, 100]);
+    expect(instance.getProgress()).toBe(0.5);
+  });
+
+  it('getProgress() reaches 1 only when the last path is drawn', () => {
+    vi.useFakeTimers();
+    const t = mockPerformanceNow();
+    const onComplete = vi.fn();
+    const instance = createEngine(makeContainer(three()), { autoplay: true, duration: 1000, stagger: 0.5, onComplete });
+
+    t.now = 0;
+    FakeIO.instances[0].trigger(true);
+    t.now = 1000; // the first path is done, two still drawing
+    raf.tick();
+    expect(instance.getProgress()).toBeCloseTo(0.5, 5);
+    expect(onComplete).not.toHaveBeenCalled();
+
+    t.now = 2000;
+    raf.tick();
+    expect(instance.getProgress()).toBe(1);
+    expect(onComplete).toHaveBeenCalledTimes(1);
+  });
+
+  it('onProgress and --scroll-draw-progress follow the whole run', () => {
+    const t = mockPerformanceNow();
+    const seen: number[] = [];
+    const container = makeContainer(three());
+    createEngine(container, { autoplay: true, duration: 1000, stagger: 0.5, onProgress: (p) => seen.push(p) });
+
+    t.now = 0;
+    FakeIO.instances[0].trigger(true);
+    t.now = 1000;
+    raf.tick();
+
+    expect(seen[seen.length - 1]).toBeCloseTo(0.5, 5);
+    expect(Number(container.style.getPropertyValue('--scroll-draw-progress'))).toBeCloseTo(0.5, 5);
+  });
+
+  it('without a stagger, progress is unchanged: the single run', () => {
+    const t = mockPerformanceNow();
+    const instance = createEngine(makeContainer(three()), { autoplay: true, duration: 1000 });
+
+    t.now = 0;
+    FakeIO.instances[0].trigger(true);
+    t.now = 250;
+    raf.tick();
+    expect(instance.getProgress()).toBeCloseTo(0.25, 5);
+  });
+});
+
 describe('preset option', () => {
   it('reveal preset sets fade:true and once:true', () => {
     const container = makeContainer();

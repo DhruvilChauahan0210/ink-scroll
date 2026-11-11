@@ -55,6 +55,15 @@ const KINDS: { k: Kind; label: string }[] = [
  */
 const RELEASES: Release[] = [
   {
+    version: '2.23.2',
+    title: 'Autoplay with a stagger finishes every path',
+    date: '2026-11-11',
+    items: [
+      { type: 'fix', text: 'With autoplay and a stagger, seek(), getProgress(), onProgress, --scroll-draw-progress and waypoints now span the whole run, duration × (1 + (n − 1) × stagger). seek(1) used to leave the later paths part-drawn, and progress said 1 while they were still drawing. Without a stagger nothing changes.' },
+      { type: 'test', text: 'Five unit tests and a browser test of an autoplay drawing below the fold in three engines; two mutations, each caught.' },
+    ],
+  },
+  {
     version: '2.23.1',
     title: 'The npm README links every guide',
     date: '2026-11-11',

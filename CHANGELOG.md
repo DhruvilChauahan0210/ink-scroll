@@ -724,6 +724,33 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ---
 
+## [2.23.2] — 2026-11-11
+
+### Fixed
+
+- **Autoplay with a stagger: `seek()`, `getProgress()` and `onProgress` span
+  the whole run.** With `autoplay: true`, path i starts `i × stagger ×
+  duration` late, so a run lasts `duration × (1 + (n − 1) × stagger)`. `seek(p)`
+  covered only `duration`, and the instance's progress followed the first
+  path: `seek(1)` left the later paths part-drawn (three paths at stagger 0.25:
+  0, 25 and 50 of 100 still to draw), and `getProgress()`, `onProgress`,
+  `--scroll-draw-progress` and waypoints said 1 while they were still drawing.
+  All of them now span the whole run, and reach 1 only when the last path has
+  drawn. Without a stagger, or in clip mode, nothing changes: the run is
+  `duration`. Found building the site's SVG path viewer.
+- A second report from the same work, an autoplay run with no stagger
+  stopping part way, did not reproduce outside that page: the new browser
+  test scrolls the drawing in at once and in steps, with and without
+  `getProgress()` read every frame, and every run finishes in Chromium,
+  Firefox and WebKit. Behaviour is unchanged there.
+
+### Tests
+
+- Five unit tests (`createEngine — autoplay with stagger`) and
+  `e2e/autoplay.spec.ts`, six browser tests per engine on a drawing below the
+  fold. Two mutations, `autoplay-run/seek` and `autoplay-run/length`, each
+  caught by its test (97 in all).
+
 ## [2.23.1] — 2026-11-11
 
 No library code changed: the build is byte-for-byte the same as 2.23.0.
