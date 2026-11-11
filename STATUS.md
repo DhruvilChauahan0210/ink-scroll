@@ -220,6 +220,7 @@ at all.
 - [x] Search Console (3 months to 2026-11-09): 133 clicks, 1.89K impressions, position 10.4; impressions halved the week of 2026-11-01 (the site-wide redesign); 21 indexed, 42 "Discovered – not indexed", 8 external links
 - [x] Homepage title and description agree on the main-entry size; React, Next.js, pen drawing and `llms.txt` read `SELF.gzipKb`; `llms.txt` test counts derived
 - [x] `/vs-gsap` title and description lead with "GSAP alternative" and the measured sizes
+- [x] SEO audit 2026-11-11: nothing blocking; finale Star link contrast fixed; `llms.txt` as Markdown links
 - [x] Vercel Web Analytics component in the root layout (`@vercel/analytics` 2.0.1); enabled from the Vercel dashboard
 - [x] 2.23.1 released 2026-11-11 (was staged): docs-only, so npm shows the README with every guide and comparison linked; `dist/` identical to the published 2.23.0
 - [x] `/react-scroll-animation`: library comparison (4, measured) and 6 questions with FAQPage data; SEO check 67 pages, 0 problems

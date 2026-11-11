@@ -8,6 +8,15 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### Site
 
+- **SEO audit fixes (2026-11-11).** An audit found nothing blocking search:
+  all 67 sitemap pages return 200 with a self canonical, no noindex and one
+  H1; Lighthouse mobile SEO 100; LCP 2.07 s on a throttled phone. Two small
+  fixes from it: the finale's "Star on GitHub" link no longer sits at 0.35
+  opacity before the star is drawn (its label failed WCAG AA at 2.77:1; now
+  only the hairline and the star are pencil until then), and `llms.txt` lists
+  its pages as Markdown links, adds the framework guides and every comparison,
+  and reads the example count from `data/examples-index.ts`.
+
 - **Vercel Web Analytics.** `<Analytics />` from `@vercel/analytics/next` in the
   root layout: cookieless page views, so no consent banner, and free on the
   Hobby plan up to 50,000 events a month (collection pauses past that; Hobby is

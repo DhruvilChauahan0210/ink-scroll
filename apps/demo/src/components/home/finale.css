@@ -118,8 +118,10 @@
 
 .home .fin-cta {
   margin-top: 8px;
-  opacity: 0.35;
-  transition: opacity 0.3s, border-color 0.3s, background 0.25s, color 0.25s, transform 0.35s var(--ease);
+  /* A link is readable before the star is drawn: only the hairline and the
+     star are pencil until then, never the label (it failed AA at 0.35 opacity). */
+  border-color: var(--line-2);
+  transition: border-color 0.3s, background 0.25s, color 0.25s, transform 0.35s var(--ease);
 }
 .home .fin-cta-star { color: var(--fg-3); transition: color 0.3s; }
 .home .fin-cta-n {
@@ -128,7 +130,7 @@
   color: var(--fg-2);
   font-variant-numeric: tabular-nums;
 }
-.home .fin-pin[data-ready] .fin-cta { opacity: 1; border-color: var(--accent); }
+.home .fin-pin[data-ready] .fin-cta { border-color: var(--accent); }
 .home .fin-pin[data-ready] .fin-cta-star { color: var(--accent); }
 
 @media (max-width: 860px) {

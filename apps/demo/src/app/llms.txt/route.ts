@@ -1,5 +1,6 @@
 import { COMPETITORS, SELF } from '@/data/competitors';
 import { BROWSER_TESTS, UNIT_TESTS } from '@/data/facts';
+import { EXAMPLE_COUNT } from '@/data/examples-index';
 
 export const dynamic = 'force-static';
 
@@ -83,18 +84,34 @@ neither draws SVG paths, pins, snaps, or scrubs video. ScrollReveal is GPL-3.0.
 
 ## Key pages
 
-- Docs and full API reference: https://svg-scroll-draw.vercel.app/docs
-- 23 live examples: https://svg-scroll-draw.vercel.app/examples
-- Migration guides (AOS in Next.js / React, ScrollReveal in React, vivus in React, GSAP ScrollTrigger in React): https://svg-scroll-draw.vercel.app/guides
-- Copy-paste scroll blocks (shadcn registry, \`npx shadcn@latest add https://svg-scroll-draw.vercel.app/r/<name>.json\`): https://svg-scroll-draw.vercel.app/blocks
-- Interactive playground: https://svg-scroll-draw.vercel.app/playground
-- vs GSAP: https://svg-scroll-draw.vercel.app/vs-gsap
-- vs Framer Motion: https://svg-scroll-draw.vercel.app/vs-framer-motion
-- vs AOS / ScrollReveal: https://svg-scroll-draw.vercel.app/vs-aos
-- React guide: https://svg-scroll-draw.vercel.app/react-scroll-animation
-- Next.js guide: https://svg-scroll-draw.vercel.app/nextjs-scroll-animation
-- Blog: https://svg-scroll-draw.vercel.app/blog
-- Changelog: https://svg-scroll-draw.vercel.app/changelog
+- [Docs](https://svg-scroll-draw.vercel.app/docs): every API and option
+- [Examples](https://svg-scroll-draw.vercel.app/examples): ${EXAMPLE_COUNT} live examples
+- [Migration guides](https://svg-scroll-draw.vercel.app/guides): AOS in Next.js and React, ScrollReveal, vivus and GSAP ScrollTrigger in React
+- [Blocks](https://svg-scroll-draw.vercel.app/blocks): copy-paste scroll blocks from a shadcn registry (\`npx shadcn@latest add https://svg-scroll-draw.vercel.app/r/<name>.json\`)
+- [Playground](https://svg-scroll-draw.vercel.app/playground): try options in the browser
+- [Changelog](https://svg-scroll-draw.vercel.app/changelog)
+- [Blog](https://svg-scroll-draw.vercel.app/blog)
+
+## Framework guides
+
+- [React](https://svg-scroll-draw.vercel.app/react-scroll-animation)
+- [Next.js](https://svg-scroll-draw.vercel.app/nextjs-scroll-animation)
+- [Vue](https://svg-scroll-draw.vercel.app/vue-scroll-animation)
+- [Nuxt](https://svg-scroll-draw.vercel.app/nuxt-scroll-animation)
+- [Svelte](https://svg-scroll-draw.vercel.app/svelte-scroll-animation)
+- [Solid](https://svg-scroll-draw.vercel.app/solid-scroll-animation)
+- [Angular](https://svg-scroll-draw.vercel.app/angular-scroll-animation)
+- [Astro](https://svg-scroll-draw.vercel.app/astro-scroll-animation)
+
+## Comparisons
+
+- [vs GSAP](https://svg-scroll-draw.vercel.app/vs-gsap)
+- [vs Framer Motion](https://svg-scroll-draw.vercel.app/vs-framer-motion)
+- [vs Motion](https://svg-scroll-draw.vercel.app/vs-motion)
+- [vs AOS and ScrollReveal](https://svg-scroll-draw.vercel.app/vs-aos)
+- [vs Locomotive Scroll](https://svg-scroll-draw.vercel.app/vs-locomotive-scroll)
+- [vs ScrollMagic](https://svg-scroll-draw.vercel.app/vs-scrollmagic)
+- [vs vivus](https://svg-scroll-draw.vercel.app/vs-vivus)
 
 ## Notes for citation
 
