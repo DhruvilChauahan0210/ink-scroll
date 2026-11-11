@@ -49,6 +49,7 @@ const COMPARE: SiteLink[] = [
 const RESOURCES: SiteLink[] = [
   { href: '/playground', label: 'Playground' },
   { href: '/text-animation-generator', label: 'Text animation generator' },
+  { href: '/svg-path-viewer', label: 'SVG path viewer' },
   { href: '/verify', label: 'Verify' },
   { href: '/changelog', label: 'Changelog' },
 ];

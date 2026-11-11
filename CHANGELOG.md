@@ -8,6 +8,21 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### Site
 
+- **New tool: SVG path viewer** (`/svg-path-viewer`), for "svg path" (526) and
+  "svg path editor" (316) in the Bing research. Paste an SVG or one path's
+  `d`: it is rebuilt from drawing elements and attributes only
+  (`lib/svg-sanitize.ts`), so a pasted script, event handler, `javascript:`
+  link, `<foreignObject>` or external `<image>` is left out, not run, and
+  nothing is uploaded. Each shape is measured as scrollDraw measures it (2πr
+  for a circle, the perimeter for a rect, `getTotalLength()` otherwise) with
+  its path commands, and checked for what stops a line drawing: no stroke, a
+  fill, `<ellipse>` outside the default selector, zero length, styles in
+  classes or `<style>`, and `vector-effect: non-scaling-stroke`, which draws
+  a scaled-up drawing with gaps. The preview plays with `seek()`; the code
+  tabs give the `pathLength="1"` CSS, `scrollDraw`, `<ScrollDraw>` and the
+  cleaned SVG. Also a reference of all 10 path commands and six FAQPage
+  questions. Linked from the nav (Resources), `llms.txt` and the sitemap.
+
 - **New tool: text animation generator** (`/text-animation-generator`). From
   the same Bing research: "text animation" (871), "animated text generator"
   (374) and "animated text with css/js" (327) searches in three months, led by

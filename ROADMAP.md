@@ -107,7 +107,7 @@
 
 - ~~AOS animation gallery~~ — `/aos-animation`, 2026-11-11.
 - ~~Text animation generator~~ — `/text-animation-generator`, 2026-11-11.
-- Next from the Bing keyword research (`reports/bing-keywords-2026-11-11.md`): an SVG path tool ("svg path" 526, "svg path editor" 316).
+- ~~SVG path tool~~ — `/svg-path-viewer`, 2026-11-11.
 - ~~Awesome-list PRs~~ — nine opened 2026-11-11 (see STATUS); follow up on review comments.
 - The JavaScript Weekly / React Status / Frontend Focus submission forms (text in `reports/link-submissions-2026-11-11.md`); Best of JS once the repo has more stars. Only 8 external links today, and 42 pages are never crawled.
 - Request indexing for the 42 "Discovered – not indexed" pages, ~10 a day.

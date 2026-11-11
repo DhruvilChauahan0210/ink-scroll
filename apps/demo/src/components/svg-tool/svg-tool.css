@@ -1,0 +1,99 @@
+/* ── The SVG path viewer (/svg-path-viewer) ───────────────────────────────
+   Input, stage and transport in one hairline panel; then the measurements
+   and checks; then the code. Mono labels, no colour of its own except the
+   accent rule on a check that needs attention. */
+
+.site .sv { display: grid; gap: 32px; }
+.site .sv-panel { border: 1px solid var(--line-2); }
+
+.site .sv-input { display: grid; gap: 6px; padding: 16px; border-bottom: 1px solid var(--line); }
+.site .sv-input span { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .sv-input textarea {
+  width: 100%;
+  min-height: 140px;
+  padding: 10px 12px;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  font: 400 12px/1.6 var(--mono);
+  color: var(--fg);
+  resize: vertical;
+}
+.site .sv-input textarea:focus-visible { border-color: var(--fg); outline: 0; }
+.site .sv-error { margin: 0; padding: 16px; border-left: 2px solid var(--accent); font-size: 13.5px; line-height: 1.6; color: var(--fg-2); }
+
+.site .sv-stage {
+  display: grid;
+  place-items: center;
+  min-height: clamp(220px, 30vw, 340px);
+  padding: clamp(16px, 3vw, 32px);
+  background: var(--panel);
+}
+.site .sv-host { width: 100%; display: grid; place-items: center; color: var(--fg); }
+.site .sv-svg { display: block; width: 100%; max-width: 560px; max-height: 300px; height: auto; overflow: visible; }
+
+.site .sv-transport {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--line);
+}
+.site .sv-btn {
+  padding: 8px 14px;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  font: 500 12px/1 var(--mono);
+  color: var(--fg);
+  cursor: pointer;
+}
+.site .sv-btn:hover, .site .sv-btn:focus-visible { border-color: var(--fg); outline: 0; }
+.site .sv-scrub { display: grid; gap: 4px; flex: 1 1 220px; min-width: 0; }
+.site .sv-scrub span { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .sv input[type='range'] { width: 100%; accent-color: var(--fg); }
+.site .sv-check { display: inline-flex; align-items: center; gap: 8px; font: 500 12px/1 var(--mono); color: var(--fg-2); cursor: pointer; }
+.site .sv-check input { accent-color: var(--fg); }
+
+.site .sv-results { display: grid; gap: 12px; min-width: 0; }
+.site .sv-scroll { overflow-x: auto; }
+.site .sv-table { width: 100%; border-collapse: collapse; }
+.site .sv-table th, .site .sv-table td { padding: 8px 12px 8px 0; border-top: 1px solid var(--line); text-align: left; white-space: nowrap; }
+.site .sv-table th { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .sv-table td { font: 400 12.5px/1.5 var(--mono); color: var(--fg); }
+.site .sv-total { margin: 0; font: 500 11px/1.4 var(--mono); color: var(--fg-3); }
+.site .sv-problems { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.site .sv-problems li { padding: 10px 14px; border-left: 2px solid var(--accent); background: var(--panel); font-size: 13.5px; line-height: 1.6; color: var(--fg-2); }
+.site .sv-problems li.is-ok { border-left-color: var(--line-2); }
+
+.site .sv-code { display: grid; min-width: 0; }
+.site .sv-tabs { display: flex; flex-wrap: wrap; }
+.site .sv-tab {
+  padding: 8px 14px;
+  border: 1px solid var(--line-2);
+  border-bottom: 0;
+  border-left-width: 0;
+  background: transparent;
+  font: 500 11.5px/1 var(--mono);
+  color: var(--fg-2);
+  cursor: pointer;
+}
+.site .sv-tab:first-child { border-left-width: 1px; }
+.site .sv-tab[aria-selected='true'] { color: var(--fg); background: var(--panel); }
+.site .sv-tab:focus-visible { outline: 1px solid var(--fg); outline-offset: -3px; }
+.site .sv-code .code-box { margin-top: 0; }
+
+/* The command reference. */
+.site .sv-cmds { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.site .sv-cmds th, .site .sv-cmds td { padding: 10px 12px 10px 0; border-top: 1px solid var(--line); text-align: left; vertical-align: top; }
+.site .sv-cmds th { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .sv-cmds td:first-child, .site .sv-cmds td:nth-child(3) { font: 400 12.5px/1.5 var(--mono); color: var(--fg); white-space: nowrap; }
+.site .sv-cmds td:nth-child(2), .site .sv-cmds td:last-child { color: var(--fg-2); line-height: 1.6; }
+
+/* Fig. 1 — the dash trick. */
+.site .svf svg { width: 100%; height: auto; }
+.site .svf-pencil { color: var(--fg-3); }
+.site .svf-ink { color: var(--fg); }
+.site .svf-k { font: 500 11px var(--mono); fill: var(--fg-2); }
+.site .svf-n { font: 500 10px var(--mono); fill: var(--fg-3); }
