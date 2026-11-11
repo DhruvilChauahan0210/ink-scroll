@@ -6,6 +6,15 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ## [Unreleased]
 
+### Site
+
+- **Vercel Web Analytics.** `<Analytics />` from `@vercel/analytics/next` in the
+  root layout: cookieless page views, so no consent banner, and free on the
+  Hobby plan up to 50,000 events a month (collection pauses past that; Hobby is
+  never billed). Search Console shows who arrives from Google; this shows what
+  they read after landing. It collects nothing until Web Analytics is enabled
+  on the project in the Vercel dashboard.
+
 ### CI
 
 - **Only the newest release takes `latest`.** On 2026-11-07 the tags v2.20.1,

@@ -108,7 +108,8 @@
 - ~~Awesome-list PRs~~ — nine opened 2026-11-11 (see STATUS); follow up on review comments.
 - The JavaScript Weekly / React Status / Frontend Focus submission forms (text in `reports/link-submissions-2026-11-11.md`); Best of JS once the repo has more stars. Only 8 external links today, and 42 pages are never crawled.
 - Request indexing for the 42 "Discovered – not indexed" pages, ~10 a day.
-- Optional: a custom domain instead of `*.vercel.app`; Vercel Web Analytics to see what visitors do after landing.
+- ~~Vercel Web Analytics~~ — component added 2026-11-11; the owner enables it in the Vercel dashboard.
+- Optional: a custom domain instead of `*.vercel.app`.
 
 ### Demo Site
 

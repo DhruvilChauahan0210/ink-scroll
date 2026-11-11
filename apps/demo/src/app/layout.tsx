@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Syne } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { TITLE_TEMPLATE } from "./_lib/seo";
 import { SELF } from '@/data/competitors';
@@ -139,6 +140,8 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
         {children}
+        {/* Vercel Web Analytics: cookieless page views, free on Hobby (50,000 events a month). */}
+        <Analytics />
       </body>
     </html>
   );
