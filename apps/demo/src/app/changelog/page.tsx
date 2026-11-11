@@ -55,6 +55,14 @@ const KINDS: { k: Kind; label: string }[] = [
  */
 const RELEASES: Release[] = [
   {
+    version: '2.23.1',
+    title: 'The npm README links every guide',
+    date: '2026-11-11',
+    items: [
+      { type: 'site', text: 'The package README, the page npm shows, links the React, Next.js, Vue, Nuxt, Svelte, Solid, Angular and Astro guides and the GSAP, Framer Motion, Motion, AOS, Locomotive Scroll, ScrollMagic and Vivus comparisons. No library code changed.' },
+    ],
+  },
+  {
     version: '2.23.0',
     title: 'The drop-ins follow reduced motion live',
     date: '2026-11-07',
