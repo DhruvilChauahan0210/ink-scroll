@@ -140,8 +140,11 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
         {children}
-        {/* Vercel Web Analytics: cookieless page views, free on Hobby (50,000 events a month). */}
-        <Analytics />
+        {/* Vercel Web Analytics: cookieless page views, free on Hobby (50,000 events a month).
+            Only in Vercel builds (VERCEL=1 at build time): elsewhere — CI's local
+            server, `next start` here — /_vercel/insights/script.js does not exist,
+            and its 404 failed CI's blocks check on every push from db4f106. */}
+        {process.env.VERCEL ? <Analytics /> : null}
       </body>
     </html>
   );
