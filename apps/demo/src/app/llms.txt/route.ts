@@ -1,6 +1,7 @@
 import { COMPETITORS, SELF } from '@/data/competitors';
 import { BROWSER_TESTS, UNIT_TESTS } from '@/data/facts';
 import { EXAMPLE_COUNT } from '@/data/examples-index';
+import { AOS_EFFECT_COUNT } from '@/data/aos-effects';
 
 export const dynamic = 'force-static';
 
@@ -109,6 +110,7 @@ neither draws SVG paths, pins, snaps, or scrubs video. ScrollReveal is GPL-3.0.
 - [vs Framer Motion](https://svg-scroll-draw.vercel.app/vs-framer-motion)
 - [vs Motion](https://svg-scroll-draw.vercel.app/vs-motion)
 - [vs AOS and ScrollReveal](https://svg-scroll-draw.vercel.app/vs-aos)
+- [AOS animation examples](https://svg-scroll-draw.vercel.app/aos-animation): all ${AOS_EFFECT_COUNT} data-aos effects live
 - [vs Locomotive Scroll](https://svg-scroll-draw.vercel.app/vs-locomotive-scroll)
 - [vs ScrollMagic](https://svg-scroll-draw.vercel.app/vs-scrollmagic)
 - [vs vivus](https://svg-scroll-draw.vercel.app/vs-vivus)

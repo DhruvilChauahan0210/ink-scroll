@@ -159,7 +159,8 @@ export default function VsAosPage() {
               Already on AOS or ScrollReveal? Change one import.{' '}
               <code>svg-scroll-draw/aos</code> reads your existing <code>data-aos</code> markup with no{' '}
               <code>aos.css</code>; <code>svg-scroll-draw/scrollreveal</code> runs your{' '}
-              <code>ScrollReveal().reveal()</code> calls under MIT instead of GPL-3.0.
+              <code>ScrollReveal().reveal()</code> calls under MIT instead of GPL-3.0. Every AOS effect runs live,
+              with its markup to copy, on <Link href="/aos-animation">AOS animation examples</Link>.
             </p>
             <p className="pg-lede">
               AOS and ScrollReveal.js put animation config in HTML data attributes.

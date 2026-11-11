@@ -42,6 +42,7 @@ const COMPARE: SiteLink[] = [
   { href: '/vs-gsap', label: 'vs GSAP' },
   { href: '/vs-framer-motion', label: 'vs Framer Motion' },
   { href: '/vs-aos', label: 'vs AOS' },
+  { href: '/aos-animation', label: 'AOS effects' },
   ...VERSUS.map((v) => ({ href: `/${v.slug}`, label: `vs ${COMPETITORS[v.competitorKey].label}` })),
 ];
 

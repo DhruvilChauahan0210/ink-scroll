@@ -8,6 +8,18 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### Site
 
+- **New page: AOS animation examples** (`/aos-animation`). Bing's keyword
+  research (2026-11-11, `reports/bing-keywords-2026-11-11.md`) showed 468
+  searches in three months for "aos animation", with two small `*.vercel.app`
+  demo pages in its top three: searchers want to see the effects. The page
+  runs all 27 `data-aos` effects live on the AOS drop-in, each with its markup
+  to copy and a replay button; duration and easing controls set every
+  specimen through the attributes and `AOS.refreshHard()`. Also every
+  attribute with its option and default, all 20 easing names, the 9 anchor
+  placements, and six questions as FAQPage data. The lists come from the
+  drop-in's own tables (`data/aos-effects.ts`). Linked from the nav (Compare),
+  `/vs-aos`, `llms.txt` and the sitemap.
+
 - **SEO audit fixes (2026-11-11).** An audit found nothing blocking search:
   all 67 sitemap pages return 200 with a self canonical, no noindex and one
   H1; Lighthouse mobile SEO 100; LCP 2.07 s on a throttled phone. Two small

@@ -105,6 +105,7 @@
 
 ### Reach (Search Console, 2026-11-11)
 
+- ~~AOS animation gallery~~ — `/aos-animation`, 2026-11-11. Next from the Bing keyword research (`reports/bing-keywords-2026-11-11.md`): a scroll text animation generator ("text animation", "animated text generator") and an SVG path tool ("svg path", "svg path editor").
 - ~~Awesome-list PRs~~ — nine opened 2026-11-11 (see STATUS); follow up on review comments.
 - The JavaScript Weekly / React Status / Frontend Focus submission forms (text in `reports/link-submissions-2026-11-11.md`); Best of JS once the repo has more stars. Only 8 external links today, and 42 pages are never crawled.
 - Request indexing for the 42 "Discovered – not indexed" pages, ~10 a day.

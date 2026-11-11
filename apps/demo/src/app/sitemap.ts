@@ -86,8 +86,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
     },
     {
+      url: `${SITE_URL}/aos-animation`,
+      lastModified: new Date("2026-11-11"),
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
       url: `${SITE_URL}/vs-aos`,
-      lastModified: new Date("2026-11-07"),
+      lastModified: new Date("2026-11-11"),
       changeFrequency: "monthly",
       priority: 0.9,
     },
