@@ -17,8 +17,13 @@ All notable changes to `svg-scroll-draw` are documented here.
   for a circle, the perimeter for a rect, `getTotalLength()` otherwise) with
   its path commands, and checked for what stops a line drawing: no stroke, a
   fill, `<ellipse>` outside the default selector, zero length, styles in
-  classes or `<style>`, and `vector-effect: non-scaling-stroke`, which draws
-  a scaled-up drawing with gaps. The preview plays with `seek()`; the code
+  classes or `<style>`, `vector-effect: non-scaling-stroke`, which draws
+  a scaled-up drawing with gaps, and one path made of many pieces, which
+  draws them one after another along a single dash (the preview splits it
+  into a path per piece so they draw together). Line view turns fills off and adds a stroke
+  only where a shape has none, so a drawing's own line widths stay. The sample
+  is a cat illustration from Tibbixel (tibbixel.com), credited in the code
+  and not covered by the MIT licence. The preview plays with `seek()`; the code
   tabs give the `pathLength="1"` CSS, `scrollDraw`, `<ScrollDraw>` and the
   cleaned SVG. Also a reference of all 10 path commands and six FAQPage
   questions. Linked from the nav (Resources), `llms.txt` and the sitemap.
