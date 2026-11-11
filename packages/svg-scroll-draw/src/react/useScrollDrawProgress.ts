@@ -39,8 +39,9 @@ export function useScrollDrawProgress(
   const optsRef = useRef(options);
   optsRef.current = options;
 
-  // Tracks the highest progress seen — used for `once` mode
-  const frozenRef = useRef(-1);
+  // The furthest raw progress seen, for `once`; eased after, so an overshooting
+  // easing settles at 1 rather than holding its peak.
+  const frozenRef = useRef(0);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -69,8 +70,8 @@ export function useScrollDrawProgress(
         ? document.querySelector(scrollContainer)
         : (scrollContainer as Element | null | undefined) ?? null;
 
-    const startConfig = parseTrigger(trigger.start ?? 'top bottom');
-    const endConfig   = parseTrigger(trigger.end   ?? 'bottom top');
+    const startConfig = parseTrigger(trigger.start || 'top bottom');
+    const endConfig   = parseTrigger(trigger.end   || 'bottom top');
 
     let tStart   = 0;
     let tEnd     = 0;
@@ -110,12 +111,7 @@ export function useScrollDrawProgress(
       const easeFn = typeof easing === 'function' ? easing : (EASINGS[easing] ?? EASINGS.linear);
 
       const raw = computeProgress(scrollPos(), tStart, tEnd, speed);
-      let p = easeFn(raw);
-
-      if (once) {
-        frozenRef.current = Math.max(frozenRef.current, p);
-        p = frozenRef.current;
-      }
+      const p = easeFn(once ? (frozenRef.current = Math.max(frozenRef.current, raw)) : raw);
 
       setProgress(p);
       rafId = requestAnimationFrame(tick);

@@ -345,7 +345,7 @@ export const EXAMPLE_SEO: Record<string, ExampleSeo> = {
     slug: 'scroll-counter',
     title: 'Animated Number Counter on Scroll — scrollCounter',
     description:
-      'Count numbers up from zero as they scroll into view, with custom formatting for currency, percentages or compact notation. 1 KB, no dependencies.',
+      'Count numbers up from zero as they scroll into view, with custom formatting for currency, percentages or compact notation. Typed, no dependencies.',
     heading: 'Number counter on scroll',
     intro:
       'Counting statistics up as they enter the viewport is the standard social-proof pattern, and it is usually a hand-rolled requestAnimationFrame loop plus an IntersectionObserver plus formatting logic. scrollCounter is those three things in one call, with a format function so 1200000 can render as $1.2M without you touching the animation.',

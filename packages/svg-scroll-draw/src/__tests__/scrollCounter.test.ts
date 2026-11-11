@@ -254,4 +254,75 @@ describe('scrollCounter', () => {
     inst.seek(-1);
     expect(inst.getProgress()).toBe(0);
   });
+
+  // Up to 2.23.2 once held the eased value: an elastic count from 0 to 1000
+  // passed 1250 a fifth of the way in and stayed there. The element starts
+  // below the fold here: rect top 1000, so the default window, top 80% → top
+  // 20%, is [360, 840], and a fifth of it is y = 456.
+  describe('once with an easing that overshoots or dips', () => {
+    function belowTheFold(): HTMLSpanElement {
+      const el = makeSpan();
+      vi.spyOn(el, 'getBoundingClientRect').mockReturnValue({
+        top: 1000, height: 100, left: 0, width: 200, right: 200, bottom: 1100, x: 0, y: 0,
+        toJSON: () => ({}),
+      });
+      return el;
+    }
+
+    it('elastic passes the target on the way and ends exactly on it', () => {
+      const el = belowTheFold();
+      const inst = scrollCounter(el, { to: 1000, easing: 'elastic' });
+      expect(el.textContent).toBe('0');
+      FakeIO.instances[0].trigger(true);
+      vi.stubGlobal('scrollY', 456);
+      raf.tick();
+      expect(el.textContent).toBe('1250');
+      vi.stubGlobal('scrollY', 900);
+      raf.tick();
+      expect(el.textContent).toBe('1000');
+      expect(inst.getProgress()).toBe(1);
+      vi.stubGlobal('scrollY', 0); // back: held
+      raf.tick();
+      expect(el.textContent).toBe('1000');
+    });
+
+    it('bounce keeps its dips while scrolling forward', () => {
+      const el = belowTheFold();
+      scrollCounter(el, { to: 1000, easing: 'bounce' });
+      FakeIO.instances[0].trigger(true);
+      const seen: number[] = [];
+      for (let y = 360; y <= 840; y += 8) {
+        vi.stubGlobal('scrollY', y);
+        raf.tick();
+        seen.push(Number(el.textContent));
+      }
+      expect(seen.some((n, i) => i > 0 && n < seen[i - 1])).toBe(true);
+      expect(seen[seen.length - 1]).toBe(1000);
+    });
+
+    it('after seek(), once still holds the sought value as its floor', () => {
+      const el = belowTheFold();
+      const inst = scrollCounter(el, { to: 1000, easing: 'ease-in' });
+      FakeIO.instances[0].trigger(true);
+      inst.seek(0.5);
+      expect(el.textContent).toBe('500');
+      inst.resume();
+      vi.stubGlobal('scrollY', 504); // raw 0.3, eased 0.09: under the floor
+      raf.tick();
+      expect(el.textContent).toBe('500');
+      vi.stubGlobal('scrollY', 744); // raw 0.8, eased 0.64
+      raf.tick();
+      expect(el.textContent).toBe('640');
+    });
+  });
+
+  // `end: ''` was read as 'top bottom'. Blank is the default now: top 20%.
+  it('a blank trigger is the default one', () => {
+    const el = makeSpan();
+    const inst = scrollCounter(el, { to: 100, easing: 'linear', once: false, trigger: { start: '', end: '' } });
+    FakeIO.instances[0].trigger(true);
+    raf.tick();
+    // rect top 300 at y 0: [300 − 640, 300 − 160] = [−340, 140], so 340 / 480 in.
+    expect(inst.getProgress()).toBeCloseTo(340 / 480, 6);
+  });
 });

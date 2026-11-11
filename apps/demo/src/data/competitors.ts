@@ -51,9 +51,9 @@ export const MEASURED_ON = '2026-08-14';
 export const SELF: Competitor = {
   name: 'svg-scroll-draw',
   label: 'svg-scroll-draw (all APIs)',
-  version: '2.23.2',
+  version: '2.23.3',
   license: 'MIT',
-  gzipKb: 11.7,
+  gzipKb: 11.6,
   lastPublish: '2026-08-14',
   command: 'npm run size',
   measured: true,
@@ -74,12 +74,12 @@ export const SELF_ENTRIES: Record<string, number> = {
   vivus: 4.2,
   text: 3.4,
   // Each framework landing quotes its own entry, wrapper and engines included.
-  vue: 13.2,
-  nuxt: 13.3,
-  svelte: 12.6,
-  solid: 12.6,
-  angular: 12.6,
-  astro: 12.2,
+  vue: 13.1,
+  nuxt: 13.2,
+  svelte: 12.5,
+  solid: 12.5,
+  angular: 12.5,
+  astro: 12.0,
 };
 
 export const COMPETITORS: Record<string, Competitor> = {

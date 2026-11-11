@@ -152,7 +152,7 @@ export function PinnedFeatureTour({
 
   return (
     <section className={`mx-auto w-full max-w-5xl ${className}`}>
-      <p className="font-mono text-xs text-neutral-500 dark:text-neutral-400">
+      <p className="font-mono text-xs text-neutral-600 dark:text-neutral-400">
         {eyebrow}
       </p>
       <h2 className="mt-3 text-3xl font-medium tracking-tight text-neutral-950 sm:text-4xl dark:text-neutral-50">
@@ -212,14 +212,14 @@ export function PinnedFeatureTour({
                       {pad(i + 1)}
                     </span>
                     {/* With one feature on screen, say how many there are. */}
-                    <span aria-hidden="true" className={`${COMPACT_SHOW} text-neutral-500 dark:text-neutral-400`}>
+                    <span aria-hidden="true" className={`${COMPACT_SHOW} text-neutral-600 dark:text-neutral-400`}>
                       of {pad(features.length)}
                     </span>
                   </span>
-                  <h3 className={`mt-3 text-2xl font-semibold leading-tight ${i === current ? 'text-neutral-950 dark:text-neutral-50' : 'text-neutral-500 dark:text-neutral-400'}`}>
+                  <h3 className={`mt-3 text-2xl font-semibold leading-tight ${i === current ? 'text-neutral-950 dark:text-neutral-50' : 'text-neutral-600 dark:text-neutral-400'}`}>
                     {f.title}
                   </h3>
-                  <p className={`mt-1.5 max-w-[36ch] leading-relaxed ${i === current ? 'text-neutral-600 dark:text-neutral-300' : 'text-neutral-500 dark:text-neutral-400'}`}>{f.body}</p>
+                  <p className={`mt-1.5 max-w-[36ch] leading-relaxed ${i === current ? 'text-neutral-600 dark:text-neutral-300' : 'text-neutral-600 dark:text-neutral-400'}`}>{f.body}</p>
                 </li>
               ))}
             </ol>

@@ -17,8 +17,10 @@
   --fg-3: #69655e;
   --line: rgba(18, 17, 16, 0.10);
   --line-2: rgba(18, 17, 16, 0.22);
-  --accent: #d9381e;
-  --accent-2: rgba(217, 56, 30, 0.12);
+  /* #d9381e was 4.07:1 on --bg and 3.75:1 on --bg-2, under AA for the small
+     mono labels that carry it; this is 5.15:1 and 4.75:1. */
+  --accent: #bd2f19;
+  --accent-2: rgba(189, 47, 25, 0.12);
 
   --sans: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
   --mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -459,7 +461,7 @@ html:not(.dark) .home .hs-nib-core { fill: var(--accent); }
   color: var(--fg-3);
 }
 .home .site-index-cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 24px; }
-@media (min-width: 900px) { .home .site-index-cols { grid-template-columns: 0.8fr 1.4fr 1.3fr 0.8fr; gap: 32px; } }
+@media (min-width: 900px) { .home .site-index-cols { grid-template-columns: 0.7fr 1.9fr 1.2fr 1.3fr 0.8fr; gap: 32px; } }
 .home .site-index-h {
   padding-bottom: 8px;
   margin-bottom: 8px;
@@ -470,7 +472,8 @@ html:not(.dark) .home .hs-nib-core { fill: var(--accent); }
 }
 .home .site-index ul { list-style: none; margin: 0; padding: 0; }
 @media (min-width: 900px) {
-  .home .site-index-frameworks ul, .home .site-index-compare ul { columns: 2; column-gap: 20px; }
+  .home .site-index-frameworks ul, .home .site-index-compare ul, .home .site-index-tools ul { columns: 2; column-gap: 20px; }
+  .home .site-index-tools li { break-inside: avoid; }
 }
 .home .site-index a {
   display: inline-block;
@@ -480,3 +483,12 @@ html:not(.dark) .home .hs-nib-core { fill: var(--accent); }
   transition: color 0.2s;
 }
 .home .site-index a:hover { color: var(--fg); }
+.home .site-index-support {
+  margin-top: 32px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  font: 400 14px/1.5 var(--sans);
+  color: var(--fg-3);
+}
+.home .site-index-support a { padding: 0; color: var(--fg); text-decoration: underline; text-decoration-color: var(--line-2); text-underline-offset: 3px; }
+.home .site-index-support a:hover { text-decoration-color: var(--fg); }

@@ -220,8 +220,8 @@ function buildEngine(
     clip === true ? 'left' : (typeof clip === 'string' ? clip : false);
 
   const easeFn      = typeof easing === 'function' ? easing : (EASINGS[easing] ?? EASINGS.linear);
-  const startConfig = parseTrigger(trigger.start ?? 'top bottom');
-  const endConfig   = parseTrigger(trigger.end   ?? 'bottom top');
+  const startConfig = parseTrigger(trigger.start || 'top bottom');
+  const endConfig   = parseTrigger(trigger.end   || 'bottom top');
 
   const scrollEl: Element | null =
     typeof scrollContainer === 'string'
@@ -267,10 +267,11 @@ function buildEngine(
   let isVisible     = false;
   let frozenAlpha   = -1;
   /**
-   * With `once`, how far each path has got. Per path because `stagger` gives
-   * each its own window: a single shared value handed the first path's progress
-   * to every later one, so `once` quietly cancelled the stagger. `frozenAlpha`
-   * is the floor under them — what `seek()` sets — and clip mode's own value.
+   * With `once`, how far the scroll has got through each path's window, raw:
+   * see latch(). Per path because `stagger` gives each its own window: a single
+   * shared value handed the first path's progress to every later one, so `once`
+   * quietly cancelled the stagger. Clip mode keeps its one value at index 0.
+   * `frozenAlpha` is the floor under them, eased: what `seek()` sets.
    */
   let frozenPath: number[] = [];
   let prevScroll    = -1;
@@ -370,6 +371,18 @@ function buildEngine(
     return inst;
   }
 
+  /**
+   * Path i's alpha from its raw scroll progress. With `once` the raw progress
+   * is held at its furthest and eased after, as scrollText does: holding the
+   * eased value with Math.max froze spring and elastic on their overshoot past
+   * 1 (drawn 1.27 for good in Chromium on 2.23.2) and flattened bounce's dips.
+   */
+  function latch(i: number, raw: number): number {
+    return once && !autoReverse
+      ? Math.max(frozenAlpha, easeFn(frozenPath[i] = Math.max(frozenPath[i] ?? 0, raw)))
+      : easeFn(raw);
+  }
+
   // ── Apply alpha to all paths ──────────────────────────────────────────────
 
   function applyAlpha(alpha: number, dir: 'forward' | 'reverse'): void {
@@ -379,35 +392,41 @@ function buildEngine(
       (container as HTMLElement).style.clipPath = computeClipPath(a);
       return;
     }
-    paths.forEach((el, i) => {
-      el.style.strokeDashoffset =
-        dir === 'reverse' ? `${lengths[i] * alpha}` : `${lengths[i] * (1 - alpha)}`;
+    paths.forEach((el, i) => paint(el, i, alpha, dir));
+  }
 
-      if (fade) el.style.opacity = dir === 'reverse' ? `${1 - alpha}` : `${alpha}`;
+  /**
+   * One path's frame at `alpha`, for seek(), the scroll loop and autoplay,
+   * which each had their own copy of it until 2.23.3.
+   */
+  function paint(el: SVGElement, i: number, alpha: number, dir: 'forward' | 'reverse'): void {
+    el.style.strokeDashoffset =
+      dir === 'reverse' ? `${lengths[i] * alpha}` : `${lengths[i] * (1 - alpha)}`;
 
-      if (colorFrom && colorTo) el.style.stroke = lerpColor(colorFrom, colorTo, alpha);
-      else if (colorTo) el.style.stroke = colorTo;
+    if (fade) el.style.opacity = dir === 'reverse' ? `${1 - alpha}` : `${alpha}`;
 
-      if (widthFrom !== null && widthTo !== null)
-        el.style.strokeWidth = `${widthFrom + (widthTo - widthFrom) * alpha}`;
-      else if (widthTo !== null)
-        el.style.strokeWidth = `${widthTo}`;
+    if (colorFrom && colorTo) el.style.stroke = lerpColor(colorFrom, colorTo, alpha);
+    else if (colorTo) el.style.stroke = colorTo;
 
-      if (fillOpacityFrom !== null && fillOpacityTo !== null)
-        el.style.fillOpacity = `${fillOpacityFrom + (fillOpacityTo - fillOpacityFrom) * alpha}`;
-      else if (fillOpacityTo !== null)
-        el.style.fillOpacity = `${fillOpacityTo}`;
+    if (widthFrom !== null && widthTo !== null)
+      el.style.strokeWidth = `${widthFrom + (widthTo - widthFrom) * alpha}`;
+    else if (widthTo !== null)
+      el.style.strokeWidth = `${widthTo}`;
 
-      if (morphTo && el.tagName.toLowerCase() === 'path' && originalDs[i]) {
-        el.setAttribute('d', morphPath(originalDs[i], morphTo, alpha));
-      }
-    });
+    if (fillOpacityFrom !== null && fillOpacityTo !== null)
+      el.style.fillOpacity = `${fillOpacityFrom + (fillOpacityTo - fillOpacityFrom) * alpha}`;
+    else if (fillOpacityTo !== null)
+      el.style.fillOpacity = `${fillOpacityTo}`;
+
+    if (morphTo && el.tagName.toLowerCase() === 'path' && originalDs[i])
+      el.setAttribute('d', morphPath(originalDs[i], morphTo, alpha));
   }
 
   function resetPaths(): void {
     (container as HTMLElement).style.setProperty('--scroll-draw-progress', '0');
     if (clipDirection) {
-      (container as HTMLElement).style.clipPath = computeClipPath(0);
+      // Reversed, progress 0 is fully shown, as applyAlpha() draws it.
+      (container as HTMLElement).style.clipPath = computeClipPath(direction === 'reverse' ? 1 : 0);
       return;
     }
     paths.forEach((el, i) => {
@@ -460,17 +479,14 @@ function buildEngine(
     }
   });
 
-  if (clipDirection) {
-    if (prefersReduced) {
-      (container as HTMLElement).style.clipPath = computeClipPath(1);
-      onComplete?.();
-      return { destroy: () => {}, replay: () => {}, pause: () => {}, resume: () => {}, seek: () => {}, getProgress: () => 1 };
-    }
-    (container as HTMLElement).style.clipPath = computeClipPath(0);
-  } else if (prefersReduced) {
+  if (prefersReduced) {
+    if (clipDirection) (container as HTMLElement).style.clipPath = computeClipPath(1);
     onComplete?.();
     return { destroy: () => {}, replay: () => {}, pause: () => {}, resume: () => {}, seek: () => {}, getProgress: () => 1 };
   }
+  // A reversed clip starts fully shown. computeClipPath(0) here hid it until
+  // the first frame, which then showed it whole: a flash of nothing.
+  if (clipDirection) (container as HTMLElement).style.clipPath = computeClipPath(direction === 'reverse' ? 1 : 0);
 
   // ── Native CSS fast path ──────────────────────────────────────────────────
   // Hand the draw to CSS scroll timelines when the config is simple enough that CSS
@@ -495,6 +511,11 @@ function buildEngine(
 
   function nativeEligible(): boolean {
     if (native === false) return false;
+    // Autoplay runs on a clock, not the scroll: on 2.23.2 a plain
+    // `{ autoplay: true }` came here and the drawing followed the page.
+    if (autoplay) return false;
+    // The trigger-line overlay is drawn by the JS engine only (cacheTriggers).
+    if (debug) return false;
     if (!supportsNativeTimeline()) return false;
     if (!paths.length) return false;
     // Only easings CSS can reproduce (no 'spring', no custom fn).
@@ -515,8 +536,8 @@ function buildEngine(
     if (onProgress || onStart || onComplete || onEnter || onLeave || onEnterBack || onLeaveBack) return false;
     if (strokeColor != null || strokeWidth != null || fillOpacity != null) return false;
     // Only the default trigger maps cleanly to the CSS `cover` range.
-    if ((trigger.start ?? 'top bottom').trim() !== 'top bottom') return false;
-    if ((trigger.end   ?? 'bottom top').trim() !== 'bottom top') return false;
+    if ((trigger.start || 'top bottom').trim() !== 'top bottom') return false;
+    if ((trigger.end   || 'bottom top').trim() !== 'bottom top') return false;
     return true;
   }
 
@@ -670,26 +691,7 @@ function buildEngine(
         paths.forEach((el, i) => {
           const staggerMs = i * stagger * effectiveDuration;
           const raw       = Math.min(1, Math.max(0, (elapsed - staggerMs) / effectiveDuration));
-          const alpha     = easeFn(raw);
-
-          el.style.strokeDashoffset = direction === 'reverse'
-            ? `${lengths[i] * alpha}`
-            : `${lengths[i] * (1 - alpha)}`;
-
-          if (fade) el.style.opacity = direction === 'reverse' ? `${1 - alpha}` : `${alpha}`;
-          if (colorFrom && colorTo) el.style.stroke = lerpColor(colorFrom, colorTo, alpha);
-          else if (colorTo) el.style.stroke = colorTo;
-          if (widthFrom !== null && widthTo !== null)
-            el.style.strokeWidth = `${widthFrom + (widthTo - widthFrom) * alpha}`;
-          else if (widthTo !== null)
-            el.style.strokeWidth = `${widthTo}`;
-          if (fillOpacityFrom !== null && fillOpacityTo !== null)
-            el.style.fillOpacity = `${fillOpacityFrom + (fillOpacityTo - fillOpacityFrom) * alpha}`;
-          else if (fillOpacityTo !== null)
-            el.style.fillOpacity = `${fillOpacityTo}`;
-          if (morphTo && el.tagName.toLowerCase() === 'path' && originalDs[i])
-            el.setAttribute('d', morphPath(originalDs[i], morphTo, alpha));
-
+          paint(el, i, easeFn(raw), direction);
           if (raw < 1) allDone = false;
         });
 
@@ -905,11 +907,7 @@ function buildEngine(
 
     // ── Clip mode: animate clipPath on container, skip per-path logic ─────────
     if (clipDirection) {
-      let alpha = easeFn(computeProgress(currentScroll, tStart, tEnd, effectiveSpeed));
-      if (once && !autoReverse) {
-        frozenAlpha = Math.max(frozenAlpha, alpha);
-        alpha = frozenAlpha;
-      }
+      const alpha = latch(0, computeProgress(currentScroll, tStart, tEnd, effectiveSpeed));
       currentAlpha = alpha;
       (container as HTMLElement).style.setProperty('--scroll-draw-progress', String(alpha));
       const visual = effectiveDir === 'reverse' ? 1 - alpha : alpha;
@@ -926,8 +924,8 @@ function buildEngine(
         if (repeatCount < maxRepeats) {
           repeatCount++;
           repeatTimer = setTimeout(() => {
-            frozenAlpha = -1; started = false; completed = false;
-            (container as HTMLElement).style.clipPath = computeClipPath(0);
+            frozenAlpha = -1; frozenPath = []; started = false; completed = false;
+            resetPaths();
           }, repeatDelay);
         }
       } else if (alpha < 1 && !once) {
@@ -940,32 +938,8 @@ function buildEngine(
 
     paths.forEach((el, i) => {
       const offset = i * staggerFit * range;
-      let alpha = easeFn(computeProgress(currentScroll, tStart + offset, tEnd + offset, effectiveSpeed));
-
-      if (once && !autoReverse) {
-        alpha = frozenPath[i] = Math.max(frozenPath[i] ?? frozenAlpha, alpha);
-      }
-
-      el.style.strokeDashoffset =
-        effectiveDir === 'reverse' ? `${lengths[i] * alpha}` : `${lengths[i] * (1 - alpha)}`;
-
-      if (fade) el.style.opacity = effectiveDir === 'reverse' ? `${1 - alpha}` : `${alpha}`;
-
-      if (colorFrom && colorTo) el.style.stroke = lerpColor(colorFrom, colorTo, alpha);
-      else if (colorTo) el.style.stroke = colorTo;
-
-      if (widthFrom !== null && widthTo !== null)
-        el.style.strokeWidth = `${widthFrom + (widthTo - widthFrom) * alpha}`;
-      else if (widthTo !== null)
-        el.style.strokeWidth = `${widthTo}`;
-
-      if (fillOpacityFrom !== null && fillOpacityTo !== null)
-        el.style.fillOpacity = `${fillOpacityFrom + (fillOpacityTo - fillOpacityFrom) * alpha}`;
-      else if (fillOpacityTo !== null)
-        el.style.fillOpacity = `${fillOpacityTo}`;
-
-      if (morphTo && el.tagName.toLowerCase() === 'path' && originalDs[i])
-        el.setAttribute('d', morphPath(originalDs[i], morphTo, alpha));
+      const alpha = latch(i, computeProgress(currentScroll, tStart + offset, tEnd + offset, effectiveSpeed));
+      paint(el, i, alpha, effectiveDir);
 
       if (i === 0) {
         // The first path is the instance's progress, as on the autoplay path:

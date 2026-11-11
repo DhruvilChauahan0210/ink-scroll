@@ -46,7 +46,7 @@ export function SignatureDraw({
     <figure
       className={`mx-auto w-full max-w-xl rounded-2xl border border-neutral-200 bg-white p-6 sm:p-8 dark:border-neutral-800 dark:bg-neutral-950 ${className}`}
     >
-      <p className="font-mono text-xs text-neutral-500 dark:text-neutral-400">
+      <p className="font-mono text-xs text-neutral-600 dark:text-neutral-400">
         {label}
       </p>
 
@@ -78,7 +78,7 @@ export function SignatureDraw({
         </svg>
       </ScrollDraw>
 
-      <figcaption className="mt-2 flex items-baseline justify-between gap-4 font-mono text-xs text-neutral-500 dark:text-neutral-400">
+      <figcaption className="mt-2 flex items-baseline justify-between gap-4 font-mono text-xs text-neutral-600 dark:text-neutral-400">
         <span>{name}</span>
         <span>{note}</span>
       </figcaption>

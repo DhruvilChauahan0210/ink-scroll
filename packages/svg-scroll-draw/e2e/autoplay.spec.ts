@@ -13,6 +13,19 @@ import { openFixture, collectErrors, call, settle } from './helpers';
  * The same page also checks a run with no stagger goes all the way once the
  * drawing scrolls in, with and without a loop reading getProgress() every
  * frame: the viewer saw a run stop part way under those conditions.
+ *
+ * That report was not the stagger bug, and these runs could not meet it: every
+ * variant here passed onProgress and onComplete, and any callback keeps the
+ * native CSS scroll-timeline path off. When the viewer still played on
+ * autoplay's own clock (it drives the run with seek() now), it made
+ * `scrollDraw(box, { autoplay: true, duration, stagger: 0 })` for one shape:
+ * no callbacks, a named easing, the default trigger. Up to 2.23.2 that config
+ * was native-eligible, and the native path was taken before autoplay was
+ * looked at, so the drawing followed the page scroll instead of its clock and
+ * stopped wherever the scroll stopped; getProgress() read the scroll too.
+ * Measured on 2.23.2 with `?bare=1`, which passes no callbacks: half drawn at
+ * this page's scroll of 900, in Chromium, Firefox and WebKit alike. Since
+ * 2.23.3 autoplay never takes the native path.
  */
 
 /**
@@ -63,15 +76,38 @@ test.describe('autoplay with a stagger', () => {
     await openFixture(page, 'autoplay.html?stagger=0.5&duration=400');
     await into(page);
     // Part way: whatever the timing, progress is below 1 while a path is short.
+    // Both read in one call: read in two, the run could finish between them
+    // (it flaked in Firefox under load on 2.23.2 and 2.23.3 alike).
     await page.waitForTimeout(300);
-    const mid = await call<number[]>(page, 'fractions');
-    if (mid.some((f) => f < 0.999)) expect(await call<number>(page, 'progress')).toBeLessThan(1);
+    const mid = await call<{ fractions: number[]; progress: number }>(page, 'snapshot');
+    if (mid.fractions.some((f) => f < 0.999)) expect(mid.progress).toBeLessThan(1);
     const end = await drawn(page, 3000);
     end.forEach((f, i) => expect(f, `path ${i}: ${end.map((v) => v.toFixed(3))}`).toBeCloseTo(1, 3));
     expect(await call<number>(page, 'progress')).toBe(1);
     expect(await call<number>(page, 'lastProgressEvent')).toBe(1);
     expect(await call<number>(page, 'scrollDrawProgress')).toBe(1);
     expect(await call<number>(page, 'completes')).toBe(1);
+  });
+});
+
+test.describe('autoplay with no callbacks', () => {
+  test('plays over its duration once in view, with no scroll after, and never on the scroll timeline', async ({ page }) => {
+    const errors = collectErrors(page);
+    await openFixture(page, 'autoplay.html?bare=1&duration=600');
+    expect(await call<number[]>(page, 'fractions')).toEqual([0, 0, 0]);
+    await into(page); // one scroll, then still
+    // No onComplete to wait on: give it the duration and a margin, then poll.
+    await page.waitForTimeout(600 + 300);
+    const deadline = Date.now() + 2500;
+    let got = await call<number[]>(page, 'fractions');
+    while (got.some((f) => f < 0.999) && Date.now() < deadline) {
+      await page.waitForTimeout(50);
+      got = await call<number[]>(page, 'fractions');
+    }
+    got.forEach((f, i) => expect(f, `path ${i}: ${got.map((v) => v.toFixed(3))}`).toBeCloseTo(1, 3));
+    expect(await call<number>(page, 'progress')).toBe(1);
+    expect(await call<string[]>(page, 'timelineClasses')).toEqual([]);
+    expect(errors).toEqual([]);
   });
 });
 

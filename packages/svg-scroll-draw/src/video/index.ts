@@ -72,8 +72,8 @@ export function scrollVideo(
 
   let prefersReduced   = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const easeFn         = typeof easing === 'function' ? easing : (EASINGS[easing] ?? EASINGS.linear);
-  const startConfig    = parseTrigger(trigger.start ?? 'top top');
-  const endConfig      = parseTrigger(trigger.end   ?? 'bottom top');
+  const startConfig    = parseTrigger(trigger.start || 'top top');
+  const endConfig      = parseTrigger(trigger.end   || 'bottom top');
 
   // Ensure video is paused and preloaded
   video.pause();
@@ -88,7 +88,10 @@ export function scrollVideo(
   let rafId        = 0;
   let isVisible    = false;
   let paused       = false;
+  /** With `once`, the floor seek() set: -1 when there is none. */
   let frozenAlpha  = -1;
+  /** With `once`, the furthest raw scroll progress, eased after (see scrollAnimate). */
+  let frozenRaw    = 0;
   let currentAlpha = 0;
   let completed    = false;
   let ready        = false;
@@ -135,11 +138,10 @@ export function scrollVideo(
     // Reduced motion shows the last frame once, at metadata. The triggers are
     // never measured then, so a scroll-driven update would seek back to frame 0.
     if (!isVisible || paused || !ready || prefersReduced) return;
-    let alpha = easeFn(computeProgress(scrollPos(), tStart, tEnd, 1));
-    if (once) {
-      frozenAlpha = Math.max(frozenAlpha, alpha);
-      alpha = frozenAlpha;
-    }
+    const progress = computeProgress(scrollPos(), tStart, tEnd, 1);
+    const alpha = once
+      ? Math.max(frozenAlpha, easeFn(frozenRaw = Math.max(frozenRaw, progress)))
+      : easeFn(progress);
     currentAlpha = alpha;
     applyAlpha(alpha);
     if (alpha >= 1 && !completed) {
@@ -224,6 +226,7 @@ export function scrollVideo(
     },
     replay() {
       frozenAlpha  = -1;
+      frozenRaw    = 0;
       completed    = false;
       currentAlpha = 0;
       paused       = false;
@@ -243,6 +246,7 @@ export function scrollVideo(
       const clamped = Math.min(1, Math.max(0, p));
       currentAlpha  = clamped;
       frozenAlpha   = clamped;
+      frozenRaw     = 0;
       paused        = true;
       cancelAnimationFrame(rafId);
       lastTime      = NaN;  // an explicit seek always seeks

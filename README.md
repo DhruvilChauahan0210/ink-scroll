@@ -26,7 +26,7 @@ Works in **React · Next.js · Vue 3 · Svelte · Solid · Angular · Nuxt · As
 
 ## Features at a glance
 
-- **11.7 KB gzipped** for the whole main entry — and you rarely need all of it. Every API is a separate entry point: `scrollReveal` is 5.8 KB, `scrollPin` 1.6 KB, `scrollSnap` 1.9 KB. [Full size table below](#bundle-sizes), measured by `npm run size` and enforced in CI.
+- **11.6 KB gzipped** for the whole main entry — and you rarely need all of it. Every API is a separate entry point: `scrollReveal` is 5.8 KB, `scrollPin` 1.6 KB, `scrollSnap` 1.9 KB. [Full size table below](#bundle-sizes), measured by `npm run size` and enforced in CI.
 - **Native CSS fast path** — where the browser supports scroll-driven animations the draw runs on a CSS `view-timeline` with zero per-frame JavaScript, and falls back to the JS engine automatically everywhere else. Both engines are [verified to produce the same output](#native-css-rendering) by a cross-browser test suite rather than assumed to.
 - **Zero dependencies** — no GSAP, no ScrollTrigger, no heavyweight runtime
 - **Reduced motion, followed live** — under `prefers-reduced-motion: reduce` every effect shows its finished state instead of animating, and a reader who turns the setting on while the page is open sees everything still moving finish at once. Scrubbing that moves only with the reader's own scroll (the horizontal strip, a timeline's scroll pass) keeps working, because holding it would hide content
@@ -39,8 +39,8 @@ Works in **React · Next.js · Vue 3 · Svelte · Solid · Angular · Nuxt · As
 - **30+ options** — easing, stagger, fade, stroke color/width lerp, fill opacity, clip reveal, morphTo, velocityScale, waypoints, callbacks, repeat, autoReverse, and more
 - **Group / Sequence / Timeline APIs** — animate multiple containers simultaneously, one-after-another, or on independent scroll windows with `loop` for auto-looping after scroll completion
 - **CSS custom property** — `--scroll-draw-progress` is set on every frame so you can drive any CSS animation without a callback
-- **714 tests across 37 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
-- **246 browser tests on top of those**, run against Chromium, Firefox and WebKit in CI. The unit suite runs in jsdom, where `getTotalLength` is stubbed and `IntersectionObserver` is faked — it can check the engine's arithmetic but nothing about real browser behaviour. Both counts are derived from the suites themselves and enforced in CI, so neither can quietly drift out of date
+- **751 tests across 38 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
+- **255 browser tests on top of those**, run against Chromium, Firefox and WebKit in CI. The unit suite runs in jsdom, where `getTotalLength` is stubbed and `IntersectionObserver` is faked — it can check the engine's arithmetic but nothing about real browser behaviour. Both counts are derived from the suites themselves and enforced in CI, so neither can quietly drift out of date
 
 ---
 
@@ -103,7 +103,7 @@ options are all decent — they just make different trade-offs:
 
 Sizes measured 2026-08-14 at gzip level 9 — see `CLAIMS-AUDIT.md` for the commands.
 
-`svg-scroll-draw` is 11.7 KB for every API at once, and each API is a separate entry point
+`svg-scroll-draw` is 11.6 KB for every API at once, and each API is a separate entry point
 (`scrollReveal` alone is 5.8 KB). If you need one effect, the small libraries above are a
 fair choice. If you need several, one dependency beats four.
 
@@ -806,19 +806,19 @@ outgrows its budget.
 <!-- size-table:start -->
 | Entry point                          | Raw | Gzipped |
 |--------------------------------------|----:|--------:|
-| `svg-scroll-draw/nuxt`               | 40.6 KB | **13.3 KB** |
-| `svg-scroll-draw/vue`                | 40.3 KB | **13.2 KB** |
-| `svg-scroll-draw/react`              | 40.2 KB | **13.2 KB** |
-| `svg-scroll-draw/angular`            | 38.2 KB | **12.6 KB** |
-| `svg-scroll-draw/solid`              | 38.0 KB | **12.6 KB** |
-| `svg-scroll-draw/svelte`             | 38.4 KB | **12.6 KB** |
-| `svg-scroll-draw/astro`              | 36.4 KB | **12.2 KB** |
-| `svg-scroll-draw`                    | 34.5 KB | **11.7 KB** |
-| `dist/cdn/svg-scroll-draw.global.js` | 33.4 KB | **11.6 KB** |
-| `svg-scroll-draw/group`              | 31.0 KB | **10.3 KB** |
-| `svg-scroll-draw/web-component`      | 21.8 KB | **7.8 KB** |
-| `svg-scroll-draw/reveal`             | 14.1 KB | **5.8 KB** |
-| `svg-scroll-draw/horizontal`         | 14.4 KB | **5.7 KB** |
+| `svg-scroll-draw/nuxt`               | 39.6 KB | **13.2 KB** |
+| `svg-scroll-draw/vue`                | 39.4 KB | **13.1 KB** |
+| `svg-scroll-draw/react`              | 39.3 KB | **13.1 KB** |
+| `svg-scroll-draw/angular`            | 37.3 KB | **12.5 KB** |
+| `svg-scroll-draw/solid`              | 37.1 KB | **12.5 KB** |
+| `svg-scroll-draw/svelte`             | 37.4 KB | **12.5 KB** |
+| `svg-scroll-draw/astro`              | 35.4 KB | **12.0 KB** |
+| `svg-scroll-draw`                    | 33.6 KB | **11.6 KB** |
+| `dist/cdn/svg-scroll-draw.global.js` | 32.4 KB | **11.5 KB** |
+| `svg-scroll-draw/group`              | 30.0 KB | **10.2 KB** |
+| `svg-scroll-draw/web-component`      | 20.9 KB | **7.7 KB** |
+| `svg-scroll-draw/reveal`             | 14.0 KB | **5.8 KB** |
+| `svg-scroll-draw/horizontal`         | 14.3 KB | **5.7 KB** |
 | `svg-scroll-draw/scrollreveal/react` | 12.3 KB | **4.8 KB** |
 | `svg-scroll-draw/scrollreveal`       | 12.1 KB | **4.7 KB** |
 | `dist/cdn/scrollreveal.global.js`    | 11.7 KB | **4.6 KB** |
@@ -838,7 +838,7 @@ outgrows its budget.
 | `svg-scroll-draw/pin`                | 3.7 KB | **1.6 KB** |
 | `svg-scroll-draw/lenis`              | 0.4 KB | **0.2 KB** |
 
-Entries share code through chunks instead of each carrying its own copy, so `svg-scroll-draw` + `svg-scroll-draw/react` together is **14.8 KB**, not 11.7 KB + 13.2 KB.
+Entries share code through chunks instead of each carrying its own copy, so `svg-scroll-draw` + `svg-scroll-draw/react` together is **14.7 KB**, not 11.6 KB + 13.1 KB.
 <!-- size-table:end -->
 
 The framework entries are larger because each re-exports the full API surface for that

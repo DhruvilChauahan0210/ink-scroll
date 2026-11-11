@@ -97,6 +97,14 @@ jobs:
     name: Browser tests
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    # Playwright's own image: the three browsers and every library they need,
+    # pulled from Microsoft's registry. On 2026-11-11 the runners could not
+    # resolve *.ubuntu.com for hours, so `playwright install --with-deps` sat in
+    # apt until the job limit, on CI and on the release. The tag must match the
+    # lockfile's playwright version, or the tests look for browsers it lacks.
+    container:
+      image: mcr.microsoft.com/playwright:v1.65.0-noble
+      options: --user 1001
 
     steps:
       - uses: actions/checkout@v7
@@ -108,10 +116,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium firefox webkit
-        working-directory: packages/svg-scroll-draw
 
       # The unit tests run in jsdom with getTotalLength stubbed and
       # IntersectionObserver faked, so they cannot verify browser behaviour. These

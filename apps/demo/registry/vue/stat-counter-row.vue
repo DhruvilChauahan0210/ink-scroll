@@ -72,7 +72,7 @@ const rows = computed(() =>
 
 <template>
   <section :class="['mx-auto w-full max-w-5xl', className]">
-    <p class="font-mono text-xs text-neutral-500 dark:text-neutral-400">
+    <p class="font-mono text-xs text-neutral-600 dark:text-neutral-400">
       {{ eyebrow }}
     </p>
 
@@ -102,7 +102,7 @@ const rows = computed(() =>
                 class="col-start-1 row-start-1 text-left"
               />
             </span>
-            <span v-if="stat.suffix" class="ml-0.5 text-[0.6em] text-neutral-500 dark:text-neutral-400">{{ stat.suffix }}</span>
+            <span v-if="stat.suffix" class="ml-0.5 text-[0.6em] text-neutral-600 dark:text-neutral-400">{{ stat.suffix }}</span>
           </span>
         </dd>
       </div>

@@ -335,6 +335,10 @@
 .home .st-tab[aria-selected='true']::after { transform: scaleX(1); }
 
 .home .st-panel {
+  /* Dark in both themes, so it keeps the dark theme's quiet ink and accent:
+     the light theme's were 3.19:1 and 3.29:1 on it. */
+  --fg-3: #8f8b83;
+  --accent: #ff5a36;
   position: relative;
   display: flex;
   flex-direction: column;

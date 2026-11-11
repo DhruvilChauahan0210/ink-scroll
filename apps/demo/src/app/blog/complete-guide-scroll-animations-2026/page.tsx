@@ -132,12 +132,13 @@ scrollReveal('.badge', { preset: 'scale' });`}</Code>
       <Section id={id(2)} k="scrollParallax" title="Parallax">
         <p>
           Move elements at a different rate than scroll. Background images, floating badges, decorative shapes.
-          Negative speed = opposite direction.
+          A positive speed moves the element up as you scroll down, ahead of the page; a negative one moves it
+          down, so it lags behind.
         </p>
         <Code file="app.js">{`import { scrollParallax } from 'svg-scroll-draw';
 
-scrollParallax('#hero-bg',       { speed: 0.4 });   // slower than scroll
-scrollParallax('#floating-badge',{ speed: -0.2 });  // opposite direction
+scrollParallax('#hero-bg',       { speed: 0.4 });   // ahead of the page: up 40% of its height
+scrollParallax('#floating-badge',{ speed: -0.2 });  // lags behind the page
 scrollParallax('#side-element',  { speed: 0.3, axis: 'x' }); // horizontal`}</Code>
       </Section>
 
@@ -243,7 +244,7 @@ scrollText('#subtitle', {
 
 scrollCounter('#users',      { to: 50000, format: n => Math.round(n).toLocaleString() + '+' });
 scrollCounter('#revenue',    { to: 1250000, format: n => '$' + Math.round(n).toLocaleString() });
-scrollCounter('#nps',        { to: 94.7, decimals: 1, format: n => n.toFixed(1) + '%' });
+scrollCounter('#nps',        { to: 94.7, format: n => n.toFixed(1) + '%' }); // decimals would replace format
 scrollCounter('#bundle',     { to: ${Math.round(SELF.gzipKb)}, format: n => '~' + Math.round(n) + ' KB' });`}</Code>
       </Section>
 

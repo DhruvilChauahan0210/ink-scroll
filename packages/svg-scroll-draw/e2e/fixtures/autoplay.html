@@ -21,6 +21,11 @@
   ?duration=  the autoplay duration in ms (default 600)
   ?poll=1     read getProgress() into a range input every frame, as the site's
               SVG path viewer did when a run was seen stopping part way
+  ?bare=1     pass no callbacks: { autoplay, duration, stagger, easing } only.
+              The other variants pass onProgress and onComplete, and a callback
+              keeps the native scroll-timeline path off on its own, so they
+              never met 2.23.2's bug: a bare autoplay config took that path
+              and the drawing followed the scroll instead of its clock.
 -->
 <div class="lead"></div>
 <svg id="art" viewBox="0 0 600 200">
@@ -42,8 +47,10 @@ const inst = scrollDraw('#art', {
   duration: Number(q.get('duration') ?? 600),
   stagger: Number(q.get('stagger') ?? 0),
   easing: 'linear',
-  onProgress: (p) => progressSeen.push(p),
-  onComplete: () => { completes++; },
+  ...(q.get('bare') === '1' ? {} : {
+    onProgress: (p) => progressSeen.push(p),
+    onComplete: () => { completes++; },
+  }),
 });
 
 if (q.get('poll') === '1') {
@@ -62,6 +69,11 @@ publish({
   lastProgressEvent: () => progressSeen[progressSeen.length - 1] ?? null,
   scrollDrawProgress: () => Number(document.getElementById('art').style.getPropertyValue('--scroll-draw-progress')),
   completes: () => completes,
+  /** fractions and getProgress() read together, in one frame. */
+  snapshot: () => ({ fractions: [...document.querySelectorAll('#art path')].map(drawnFraction), progress: inst.getProgress() }),
+  /** Classes the native scroll-timeline path puts on the drawing and its paths. */
+  timelineClasses: () => [document.getElementById('art'), ...document.querySelectorAll('#art path')]
+    .flatMap((el) => [...el.classList].filter((c) => c.startsWith('svg-scroll-draw-'))),
   seek: (p) => inst.seek(p),
   call: (method) => inst[method](),
 });

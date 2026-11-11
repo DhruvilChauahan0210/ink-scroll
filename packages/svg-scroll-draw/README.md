@@ -7,7 +7,7 @@
 [![license](https://img.shields.io/npm/l/svg-scroll-draw)](./LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/DhruvilChauahan0210/ink-scroll?style=flat)](https://github.com/DhruvilChauahan0210/ink-scroll/stargazers)
 
-> Draw SVG paths on scroll — plus reveal, pin, snap, parallax, counters, video scrub and text splitting. **11.7 KB gzipped for every API, from 1.6 KB if you import one.** Zero dependencies, MIT, and a native CSS fast path that runs with no per-frame JavaScript. Works in React, Next.js, Vue, Svelte, Solid, Angular, Astro, Nuxt and vanilla JS.
+> Draw SVG paths on scroll — plus reveal, pin, snap, parallax, counters, video scrub and text splitting. **11.6 KB gzipped for every API, from 1.6 KB if you import one.** Zero dependencies, MIT, and a native CSS fast path that runs with no per-frame JavaScript. Works in React, Next.js, Vue, Svelte, Solid, Angular, Astro, Nuxt and vanilla JS.
 
 **[Live Demo](https://svg-scroll-draw.vercel.app)** · [npm](https://www.npmjs.com/package/svg-scroll-draw) · [Docs](https://svg-scroll-draw.vercel.app/docs) · [Examples](https://svg-scroll-draw.vercel.app/examples) · [Report a bug](https://github.com/DhruvilChauahan0210/ink-scroll/issues)
 
@@ -137,12 +137,11 @@ scrollCounter('#revenue', {
   once:   true,
 });
 
-// Percentage with decimal
+// Percentage with one decimal. decimals replaces format, so the % goes in format.
 scrollCounter('#rate', {
-  from:     0,
-  to:       94.7,
-  decimals: 1,
-  format:   n => n.toFixed(1) + '%',
+  from:   0,
+  to:     94.7,
+  format: n => n.toFixed(1) + '%',
 });
 ```
 
@@ -161,7 +160,7 @@ import { ScrollCounter } from 'svg-scroll-draw/react';
 | `to` | `number` | — | Target value **(required)** |
 | `from` | `number` | `0` | Starting value. Set higher than `to` to count down. |
 | `format` | `(n: number) => string` | `String(Math.round(n))` | Custom formatter |
-| `decimals` | `number` | — | Shorthand for `format: n => n.toFixed(decimals)` |
+| `decimals` | `number` | — | Shorthand for `format: n => n.toFixed(decimals)`; replaces `format` when both are set |
 | `easing` | `string \| fn` | `"ease-out"` | — |
 | `trigger` | `TriggerConfig` | `{ start: 'top 80%', end: 'top 20%' }` | — |
 | `once` | `boolean` | `true` | — |
@@ -174,12 +173,12 @@ import { ScrollCounter } from 'svg-scroll-draw/react';
 ```js
 import { scrollParallax } from 'svg-scroll-draw';
 
-scrollParallax('#hero-bg', { speed: 0.4 });           // 40% of scroll rate
-scrollParallax('#floating-badge', { speed: -0.3 });   // opposite direction
+scrollParallax('#hero-bg', { speed: 0.4 });           // up 40% of its height: ahead of the page
+scrollParallax('#floating-badge', { speed: -0.3 });   // down 30%: lags behind the page
 scrollParallax('#sidebar', { speed: 0.3, axis: 'x' }); // horizontal
 ```
 
-`speed` is a multiplier relative to element height. `0.5` = half scroll speed, `-0.2` = opposite direction.
+`speed` is how far the element travels while it crosses the viewport, as a fraction of its own height (its width on `axis: 'x'`). A positive speed moves it up as you scroll down, so it runs ahead of the page: `0.5` = up half its height. A negative one moves it down, so it lags behind, as a background does: `-0.2` = down a fifth.
 
 ---
 
@@ -635,9 +634,9 @@ devtools.highlight('#my-element'); // outline for 2 seconds
 <!-- size-table:start -->
 | Entry | Gzipped |
 |---|---|
-| `svg-scroll-draw` (main, every core API) | 11.7 KB |
-| `svg-scroll-draw/react` (includes the engine) | 13.2 KB |
-| `svg-scroll-draw` + `svg-scroll-draw/react` (together; the engine ships once) | 14.8 KB |
+| `svg-scroll-draw` (main, every core API) | 11.6 KB |
+| `svg-scroll-draw/react` (includes the engine) | 13.1 KB |
+| `svg-scroll-draw` + `svg-scroll-draw/react` (together; the engine ships once) | 14.7 KB |
 | `svg-scroll-draw/reveal` | 5.8 KB |
 | `svg-scroll-draw/text` | 3.4 KB |
 | `svg-scroll-draw/video` | 2.8 KB |

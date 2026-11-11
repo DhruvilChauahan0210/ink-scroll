@@ -32,10 +32,12 @@ export function measureTriggerFrame(
   const size = axis === 'x' ? rect.width : rect.height;
 
   if (scrollEl) {
+    // From the scrollport, inside the border, as clientHeight and CSS view()
+    // measure it. From the border box, a 20px border moved the window 20px.
     const top =
       axis === 'x'
-        ? rect.left - scrollEl.getBoundingClientRect().left + scrollEl.scrollLeft
-        : rect.top - scrollEl.getBoundingClientRect().top + scrollEl.scrollTop;
+        ? rect.left - scrollEl.getBoundingClientRect().left - scrollEl.clientLeft + scrollEl.scrollLeft
+        : rect.top - scrollEl.getBoundingClientRect().top - scrollEl.clientTop + scrollEl.scrollTop;
     return { top, height: size, scroll: 0 };
   }
 

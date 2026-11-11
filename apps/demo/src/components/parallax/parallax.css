@@ -1,0 +1,242 @@
+/* ── The parallax scrolling generator (/parallax-scrolling-generator) ──────
+   One panel: presets, the scrolling preview window and its transport, then a
+   row per layer, so a phone keeps the preview next to what changes it; then
+   the code, then the same scene on real scroll. Hairlines
+   and mono labels, as the rest of the site. Classes are prefixed plx- (the
+   tool) and plxf- (fig. 1). */
+
+.site .plx { display: grid; gap: 32px; min-width: 0; }
+.site .plx-panel { border: 1px solid var(--line-2); min-width: 0; }
+.site .plx-k { margin: 0; font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .plx input[type='range'] { width: 100%; min-width: 0; margin: 0; accent-color: var(--fg); }
+/* globals.css takes the outline off every range input; a keyboard needs it back. */
+.site .plx input[type='range']:focus-visible { outline: 1px solid var(--fg); outline-offset: 6px; }
+
+/* Presets. */
+.site .plx-presets { display: grid; gap: 8px; padding: 16px; }
+.site .plx-preset-note { margin: 0; font-size: 13px; line-height: 1.5; color: var(--fg-2); }
+
+.site .plx-seg { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); border: 1px solid var(--line-2); min-width: 0; }
+.site .plx-seg button {
+  min-width: 0;
+  padding: 7px 6px;
+  border: 0;
+  border-left: 1px solid var(--line-2);
+  background: transparent;
+  font: 500 11.5px/1.2 var(--mono);
+  color: var(--fg-2);
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.site .plx-seg button:first-child { border-left: 0; }
+.site .plx-seg button[aria-checked='true'] { background: var(--fg); color: var(--bg); }
+.site .plx-seg button:focus-visible { outline: 1px solid var(--fg); outline-offset: -3px; }
+/* The chosen button is filled with --fg, which would hide an --fg ring. */
+.site .plx-seg button[aria-checked='true']:focus-visible { outline-color: var(--bg); }
+/* The presets wrap onto a second row on a phone instead of cutting their
+   names: flex items whose borders overlap by a pixel, so the lines stay single. */
+.site .plx-seg.is-wide { display: flex; flex-wrap: wrap; max-width: 560px; padding: 0 1px 1px 0; border: 0; }
+.site .plx-seg.is-wide button { flex: 1 1 84px; margin: 0 -1px -1px 0; border: 1px solid var(--line-2); }
+
+/* A row per layer: name, speed, axis, and what that does here. Narrow, the
+   name and its two readouts share the first two lines, so the preview and all
+   four rows fit on one phone screen together. */
+.site .plx-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto 72px;
+  grid-template-areas: 'name travel axis' 'name rate axis' 'speed speed speed';
+  gap: 2px 12px;
+  align-items: center;
+  padding: 12px 16px;
+  border-top: 1px solid var(--line);
+}
+.site .plx-row .plx-speed { margin-top: 8px; }
+.site .plx-row.is-head { display: none; }
+.site .plx-name { grid-area: name; display: flex; gap: 12px; align-items: baseline; min-width: 0; font-size: 14px; color: var(--fg); }
+.site .plx-name b { font: 500 10.5px/1 var(--mono); color: var(--fg-3); }
+.site .plx-name small { display: block; margin-top: 2px; font: 400 11px/1.4 var(--mono); color: var(--fg-3); }
+.site .plx-speed { grid-area: speed; display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 12px; align-items: center; min-width: 0; }
+.site .plx-speed span { font: 500 12px/1 var(--mono); color: var(--fg); font-variant-numeric: tabular-nums; }
+.site .plx-row .plx-seg { grid-area: axis; }
+.site .plx-out { font: 400 11.5px/1.4 var(--mono); color: var(--fg-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.site .plx-out.is-travel { grid-area: travel; text-align: right; }
+.site .plx-out.is-rate { grid-area: rate; text-align: right; }
+@media (min-width: 760px) {
+  .site .plx-row {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.6fr) 72px 80px 72px;
+    grid-template-areas: 'name speed axis travel rate';
+    gap: 8px 16px;
+  }
+  .site .plx-row .plx-speed { margin-top: 0; }
+  .site .plx-out.is-travel { text-align: left; }
+  .site .plx-row.is-head { display: grid; padding-top: 10px; padding-bottom: 10px; }
+  .site .plx-row.is-head span { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+  .site .plx-row.is-head span:nth-child(1) { grid-area: name; }
+  .site .plx-row.is-head span:nth-child(2) { grid-area: speed; padding-left: 64px; }
+  .site .plx-row.is-head span:nth-child(3) { grid-area: axis; }
+  .site .plx-row.is-head span:nth-child(4) { grid-area: travel; }
+  .site .plx-row.is-head span:nth-child(5) { grid-area: rate; text-align: right; }
+}
+
+/* The preview: a small window onto a page that holds the scene. */
+.site .plx-window { --plx-v: 360px; position: relative; border-top: 1px solid var(--line); }
+@media (max-width: 599px) { .site .plx-window { --plx-v: 320px; } }
+.site .plx-box {
+  position: relative;
+  height: var(--plx-v);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-behavior: auto;
+  padding: 0 clamp(16px, 3vw, 32px);
+  background: var(--bg);
+}
+.site .plx-box:focus-visible { outline: 1px solid var(--fg); outline-offset: -1px; }
+.site .plx-pad {
+  height: var(--plx-v);
+  display: grid;
+  align-content: start;
+  gap: 16px;
+  padding: 24px 0;
+}
+.site .plx-pad.is-end { align-content: end; }
+.site .plx-hint { margin: 0; font: 500 11px/1.4 var(--mono); color: var(--fg-3); }
+.site .plx-bars { display: grid; gap: 10px; }
+.site .plx-bars i { display: block; height: 6px; background: var(--line); }
+.site .plx-bars i:nth-child(1) { width: 48%; height: 10px; background: var(--line-2); }
+.site .plx-bars i:nth-child(2) { width: 92%; }
+.site .plx-bars i:nth-child(3) { width: 86%; }
+.site .plx-bars i:nth-child(4) { width: 95%; }
+.site .plx-bars i:nth-child(5) { width: 64%; }
+
+/* The window's edges: labels that stay put while the page scrolls under them. */
+.site .plx-edge {
+  position: absolute;
+  right: 12px;
+  z-index: 1;
+  padding: 2px 6px;
+  background: var(--bg);
+  font: 500 10px/1.4 var(--mono);
+  color: var(--fg-3);
+  pointer-events: none;
+}
+.site .plx-edge.is-top { top: 8px; }
+.site .plx-edge.is-bottom { bottom: 8px; }
+
+/* The scene: four layers stacked, clipped to the scene. */
+.site .plx-scene {
+  position: relative;
+  aspect-ratio: 3 / 1;
+  overflow: hidden;
+  border: 1px solid var(--line-2);
+  background: var(--panel);
+}
+@media (max-width: 599px) { .site .plx-scene { aspect-ratio: 3 / 2; } }
+.site .plx-layer { position: absolute; inset: 0; will-change: transform; }
+.site .plx-layer svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.site .plx-layer path,
+.site .plx-layer circle { stroke-width: 1.25; vector-effect: non-scaling-stroke; }
+.site .plx-layer .plx-fill { fill: var(--panel); }
+.site .plx-layer .plx-thin { stroke-width: 1; opacity: 0.7; }
+.site .plx-layer .plx-dash { stroke-dasharray: 2 7; }
+.site .plx-l-sky, .site .plx-l-mountains { color: var(--fg-3); }
+.site .plx-l-hills { color: var(--fg-2); }
+.site .plx-l-ground { color: var(--fg); }
+.site .plx-l-sky .plx-sun { color: var(--fg-2); stroke-width: 1.5; }
+.site .plx-l-ground path { stroke-width: 1.4; }
+
+.site .plx-transport {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--line);
+}
+.site .plx-btn {
+  padding: 8px 14px;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  font: 500 12px/1 var(--mono);
+  color: var(--fg);
+  cursor: pointer;
+}
+.site .plx-btn:hover, .site .plx-btn:focus-visible { border-color: var(--fg); outline: 0; }
+.site .plx-btn:disabled { color: var(--fg-3); border-color: var(--line); cursor: not-allowed; }
+.site .plx-scrub { display: grid; gap: 4px; flex: 1 1 200px; min-width: 0; }
+.site .plx-scrub span, .site .plx-count { font: 500 10px/1.4 var(--mono); color: var(--fg-3); font-variant-numeric: tabular-nums; }
+.site .plx-count { margin: 0; }
+.site .plx-note {
+  margin: 0;
+  padding: 10px 16px;
+  border-top: 1px solid var(--line);
+  border-left: 2px solid var(--accent);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--fg-2);
+}
+
+.site .plx-code { display: grid; min-width: 0; }
+.site .plx-tabs { display: flex; flex-wrap: wrap; }
+.site .plx-tab {
+  padding: 8px 14px;
+  border: 1px solid var(--line-2);
+  border-bottom: 0;
+  border-left-width: 0;
+  background: transparent;
+  font: 500 11.5px/1 var(--mono);
+  color: var(--fg-2);
+  cursor: pointer;
+}
+.site .plx-tab:first-child { border-left-width: 1px; }
+.site .plx-tab[aria-selected='true'] { color: var(--fg); background: var(--panel); }
+.site .plx-tab:focus-visible { outline: 1px solid var(--fg); outline-offset: -3px; }
+.site .plx-code .code-box { margin-top: 0; }
+
+.site .plx-live { display: grid; gap: 16px; padding: clamp(32px, 8vw, 96px) 0; border-top: 1px solid var(--line); }
+.site .plx-live .plx-scene { aspect-ratio: 2.4 / 1; }
+@media (max-width: 599px) { .site .plx-live .plx-scene { aspect-ratio: 3 / 2; } }
+.site .plx-live-note { margin: 0; max-width: 60ch; font-size: 13px; line-height: 1.6; color: var(--fg-2); }
+
+/* The speed table (section 2). */
+.site .plx-scroll { overflow-x: auto; }
+.site .plx-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.site .plx-table th, .site .plx-table td { padding: 10px 16px 10px 0; border-top: 1px solid var(--line); text-align: left; vertical-align: top; }
+.site .plx-table th { font: 500 10px/1.4 var(--mono); color: var(--fg-3); white-space: nowrap; }
+.site .plx-table td:first-child, .site .plx-table td:nth-child(2), .site .plx-table td:nth-child(3) { font: 400 12.5px/1.5 var(--mono); color: var(--fg); white-space: nowrap; }
+.site .plx-table td:last-child { color: var(--fg-2); line-height: 1.6; }
+@media (max-width: 599px) {
+  .site .plx-table th, .site .plx-table td { padding-right: 12px; }
+  .site .plx-table th:last-child, .site .plx-table td:last-child { padding-right: 0; }
+  .site .plx-table td:last-child { min-width: 10em; }
+}
+
+/* Every scrollParallax option (section 3): the names are longer than the
+   Q1…Q7 the shared list is sized for, so they get the notes' key column
+   (stk-note: 112px and a 16px gap), and their own line on a phone. */
+.site .plx-opts .stk-q { grid-template-columns: 112px minmax(0, 1fr); column-gap: 16px; }
+@media (max-width: 559px) {
+  .site .plx-opts .stk-q { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+}
+
+/* Fig. 1 — layers seen side on. */
+.site .plxf svg { width: 100%; height: auto; color: var(--fg); }
+.site .plxf-guide { color: var(--fg-3); }
+.site .plxf-ink { color: var(--fg); }
+.site .plxf-k { font: 500 10.5px var(--mono); fill: var(--fg-2); }
+.site .plxf-v { font: 500 11px var(--mono); fill: var(--fg); }
+.site .plxf-n { font: 500 10px var(--mono); fill: var(--fg-3); }
+/* Drawn at 520 wide and scaled to the column: on a phone that is about two
+   thirds, which took the labels under 7px. */
+@media (max-width: 599px) {
+  .site .plxf-k { font-size: 14px; }
+  .site .plxf-v { font-size: 14.5px; }
+  .site .plxf-n { font-size: 13.5px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site .plx-layer { will-change: auto; }
+}

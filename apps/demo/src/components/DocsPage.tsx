@@ -432,7 +432,7 @@ export function DocsPage() {
         </aside>
 
         {/* Content */}
-        <main className="dc-main">
+        <div className="dc-main">
 
           {/* ── Installation ─────────────────────────────────── */}
           <DocSection id="installation" tag="Getting Started" heading="Installation">
@@ -532,6 +532,11 @@ instance.destroy();   // cleanup on unmount`}
               </Opt>
               <Opt name="once" type="boolean" defaultVal="false">
                 Lock draw progress at its maximum once reached. Scrolling back up will not erase the paths.
+                What locks is how far the scroll got, so an easing that overshoots or dips (
+                <code className="font-mono text-pitch-black">elastic</code>,{' '}
+                <code className="font-mono text-pitch-black">spring</code>,{' '}
+                <code className="font-mono text-pitch-black">bounce</code>, a function) still plays out and ends
+                exactly drawn. In 2.23.2 and earlier it stayed on the overshoot, drawn past its end; fixed in 2.23.3.
               </Opt>
             </OptGroup>
           </DocSection>
@@ -1352,7 +1357,13 @@ export function ParallaxSection() {
               <code className="font-mono text-pitch-black">repeat</code>,
               custom trigger, custom scroll container,{' '}
               <code className="font-mono text-pitch-black">speed ≠ 1</code>,{' '}
-              <code className="font-mono text-pitch-black">spring</code> easing, animated color/width/fill.
+              <code className="font-mono text-pitch-black">spring</code> easing, animated color/width/fill,{' '}
+              <code className="font-mono text-pitch-black">autoplay</code> and{' '}
+              <code className="font-mono text-pitch-black">debug</code>. In 2.23.2 and earlier those last two
+              did not count: a plain <code className="font-mono text-pitch-black">{'{ autoplay: true }'}</code>{' '}
+              followed the scroll instead of playing over its duration, and{' '}
+              <code className="font-mono text-pitch-black">{'{ debug: true }'}</code> drew no trigger lines,
+              in every browser with view timelines. Fixed in 2.23.3.
             </p>
             <Sub>Jumping straight past a drawing</Sub>
             <p className="text-sm text-graphite-border leading-relaxed mb-4">
@@ -1423,12 +1434,14 @@ scrollDraw('#svg', { easing: createSpring({ tension: 1.5, friction: 1.2 }) });`}
           <DocSection id="create-bounce" tag="v1.2.0" heading="createBounce">
             <p className="text-sm text-graphite-border leading-relaxed mb-2">
               Returns a bounce-out easing. The animation rises to 1 via ease-out, then makes{' '}
-              <code className="font-mono text-pitch-black">bounces</code> dips below 1 that settle —
-              like a ball landing. Output stays within [0, 1].
+              <code className="font-mono text-pitch-black">bounces − 1</code> dips below 1 that settle —
+              like a ball landing. The rise is the first of the{' '}
+              <code className="font-mono text-pitch-black">bounces</code> segments. Output stays within [0, 1].
             </p>
             <OptGroup>
               <Opt name="bounces" type="number" defaultVal="3">
-                Number of bounces after the initial approach. Higher = more dips before settling.
+                Segments, the first rise included, so <code className="font-mono text-pitch-black">bounces − 1</code>{' '}
+                dips follow it: the default 3 is a rise and two dips. Higher = more dips before settling.
               </Opt>
               <Opt name="decay" type="number" defaultVal="0.5">
                 Amplitude reduction per bounce (0–1). Lower = faster decay, shallower bounces.
@@ -1437,13 +1450,13 @@ scrollDraw('#svg', { easing: createSpring({ tension: 1.5, friction: 1.2 }) });`}
             <CodeBlock file="bounce.js">
 {`import { scrollDraw, createBounce } from 'svg-scroll-draw';
 
-// Named string — default params (3 bounces, decay 0.5)
+// Named string — default params (bounces: 3, a rise and two dips; decay 0.5)
 scrollDraw('#svg', { easing: 'bounce' });
 
-// Lots of quick bounces
+// Four quick dips
 scrollDraw('#svg', { easing: createBounce({ bounces: 5, decay: 0.35 }) });
 
-// Two slow, deep bounces
+// One slow, deep dip
 scrollDraw('#svg', { easing: createBounce({ bounces: 2, decay: 0.7 }) });`}
             </CodeBlock>
           </DocSection>
@@ -2515,12 +2528,11 @@ scrollCounter('#revenue', {
   once:   true,
 });
 
-// Percentage with decimal
+// Percentage with one decimal. decimals replaces format, so the % goes in format.
 scrollCounter('#conversion', {
-  from:     0,
-  to:       94.7,
-  decimals: 1,
-  format:   n => n.toFixed(1) + '%',
+  from:   0,
+  to:     94.7,
+  format: n => n.toFixed(1) + '%',
 });
 
 // React
@@ -2531,13 +2543,13 @@ import { ScrollCounter } from 'svg-scroll-draw/react';
 
           <DocSection id="scroll-parallax" tag="v2.0.0" heading="scrollParallax">
             <p className="text-sm text-graphite-border leading-relaxed mb-2">
-              Move any element at a different rate than scroll. <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">speed</code> is a multiplier relative to element size — <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">0.5</code> = half scroll speed, <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">-0.2</code> = opposite direction.
+              Move any element at a different rate than scroll. <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">speed</code> is how far it travels while it crosses the viewport, as a fraction of its own size. A positive speed moves it up as you scroll down, so it runs ahead of the page: <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">0.5</code> = up half its height. A negative one moves it down, so it lags behind, like a background: <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">-0.2</code> = down a fifth.
             </p>
             <CodeBlock file="index.js">
 {`import { scrollParallax } from 'svg-scroll-draw';
 
-scrollParallax('#hero-bg-image', { speed: 0.4 });
-scrollParallax('#floating-element', { speed: -0.2 }); // moves opposite
+scrollParallax('#hero-bg-image', { speed: 0.4 });         // ahead of the page
+scrollParallax('#floating-element', { speed: -0.2 });     // lags behind the page
 scrollParallax('#side-badge', { speed: 0.3, axis: 'x' }); // horizontal`}
             </CodeBlock>
           </DocSection>
@@ -2702,7 +2714,7 @@ interface ScrollDrawOptions {
             </CodeBlock>
           </DocSection>
 
-        </main>
+        </div>
       </div>
     </div>
   );

@@ -64,7 +64,7 @@ export function RevealCards({
 
   return (
     <section className={`mx-auto w-full max-w-5xl ${className}`}>
-      <p className="font-mono text-xs text-neutral-500 dark:text-neutral-400">
+      <p className="font-mono text-xs text-neutral-600 dark:text-neutral-400">
         {eyebrow}
       </p>
       <h2 className="mt-3 text-3xl font-medium tracking-tight text-neutral-950 sm:text-4xl dark:text-neutral-50">

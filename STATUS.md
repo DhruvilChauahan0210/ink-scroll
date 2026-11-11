@@ -1,11 +1,11 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **2.23.0** — published 2026-11-07 (`v2.23.0` on `bd31fe2`, npm `latest`), with 2.20.1, 2.21.0 and 2.22.0 published the same day; every release through trusted publishing
-> Tests: **714 unit** across 37 suites · **246 browser tests** per engine (738 runs
-> across Chromium/Firefox/WebKit) · **92 mutations**, each caught by the one test
+> Current version: **2.23.3** in the working tree (branch `feat/tools-expansion`, not tagged); npm `latest` is **2.23.1** — `v2.23.2` is tagged but its release job never got past installing Playwright (runner DNS outage, 2026-11-11); every release through trusted publishing
+> Tests: **751 unit** across 38 suites · **255 browser tests** per engine (765 runs
+> across Chromium/Firefox/WebKit) · **103 mutations**, each caught by the one test
 > named for it · **91.5% line coverage** (gate 90/90/82/82)
-> Bundle: **11.7 KB gzipped** (main entry as shipped files, chunks included; per-API entries from 0.2 KB) · zero runtime dependencies
-> Last updated: 2026-11-06
+> Bundle: **11.6 KB gzipped** (main entry as shipped files, chunks included; per-API entries from 0.2 KB) · zero runtime dependencies
+> Last updated: 2026-11-11
 
 ---
 
@@ -49,11 +49,11 @@
 - [x] `scrollAnimateGroup` + `scrollAnimateSequence` + `scrollParallaxGroup` in `svg-scroll-draw/group`
 
 ### Testing
-- [x] 714 tests across 37 suites — `motionLive` (reduced motion turned on mid-visit, every engine and the React hook), `reactive` (the wrappers' option fingerprint and live callbacks), `directives` (the built files' "use client"), `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollText` (23)
+- [x] 751 tests across 38 suites — `motionLive` (reduced motion turned on mid-visit, every engine and the React hook), `reactive` (the wrappers' option fingerprint and live callbacks), `directives` (the built files' "use client"), `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollText` (23)
 - [x] Initial state fix — `createAnimateEngine` and `scrollCounter` now apply correct alpha immediately on init (no flash before IO fires)
 
 ### Browser tests (Phase 2, `packages/svg-scroll-draw/e2e`)
-246 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
+255 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
 `helpers.ts` (deterministic sweep — scroll to a fixed offset, wait two frames,
 read) and `fixtures/_probe.mjs` (parsing stays in the page, so specs assert on
 numbers).
@@ -76,7 +76,7 @@ numbers).
 - [x] `motion-live` — reduced motion turned on after load (`emulateMedia`): a part-drawn drawing, a drawing, reveal cards, split text, a counter and parallax all finish without a scroll, each `onComplete` once, the screen-reader copy once; nothing moves afterwards; a `replay()` taken off the instance is ignored; turning it off leaves everything finished. Video and cinematic suites turn it on mid-scrub
 - [x] `frameworks` — all eight wrappers (React, Vue, Solid, Svelte, Angular, Astro, Nuxt, the web component) mounted for real and held to one contract: the engine runs, unmounting leaks no observer and no frame loop, re-mounting works, and option changes reach the engine only where the wrapper claims they do. React/Vue/Solid/Nuxt are bundled from `dist/` by `e2e/build-fixtures.mjs`
 - [x] `cdn` — both CDN builds loaded from a plain `<script src>`: the production one exposes the API, registers `<scroll-draw>` and says nothing; the dev one reports the same mistakes the production build hides, and does not mistake a stroke set from CSS for a missing one
-- [x] `scripts/mutation-check.mjs` — 92 one-line source mutations, each required to fail the single test named for it; `--anchors` checks in a second that every one still applies (verify and CI)
+- [x] `scripts/mutation-check.mjs` — 103 one-line source mutations, each required to fail the single test named for it; `--anchors` checks in a second that every one still applies (verify and CI)
 - [x] `scripts/make-fixture-video.mjs` — reproducible 4s scrub clip, no system tooling needed
 
 ### Browser tests still missing
@@ -135,6 +135,19 @@ at all.
 - [x] MobileMenu version badge updated to v2.7.0
 
 ## Remaining / Next
+
+### Tools expansion and 2.23.3 (2026-11-11; branch `feat/tools-expansion`, not merged)
+
+- [x] `/tools` hub and 23 tools from one list (`data/tools.ts`), read by the hub, the nav (five named, "All 23 tools"), the footer index (every tool), the sitemap and `llms.txt`; `check-nav` reads the list
+- [x] 20 new tools: easing visualizer, counter, parallax, scroll trigger visualizer, CSS scroll-driven, shape to path, progress bar, scroll reveal; SVG wave, blob, to-JSX, line drawing, morph; CSS keyframes, scroll snap, horizontal scroll, cubic-bezier, text fill on scroll, scroll pin
+- [x] Each round-1 tool QA'd by a second agent: every claim checked against the source, every control and four or more generated outputs run in Chromium, Firefox and WebKit, fixes in the tool's own files
+- [x] Tool kit (`lib/tool-export.ts`, `components/tool-kit/`): source line, HTML download, StackBlitz (HTML and Vite + React), "Use it in your project"; used by morph, text fill and pin
+- [x] 2.23.3 staged (not tagged): `once` latches raw progress (overshooting easings end on target); autoplay and debug never take the native path; blank triggers are the default; scroll containers measured from their scrollport; reversed clip starts shown — 37 unit + 9 browser tests, 6 mutations, independently reviewed (700-sequence differential fuzz: linear unchanged)
+- [x] Site: one `<main>` per page; slider focus ring site-wide; light-theme accent and Copy button pass AA; `test-a11y` audits the light theme
+- [x] CI: browser job in `mcr.microsoft.com/playwright:v1.65.0-noble` (no apt); `npm run report:numbers`; `.github/FUNDING.yml` and a footer sponsor link
+- [ ] Tool kit in the 20 tools built before it
+- [ ] Library bugs found by QA, not fixed yet (see NEXT-SESSION-PLAN)
+- [ ] Typewriter, SVG path editor and scroll video scrub tools (stopped before they wrote anything)
 
 ### Unreleased — migration guides (branch `feat/migration-guides`, 2026-10-31; site-only)
 - [x] `/guides` + 4 guides (AOS Next.js, AOS React, ScrollReveal React, vivus React), sitemap, nav, vs-page and README links

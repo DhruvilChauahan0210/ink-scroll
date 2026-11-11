@@ -141,13 +141,13 @@ export function ReadingProgress({
       </div>
 
       <header>
-        <p className="font-mono text-xs text-neutral-500 dark:text-neutral-400">
+        <p className="font-mono text-xs text-neutral-600 dark:text-neutral-400">
           {kicker}
         </p>
         <Heading className="mt-3 text-4xl font-medium tracking-tight text-neutral-950 text-balance sm:text-5xl dark:text-neutral-50">
           {title}
         </Heading>
-        <p className="mt-4 text-sm text-neutral-500 dark:text-neutral-400">{byline}</p>
+        <p className="mt-4 text-sm text-neutral-600 dark:text-neutral-400">{byline}</p>
       </header>
 
       <div className="mt-10 space-y-6 text-lg leading-relaxed text-neutral-700 dark:text-neutral-300">

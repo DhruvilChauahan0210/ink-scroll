@@ -12,6 +12,7 @@ import {
   computeTriggers,
   getElementLength,
 } from '../core/utils';
+import { measureTriggerFrame } from '../core/trigger-frame';
 
 describe('EASINGS', () => {
   it('linear returns t unchanged', () => {
@@ -142,6 +143,20 @@ describe('createBounce', () => {
       (t) => Math.abs(fn2(t) - fn5(t)) > 0.001
     );
     expect(differs).toBe(true);
+  });
+
+  // Segment 0 is the rise, so `bounces` segments make bounces − 1 dips (the
+  // JSDoc said `bounces` dips until 2.23.3). A dip is a run that goes down.
+  it.each([[1, 0], [2, 1], [3, 2], [5, 4]])('bounces: %i makes %i dips', (bounces, expected) => {
+    const fn = createBounce({ bounces, decay: 0.5 });
+    let dips = 0;
+    let falling = false;
+    for (let i = 1; i <= 2000; i++) {
+      const down = fn(i / 2000) < fn((i - 1) / 2000);
+      if (down && !falling) dips++;
+      falling = down;
+    }
+    expect(dips).toBe(expected);
   });
 
   it('decay=0 means no amplitude reduction (all bounces equal depth)', () => {
@@ -372,5 +387,30 @@ describe('computeTriggers', () => {
     expect(tStart).toBe(-500);
     // tEnd: elementBottom(bottom) - vpAnchor(top) = (100+200+400) - 0 = 700
     expect(tEnd).toBe(700);
+  });
+});
+
+// The window of an element in a scroll container is measured from the
+// container's scrollport, inside its border, as clientHeight (the viewport
+// size used with it) and CSS view() measure it. From the border box, a
+// container with a 20px top border moved every trigger 20px late.
+describe('measureTriggerFrame', () => {
+  function box(rect: Partial<DOMRect>, own: Record<string, number> = {}): HTMLElement {
+    const el = document.createElement('div');
+    el.getBoundingClientRect = () => ({ top: 0, left: 0, width: 0, height: 0, ...rect }) as DOMRect;
+    for (const [k, v] of Object.entries(own)) Object.defineProperty(el, k, { value: v });
+    return el;
+  }
+
+  it('counts a scroll container from inside its border', () => {
+    const scroller = box({ top: 100, left: 50 }, { clientTop: 20, clientLeft: 7, scrollTop: 60, scrollLeft: 5 });
+    const el = box({ top: 400, left: 80, width: 10, height: 30 });
+    expect(measureTriggerFrame(el, scroller, 'y')).toEqual({ top: 400 - 100 - 20 + 60, height: 30, scroll: 0 });
+    expect(measureTriggerFrame(el, scroller, 'x')).toEqual({ top: 80 - 50 - 7 + 5, height: 10, scroll: 0 });
+  });
+
+  it('measures the window as before: viewport-relative, plus the page scroll', () => {
+    const el = box({ top: 400, left: 80, width: 10, height: 30 });
+    expect(measureTriggerFrame(el, null, 'y')).toEqual({ top: 400, height: 30, scroll: window.scrollY });
   });
 });

@@ -13,7 +13,7 @@ const SITE_URL = "https://svg-scroll-draw.vercel.app";
 // these alongside the literal entries below — never type them by hand.
 const FRAMEWORK_PAGES_DATE = "2026-11-07";
 const VERSUS_PAGES_DATE = "2026-11-07";
-const EXAMPLE_PAGES_DATE = "2026-11-11";
+const EXAMPLE_PAGES_DATE = "2026-11-12";
 const GUIDE_PAGES_DATE = "2026-11-07";
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -27,7 +27,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${SITE_URL}/docs`,
-      lastModified: new Date("2026-11-07"),
+      lastModified: new Date("2026-11-12"),
       changeFrequency: "weekly",
       priority: 0.9,
     },
@@ -39,7 +39,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${SITE_URL}/blocks`,
-      lastModified: new Date("2026-11-07"),
+      lastModified: new Date("2026-11-12"),
       changeFrequency: "monthly",
       priority: 0.8,
     },
@@ -51,7 +51,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${SITE_URL}/changelog`,
-      lastModified: new Date("2026-11-11"),
+      lastModified: new Date("2026-11-12"),
       changeFrequency: "monthly",
       priority: 0.5,
     },
@@ -82,6 +82,126 @@ export default function sitemap(): MetadataRoute.Sitemap {
     {
       url: `${SITE_URL}/vs-gsap`,
       lastModified: new Date("2026-11-11"),
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
+      url: `${SITE_URL}/tools`,
+      lastModified: new Date("2026-11-12"),
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
+      url: `${SITE_URL}/easing-visualizer`,
+      lastModified: new Date("2026-11-12"),
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
+      url: `${SITE_URL}/counter-animation-generator`,
+      lastModified: new Date("2026-11-12"),
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
+      url: `${SITE_URL}/parallax-scrolling-generator`,
+      lastModified: new Date("2026-11-12"),
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
+      url: `${SITE_URL}/scroll-trigger-visualizer`,
+      lastModified: new Date("2026-11-12"),
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
+      url: `${SITE_URL}/css-scroll-driven-animation-generator`,
+      lastModified: new Date("2026-11-12"),
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
+      url: `${SITE_URL}/svg-shape-to-path-converter`,
+      lastModified: new Date("2026-11-12"),
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
+      url: `${SITE_URL}/scroll-progress-bar-generator`,
+      lastModified: new Date("2026-11-12"),
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
+      url: `${SITE_URL}/scroll-reveal-generator`,
+      lastModified: new Date("2026-11-12"),
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
+      url: `${SITE_URL}/css-keyframes-animation-generator`,
+      lastModified: new Date("2026-11-12"),
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
+      url: `${SITE_URL}/css-scroll-snap-generator`,
+      lastModified: new Date("2026-11-12"),
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
+      url: `${SITE_URL}/horizontal-scroll-generator`,
+      lastModified: new Date("2026-11-12"),
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
+      url: `${SITE_URL}/cubic-bezier-generator`,
+      lastModified: new Date("2026-11-12"),
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
+      url: `${SITE_URL}/svg-line-drawing-generator`,
+      lastModified: new Date("2026-11-12"),
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
+      url: `${SITE_URL}/svg-to-jsx-converter`,
+      lastModified: new Date("2026-11-12"),
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
+      url: `${SITE_URL}/svg-wave-generator`,
+      lastModified: new Date("2026-11-12"),
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
+      url: `${SITE_URL}/svg-blob-generator`,
+      lastModified: new Date("2026-11-12"),
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
+      url: `${SITE_URL}/svg-morph-generator`,
+      lastModified: new Date("2026-11-12"),
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
+      url: `${SITE_URL}/text-fill-scroll-generator`,
+      lastModified: new Date("2026-11-12"),
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
+      url: `${SITE_URL}/scroll-pin-generator`,
+      lastModified: new Date("2026-11-12"),
       changeFrequency: "monthly",
       priority: 0.9,
     },
@@ -200,7 +320,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${SITE_URL}/blog/complete-guide-scroll-animations-2026`,
-      lastModified: new Date("2026-11-07"),
+      lastModified: new Date("2026-11-12"),
       changeFrequency: "monthly",
       priority: 0.8,
     },
@@ -218,7 +338,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${SITE_URL}/blog/horizontal-scroll-sections`,
-      lastModified: new Date("2026-11-11"),
+      lastModified: new Date("2026-11-12"),
       changeFrequency: "monthly",
       priority: 0.8,
     },

@@ -51,7 +51,7 @@ export function StatCounterRow({
 }: StatCounterRowProps) {
   return (
     <section className={`mx-auto w-full max-w-5xl ${className}`}>
-      <p className="font-mono text-xs text-neutral-500 dark:text-neutral-400">
+      <p className="font-mono text-xs text-neutral-600 dark:text-neutral-400">
         {eyebrow}
       </p>
 
@@ -83,7 +83,7 @@ export function StatCounterRow({
                       className="col-start-1 row-start-1 text-left"
                     />
                   </span>
-                  {stat.suffix && <span className="ml-0.5 text-[0.6em] text-neutral-500 dark:text-neutral-400">{stat.suffix}</span>}
+                  {stat.suffix && <span className="ml-0.5 text-[0.6em] text-neutral-600 dark:text-neutral-400">{stat.suffix}</span>}
                 </span>
               </dd>
             </div>

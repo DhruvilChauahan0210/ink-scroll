@@ -129,8 +129,8 @@ export function scrollDrawTimeline(
     respectReducedMotion = true,
   } = options;
 
-  const startConfig = parseTrigger(trigger.start ?? 'top bottom');
-  const endConfig   = parseTrigger(trigger.end   ?? 'bottom top');
+  const startConfig = parseTrigger(trigger.start || 'top bottom');
+  const endConfig   = parseTrigger(trigger.end   || 'bottom top');
 
   let repeatCount: number = repeat === 'infinite' ? Infinity : (repeat ?? 0);
   let repeatTimer: ReturnType<typeof setTimeout> | undefined;

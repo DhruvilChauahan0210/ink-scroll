@@ -138,7 +138,7 @@ onBeforeUnmount(() => {
   <section :class="['mx-auto grid w-full max-w-5xl gap-10 md:grid-cols-2 md:gap-16', className]">
     <!-- Pinned panel -->
     <div class="md:sticky md:top-24 md:self-start">
-      <p class="font-mono text-xs text-neutral-500 dark:text-neutral-400">
+      <p class="font-mono text-xs text-neutral-600 dark:text-neutral-400">
         {{ eyebrow }}
       </p>
       <h2 class="mt-3 text-3xl font-medium tracking-tight text-neutral-950 sm:text-4xl dark:text-neutral-50">
@@ -159,7 +159,7 @@ onBeforeUnmount(() => {
               'flex items-baseline gap-3 text-sm transition-colors duration-300',
               i === active
                 ? 'font-semibold text-neutral-950 dark:text-neutral-50'
-                : 'text-neutral-500 dark:text-neutral-400',
+                : 'text-neutral-600 dark:text-neutral-400',
             ]"
           >
             <span class="font-mono text-xs">{{ pad(i + 1) }}</span>{{ step.title }}
@@ -175,7 +175,7 @@ onBeforeUnmount(() => {
           :options="CARD_OPTIONS"
           class="rounded-2xl border border-neutral-200 bg-white p-6 sm:p-8 dark:border-neutral-800 dark:bg-neutral-950"
         >
-          <span class="font-mono text-xs text-neutral-500 dark:text-neutral-400">Step {{ pad(i + 1) }}</span>
+          <span class="font-mono text-xs text-neutral-600 dark:text-neutral-400">Step {{ pad(i + 1) }}</span>
           <h3 class="mt-2 text-xl font-semibold text-neutral-950 dark:text-neutral-50">{{ step.title }}</h3>
           <p class="mt-2 leading-relaxed text-neutral-600 dark:text-neutral-400">{{ step.body }}</p>
         </ScrollAnimate>

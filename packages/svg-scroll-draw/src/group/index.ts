@@ -250,7 +250,9 @@ export function scrollAnimateSequence(
 
 /**
  * Apply a parallax effect to multiple elements simultaneously.
- * Each element moves at `speed × elementHeight` pixels independently.
+ * Each element travels `speed × its own height` over its trigger window,
+ * independently: a positive speed moves it up as the page scrolls down, ahead
+ * of the page; a negative one moves it down, so it lags behind.
  *
  * @example
  * import { scrollParallaxGroup } from 'svg-scroll-draw/group';
@@ -258,7 +260,7 @@ export function scrollAnimateSequence(
  * // Three background layers at the same speed
  * scrollParallaxGroup(['#layer-far', '#layer-mid', '#layer-near'], { speed: 0.4 });
  *
- * // Opposite direction (floats upward as you scroll down)
+ * // Negative: they move down, lagging behind the page as it scrolls
  * scrollParallaxGroup(['#badge', '#tag'], { speed: -0.2 });
  */
 export function scrollParallaxGroup(

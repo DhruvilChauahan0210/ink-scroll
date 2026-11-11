@@ -191,6 +191,74 @@ describe('scrollAnimate', () => {
     expect(inst.getProgress()).toBeGreaterThanOrEqual(progressAtEnd);
   });
 
+  // Up to 2.23.2 once held the eased value, so elastic stayed on its 1.25
+  // peak: '--x' from 0 to 100 ended on 125. The raw progress is held now and
+  // eased after. Here the element starts below the fold (rect top 1000, height
+  // 400): the window is [200, 1400], and a fifth of it, elastic's peak, is y = 440.
+  describe('once with an easing that overshoots or dips', () => {
+    function belowTheFold(): HTMLDivElement {
+      const el = makeDiv();
+      vi.spyOn(el, 'getBoundingClientRect').mockReturnValue({
+        top: 1000, height: 400, left: 0, width: 300, right: 300, bottom: 1400, x: 0, y: 0,
+        toJSON: () => ({}),
+      });
+      return el;
+    }
+
+    it('elastic overshoots mid-scroll and ends exactly on "to"', () => {
+      const el = belowTheFold();
+      const inst = scrollAnimate(el, { props: { '--x': [0, 100] }, easing: 'elastic', once: true, native: false });
+      expect(el.style.getPropertyValue('--x')).toBe('0');
+      FakeIO.instances[0].trigger(true);
+      vi.stubGlobal('scrollY', 440);
+      raf.tick();
+      expect(parseFloat(el.style.getPropertyValue('--x'))).toBeCloseTo(125, 6);
+      vi.stubGlobal('scrollY', 1500);
+      raf.tick();
+      expect(el.style.getPropertyValue('--x')).toBe('100');
+      expect(inst.getProgress()).toBe(1);
+      vi.stubGlobal('scrollY', 440); // back: held at the end
+      raf.tick();
+      expect(el.style.getPropertyValue('--x')).toBe('100');
+    });
+
+    it('bounce keeps its dips while scrolling forward', () => {
+      const seen: number[] = [];
+      const el = belowTheFold();
+      scrollAnimate(el, { props: { opacity: [0, 1] }, easing: 'bounce', once: true, native: false, onProgress: (p) => seen.push(p) });
+      FakeIO.instances[0].trigger(true);
+      for (let y = 200; y <= 1400; y += 24) {
+        vi.stubGlobal('scrollY', y);
+        raf.tick();
+      }
+      expect(seen.some((p, i) => i > 0 && p < seen[i - 1] - 1e-9)).toBe(true);
+      expect(seen[seen.length - 1]).toBe(1);
+    });
+
+    it('after seek(), once still holds the sought value as its floor', () => {
+      const el = makeDiv();
+      const inst = scrollAnimate(el, { props: { opacity: [0, 1] }, easing: 'ease-in', once: true, native: false });
+      FakeIO.instances[0].trigger(true);
+      inst.seek(0.5);
+      inst.resume();
+      vi.stubGlobal('scrollY', -240); // raw 0.3, eased 0.09: under the floor
+      raf.tick();
+      expect(inst.getProgress()).toBe(0.5);
+      vi.stubGlobal('scrollY', 360); // raw 0.8, eased 0.64
+      raf.tick();
+      expect(inst.getProgress()).toBeCloseTo(0.64, 6);
+    });
+  });
+
+  // `end: ''` was read as 'top bottom', a window with no length.
+  it('a blank trigger is the default one', () => {
+    const el = makeDiv();
+    const inst = scrollAnimate(el, { props: { opacity: [0, 1] }, easing: 'linear', native: false, trigger: { start: '', end: '' } });
+    FakeIO.instances[0].trigger(true);
+    raf.tick();
+    expect(inst.getProgress()).toBeCloseTo(0.5, 6); // y 0 in [−600, 600]
+  });
+
   it('calls onProgress callback', () => {
     const el = makeDiv();
     const onProgress = vi.fn();

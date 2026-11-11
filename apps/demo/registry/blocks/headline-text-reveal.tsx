@@ -41,7 +41,7 @@ export function HeadlineTextReveal({
 }: HeadlineTextRevealProps) {
   return (
     <section className={`mx-auto w-full max-w-4xl text-center ${className}`}>
-      <p className="font-mono text-xs text-neutral-500 dark:text-neutral-400">
+      <p className="font-mono text-xs text-neutral-600 dark:text-neutral-400">
         {eyebrow}
       </p>
 

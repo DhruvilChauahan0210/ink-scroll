@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>debug: true draws the trigger lines where view timelines exist</title>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+  .lead { height: 1200px; background: #eee; }
+  #art { display: block; width: 600px; height: 200px; }
+  #art path { fill: none; stroke: #234; stroke-width: 6; }
+  .tail { height: 1600px; }
+</style>
+<!--
+  The overlay is dev-only, and the npm bundles decide that from
+  process.env.NODE_ENV, which a bundler-less browser does not have. This is the
+  switch the dev CDN build bakes in (as devtools.html). Classic script, so it
+  runs before the module below.
+-->
+<script>window.__SVG_SCROLL_DRAW_DEV__ = true;</script>
+</head>
+<body>
+<!--
+  Viewport 900x800. A drawing 1200px down, 200px tall, with `debug: true` and
+  nothing else: otherwise a config the native scroll-timeline path takes. Up to
+  2.23.2 debug did not keep it off that path, which draws no overlay, so in a
+  browser with view timelines debug: true showed nothing. The default window is
+  top bottom → bottom top: [400, 1400].
+-->
+<div class="lead"></div>
+<svg id="art" viewBox="0 0 600 200"><path d="M20 100 H580" /></svg>
+<div class="tail"></div>
+<script type="module">
+import { scrollDraw } from '/dist/index.mjs';
+import { publish, drawnFraction } from './_probe.mjs';
+
+const inst = scrollDraw('#art', { debug: true });
+const path = document.querySelector('#art path');
+
+publish({
+  scrollTo: (y) => window.scrollTo(0, y),
+  /** The overlay's two lines, where they sit on screen, and the drawing. */
+  read: () => {
+    const overlay = document.querySelector('[data-svg-scroll-draw-debug]');
+    const lines = overlay ? [...overlay.children].map((l) => Math.round(l.getBoundingClientRect().top)) : [];
+    return {
+      scrollY: window.scrollY,
+      overlay: !!overlay,
+      lines,
+      labels: overlay ? overlay.textContent.replace(/\s+/g, ' ').trim() : '',
+      drawn: drawnFraction(path),
+      native: [...path.classList].some((c) => c.startsWith('svg-scroll-draw-')),
+    };
+  },
+  destroy: () => inst.destroy(),
+  overlayCount: () => document.querySelectorAll('[data-svg-scroll-draw-debug]').length,
+});
+</script>
+</body>
+</html>

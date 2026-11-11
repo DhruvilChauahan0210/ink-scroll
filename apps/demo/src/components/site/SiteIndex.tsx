@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { INDEX } from './sitemap';
 
+const SPONSOR = 'https://github.com/sponsors/DhruvilChauahan0210';
+
 /**
  * Every page, in one band under the drawing sheet. The sheet's parts list keeps
  * its twelve hand-ruled links; this is the plain index beside it, so any page is
@@ -24,6 +26,10 @@ export function SiteIndex() {
           </div>
         ))}
       </div>
+      <p className="site-index-support">
+        Free and MIT. If it saves you time,{' '}
+        <a href={SPONSOR} rel="noopener">sponsor it on GitHub ↗</a>
+      </p>
     </nav>
   );
 }

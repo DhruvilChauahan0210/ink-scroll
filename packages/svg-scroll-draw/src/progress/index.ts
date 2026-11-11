@@ -78,8 +78,8 @@ export function scrollProgress(
   } = options;
 
   const easeFn      = typeof easing === 'function' ? easing : (EASINGS[easing] ?? EASINGS.linear);
-  const startConfig = parseTrigger(trigger.start ?? 'top bottom');
-  const endConfig   = parseTrigger(trigger.end   ?? 'bottom top');
+  const startConfig = parseTrigger(trigger.start || 'top bottom');
+  const endConfig   = parseTrigger(trigger.end   || 'bottom top');
 
   const scrollEl: Element | null =
     typeof scrollContainer === 'string'

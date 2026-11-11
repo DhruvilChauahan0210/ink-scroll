@@ -1,0 +1,219 @@
+/* ── The SVG shape to path converter (/svg-shape-to-path-converter) ────────
+   One hairline panel: input, controls, the before and after drawings side by
+   side, the transport; then what was converted, then the output. Mono
+   labels, square corners; the accent only on a check that needs attention. */
+
+.site .s2p { display: grid; gap: 32px; }
+.site .s2p [hidden] { display: none !important; }
+.site .s2p-panel { border: 1px solid var(--line-2); min-width: 0; }
+
+.site .s2p-input { display: grid; gap: 6px; padding: 16px; border-bottom: 1px solid var(--line); }
+.site .s2p-input span,
+.site .s2p-field-k { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .s2p-input textarea {
+  width: 100%;
+  min-height: 150px;
+  padding: 10px 12px;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  font: 400 12px/1.6 var(--mono);
+  color: var(--fg);
+  resize: vertical;
+}
+.site .s2p-input textarea:focus-visible { border-color: var(--fg); outline: 0; }
+
+.site .s2p-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 16px 20px;
+  padding: 16px;
+  border-bottom: 1px solid var(--line);
+}
+.site .s2p-field { display: grid; gap: 6px; align-content: start; min-width: 0; }
+.site .s2p-field.is-wide { grid-column: 1 / -1; }
+
+/* Which shapes to convert: toggles with the count found in the paste. */
+.site .s2p-types { display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); border-top: 1px solid var(--line-2); border-left: 1px solid var(--line-2); }
+.site .s2p-types button {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 0;
+  border-right: 1px solid var(--line-2);
+  border-bottom: 1px solid var(--line-2);
+  background: transparent;
+  font: 500 11.5px/1.2 var(--mono);
+  color: var(--fg-3);
+  cursor: pointer;
+}
+.site .s2p-types button span { color: var(--fg-3); }
+.site .s2p-types button[aria-pressed='true'] { color: var(--fg); background: var(--panel); }
+.site .s2p-types button[aria-pressed='true'] span { color: var(--fg-2); }
+.site .s2p-types button:focus-visible { outline: 1px solid var(--fg); outline-offset: -3px; }
+
+.site .s2p-seg { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); border: 1px solid var(--line-2); }
+.site .s2p-seg button {
+  padding: 7px 4px;
+  border: 0;
+  border-left: 1px solid var(--line-2);
+  background: transparent;
+  font: 500 11.5px/1.2 var(--mono);
+  color: var(--fg-2);
+  cursor: pointer;
+}
+.site .s2p-seg button:first-child { border-left: 0; }
+.site .s2p-seg button[aria-checked='true'] { background: var(--fg); color: var(--bg); }
+.site .s2p-seg button:focus-visible { outline: 1px solid var(--fg); outline-offset: -3px; }
+
+.site .s2p-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.site .s2p-btn {
+  padding: 8px 14px;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  font: 500 12px/1 var(--mono);
+  color: var(--fg);
+  cursor: pointer;
+}
+.site .s2p-btn:hover, .site .s2p-btn:focus-visible { border-color: var(--fg); outline: 0; }
+.site .s2p-btn:disabled, .site .s2p input:disabled { opacity: 0.45; cursor: default; }
+.site .s2p-btn:disabled:hover { border-color: var(--line-2); }
+
+.site .s2p-error { margin: 0; padding: 16px; border-left: 2px solid var(--accent); font-size: 13.5px; line-height: 1.6; color: var(--fg-2); }
+
+/* Before and after, side by side at every width: the comparison is the point,
+   and stacked on a phone the second drawing sat a screen away from the first. */
+.site .s2p-stages { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); background: var(--panel); }
+.site .s2p-stage { display: grid; grid-template-rows: auto 1fr; min-width: 0; }
+.site .s2p-stage + .s2p-stage { border-left: 1px solid var(--line); }
+.site .s2p-stage-k {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 12px;
+  margin: 0;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--line);
+  font: 500 10px/1.4 var(--mono);
+  color: var(--fg-3);
+}
+.site .s2p-stage-k span:first-child { color: var(--fg-2); }
+@media (max-width: 559px) { .site .s2p-stage-k { padding: 8px 10px; } }
+.site .s2p-host {
+  display: grid;
+  place-items: center;
+  min-height: clamp(120px, 24vw, 280px);
+  padding: clamp(10px, 2.4vw, 28px);
+  color: var(--fg);
+}
+.site .s2p-svg { display: block; width: 100%; max-width: 420px; max-height: 240px; height: auto; overflow: visible; }
+
+.site .s2p-transport {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--line);
+}
+.site .s2p-scrub { display: grid; gap: 4px; flex: 1 1 220px; min-width: 0; }
+.site .s2p-scrub span { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .s2p input[type='range'] { width: 100%; accent-color: var(--fg); }
+/* The site's range style sets outline: none, which left the slider with no focus ring. */
+.site .s2p input[type='range']:focus-visible { outline: 1px solid var(--fg); outline-offset: 6px; }
+.site .s2p-check { display: inline-flex; align-items: center; gap: 8px; font: 500 12px/1 var(--mono); color: var(--fg-2); cursor: pointer; }
+.site .s2p-check input { accent-color: var(--fg); }
+
+/* What was converted. */
+.site .s2p-results { display: grid; gap: 12px; min-width: 0; }
+.site .s2p-tally, .site .s2p-legend { margin: 0; font: 500 11px/1.6 var(--mono); color: var(--fg-3); }
+.site .s2p-legend { font-weight: 400; max-width: 80ch; }
+.site .s2p-warn { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.site .s2p-warn li { padding: 10px 14px; border-left: 2px solid var(--accent); background: var(--panel); font-size: 13.5px; line-height: 1.6; color: var(--fg-2); }
+.site .s2p-scroll { overflow-x: auto; }
+.site .s2p-scroll:focus-visible { outline: 1px solid var(--fg); outline-offset: 2px; }
+.site .s2p-table { width: 100%; border-collapse: collapse; }
+.site .s2p-table th, .site .s2p-table td { padding: 8px 14px 8px 0; border-top: 1px solid var(--line); text-align: left; vertical-align: top; white-space: nowrap; }
+.site .s2p-table th { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .s2p-table td { font: 400 12.5px/1.5 var(--mono); color: var(--fg); }
+.site .s2p-table tr.is-kept td { color: var(--fg-3); }
+.site .s2p-table td.s2p-notes { min-width: 200px; white-space: normal; font-family: var(--sans); font-size: 13px; line-height: 1.55; color: var(--fg-2); }
+
+/* Below 900px each row becomes a short block: the element and what it became,
+   then its commands, its two dashes and its notes, labelled from data-k. In a
+   scrolled table the notes, the column that says what happened, were off the
+   right edge and every row was tall and blank. */
+@media (max-width: 899px) {
+  .site .s2p-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .site .s2p-table, .site .s2p-table tbody { display: block; }
+  .site .s2p-table tr {
+    display: grid;
+    grid-template-columns: 22px minmax(0, 280px) minmax(0, 280px);
+    gap: 4px 12px;
+    padding: 10px 0;
+    border-top: 1px solid var(--line);
+  }
+  .site .s2p-table th, .site .s2p-table td { padding: 0; border-top: 0; white-space: normal; }
+  .site .s2p-table td:nth-child(-n + 3) { grid-row: 1; }
+  .site .s2p-table td:nth-child(4), .site .s2p-table td.s2p-notes { grid-column: 2 / -1; }
+  .site .s2p-table td:nth-child(5) { grid-column: 2; }
+  .site .s2p-table td:nth-child(6) { grid-column: 3; }
+  .site .s2p-table td.s2p-notes { min-width: 0; }
+  .site .s2p-table td.s2p-notes.is-empty { display: none; }
+  .site .s2p-table td[data-k]::before { content: attr(data-k); margin-right: 8px; font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+}
+
+/* The output. */
+.site .s2p-code { display: grid; min-width: 0; }
+.site .s2p-code-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 8px; }
+.site .s2p-tabs { display: flex; flex-wrap: wrap; }
+.site .s2p-tab {
+  padding: 8px 14px;
+  border: 1px solid var(--line-2);
+  border-bottom: 0;
+  border-left-width: 0;
+  background: transparent;
+  font: 500 11.5px/1 var(--mono);
+  color: var(--fg-2);
+  cursor: pointer;
+}
+.site .s2p-tab:first-child { border-left-width: 1px; }
+.site .s2p-tab[aria-selected='true'] { color: var(--fg); background: var(--panel); }
+.site .s2p-tab:focus-visible { outline: 1px solid var(--fg); outline-offset: -3px; }
+.site .s2p-dl { margin-bottom: 8px; }
+.site .s2p-code .code-box { margin-top: 0; }
+
+/* Reference tables in the page's sections. */
+.site .s2p-ref { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.site .s2p-ref th, .site .s2p-ref td { padding: 10px 14px 10px 0; border-top: 1px solid var(--line); text-align: left; vertical-align: top; }
+.site .s2p-ref th { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .s2p-ref td { color: var(--fg-2); line-height: 1.6; }
+.site .s2p-ref td:first-child { font: 400 12.5px/1.6 var(--mono); color: var(--fg); white-space: nowrap; }
+.site .s2p-ref td.is-d { min-width: 300px; font: 400 12px/1.6 var(--mono); color: var(--fg); overflow-wrap: anywhere; }
+/* Stacked on a phone, the same way as the converter's table. */
+@media (max-width: 639px) {
+  .site .s2p-ref thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .site .s2p-ref, .site .s2p-ref tbody, .site .s2p-ref tr { display: block; }
+  .site .s2p-ref tr { padding: 10px 0; border-top: 1px solid var(--line); }
+  .site .s2p-ref td { display: block; padding: 3px 0; border-top: 0; }
+  .site .s2p-ref td:first-child { white-space: normal; }
+  .site .s2p-ref td.is-d { min-width: 0; }
+  .site .s2p-ref td[data-k]::before { content: attr(data-k); margin-right: 8px; font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+}
+
+/* Fig. 1 — shapes as paths. Its viewBox is 420 wide, so on a phone the text
+   is set larger to land near the 10–11px the other figures show. */
+.site .s2pf svg { width: 100%; height: auto; overflow: visible; }
+.site .s2pf-ink { color: var(--fg); }
+.site .s2pf-pencil { color: var(--fg-3); }
+.site .s2pf-cmd { font: 600 12px var(--mono); fill: var(--fg); }
+.site .s2pf-dim { font: 500 11px var(--mono); fill: var(--fg-3); }
+.site .s2pf-k { font: 500 11px var(--mono); fill: var(--fg-2); }
+.site .s2pf-d { font: 500 11.5px var(--mono); fill: var(--fg-2); }
+.site .s2p-b { font-weight: 500; color: var(--fg); }
+@media (max-width: 559px) {
+  .site .s2pf-cmd { font-size: 13.5px; }
+  .site .s2pf-dim, .site .s2pf-k, .site .s2pf-d { font-size: 13px; }
+}

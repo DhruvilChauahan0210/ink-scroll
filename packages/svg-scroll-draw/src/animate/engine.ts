@@ -204,8 +204,8 @@ function buildAnimateEngine(
   } = options;
 
   const easeFn         = typeof easing === 'function' ? easing : (EASINGS[easing] ?? EASINGS['ease-out']);
-  const startConfig    = parseTrigger(trigger.start ?? 'top bottom');
-  const endConfig      = parseTrigger(trigger.end   ?? 'bottom top');
+  const startConfig    = parseTrigger(trigger.start || 'top bottom');
+  const endConfig      = parseTrigger(trigger.end   || 'bottom top');
 
   /** Element the trigger window is measured from — the animated one unless overridden. */
   const triggerEl: Element = triggerElement ?? el;
@@ -269,6 +269,17 @@ function buildAnimateEngine(
 
   resolveFromValues();
 
+  // Shared by both paths: the native one never has a scrollContainer.
+  const scrollPos = (): number => {
+    if (scrollEl) return axis === 'x' ? scrollEl.scrollLeft : scrollEl.scrollTop;
+    return axis === 'x' ? window.scrollX : window.scrollY;
+  };
+
+  const vpSize = (): number => {
+    if (scrollEl) return axis === 'x' ? scrollEl.clientWidth : scrollEl.clientHeight;
+    return axis === 'x' ? window.innerWidth : window.innerHeight;
+  };
+
   // ── Native fast path ────────────────────────────────────────────────────────
 
   /**
@@ -291,8 +302,8 @@ function buildAnimateEngine(
     if (speed !== 1) return false;
     if (onProgress || onComplete || onEnter || onLeave || onEnterBack || onLeaveBack) return false;
     if (velocityScale !== false) return false;
-    if ((trigger.start ?? 'top bottom').trim() !== 'top bottom') return false;
-    if ((trigger.end   ?? 'bottom top').trim() !== 'bottom top') return false;
+    if ((trigger.start || 'top bottom').trim() !== 'top bottom') return false;
+    if ((trigger.end   || 'bottom top').trim() !== 'bottom top') return false;
     for (const entry of entries) {
       if (!NATIVE_SAFE_PROPS.has(entry.prop)) return false;
     }
@@ -314,8 +325,6 @@ function buildAnimateEngine(
     document.head.appendChild(style);
     (el as HTMLElement).classList.add(cls);
 
-    const scrollPos = (): number => (axis === 'x' ? window.scrollX : window.scrollY);
-    const vpSize    = (): number => (axis === 'x' ? window.innerWidth : window.innerHeight);
     const liveTriggers = () => {
       const rect = el.getBoundingClientRect();
       return computeTriggers({ top: rect.top, height: rect.height }, scrollPos(), vpSize(), startConfig, endConfig);
@@ -373,22 +382,19 @@ function buildAnimateEngine(
   let rafId            = 0;
   let isVisible        = false;
   let paused           = false;
+  /** With `once`, the floor seek() set, eased: -1 when there is none. */
   let frozenAlpha      = -1;
+  /**
+   * With `once`, the furthest raw scroll progress, eased after, as scrollText
+   * has always done. Holding the eased value with Math.max froze spring and
+   * elastic on their overshoot past "to", and flattened bounce's dips.
+   */
+  let frozenRaw        = 0;
   let currentAlpha     = 0;
   let completed        = false;
   let prevRawProgress  = NaN;
   let prevVelScroll    = -1;
   let prevVelTime      = 0;
-
-  const scrollPos = (): number => {
-    if (scrollEl) return axis === 'x' ? scrollEl.scrollLeft : scrollEl.scrollTop;
-    return axis === 'x' ? window.scrollX : window.scrollY;
-  };
-
-  const vpSize = (): number => {
-    if (scrollEl) return axis === 'x' ? scrollEl.clientWidth : scrollEl.clientHeight;
-    return axis === 'x' ? window.innerWidth : window.innerHeight;
-  };
 
   /**
    * The props this engine writes that move the element's box without moving its
@@ -459,11 +465,10 @@ function buildAnimateEngine(
 
     const raw = tEnd === tStart ? 0 : (currentScroll - tStart) / (tEnd - tStart);
     fireScrollCallbacks(raw);
-    let alpha = easeFn(computeProgress(currentScroll, tStart, tEnd, effectiveSpeed));
-    if (once) {
-      frozenAlpha = Math.max(frozenAlpha, alpha);
-      alpha = frozenAlpha;
-    }
+    const progress = computeProgress(currentScroll, tStart, tEnd, effectiveSpeed);
+    const alpha = once
+      ? Math.max(frozenAlpha, easeFn(frozenRaw = Math.max(frozenRaw, progress)))
+      : easeFn(progress);
     currentAlpha = alpha;
     applyAlpha(alpha);
     if (alpha >= 1 && !completed) {
@@ -496,10 +501,9 @@ function buildAnimateEngine(
   // Apply initial state immediately so elements never flash at their "to" value
   // before the IntersectionObserver fires for the first time.
   {
-    const initAlpha = easeFn(computeProgress(scrollPos(), tStart, tEnd, speed));
-    if (once && initAlpha > 0) frozenAlpha = initAlpha;
-    currentAlpha = initAlpha;
-    applyAlpha(initAlpha);
+    frozenRaw    = computeProgress(scrollPos(), tStart, tEnd, speed);
+    currentAlpha = easeFn(frozenRaw);
+    applyAlpha(currentAlpha);
   }
 
   const observer = new IntersectionObserver(
@@ -544,6 +548,7 @@ function buildAnimateEngine(
     },
     replay() {
       frozenAlpha  = -1;
+      frozenRaw    = 0;
       completed    = false;
       currentAlpha = 0;
       paused       = false;
@@ -562,6 +567,7 @@ function buildAnimateEngine(
       const clamped = Math.min(1, Math.max(0, p));
       currentAlpha  = clamped;
       frozenAlpha   = clamped;
+      frozenRaw     = 0;
       paused        = true;
       cancelAnimationFrame(rafId);
       applyAlpha(clamped);

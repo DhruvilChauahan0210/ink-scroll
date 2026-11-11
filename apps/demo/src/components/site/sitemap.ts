@@ -16,6 +16,7 @@
 import { COMPETITORS } from '@/data/competitors';
 import { FRAMEWORK_LANDINGS } from '@/data/framework-landings';
 import { VERSUS } from '@/data/versus';
+import { TOOLS } from '@/data/tools';
 
 export type SiteLink = { href: string; label: string };
 export type SiteGroup = { key: string; title: string; links: SiteLink[] };
@@ -42,24 +43,54 @@ const COMPARE: SiteLink[] = [
   { href: '/vs-gsap', label: 'vs GSAP' },
   { href: '/vs-framer-motion', label: 'vs Framer Motion' },
   { href: '/vs-aos', label: 'vs AOS' },
-  { href: '/aos-animation', label: 'AOS effects' },
   ...VERSUS.map((v) => ({ href: `/${v.slug}`, label: `vs ${COMPETITORS[v.competitorKey].label}` })),
+];
+
+/**
+ * The tools the menus name, in this order: the drawing tools first, because
+ * drawing is what the library is for. With two dozen tools a full list would
+ * fill the menu; the footer index and /tools list every one.
+ */
+const MENU_TOOLS = [
+  'svg-path-viewer',
+  'svg-line-drawing-generator',
+  'text-animation-generator',
+  'scroll-reveal-generator',
+  'css-scroll-driven-animation-generator',
+];
+
+const toolLink = (slug: string): SiteLink | null => {
+  const t = TOOLS.find((x) => x.slug === slug);
+  return t ? { href: `/${t.slug}`, label: t.name } : null;
+};
+
+const TOOL_LINKS: SiteLink[] = [
+  { href: '/tools', label: `All ${TOOLS.length} tools` },
+  ...MENU_TOOLS.map(toolLink).filter((l): l is SiteLink => l != null),
+];
+
+/** The hub, then every tool, from data/tools.ts. */
+const ALL_TOOL_LINKS: SiteLink[] = [
+  { href: '/tools', label: 'All tools' },
+  ...TOOLS.map((t) => ({ href: `/${t.slug}`, label: t.name })),
 ];
 
 const RESOURCES: SiteLink[] = [
   { href: '/playground', label: 'Playground' },
-  { href: '/text-animation-generator', label: 'Text animation generator' },
-  { href: '/svg-path-viewer', label: 'SVG path viewer' },
   { href: '/verify', label: 'Verify' },
   { href: '/changelog', label: 'Changelog' },
 ];
 
 /** What the "More" menu and the phone menu list below the primary sections. */
 export const MORE: SiteGroup[] = [
+  { key: 'tools', title: 'Tools', links: TOOL_LINKS },
   { key: 'frameworks', title: 'Frameworks', links: FRAMEWORKS },
   { key: 'compare', title: 'Compare', links: COMPARE },
   { key: 'resources', title: 'Resources', links: RESOURCES },
 ];
 
-/** The footer index: every group, the primary sections first. */
-export const INDEX: SiteGroup[] = [{ key: 'sections', title: 'Sections', links: PRIMARY }, ...MORE];
+/** The footer index: every group, the primary sections first, and every tool. */
+export const INDEX: SiteGroup[] = [
+  { key: 'sections', title: 'Sections', links: PRIMARY },
+  ...MORE.map((g) => (g.key === 'tools' ? { ...g, links: ALL_TOOL_LINKS } : g)),
+];

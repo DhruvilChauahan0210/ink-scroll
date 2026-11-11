@@ -17,8 +17,9 @@ export function createSpring({
 
 /**
  * Returns a bounce-out easing function.
- * The animation rises to 1 and then makes `bounces` dips below 1 that settle.
- * - `bounces` — number of bounces after the initial approach (default 3)
+ * The animation rises to 1 and then makes `bounces − 1` dips below 1 that settle:
+ * the rise is the first of the `bounces` segments.
+ * - `bounces` — segments, the first rise included (default 3: a rise, then 2 dips)
  * - `decay`   — amplitude reduction per bounce (0–1, default 0.5)
  *
  * @example

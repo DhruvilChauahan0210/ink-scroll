@@ -1,0 +1,280 @@
+/* ── The CSS scroll-driven animation generator (/css-scroll-driven-animation-generator)
+   A support line; one panel with the controls, the preview box and its range
+   track, the transport; then the code and the library's verdict. Hairlines,
+   mono labels, square corners, as the other tools. The accent marks one thing:
+   a browser without scroll timelines. */
+
+/* The page title is longer than the other tools': a size that keeps it to
+   three lines beside the figure. "scroll-driven" is kept whole in both titles. */
+.site .pg-title.cssd-title { font-size: clamp(40px, 5.6vw, 92px); max-width: 20ch; }
+.site .cssd-nowrap { white-space: nowrap; }
+
+.site .cssd { display: grid; gap: 24px; --cssd-h: 320px; }
+@media (max-width: 559px) { .site .cssd { --cssd-h: 280px; } }
+
+.site .cssd code { font: 400 0.9em/1.5 var(--mono); color: var(--fg); overflow-wrap: anywhere; }
+
+.site .cssd-support {
+  margin: 0;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--fg-2);
+}
+.site .cssd-support.is-off { border-left: 2px solid var(--accent); }
+
+.site .cssd-panel { border: 1px solid var(--line-2); min-width: 0; }
+
+/* Controls */
+.site .cssd-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 16px 20px;
+  padding: 16px;
+  border-bottom: 1px solid var(--line);
+}
+.site .cssd-field { display: grid; gap: 6px; align-content: start; min-width: 0; }
+.site .cssd-field.is-wide, .site .cssd .is-wide { grid-column: 1 / -1; }
+.site .cssd-field > span, .site .cssd-edge-k, .site .cssd-edge-v { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .cssd select {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  min-width: 0;
+  padding: 8px 12px;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  font: 400 13px/1.3 var(--mono);
+  color: var(--fg);
+  cursor: pointer;
+}
+.site .cssd select:disabled { color: var(--fg-3); cursor: default; }
+.site .cssd select:not(:disabled):hover, .site .cssd select:focus-visible { border-color: var(--fg); outline: 0; }
+.site .cssd option { background: var(--bg); color: var(--fg); }
+.site .cssd input[type='range'] { width: 100%; min-width: 0; margin: 0; accent-color: var(--fg); }
+/* The site's range reset sets outline: none, which also hid the keyboard focus. */
+.site .cssd input[type='range']:focus-visible { outline: 1px solid var(--fg); outline-offset: 7px; border-radius: 0; }
+
+.site .cssd-seg { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); border: 1px solid var(--line-2); }
+.site .cssd-seg button {
+  padding: 7px 6px;
+  border: 0;
+  border-left: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  font: 500 11.5px/1.2 var(--mono);
+  color: var(--fg-2);
+  cursor: pointer;
+}
+.site .cssd-seg button:first-child { border-left: 0; }
+.site .cssd-seg button[aria-checked='true'] { background: var(--fg); color: var(--bg); }
+.site .cssd-seg button:disabled { color: var(--fg-3); cursor: not-allowed; text-decoration: line-through; }
+.site .cssd-seg button:focus-visible { outline: 1px solid var(--fg); outline-offset: -3px; }
+
+.site .cssd-hint { margin: 0; font-size: 13px; line-height: 1.6; color: var(--fg-2); }
+
+/* The range: quick picks, then a start and an end edge. */
+.site .cssd-range { display: grid; gap: 12px; min-width: 0; }
+.site .cssd-picks { display: flex; flex-wrap: wrap; gap: 8px; }
+.site .cssd-picks button {
+  padding: 7px 10px;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  font: 500 11.5px/1.2 var(--mono);
+  color: var(--fg-2);
+  cursor: pointer;
+}
+.site .cssd-picks button[aria-pressed='true'] { border-color: var(--fg); color: var(--fg); }
+.site .cssd-picks button:hover, .site .cssd-picks button:focus-visible { border-color: var(--fg); outline: 0; }
+.site .cssd-edge {
+  display: grid;
+  grid-template-columns: 88px 120px minmax(0, 1fr) 40px;
+  grid-template-areas: 'k sel rng val';
+  align-items: center;
+  gap: 8px 12px;
+}
+.site .cssd-edge-k { grid-area: k; }
+.site .cssd-edge select { grid-area: sel; }
+.site .cssd-edge input[type='range'] { grid-area: rng; }
+.site .cssd-edge-v { grid-area: val; text-align: right; color: var(--fg); }
+@media (max-width: 559px) {
+  /* Two controls to a row, so the preview stays near them. */
+  .site .cssd-controls { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 12px; }
+  .site .cssd-controls > .cssd-field:first-child { grid-column: 1 / -1; }
+  .site .cssd-picks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .site .cssd-edge { grid-template-columns: 104px minmax(0, 1fr); grid-template-areas: 'k val' 'sel rng'; gap: 6px 14px; }
+}
+
+/* The stage: the scroll box, and beside it the track of each range on its scroll. */
+.site .cssd-stage { display: grid; grid-template-columns: minmax(0, 1fr) auto; background: var(--panel); }
+.site .cssd-frame { min-width: 0; }
+/* No border or padding on the box itself: both would move the content against
+   the scrollport the view() timelines measure. */
+.site .cssd-box {
+  height: var(--cssd-h);
+  overflow-x: hidden; /* a card sliding in from the side must not scroll the box sideways */
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-behavior: auto;
+}
+.site .cssd-box:focus-visible { outline: 1px solid var(--fg); outline-offset: -2px; }
+.site .cssd-content { position: relative; padding: 0 16px; }
+.site .cssd-gap {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  height: var(--cssd-h);
+  padding: 16px 0;
+  box-sizing: border-box;
+  font: 500 10px/1.4 var(--mono);
+  color: var(--fg-3);
+}
+.site .cssd-gap.is-end { align-items: flex-end; }
+
+.site .cssd-subj {
+  display: grid;
+  gap: 10px;
+  width: min(80%, 320px);
+  margin: 0 auto 40px;
+  padding: 14px 16px 16px;
+  border: 1px solid var(--line-2);
+  background: var(--bg);
+}
+.site .cssd-subj-top { display: flex; justify-content: space-between; gap: 8px; font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .cssd-subj-l { display: block; height: 8px; background: var(--line-2); }
+.site .cssd-subj-l.is-short { width: 58%; }
+.site .cssd-subj.is-solid { border-color: var(--fg); background: var(--fg); }
+.site .cssd-subj.is-solid .cssd-subj-top { color: var(--bg); }
+.site .cssd-subj.is-solid .cssd-subj-l { background: var(--bg); opacity: 0.35; }
+
+/* The progress-bar preset: a sticky bar over an article. */
+.site .cssd-content.is-page { padding: 0; }
+.site .cssd-bar {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  height: 3px;
+  background: var(--fg);
+  transform-origin: 0 50%;
+  transform: scaleX(var(--scroll-progress, 0));
+}
+.site .cssd-article {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  min-height: calc(var(--cssd-h) * 3);
+  padding: 24px 20px 40px;
+  box-sizing: border-box;
+}
+.site .cssd-article-k { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .cssd-line { display: block; height: 9px; background: var(--line-2); }
+.site .cssd-line.is-break { height: 6px; background: transparent; }
+
+.site .cssd-track {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 8px;
+  padding: 10px 12px;
+  border-left: 1px solid var(--line);
+  font: 500 10px/1.4 var(--mono);
+  color: var(--fg-3);
+}
+.site .cssd-track-k, .site .cssd-track-v, .site .cssd-track-body { display: grid; grid-auto-flow: column; grid-auto-columns: 36px; }
+.site .cssd-track-k, .site .cssd-track-v { text-align: center; }
+.site .cssd-track-v { color: var(--fg); font-variant-numeric: tabular-nums; }
+.site .cssd-track-body { position: relative; min-height: 0; }
+.site .cssd-lane { position: relative; }
+.site .cssd-lane::before { content: ''; position: absolute; top: 0; bottom: 0; left: 50%; width: 1px; background: var(--line-2); }
+.site .cssd-lane i { position: absolute; left: calc(50% - 2px); width: 5px; background: var(--fg-2); }
+.site .cssd-head { position: absolute; left: -6px; right: -6px; top: 0; border-top: 1px solid var(--fg); pointer-events: none; }
+
+.site .cssd-transport {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--line);
+}
+.site .cssd-transport .cssd-seg { flex: 0 1 260px; }
+.site .cssd-btn {
+  padding: 8px 14px;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  font: 500 12px/1 var(--mono);
+  color: var(--fg);
+  cursor: pointer;
+}
+.site .cssd-btn:hover, .site .cssd-btn:focus-visible { border-color: var(--fg); outline: 0; }
+.site .cssd-scrub { display: grid; gap: 4px; flex: 1 1 200px; min-width: 0; }
+.site .cssd-scrub span { font: 500 10px/1.4 var(--mono); color: var(--fg-3); font-variant-numeric: tabular-nums; }
+.site .cssd-note { margin: 0; padding: 12px 16px; border-top: 1px solid var(--line); font-size: 13px; line-height: 1.6; color: var(--fg-2); }
+
+/* Code */
+.site .cssd-code { display: grid; min-width: 0; }
+.site .cssd-files { display: grid; gap: 16px; min-width: 0; }
+.site .cssd-tabs { display: flex; flex-wrap: wrap; }
+.site .cssd-tab {
+  padding: 8px 14px;
+  border: 1px solid var(--line-2);
+  border-bottom: 0;
+  border-left-width: 0;
+  border-radius: 0;
+  background: transparent;
+  font: 500 11.5px/1 var(--mono);
+  color: var(--fg-2);
+  cursor: pointer;
+}
+.site .cssd-tab:first-child { border-left-width: 1px; }
+.site .cssd-tab[aria-selected='true'] { color: var(--fg); background: var(--panel); }
+.site .cssd-tab:focus-visible { outline: 1px solid var(--fg); outline-offset: -3px; }
+.site .cssd-code .code-box { margin-top: 0; }
+
+.site .cssd-verdict { display: grid; gap: 6px; padding-top: 12px; border-top: 1px solid var(--fg-3); }
+.site .cssd-verdict-k { margin: 0; font: 500 11px/1.4 var(--mono); color: var(--fg); }
+.site .cssd-verdict-d { margin: 0; max-width: 72ch; font-size: 13.5px; line-height: 1.6; color: var(--fg-2); }
+
+/* The reference tables. */
+.site .cssd-scroll { overflow-x: auto; }
+.site .cssd-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.site .cssd-table th, .site .cssd-table td { padding: 10px 12px 10px 0; border-top: 1px solid var(--line); text-align: left; vertical-align: top; }
+.site .cssd-table th { font: 500 10px/1.4 var(--mono); color: var(--fg-3); white-space: nowrap; }
+.site .cssd-table td { color: var(--fg-2); line-height: 1.6; }
+.site .cssd-table td:first-child { font: 400 12.5px/1.6 var(--mono); color: var(--fg); white-space: nowrap; }
+.site .cssd-table td.is-mono { font: 400 12px/1.6 var(--mono); color: var(--fg); white-space: nowrap; }
+/* On a phone each row becomes a block, its first cell the heading and every
+   other cell under its column's name: columns squeezed to a few words, or a
+   "Why" pushed out past the edge, read worse than a list. */
+@media (max-width: 559px) {
+  .site .cssd-table, .site .cssd-table tbody, .site .cssd-table tr, .site .cssd-table td { display: block; }
+  .site .cssd-table thead { display: none; }
+  .site .cssd-table tr { padding: 12px 0; border-top: 1px solid var(--line); }
+  .site .cssd-table th, .site .cssd-table td { padding: 0; border-top: 0; }
+  .site .cssd-table td:first-child, .site .cssd-table td.is-mono { white-space: normal; }
+  .site .cssd-table td + td { margin-top: 8px; }
+  .site .cssd-table td[data-k]::before { content: attr(data-k); display: block; font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+}
+
+/* Fig. 1 — the four ranges. */
+.site .cssdf svg { display: block; width: 100%; height: auto; }
+.site .cssdf-vp { color: var(--fg-3); }
+.site .cssdf-el { color: var(--fg-3); }
+.site .cssdf-el.is-in { color: var(--fg); fill: currentColor; }
+.site .cssdf-path { color: var(--fg-3); }
+.site .cssdf-guide { color: var(--line-2); }
+.site .cssdf-axis { color: var(--fg-3); }
+.site .cssdf-bar { color: var(--fg); }
+.site .cssdf-k { font: 500 12px var(--mono); fill: var(--fg-2); }
+.site .cssdf-n { font: 500 11px var(--mono); fill: var(--fg-3); }
+.site .cssdf-r { font: 500 12px var(--mono); fill: var(--fg-2); }
+/* On a phone the figure draws at about 0.6 of its viewBox: larger type keeps
+   the labels near 10px. The layout leaves room for these sizes. */
+@media (max-width: 559px) {
+  .site .cssdf-k { font-size: 19px; }
+  .site .cssdf-n { font-size: 16px; }
+  .site .cssdf-r { font-size: 17px; }
+}

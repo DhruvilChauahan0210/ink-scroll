@@ -258,6 +258,22 @@ describe('scrollVideo', () => {
     expect(inst.getProgress()).toBeGreaterThanOrEqual(peak);
   });
 
+  // once held the eased value, so an elastic scrub stayed on its 1.25 peak:
+  // with `to` short of the end, the film froze past `to` (6.25s of a 0 → 5 run).
+  // Window [0, 600]; elastic peaks a fifth in, at y = 120.
+  it('once with an overshooting easing ends exactly on `to`', () => {
+    const video = makeVideo();
+    const inst = scrollVideo(video, { from: 0, to: 5, once: true, easing: 'elastic' });
+    FakeIO.instances[0].trigger(true);
+    vi.stubGlobal('scrollY', 120);
+    raf.tick();
+    expect(inst.getProgress()).toBeCloseTo(1.25, 6);
+    vi.stubGlobal('scrollY', 700);
+    raf.tick();
+    expect(inst.getProgress()).toBe(1);
+    expect(video.currentTime).toBeCloseTo(5, 6);
+  });
+
   it('sets preload if not present', () => {
     const video = makeVideo();
     video.removeAttribute('preload');

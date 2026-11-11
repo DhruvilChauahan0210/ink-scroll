@@ -1,0 +1,369 @@
+/* ── The scroll pin generator (/scroll-pin-generator) ─────────────────────
+   One hairline panel: the controls across the top, then the preview window
+   and its transport beside the readouts; then the code. Mono labels; the
+   accent only on the "you are here" mark on the scroll track. Prefix spn-,
+   the header figure spnf-.
+
+   Wide: controls, then preview | readouts. Phone: the preview first, so a
+   change is seen next to the control that made it. */
+
+.site .spn { display: grid; gap: 32px; }
+.site .spn-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: 'view' 'transport' 'controls' 'read' 'rm';
+  border: 1px solid var(--line-2);
+  min-width: 0;
+}
+.site .spn-controls { grid-area: controls; }
+.site .spn-view { grid-area: view; }
+.site .spn-transport { grid-area: transport; }
+.site .spn-read { grid-area: read; }
+.site .spn-rm { grid-area: rm; }
+@media (min-width: 760px) {
+  .site .spn-panel {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    grid-template-rows: auto auto 1fr auto;
+    grid-template-areas:
+      'controls controls'
+      'view read'
+      'transport read'
+      'rm rm';
+  }
+}
+.site .spn-k { margin: 0; font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+
+/* ── Controls ────────────────────────────────────────────────────────── */
+
+.site .spn-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 20px;
+  padding: 16px;
+  border-bottom: 1px solid var(--line);
+}
+@media (min-width: 760px) {
+  .site .spn-controls { grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr) minmax(0, 1fr); gap: 16px 24px; border-top: 0; }
+}
+@media (max-width: 759px) { .site .spn-controls { border-top: 1px solid var(--line); } }
+.site .spn-field { display: grid; gap: 8px; align-content: start; min-width: 0; }
+.site .spn-field-k { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .spn-seg { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); border: 1px solid var(--line-2); }
+.site .spn-seg button {
+  min-width: 0;
+  padding: 8px 4px;
+  border: 0;
+  border-left: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  font: 500 11.5px/1.2 var(--mono);
+  color: var(--fg-2);
+  cursor: pointer;
+}
+.site .spn-seg button:first-child { border-left: 0; }
+.site .spn-seg button:hover { color: var(--fg); }
+.site .spn-seg button[aria-checked='true'] { background: var(--fg); color: var(--bg); }
+.site .spn-seg button:focus-visible { outline: 1px solid var(--fg); outline-offset: -3px; }
+.site .spn-range { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 12px; }
+.site .spn-val { min-width: 52px; font: 500 12px/1 var(--mono); font-variant-numeric: tabular-nums; color: var(--fg); text-align: right; }
+.site .spn input[type='range'] { width: 100%; accent-color: var(--fg); }
+/* globals.css gives every range `outline: none`, which outranks :focus-visible. */
+.site .spn input[type='range']:focus-visible { outline: 1px solid var(--fg); outline-offset: 4px; }
+.site .spn-hint { margin: 0; font-size: 12.5px; line-height: 1.5; color: var(--fg-3); }
+.site .spn-chip,
+.site .spn-btn {
+  justify-self: start;
+  padding: 7px 10px;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  font: 500 11.5px/1.2 var(--mono);
+  color: var(--fg-2);
+  cursor: pointer;
+}
+.site .spn-btn { padding: 8px 14px; color: var(--fg); }
+.site .spn-chip:hover, .site .spn-chip:focus-visible,
+.site .spn-btn:hover, .site .spn-btn:focus-visible { border-color: var(--fg); color: var(--fg); outline: 0; }
+
+/* ── The preview window ─────────────────────────────────────────────── */
+
+.site .spn-view,
+.site .spn-transport,
+.site .spn-read { min-width: 0; background: var(--panel); }
+.site .spn-view { display: grid; gap: 8px; align-content: start; padding: 16px 16px 12px; }
+@media (min-width: 760px) {
+  .site .spn-view { padding-right: 12px; }
+  .site .spn-read { padding-left: 12px; }
+}
+/* clip-path, not overflow: it also clips the stage while it is position: fixed,
+   which overflow on an ancestor does not. */
+.site .spn-frame { position: relative; border: 1px solid var(--line-2); background: var(--bg); clip-path: inset(0); }
+/* No border or padding on the box: its top edge is the window's top for the
+   pin, and clientHeight is the height the preview's vh are of. */
+.site .spn-box {
+  position: relative;
+  height: 340px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.site .spn-box:focus-visible { outline: 1px solid var(--fg); outline-offset: -2px; }
+@media (max-width: 759px) { .site .spn-box { height: 300px; } }
+
+.site .spn-flow {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 4px;
+  padding: 0 16px 16px;
+  font: 500 10.5px/1.4 var(--mono);
+  color: var(--fg-3);
+}
+.site .spn-flow.is-after { justify-content: flex-start; padding: 16px; }
+
+.site .spn-stage {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 12px;
+  padding: 16px;
+  border-top: 1px solid var(--fg-3);
+  border-bottom: 1px solid var(--fg-3);
+  background: var(--panel);
+  color: var(--fg);
+}
+.site .spn-steps { display: grid; align-items: center; min-height: 0; margin: 0; padding: 0; list-style: none; }
+.site .spn-step {
+  grid-area: 1 / 1;
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.site .spn-step[aria-current] { opacity: 1; }
+.site .spn-step svg { display: block; width: 72px; height: 72px; overflow: visible; }
+.site .spn-step path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  /* Times 1px: Firefox drops a calc() of plain numbers here. */
+  stroke-dashoffset: calc((1 - var(--draw, 0)) * 1px);
+}
+.site .spn-step-n { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .spn-step-t { margin: 4px 0; font-size: 18px; font-weight: 500; line-height: 1.25; letter-spacing: -0.01em; }
+.site .spn-step-b { margin: 0; font-size: 13px; line-height: 1.5; color: var(--fg-2); }
+@media (max-width: 479px) {
+  .site .spn-step { grid-template-columns: 52px minmax(0, 1fr); gap: 12px; }
+  .site .spn-step svg { width: 52px; height: 52px; }
+  .site .spn-step-t { font-size: 16px; }
+  .site .spn-step-b { font-size: 12.5px; }
+}
+.site .spn-stage-foot { display: grid; gap: 8px; }
+.site .spn-ticks { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 4px; }
+.site .spn-ticks i { height: 3px; border: 1px solid var(--line-2); }
+.site .spn-ticks i[data-on] { border-color: var(--fg); background: var(--fg); }
+.site .spn-pbar { display: block; height: 2px; background: var(--line); }
+.site .spn-pbar > span {
+  display: block;
+  height: 100%;
+  background: var(--fg);
+  transform: scaleX(var(--progress, 0));
+  transform-origin: 0 50%;
+}
+
+/* The header and the pin line stay put while the content scrolls under them. */
+.site .spn-overlay { position: absolute; inset: 0; z-index: 1; overflow: hidden; pointer-events: none; }
+.site .spn-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--line-2);
+  background: repeating-linear-gradient(135deg, var(--line) 0 1px, transparent 1px 6px) var(--bg);
+  font: 500 10px/1 var(--mono);
+  color: var(--fg-3);
+  overflow: hidden;
+  white-space: nowrap;
+}
+.site .spn-line { position: absolute; left: 0; right: 0; height: 0; border-top: 1px dashed var(--fg); }
+.site .spn-line i {
+  position: absolute;
+  right: 12px;
+  top: 3px;
+  padding: 1px 4px;
+  background: var(--bg);
+  font: 500 10px/1 var(--mono);
+  font-style: normal;
+  color: var(--fg);
+  white-space: nowrap;
+}
+
+.site .spn-transport {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: start;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 16px 16px;
+}
+@media (min-width: 760px) { .site .spn-transport { padding-right: 12px; } }
+.site .spn-scrub { display: grid; gap: 4px; flex: 1 1 200px; min-width: 0; }
+.site .spn-scrub span { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+
+/* ── Readouts ────────────────────────────────────────────────────────── */
+
+.site .spn-read { display: grid; gap: 16px; align-content: start; padding: 16px; }
+@media (max-width: 759px) { .site .spn-read { border-top: 1px solid var(--line); } }
+.site .spn-big { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.site .spn-big > div { display: grid; gap: 6px; }
+.site .spn-num {
+  font-size: clamp(36px, 4.5vw, 52px);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  color: var(--fg);
+}
+.site .spn-num small { font-size: 0.45em; letter-spacing: 0; color: var(--fg-3); }
+.site .spn-bar { display: block; height: 8px; border: 1px solid var(--line-2); background: var(--bg); overflow: hidden; }
+.site .spn-bar > span { display: block; height: 100%; background: var(--fg); transform-origin: 0 50%; }
+.site .spn-state { margin: 0; font-size: 13px; line-height: 1.5; color: var(--fg-2); }
+.site .spn-state b { font: 500 11.5px/1.5 var(--mono); color: var(--fg); }
+
+/* Scroll positions, 0 to the end of the box: the pin is the thick part. */
+.site .spn-track { display: grid; gap: 4px; }
+.site .spn-rail { position: relative; height: 52px; margin: 0 2px; }
+.site .spn-rail::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; border-top: 1px solid var(--line-2); }
+.site .spn-win { position: absolute; top: calc(50% - 3px); height: 6px; background: var(--fg-3); }
+.site .spn-cut { position: absolute; top: calc(50% - 3px); height: 6px; border-left: 2px solid var(--panel); }
+.site .spn-mark { position: absolute; top: calc(50% - 8px); height: 16px; border-left: 1px solid var(--fg); }
+.site .spn-mark i {
+  position: absolute;
+  left: 0;
+  bottom: 19px;
+  transform: translateX(-50%);
+  font: 500 10px/1 var(--mono);
+  font-style: normal;
+  color: var(--fg-2);
+  white-space: nowrap;
+}
+.site .spn-mark.is-below i { bottom: auto; top: 19px; }
+.site .spn-mark.is-l i { transform: none; }
+.site .spn-mark.is-r i { transform: translateX(-100%); }
+.site .spn-now { position: absolute; top: calc(50% - 12px); height: 24px; margin-left: -1px; border-left: 2px solid var(--accent); }
+
+.site .spn-log { display: grid; gap: 6px; }
+.site .spn-log ol { display: grid; margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line-2); }
+.site .spn-log li {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 12px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--fg-2);
+}
+.site .spn-log li:first-child code { color: var(--fg); }
+.site .spn-log code { font: 500 12px/1.5 var(--mono); color: var(--fg-2); }
+.site .spn-log li.is-none { color: var(--fg-3); }
+.site .spn-log-empty { margin: 0; font-size: 12.5px; line-height: 1.5; color: var(--fg-3); }
+
+.site .spn-math { margin: 0; border-top: 1px solid var(--line-2); }
+.site .spn-math > div {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+}
+.site .spn-math dt { font: 500 10px/1.9 var(--mono); color: var(--fg-3); }
+.site .spn-math dd {
+  margin: 0;
+  font: 400 12.5px/1.6 var(--mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--fg);
+  overflow-wrap: anywhere;
+}
+.site .spn-rm {
+  margin: 0;
+  padding: 10px 16px;
+  border-top: 1px solid var(--line);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--fg-2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site .spn-step { transition: none; }
+  .site .spn-step path { stroke-dashoffset: 0; }
+}
+
+/* ── The code ─────────────────────────────────────────────────────────── */
+
+.site .spn-code { display: grid; min-width: 0; }
+.site .spn-tabs { display: flex; flex-wrap: wrap; }
+.site .spn-tab {
+  padding: 8px 14px;
+  border: 1px solid var(--line-2);
+  border-bottom: 0;
+  border-left-width: 0;
+  border-radius: 0;
+  background: transparent;
+  font: 500 11.5px/1 var(--mono);
+  color: var(--fg-2);
+  cursor: pointer;
+}
+.site .spn-tab:first-child { border-left-width: 1px; }
+.site .spn-tab[aria-selected='true'] { color: var(--fg); background: var(--panel); }
+.site .spn-tab:focus-visible { outline: 1px solid var(--fg); outline-offset: -3px; }
+@media (max-width: 479px) { .site .spn-tab { padding: 8px 10px; } }
+.site .spn-code .code-box { margin-top: 0; }
+.site .spn-code > .spn-hint { margin-top: 8px; }
+
+/* ── Reference tables and notes on the page ──────────────────────────── */
+
+.site .spn-a { color: var(--fg); text-decoration: underline; text-decoration-color: var(--line-2); text-underline-offset: 3px; }
+.site .spn-a:hover { text-decoration-color: var(--fg); }
+
+.site .spn-scroll { overflow-x: auto; }
+.site .spn-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.site .spn-table th,
+.site .spn-table td { padding: 10px 12px 10px 0; border-top: 1px solid var(--line); text-align: left; vertical-align: top; }
+.site .spn-table th { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .spn-table td { line-height: 1.6; color: var(--fg-2); }
+.site .spn-table td.is-code { font: 400 12.5px/1.6 var(--mono); color: var(--fg); white-space: nowrap; }
+.site .spn-table th.is-key { min-width: 120px; font: 400 12.5px/1.6 var(--mono); color: var(--fg); }
+
+/* ── Fig. 1: the wrapper, the pin line and progress ──────────────────── */
+
+.site .spnf svg { width: 100%; height: auto; }
+.site .spnf-wrap, .site .spnf-win { color: var(--fg-2); }
+.site .spnf-head { fill: var(--line); stroke: none; }
+.site .spnf-ghost, .site .spnf-dim, .site .spnf-start, .site .spnf-axis { color: var(--fg-3); }
+.site .spnf-pin { color: var(--fg); }
+.site .spnf-now { color: var(--fg); stroke-width: 3; }
+.site .spnf-panel { fill: var(--panel); stroke: var(--fg); stroke-width: 1.5; }
+.site .spnf-shape { fill: none; stroke: var(--fg); stroke-width: 1.25; stroke-linejoin: round; }
+.site .spnf-dot { fill: var(--fg); }
+.site .spnf-code { font: 500 12.5px var(--mono); fill: var(--fg); }
+.site .spnf-l, .site .spnf-in { font: 500 11.5px var(--mono); fill: var(--fg); }
+.site .spnf-k, .site .spnf-s, .site .spnf-in-s { font: 500 10.5px var(--mono); fill: var(--fg-3); }
+.site .spnf-n, .site .spnf-f { font: 500 10.5px var(--mono); fill: var(--fg-2); }
+/* The figure scales with its column; on a phone that is about two thirds, so
+   the labels are drawn larger to land near 10px on screen. */
+@media (max-width: 560px) {
+  .site .spnf-code { font-size: 14px; }
+  .site .spnf-l, .site .spnf-in { font-size: 12.5px; }
+  .site .spnf-k, .site .spnf-s, .site .spnf-n, .site .spnf-f { font-size: 11.5px; }
+  .site .spnf-in-s { font-size: 10.5px; }
+}

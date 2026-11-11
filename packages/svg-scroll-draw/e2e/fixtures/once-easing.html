@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>once with an easing that overshoots or dips</title>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+  .lead { height: 1200px; background: #eee; }
+  /* All three share a document top (1200) and a height (200), side by side. */
+  .row { display: flex; gap: 40px; padding: 0 40px; height: 200px; }
+  #art { display: block; width: 300px; height: 200px; overflow: visible; }
+  #art path { fill: none; stroke: #234; stroke-width: 6; }
+  #box { width: 100px; height: 200px; background: #0a7; }
+  #count { width: 160px; height: 200px; font-size: 32px; line-height: 200px; }
+  .tail { height: 1600px; }
+</style>
+</head>
+<body>
+<!--
+  Viewport 900x800. `once: true` on a drawing, a moving box and a counter, all
+  with ?easing= (default elastic). Up to 2.23.2 once held the EASED value with
+  Math.max, so elastic froze on its overshoot (it peaks near 1.27) and bounce
+  lost its dips.
+
+  Windows: scrollDraw and scrollAnimate use top bottom → bottom top, [400, 1400];
+  scrollCounter uses top 80% → top 20%, [560, 1040].
+-->
+<div class="lead"></div>
+<div class="row">
+  <svg id="art" viewBox="0 0 300 200"><path d="M10 100 H290" /></svg>
+  <div id="box"></div>
+  <div id="count">–</div>
+</div>
+<div class="tail"></div>
+<script type="module">
+import { scrollDraw, scrollAnimate, scrollCounter } from '/dist/index.mjs';
+import { publish, drawnFraction, transformOf } from './_probe.mjs';
+
+const easing = new URLSearchParams(location.search).get('easing') ?? 'elastic';
+const path = document.querySelector('#art path');
+const box = document.getElementById('box');
+const count = document.getElementById('count');
+
+const draw = scrollDraw('#art', { once: true, easing });
+const animate = scrollAnimate('#box', { props: { transform: ['translateX(0px)', 'translateX(100px)'] }, easing, once: true });
+const counter = scrollCounter('#count', { to: 1000, easing });
+
+publish({
+  scrollTo: (y) => window.scrollTo(0, y),
+  /** Each one's value as a fraction of the way from start to target. */
+  read: () => ({
+    scrollY: window.scrollY,
+    draw: drawnFraction(path),
+    animate: transformOf(box).x / 100,
+    counter: Number(count.textContent) / 1000,
+  }),
+  progress: () => ({ draw: draw.getProgress(), animate: animate.getProgress(), counter: counter.getProgress() }),
+});
+</script>
+</body>
+</html>

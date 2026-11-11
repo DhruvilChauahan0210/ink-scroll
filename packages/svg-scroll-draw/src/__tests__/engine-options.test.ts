@@ -308,6 +308,29 @@ describe('createEngine — clip mode', () => {
     expect(onComplete).toHaveBeenCalledOnce();
   });
 
+  // Reversed, progress 0 is fully shown (applyAlpha draws 1 − alpha). The
+  // initial clip was computeClipPath(0) whatever the direction, so a reversed
+  // clip sat fully hidden until its first frame: with `delay`, for the delay.
+  it('direction: reverse starts fully shown, and replay() returns there', () => {
+    const container = makeContainer();
+    const instance = createEngine(container, { clip: 'left', direction: 'reverse' });
+    expect(container.style.clipPath).toBe('inset(0 0% 0 0)');
+
+    vi.stubGlobal('scrollY', 500);
+    FakeIO.instances[0].trigger(true);
+    raf.tick();
+    expect(container.style.clipPath).toBe('inset(0 100% 0 0)');
+
+    instance.replay();
+    expect(container.style.clipPath).toBe('inset(0 0% 0 0)');
+  });
+
+  it('forward still starts fully hidden', () => {
+    const container = makeContainer();
+    createEngine(container, { clip: 'left' });
+    expect(container.style.clipPath).toBe('inset(0 100% 0 0)');
+  });
+
   it('clip mode sets --scroll-draw-progress custom property', () => {
     const container = makeContainer();
     createEngine(container, { clip: 'left' });
@@ -318,6 +341,24 @@ describe('createEngine — clip mode', () => {
 
     expect(parseFloat(container.style.getPropertyValue('--scroll-draw-progress'))).toBeGreaterThan(0);
   });
+});
+
+// ── blank triggers ────────────────────────────────────────────────────────────
+
+// `?? 'bottom top'` replaced only undefined, so `end: ''` reached parseTrigger,
+// which read it as 'top bottom': the window [−800, −800] has no length, and the
+// drawing never moved. A blank trigger is no trigger now, so the default.
+describe('createEngine — a blank trigger is the default one', () => {
+  for (const trigger of [{ end: '' }, { start: '' }, { start: '', end: '' }]) {
+    it(`${JSON.stringify(trigger)} draws as {} does`, () => {
+      const path = makePath();
+      const instance = createEngine(makeContainer([path]), { native: false, trigger });
+      vi.stubGlobal('scrollY', 0); // 800 into the default [−800, 500]
+      FakeIO.instances[0].trigger(true);
+      raf.tick();
+      expect(instance.getProgress()).toBeCloseTo(800 / 1300, 6);
+    });
+  }
 });
 
 // ── prefersReducedMotion ──────────────────────────────────────────────────────
@@ -600,6 +641,118 @@ describe('createEngine — once', () => {
     vi.stubGlobal('scrollY', 800); // both done
     raf.tick();
     expect(onComplete).toHaveBeenCalledTimes(1);
+  });
+
+  // Up to 2.23.2 `once` held the EASED value with Math.max, so an easing that
+  // overshoots stayed on its peak: elastic reaches 1.25 a fifth of the way in,
+  // and the path stayed drawn 1.25 (dashoffset −25 of 100) for good, past its
+  // end. The raw progress is held now, and eased after, as scrollText does.
+  // tStart −800, tEnd 500: a fifth of the window is y = −540.
+  describe('with an easing that overshoots or dips', () => {
+    it('elastic still overshoots mid-scroll, then ends drawn exactly to 1', () => {
+      const path = makePath();
+      const instance = createEngine(makeContainer([path]), { once: true, easing: 'elastic' });
+      FakeIO.instances[0].trigger(true);
+
+      vi.stubGlobal('scrollY', -540);
+      raf.tick();
+      expect(instance.getProgress()).toBeCloseTo(1.25, 6);
+      expect(parseFloat(path.style.strokeDashoffset)).toBeCloseTo(-25, 3);
+
+      vi.stubGlobal('scrollY', 600);
+      raf.tick();
+      expect(instance.getProgress()).toBe(1);
+      expect(parseFloat(path.style.strokeDashoffset)).toBe(0);
+
+      // Scrolling back holds the end, as once always has.
+      vi.stubGlobal('scrollY', -540);
+      raf.tick();
+      expect(instance.getProgress()).toBe(1);
+      expect(parseFloat(path.style.strokeDashoffset)).toBe(0);
+    });
+
+    it('a custom overshooting function ends exactly on 1 too', () => {
+      const path = makePath();
+      const overshoot = (t: number) => (t < 1 ? Math.min(1.4, t * 2) : 1);
+      createEngine(makeContainer([path]), { once: true, easing: overshoot });
+      FakeIO.instances[0].trigger(true);
+      vi.stubGlobal('scrollY', 240); // raw 0.8 → 1.4
+      raf.tick();
+      expect(parseFloat(path.style.strokeDashoffset)).toBeCloseTo(-40, 3);
+      vi.stubGlobal('scrollY', 500);
+      raf.tick();
+      expect(parseFloat(path.style.strokeDashoffset)).toBe(0);
+    });
+
+    it('bounce keeps its dips while scrolling forward', () => {
+      const seen: number[] = [];
+      createEngine(makeContainer([makePath()]), { once: true, easing: 'bounce', onProgress: (p) => seen.push(p) });
+      FakeIO.instances[0].trigger(true);
+      for (let y = -800; y <= 500; y += 26) {
+        vi.stubGlobal('scrollY', y);
+        raf.tick();
+      }
+      const dips = seen.filter((p, i) => i > 0 && p < seen[i - 1] - 1e-9).length;
+      expect(dips).toBeGreaterThan(0);
+      expect(seen[seen.length - 1]).toBe(1);
+    });
+
+    it('each staggered path settles on 1', () => {
+      const paths = [makePath(), makePath(), makePath()];
+      createEngine(makeContainer(paths), { once: true, easing: 'elastic', stagger: 0.1 });
+      FakeIO.instances[0].trigger(true);
+      for (let y = -800; y <= 900; y += 13) {
+        vi.stubGlobal('scrollY', y);
+        raf.tick();
+      }
+      paths.forEach((p) => expect(parseFloat(p.style.strokeDashoffset)).toBe(0));
+    });
+
+    it('clip mode ends fully revealed, not on the overshoot', () => {
+      const container = makeContainer();
+      createEngine(container, { clip: 'left', once: true, easing: 'elastic' });
+      FakeIO.instances[0].trigger(true);
+      vi.stubGlobal('scrollY', -540);
+      raf.tick();
+      expect(container.style.clipPath).toBe('inset(0 -25% 0 0)');
+      vi.stubGlobal('scrollY', 600);
+      raf.tick();
+      expect(container.style.clipPath).toBe('inset(0 0% 0 0)');
+    });
+
+    // seek() pins a frame as drawn, eased, and once holds at least that much
+    // afterwards. That is unchanged, for linear easing and any other.
+    for (const easing of ['linear', 'ease-in'] as const) {
+      it(`after seek(), once still holds the sought frame as its floor (${easing})`, () => {
+        const ease = easing === 'linear' ? (t: number) => t : (t: number) => t * t;
+        const instance = createEngine(makeContainer([makePath()]), { once: true, easing });
+        FakeIO.instances[0].trigger(true);
+        vi.stubGlobal('scrollY', 240); // raw 0.8
+        raf.tick();
+
+        instance.seek(0.5);
+        expect(instance.getProgress()).toBe(0.5);
+        instance.resume();
+        vi.stubGlobal('scrollY', -410); // raw 0.3: under the floor
+        raf.tick();
+        expect(instance.getProgress()).toBeCloseTo(Math.max(0.5, ease(0.3)), 6);
+        vi.stubGlobal('scrollY', 240); // raw 0.8
+        raf.tick();
+        expect(instance.getProgress()).toBeCloseTo(Math.max(0.5, ease(0.8)), 6);
+      });
+    }
+
+    it('replay() lets an overshooting once run again from 0', () => {
+      const path = makePath();
+      const instance = createEngine(makeContainer([path]), { once: true, easing: 'elastic' });
+      FakeIO.instances[0].trigger(true);
+      vi.stubGlobal('scrollY', 600);
+      raf.tick();
+      instance.replay();
+      vi.stubGlobal('scrollY', -540);
+      raf.tick();
+      expect(instance.getProgress()).toBeCloseTo(1.25, 6);
+    });
   });
 
   // The last staggered window ends past trigger.end; near the bottom of a page,

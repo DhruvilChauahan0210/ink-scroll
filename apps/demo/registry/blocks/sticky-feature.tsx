@@ -104,7 +104,7 @@ export function StickyFeature({
     <section className={`mx-auto grid w-full max-w-5xl gap-10 md:grid-cols-2 md:gap-16 ${className}`}>
       {/* Pinned panel */}
       <div className="md:sticky md:top-24 md:self-start">
-        <p className="font-mono text-xs text-neutral-500 dark:text-neutral-400">
+        <p className="font-mono text-xs text-neutral-600 dark:text-neutral-400">
           {eyebrow}
         </p>
         <h2 className="mt-3 text-3xl font-medium tracking-tight text-neutral-950 sm:text-4xl dark:text-neutral-50">
@@ -124,7 +124,7 @@ export function StickyFeature({
                 className={`flex items-baseline gap-3 text-sm transition-colors duration-300 ${
                   i === active
                     ? 'font-semibold text-neutral-950 dark:text-neutral-50'
-                    : 'text-neutral-500 dark:text-neutral-400'
+                    : 'text-neutral-600 dark:text-neutral-400'
                 }`}
               >
                 <span className="font-mono text-xs">{String(i + 1).padStart(2, '0')}</span>
@@ -145,7 +145,7 @@ export function StickyFeature({
               easing="ease-out"
               className="rounded-2xl border border-neutral-200 bg-white p-6 sm:p-8 dark:border-neutral-800 dark:bg-neutral-950"
             >
-              <span className="font-mono text-xs text-neutral-500 dark:text-neutral-400">
+              <span className="font-mono text-xs text-neutral-600 dark:text-neutral-400">
                 Step {String(i + 1).padStart(2, '0')}
               </span>
               <h3 className="mt-2 text-xl font-semibold text-neutral-950 dark:text-neutral-50">{step.title}</h3>

@@ -192,4 +192,21 @@ describe('scrollReveal', () => {
     expect(opacityAfter).toBeGreaterThan(0);
     inst.destroy();
   });
+
+  // scrollReveal is scrollAnimate with once: true. Up to 2.23.2 that held the
+  // eased value, so an elastic fadeUp stayed 8px above its place (32 → 0 at
+  // 1.25 is −8) for good. Window [496, 776]; elastic peaks a fifth in, at 552.
+  it('an elastic reveal overshoots on the way, and ends in its place', () => {
+    const el   = makeEl();
+    const inst = scrollReveal([el], { easing: 'elastic' });
+    FakeIO.instances[0].trigger(true);
+    vi.stubGlobal('scrollY', 552);
+    raf.tick();
+    expect(el.style.transform).toContain('translateY(-8px)');
+    vi.stubGlobal('scrollY', 900);
+    raf.tick();
+    expect(el.style.transform).toContain('translateY(0px)');
+    expect(el.style.opacity).toBe('1');
+    inst.destroy();
+  });
 });

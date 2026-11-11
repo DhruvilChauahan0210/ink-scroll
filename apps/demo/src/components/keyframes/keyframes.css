@@ -1,0 +1,255 @@
+/* ── The CSS keyframes animation generator (/css-keyframes-animation-generator)
+   One hairline panel: the effects, the controls, the card on its stage, the
+   transport with the live timeline; then the code; then the box that scrolls.
+   Mono labels, square corners. The accent is used once: the playhead, the
+   one thing on the panel that says "now". */
+
+.site .kfg { display: grid; gap: 32px; min-width: 0; }
+.site .kfg [hidden] { display: none !important; }
+.site .kfg-panel { border: 1px solid var(--line-2); min-width: 0; }
+
+/* The effects, in their three groups. */
+.site .kfg-presets { display: grid; gap: 14px; padding: 16px; border-bottom: 1px solid var(--line); }
+.site .kfg-group { display: grid; gap: 8px; min-width: 0; }
+.site .kfg-group-k { margin: 0; font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .kfg-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.site .kfg-chips button {
+  padding: 7px 10px;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  font: 500 11.5px/1.2 var(--mono);
+  color: var(--fg-2);
+  cursor: pointer;
+}
+.site .kfg-chips button:hover { color: var(--fg); border-color: var(--fg-3); }
+.site .kfg-chips button[aria-pressed='true'] { background: var(--fg); border-color: var(--fg); color: var(--bg); }
+.site .kfg-chips button:focus-visible { outline: 1px solid var(--fg); outline-offset: 2px; }
+.site .kfg-hint { margin: 0; max-width: 72ch; font-size: 13px; line-height: 1.55; color: var(--fg-2); }
+.site .kfg-hint b { font-weight: 500; color: var(--fg); }
+
+/* The controls: one per animation property, named as CSS names it. */
+.site .kfg-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px 20px;
+  padding: 16px;
+  border-bottom: 1px solid var(--line);
+}
+@media (max-width: 559px) {
+  .site .kfg-controls { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 12px; }
+  .site .kfg-field.is-param { grid-column: 1 / -1; }
+}
+.site .kfg-field { display: grid; gap: 6px; align-content: start; min-width: 0; }
+.site .kfg-field > span { font: 500 10px/1.4 var(--mono); color: var(--fg-3); overflow-wrap: anywhere; }
+.site .kfg-field input[type='text'],
+.site .kfg-field input[type='number'],
+.site .kfg-field select {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  min-width: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  font: 400 13px/1.3 var(--mono);
+  color: var(--fg);
+}
+.site .kfg-field select { cursor: pointer; }
+.site .kfg-field input:hover,
+.site .kfg-field select:hover { border-color: var(--fg-3); }
+.site .kfg-field input[type='text']:focus-visible,
+.site .kfg-field input[type='number']:focus-visible,
+.site .kfg-field select:focus-visible { border-color: var(--fg); outline: 1px solid var(--fg); outline-offset: 2px; }
+.site .kfg-field input[aria-invalid='true'] { border-style: dashed; border-color: var(--fg); }
+.site .kfg-field option { background: var(--bg); color: var(--fg); }
+.site .kfg-pair { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: 8px; }
+.site .kfg input[type='range'] { width: 100%; margin: 6px 0; accent-color: var(--fg); }
+/* globals.css takes the outline off every range input; give the keyboard one back. */
+.site .kfg input[type='range']:focus-visible { outline: 1px solid var(--fg); outline-offset: 6px; }
+
+.site .kfg-warn {
+  margin: 0;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--line);
+  box-shadow: inset 2px 0 0 var(--fg);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--fg-2);
+}
+
+/* The card on its stage. overflow: hidden keeps a slide or a wobble off the
+   page's width; nothing in here uses a view() timeline. */
+.site .kfg-stage {
+  display: grid;
+  place-items: center;
+  min-height: clamp(220px, 26vw, 300px);
+  padding: 32px 16px;
+  overflow: hidden;
+  background: var(--panel);
+}
+.site .kfg-card,
+.site .kfg-scard {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+  padding: 16px;
+  border: 1px solid var(--line-2);
+  background: var(--bg);
+}
+.site .kfg-card { width: min(240px, 72%); }
+.site .kfg-card-k { font: 500 11px/1.4 var(--mono); color: var(--fg-2); overflow-wrap: anywhere; }
+.site .kfg-card-l { display: block; height: 8px; background: var(--line-2); }
+.site .kfg-card-l.is-2 { width: 82%; }
+.site .kfg-card-l.is-3 { width: 56%; }
+
+/* Transport: the buttons, the live timeline, the slider, where it is. */
+.site .kfg-transport { display: grid; gap: 12px; padding: 14px 16px 16px; border-top: 1px solid var(--line); min-width: 0; }
+.site .kfg-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+.site .kfg-btn {
+  padding: 8px 14px;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  font: 500 12px/1 var(--mono);
+  color: var(--fg);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.site .kfg-btn:hover { border-color: var(--fg); }
+.site .kfg-btn:focus-visible { border-color: var(--fg); outline: 1px solid var(--fg); outline-offset: 2px; }
+.site .kfg-rm { margin: 0; max-width: 64ch; font-size: 13px; line-height: 1.55; color: var(--fg-2); }
+
+.site .kfg-tl { display: grid; gap: 4px; min-width: 0; }
+.site .kfg-tl-track { position: relative; display: flex; height: 44px; border: 1px solid var(--line-2); background: var(--bg); }
+.site .kfg-tl-seg {
+  flex: 1 1 0;
+  min-width: 0;
+  box-shadow: inset 1px 0 0 var(--line-2);
+  background: repeating-linear-gradient(135deg, var(--line) 0 1px, transparent 1px 6px);
+}
+.site .kfg-tl-seg:first-child { box-shadow: none; }
+.site .kfg-tl-seg.is-cycle { background: transparent; }
+.site .kfg-tl-seg svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.site .kfg-tl-seg path,
+.site .kfg-tl-seg line { fill: none; stroke: var(--fg); stroke-width: 1.5; stroke-linejoin: round; }
+.site .kfg-tl-head {
+  position: absolute;
+  top: -5px;
+  bottom: -5px;
+  left: 0;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--accent);
+  pointer-events: none;
+}
+.site .kfg-tl-labels { display: flex; }
+.site .kfg-tl-labels span {
+  flex: 1 1 0;
+  min-width: 0;
+  padding-left: 4px;
+  overflow: hidden;
+  white-space: nowrap;
+  font: 500 10px/1.4 var(--mono);
+  color: var(--fg-3);
+}
+.site .kfg-scrub { display: grid; gap: 2px; min-width: 0; }
+.site .kfg-scrub span { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .kfg-read { margin: 0; min-height: 1.5em; font: 500 12px/1.5 var(--mono); color: var(--fg); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+
+/* The code. */
+.site .kfg-code { display: grid; gap: 10px; min-width: 0; }
+.site .kfg-code-k { margin: 0; max-width: 72ch; font-size: 13.5px; line-height: 1.6; color: var(--fg-2); }
+.site .kfg-tabs { display: flex; flex-wrap: wrap; margin-bottom: -10px; }
+.site .kfg-tab {
+  padding: 8px 14px;
+  border: 1px solid var(--line-2);
+  border-bottom: 0;
+  border-left-width: 0;
+  border-radius: 0;
+  background: transparent;
+  font: 500 11.5px/1 var(--mono);
+  color: var(--fg-2);
+  cursor: pointer;
+}
+.site .kfg-tab:first-child { border-left-width: 1px; }
+.site .kfg-tab[aria-selected='true'] { color: var(--fg); background: var(--panel); }
+.site .kfg-tab:focus-visible { outline: 1px solid var(--fg); outline-offset: -3px; }
+.site .kfg-code .code-box { margin-top: 0; }
+.site .kfg-nomap { display: grid; gap: 6px; padding: 16px; border: 1px dashed var(--line-2); background: var(--panel); }
+.site .kfg-nomap p { margin: 0; max-width: 72ch; font-size: 14px; line-height: 1.6; color: var(--fg-2); }
+.site .kfg-nomap .kfg-nomap-k { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+
+/* The box that scrolls. Framed with an inset shadow, not a border:
+   svg-scroll-draw 2.23.2 measures a scrollContainer's trigger from its border
+   box (core/trigger-frame.ts; 2.23.3 measures inside it), so a border would
+   shift the library card's window by its width. Each spacer is one box tall,
+   so at the top of the box the row sits just below its bottom edge: entry 0%. */
+.site .kfg-live { --kfg-box: 320px; display: grid; gap: 12px; min-width: 0; }
+@media (max-width: 559px) { .site .kfg-live { --kfg-box: 280px; } }
+.site .kfg-live-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; }
+.site .kfg-live-k { margin: 0; font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .kfg-sbox {
+  height: var(--kfg-box);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  box-shadow: inset 0 0 0 1px var(--line-2);
+  background: var(--panel);
+}
+.site .kfg-sbox:focus-visible { outline: 1px solid var(--fg); outline-offset: 2px; }
+.site .kfg-strack { position: relative; }
+.site .kfg-spacer { display: grid; place-items: center; height: var(--kfg-box); }
+.site .kfg-spacer span { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .kfg-srow { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; padding: 0 16px; }
+.site .kfg-scol { display: grid; gap: 8px; align-content: start; min-width: 0; }
+.site .kfg-scard { gap: 8px; padding: 12px; }
+.site .kfg-scard.is-off { border-style: dashed; background: transparent; }
+.site .kfg-scard.is-off .kfg-card-l { background: var(--line); }
+.site .kfg-scap { margin: 0; font: 500 10px/1.4 var(--mono); color: var(--fg-3); overflow-wrap: anywhere; }
+.site .kfg-live-notes { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.site .kfg-live-notes li { max-width: 76ch; font-size: 13px; line-height: 1.6; color: var(--fg-2); }
+.site .kfg-live-notes b { margin-right: 8px; font: 500 10.5px/1.4 var(--mono); color: var(--fg); }
+
+/* The page's sections. */
+.site .kfg-mt { margin-top: 24px; }
+.site .kfg-scroll { overflow-x: auto; }
+.site .kfg-scroll:focus-visible { outline: 1px solid var(--fg); outline-offset: 2px; }
+.site .kfg-ref { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.site .kfg-ref th, .site .kfg-ref td { padding: 9px 14px 9px 0; border-top: 1px solid var(--line); text-align: left; vertical-align: top; }
+.site .kfg-ref th { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .kfg-ref td { line-height: 1.55; color: var(--fg-2); }
+.site .kfg-ref td.is-code { font: 400 12.5px/1.55 var(--mono); color: var(--fg); white-space: nowrap; }
+.site .kfg-ref td.is-num { font: 400 12.5px/1.55 var(--mono); color: var(--fg); font-variant-numeric: tabular-nums; }
+.site .kfg-ref tbody th { padding-top: 16px; color: var(--fg-2); }
+/* On a phone each effect is a short block: its name, stops and JS call on
+   one line, what it does under them. As four columns the description was a
+   word wide and the table five screens tall. */
+@media (max-width: 639px) {
+  .site .kfg-ref thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .site .kfg-ref, .site .kfg-ref tbody { display: block; }
+  .site .kfg-ref tr { display: grid; grid-template-columns: minmax(0, 1fr) 8ch 13ch; gap: 2px 14px; padding: 9px 0; border-top: 1px solid var(--line); }
+  .site .kfg-ref th, .site .kfg-ref td { padding: 0; border-top: 0; }
+  .site .kfg-ref tbody th { grid-column: 1 / -1; padding-top: 8px; }
+  .site .kfg-ref td:nth-child(1) { grid-area: 1 / 1; }
+  .site .kfg-ref td:nth-child(3) { grid-area: 1 / 2; }
+  .site .kfg-ref td:nth-child(4) { grid-area: 1 / 3; }
+  .site .kfg-ref td:nth-child(2) { grid-column: 1 / -1; grid-row: 2; }
+  .site .kfg-ref td.is-num::after { content: ' stops'; color: var(--fg-3); }
+}
+
+/* Fig. 1 — the timeline drawing. Its text is set in the SVG's own units, so
+   on a phone, where the drawing is scaled down, it is set larger to stay
+   about 10px on screen. */
+.site .kfgf svg { display: block; width: 100%; max-width: 560px; height: auto; overflow: visible; }
+.site .kfgf-t { font: 500 11px var(--mono); fill: var(--fg-2); }
+@media (max-width: 559px) { .site .kfgf-t { font-size: 14px; } }
+.site .kfgf-dim { fill: var(--fg-3); }
+.site .kfgf-zone { fill: var(--line); }
+.site .kfgf-rule { stroke: var(--line-2); stroke-dasharray: 3 3; }
+.site .kfgf-ink { fill: none; stroke: var(--fg); stroke-width: 1.75; stroke-linejoin: round; stroke-linecap: round; }
+.site .kfgf-axis { stroke: var(--fg-3); stroke-width: 1; }
+.site .kfgf-dimline line { stroke: var(--fg-3); stroke-width: 1; }
+.site .kfgf-track { stroke: var(--line-2); stroke-width: 1; stroke-dasharray: 2 3; }
+.site .kfgf-bar { stroke: var(--fg); stroke-width: 3; }

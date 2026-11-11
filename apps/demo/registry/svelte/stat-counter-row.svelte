@@ -60,7 +60,7 @@
 </script>
 
 <section class="mx-auto w-full max-w-5xl {className}">
-  <p class="font-mono text-xs text-neutral-500 dark:text-neutral-400">
+  <p class="font-mono text-xs text-neutral-600 dark:text-neutral-400">
     {eyebrow}
   </p>
 
@@ -95,7 +95,7 @@
               ></span>
             </span>
             {#if stat.suffix}
-              <span class="ml-0.5 text-[0.6em] text-neutral-500 dark:text-neutral-400">{stat.suffix}</span>
+              <span class="ml-0.5 text-[0.6em] text-neutral-600 dark:text-neutral-400">{stat.suffix}</span>
             {/if}
           </span>
         </dd>

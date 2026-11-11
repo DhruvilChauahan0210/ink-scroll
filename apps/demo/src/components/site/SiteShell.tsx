@@ -39,7 +39,8 @@ export function SiteShell({
       ) : null}
       <Magnetic />
       <HomeNav version={SELF.version} active={active} solid more={MORE} />
-      <div className="site-body">{children}</div>
+      {/* The page's one main landmark; pages inside render none of their own. */}
+      <main className="site-body">{children}</main>
       <footer className="sec-cal">
         <SignOff
           version={SELF.version}

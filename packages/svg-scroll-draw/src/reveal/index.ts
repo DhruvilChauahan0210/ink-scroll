@@ -206,8 +206,8 @@ export function scrollReveal(
   // itself, counted within its row and capped at one window. It used to be a
   // flat step of `stagger × 4`% of the viewport per DOM index (0.32% at the
   // default — no visible cascade), and a custom trigger dropped it entirely.
-  const start  = trigger?.start ?? 'top 88%';
-  const end    = trigger?.end ?? 'top 53%';
+  const start  = trigger?.start || 'top 88%';
+  const end    = trigger?.end || 'top 53%';
   const span   = Math.abs(anchors(start)[1] - anchors(end)[1]);
   const step   = Math.min(Math.max(stagger, 0), 1) * span;
   const index  = step > 0 ? rowIndices(els) : els.map(() => 0);

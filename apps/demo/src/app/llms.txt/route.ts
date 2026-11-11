@@ -2,8 +2,12 @@ import { COMPETITORS, SELF } from '@/data/competitors';
 import { BROWSER_TESTS, UNIT_TESTS } from '@/data/facts';
 import { EXAMPLE_COUNT } from '@/data/examples-index';
 import { AOS_EFFECT_COUNT } from '@/data/aos-effects';
+import { TOOLS } from '@/data/tools';
 
 export const dynamic = 'force-static';
+
+/** One line per tool, from the same list the /tools hub reads. */
+const TOOL_LINES = TOOLS.map((t) => `- [${t.name}](https://svg-scroll-draw.vercel.app/${t.slug}): ${t.blurb}`).join('\n');
 
 const BODY = `# svg-scroll-draw
 
@@ -90,10 +94,13 @@ neither draws SVG paths, pins, snaps, or scrubs video. ScrollReveal is GPL-3.0.
 - [Migration guides](https://svg-scroll-draw.vercel.app/guides): AOS in Next.js and React, ScrollReveal, vivus and GSAP ScrollTrigger in React
 - [Blocks](https://svg-scroll-draw.vercel.app/blocks): copy-paste scroll blocks from a shadcn registry (\`npx shadcn@latest add https://svg-scroll-draw.vercel.app/r/<name>.json\`)
 - [Playground](https://svg-scroll-draw.vercel.app/playground): try options in the browser
-- [SVG path viewer](https://svg-scroll-draw.vercel.app/svg-path-viewer): paste an SVG, see each path's length and commands, copy the draw animation code
-- [Text animation generator](https://svg-scroll-draw.vercel.app/text-animation-generator): build a scrollText animation and copy the JavaScript or React code
+- [Tools](https://svg-scroll-draw.vercel.app/tools): ${TOOLS.length} free generators, SVG tools and visualizers, listed below
 - [Changelog](https://svg-scroll-draw.vercel.app/changelog)
 - [Blog](https://svg-scroll-draw.vercel.app/blog)
+
+## Tools
+
+${TOOL_LINES}
 
 ## Framework guides
 

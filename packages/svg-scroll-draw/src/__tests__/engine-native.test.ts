@@ -234,6 +234,12 @@ describe('native fast path — fallback to JS engine', () => {
     ['repeat',               { repeat: 2 }],
     ['strokeColor',          { strokeColor: '#f00' }],
     ['axis x',               { axis: 'x' }],
+    // Up to 2.23.2 neither was checked, so `{ autoplay: true }` and
+    // `{ debug: true }` with an otherwise plain config took the scroll timeline:
+    // the autoplay drawing followed the page instead of its clock, and no
+    // trigger lines were drawn.
+    ['autoplay',             { autoplay: true }],
+    ['debug',                { debug: true }],
   ];
 
   it.each(ineligible)('falls back to JS for %s', (_label, opts) => {
@@ -243,6 +249,30 @@ describe('native fast path — fallback to JS engine', () => {
     expect(nativeClass(path)).toBeUndefined();
     // JS engine sets up an IntersectionObserver.
     expect(FakeIO.instances.length).toBe(1);
+  });
+
+  it('autoplay with no callbacks plays on its clock: no scroll timeline, a viewport observer', () => {
+    const path = makePath();
+    const instance = createEngine(makeContainer([path]), { autoplay: true, duration: 600 });
+    expect(nativeStyle()).toBeNull();
+    expect(nativeClass(path)).toBeUndefined();
+    // Not yet in view: nothing drawn, whatever the scroll position says.
+    expect(path.style.strokeDashoffset).toBe('100');
+    expect(instance.getProgress()).toBe(0);
+  });
+
+  it('debug draws its trigger-line overlay where view timelines exist', () => {
+    const instance = createEngine(makeContainer(), { debug: true });
+    expect(document.querySelector('[data-svg-scroll-draw-debug]')).not.toBeNull();
+    instance.destroy();
+    expect(document.querySelector('[data-svg-scroll-draw-debug]')).toBeNull();
+  });
+
+  // '' is no trigger, so the default one: native stays available for it.
+  it('treats a blank trigger as the default, which native can express', () => {
+    const path = makePath();
+    createEngine(makeContainer([path]), { trigger: { start: '', end: '' } });
+    expect(nativeClass(path)).toBeTruthy();
   });
 
   it('falls back when the browser lacks animation-timeline support', () => {

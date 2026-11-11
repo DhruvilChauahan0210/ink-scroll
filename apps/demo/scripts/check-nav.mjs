@@ -20,10 +20,12 @@ const appDir = resolve(src, 'app');
 
 const sitemap = readFileSync(resolve(src, 'components/site/sitemap.ts'), 'utf8');
 const versus = readFileSync(resolve(src, 'data/versus.ts'), 'utf8');
+const tools = readFileSync(resolve(src, 'data/tools.ts'), 'utf8');
 
-// Hand-listed links, then the comparison pages sitemap.ts generates from VERSUS.
+// Hand-listed links, then the pages sitemap.ts generates from VERSUS and TOOLS.
 const linked = new Set([...sitemap.matchAll(/href: '(\/[a-z0-9-]+)'/g)].map((m) => m[1]));
 for (const m of versus.matchAll(/^ {4}slug: '(vs-[a-z0-9-]+)',$/gm)) linked.add(`/${m[1]}`);
+for (const m of tools.matchAll(/\{ slug: '([a-z0-9-]+)'/g)) linked.add(`/${m[1]}`);
 
 // Static top-level routes: a folder under app/ with its own page.tsx. Dynamic
 // segments ([framework]) are covered by the data that generates them.

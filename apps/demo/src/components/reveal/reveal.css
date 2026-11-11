@@ -1,0 +1,251 @@
+/* ── The scroll reveal generator (/scroll-reveal-generator) ───────────────
+   One panel: controls, a box that scrolls on its own with the trigger lines
+   drawn over it, a transport; then the code, then the same cards on the real
+   page scroll. Hairlines and mono labels, as the rest of the site. The cards
+   carry no transition: the engine writes their styles every frame. */
+
+.site .srg { display: grid; gap: 32px; --srg-h: 400px; }
+@media (max-width: 559px) { .site .srg { --srg-h: 360px; } }
+.site .srg-panel { border: 1px solid var(--line-2); }
+
+.site .srg-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px 20px;
+  padding: 16px;
+  border-bottom: 1px solid var(--line);
+}
+.site .srg-field { display: grid; gap: 6px; align-content: start; min-width: 0; }
+.site .srg-field.is-wide { grid-column: 1 / -1; }
+.site .srg-field > span:first-child { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .srg-field select {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  min-width: 0;
+  padding: 8px 12px;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  font: 400 13px/1.3 var(--mono);
+  color: var(--fg);
+  cursor: pointer;
+}
+.site .srg-field select:hover,
+.site .srg-field select:focus-visible { border-color: var(--fg); outline: 0; }
+.site .srg-field option { background: var(--bg); color: var(--fg); }
+.site .srg input[type='range'] { width: 100%; accent-color: var(--fg); }
+/* globals.css gives every range `outline: none`, :focus-visible included: give the keyboard one back. */
+.site .srg input[type='range']:focus-visible { outline: 1px solid var(--fg); outline-offset: 6px; }
+
+/* Presets: a hairline grid of buttons, the gaps drawing the rules. */
+.site .srg-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1px;
+  border: 1px solid var(--line-2);
+  background: var(--line-2);
+}
+.site .srg-presets button { flex: 1 1 88px; }
+.site .srg-presets button,
+.site .srg-seg button {
+  padding: 8px 6px;
+  border: 0;
+  border-radius: 0;
+  background: var(--bg);
+  font: 500 11.5px/1.2 var(--mono);
+  color: var(--fg-2);
+  cursor: pointer;
+}
+.site .srg-presets button[aria-checked='true'],
+.site .srg-seg button[aria-checked='true'] { background: var(--fg); color: var(--bg); }
+.site .srg-presets button:focus-visible,
+.site .srg-seg button:focus-visible { outline: 1px solid var(--fg); outline-offset: -3px; }
+/* The chosen one is filled with --fg: an --fg ring on it would not show. */
+.site .srg-presets button[aria-checked='true']:focus-visible,
+.site .srg-seg button[aria-checked='true']:focus-visible { outline-color: var(--bg); }
+.site .srg-seg {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 1px;
+  border: 1px solid var(--line-2);
+  background: var(--line-2);
+}
+
+/* On a phone, two controls a row, so the preview stays near them. */
+@media (max-width: 559px) {
+  .site .srg-controls { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 16px; padding: 14px 12px; }
+  .site .srg-field > span:first-child { overflow-wrap: anywhere; }
+  .site .srg-presets button { flex-basis: 64px; padding: 8px 2px; font-size: 11px; }
+}
+
+/* The box: its own scroller, the trigger lines fixed over it. */
+.site .srg-frame { position: relative; }
+.site .srg-box {
+  height: var(--srg-h);
+  overflow-x: hidden;
+  overflow-y: auto;
+  background: var(--panel);
+  scroll-behavior: auto;
+}
+.site .srg-box:focus-visible { outline: 1px solid var(--fg); outline-offset: -1px; }
+
+.site .srg-hero {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: calc(var(--srg-h) * 0.9);
+  padding: 24px 20px 20px;
+}
+.site .srg-hero-k,
+.site .srg-hero-hint,
+.site .srg-foot { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .srg-hero-hint { margin-top: auto; }
+
+.site .srg-line { display: block; width: 76%; height: 5px; background: var(--line-2); }
+.site .srg-line.is-title { width: 62%; height: 8px; background: var(--fg-3); }
+.site .srg-line.is-head { width: min(78%, 420px); height: 16px; background: var(--fg-3); }
+.site .srg-line.is-short { width: 42%; }
+.site .srg-line.is-head.is-short { width: min(48%, 260px); }
+
+.site .srg-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  padding: 0 20px;
+}
+@media (max-width: 559px) { .site .srg-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; padding: 0 12px; } }
+.site .srg-card {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid var(--line-2);
+  background: var(--bg);
+}
+.site .srg-card-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font: 500 10px/1 var(--mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--fg-3);
+}
+.site .srg-thumb { display: block; width: 100%; height: auto; aspect-ratio: 2 / 1; border: 1px solid var(--line); color: var(--fg-2); }
+.site .srg-foot { display: flex; align-items: flex-end; min-height: var(--srg-h); padding: 20px; }
+
+.site .srg-lines { position: absolute; inset: 0; pointer-events: none; }
+.site .srg-trig { position: absolute; left: 0; right: 0; border-top: 1px dashed var(--fg-3); }
+.site .srg-trig b {
+  position: absolute;
+  right: 18px;
+  bottom: 3px;
+  padding: 2px 5px;
+  background: var(--panel);
+  font: 500 10px/1 var(--mono);
+  color: var(--fg-2);
+}
+
+.site .srg-transport {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--line);
+}
+.site .srg-btn {
+  padding: 8px 14px;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  font: 500 12px/1 var(--mono);
+  color: var(--fg);
+  cursor: pointer;
+}
+.site .srg-btn.is-quiet { color: var(--fg-2); }
+.site .srg-btn:hover, .site .srg-btn:focus-visible { border-color: var(--fg); outline: 0; }
+.site .srg-check { display: inline-flex; align-items: center; gap: 8px; font: 500 12px/1 var(--mono); color: var(--fg-2); cursor: pointer; }
+.site .srg-check input { accent-color: var(--fg); }
+.site .srg-check input:focus-visible { outline: 1px solid var(--fg); outline-offset: 3px; border-radius: 0; }
+.site .srg-count { flex: 1 1 240px; min-width: 0; margin: 0; font: 500 10px/1.5 var(--mono); color: var(--fg-3); }
+.site .srg-warn {
+  margin: 0;
+  padding: 10px 16px;
+  border-top: 1px solid var(--line);
+  border-left: 2px solid var(--accent);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--fg-2);
+}
+.site .srg-warn.is-info { border-left-color: var(--fg-3); }
+.site .srg-warn code { font: 400 0.92em/1 var(--mono); color: var(--fg); }
+
+.site .srg-code { display: grid; min-width: 0; }
+.site .srg-tabs { display: flex; }
+.site .srg-tab {
+  padding: 8px 14px;
+  border: 1px solid var(--line-2);
+  border-bottom: 0;
+  border-left-width: 0;
+  background: transparent;
+  font: 500 11.5px/1 var(--mono);
+  color: var(--fg-2);
+  cursor: pointer;
+}
+.site .srg-tab:first-child { border-left-width: 1px; }
+.site .srg-tab[aria-selected='true'] { color: var(--fg); background: var(--panel); }
+.site .srg-tab:focus-visible { outline: 1px solid var(--fg); outline-offset: -3px; }
+.site .srg-code .code-box { margin-top: 0; }
+
+.site .srg-live { display: grid; gap: 16px; padding: clamp(32px, 8vw, 96px) 0; border-top: 1px solid var(--line); }
+.site .srg-live-k { margin: 0; font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .srg-grid.is-live { gap: 16px; padding: 0; }
+.site .srg-live-note { margin: 0; max-width: 60ch; font-size: 13px; line-height: 1.6; color: var(--fg-2); }
+
+/* The preset and window tables. */
+.site .srg-scroll { overflow-x: auto; }
+.site .srg-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.site .srg-table th, .site .srg-table td { padding: 10px 12px 10px 0; border-top: 1px solid var(--line); text-align: left; vertical-align: top; }
+.site .srg-table th { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .srg-table td { color: var(--fg-2); line-height: 1.6; }
+.site .srg-table td.is-code { font: 400 12.5px/1.6 var(--mono); color: var(--fg); white-space: nowrap; }
+
+/* On a phone the three-column tables become one entry per row: the name, then
+   the rest under it, each value labelled from data-k. Laid out as columns,
+   the nowrap code pushed the descriptions out of the box. */
+@media (max-width: 559px) {
+  .site .srg-table.is-stack thead { display: none; }
+  .site .srg-table.is-stack tr { display: grid; gap: 4px; padding: 12px 0; border-top: 1px solid var(--line); }
+  .site .srg-table.is-stack td { padding: 0; border-top: 0; }
+  .site .srg-table.is-stack td.is-code { white-space: normal; overflow-wrap: anywhere; }
+  .site .srg-table.is-stack td.is-key { font-weight: 500; color: var(--fg); }
+  .site .srg-table.is-stack td[data-k]::before {
+    content: attr(data-k) ' · ';
+    font: 500 10px/1.6 var(--mono);
+    color: var(--fg-3);
+  }
+}
+
+/* Fig. 1 — one card through the default reveal. */
+.site .srgf svg { width: 100%; height: auto; }
+.site .srgf line, .site .srgf rect { vector-effect: non-scaling-stroke; }
+.site .srgf-frame { fill: none; stroke: var(--line-2); stroke-width: 1; }
+.site .srgf-trig { stroke: var(--fg-3); stroke-width: 1; stroke-dasharray: 4 3; }
+.site .srgf-place { fill: none; stroke: var(--fg-3); stroke-width: 1; stroke-dasharray: 1.5 2.5; }
+.site .srgf-card .srgf-body { fill: var(--panel); stroke: var(--fg); stroke-width: 1.5; }
+.site .srgf-card .srgf-thumb { fill: none; stroke: var(--fg-3); stroke-width: 1; }
+.site .srgf-card .srgf-text { stroke: var(--fg-3); stroke-width: 2; }
+.site .srgf-ghost .srgf-body { fill: none; stroke: var(--fg-3); stroke-width: 1; stroke-dasharray: 4 3; }
+.site .srgf-ghost .srgf-thumb,
+.site .srgf-ghost .srgf-text { fill: none; stroke: var(--line-2); stroke-width: 1; }
+.site .srgf-dim line { stroke: var(--fg-2); stroke-width: 1; }
+.site .srgf-pct, .site .srgf-n { font: 500 12px var(--mono); fill: var(--fg-2); }
+.site .srgf-sub, .site .srgf-dimk { font: 500 11px var(--mono); fill: var(--fg-3); }
+.site .srgf-dimk { fill: var(--fg-2); }
+/* Drawn at about 0.77 of its units on a phone: larger type there keeps it near 10px. */
+@media (max-width: 559px) {
+  .site .srgf-pct, .site .srgf-n { font-size: 13.5px; }
+  .site .srgf-sub, .site .srgf-dimk { font-size: 12.5px; }
+}

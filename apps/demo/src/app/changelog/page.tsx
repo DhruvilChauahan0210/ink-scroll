@@ -55,6 +55,17 @@ const KINDS: { k: Kind; label: string }[] = [
  */
 const RELEASES: Release[] = [
   {
+    version: '2.23.3',
+    title: 'once plays an overshooting easing out, and autoplay keeps its clock',
+    date: '2026-11-11',
+    items: [
+      { type: 'fix', text: 'once: true with spring, elastic or any easing past 1 ends exactly on its target in scrollDraw, scrollAnimate, scrollReveal, scrollCounter, scrollVideo and useScrollDrawProgress. They held the eased value at its highest, so elastic froze on its peak (a counter to 1000 stopped on 1273) and bounce never dipped. With linear nothing changes.' },
+      { type: 'fix', text: 'autoplay: true plays over its duration in every browser. With no callbacks and the default trigger it took the native scroll-timeline path, followed the page scroll and stopped where the scroll stopped. debug: true draws its trigger lines everywhere for the same reason.' },
+      { type: 'fix', text: 'A blank trigger string means the default; a scrollContainer with a border is measured from inside it; clip with direction reverse starts fully shown.' },
+      { type: 'test', text: '37 unit tests and 9 browser tests per engine, each failing on 2.23.2; six mutations, each caught.' },
+    ],
+  },
+  {
     version: '2.23.2',
     title: 'Autoplay with a stagger finishes every path',
     date: '2026-11-11',

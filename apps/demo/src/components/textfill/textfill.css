@@ -1,0 +1,365 @@
+/* ── The text fill on scroll generator (/text-fill-scroll-generator) ─────
+   One hairline panel: the engine, then the preview viewport with its
+   transport and readouts beside the controls; then the code. Mono labels;
+   the accent only on the warnings' rule.
+
+   The preview box's colours are the visitor's own (--tfl-bg, --tfl-ink, set
+   inline from the colour inputs): it shows their text, not the site's.
+   Prefix tfl-. */
+
+.site .tfl { display: grid; gap: 32px; }
+.site .tfl-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: 'engine' 'view' 'transport' 'read' 'controls' 'msgs';
+  border: 1px solid var(--line-2);
+  min-width: 0;
+}
+.site .tfl-engine { grid-area: engine; }
+.site .tfl-view { grid-area: view; }
+.site .tfl-transport { grid-area: transport; }
+.site .tfl-read { grid-area: read; }
+.site .tfl-controls { grid-area: controls; }
+.site .tfl-msgs { grid-area: msgs; }
+@media (min-width: 900px) {
+  .site .tfl-panel {
+    grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr);
+    grid-template-rows: auto auto auto 1fr auto;
+    grid-template-areas:
+      'engine engine'
+      'view controls'
+      'transport controls'
+      'read controls'
+      'msgs msgs';
+  }
+  .site .tfl-controls { border-left: 1px solid var(--line); }
+}
+
+.site .tfl-k { margin: 0; font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+
+/* ── Engine ─────────────────────────────────────────────────────────── */
+
+.site .tfl-engine {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  border-bottom: 1px solid var(--line);
+}
+.site .tfl-engine .tfl-seg { max-width: 560px; }
+/* Three names in a row do not fit a phone: one under another. */
+@media (max-width: 459px) { .site .tfl-engine .tfl-seg { grid-auto-flow: row; } .site .tfl-engine .tfl-seg button { border-left: 0; border-top: 1px solid var(--line-2); } .site .tfl-engine .tfl-seg button:first-child { border-top: 0; } }
+.site .tfl-engine-d { margin: 0; max-width: 72ch; font-size: 14px; line-height: 1.6; color: var(--fg-2); }
+
+/* ── Controls ───────────────────────────────────────────────────────── */
+
+.site .tfl-controls { display: grid; align-content: start; min-width: 0; }
+.site .tfl-group {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  margin: 0;
+  padding: 16px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+}
+.site .tfl-group:last-child { border-bottom: 0; }
+.site .tfl-group legend {
+  float: left;
+  width: 100%;
+  padding: 0;
+  font: 500 11px/1.4 var(--mono);
+  color: var(--fg);
+}
+.site .tfl-group legend + * { clear: both; }
+.site .tfl-field { display: grid; gap: 6px; align-content: start; min-width: 0; }
+.site .tfl-field > span:first-child,
+.site .tfl-swatch > span:first-child,
+.site .tfl-point-t { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .tfl-field em { font-style: normal; }
+.site .tfl-point-t code { color: var(--fg-2); }
+.site .tfl-field textarea,
+.site .tfl-field select {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  min-width: 0;
+  padding: 8px 12px;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  font: 400 13px/1.45 var(--mono);
+  color: var(--fg);
+}
+.site .tfl-field textarea { resize: vertical; min-height: 72px; }
+.site .tfl-field select { cursor: pointer; }
+.site .tfl-field textarea:focus-visible,
+.site .tfl-field select:focus-visible,
+.site .tfl-field select:hover { border-color: var(--fg); outline: 0; }
+.site .tfl option { background: var(--bg); color: var(--fg); }
+.site .tfl input[type='range'] { width: 100%; accent-color: var(--fg); }
+/* globals.css gives every range `outline: none`, which outranks :focus-visible. */
+.site .tfl input[type='range']:focus-visible { outline: 1px solid var(--fg); outline-offset: 4px; }
+.site .tfl-help { margin: 0; font-size: 13px; line-height: 1.55; color: var(--fg-2); }
+
+.site .tfl-seg { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); border: 1px solid var(--line-2); }
+.site .tfl-seg button {
+  min-width: 0;
+  padding: 8px 6px;
+  border: 0;
+  border-left: 1px solid var(--line-2);
+  background: transparent;
+  font: 500 11.5px/1.2 var(--mono);
+  color: var(--fg-2);
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+.site .tfl-seg button:first-child { border-left: 0; }
+.site .tfl-seg button[aria-checked='true'] { background: var(--fg); color: var(--bg); }
+.site .tfl-seg button:focus-visible { outline: 1px solid var(--fg); outline-offset: -3px; }
+.site .tfl-seg button:disabled { cursor: not-allowed; }
+.site .tfl-seg[aria-disabled='true'] { opacity: 0.5; }
+
+.site .tfl-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.site .tfl-chip,
+.site .tfl-btn {
+  padding: 7px 10px;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  font: 500 11.5px/1.2 var(--mono);
+  color: var(--fg-2);
+  cursor: pointer;
+}
+.site .tfl-btn { padding: 8px 14px; color: var(--fg); }
+.site .tfl-btn.is-small { justify-self: start; padding: 7px 10px; }
+.site .tfl-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.site .tfl-chip:hover, .site .tfl-chip:focus-visible,
+.site .tfl-btn:not(:disabled):hover, .site .tfl-btn:focus-visible { border-color: var(--fg); color: var(--fg); outline: 0; }
+.site .tfl-chip[aria-pressed='true'] { border-color: var(--fg); background: var(--fg); color: var(--bg); }
+
+.site .tfl-swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 12px; }
+.site .tfl-swatch { display: grid; gap: 6px; min-width: 0; }
+.site .tfl-swatch-in {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px 4px 4px;
+  border: 1px solid var(--line-2);
+}
+.site .tfl-swatch-in:focus-within { border-color: var(--fg); }
+.site .tfl-swatch input[type='color'] {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.site .tfl-swatch input[type='color']::-webkit-color-swatch-wrapper { padding: 0; }
+.site .tfl-swatch input[type='color']::-webkit-color-swatch { border: 0; border-radius: 0; }
+.site .tfl-swatch input[type='color']::-moz-color-swatch { border: 0; border-radius: 0; }
+.site .tfl-swatch input[type='color']:focus-visible { outline: 1px solid var(--fg); outline-offset: 2px; }
+.site .tfl-swatch code { font: 400 12px/1 var(--mono); color: var(--fg-2); }
+
+.site .tfl-point { display: grid; gap: 8px; padding-top: 4px; }
+.site .tfl-point-row { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: 12px; align-items: end; }
+
+/* ── The preview viewport ───────────────────────────────────────────── */
+
+.site .tfl-view,
+.site .tfl-transport,
+.site .tfl-read { min-width: 0; background: var(--panel); }
+.site .tfl-view { display: grid; gap: 8px; align-content: start; padding: 16px 16px 12px; }
+.site .tfl-frame {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 44px;
+  border: 1px solid var(--line-2);
+  background: var(--tfl-bg);
+  color: var(--tfl-ink);
+}
+/* The margin the line labels sit in, beside the box. */
+.site .tfl-ruler { border-left: 1px solid var(--tfl-ink); opacity: 0.25; }
+/* No border or padding on the box itself: its top edge is the viewport's top
+   for the trigger, and clientHeight is the height the percentages are of. */
+.site .tfl-box {
+  position: relative;
+  height: 320px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.site .tfl-box:focus-visible { outline: 1px solid var(--fg); outline-offset: 3px; }
+@media (max-width: 599px) { .site .tfl-box { height: 280px; } }
+/* A viewport of room above and below the text: it starts below the fold and leaves at the top. */
+.site .tfl-room { height: 100%; }
+.site .tfl-subject { position: relative; padding: 0 20px 0 32px; }
+.site .tfl-host { position: relative; }
+.site .tfl-box .text-fill {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: clamp(19px, 2.2vw, 23px);
+  font-weight: 450;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  overflow-wrap: anywhere;
+}
+.site .tfl-box h2.text-fill {
+  font-size: clamp(26px, 3.4vw, 34px);
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+}
+
+/* The trigger's edges on the text block, in its left margin. */
+.site .tfl-edges {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 14px;
+  width: 0;
+  border-left: 1px solid var(--tfl-ink);
+  opacity: 0.55;
+}
+.site .tfl-dot {
+  position: absolute;
+  left: -4px;
+  width: 7px;
+  height: 7px;
+  margin-top: -3.5px;
+  background: var(--tfl-ink);
+}
+.site .tfl-dot.is-end { background: var(--tfl-bg); border: 1px solid var(--tfl-ink); }
+.site .tfl-legend .tfl-dot { position: static; display: inline-block; margin: 0 4px 0 0; vertical-align: -1px; background: var(--fg); }
+.site .tfl-legend .tfl-dot.is-end { background: transparent; border-color: var(--fg); }
+
+/* The viewport lines, over the box. */
+.site .tfl-overlay { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.site .tfl-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 0;
+  border-top: 1px dashed var(--tfl-ink);
+  opacity: 0.6;
+}
+.site .tfl-line.is-end { border-top-style: dotted; }
+.site .tfl-line i {
+  position: absolute;
+  top: 4px;
+  right: 0;
+  width: 44px;
+  padding: 0 6px;
+  font: 500 9.5px/1.2 var(--mono);
+  font-style: normal;
+  text-align: right;
+  color: var(--tfl-ink);
+}
+.site .tfl-line.is-end i { top: auto; bottom: 4px; }
+.site .tfl-line.is-start.is-flip i { top: auto; bottom: 4px; }
+.site .tfl-line.is-end.is-flip i { top: 4px; bottom: auto; }
+.site .tfl-legend { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 0; font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+
+/* ── Transport and readouts ─────────────────────────────────────────── */
+
+.site .tfl-transport {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
+  padding: 4px 16px 12px;
+}
+.site .tfl-scrub { display: grid; gap: 4px; flex: 1 1 200px; min-width: 0; }
+.site .tfl-scrub span { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+
+.site .tfl-read { display: grid; gap: 12px; align-content: start; padding: 12px 16px 16px; border-top: 1px solid var(--line); }
+.site .tfl-prog { display: grid; grid-template-columns: auto auto minmax(0, 1fr); align-items: center; gap: 4px 12px; }
+.site .tfl-num { font: 500 22px/1 var(--mono); color: var(--fg); font-variant-numeric: tabular-nums; }
+.site .tfl-bar { position: relative; height: 4px; background: var(--line-2); overflow: hidden; }
+.site .tfl-bar span { position: absolute; inset: 0; background: var(--fg); transform-origin: left center; }
+.site .tfl-status { grid-column: 1 / -1; margin: 0; font-size: 13px; line-height: 1.5; color: var(--fg-2); }
+.site .tfl-math { display: grid; margin: 0; border-top: 1px solid var(--line); }
+.site .tfl-math > div { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 12px; padding: 7px 0; border-bottom: 1px solid var(--line); }
+.site .tfl-math dt { font: 500 10px/1.8 var(--mono); color: var(--fg-3); }
+.site .tfl-math dd { margin: 0; min-width: 0; font-size: 13px; line-height: 1.5; color: var(--fg-2); overflow-wrap: anywhere; }
+.site .tfl-math code { font: 400 12px/1.5 var(--mono); color: var(--fg); }
+.site .tfl-math small { display: block; font-size: 12px; color: var(--fg-3); }
+
+/* ── Messages ───────────────────────────────────────────────────────── */
+
+.site .tfl-msgs { display: grid; }
+.site .tfl-msgs:empty { display: none; }
+.site .tfl-warn,
+.site .tfl-note {
+  margin: 0;
+  padding: 10px 16px;
+  border-top: 1px solid var(--line);
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--fg-2);
+}
+.site .tfl-warn { border-left: 2px solid var(--accent); }
+.site .tfl-warn code { font: 400 12px/1 var(--mono); color: var(--fg); }
+
+/* ── Code ───────────────────────────────────────────────────────────── */
+
+.site .tfl-code { display: grid; min-width: 0; }
+.site .tfl-tabs { display: flex; flex-wrap: wrap; }
+.site .tfl-tab {
+  padding: 8px 14px;
+  border: 1px solid var(--line-2);
+  border-bottom: 0;
+  border-left-width: 0;
+  background: transparent;
+  font: 500 11.5px/1 var(--mono);
+  color: var(--fg-2);
+  cursor: pointer;
+}
+.site .tfl-tab:first-child { border-left-width: 1px; }
+.site .tfl-tab[aria-selected='true'] { color: var(--fg); background: var(--panel); }
+.site .tfl-tab:focus-visible { outline: 1px solid var(--fg); outline-offset: -3px; }
+.site .tfl-code .code-box { margin-top: 0; }
+.site .tfl-hint { margin: 0 0 4px; font-size: 13px; line-height: 1.55; color: var(--fg-2); }
+
+/* ── Figures ────────────────────────────────────────────────────────── */
+
+.site .tff svg { display: block; width: 100%; height: auto; overflow: visible; }
+/* In the body, at the size the header figure is drawn, not the full column. */
+.site .tff-body { max-width: 600px; margin: 28px 0 8px; }
+.site .tff-code { font: 500 12px var(--mono); fill: var(--fg); }
+.site .tff-k { font: 500 11px var(--mono); fill: var(--fg-3); }
+.site .tff-n { font: 500 11.5px var(--mono); fill: var(--fg-2); }
+.site .tff-word { font: 500 19px var(--mono); }
+.site .tff-word.is-small { font-size: 16px; }
+.site .tff-full { stop-color: var(--fg); }
+.site .tff-dim { stop-color: var(--fg-3); stop-opacity: 0.38; }
+.site .tff-rule { color: var(--line-2); }
+.site .tff-tick { color: var(--fg-3); }
+.site .tff-front { color: var(--fg); }
+.site .tff-path { color: var(--fg-3); }
+.site .tff-box { color: var(--line-2); }
+.site .tff-strip { color: var(--fg-3); }
+.site .tff-dot { fill: var(--fg); }
+
+/* ── The page's reference table and run-in heads ────────────────────── */
+
+.site .tfl-b { font-weight: 500; color: var(--fg); }
+.site .tfl-a { color: var(--fg); text-decoration: underline; text-decoration-color: var(--line-2); text-underline-offset: 3px; }
+.site .tfl-a:hover { text-decoration-color: var(--fg); }
+.site .tfl-table { width: 100%; margin: 8px 0 0; border-collapse: collapse; font-size: 13.5px; }
+.site .tfl-table th,
+.site .tfl-table td { padding: 10px 14px 10px 0; border-top: 1px solid var(--line); text-align: left; vertical-align: top; }
+.site .tfl-table thead th { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .tfl-table tbody th { width: 112px; font: 500 10.5px/1.6 var(--mono); color: var(--fg); }
+.site .tfl-table td { line-height: 1.6; color: var(--fg-2); }
+/* On a phone each row is a block: what it is about, then the three answers, labelled. */
+@media (max-width: 699px) {
+  .site .tfl-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .site .tfl-table, .site .tfl-table tbody, .site .tfl-table tr { display: block; }
+  .site .tfl-table tr { padding: 10px 0; border-top: 1px solid var(--line); }
+  .site .tfl-table th, .site .tfl-table td { display: block; width: auto; padding: 2px 0; border-top: 0; }
+  .site .tfl-table tbody th { padding-bottom: 4px; }
+  .site .tfl-table td::before { content: attr(data-k) ' · '; font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+}

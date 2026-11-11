@@ -1,0 +1,44 @@
+/* The row under a tool's code and the block before its questions. Shared by
+   every tool page (components/tool-kit/), prefix tk-. */
+
+.site .tk-export {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 12px 0 0;
+  border-top: 1px solid var(--line);
+}
+.site .tk-export-k { margin-right: 4px; font: 500 10px/1.4 var(--mono); color: var(--fg-3); text-transform: uppercase; letter-spacing: 0.08em; }
+.site .tk-btn {
+  padding: 8px 14px;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  font: 500 12px/1 var(--mono);
+  color: var(--fg);
+  cursor: pointer;
+}
+.site .tk-btn:hover, .site .tk-btn:focus-visible { border-color: var(--fg); outline: 0; }
+
+.site .tk-next { display: grid; gap: 28px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 900px) { .site .tk-next { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); } }
+.site .tk-next-install { display: grid; gap: 14px; align-content: start; min-width: 0; }
+.site .tk-next-facts { display: grid; margin: 0; border-top: 1px solid var(--line); }
+.site .tk-next-facts > div { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--line); }
+.site .tk-next-facts dt { font: 500 10px/1.6 var(--mono); color: var(--fg-3); text-transform: uppercase; letter-spacing: 0.08em; }
+.site .tk-next-facts dd { margin: 0; min-width: 0; font-size: 14px; line-height: 1.5; color: var(--fg-2); overflow-wrap: anywhere; }
+.site .tk-next-facts code { font: 500 12.5px/1.5 var(--mono); color: var(--fg); }
+.site .tk-next-links { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 0; font: 500 12px/1.4 var(--mono); }
+.site .tk-next-links a { color: var(--fg); text-decoration: underline; text-decoration-color: var(--line-2); text-underline-offset: 3px; }
+.site .tk-next-links a:hover { text-decoration-color: var(--fg); }
+
+.site .tk-next-more { display: grid; align-content: start; min-width: 0; border-top: 1px solid var(--fg-3); }
+.site .tk-next-k { margin: 0; padding: 10px 0; font: 500 10px/1.4 var(--mono); color: var(--fg-3); text-transform: uppercase; letter-spacing: 0.08em; }
+.site .tk-next-row { display: grid; gap: 4px; padding: 12px 0; border-top: 1px solid var(--line); color: inherit; text-decoration: none; }
+.site .tk-next-row:hover .tk-next-t, .site .tk-next-row:focus-visible .tk-next-t { text-decoration: underline; text-underline-offset: 3px; }
+.site .tk-next-t { font-size: 16px; font-weight: 500; color: var(--fg); }
+.site .tk-next-d { font-size: 13.5px; line-height: 1.5; color: var(--fg-2); }
+.site .tk-next-all { padding: 12px 0; border-top: 1px solid var(--line); font: 500 12px/1.4 var(--mono); color: var(--fg); text-decoration: none; }
+.site .tk-next-all:hover { text-decoration: underline; text-underline-offset: 3px; }

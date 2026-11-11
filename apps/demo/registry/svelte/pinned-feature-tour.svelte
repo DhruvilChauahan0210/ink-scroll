@@ -159,7 +159,7 @@
 </script>
 
 <section class="mx-auto w-full max-w-5xl {className}">
-  <p class="font-mono text-xs text-neutral-500 dark:text-neutral-400">
+  <p class="font-mono text-xs text-neutral-600 dark:text-neutral-400">
     {eyebrow}
   </p>
   <h2 class="mt-3 text-3xl font-medium tracking-tight text-neutral-950 sm:text-4xl dark:text-neutral-50">
@@ -217,14 +217,14 @@
                   {pad(i + 1)}
                 </span>
                 <!-- With one feature on screen, say how many there are. -->
-                <span aria-hidden="true" class="{COMPACT_SHOW} text-neutral-500 dark:text-neutral-400">
+                <span aria-hidden="true" class="{COMPACT_SHOW} text-neutral-600 dark:text-neutral-400">
                   of {pad(features.length)}
                 </span>
               </span>
-              <h3 class="mt-3 text-2xl font-semibold leading-tight {i === current ? 'text-neutral-950 dark:text-neutral-50' : 'text-neutral-500 dark:text-neutral-400'}">
+              <h3 class="mt-3 text-2xl font-semibold leading-tight {i === current ? 'text-neutral-950 dark:text-neutral-50' : 'text-neutral-600 dark:text-neutral-400'}">
                 {f.title}
               </h3>
-              <p class="mt-1.5 max-w-[36ch] leading-relaxed {i === current ? 'text-neutral-600 dark:text-neutral-300' : 'text-neutral-500 dark:text-neutral-400'}">{f.body}</p>
+              <p class="mt-1.5 max-w-[36ch] leading-relaxed {i === current ? 'text-neutral-600 dark:text-neutral-300' : 'text-neutral-600 dark:text-neutral-400'}">{f.body}</p>
             </li>
           {/each}
         </ol>

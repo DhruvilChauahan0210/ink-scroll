@@ -1,8 +1,57 @@
 # Next Session Plan — svg-scroll-draw
 
-> Updated: 2026-11-07 — **Unslop branch `fix/unslop-polish`** (heydamir/unslop applied to the site, blocks and showcase; not merged). **2.22.0 pushed** (`66af2b5`, not tagged) (reduced motion turned on mid-visit finishes every effect at once, one way; IndexNow warns instead of failing when Bing refuses the site). **Live chapter merged** (site-only: the GitHub cards keep their last good figures, "npm / all time", a chart of every day since the first publish with a per-day read-out and a 30-day switch). **2.21.0 pushed** (`140ae6c`, not tagged: scrollText's screen-reader text; the site passes axe on every page). **2.20.1 pushed** (`975dce6`, not tagged: resume() off screen mid-tail finishes the drawing). **2.20.0 published** (`v2.20.0` on `972d705`: `scrollPin` `pinDistance: '150vh'`; the first release through npm's trusted publishing — `_npmUser` is GitHub Actions). **2.19.1 published** (`v2.19.1` on `2f7b711`: a staggered drawing finishes; Playwright 1.65.0; npm `latest`). **2.19.0 published** (`v2.19.0` on `f131f9c`: every engine follows the page; live wrapper options; Vue and Svelte blocks). Dependencies updated in `660f363` (site and tooling only). **2.18.1 published** (`v2.18.1` on `70c91cd`: `scrollHorizontal` follows the layout and measures against its sticky stage; the horizontal strip recipe, the fifth and last planned). **2.18.0 published** (`v2.18.0` on `1840983`: `scrollVideo` `triggerElement`; four recipes). **2.17.1 published** (`v2.17.1` on `ed77b58`: `once` keeps `stagger`; the logo example is a full recipe). Recipe 2, the pinned feature tour on `/examples/scroll-pin`, is done (site-only). **2.17.0 published** (`v2.17.0` on `d7b03b2`: the React, Vue, Nuxt, Solid and Svelte wrappers follow option changes, Angular gets `update()` for `ngOnChanges`). **2.16.1 published** (`v2.16.1` on `b3eb52a`) (`svg-scroll-draw/react` ships `"use client"` so Server Components render `<ScrollDraw>` directly; all 56 mutations run again). **2.16.0 published** (`v2.16.0` on `fde9f4c`: ES module entries share code through chunks — main + react 18.1 → 13.2 KB; the drop-ins share one instance with their React hooks; size tables generated; main entry 10.7 KB as shipped files). **2.15.3 published** (`v2.15.3` on `acc9acc`: scrollReveal's `stagger` is a fraction of the reveal window, per row, on top of a custom trigger; 2.15.2 before it kept scrollVideo's end frame under reduced motion). Every page is linked from every page (nav "More", phone menu, footer index — `components/site/sitemap.ts`, guarded by `check-nav`). Sitemap dates come from git for every URL, generated groups included — Search Console (2026-11-04) had 20 indexed, 35 "Discovered – not indexed" (never crawled), 2 "Crawled – not indexed". The native CSS path is no longer described as compositor work anywhere, and `/vs-aos` quotes the reveal entry and the real presets. Every page is on the homepage design and all 23 showcase sites are live — in `32f3409`, on `main`.
+> Updated: 2026-11-11 — **Branch `feat/tools-expansion`** (pushed, not merged): `/tools` and 20 new tools (23 in all), a shared tool kit, site-wide accessibility fixes, and **2.23.3 staged** (not tagged). **npm `latest` is still 2.23.1**: `v2.23.2` is tagged, but its release job failed three times on "Install Playwright browsers" (GitHub runners could not resolve `*.ubuntu.com`), so `main`'s recipe pages point at a 2.23.2 the CDNs do not have. Earlier history below.
 
 ---
+
+## Tools expansion and 2.23.3 (2026-11-11) — branch `feat/tools-expansion`
+
+**Owner, in this order:**
+1. Set up GitHub Sponsors (github.com/sponsors → Get sponsored), so the
+   footer link and the repo's Sponsor button have somewhere to go.
+2. Check the PR's CI, above all the browser job in its new Playwright
+   container. If it passes, port the same `container:` to the release job.
+3. Merge the branch, then `git tag v2.23.3 <merge sha> && git push origin v2.23.3`.
+   2.23.3 supersedes the unpublished 2.23.2: the site pins 2.23.3 now. If the
+   release job still hangs on apt, re-run it once GitHub's runners resolve
+   `*.ubuntu.com` again (`gh run rerun <id>`).
+4. Request indexing for the new tool pages, best first: svg-line-drawing-generator,
+   scroll-reveal-generator, css-scroll-driven-animation-generator,
+   scroll-trigger-visualizer, scroll-progress-bar-generator, counter-animation-generator.
+
+**Next work:**
+- Wire the tool kit (`withSource`, `<ToolExport>`, `<ToolNextStep>`) into the
+  20 tools built before it — one per tool, its own files only.
+- Build the three tools that were stopped before writing anything:
+  typewriter effect, SVG path editor, scroll video scrub (briefs in the
+  session's round-3 workflow script).
+- Library bugs found by the tools' QA, confirmed by measurement, not fixed:
+  - scrollAnimate/scrollParallax: the IntersectionObserver watches the
+    transformed element, so a parallax layer whose own travel takes it out of
+    view stops updating (speed 1.5 on x froze at translateX(−105%)), and an
+    entrance pushed below the fold by its from-transform starts late and jumps.
+  - `replay()` after `pause()`/`seek()` never restarts the frame loop
+    (animate engine and scrollCounter).
+  - scrollCounter's `destroy()` leaves `--scroll-draw-progress`.
+  - `useScrollDrawProgress` with `scrollContainer` adds a viewport-relative
+    rect to `scrollTop` (never reaches 1 for a panel lower on the page).
+  - scrollSnap: starts at index 0 wherever the page is; measures a container's
+    border box; fought by CSS `scroll-behavior: smooth`; offsets not clamped.
+  - morphTo: the dash is sized to the start shape, so a longer target stays
+    part drawn (circle → star 82%); `destroy()` leaves the last frame's `d`.
+  - `debug: true` gives up the native path in production builds too, where it
+    draws nothing: use `debug && IS_DEV`.
+  - scrollText has no `scrollContainer`, and in Chromium a wrapped line after
+    the first starts with the space span.
+  - scrollPin: a jump across the whole pin fires no callbacks.
+  - scrollAnimate clip-path tuples join with ", " (invalid `inset()`), blocked
+    by the reveal and horizontal budgets.
+  - Docs: root README createBounce (`bounces − 1` dips), reveal's `from`
+    comment, horizontal's doc example (`overflow: clip`, no `distance`),
+    DocsPage's horizontal snap example and "scrollText 2.5 KB",
+    examples-seo's reveal "4.5 KB" and "~11 KB"; NATIVE_PROJECTS in
+    e2e/helpers.ts could include webkit.
+
 
 ## 2.23.0 and the unslop post (2026-11-07) — published
 

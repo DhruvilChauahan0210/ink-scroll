@@ -107,6 +107,20 @@ for (const path of pages) {
   }
   await page.close();
 }
+
+// The light theme, once per page in its first state. Dark is the default
+// (layout.tsx), so the pass above never saw light: an accent at 4.07:1 and a
+// Copy button at 2.87:1 shipped on every page in it.
+const light = await browser.newContext({ viewport: { width: 1280, height: 800 }, reducedMotion: 'reduce' });
+await light.addInitScript(() => localStorage.setItem('theme', 'light'));
+for (const path of pages) {
+  const page = await light.newPage();
+  page.on('pageerror', (e) => pageErrors.push(`${path} (light): ${String(e).slice(0, 160)}`));
+  await page.goto(BASE + path, { waitUntil: 'load' });
+  await page.waitForTimeout(300);
+  await audit(page, `${path} (light)`);
+  await page.close();
+}
 await browser.close();
 
 // ── Links: every internal target loads, and every #anchor exists there ───────

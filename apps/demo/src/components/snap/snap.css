@@ -1,0 +1,245 @@
+/* ── The CSS scroll snap generator (/css-scroll-snap-generator) ────────────
+   One hairline panel: controls, a stage holding the scroll port (the
+   generated CSS snaps it; this file only gives it a size and draws the
+   items), the snap rulers, the transport; then the code. The snap rules
+   themselves come from the injected stylesheet (.snp-x), never from here:
+   what the preview does is what you copy. */
+
+.site .snp { display: grid; gap: 32px; }
+.site .snp-panel { border: 1px solid var(--line-2); min-width: 0; }
+
+.site .snp-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 16px 20px;
+  padding: 16px;
+  border-bottom: 1px solid var(--line);
+}
+.site .snp-field { display: grid; gap: 6px; align-content: start; min-width: 0; }
+.site .snp-field.is-wide { grid-column: 1 / -1; }
+.site .snp-field > span { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .snp-field.is-off > span { color: var(--fg-3); opacity: 0.7; }
+@media (max-width: 559px) {
+  .site .snp-controls { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 12px; }
+  .site .snp-field.is-phone-wide { grid-column: 1 / -1; }
+}
+.site .snp input[type='range'] { width: 100%; accent-color: var(--fg); }
+/* globals.css gives every range outline: none at a higher specificity. */
+.site .snp input[type='range']:focus-visible { outline: 1px solid var(--fg); outline-offset: 4px; }
+.site .snp input:disabled { opacity: 0.4; cursor: default; }
+.site .snp-field select {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  min-width: 0;
+  padding: 7px 10px;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  font: 400 12.5px/1.3 var(--mono);
+  color: var(--fg);
+  cursor: pointer;
+}
+.site .snp-field select:hover, .site .snp-field select:focus-visible { border-color: var(--fg); outline: 0; }
+.site .snp-field option { background: var(--bg); color: var(--fg); }
+
+.site .snp-seg { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); border: 1px solid var(--line-2); }
+.site .snp-seg button {
+  min-width: 0;
+  padding: 7px 4px;
+  border: 0;
+  border-left: 1px solid var(--line-2);
+  background: transparent;
+  font: 500 11.5px/1.2 var(--mono);
+  color: var(--fg-2);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.site .snp-seg button:first-child { border-left: 0; }
+.site .snp-seg button[aria-checked='true'],
+.site .snp-seg button[aria-pressed='true'] { background: var(--fg); color: var(--bg); }
+.site .snp-seg button:focus-visible { outline: 1px solid var(--fg); outline-offset: -3px; }
+.site .snp-seg button:disabled { cursor: default; opacity: 0.4; }
+
+.site .snp-warn {
+  margin: 0;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--fg-2);
+}
+
+/* The stage: the scroll port in a frame, the rulers under it. The frame has
+   the border, not the port: a border on a scroll container shifts where
+   scrollSnap lands by its width (snap/index.ts:121–124). */
+.site .snp-stage { display: grid; gap: 10px; padding: 16px; background: var(--panel); }
+.site .snp-stage-k {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 16px;
+  margin: 0;
+  font: 500 10px/1.4 var(--mono);
+  color: var(--fg-3);
+}
+.site .snp-frame { position: relative; border: 1px solid var(--line-2); background: var(--bg); }
+.site .snp-port {
+  height: clamp(200px, 26vw, 240px);
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+.site .snp-port.is-y, .site .snp-port.is-both { height: clamp(240px, 34vw, 320px); }
+.site .snp-port:focus-visible { outline: 1px solid var(--fg); outline-offset: -1px; }
+.site .snp-port > div {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  min-height: 0;
+  border: 1px solid var(--line-2);
+  background: var(--panel);
+  font: 500 12px/1 var(--mono);
+  color: var(--fg-3);
+}
+.site .snp-port > div.is-snapped { border-color: var(--fg); color: var(--fg); }
+.site .snp-port > div.is-snapped span::after { content: ' · snapped'; }
+
+/* Over the port's client area (sized from clientWidth/Height, so a scrollbar
+   is not counted), never scrolling with it. */
+.site .snp-over {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--snp-w, 100%);
+  height: var(--snp-h, 100%);
+  pointer-events: none;
+  overflow: hidden;
+}
+.site .snp-band {
+  position: absolute;
+  background: repeating-linear-gradient(45deg, var(--line-2) 0 1px, transparent 1px 6px);
+}
+.site .snp-band.is-x { top: 0; bottom: 0; }
+.site .snp-band.is-y { left: 0; right: 0; }
+.site .snp-line { position: absolute; background: var(--accent); }
+.site .snp-line.is-x { top: 0; bottom: 0; width: 1px; transform: translateX(-0.5px); }
+.site .snp-line.is-y { left: 0; right: 0; height: 1px; transform: translateY(-0.5px); }
+.site .snp-line b {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  padding: 1px 4px;
+  background: var(--bg);
+  font: 500 10px/1.3 var(--mono);
+  color: var(--fg-2);
+  white-space: nowrap;
+}
+.site .snp-line.is-y b { top: 6px; left: 6px; }
+
+/* Snap positions along each scroll axis. */
+.site .snp-ruler {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  min-height: 34px;
+}
+.site .snp-ruler-k, .site .snp-ruler-end, .site .snp-ruler-none { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .snp-ruler-k { min-width: 96px; }
+.site .snp-ruler-track { position: relative; height: 22px; margin: 0 6px 12px; border-bottom: 1px solid var(--line-2); }
+.site .snp-tick { position: absolute; bottom: -5px; width: 1px; height: 10px; background: var(--fg-3); transform: translateX(-0.5px); }
+.site .snp-tick.is-on { width: 2px; background: var(--fg); transform: translateX(-1px); }
+.site .snp-tick i {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  font: 500 9.5px/1 var(--mono);
+  font-style: normal;
+  color: var(--fg-3);
+  white-space: nowrap;
+}
+.site .snp-tick.is-first i { left: 0; transform: none; }
+.site .snp-tick.is-last i { left: auto; right: 0; transform: none; }
+.site .snp-tick.is-on i { color: var(--fg); }
+.site .snp-mark {
+  position: absolute;
+  top: 2px;
+  left: 0;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 7px solid var(--fg);
+  transform: translateX(-5px);
+}
+@media (max-width: 559px) {
+  .site .snp-ruler { grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; }
+  .site .snp-ruler-k { grid-column: 1 / -1; }
+}
+
+.site .snp-transport {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 24px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--line);
+}
+.site .snp-pair { display: inline-grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.site .snp-btn {
+  padding: 8px 14px;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  font: 500 12px/1 var(--mono);
+  color: var(--fg);
+  cursor: pointer;
+}
+.site .snp-btn:hover, .site .snp-btn:focus-visible { border-color: var(--fg); outline: 0; }
+.site .snp-read { display: flex; flex-wrap: wrap; gap: 6px 20px; margin: 0; }
+.site .snp-read div { display: flex; gap: 6px; min-width: 0; }
+.site .snp-read dt { font: 500 10px/1.6 var(--mono); color: var(--fg-3); }
+.site .snp-read dd { margin: 0; font: 500 11.5px/1.4 var(--mono); color: var(--fg); overflow-wrap: anywhere; }
+
+.site .snp-code { display: grid; gap: 12px; min-width: 0; }
+.site .snp-code-note { margin: 0; max-width: 72ch; font-size: 13.5px; line-height: 1.6; color: var(--fg-2); }
+.site .snp-code .code-box { margin-top: 0; }
+
+/* Reference tables in the page's sections. */
+.site .snp-scroll { overflow-x: auto; }
+.site .snp-scroll:focus-visible { outline: 1px solid var(--fg); outline-offset: 2px; }
+.site .snp-ref { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.site .snp-ref th, .site .snp-ref td { padding: 10px 14px 10px 0; border-top: 1px solid var(--line); text-align: left; vertical-align: top; }
+.site .snp-ref th { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .snp-ref td { color: var(--fg-2); line-height: 1.6; }
+.site .snp-ref td:first-child { font: 400 12.5px/1.6 var(--mono); color: var(--fg); white-space: nowrap; }
+.site .snp-ref td.is-code { font: 400 12px/1.6 var(--mono); color: var(--fg); }
+.site .snp-ref td.is-def { white-space: nowrap; }
+/* Stacked on a phone: each row a short block labelled from data-k. */
+@media (max-width: 639px) {
+  .site .snp-ref thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .site .snp-ref, .site .snp-ref tbody, .site .snp-ref tr { display: block; }
+  .site .snp-ref tr { padding: 10px 0; border-top: 1px solid var(--line); }
+  .site .snp-ref td { display: block; padding: 3px 0; border-top: 0; }
+  .site .snp-ref td[data-k]::before { content: attr(data-k); display: block; font: 500 10px/1.6 var(--mono); color: var(--fg-3); }
+}
+
+/* Fig. 1 — where an item snaps. */
+.site .snpf svg { width: 100%; height: auto; }
+.site .snpf-port { color: var(--fg-2); }
+.site .snpf-item, .site .snpf-tick, .site .snpf-dim, .site .snpf-axis { color: var(--fg-3); }
+.site .snpf-hatch { color: var(--fg-3); opacity: 0.55; }
+.site .snpf-on { color: var(--fg); }
+.site .snpf-line { color: var(--fg); }
+.site .snpf-line-cap { fill: var(--fg); }
+.site .snpf-l { font: 500 12.5px var(--mono); fill: var(--fg); }
+.site .snpf-k { font: 500 10.5px var(--mono); fill: var(--fg-2); }
+.site .snpf-s, .site .snpf-n { font: 500 10.5px var(--mono); fill: var(--fg-3); }
+.site .snpf-n.is-on { fill: var(--fg); }
+/* The figure scales with its column; on a phone that is about two thirds, so
+   the labels are drawn larger to land near 10px on screen. */
+@media (max-width: 560px) {
+  .site .snpf-l { font-size: 16px; }
+  .site .snpf-k, .site .snpf-s, .site .snpf-n { font-size: 13.5px; }
+}

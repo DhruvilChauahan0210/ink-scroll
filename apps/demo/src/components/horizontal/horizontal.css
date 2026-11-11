@@ -1,0 +1,206 @@
+/* ── The horizontal scroll section generator (/horizontal-scroll-generator) ──
+   One hairline frame: the controls, the preview box, the transport and the
+   readout; then the code. The preview's layout rules are not here: they are
+   the generated CSS itself, injected next to the box (code.ts), so only the
+   look of the preview lives in this file. Mono labels, square corners; the
+   accent is used once, for the progress bar's fill. */
+
+.site .hz { display: grid; gap: 32px; }
+.site .hz-frame { border: 1px solid var(--line-2); min-width: 0; }
+
+.site .hz-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px 20px;
+  padding: 16px;
+  border-bottom: 1px solid var(--line);
+}
+/* On a phone, two columns; a slider that shares its row with a switch gets the full width. */
+@media (max-width: 559px) {
+  .site .hz-controls { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  .site .hz-field.is-pair { grid-column: 1 / -1; }
+}
+.site .hz-field { display: grid; gap: 8px; align-content: start; min-width: 0; }
+.site .hz-field.is-wide { grid-column: 1 / -1; }
+.site .hz-label { font: 500 10px/1.4 var(--mono); color: var(--fg-3); overflow-wrap: anywhere; }
+.site .hz-pair { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 10px; }
+.site .hz-pair.is-idle input[type='range'] { opacity: 0.45; }
+.site .hz input[type='range'] { width: 100%; min-width: 0; margin: 0; accent-color: var(--fg); }
+/* globals.css takes the outline off every range input; give the keyboard one back. */
+.site .hz input[type='range']:focus-visible { outline: 1px solid var(--fg); outline-offset: 4px; }
+
+.site .hz-field select {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  min-width: 0;
+  padding: 7px 10px;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  font: 400 12.5px/1.3 var(--mono);
+  color: var(--fg);
+  cursor: pointer;
+}
+.site .hz-field select:hover { border-color: var(--fg); }
+.site .hz-field select:focus-visible { border-color: var(--fg); outline: 1px solid var(--fg); outline-offset: 2px; }
+.site .hz-field option { background: var(--bg); color: var(--fg); }
+
+.site .hz-seg { display: inline-grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); border: 1px solid var(--line-2); min-width: 0; }
+.site .hz-field.is-wide .hz-seg { justify-self: start; }
+.site .hz-seg button {
+  padding: 6px 10px;
+  border: 0;
+  border-left: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  font: 500 11.5px/1.2 var(--mono);
+  color: var(--fg-2);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.site .hz-seg button:first-child { border-left: 0; }
+.site .hz-seg button:hover { color: var(--fg); }
+.site .hz-seg button[aria-checked='true'] { background: var(--fg); color: var(--bg); }
+.site .hz-seg button:focus-visible { outline: 1px solid var(--fg); outline-offset: 2px; }
+
+/* The preview: a scroll container standing in for the window. Its frame is an
+   inset shadow, not a border: svg-scroll-draw 2.23.2 measures a scroll
+   container's trigger from its border box (core/trigger-frame.ts), so a border
+   would shift the scroll window by its width. No padding either, so the stage
+   is exactly as wide as the box and cqw means the same in both. */
+.site .hz-stagewrap { padding: 16px; background: var(--panel); }
+.site .hz-box {
+  --hz-h: 300px;
+  position: relative;
+  height: var(--hz-h);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  container-type: inline-size;
+  box-shadow: inset 0 0 0 1px var(--line-2);
+  background: var(--bg);
+}
+@media (max-width: 559px) { .site .hz-box { --hz-h: 260px; } }
+.site .hz-box:focus-visible { outline: 1px solid var(--fg); outline-offset: 2px; }
+
+.site .hz-before, .site .hz-after {
+  display: grid;
+  place-items: center;
+  font: 500 10.5px/1.4 var(--mono);
+  color: var(--fg-3);
+}
+.site .hz-before { height: 96px; border-bottom: 1px dashed var(--line-2); }
+.site .hz-after { height: 120px; border-top: 1px dashed var(--line-2); }
+
+.site .hz-panel {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 8px;
+  height: calc(var(--hz-h) - 76px);
+  padding: 12px;
+  border: 1px solid var(--line-2);
+  background: var(--panel);
+  color: var(--fg);
+}
+.site .hz-panel:focus-visible { outline: 2px solid var(--fg); outline-offset: -2px; }
+.site .hz-panel-h { display: flex; justify-content: space-between; gap: 8px; min-width: 0; font: 500 11px/1.4 var(--mono); }
+.site .hz-panel-h b { font-weight: 500; color: var(--fg-3); }
+.site .hz-panel-h span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.site .hz-art { display: block; width: 100%; height: 100%; min-height: 0; }
+.site .hz-art path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+/* The bar's look; where it sits is the generated CSS. */
+.site .hz-bar { background: var(--line-2); }
+.site .hz-bar span { background: var(--accent); }
+
+.site .hz-transport {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 12px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--line);
+}
+.site .hz-btn {
+  padding: 8px 12px;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  font: 500 12px/1 var(--mono);
+  color: var(--fg);
+  cursor: pointer;
+}
+.site .hz-btn:hover { border-color: var(--fg); }
+.site .hz-btn:focus-visible { border-color: var(--fg); outline: 1px solid var(--fg); outline-offset: 2px; }
+.site .hz-scrub { display: grid; gap: 4px; flex: 1 1 200px; min-width: 0; margin-left: 8px; }
+.site .hz-scrub span { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+
+.site .hz-read { display: grid; gap: 4px; padding: 12px 16px; border-top: 1px solid var(--line); }
+.site .hz-read p { margin: 0; font: 400 11.5px/1.6 var(--mono); color: var(--fg-2); overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+.site .hz-read p:first-child { color: var(--fg); }
+
+.site .hz-warn, .site .hz-note, .site .hz-rm {
+  margin: 0;
+  padding: 10px 16px;
+  border-top: 1px solid var(--line);
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--fg-2);
+}
+.site .hz-warn { color: var(--fg); }
+.site .hz-rm { display: none; }
+@media (prefers-reduced-motion: reduce) { .site .hz-rm { display: block; } }
+.site .hz-rm code { font: 400 0.92em var(--mono); color: var(--fg); }
+
+/* The code. */
+.site .hz-code { display: grid; min-width: 0; }
+.site .hz-tabs { display: flex; flex-wrap: wrap; }
+.site .hz-tab {
+  padding: 8px 12px;
+  border: 1px solid var(--line-2);
+  border-bottom: 0;
+  border-left-width: 0;
+  border-radius: 0;
+  background: transparent;
+  font: 500 11.5px/1 var(--mono);
+  color: var(--fg-2);
+  cursor: pointer;
+}
+.site .hz-tab:first-child { border-left-width: 1px; }
+.site .hz-tab[aria-selected='true'] { color: var(--fg); background: var(--panel); }
+.site .hz-tab:focus-visible { outline: 1px solid var(--fg); outline-offset: -3px; }
+.site .hz-code .code-box { margin-top: 0; }
+.site .hz-code-note { margin: 12px 0 0; max-width: 68ch; font-size: 13px; line-height: 1.6; color: var(--fg-2); }
+
+/* Reference: the cost table. */
+.site .hz-scroll { overflow-x: auto; margin: 20px 0 8px; }
+.site .hz-table { width: 100%; min-width: 640px; border-collapse: collapse; font-size: 13.5px; }
+.site .hz-table th, .site .hz-table td { padding: 10px 12px 10px 0; border-top: 1px solid var(--line); text-align: left; vertical-align: top; }
+.site .hz-table thead th { font: 500 10px/1.4 var(--mono); color: var(--fg-3); white-space: nowrap; }
+.site .hz-table tbody th { font: 500 11.5px/1.6 var(--mono); color: var(--fg); white-space: nowrap; }
+.site .hz-table td { color: var(--fg-2); line-height: 1.6; }
+
+/* Fig. 1 — the three boxes, side on and face on. */
+.site .hzf svg { display: block; width: 100%; height: auto; max-width: 560px; }
+.site .hzf :is(rect, path) { fill: none; vector-effect: non-scaling-stroke; }
+.site .hzf-outer { stroke: var(--fg); stroke-width: 1.25; }
+.site .hzf-ghost { stroke: var(--fg-3); stroke-width: 1; stroke-dasharray: 3 3; }
+.site .hzf-lead { stroke: var(--fg-3); stroke-width: 1; stroke-dasharray: 2 3; }
+.site .hzf-dim { stroke: var(--fg-3); stroke-width: 1; }
+.site .hzf-track { stroke: var(--line-2); stroke-width: 1; }
+.site .hzf-win { stroke: var(--fg); stroke-width: 1.75; }
+.site .hzf-in :is(rect, path) { stroke: var(--fg); stroke-width: 1.25; }
+.site .hzf-off :is(rect, path) { stroke: var(--fg-3); stroke-width: 1; stroke-dasharray: 3 3; }
+.site .hzf-in text, .site .hzf-off text { font: 500 10px var(--mono); }
+.site .hzf-in text { fill: var(--fg); }
+.site .hzf-off text { fill: var(--fg-3); }
+.site .hzf-h { font: 500 11px var(--mono); fill: var(--fg-3); }
+.site .hzf-k { font: 500 11.5px var(--mono); fill: var(--fg); }
+.site .hzf-m { font: 500 10.5px var(--mono); fill: var(--fg-3); }
+.site .hzf-f { font: 500 11.5px var(--mono); fill: var(--fg-2); }

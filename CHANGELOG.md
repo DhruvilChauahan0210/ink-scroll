@@ -8,6 +8,156 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### Site
 
+- **New tool: SVG morph generator** (`/svg-morph-generator`). Pick or paste
+  two shapes; both are rewritten as absolute cubic Béziers with the same number
+  of segments, the start point can be rotated so nothing twists, and the
+  numbered point pairs are drawn. The morph is scrubbed through `seek()`, and
+  the tool writes the `morphTo` code (JS and React), the matched path pair and
+  a CSS `d: path()` version where browsers animate it.
+
+- **New tool: text fill on scroll generator** (`/text-fill-scroll-generator`).
+  Text that fills with colour, or lights up word by word, as it scrolls: pure
+  CSS on a view timeline, `scrollProgress` driving a gradient, or `scrollText`,
+  each scrolled live in a box, with the text kept readable to screen readers.
+
+- **New tool: scroll pin generator** (`/scroll-pin-generator`). Pin distance,
+  top and the number of steps of a pinned feature tour, run by `scrollPin` in a
+  box you scroll with a progress and step readout; HTML, CSS, JS, React or a
+  CSS-only `position: sticky` version.
+
+- **Every tool's code can leave the page running.** `lib/tool-export.ts` and
+  `components/tool-kit/`: a source line at the top of generated code (`Made
+  with https://svg-scroll-draw.vercel.app/<tool>`, a comment, so a GitHub code
+  search shows which tools' code ends up in other projects), a complete HTML
+  file to download, the same file or a Vite + React project opened in
+  StackBlitz (a form posted on click, nothing sent before), and one "Use it in
+  your project" block: install, import, entry size, the docs anchor and the
+  next tool. The three newest tools use it; the others follow.
+
+- **Keyboard focus on every slider.** `globals.css` took the outline off every
+  `input[type=range]`, and the rule outranked `:focus-visible`, so no slider on
+  the site showed focus. One rule puts it back.
+
+- **The light theme passes contrast.** Its accent `#d9381e` was 4.07:1 on the
+  page and 3.75:1 on panels, under AA for the small mono labels it colours; it
+  is `#bd2f19` (5.15:1 and 4.75:1). The Copy button's grey `#888` (2.87:1 on
+  light panels) is the theme's `--fg-3`. The homepage's stack panel, dark in
+  both themes, keeps the dark theme's grey and accent (they were 3.19:1 and
+  3.29:1 on it), and the copy-paste blocks' captions are `text-neutral-600` in
+  light mode (`neutral-500` was 4.39:1 on an off-white page; the registry files
+  are regenerated). The accessibility check now audits every page in the light
+  theme too; it only ever saw the default, dark.
+
+- **The menu names five tools, the footer all of them.** With 23 tools the
+  More menu lists "All 23 tools" and the drawing tools first; the footer index
+  lists every tool in two columns, its five groups on one row.
+
+- **Sponsor link.** The footer index ends with a link to GitHub Sponsors, and
+  `.github/FUNDING.yml` adds the repository's Sponsor button.
+
+- **Tools hub** (`/tools`): every interactive tool on one page, in three
+  groups (generators, SVG, how it works), with an ItemList for search engines.
+  The hub, a new Tools group in the nav and footer, the sitemap and `llms.txt`
+  all read one list (`data/tools.ts`), so a tool is added in one place.
+
+- **New tool: SVG line drawing generator** (`/svg-line-drawing-generator`).
+  Paste any SVG and get one file that draws itself with CSS and no JavaScript
+  (`pathLength="1"`, a dash of 1 and a gap of 2, which avoids a dot WebKit
+  draws on closed round-capped shapes), with duration, stagger, easing, order,
+  loop, a fill fade-in and a seeded hand-drawn timing; or the scroll version as
+  one scrollDraw call, live in a box that scrolls.
+
+- **New tool: SVG to JSX converter** (`/svg-to-jsx-converter`). A pasted SVG
+  becomes a React component in TSX (`SVGProps<SVGSVGElement>`) or JSX: names
+  from react-dom's own SVG table, style strings as objects, `{...props}`,
+  `1em` sizing, `role="img"` with a `<title>`, and an optional `<ScrollDraw>`
+  wrapper. Scripts, event handlers and `javascript:` links are left out, and a
+  table lists every change with its reason.
+
+- **New tool: SVG wave generator** (`/svg-wave-generator`). One to four
+  layers of curves (Catmull-Rom with tension), peaks or steps from a seed, each
+  shape cut to exactly 0..width; copied as SVG, React or a CSS data URI, or as
+  a line scrollDraw draws.
+
+- **New tool: SVG blob generator** (`/svg-blob-generator`). 3 to 12 points, a
+  randomness and a seed give a closed blob with no corner at the seam; morph to
+  the next seed (same commands in both paths), draw the outline with
+  scrollDraw, copy SVG, `d`, React or a CSS `clip-path`.
+
+- **New tool: CSS keyframes animation generator**
+  (`/css-keyframes-animation-generator`). 27 original entrances, attention
+  effects and exits with duration, delay, count, direction, fill and an easing
+  checked with `CSS.supports`; copies the `@keyframes` and class with a
+  reduced-motion rule, a `view()` scroll version, and scrollReveal or
+  scrollAnimate where one from → to holds the effect.
+
+- **New tool: CSS scroll snap generator** (`/css-scroll-snap-generator`).
+  Carousel, sections and gallery presets in a real snapping box running the
+  generated CSS, with the snap positions drawn over it; copies HTML, CSS and
+  Previous/Next JS, and compares CSS snapping with `scrollSnap` honestly.
+
+- **New tool: horizontal scroll generator** (`/horizontal-scroll-generator`).
+  Panels, width, gap, scroll length and easing for a pinned sideways section,
+  run by scrollHorizontal in a box you scroll or by the generated
+  scroll-timeline CSS; HTML, CSS, JS, React or CSS only, each with a keyboard
+  focus fix and a fallback row.
+
+- **New tool: cubic-bezier generator** (`/cubic-bezier-generator`). Drag P1
+  and P2 (mouse, touch, arrow keys or inputs), race the curve against a CSS
+  keyword, the library's own quadratics or 24 named curves, and copy the CSS or
+  a Newton–bisection `cubicBezier()` for the `easing` option, checked against
+  the browser's own curve.
+
+- **New tool: easing visualizer** (`/easing-visualizer`). The seven named
+  easings and `createSpring` / `createBounce` / `createElastic` with sliders,
+  plotted with their overshoot past 1, drawn by scrollDraw through `seek()`
+  against a second easing, and run on real scroll in a small box. Copies
+  `scrollDraw`, `scrollAnimate`, `<ScrollDraw>` or CSS (the exact
+  cubic-béziers for ease-in and ease-out, a `linear()` for the rest).
+
+- **New tool: animated counter generator** (`/counter-animation-generator`).
+  From, to, decimals, prefix and suffix, locale, compact notation, easing,
+  trigger and `once`, previewed with `seek()`; four example stats count on the
+  page's real scroll. The code writes `format` through `Intl.NumberFormat` and
+  can add a screen-reader copy of the final number.
+
+- **New tool: parallax scrolling generator** (`/parallax-scrolling-generator`).
+  An original four-layer line-drawn landscape; each layer gets its own speed
+  and axis, with its travel in px and its rate on screen. scrollParallax
+  has no `scrollContainer`, so the preview window's scroll is fed to real
+  instances through `seek()`. JavaScript, a React `useEffect` and one CDN file.
+
+- **New tool: scroll trigger visualizer** (`/scroll-trigger-visualizer`). Pick
+  an element edge and a viewport line for start and end, scroll a 300px box
+  running scrollDraw with `scrollContainer`, and watch progress run 0 → 1 with
+  the arithmetic beside it. Shows what the parser makes of input it does not
+  accept, each function's default window, and a comparison with GSAP
+  ScrollTrigger's syntax.
+
+- **New tool: CSS scroll-driven animation generator**
+  (`/css-scroll-driven-animation-generator`). Seven presets on any
+  `animation-range` (entry, exit, cover, contain), running as the generated
+  CSS in a box you scroll, gated by `@supports` and `prefers-reduced-motion`,
+  with an optional JS fallback. Says whether svg-scroll-draw would compile the
+  same settings to that CSS itself.
+
+- **New tool: SVG shape to path converter** (`/svg-shape-to-path-converter`).
+  Every rect (rx/ry, auto and clamping per SVG 2), circle, ellipse, line,
+  polyline and polygon becomes the path it equals, starting where the browser
+  starts the shape; checked against Chromium's, Firefox's and WebKit's own
+  shapes. Before and after draw side by side.
+
+- **New tool: scroll progress bar generator** (`/scroll-progress-bar-generator`).
+  A bar on the top, bottom or left edge or a ring in the corner, for the page
+  or one article, as pure CSS on `animation-timeline: scroll()` / a view
+  timeline inside `@supports`, or as `scrollProgress` in JavaScript or React.
+
+- **New tool: scroll reveal generator** (`/scroll-reveal-generator`). One of
+  the 7 presets with its moving value, start opacity, stagger, easing, `once`
+  and trigger; nine original cards reveal in a box that scrolls itself, with
+  the trigger lines drawn over it. The zero-config result is
+  `scrollReveal('.card')`.
+
 - **New tool: SVG path viewer** (`/svg-path-viewer`), for "svg path" (526) and
   "svg path editor" (316) in the Bing research. Paste an SVG or one path's
   `d`: it is rebuilt from drawing elements and attributes only
@@ -70,6 +220,20 @@ All notable changes to `svg-scroll-draw` are documented here.
   on the project in the Vercel dashboard.
 
 ### CI
+
+- **Browser tests run in Playwright's own image.** On 2026-11-11 GitHub's
+  runners could not resolve `*.ubuntu.com` for hours, so `playwright install
+  --with-deps` waited on apt until the job's limit, in CI and in three release
+  attempts of 2.23.2. The browser job now runs in
+  `mcr.microsoft.com/playwright:v1.65.0-noble`, which carries the browsers and
+  their libraries, and installs nothing. The image tag has to follow the
+  lockfile's Playwright version. The release job is unchanged until this has
+  run on CI.
+- **The nav check reads the tools list.** `check-nav.mjs` counts the pages
+  `data/tools.ts` generates, as it does the comparison pages.
+- **`npm run report:numbers`** writes `reports/numbers-<date>.md`: npm
+  downloads by day, jsDelivr requests by version and file, the repository's
+  views, clones and referrers, and a code search for the tools' source line.
 
 - **Only the newest release takes `latest`.** On 2026-11-07 the tags v2.20.1,
   v2.21.0, v2.22.0 and v2.23.0 were pushed within two minutes; release.yml ran
@@ -728,6 +892,75 @@ All notable changes to `svg-scroll-draw` are documented here.
   allowed, followed by `check-jsx-text` and `check-nav`.
 
 ---
+
+## [2.23.3] — 2026-11-11
+
+### Fixed
+
+- **`once: true` with an easing that overshoots or dips ends on its target.**
+  `scrollDraw`, `scrollAnimate` (so `scrollReveal`), `scrollCounter`,
+  `scrollVideo` and `useScrollDrawProgress` held the *eased* value at its
+  highest, so `spring`, `elastic` or a function that passes 1 froze on its
+  peak for good. Measured in Chromium with `elastic`: a drawing ended 1.27
+  drawn, a box 27px past its `to`, and a counter from 0 to 1000 on 1273.
+  `bounce` never dipped. They now hold how far the scroll got and ease that,
+  as `scrollText` always did, so the easing plays out and ends exactly on the
+  target. `seek()` still sets the floor `once` holds, and `getProgress()`
+  still reports the eased value. With `linear` nothing changes.
+- **`autoplay: true` plays over its `duration` whatever else is set.** With
+  no callbacks, a named easing and the default trigger, an autoplay drawing
+  took the native CSS scroll-timeline path. In Chromium, Firefox and WebKit it
+  then followed the page scroll instead of its clock, and stopped wherever the
+  scroll stopped: half drawn at the test page's resting scroll. This was 2.23.2's
+  "autoplay run with no stagger stopping part way", seen building the SVG path
+  viewer: its browser test always passed `onProgress` and `onComplete`, which
+  keep the native path off on their own. Autoplay never takes it now.
+- **`debug: true` draws its trigger lines in every browser.** An otherwise
+  plain config took the native path, which draws no overlay, so debug showed
+  nothing wherever view timelines exist. Debug runs on the JS engine now.
+- **A blank trigger is the default one.** `trigger: { end: '' }` was read as
+  `'top bottom'`, not the function's default end; for `scrollDraw` that is a
+  window of no length, and the drawing never moved. An empty `start` or `end`
+  now counts as unset in every engine.
+- **A `scrollContainer` with a border.** The trigger window was measured from
+  the container's border box instead of its scrollport, so with a 30px border
+  every window started and ended 30px late against CSS `view()` (0.068 of the
+  window in the browser test). It counts from inside the border now.
+- **`clip` with `direction: 'reverse'` starts fully shown.** The first clip,
+  and the one `replay()` and `repeat` go back to, was the fully hidden one
+  whatever the direction, so a reversed clip sat hidden until its first frame:
+  with `delay`, for the whole delay.
+
+### Changed
+
+- The draw engine's three copies of a path's frame (`seek()`, the scroll loop,
+  autoplay) are one function. The main entry is 11.6 KB gzipped (was 11.7),
+  `svg-scroll-draw/react` 13.1 (13.2). `scrollReveal` stays 5.8 KB.
+
+### Docs
+
+- `createBounce` makes `bounces − 1` dips, the rise being the first of its
+  `bounces` segments. Its comment and the docs page said `bounces` dips.
+- `scrollParallax`'s speed had its direction backwards in the README, the docs
+  page, the 2026 guide and `scrollParallaxGroup`'s comment ("0.4 = slower than
+  scroll", "−0.2 floats upward"). A positive speed moves the element up as you
+  scroll down, ahead of the page; a negative one moves it down, so it lags.
+- The percentage counter example in the README, the docs page and the guide set
+  `decimals: 1` with a `format` that adds `%`. `decimals` replaces `format`, so
+  the % never showed. The examples use `format` alone, and the options table
+  says which wins.
+- The counter example page no longer claims "1 KB", a figure nothing measured.
+
+### Tests
+
+- 37 unit tests (751 in all), among them the first for `useScrollDrawProgress`.
+  9 browser tests per engine (255): `e2e/once-easing.spec.ts`, an autoplay
+  drawing with no callbacks, `e2e/debug.spec.ts` and
+  `e2e/container-border.spec.ts`. A race in an autoplay test, which flaked in
+  Firefox under load, reads both values in one call. Six mutations, each
+  caught by its test (103 in all): `once-raw/draw`, `once-raw/animate`,
+  `once-raw/counter`, `native-optout/autoplay`, `native-optout/debug` and
+  `container/scrollport`. `reveal/once-latch` is re-anchored.
 
 ## [2.23.2] — 2026-11-11
 

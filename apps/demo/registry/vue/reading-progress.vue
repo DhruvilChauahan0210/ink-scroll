@@ -158,7 +158,7 @@ onBeforeUnmount(() => {
     </div>
 
     <header>
-      <p class="font-mono text-xs text-neutral-500 dark:text-neutral-400">
+      <p class="font-mono text-xs text-neutral-600 dark:text-neutral-400">
         {{ kicker }}
       </p>
       <component
@@ -167,7 +167,7 @@ onBeforeUnmount(() => {
       >
         {{ title }}
       </component>
-      <p class="mt-4 text-sm text-neutral-500 dark:text-neutral-400">{{ byline }}</p>
+      <p class="mt-4 text-sm text-neutral-600 dark:text-neutral-400">{{ byline }}</p>
     </header>
 
     <div class="mt-10 space-y-6 text-lg leading-relaxed text-neutral-700 dark:text-neutral-300">

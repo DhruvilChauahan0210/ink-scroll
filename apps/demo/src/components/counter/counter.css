@@ -1,0 +1,228 @@
+/* ── The animated counter generator (/counter-animation-generator) ────────
+   One panel: controls, a stage with the number big, a transport (play,
+   scrub); then the code; then a row of counters on the page's own scroll.
+   Hairlines and mono labels, as the other tools. */
+
+.site .ctr { display: grid; gap: 32px; }
+.site .ctr-panel { border: 1px solid var(--line-2); scroll-margin-top: calc(var(--nav-h) + 24px); }
+.site .ctr code { font: 400 0.9em/1.4 var(--mono); color: var(--fg); }
+
+/* Visually hidden, still read. */
+.site .ctr-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.site .ctr-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 16px 20px;
+  padding: 16px;
+  border-bottom: 1px solid var(--line);
+}
+.site .ctr-field { display: grid; gap: 6px; align-content: start; min-width: 0; }
+/* The trigger windows read "top bottom → center center": two columns, or they cut off. */
+.site .ctr-field.is-wide { grid-column: span 2; }
+.site .ctr-field > span { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .ctr-field input[type='text'],
+.site .ctr-field select {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  min-width: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  font: 400 13px/1.3 var(--mono);
+  color: var(--fg);
+}
+.site .ctr-field select { cursor: pointer; text-overflow: ellipsis; }
+.site .ctr-field input[type='text']:focus-visible,
+.site .ctr-field select:focus-visible,
+.site .ctr-field select:hover { border-color: var(--fg); outline: 0; }
+.site .ctr-field input[aria-invalid='true'] { border-style: dashed; border-color: var(--fg-2); }
+.site .ctr-field input::placeholder { color: var(--fg-3); }
+.site .ctr-field option { background: var(--bg); color: var(--fg); }
+.site .ctr input[type='range'] { width: 100%; accent-color: var(--fg); }
+/* globals.css takes the outline off every range input, :focus-visible included,
+   so the thumb carries the focus ring: a gap, then a ring in the ink colour. */
+.site .ctr input[type='range']:focus-visible { outline: 0; }
+.site .ctr input[type='range']:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 2px #000, 0 0 0 4px var(--bg), 0 0 0 5.5px var(--fg); }
+.site .ctr input[type='range']:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 2px #000, 0 0 0 4px var(--bg), 0 0 0 5.5px var(--fg); }
+.site .ctr input[type='range']:disabled { opacity: 0.4; }
+
+.site .ctr-seg { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); border: 1px solid var(--line-2); }
+.site .ctr-seg button {
+  min-width: 0;
+  /* 33px + the group's two borders: the height of the text fields beside it. */
+  min-height: 33px;
+  padding: 7px 4px;
+  border: 0;
+  border-left: 1px solid var(--line-2);
+  background: transparent;
+  font: 500 11.5px/1.2 var(--mono);
+  color: var(--fg-2);
+  cursor: pointer;
+}
+.site .ctr-seg button:first-child { border-left: 0; }
+.site .ctr-seg button[aria-checked='true'] { background: var(--fg); color: var(--bg); }
+.site .ctr-seg button:focus-visible { outline: 1px solid var(--fg); outline-offset: -3px; }
+
+/* The number: every digit the same width, and the widest of the start and the
+   end held in the same grid cell, so nothing moves while it counts. Before the
+   script runs, the counting span is empty and shows the final value. */
+.site .ctr-num {
+  display: inline-grid;
+  max-width: 100%;
+  font-variant-numeric: tabular-nums;
+}
+.site .ctr-hold, .site .ctr-run { grid-row: 1; grid-column: 1; min-width: 0; overflow-wrap: anywhere; }
+.site .ctr-hold { visibility: hidden; }
+.site .ctr-run:empty::before { content: attr(data-final); }
+
+.site .ctr-stage {
+  display: grid;
+  place-items: center;
+  /* On a phone the controls take seven rows: a shorter stage keeps the
+     controls, the number and Play on one screen. */
+  min-height: clamp(132px, 24vw, 260px);
+  padding: clamp(20px, 4vw, 32px) clamp(16px, 4vw, 48px);
+  overflow: hidden;
+  background: var(--panel);
+  text-align: center;
+}
+.site .ctr-num-big {
+  justify-items: center;
+  font-size: clamp(34px, 7.4vw, 96px);
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--fg);
+}
+
+.site .ctr-transport {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--line);
+}
+.site .ctr-btn {
+  padding: 8px 14px;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  font: 500 12px/1 var(--mono);
+  color: var(--fg);
+  cursor: pointer;
+}
+.site .ctr-btn:hover, .site .ctr-btn:focus-visible { border-color: var(--fg); outline: 0; }
+.site .ctr-btn:disabled { opacity: 0.4; cursor: default; }
+/* The thumb stands 8px above its 5px track, and its focus ring 6px more: room for both under the label. */
+.site .ctr-scrub { display: grid; gap: 14px; flex: 1 1 220px; min-width: 0; padding-bottom: 6px; }
+.site .ctr-scrub span { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+
+.site .ctr-note,
+.site .ctr-warn {
+  margin: 0;
+  padding: 10px 16px;
+  border-top: 1px solid var(--line);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--fg-2);
+}
+.site .ctr-warn { border-left: 2px solid var(--accent); }
+
+.site .ctr-code { display: grid; min-width: 0; }
+.site .ctr-tabs { display: flex; flex-wrap: wrap; }
+.site .ctr-tab {
+  padding: 8px 14px;
+  border: 1px solid var(--line-2);
+  border-bottom: 0;
+  border-left-width: 0;
+  background: transparent;
+  font: 500 11.5px/1 var(--mono);
+  color: var(--fg-2);
+  cursor: pointer;
+}
+.site .ctr-tab:first-child { border-left-width: 1px; }
+.site .ctr-tab[aria-selected='true'] { color: var(--fg); background: var(--panel); }
+.site .ctr-tab:focus-visible { outline: 1px solid var(--fg); outline-offset: -3px; }
+.site .ctr-code .code-box { margin-top: 0; }
+
+/* On real scroll: a row of stat cards sharing hairlines. */
+.site .ctr-live { display: grid; gap: 16px; padding-top: 8px; }
+.site .ctr-live-k { margin: 0; font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .ctr-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  border: 1px solid var(--line-2);
+  background: var(--line-2);
+}
+@media (min-width: 760px) { .site .ctr-cards { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+/* A column, the Edit button at its foot, so the buttons of one row line up
+   when a note wraps to two lines. */
+.site .ctr-card { display: flex; flex-direction: column; gap: 8px; min-width: 0; padding: 16px; background: var(--bg); }
+/* Yours: a row of its own above the four examples. */
+.site .ctr-card.is-yours { grid-column: 1 / -1; background: var(--panel); }
+.site .ctr-card.is-yours .ctr-card-v { font-size: clamp(32px, 4.4vw, 52px); }
+.site .ctr-card-k, .site .ctr-card-n { margin: 0; font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .ctr-card-v {
+  margin: 0;
+  font-size: clamp(24px, 2.6vw, 32px);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--fg);
+}
+.site .ctr-card-btn {
+  align-self: flex-start;
+  margin-top: auto;
+  padding: 6px 10px;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  font: 500 11px/1 var(--mono);
+  color: var(--fg-2);
+  cursor: pointer;
+}
+.site .ctr-card-btn:hover, .site .ctr-card-btn:focus-visible { border-color: var(--fg); color: var(--fg); outline: 0; }
+.site .ctr-live-note { margin: 0; max-width: 64ch; font-size: 13px; line-height: 1.6; color: var(--fg-2); }
+
+/* Reference sections: a paragraph or table after a code listing. */
+.site .ctr-after, .site .stk-p.ctr-after { margin-top: 24px; }
+
+/* Reference tables. */
+.site .ctr-scroll { overflow-x: auto; }
+.site .ctr-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.site .ctr-table th, .site .ctr-table td { padding: 10px 16px 10px 0; border-top: 1px solid var(--line); text-align: left; vertical-align: top; }
+.site .ctr-table th { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .ctr-table td { font: 400 12.5px/1.5 var(--mono); color: var(--fg); white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+/* Fig. 1 — the window and the curve. Drawn 360 wide so its 10px labels are
+   still 9.7px on a phone; 15px in the desktop column, as the path viewer's
+   figure, and held to 560px where the hero is one column (a tablet). */
+.site .ctrf { max-width: 560px; }
+.site .ctrf svg { display: block; width: 100%; height: auto; }
+.site .ctrf-frame { color: var(--line-2); }
+.site .ctrf-guide { color: var(--fg-3); }
+.site .ctrf-axis { color: var(--line-2); }
+.site .ctrf-lin { color: var(--fg-3); }
+.site .ctrf-curve { color: var(--fg); }
+.site .ctrf-box { color: var(--fg); }
+.site .ctrf-link { color: var(--fg-2); }
+.site .ctrf-dot { fill: var(--fg); }
+.site .ctrf-ring { fill: var(--bg); stroke: var(--fg-3); }
+.site .ctrf-num { font: 500 13px var(--mono); fill: var(--fg); }
+.site .ctrf-k { font: 500 10px var(--mono); fill: var(--fg-2); }
+.site .ctrf-n { font: 500 10px var(--mono); fill: var(--fg-3); }

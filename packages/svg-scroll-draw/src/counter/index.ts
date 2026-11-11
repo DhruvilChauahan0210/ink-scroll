@@ -61,8 +61,8 @@ function buildCounter(el: HTMLElement, options: ScrollCounterOptions, prefersRed
       : (format ?? ((n) => String(Math.round(n))));
 
   const easeFn      = typeof easing === 'function' ? easing : (EASINGS[easing] ?? EASINGS['ease-out']);
-  const startConfig = parseTrigger(trigger.start ?? 'top 80%');
-  const endConfig   = parseTrigger(trigger.end   ?? 'top 20%');
+  const startConfig = parseTrigger(trigger.start || 'top 80%');
+  const endConfig   = parseTrigger(trigger.end   || 'top 20%');
 
   if (prefersReduced) {
     el.textContent = fmt(to);
@@ -82,7 +82,14 @@ function buildCounter(el: HTMLElement, options: ScrollCounterOptions, prefersRed
   let rafId        = 0;
   let isVisible    = false;
   let paused       = false;
+  /** With `once`, the floor seek() set: -1 when there is none. */
   let frozenAlpha  = -1;
+  /**
+   * With `once`, the furthest raw scroll progress, eased after. Holding the
+   * eased value with Math.max froze spring and elastic past `to` for good
+   * (elastic from 0 to 1000 ended on 1273 in Chromium), and flattened bounce's dips.
+   */
+  let frozenRaw    = 0;
   let currentAlpha = 0;
   let completed    = false;
 
@@ -110,11 +117,10 @@ function buildCounter(el: HTMLElement, options: ScrollCounterOptions, prefersRed
 
   function update(): void {
     if (!isVisible || paused) return;
-    let alpha = easeFn(computeProgress(scrollPos(), tStart, tEnd, 1));
-    if (once) {
-      frozenAlpha = Math.max(frozenAlpha, alpha);
-      alpha = frozenAlpha;
-    }
+    const progress = computeProgress(scrollPos(), tStart, tEnd, 1);
+    const alpha = once
+      ? Math.max(frozenAlpha, easeFn(frozenRaw = Math.max(frozenRaw, progress)))
+      : easeFn(progress);
     currentAlpha = alpha;
     applyAlpha(alpha);
     if (alpha >= 1 && !completed) {
@@ -130,8 +136,8 @@ function buildCounter(el: HTMLElement, options: ScrollCounterOptions, prefersRed
 
   // Apply correct initial state — prevents flash before first IO tick.
   {
-    const initAlpha = easeFn(computeProgress(scrollPos(), tStart, tEnd, 1));
-    if (once && initAlpha > 0) frozenAlpha = initAlpha;
+    frozenRaw = computeProgress(scrollPos(), tStart, tEnd, 1);
+    const initAlpha = easeFn(frozenRaw);
     currentAlpha = initAlpha;
     applyAlpha(initAlpha);
   }
@@ -175,6 +181,7 @@ function buildCounter(el: HTMLElement, options: ScrollCounterOptions, prefersRed
     },
     replay() {
       frozenAlpha  = -1;
+      frozenRaw    = 0;
       completed    = false;
       currentAlpha = 0;
       paused       = false;
@@ -193,6 +200,7 @@ function buildCounter(el: HTMLElement, options: ScrollCounterOptions, prefersRed
       const clamped = Math.min(1, Math.max(0, p));
       currentAlpha  = clamped;
       frozenAlpha   = clamped;
+      frozenRaw     = 0;
       paused        = true;
       cancelAnimationFrame(rafId);
       applyAlpha(clamped);

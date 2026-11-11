@@ -1,0 +1,365 @@
+/* ── The scroll trigger visualizer (/scroll-trigger-visualizer) ───────────
+   One hairline panel: presets, the two trigger pairs, the preview viewport
+   with its transport beside the worked numbers; then the code. Mono labels;
+   the accent only on the "you are here" mark on the scroll track.
+
+   The panel is one grid. Wide: controls across the top, then the preview and
+   transport in one column and the readouts in the other. Phone: the preview
+   comes straight after the presets and stays pinned under the nav while the
+   controls and readouts scroll beneath it, so a change is seen as it is made. */
+
+.site .trg { display: grid; gap: 32px; }
+.site .trg-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: 'presets' 'view' 'transport' 'controls' 'words' 'read' 'msgs';
+  border: 1px solid var(--line-2);
+  min-width: 0;
+}
+.site .trg-presets { grid-area: presets; }
+.site .trg-controls { grid-area: controls; }
+.site .trg-words { grid-area: words; }
+.site .trg-view { grid-area: view; }
+.site .trg-transport { grid-area: transport; }
+.site .trg-read { grid-area: read; }
+.site .trg-msgs { grid-area: msgs; }
+@media (min-width: 760px) {
+  .site .trg-panel {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: auto auto auto auto 1fr auto;
+    grid-template-areas:
+      'presets presets'
+      'controls controls'
+      'words words'
+      'view read'
+      'transport read'
+      'msgs msgs';
+  }
+}
+.site .trg-k { margin: 0; font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+
+.site .trg-presets {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+}
+.site .trg-presets .trg-k { margin-right: 4px; }
+.site .trg-chip,
+.site .trg-btn {
+  padding: 7px 10px;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  font: 500 11.5px/1.2 var(--mono);
+  color: var(--fg-2);
+  cursor: pointer;
+}
+.site .trg-btn { padding: 8px 14px; color: var(--fg); }
+.site .trg-chip:hover, .site .trg-chip:focus-visible,
+.site .trg-btn:hover, .site .trg-btn:focus-visible { border-color: var(--fg); color: var(--fg); outline: 0; }
+.site .trg-chip[aria-pressed='true'] { border-color: var(--fg); background: var(--fg); color: var(--bg); }
+
+/* The two pairs side by side at every width, and the element's height under them. */
+.site .trg-controls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px 16px;
+  padding: 16px;
+  border-bottom: 1px solid var(--line);
+}
+.site .trg-pair { display: grid; gap: 12px; align-content: start; min-width: 0; margin: 0; padding: 0; border: 0; }
+.site .trg-pair legend { padding: 0 0 8px; font: 500 11px/1.4 var(--mono); color: var(--fg); }
+.site .trg-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 599px) {
+  .site .trg-row { grid-template-columns: minmax(0, 1fr); }
+  .site .trg-field input[type='text'], .site .trg-field select { padding-left: 10px; padding-right: 10px; }
+}
+/* Under 360px two columns cannot hold "a percentage": one pair under the other. */
+@media (max-width: 359px) { .site .trg-controls { grid-template-columns: minmax(0, 1fr); } }
+.site .trg-field { display: grid; gap: 6px; align-content: start; min-width: 0; }
+.site .trg-field > span:first-child,
+.site .trg-for > span { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .trg-height { grid-column: 1 / -1; max-width: 360px; }
+.site .trg-field input[type='text'],
+.site .trg-field select,
+.site .trg-for select {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  min-width: 0;
+  padding: 8px 12px;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  font: 400 13px/1.3 var(--mono);
+  color: var(--fg);
+}
+.site .trg-field select, .site .trg-for select { cursor: pointer; }
+.site .trg-field input[type='text']:focus-visible,
+.site .trg-field select:focus-visible, .site .trg-field select:hover,
+.site .trg-for select:focus-visible, .site .trg-for select:hover { border-color: var(--fg); outline: 0; }
+.site .trg option { background: var(--bg); color: var(--fg); }
+.site .trg input[type='range'] { width: 100%; accent-color: var(--fg); }
+/* globals.css gives every range `outline: none`, which outranks :focus-visible. */
+.site .trg input[type='range']:focus-visible { outline: 1px solid var(--fg); outline-offset: 4px; }
+
+.site .trg-seg { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); border: 1px solid var(--line-2); }
+.site .trg-seg button {
+  padding: 7px 6px;
+  border: 0;
+  border-left: 1px solid var(--line-2);
+  background: transparent;
+  font: 500 11.5px/1.2 var(--mono);
+  color: var(--fg-2);
+  cursor: pointer;
+}
+.site .trg-seg button:first-child { border-left: 0; }
+.site .trg-seg button[aria-checked='true'] { background: var(--fg); color: var(--bg); }
+.site .trg-seg button:focus-visible { outline: 1px solid var(--fg); outline-offset: -3px; }
+
+.site .trg-notes {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 2px 0 2px 12px;
+  border-left: 1px solid var(--fg-3);
+  list-style: none;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--fg-2);
+}
+.site .trg-notes li:first-child { font: 500 11.5px/1.5 var(--mono); color: var(--fg); }
+
+.site .trg-words {
+  margin: 0;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--fg-2);
+}
+
+/* ── The preview viewport and the worked numbers ─────────────────────── */
+
+.site .trg-view,
+.site .trg-transport,
+.site .trg-read { min-width: 0; background: var(--panel); }
+.site .trg-view { display: grid; gap: 8px; align-content: start; padding: 16px 16px 12px; }
+@media (min-width: 760px) {
+  .site .trg-view { padding-right: 12px; }
+  .site .trg-read { padding-left: 12px; }
+}
+/* Pinned on a phone tall enough to keep room for the controls under it. */
+@media (max-width: 759px) and (min-height: 640px) {
+  .site .trg-view {
+    position: sticky;
+    top: calc(var(--nav-h) + 8px);
+    z-index: 2;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--line);
+  }
+}
+.site .trg-frame { position: relative; border: 1px solid var(--line-2); background: var(--bg); }
+/* No border or padding on the box itself: its top edge is the viewport's top
+   for the library, and clientHeight is the height the percentages are of. */
+.site .trg-scroller {
+  position: relative;
+  height: 300px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.site .trg-scroller:focus-visible { outline: 1px solid var(--fg); outline-offset: 3px; }
+/* Shorter on a phone, so the pinned preview leaves room; the percentages are of
+   whatever height the box has, measured. */
+@media (max-width: 759px) { .site .trg-scroller { height: 240px; } }
+
+.site .trg-el {
+  position: relative;
+  display: grid;
+  place-items: center;
+  margin: 0 24px 0 48px;
+  border: 1px solid var(--line-2);
+  background: var(--panel);
+  color: var(--fg);
+}
+.site .trg-svg { display: block; width: 80%; max-width: 220px; max-height: 70%; height: auto; overflow: visible; }
+.site .trg-el-k { position: absolute; right: 6px; bottom: 5px; font: 500 10px/1 var(--mono); color: var(--fg-3); }
+
+/* The element's start and end edges. */
+.site .trg-edge { position: absolute; left: -1px; right: -1px; height: 0; margin-top: -1px; border-top: 2px solid var(--fg); }
+.site .trg-edge.is-end { border-top-style: dashed; }
+.site .trg-edge i {
+  position: absolute;
+  left: 6px;
+  top: 5px;
+  padding: 0 2px;
+  background: var(--panel);
+  font: 500 10px/1 var(--mono);
+  font-style: normal;
+  color: var(--fg);
+  white-space: nowrap;
+}
+.site .trg-edge.is-bottom i { top: auto; bottom: 5px; }
+
+/* Lines across the viewport: they stay put while the content scrolls. */
+.site .trg-overlay { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.site .trg-tick {
+  position: absolute;
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transform: translateY(-50%);
+  font: 500 9px/1 var(--mono);
+  color: var(--fg-3);
+}
+.site .trg-tick::before { content: ''; width: 8px; border-top: 1px solid var(--line-2); }
+.site .trg-line { position: absolute; left: 0; right: 0; height: 0; border-top: 1px solid var(--fg); }
+.site .trg-line.is-end { border-top-style: dashed; border-top-color: var(--fg-2); }
+.site .trg-line i {
+  position: absolute;
+  right: 20px;
+  bottom: 3px;
+  padding: 1px 4px;
+  background: var(--bg);
+  font: 500 10px/1 var(--mono);
+  font-style: normal;
+  color: var(--fg);
+  white-space: nowrap;
+}
+.site .trg-line.is-end i { right: auto; left: 48px; color: var(--fg-2); }
+.site .trg-line.is-low i { bottom: auto; top: 3px; }
+
+.site .trg-read { display: grid; gap: 20px; align-content: start; padding: 16px; }
+.site .trg-prog { display: grid; gap: 8px; }
+.site .trg-num {
+  font-size: clamp(40px, 5vw, 56px);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  color: var(--fg);
+}
+.site .trg-bar { display: block; height: 8px; border: 1px solid var(--line-2); background: var(--bg); overflow: hidden; }
+.site .trg-bar > span { display: block; height: 100%; background: var(--fg); transform-origin: 0 50%; }
+.site .trg-status { margin: 0; font-size: 13px; line-height: 1.5; color: var(--fg-2); }
+
+/* Scroll positions, 0 to the end of the box: the window is the thick part. */
+.site .trg-track { display: grid; gap: 4px; }
+.site .trg-rail { position: relative; height: 52px; margin: 0 2px; }
+.site .trg-rail::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; border-top: 1px solid var(--line-2); }
+.site .trg-win { position: absolute; top: calc(50% - 3px); height: 6px; background: var(--fg-3); }
+.site .trg-mark { position: absolute; top: calc(50% - 8px); height: 16px; border-left: 1px solid var(--fg); }
+.site .trg-mark.is-end { border-left-style: dashed; }
+.site .trg-mark i {
+  position: absolute;
+  left: 0;
+  bottom: 19px;
+  transform: translateX(-50%);
+  font: 500 10px/1 var(--mono);
+  font-style: normal;
+  color: var(--fg-2);
+  white-space: nowrap;
+}
+.site .trg-mark.is-end i { bottom: auto; top: 19px; }
+.site .trg-mark.is-l i { transform: none; }
+.site .trg-mark.is-r i { transform: translateX(-100%); }
+.site .trg-now { position: absolute; top: calc(50% - 12px); height: 24px; margin-left: -1px; border-left: 2px solid var(--accent); }
+
+.site .trg-math { margin: 0; border-top: 1px solid var(--line-2); }
+.site .trg-math > div {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+}
+.site .trg-math dt { font: 500 10px/1.9 var(--mono); color: var(--fg-3); }
+.site .trg-math dd {
+  margin: 0;
+  font: 400 12.5px/1.6 var(--mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--fg);
+  overflow-wrap: anywhere;
+}
+.site .trg-math small { display: block; font-size: 11px; color: var(--fg-3); }
+
+.site .trg-transport {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: start;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 16px 16px;
+}
+@media (min-width: 760px) { .site .trg-transport { padding-right: 12px; } }
+@media (max-width: 759px) { .site .trg-transport { border-bottom: 1px solid var(--line); } }
+.site .trg-scrub { display: grid; gap: 4px; flex: 1 1 200px; min-width: 0; }
+.site .trg-scrub span { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .trg-warn,
+.site .trg-rm {
+  margin: 0;
+  padding: 10px 16px;
+  border-top: 1px solid var(--line);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--fg-2);
+}
+.site .trg-warn { border-left: 2px solid var(--fg); }
+
+/* ── The code ─────────────────────────────────────────────────────────── */
+
+.site .trg-code { display: grid; min-width: 0; }
+.site .trg-for { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-bottom: 16px; }
+.site .trg-for select { width: auto; padding: 7px 12px; }
+.site .trg-tabs { display: flex; }
+.site .trg-tab {
+  padding: 8px 14px;
+  border: 1px solid var(--line-2);
+  border-bottom: 0;
+  border-left-width: 0;
+  background: transparent;
+  font: 500 11.5px/1 var(--mono);
+  color: var(--fg-2);
+  cursor: pointer;
+}
+.site .trg-tab:first-child { border-left-width: 1px; }
+.site .trg-tab[aria-selected='true'] { color: var(--fg); background: var(--panel); }
+.site .trg-tab:focus-visible { outline: 1px solid var(--fg); outline-offset: -3px; }
+.site .trg-code .code-box { margin-top: 0; }
+.site .trg-hint { margin: 8px 0 0; font-size: 12.5px; line-height: 1.5; color: var(--fg-3); }
+
+/* ── Reference tables on the page ────────────────────────────────────── */
+
+.site .trg-scroll { overflow-x: auto; }
+.site .trg-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.site .trg-table th,
+.site .trg-table td { padding: 10px 12px 10px 0; border-top: 1px solid var(--line); text-align: left; vertical-align: top; }
+.site .trg-table th { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .trg-table td { line-height: 1.6; color: var(--fg-2); }
+.site .trg-table td.is-code { font: 400 12.5px/1.6 var(--mono); color: var(--fg); white-space: nowrap; }
+.site .trg-table th.is-key { min-width: 120px; font: 400 12.5px/1.6 var(--mono); color: var(--fg); }
+
+/* ── Fig. 1: the anatomy of 'top 85%' ─────────────────────────────────── */
+
+.site .trgf svg { width: 100%; height: auto; }
+.site .trgf-frame { color: var(--fg-2); }
+.site .trgf-tick, .site .trgf-dim, .site .trgf-end, .site .trgf-el-out { color: var(--fg-3); }
+.site .trgf-el, .site .trgf-start { color: var(--fg); }
+.site .trgf-edge { color: var(--fg); stroke-width: 3; }
+.site .trgf-dot { fill: var(--fg); }
+.site .trgf-code { font: 500 12.5px var(--mono); fill: var(--fg); }
+.site .trgf-l { font: 500 11.5px var(--mono); fill: var(--fg); }
+.site .trgf-k, .site .trgf-axis, .site .trgf-s { font: 500 10.5px var(--mono); fill: var(--fg-3); }
+.site .trgf-n { font: 500 10.5px var(--mono); fill: var(--fg-2); }
+/* The figure scales with its column; on a phone that is about two thirds, so
+   the labels are drawn larger to land near 10px on screen. */
+@media (max-width: 560px) {
+  .site .trgf-code { font-size: 16px; }
+  .site .trgf-l { font-size: 15px; }
+  .site .trgf-k, .site .trgf-axis, .site .trgf-s, .site .trgf-n { font-size: 14px; }
+}

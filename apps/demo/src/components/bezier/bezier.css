@@ -1,0 +1,261 @@
+/* ── The cubic-bezier generator (/cubic-bezier-generator) ────────────────
+   One hairline panel: where to start from, then the editor beside the value,
+   the numbers and the race; the transport; what each curve does and the
+   browser check. Then the code. Mono labels, square corners, and one colour
+   of its own: the accent marks the curve wherever it leaves 0–1. */
+
+.site .bz { display: grid; gap: 32px; }
+.site .bz [hidden] { display: none !important; }
+.site .bz-panel { border: 1px solid var(--line-2); min-width: 0; }
+
+.site .bz-controls { display: grid; gap: 16px; padding: 16px; border-bottom: 1px solid var(--line); }
+.site .bz-field { display: grid; gap: 8px; align-content: start; min-width: 0; }
+.site .bz-label { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+
+.site .bz-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.site .bz-chips button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 10px 6px 8px;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  font: 500 11.5px/1.2 var(--mono);
+  color: var(--fg-2);
+  cursor: pointer;
+}
+.site .bz-chips button:hover { color: var(--fg); border-color: var(--fg-3); }
+.site .bz-chips button[aria-pressed='true'] { background: var(--fg); border-color: var(--fg); color: var(--bg); }
+.site .bz-chips button:focus-visible { outline: 1px solid var(--fg); outline-offset: 2px; }
+.site .bz-chips { align-items: center; }
+.site .bz-row-k { min-width: 7.5em; font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+@media (max-width: 559px) { .site .bz-row-k { min-width: 0; flex-basis: 100%; } }
+.site .bz-mini { width: 14px; height: 14px; flex: none; overflow: visible; }
+.site .bz-mini path { fill: none; stroke: currentColor; stroke-width: 1.25; }
+
+.site .bz-selects {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+.site .bz-select {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  padding: 8px 28px 8px 12px;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  /* The arrow, drawn in the text colour so it follows the theme. */
+  background-image: linear-gradient(45deg, transparent 50%, var(--fg-2) 50%), linear-gradient(135deg, var(--fg-2) 50%, transparent 50%);
+  background-position: calc(100% - 15px) 52%, calc(100% - 10px) 52%;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+  font: 400 13px/1.3 var(--mono);
+  color: var(--fg);
+  cursor: pointer;
+}
+.site .bz-select:hover { border-color: var(--fg); }
+.site .bz-select:focus-visible { border-color: var(--fg); outline: 1px solid var(--fg); outline-offset: 2px; }
+.site .bz-select option, .site .bz-select optgroup { background: var(--bg); color: var(--fg); }
+
+.site .bz-btn {
+  padding: 8px 14px;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  font: 500 12px/1 var(--mono);
+  color: var(--fg);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.site .bz-btn:hover { border-color: var(--fg); }
+.site .bz-btn:focus-visible { border-color: var(--fg); outline: 1px solid var(--fg); outline-offset: 2px; }
+.site .bz-selects .bz-btn { justify-self: start; padding: 9px 14px; }
+
+/* The editor beside the value, the numbers and the race; stacked on a phone. */
+.site .bz-stage { display: grid; gap: 24px; padding: 16px; background: var(--panel); }
+@media (min-width: 820px) {
+  .site .bz-stage { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; gap: 32px; padding: 24px; }
+}
+
+.site .bz-editor { display: grid; gap: 8px; min-width: 0; max-width: 420px; width: 100%; justify-self: center; }
+.site .bz-editor svg { display: block; width: 100%; height: auto; overflow: visible; user-select: none; -webkit-user-select: none; }
+.site .bz-hint { margin: 0; font-size: 12.5px; line-height: 1.5; color: var(--fg-2); }
+
+.site .bz-bg { fill: var(--bg); }
+.site .bz-g { stroke: var(--line); stroke-width: 1; }
+.site .bz-g1 { stroke: var(--line-2); stroke-width: 1; }
+.site .bz-ax { font: 500 10.5px var(--mono); fill: var(--fg-3); }
+.site .bz-diag { stroke: var(--line-2); stroke-width: 1; stroke-dasharray: 1 3; }
+.site .bz-arm { stroke: var(--fg-2); stroke-width: 1; }
+.site .bz-ca { fill: none; stroke: var(--fg); stroke-width: 2; stroke-linejoin: round; }
+.site .bz-over { fill: none; stroke: currentColor; stroke-width: 2; stroke-linejoin: round; }
+.site .bz-cb { fill: none; stroke: var(--fg-3); stroke-width: 1.25; stroke-dasharray: 5 4; }
+.site .bz-head { stroke: var(--fg-3); stroke-width: 1; stroke-dasharray: 2 3; }
+.site .bz-dot { fill: var(--fg); }
+.site .bz-dot-b { fill: var(--bg); stroke: var(--fg-2); stroke-width: 1.25; }
+.site .bz-end { fill: var(--fg); }
+.site .bz-unit { stroke: var(--fg-3); stroke-width: 1.5; }
+
+/* The handles: HTML over the SVG (see Editor), each a 40px target with the
+   dot drawn in its middle and a ring on focus and while dragging. touch-action:
+   none only here, so a finger on the rest of the editor still scrolls the page. */
+.site .bz-plot { position: relative; }
+.site .bz-h {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  margin: -20px 0 0 -20px;
+  border-radius: 50%;
+  cursor: grab;
+  touch-action: none;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.site .bz-h::before, .site .bz-h::after { content: ''; position: absolute; left: 50%; top: 50%; border-radius: 50%; }
+.site .bz-h::before { width: 13px; height: 13px; margin: -6.5px 0 0 -6.5px; background: var(--bg); border: 2px solid var(--fg); box-sizing: border-box; }
+.site .bz-h::after { width: 25px; height: 25px; margin: -12.5px 0 0 -12.5px; border: 1px solid transparent; box-sizing: border-box; }
+.site .bz-h:hover::after { border-color: var(--line-2); }
+.site .bz-h:focus-visible::after, .site .bz-h.is-active::after { border-color: var(--fg); }
+.site .bz-h.is-active { cursor: grabbing; }
+.site .bz-h-k { font: 600 11px var(--mono); fill: var(--fg); pointer-events: none; }
+
+.site .bz-side { display: grid; gap: 16px; align-content: start; min-width: 0; }
+.site .bz-value { display: grid; gap: 6px; min-width: 0; }
+.site .bz-value-h { display: flex; align-items: end; justify-content: space-between; gap: 12px; }
+.site .bz-copy { padding: 5px 10px; font-size: 11px; }
+.site .bz-text {
+  width: 100%;
+  min-width: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: var(--bg);
+  font: 500 13px/1.3 var(--mono);
+  color: var(--fg);
+}
+.site .bz-text:focus-visible { border-color: var(--fg); outline: 1px solid var(--fg); outline-offset: 2px; }
+.site .bz-text[aria-invalid='true'] { border-color: var(--fg-2); border-style: dashed; }
+.site .bz-msg { margin: 0; min-height: 0; font-size: 12.5px; line-height: 1.5; color: var(--fg-2); }
+.site .bz-msg:empty { display: none; }
+
+.site .bz-nums-k { margin: 0 0 -8px; }
+.site .bz-nums { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; align-items: end; }
+.site .bz-num { display: grid; gap: 4px; min-width: 0; }
+.site .bz-num input {
+  width: 100%;
+  min-width: 0;
+  padding: 7px 6px;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: var(--bg);
+  font: 500 13px/1.3 var(--mono);
+  color: var(--fg);
+  font-variant-numeric: tabular-nums;
+}
+.site .bz-num input:focus-visible { border-color: var(--fg); outline: 1px solid var(--fg); outline-offset: 2px; }
+@media (max-width: 479px) {
+  .site .bz-nums { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.site .bz-race { display: grid; gap: 14px; padding-top: 16px; border-top: 1px solid var(--line); min-width: 0; }
+.site .bz-lane, .site .bz-draw-row { display: grid; gap: 6px; min-width: 0; }
+.site .bz-lane svg, .site .bz-draw svg { display: block; width: 100%; height: auto; overflow: visible; }
+.site .bz-row-h { display: flex; justify-content: space-between; gap: 12px; margin: 0; font: 500 11px/1.4 var(--mono); color: var(--fg-2); }
+.site .bz-row-h span:first-child { min-width: 0; overflow-wrap: anywhere; }
+.site .bz-row-h span:last-child { color: var(--fg); font-variant-numeric: tabular-nums; }
+.site .bz-draw { color: var(--fg); }
+.site .bz-pencil { fill: none; stroke: var(--line-2); stroke-width: 1; stroke-dasharray: 3 4; }
+.site .bz-line { fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: butt; }
+
+.site .bz-transport {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--line);
+}
+.site .bz-scrub { display: grid; gap: 4px; flex: 1 1 220px; min-width: 0; }
+.site .bz-scrub span { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .bz input[type='range'] { width: 100%; margin: 0; accent-color: var(--fg); }
+/* globals.css takes the outline off every range input; give the keyboard one back. */
+.site .bz input[type='range']:focus-visible { outline: 1px solid var(--fg); outline-offset: 6px; }
+.site .bz-read { margin: 0; font: 500 12px/1.4 var(--mono); color: var(--fg); font-variant-numeric: tabular-nums; }
+
+.site .bz-stats { display: grid; gap: 6px; margin: 0; padding: 12px 16px; border-top: 1px solid var(--line); list-style: none; }
+.site .bz-stats li { font: 400 12px/1.6 var(--mono); color: var(--fg-2); overflow-wrap: anywhere; }
+.site .bz-stats b { font-weight: 500; color: var(--fg); }
+.site .bz-probe { position: absolute; width: 0; height: 0; overflow: hidden; }
+.site .bz-rm { display: none; margin: 0; padding: 12px 16px; border-top: 1px solid var(--line); font-size: 13px; line-height: 1.6; color: var(--fg-2); }
+@media (prefers-reduced-motion: reduce) { .site .bz-rm { display: block; } }
+
+/* The code. */
+.site .bz-code { display: grid; min-width: 0; }
+.site .bz-tabs { display: flex; flex-wrap: wrap; }
+.site .bz-tab {
+  padding: 8px 14px;
+  border: 1px solid var(--line-2);
+  border-bottom: 0;
+  border-left-width: 0;
+  border-radius: 0;
+  background: transparent;
+  font: 500 11.5px/1 var(--mono);
+  color: var(--fg-2);
+  cursor: pointer;
+}
+.site .bz-tab:first-child { border-left-width: 1px; }
+.site .bz-tab[aria-selected='true'] { color: var(--fg); background: var(--panel); }
+.site .bz-tab:focus-visible { outline: 1px solid var(--fg); outline-offset: -3px; }
+.site .bz-code .code-box { margin-top: 0; }
+
+/* Reference tables. */
+.site .stk-p.bz-after { margin-top: 28px; }
+.site .bz-scroll { overflow-x: auto; }
+.site .bz-scroll:focus-visible { outline: 1px solid var(--fg); outline-offset: 2px; }
+.site .bz-table { width: 100%; min-width: 560px; border-collapse: collapse; font-size: 13.5px; }
+.site .bz-table th, .site .bz-table td { padding: 9px 12px 9px 0; border-top: 1px solid var(--line); text-align: left; vertical-align: top; }
+.site .bz-table th { font: 500 10px/1.4 var(--mono); color: var(--fg-3); white-space: nowrap; }
+.site .bz-table td { color: var(--fg-2); line-height: 1.6; }
+.site .bz-table td.is-code { font: 400 12.5px/1.6 var(--mono); color: var(--fg); white-space: nowrap; }
+.site .bz-table tr.is-fam td { padding-top: 16px; font: 500 10px/1.4 var(--mono); color: var(--fg-3); border-top-color: var(--line-2); }
+/* On a phone each row is a short card: its cells one under the other, each
+   with its column's name, so nothing scrolls sideways. */
+@media (max-width: 559px) {
+  .site .bz-table.is-stack { min-width: 0; }
+  .site .bz-table.is-stack thead { display: none; }
+  .site .bz-table.is-stack tr { display: block; padding: 8px 0; border-top: 1px solid var(--line); }
+  .site .bz-table.is-stack tr.is-fam { padding: 16px 0 4px; border-top-color: var(--line-2); }
+  .site .bz-table.is-stack td { display: block; padding: 2px 0; border-top: 0; }
+  .site .bz-table.is-stack td.is-code { white-space: normal; overflow-wrap: anywhere; }
+  .site .bz-table.is-stack td[data-k]::before { content: attr(data-k); margin-right: 8px; font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+}
+
+/* Fig. 1 — the anatomy of a cubic Bézier. Its viewBox is 440 wide, so on a
+   phone the text is set larger to land near the 10–11px of the other figures. */
+.site .bzf svg { display: block; width: 100%; height: auto; overflow: visible; }
+.site .bzf-g { stroke: var(--line); stroke-width: 1; }
+.site .bzf-g1 { stroke: var(--line-2); stroke-width: 1; stroke-dasharray: 3 3; }
+.site .bzf-axis { stroke: var(--fg-3); stroke-width: 1; fill: none; }
+.site .bzf-arm { stroke: var(--fg-2); stroke-width: 1.25; }
+.site .bzf-pencil { stroke: var(--fg-3); stroke-width: 1; stroke-dasharray: 3 3; fill: none; }
+.site .bzf-pdot { fill: var(--fg-3); }
+.site .bzf-curve { fill: none; stroke: var(--fg); stroke-width: 2.25; stroke-linejoin: round; }
+.site .bzf-proj { stroke: var(--fg-2); stroke-width: 1; stroke-dasharray: 2 3; }
+.site .bzf-end { fill: var(--fg); }
+.site .bzf-h { fill: var(--bg); stroke: var(--fg); stroke-width: 2; }
+.site .bzf-b { fill: var(--fg); }
+.site .bzf-k { font: 600 12px var(--mono); fill: var(--fg); }
+.site .bzf-n { font: 500 10.5px var(--mono); fill: var(--fg-2); }
+.site .bzf-ax { font: 500 10.5px var(--mono); fill: var(--fg-3); }
+@media (max-width: 559px) {
+  .site .bzf-k { font-size: 13.5px; }
+  .site .bzf-n, .site .bzf-ax { font-size: 12.5px; }
+}
+
+/* Leaving 0–1, the tool's one accent. */
+.site .bz-over { color: var(--accent); }
