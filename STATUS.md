@@ -215,6 +215,12 @@ at all.
 
 - [x] `/blog/reduced-motion-scroll-animations`: what `prefers-reduced-motion` should do per effect, the library's behaviour per engine (checked against the source and its reduced-motion tests), live listening, a Playwright test; passes axe, the SEO check and the sweep (66 pages)
 
+### Search Console read and the size figures (2026-11-11)
+
+- [x] Search Console (3 months to 2026-11-09): 133 clicks, 1.89K impressions, position 10.4; impressions halved the week of 2026-11-01 (the site-wide redesign); 21 indexed, 42 "Discovered – not indexed", 8 external links
+- [x] Homepage title and description agree on the main-entry size; React, Next.js, pen drawing and `llms.txt` read `SELF.gzipKb`; `llms.txt` test counts derived
+- [x] `/vs-gsap` title and description lead with "GSAP alternative" and the measured sizes
+
 ### SEO check and an accessibility post (2026-11-06; pushed in `44e4dfd`)
 
 - [x] `apps/demo/scripts/test-seo.mjs` (`npm run test:seo -w apps/demo`, in CI): every sitemap page's title (≤ 60, unique), description (50–160, unique), canonical, one `<h1>`, `lang`, no `noindex`, OG/Twitter tags with a loading image, JSON-LD that parses, 2+ inbound links — 65 pages, 0 problems after shortening `/examples/line-chart`'s description (175 → 140)

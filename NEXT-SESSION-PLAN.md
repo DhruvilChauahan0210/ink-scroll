@@ -430,7 +430,12 @@ months, 81% to the homepage; `/vs-gsap` at position 11 with 425 impressions.
 3. **Owner:** create the `v2.10.1` GitHub release page by hand (its job lacked
    `contents: write`; from 2.10.2 the workflow creates it).
 4. **Owner, ~2026-11-18:** re-check Search Console for the new titles
-   (`/vs-gsap`, home, React, Next.js) and Page indexing for the 35
+   (`/vs-gsap` again on 2026-11-11, home, React, Next.js). Read on 2026-11-11:
+   impressions halved the week of 2026-11-01, after the site-wide redesign,
+   and position went from ~6 to ~12; 21 indexed, 42 "Discovered – not
+   indexed", 8 external links. Leave ranking pages alone for 2–3 weeks; the
+   lever is links from other sites (awesome lists, newsletter submission
+   forms, library directories) and Page indexing for the 35
    "Discovered – not indexed" pages (sitemap resubmitted 2026-11-04, 64
    discovered); request indexing ~10 a day (the daily quota). Compare CTR on
    `/docs`, `/vs-locomotive-scroll`, `/lenis-scroll-animation` and the

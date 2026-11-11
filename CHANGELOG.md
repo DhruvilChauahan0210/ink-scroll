@@ -22,6 +22,16 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### Site
 
+- **One size figure everywhere, and a `/vs-gsap` title for what people search.**
+  The homepage title said 12 KB (a rounded 11.7) while its description said
+  10.7 KB, typed in by hand before 2.16.0. The homepage, the React and Next.js
+  descriptions, the pen drawing's size label and `llms.txt` (which also had the
+  old test counts, 623 and 195) now read the measured figures from
+  `data/competitors.ts` and `data/facts.ts`. `/vs-gsap` had the most impressions
+  of any inner page in Search Console (219 in three months) and one click; its
+  title is now "GSAP Alternative for Scroll Animation: 11.7 KB vs 47.5 KB",
+  with both numbers derived.
+
 - **New post: Unslopping a site** (`/blog/unslop-ai-looking-ui`). How this site,
   its blocks and its 23 demo sites were checked against heydamir/unslop's 60
   signs of AI-looking UI: the 13 the main site had, each pass and its rule (the

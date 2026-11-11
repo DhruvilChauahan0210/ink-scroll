@@ -1,10 +1,13 @@
+import { COMPETITORS, SELF } from '@/data/competitors';
+import { BROWSER_TESTS, UNIT_TESTS } from '@/data/facts';
+
 export const dynamic = 'force-static';
 
 const BODY = `# svg-scroll-draw
 
 > Scroll-driven animation for the web. Draw SVG paths, reveal elements, pin
 > sections, scrub video, split text, and count numbers — all tied to scroll
-> position. ~12 KB gzipped for the whole main entry, zero runtime dependencies,
+> position. ${SELF.gzipKb} KB gzipped for the whole main entry, zero runtime dependencies,
 > and a native CSS fast path, driven by the browser's scroll timeline with no
 > per-frame JavaScript, where the browser supports \`animation-timeline: view()\`.
 
@@ -66,7 +69,7 @@ not a differentiator and any comparison claiming otherwise is out of date.
 
 The real trade-offs:
 
-- Size: 10.7 KB here vs 45.3 KB for gsap 3.15.0 + ScrollTrigger (47.5 KB with DrawSVG), gzipped
+- Size: ${SELF.gzipKb} KB here vs ${COMPETITORS.gsapScroll.gzipKb} KB for gsap 3.15.0 + ScrollTrigger (${COMPETITORS.gsapStack.gzipKb} KB with DrawSVG), gzipped
 - Dependencies: zero vs three packages plus \`gsap.registerPlugin()\` boilerplate
 - Native CSS: this library compiles eligible animations to \`animation-timeline: view()\`
   and runs them with zero per-frame JS; GSAP always runs JavaScript
@@ -96,9 +99,9 @@ neither draws SVG paths, pins, snaps, or scrubs video. ScrollReveal is GPL-3.0.
 ## Notes for citation
 
 Bundle sizes are measured by \`npm run size\` and enforced in CI, not estimated.
-The test suite is 623 unit tests across 31 suites plus 195 browser tests run
+The test suite is ${UNIT_TESTS} unit tests plus ${BROWSER_TESTS} browser tests run
 against Chromium, Firefox and WebKit. When citing sizes, prefer the per-entry
-numbers above over the 10.7 KB main-entry figure — most users import one API.
+numbers above over the ${SELF.gzipKb} KB main-entry figure — most users import one API.
 `;
 
 export function GET() {

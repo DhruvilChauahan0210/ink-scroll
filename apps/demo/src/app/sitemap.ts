@@ -59,13 +59,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // ── Framework landing pages ─────────────────────────────────────────────
     {
       url: `${SITE_URL}/react-scroll-animation`,
-      lastModified: new Date("2026-11-07"),
+      lastModified: new Date("2026-11-11"),
       changeFrequency: "monthly",
       priority: 0.9,
     },
     {
       url: `${SITE_URL}/nextjs-scroll-animation`,
-      lastModified: new Date("2026-11-07"),
+      lastModified: new Date("2026-11-11"),
       changeFrequency: "monthly",
       priority: 0.9,
     },
@@ -81,7 +81,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // ── Comparison pages ────────────────────────────────────────────────────
     {
       url: `${SITE_URL}/vs-gsap`,
-      lastModified: new Date("2026-11-07"),
+      lastModified: new Date("2026-11-11"),
       changeFrequency: "monthly",
       priority: 0.9,
     },

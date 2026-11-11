@@ -20,8 +20,10 @@ const DRAWSVG_KB = (COMPETITORS.gsapStack.gzipKb - COMPETITORS.gsapScroll.gzipKb
 const SPLITTEXT_KB = COMPETITORS.gsapSplitText.gzipKb.toFixed(1);
 const DELTA_KB = (COMPETITORS.gsapStack.gzipKb - SELF.gzipKb).toFixed(1);
 
-const TITLE = `GSAP ScrollTrigger Alternative: ${Math.round(SELF.gzipKb)} KB, MIT, Native CSS`;
-const DESCRIPTION = `Measured: ${SELF.gzipKb} KB vs ${COMPETITORS.gsapStack.gzipKb} KB for GSAP + ScrollTrigger + DrawSVG. MIT, native CSS fast path. GSAP is free and does more — when to pick each.`;
+// Leads with what searchers type ("gsap alternative", "gsap bundle size"): the page
+// had the most impressions of any inner page and almost no clicks.
+const TITLE = `GSAP Alternative for Scroll Animation: ${SELF.gzipKb} KB vs ${COMPETITORS.gsapStack.gzipKb} KB`;
+const DESCRIPTION = `GSAP + ScrollTrigger + DrawSVG is ${COMPETITORS.gsapStack.gzipKb} KB gzipped; svg-scroll-draw is ${SELF.gzipKb} KB, MIT, with a native CSS path. Side by side, and when to pick GSAP.`;
 
 export const metadata: Metadata = {
   title: seoTitle(TITLE),

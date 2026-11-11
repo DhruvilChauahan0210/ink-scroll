@@ -34,9 +34,10 @@ const syne = Syne({
 
 const SITE_URL = "https://svg-scroll-draw.vercel.app";
 
-const HOME_TITLE = `SVG Scroll Animation Library — ${Math.round(SELF.gzipKb)} KB, MIT, No GSAP`;
+// Both read the measured size, so the title and the description cannot disagree.
+const HOME_TITLE = `SVG Scroll Animation Library — ${SELF.gzipKb} KB, MIT, No GSAP`;
 const HOME_DESCRIPTION =
-  "Draw SVG paths, reveal content, split text and scrub video on scroll. 10.7 KB gzipped, zero dependencies, MIT. React, Next.js, Vue, Svelte or vanilla JS.";
+  `Draw SVG paths, reveal content, split text and scrub video on scroll. ${SELF.gzipKb} KB gzipped, zero dependencies, MIT. React, Next.js, Vue, Svelte or vanilla JS.`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

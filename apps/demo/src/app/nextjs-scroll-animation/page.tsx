@@ -17,7 +17,7 @@ import { ScrollDraw } from 'svg-scroll-draw/react';
 
 const TITLE = 'Next.js Scroll Animation for the App Router, SSR-Safe';
 const DESCRIPTION =
-  "Scroll animations for Next.js: one 'use client' component, SSR-safe, no hydration errors. Reveal, pin, text split, SVG draw. 10.7 KB gzip, MIT, TypeScript.";
+  `Scroll animations for Next.js: one 'use client' component, SSR-safe, no hydration errors. Reveal, pin, text split, SVG draw. ${SELF.gzipKb} KB gzip, MIT, TypeScript.`;
 
 /** The copy-paste answer, right under the fold. */
 const HERO_SNIPPET = `// app/page.tsx — a Server Component, no directive
