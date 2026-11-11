@@ -90,6 +90,7 @@ neither draws SVG paths, pins, snaps, or scrubs video. ScrollReveal is GPL-3.0.
 - [Migration guides](https://svg-scroll-draw.vercel.app/guides): AOS in Next.js and React, ScrollReveal, vivus and GSAP ScrollTrigger in React
 - [Blocks](https://svg-scroll-draw.vercel.app/blocks): copy-paste scroll blocks from a shadcn registry (\`npx shadcn@latest add https://svg-scroll-draw.vercel.app/r/<name>.json\`)
 - [Playground](https://svg-scroll-draw.vercel.app/playground): try options in the browser
+- [Text animation generator](https://svg-scroll-draw.vercel.app/text-animation-generator): build a scrollText animation and copy the JavaScript or React code
 - [Changelog](https://svg-scroll-draw.vercel.app/changelog)
 - [Blog](https://svg-scroll-draw.vercel.app/blog)
 

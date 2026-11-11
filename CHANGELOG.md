@@ -8,6 +8,19 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### Site
 
+- **New tool: text animation generator** (`/text-animation-generator`). From
+  the same Bing research: "text animation" (871), "animated text generator"
+  (374) and "animated text with css/js" (327) searches in three months, led by
+  online tools. Type a line, split it by word, letter or line, pick one of 7
+  starting states, an easing, the stagger and `once`, then watch it: the
+  preview is a scrollText instance driven by `seek()` (Play, or scrub the
+  progress), and "On real scroll" runs the same options from the page's
+  scroll. It writes the JavaScript or React code with only the options that
+  differ from the defaults, and warns when the stagger is too large for the
+  number of pieces (1 / (n − 1), scrollText's own limit). Fig. 1 draws each
+  word's slice of the scroll. Linked from the nav (Resources), `llms.txt` and
+  the sitemap; marked up as a WebApplication with six FAQPage questions.
+
 - **New page: AOS animation examples** (`/aos-animation`). Bing's keyword
   research (2026-11-11, `reports/bing-keywords-2026-11-11.md`) showed 468
   searches in three months for "aos animation", with two small `*.vercel.app`

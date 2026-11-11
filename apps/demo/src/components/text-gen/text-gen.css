@@ -1,0 +1,132 @@
+/* ── The text animation generator (/text-animation-generator) ─────────────
+   One panel: controls, a stage that shows the text big, a transport (play,
+   scrub, piece count); then the code, then the same text on real scroll.
+   Hairlines and mono labels, as the rest of the site. */
+
+.site .tg { display: grid; gap: 32px; }
+.site .tg-panel { border: 1px solid var(--line-2); }
+
+.site .tg-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px 20px;
+  padding: 16px;
+  border-bottom: 1px solid var(--line);
+}
+.site .tg-field { display: grid; gap: 6px; align-content: start; min-width: 0; }
+.site .tg-field.is-wide { grid-column: 1 / -1; }
+.site .tg-field > span { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .tg-field input[type='text'],
+.site .tg-field select {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  min-width: 0;
+  padding: 8px 12px;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  font: 400 13px/1.3 var(--mono);
+  color: var(--fg);
+}
+.site .tg-field select { cursor: pointer; }
+.site .tg-field input[type='text']:focus-visible,
+.site .tg-field select:focus-visible,
+.site .tg-field select:hover { border-color: var(--fg); outline: 0; }
+.site .tg-field option { background: var(--bg); color: var(--fg); }
+.site .tg input[type='range'] { width: 100%; accent-color: var(--fg); }
+
+.site .tg-seg { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); border: 1px solid var(--line-2); }
+.site .tg-seg button {
+  padding: 7px 6px;
+  border: 0;
+  border-left: 1px solid var(--line-2);
+  background: transparent;
+  font: 500 11.5px/1.2 var(--mono);
+  color: var(--fg-2);
+  cursor: pointer;
+}
+.site .tg-seg button:first-child { border-left: 0; }
+.site .tg-seg button[aria-checked='true'] { background: var(--fg); color: var(--bg); }
+.site .tg-seg button:focus-visible { outline: 1px solid var(--fg); outline-offset: -3px; }
+
+.site .tg-stage {
+  display: grid;
+  place-items: center;
+  min-height: clamp(200px, 28vw, 300px);
+  padding: 32px clamp(16px, 4vw, 48px);
+  overflow: hidden;
+  background: var(--panel);
+}
+.site .tg-host { width: 100%; }
+.site .tg-text {
+  margin: 0;
+  font-size: clamp(28px, 4.4vw, 56px);
+  font-weight: 500;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  text-align: center;
+  color: var(--fg);
+  overflow-wrap: anywhere;
+}
+
+.site .tg-transport {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--line);
+}
+.site .tg-btn {
+  padding: 8px 14px;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  font: 500 12px/1 var(--mono);
+  color: var(--fg);
+  cursor: pointer;
+}
+.site .tg-btn:hover, .site .tg-btn:focus-visible { border-color: var(--fg); outline: 0; }
+.site .tg-scrub { display: grid; gap: 4px; flex: 1 1 220px; min-width: 0; }
+.site .tg-scrub span, .site .tg-count { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .tg-count { margin: 0; }
+.site .tg-warn {
+  margin: 0;
+  padding: 10px 16px;
+  border-top: 1px solid var(--line);
+  border-left: 2px solid var(--accent);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--fg-2);
+}
+
+.site .tg-code { display: grid; min-width: 0; }
+.site .tg-tabs { display: flex; gap: 0; }
+.site .tg-tab {
+  padding: 8px 14px;
+  border: 1px solid var(--line-2);
+  border-bottom: 0;
+  border-left-width: 0;
+  background: transparent;
+  font: 500 11.5px/1 var(--mono);
+  color: var(--fg-2);
+  cursor: pointer;
+}
+.site .tg-tab:first-child { border-left-width: 1px; }
+.site .tg-tab[aria-selected='true'] { color: var(--fg); background: var(--panel); }
+.site .tg-tab:focus-visible { outline: 1px solid var(--fg); outline-offset: -3px; }
+.site .tg-code .code-box { margin-top: 0; }
+
+.site .tg-live { display: grid; gap: 16px; padding: clamp(32px, 8vw, 96px) 0; border-top: 1px solid var(--line); }
+.site .tg-live-k { margin: 0; font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .tg-live-host .tg-text { text-align: left; font-size: clamp(32px, 5.2vw, 72px); }
+.site .tg-live-note { margin: 0; max-width: 60ch; font-size: 13px; line-height: 1.6; color: var(--fg-2); }
+
+/* Fig. 1 — the stagger slices. */
+.site .tgf svg { width: 100%; height: auto; }
+.site .tgf-grid { color: var(--line); }
+.site .tgf-track { color: var(--line-2); }
+.site .tgf-slice { color: var(--fg); stroke-width: 3; }
+.site .tgf-word { font: 500 12px var(--mono); fill: var(--fg-2); }
+.site .tgf-axis { font: 500 10px var(--mono); fill: var(--fg-3); }
