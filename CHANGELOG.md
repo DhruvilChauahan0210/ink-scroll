@@ -20,6 +20,16 @@ All notable changes to `svg-scroll-draw` are documented here.
   helped: GitHub keeps one pending run per group and cancels the others. The
   rule's ten cases (the race among them) run in `verify` and CI.
 
+### Docs
+
+- **Both READMEs link every framework guide and comparison.** Under the main
+  links: React, Next.js, Vue, Nuxt, Svelte, Solid, Angular and Astro guides,
+  then the GSAP, Framer Motion, Motion, AOS, Locomotive Scroll, ScrollMagic
+  and Vivus comparisons. npm and GitHub show the README to more people than
+  search sends to the site (2,360 npm downloads the week of 2026-11-03), and
+  most of those pages are not yet crawled. npm shows the package README from
+  the next release.
+
 ### Site
 
 - **`/react-scroll-animation` answers what React developers search for.**

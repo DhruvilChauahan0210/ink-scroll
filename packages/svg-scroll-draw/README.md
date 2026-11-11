@@ -11,6 +11,10 @@
 
 **[Live Demo](https://svg-scroll-draw.vercel.app)** · [npm](https://www.npmjs.com/package/svg-scroll-draw) · [Docs](https://svg-scroll-draw.vercel.app/docs) · [Examples](https://svg-scroll-draw.vercel.app/examples) · [Report a bug](https://github.com/DhruvilChauahan0210/ink-scroll/issues)
 
+**Guides by framework:** [React](https://svg-scroll-draw.vercel.app/react-scroll-animation) · [Next.js](https://svg-scroll-draw.vercel.app/nextjs-scroll-animation) · [Vue](https://svg-scroll-draw.vercel.app/vue-scroll-animation) · [Nuxt](https://svg-scroll-draw.vercel.app/nuxt-scroll-animation) · [Svelte](https://svg-scroll-draw.vercel.app/svelte-scroll-animation) · [Solid](https://svg-scroll-draw.vercel.app/solid-scroll-animation) · [Angular](https://svg-scroll-draw.vercel.app/angular-scroll-animation) · [Astro](https://svg-scroll-draw.vercel.app/astro-scroll-animation)
+
+**Compared with:** [GSAP](https://svg-scroll-draw.vercel.app/vs-gsap) · [Framer Motion](https://svg-scroll-draw.vercel.app/vs-framer-motion) · [Motion](https://svg-scroll-draw.vercel.app/vs-motion) · [AOS](https://svg-scroll-draw.vercel.app/vs-aos) · [Locomotive Scroll](https://svg-scroll-draw.vercel.app/vs-locomotive-scroll) · [ScrollMagic](https://svg-scroll-draw.vercel.app/vs-scrollmagic) · [Vivus](https://svg-scroll-draw.vercel.app/vs-vivus)
+
 **Try it in your browser, no install:** [Vanilla JS on StackBlitz](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/vanilla) · [React on StackBlitz](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/react)
 
 **Using an AI coding agent?** Give it the [svg-scroll-draw skill](https://github.com/DhruvilChauahan0210/ink-scroll/blob/main/skills/svg-scroll-draw/SKILL.md) or point it at [llms.txt](https://svg-scroll-draw.vercel.app/llms.txt).

@@ -10,6 +10,10 @@
 
 **[Live Demo](https://svg-scroll-draw.vercel.app)** · **[23 Examples](https://svg-scroll-draw.vercel.app/examples)** · **[Blocks](https://svg-scroll-draw.vercel.app/blocks)** · **[Docs](https://svg-scroll-draw.vercel.app/docs)** · **[⚡ Playground](https://svg-scroll-draw.vercel.app/playground)** · [npm](https://www.npmjs.com/package/svg-scroll-draw)
 
+**Guides by framework:** [React](https://svg-scroll-draw.vercel.app/react-scroll-animation) · [Next.js](https://svg-scroll-draw.vercel.app/nextjs-scroll-animation) · [Vue](https://svg-scroll-draw.vercel.app/vue-scroll-animation) · [Nuxt](https://svg-scroll-draw.vercel.app/nuxt-scroll-animation) · [Svelte](https://svg-scroll-draw.vercel.app/svelte-scroll-animation) · [Solid](https://svg-scroll-draw.vercel.app/solid-scroll-animation) · [Angular](https://svg-scroll-draw.vercel.app/angular-scroll-animation) · [Astro](https://svg-scroll-draw.vercel.app/astro-scroll-animation)
+
+**Compared with:** [GSAP](https://svg-scroll-draw.vercel.app/vs-gsap) · [Framer Motion](https://svg-scroll-draw.vercel.app/vs-framer-motion) · [Motion](https://svg-scroll-draw.vercel.app/vs-motion) · [AOS](https://svg-scroll-draw.vercel.app/vs-aos) · [Locomotive Scroll](https://svg-scroll-draw.vercel.app/vs-locomotive-scroll) · [ScrollMagic](https://svg-scroll-draw.vercel.app/vs-scrollmagic) · [Vivus](https://svg-scroll-draw.vercel.app/vs-vivus)
+
 ![svg-scroll-draw demo](https://raw.githubusercontent.com/DhruvilChauahan0210/ink-scroll/main/demo.gif)
 
 **Try it in your browser, no install:** [Vanilla JS on StackBlitz](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/vanilla) · [React on StackBlitz](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/react)
