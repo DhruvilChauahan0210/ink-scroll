@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import '@/components/stack/stack.css';
 import Link from 'next/link';
 import { seoTitle } from '../_lib/seo';
-import { SELF } from '@/data/competitors';
+import { COMPETITORS, SELF, provenance } from '@/data/competitors';
 import { UNIT_TESTS } from '@/data/facts';
 import { SiteShell } from '@/components/site/SiteShell';
 import { jsonLd, SITE_URL } from '@/lib/json-ld';
@@ -10,6 +10,7 @@ import { CodeBox } from '@/components/site/CodeBox';
 import { StepRail } from '@/components/site/StepRail';
 import { CopyCommand } from '@/components/home/CopyCommand';
 import { PageMap } from '@/components/stack/PageMap';
+import { SizeBars } from '@/components/stack/SizeBars';
 import { C, Sec, Toc, pad } from '@/components/stack/parts';
 
 const TITLE = `React Scroll Animation: Components & Hooks, ${SELF.gzipKb} KB`;
@@ -211,17 +212,70 @@ export default function Page() {
   );
 }`;
 
+/** The libraries React developers weigh this against, measured the same way (`data/competitors.ts`). */
+const CMP = [
+  {
+    name: 'GSAP + ScrollTrigger', size: COMPETITORS.gsapScroll.gzipKb, api: 'useGSAP hook (@gsap/react)',
+    note: 'Free since 2025 and the most capable: sequenced timelines for anything. Pick it when the page is one long choreographed piece.',
+    href: '/vs-gsap',
+  },
+  {
+    name: 'Framer Motion', size: COMPETITORS.framerMotion.gzipKb, api: 'useScroll, useTransform, motion.*',
+    note: 'React-only, and also does layout, gesture and exit animation. Pick it when you already use it for those.',
+    href: '/vs-framer-motion',
+  },
+  {
+    name: 'AOS', size: COMPETITORS.aos.gzipKb, api: 'none: data attributes + AOS.init()',
+    note: `Smaller, but reveal-on-scroll only, and last published ${COMPETITORS.aos.lastPublish?.slice(0, 4)}. Pick it for fades on a simple page.`,
+    href: '/vs-aos',
+  },
+  {
+    name: 'svg-scroll-draw', size: SELF.gzipKb, api: 'components + hooks',
+    note: 'Scroll-tied drawing, reveals, pinning, text and video, on CSS scroll timelines where supported. Also Vue, Svelte, Solid, Angular.',
+    href: '/docs', highlight: true,
+  },
+];
+
+/** Asked about React scroll animation; answered once, here and in the page's FAQPage data. */
+const FAQ: { q: string; a: string }[] = [
+  {
+    q: 'What is the best scroll animation library for React?',
+    a: 'It depends on the page. GSAP with ScrollTrigger handles long choreographed timelines best; Framer Motion fits if you already use it for layout and gestures; AOS covers simple fade-ins. svg-scroll-draw covers scroll-tied drawing, reveals, pinning, split text and video scrubbing in one small package, and hands the work to the browser\'s CSS scroll timeline where it can.',
+  },
+  {
+    q: 'How do I animate an element when it scrolls into view in React?',
+    a: 'Wrap it in <ScrollAnimate> with the properties to animate and once to play it a single time, as in the first example on this page. For many elements at once, call scrollReveal with a selector inside useEffect and return its destroy() for cleanup.',
+  },
+  {
+    q: 'Can I do scroll animations in React without a library?',
+    a: "Yes. An IntersectionObserver that adds a class covers fade-ins, and CSS animation-timeline: view() ties an animation to scroll in browsers that support it. A library earns its place when you need a fallback for the browsers that don't, scrubbing back and forth, pinning, SVG path lengths or cleanup across route changes.",
+  },
+  {
+    q: 'Is svg-scroll-draw a Framer Motion alternative?',
+    a: 'For scroll-driven effects, yes, at a fraction of the size. It does not replace Framer Motion\'s layout animations, gestures or exit animations, so keep Framer Motion if a page relies on those.',
+  },
+  {
+    q: 'Does it work with React Server Components and Next.js?',
+    a: "Yes. The components in svg-scroll-draw/react ship with 'use client', so a Server Component can render them directly; only function options such as onProgress need a client file of your own. On the server every call is a no-op, so rendering never touches window.",
+  },
+  {
+    q: 'How do I clean up scroll animations in React?',
+    a: 'The components clean up when they unmount. The plain functions return an instance: call them inside useEffect and return instance.destroy(), so nothing keeps listening after the component is gone.',
+  },
+];
+
 const TOC = [
   { id: 'answer', label: 'The answer' },
   { id: 'quick-start', label: `Quick start · ${QUICK_START.length}` },
   { id: 'every-api', label: `Every React API · ${APIS.length}` },
   { id: 'app-router', label: 'Next.js App Router' },
+  { id: 'which-library', label: 'Which library to pick' },
+  { id: 'faq', label: `Questions · ${FAQ.length}` },
   { id: 'drop-in', label: 'Drop it in' },
 ];
 
 /** What this page is, for search engines: a technical article about the library. */
-const JSON_LD = {
-  '@context': 'https://schema.org',
+const ARTICLE = {
   '@type': 'TechArticle',
   headline: TITLE,
   description: DESCRIPTION,
@@ -230,6 +284,16 @@ const JSON_LD = {
   publisher: { '@type': 'Organization', name: 'svg-scroll-draw', url: SITE_URL },
   about: { '@id': `${SITE_URL}/#software` },
   mainEntityOfPage: { '@type': 'WebPage', '@id': `${SITE_URL}/react-scroll-animation` },
+};
+const JSON_LD = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    ARTICLE,
+    {
+      '@type': 'FAQPage',
+      mainEntity: FAQ.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+    },
+  ],
 };
 
 export default function ReactScrollAnimationPage() {
@@ -327,8 +391,51 @@ export default function ReactScrollAnimationPage() {
               </p>
             </Sec>
 
-            {/* ── 05 Drop it in ─────────────────────────────── */}
-            <Sec n={5} k="Drop it in" id="drop-in" title="Drop-in for React + Next.js">
+            {/* ── 05 Which library ──────────────────────────── */}
+            <Sec n={5} k="measured" id="which-library" title="Which React scroll animation library?">
+              <p className="stk-p">
+                Four libraries cover most React scroll animation. Each is the right pick for some page; the sizes are
+                minified and gzipped, measured the same way for all four.
+              </p>
+              <SizeBars
+                caption="fig. 2 — bundle, minified + gzipped, to one scale"
+                rows={CMP.map((c) => ({ label: c.name, kb: c.size, self: c.highlight }))}
+              />
+              <div className="stk-cmp stk-cmp-2x2">
+                {CMP.map(({ name, size, api, note, href, highlight }) => (
+                  <div key={name} className={`stk-cmp-col${highlight ? ' is-self' : ''}`}>
+                    <p className="stk-cmp-name">{name}</p>
+                    <dl>
+                      <div><dt>Bundle</dt><dd>{size} KB</dd></div>
+                      <div><dt>React API</dt><dd>{api}</dd></div>
+                    </dl>
+                    <p className="stk-cmp-note">{note}</p>
+                    {!highlight && <p className="stk-cmp-note"><Link href={href}>Side by side →</Link></p>}
+                  </div>
+                ))}
+              </div>
+              <p className="stk-src">
+                {provenance([`gsap ${COMPETITORS.gsapScroll.version}`, `framer-motion ${COMPETITORS.framerMotion.version}`, `aos ${COMPETITORS.aos.version}`, `svg-scroll-draw ${SELF.version}`])}
+              </p>
+            </Sec>
+
+            {/* ── 06 Questions ──────────────────────────────── */}
+            <Sec n={6} k={`${FAQ.length} questions`} id="faq" title="Questions React developers ask">
+              <div className="stk-faq">
+                {FAQ.map((f, i) => (
+                  <div key={f.q} className="stk-q">
+                    <span className="stk-q-n">Q{i + 1}</span>
+                    <div>
+                      <h3 className="stk-q-t">{f.q}</h3>
+                      <p className="stk-p">{f.a}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Sec>
+
+            {/* ── 07 Drop it in ─────────────────────────────── */}
+            <Sec n={7} k="Drop it in" id="drop-in" title="Drop-in for React + Next.js">
               <dl className="stk-close-specs">
                 <div><dt>Licence</dt><dd>MIT</dd></div>
                 <div><dt>Dependencies</dt><dd>Zero</dd></div>

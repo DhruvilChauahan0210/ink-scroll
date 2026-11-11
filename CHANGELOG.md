@@ -22,6 +22,13 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### Site
 
+- **`/react-scroll-animation` answers what React developers search for.**
+  Search Console had it at position 44 for "react scroll animation". It now
+  has "Which React scroll animation library?" (GSAP + ScrollTrigger, Framer
+  Motion, AOS and svg-scroll-draw, sizes from `data/competitors.ts`, with when
+  to pick each and links to the side-by-side pages) and six questions marked
+  up as FAQPage. Four comparison columns sit two by two (`.stk-cmp-2x2`).
+
 - **One size figure everywhere, and a `/vs-gsap` title for what people search.**
   The homepage title said 12 KB (a rounded 11.7) while its description said
   10.7 KB, typed in by hand before 2.16.0. The homepage, the React and Next.js

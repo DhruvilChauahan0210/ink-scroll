@@ -434,8 +434,9 @@ months, 81% to the homepage; `/vs-gsap` at position 11 with 425 impressions.
    impressions halved the week of 2026-11-01, after the site-wide redesign,
    and position went from ~6 to ~12; 21 indexed, 42 "Discovered – not
    indexed", 8 external links. Leave ranking pages alone for 2–3 weeks; the
-   lever is links from other sites (awesome lists, newsletter submission
-   forms, library directories) and Page indexing for the 35
+   lever is links from other sites: nine awesome-list PRs opened 2026-11-11
+   (STATUS lists them); newsletter forms still to send. `/react-scroll-animation`
+   got a comparison and FAQ the same day (was position 44) and Page indexing for the 35
    "Discovered – not indexed" pages (sitemap resubmitted 2026-11-04, 64
    discovered); request indexing ~10 a day (the daily quota). Compare CTR on
    `/docs`, `/vs-locomotive-scroll`, `/lenis-scroll-animation` and the

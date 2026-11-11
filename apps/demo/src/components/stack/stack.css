@@ -190,6 +190,11 @@ html:has(.site .stk) { scroll-behavior: smooth; }
   .site .stk-cmp-col { padding: 16px 20px 20px; border-left: 1px solid var(--line); }
   .site .stk-cmp-col:first-child { border-left: 0; padding-left: 0; }
 }
+/* Four libraries: two by two, each row starting flush left. */
+@media (min-width: 760px) {
+  .site .stk-cmp.stk-cmp-2x2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .site .stk-cmp.stk-cmp-2x2 .stk-cmp-col:nth-child(2n + 1) { border-left: 0; padding-left: 0; }
+}
 .site .stk-cmp-col.is-self .stk-cmp-name { color: var(--accent); }
 .site .stk-cmp-name { margin: 0 0 16px; font-size: 18px; font-weight: 500; letter-spacing: 0; color: var(--fg); }
 .site .stk-cmp dl { margin: 0; }
