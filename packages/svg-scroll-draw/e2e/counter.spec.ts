@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { openFixture, collectErrors, scrollToY, read, call, sweep, table } from './helpers';
+import { openFixture, collectErrors, scrollToY, read, call, settle, sweep, table } from './helpers';
 
 /**
  * `scrollCounter` in real browsers.
@@ -8,7 +8,13 @@ import { openFixture, collectErrors, scrollToY, read, call, sweep, table } from 
  * default window is `top 80%` → `top 20%`, so the count runs from y=560 to y=1040.
  */
 
-type Row = { scrollY: number; plain: string; decimals: string; formatted: string };
+type Row = { scrollY: number; plain: string; decimals: string; formatted: string; plainVar: string };
+
+/** The default easing, restated: what #plain (0 → 1000) shows at `y`. */
+const plainAt = (y: number) => {
+  const t = Math.min(1, Math.max(0, (y - 560) / (1040 - 560)));
+  return String(Math.round(1000 * t * (2 - t)));
+};
 
 const START = 560;
 const END = 1040;
@@ -114,4 +120,33 @@ test.describe('scrollCounter', () => {
 
     expect(after.plain, 'a destroyed counter kept counting').toBe(before.plain);
   });
+
+  // It left --scroll-draw-progress behind, where every other engine puts the
+  // element back as it found it.
+  test('destroy() takes --scroll-draw-progress off the element', async ({ page }) => {
+    await openFixture(page, 'counter.html');
+    await scrollToY(page, 800);
+    expect((await read<Row>(page)).plainVar).not.toBe('');
+    await call(page, 'destroyAll');
+    expect((await read<Row>(page)).plainVar).toBe('');
+  });
+
+  // replay() after pause() or seek() cleared `paused` and requested no frame,
+  // so the count stayed at its first value until it left the screen.
+  for (const stop of ['pause', 'seek'] as const) {
+    test(`replay() after ${stop}() counts with the scroll again`, async ({ page }) => {
+      await openFixture(page, 'counter.html');
+      await scrollToY(page, 800);
+      expect((await read<Row>(page)).plain).toBe(plainAt(800));
+
+      await call(page, 'plainCall', stop, 0.2);
+      await call(page, 'plainCall', 'replay');
+      // replay() resets, and its next frame counts from the scroll again: no
+      // scroll has to come first.
+      await settle(page);
+      expect((await read<Row>(page)).plain, 'replay() left the count stopped').toBe(plainAt(800));
+      await scrollToY(page, 900);
+      expect((await read<Row>(page)).plain, 'replay() left the count stopped').toBe(plainAt(900));
+    });
+  }
 });

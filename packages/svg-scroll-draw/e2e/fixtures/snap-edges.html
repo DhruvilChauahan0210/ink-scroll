@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>scrollSnap — where it starts, smooth pages, borders, short pages</title>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  /* ?mode=smooth: a page that asks for smooth scrolling, as many sites do. */
+  html.smooth { scroll-behavior: smooth; }
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+  section { display: flex; align-items: center; justify-content: center; font-size: 40px; }
+  section:nth-child(odd)  { background: #dde; }
+  section:nth-child(even) { background: #eed; }
+  /* ?mode=border: a 600px scrollport inside a 4px border. */
+  #box { height: 608px; overflow-y: auto; border: 4px solid #999; }
+</style>
+</head>
+<body>
+
+<script type="module">
+import { scrollSnap } from '/dist/snap/index.mjs';
+import { publish } from './_probe.mjs';
+
+/*
+ * One page, four setups (viewport 900x800):
+ *   start   four 800px sections, the page already on section 2 (y 1600) when
+ *           scrollSnap is created
+ *   smooth  four 800px sections, html { scroll-behavior: smooth }
+ *   border  three 600px sections in a container with a 4px border: section i
+ *           is at scrollTop i * 600, and the container scrolls to 1200
+ *   short   five 400px sections: the page scrolls to 1200, so the last two
+ *           start past the end of the scroll range
+ */
+const mode = new URLSearchParams(location.search).get('mode');
+const SIZES = { start: [4, 800], smooth: [4, 800], border: [3, 600], short: [5, 400] };
+const [count, size] = SIZES[mode];
+
+if (mode === 'smooth') document.documentElement.classList.add('smooth');
+const host = mode === 'border' ? document.body.appendChild(Object.assign(document.createElement('div'), { id: 'box' })) : document.body;
+const sections = Array.from({ length: count }, (_, i) => {
+  const s = host.appendChild(document.createElement('section'));
+  s.textContent = String(i);
+  s.style.height = `${size}px`;
+  return s;
+});
+const box = mode === 'border' ? host : null;
+const scroll = () => (box ? box.scrollTop : window.scrollY);
+
+if (mode === 'start') window.scrollTo(0, 1600);
+
+const snaps = [];
+const at = [];
+const inst = scrollSnap(sections, {
+  duration: 300,
+  scrollContainer: box ?? undefined,
+  // Where the scroll is when the snap reports itself done.
+  onSnap: (i) => { snaps.push(i); at.push(scroll()); },
+});
+
+publish({
+  read: () => ({ scroll: scroll(), index: inst.getCurrentIndex(), snaps: snaps.slice(), at: at.slice() }),
+  geometry: () => {
+    const el = box ?? document.documentElement;
+    return { max: el.scrollHeight - el.clientHeight, behavior: getComputedStyle(document.documentElement).scrollBehavior };
+  },
+  snapTo: (i) => inst.snapTo(i),
+  scrollTo: (y) => (box ? box.scrollTo({ top: y, behavior: 'instant' }) : window.scrollTo({ top: y, behavior: 'instant' })),
+});
+</script>
+</body>
+</html>

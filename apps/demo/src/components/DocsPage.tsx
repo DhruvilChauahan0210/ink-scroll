@@ -8,7 +8,7 @@ import { CopyButton } from './CopyButton';
 import { CopyCommand } from './home/CopyCommand';
 import { DocsAnatomy } from './DocsAnatomy';
 import { CodeBox } from './site/CodeBox';
-import { SELF } from '@/data/competitors';
+import { SELF, SELF_ENTRIES, COMPETITORS } from '@/data/competitors';
 import { UNIT_TESTS, BROWSER_TESTS } from '@/data/facts';
 
 
@@ -517,7 +517,7 @@ instance.destroy();   // cleanup on unmount`}
                 Animation speed multiplier. Values above 1 complete the draw over a shorter scroll distance. Values below 1 slow it down.
               </Opt>
               <Opt name="easing" type="'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | 'spring' | 'bounce' | 'elastic' | (t: number) => number" defaultVal="'linear'">
-                Easing curve applied to draw progress. Pass a custom function for full control — receives and returns a 0–1 value.
+                Easing curve applied to draw progress. Pass a custom function for full control — it receives progress from 0 to 1 and may return values outside 0–1: overshoot past 1 is how spring and elastic work.
               </Opt>
               <Opt name="direction" type="'forward' | 'reverse'" defaultVal="'forward'">
                 <code className="font-mono text-pitch-black">{"'forward'"}</code> draws the path as you scroll in.{' '}
@@ -1359,7 +1359,8 @@ export function ParallaxSection() {
               <code className="font-mono text-pitch-black">speed ≠ 1</code>,{' '}
               <code className="font-mono text-pitch-black">spring</code> easing, animated color/width/fill,{' '}
               <code className="font-mono text-pitch-black">autoplay</code> and{' '}
-              <code className="font-mono text-pitch-black">debug</code>. In 2.23.2 and earlier those last two
+              <code className="font-mono text-pitch-black">debug</code> in a development build (a production
+              build draws no trigger lines, so since 2.23.4 debug left on there keeps the fast path). In 2.23.2 and earlier those last two
               did not count: a plain <code className="font-mono text-pitch-black">{'{ autoplay: true }'}</code>{' '}
               followed the scroll instead of playing over its duration, and{' '}
               <code className="font-mono text-pitch-black">{'{ debug: true }'}</code> drew no trigger lines,
@@ -2304,12 +2305,14 @@ const snap = scrollSnap('.section', {
   onSnap:    (index) => console.log('snapped to section', index),
 });
 
-// Horizontal snap (e.g. feature carousel)
+// Horizontal snap (e.g. feature carousel). The cards scroll inside .carousel
+// (overflow-x: auto); without scrollContainer it would snap the window sideways.
 scrollSnap('.card', {
-  direction: 'horizontal',
-  duration:  400,
-  easing:    'ease-out',
-  onSnap:    (i) => setActiveCard(i),
+  direction:       'horizontal',
+  scrollContainer: '.carousel',
+  duration:        400,
+  easing:          'ease-out',
+  onSnap:          (i) => setActiveCard(i),
 });
 
 // Programmatic control
@@ -2581,9 +2584,9 @@ scrollVideo('#film', {
   trigger: { start: 'top top', end: 'bottom bottom' },
 });
 
-// React
+// React: preload follows the option, poster goes to the <video> (2.23.4)
 import { ScrollVideo } from 'svg-scroll-draw/react';
-<ScrollVideo src="/hero.mp4" trigger={{ start: 'top top', end: 'bottom top' }} />`}
+<ScrollVideo src="/hero.mp4" poster="/hero.jpg" trigger={{ start: 'top top', end: 'bottom top' }} />`}
             </CodeBlock>
             <p className="text-[12px] text-graphite-border mt-3">
               <strong>Encoding:</strong> put a keyframe every few frames (<code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">-g 3</code>):
@@ -2597,7 +2600,7 @@ import { ScrollVideo } from 'svg-scroll-draw/react';
 
           <DocSection id="scroll-text" tag="v2.1.0" heading="scrollText">
             <p className="text-sm text-graphite-border leading-relaxed mb-2">
-              Split any text element into chars, words, or lines and animate each piece on scroll. A 2.5 KB alternative to GSAP SplitText. SplitText is free and 3.6 KB, but it only splits — animating the pieces needs GSAP core (27.7 KB) too.
+              Split any text element into chars, words, or lines and animate each piece on scroll. A {SELF_ENTRIES.text} KB alternative to GSAP SplitText. SplitText is free and {COMPETITORS.gsapSplitText.gzipKb} KB, but it only splits — animating the pieces needs GSAP core ({COMPETITORS.gsapCore.gzipKb} KB) too.
             </p>
             <CodeBlock file="index.js">
 {`import { scrollText } from 'svg-scroll-draw/text';
@@ -2626,7 +2629,7 @@ import { ScrollText } from 'svg-scroll-draw/react';
 </ScrollText>`}
             </CodeBlock>
             <p className="text-[12px] text-graphite-border mt-3">
-              Accessibility: the original text is preserved in <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">aria-label</code> on the container. All split spans have <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">aria-hidden=&quot;true&quot;</code>. <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">destroy()</code> restores the original HTML.
+              Accessibility: the element keeps one visually hidden copy of its whole text, after the split pieces, so a screen reader reads the sentence once. All split spans have <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">aria-hidden=&quot;true&quot;</code>. No <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">aria-label</code> is added: ARIA does not allow one on a paragraph or a span. <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">destroy()</code> restores the original HTML.
             </p>
           </DocSection>
 

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useId, useMemo, useRef, useState, useSyncExternalStore, type ReactNode, type RefObject } from 'react';
 import { CodeBox } from '@/components/site/CodeBox';
+import { ToolExport } from '@/components/tool-kit/ToolExport';
 import {
   DIRECTIONS, FILLS, GROUPS, JUMPS, LIMITS, TIMING_KINDS, presetOf, presetsIn,
   type Direction, type Fill, type Iterations, type Jump, type TimingKind,
@@ -9,7 +10,7 @@ import {
 import {
   CLASS_RE, INITIAL, MAX_CLASS, OUTPUTS, REVEAL_DEFAULTS, EXIT_TRIGGER, cssCode, cyclePath, cyclePoints, draftOf,
   easingFn, fillsAfter, fillsBefore, firstFrame, jsCode, lastFrame, libMapOf, libPreviewOptions, phaseText,
-  previewCss, rangeOf, reversedAt, scrollCssCode, scrollPreviewCss, settingsFor, shorthandCode, spanOf,
+  previewCss, rangeOf, reversedAt, runnable, scrollCssCode, scrollPreviewCss, settingsFor, shorthandCode, spanOf,
   timingFromDraft,
   type OutputKey, type Settings, type Span, type TimeSettings, type TimingDraft,
 } from './code';
@@ -29,6 +30,10 @@ import {
  * - Under reduced motion nothing plays by itself: the card is held paused and
  *   the slider steps through it; the scroll versions do what they would do
  *   for a reader who asked for less motion.
+ * - Under the code, the export row runs the tab on show outside the site: the
+ *   CSS on a card with a Replay button, or a page to scroll for the scroll
+ *   versions, the JS one with svg-scroll-draw from jsDelivr at `version`
+ *   (SELF.version, passed down by the page).
  */
 
 type Instance = ReturnType<typeof import('svg-scroll-draw').scrollAnimate>;
@@ -55,7 +60,7 @@ const FILE: Record<OutputKey, (s: Settings) => string> = {
   'scroll-js': () => 'main.js',
 };
 
-export function KeyframesGenerator() {
+export function KeyframesGenerator({ version }: { version: string }) {
   const uid = useId().replace(/[^A-Za-z0-9_-]/g, '');
   const scope = `kfg-s-${uid}`;
   const [s, setS] = useState<Settings>(INITIAL);
@@ -206,6 +211,7 @@ export function KeyframesGenerator() {
     if (tab === 'scroll-css') return { code: scrollCssCode(s), why: '' };
     return jsCode(s);
   }, [s, tab]);
+  const run = useMemo(() => runnable(s, tab, version), [s, tab, version]);
 
   // ── The scroll box ────────────────────────────────────────────────────────
 
@@ -414,11 +420,13 @@ export function KeyframesGenerator() {
             <div className="kfg-nomap">
               <p className="kfg-nomap-k">No svg-scroll-draw version</p>
               <p>
-                {out.why} The On scroll · CSS tab plays every frame of it, in browsers with scroll timelines.
+                {out.why} The On scroll · CSS tab plays every frame of it, in browsers with scroll timelines, and
+                the row below runs that version.
               </p>
             </div>
           )}
         </div>
+        <ToolExport title={run.title} filename={run.filename} html={run.html} />
       </div>
 
       <div className="kfg-live">

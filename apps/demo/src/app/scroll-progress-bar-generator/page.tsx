@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import '@/components/stack/stack.css';
 import '@/components/progressbar/progressbar.css';
-import Link from 'next/link';
 import { SELF } from '@/data/competitors';
 import { seoTitle } from '../_lib/seo';
 import { SiteShell } from '@/components/site/SiteShell';
@@ -10,8 +9,10 @@ import { CodeBox } from '@/components/site/CodeBox';
 import { CopyCommand } from '@/components/home/CopyCommand';
 import { ProgressBarGenerator } from '@/components/progressbar/ProgressBarGenerator';
 import { ProgressFigure } from '@/components/progressbar/ProgressFigure';
-import { DEFAULTS, LIB_DEFAULTS, OUTPUTS, SCOPES, STYLES, TRIGGER, css } from '@/components/progressbar/code';
+import { DEFAULTS, LIB_DEFAULTS, OUTPUTS, SCOPES, STYLES, TOOL_SLUG, TRIGGER, css } from '@/components/progressbar/code';
 import { C, Note, Sec, Toc } from '@/components/stack/parts';
+import { ToolNextStep } from '@/components/tool-kit/ToolNextStep';
+import { withSource } from '@/lib/tool-export';
 
 // Searchers ask for "scroll progress bar", "reading progress bar", "scroll
 // indicator css" and "react scroll progress"; the results are snippets and
@@ -39,7 +40,7 @@ const BAR_CSS = `.progress-bar {
   transform: scaleX(var(${LIB_DEFAULTS.variable}, 0));
 }`;
 
-const HOOK_TSX = `'use client';
+const HOOK_TSX = withSource(`'use client';
 
 import { useScrollDrawProgress } from 'svg-scroll-draw/react';
 
@@ -49,16 +50,19 @@ export function ReadingPercent() {
     trigger: { start: '${TRIGGER.start}', end: '${TRIGGER.end}' },
   });
   return <p className="reading-percent">{Math.round(progress * 100)}% read</p>;
-}`;
+}`, TOOL_SLUG, 'tsx');
 
-const CONTAINER_JS = `import { scrollProgress } from 'svg-scroll-draw/progress';
+const CONTAINER_JS = withSource(`import { scrollProgress } from 'svg-scroll-draw/progress';
 
 // A panel that scrolls on its own: measure what is inside it, against it.
 scrollProgress('.panel-content', {
   scrollContainer: '.panel',
   trigger: { start: '${TRIGGER.start}', end: '${TRIGGER.end}' },
   easedVariable: null,
-});`;
+});`, TOOL_SLUG, 'js');
+
+/** What the CSS only tab writes for a bar along the top: a whole progress.css. */
+const TOP_CSS = withSource(css({ ...DEFAULTS }, 'css'), TOOL_SLUG, 'css');
 
 const OPTIONS: { k: string; def: string; d: string }[] = [
   { k: 'variable', def: `'${LIB_DEFAULTS.variable}'`, d: 'The custom property the raw progress, 0 to 1, is written to, on the target element. Everything inside the element inherits it.' },
@@ -120,6 +124,7 @@ const TOC = [
   { id: 'css', label: 'CSS only: scroll()' },
   { id: 'react', label: 'React and Next.js' },
   { id: 'options', label: `Options · ${OPTIONS.length}` },
+  { id: 'use', label: 'Use it in your project' },
   { id: 'faq', label: `Questions · ${FAQ.length}` },
 ];
 
@@ -197,7 +202,7 @@ export default function ScrollProgressBarGeneratorPage() {
           <div className="stk-main">
 
             <Sec n={1} k="The tool" id="generator" title="Make your progress bar">
-              <ProgressBarGenerator />
+              <ProgressBarGenerator version={SELF.version} />
             </Sec>
 
             <Sec n={2} k="The model" id="how" title="How scroll becomes a bar">
@@ -238,7 +243,7 @@ export default function ScrollProgressBarGeneratorPage() {
                 keyframes over the whole of it, and <C>animation-fill-mode: both</C> holds 0 before and 1 after.
                 This is what the CSS only tab writes for a bar along the top:
               </p>
-              <CodeBox file="progress.css">{css({ ...DEFAULTS }, 'css')}</CodeBox>
+              <CodeBox file="progress.css">{TOP_CSS}</CodeBox>
               <Note k="The fallback">
                 A browser without scroll timelines ignores <C>animation-timeline</C> and plays the keyframes as an
                 ordinary animation of no length, which leaves the bar full. The <C>@supports</C> block keeps it hidden
@@ -317,7 +322,23 @@ export default function ScrollProgressBarGeneratorPage() {
               </Note>
             </Sec>
 
-            <Sec n={6} k={`${FAQ.length} questions`} id="faq" title="Scroll progress bar questions">
+            <Sec n={6} k="Next step" id="use" title="Use it in your project">
+              <p className="stk-p">
+                scrollProgress has an entry of its own, <C>svg-scroll-draw/progress</C>, and the JavaScript and React
+                tabs import it from there. It is not in the script-tag build, so the page the export row gives you from
+                those tabs loads that entry from jsDelivr as an ES module, pinned to {SELF.version}. The CSS only page
+                loads nothing.
+              </p>
+              <ToolNextStep
+                slug={TOOL_SLUG}
+                api="scrollProgress"
+                entry="progress"
+                docs="/docs#scroll-progress"
+                related={['css-scroll-driven-animation-generator', 'text-fill-scroll-generator']}
+              />
+            </Sec>
+
+            <Sec n={7} k={`${FAQ.length} questions`} id="faq" title="Scroll progress bar questions">
               <div className="stk-faq">
                 {FAQ.map((f, i) => (
                   <div key={f.q} className="stk-q">
@@ -329,11 +350,6 @@ export default function ScrollProgressBarGeneratorPage() {
                   </div>
                 ))}
               </div>
-              <p className="stk-p stk-more">
-                scrollProgress in svg-scroll-draw {SELF.version}: <Link href="/docs#scroll-progress">the docs</Link>.
-                More tools: the <Link href="/text-animation-generator">text animation generator</Link> and the{' '}
-                <Link href="/svg-path-viewer">SVG path viewer</Link>.
-              </p>
             </Sec>
           </div>
         </div>

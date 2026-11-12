@@ -126,28 +126,33 @@ export function ScrollCounter({ className, style, ...rest }: ScrollCounterProps)
 
 type ScrollVideoProps = ScrollVideoOptions & ElementAttrs & {
   src: string;
+  /** The image shown before the first frame loads, as on any <video>. */
+  poster?: string;
   className?: string;
   style?: React.CSSProperties;
   muted?: boolean;
   playsInline?: boolean;
 };
 
-export function ScrollVideo({ src, className, style, muted = true, playsInline = true, ...rest }: ScrollVideoProps) {
+export function ScrollVideo({ src, poster, className, style, muted = true, playsInline = true, ...rest }: ScrollVideoProps) {
   const ref = useRef<HTMLVideoElement>(null);
   const [options, attrs] = split<ScrollVideoOptions>(rest);
 
   useEngine(ref, options, scrollVideo);
 
+  // `preload` follows the option. It was always "auto" here, and scrollVideo
+  // leaves a preload attribute the page set alone, so the option did nothing.
   return (
     <video
       {...attrs}
       ref={ref}
       src={src}
+      poster={poster}
       className={className}
       style={style}
       muted={muted}
       playsInline={playsInline}
-      preload="auto"
+      preload={options.preload ?? 'auto'}
     />
   );
 }

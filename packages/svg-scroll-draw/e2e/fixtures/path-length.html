@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>scrollDraw — a path with a pathLength</title>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+  .spacer { height: 1200px; }
+  .tail   { height: 2000px; }
+  svg { width: 300px; height: 100px; display: block; }
+</style>
+</head>
+<body>
+
+<div class="spacer"></div>
+<!-- The same 280-unit line twice: once in user units, once with pathLength="1",
+     which makes the browser read dash values in units of the whole line. -->
+<div id="plain"><svg viewBox="0 0 300 100"><path id="a" d="M10 50 L290 50" fill="none" stroke="#000" stroke-width="4"></path></svg></div>
+<div id="scaled"><svg viewBox="0 0 300 100"><path id="b" d="M10 50 L290 50" pathLength="1" fill="none" stroke="#000" stroke-width="4"></path></svg></div>
+<div class="tail"></div>
+
+<script type="module">
+import { scrollDraw } from '/dist/index.mjs';
+import { publish } from './_probe.mjs';
+
+const a = document.querySelector('#a');
+const b = document.querySelector('#b');
+// Callbacks keep both on the JS engine, which seek() drives directly.
+const plain  = scrollDraw('#plain',  { onProgress: () => {} });
+const scaled = scrollDraw('#scaled', { onProgress: () => {} });
+
+/**
+ * How much of the line is drawn, from the dash pattern as the browser applies
+ * it: in pathLength units when the attribute is set, dash `d` then gap `d`
+ * repeating, shifted by the offset. Sampled, so a dash longer than the line or
+ * an offset past it reads as it renders.
+ */
+const drawn = (el) => {
+  const units = Number(el.getAttribute('pathLength')) || el.getTotalLength();
+  const cs = getComputedStyle(el);
+  const d = parseFloat(cs.strokeDasharray);
+  const o = parseFloat(cs.strokeDashoffset) || 0;
+  const N = 2000;
+  let on = 0;
+  for (let i = 0; i < N; i++) {
+    const at = ((((i + 0.5) / N) * units + o) % (2 * d) + 2 * d) % (2 * d);
+    if (at < d) on++;
+  }
+  return on / N;
+};
+
+publish({
+  seek: (p) => { plain.seek(p); scaled.seek(p); },
+  read: () => ({ plain: drawn(a), scaled: drawn(b), dash: parseFloat(getComputedStyle(b).strokeDasharray) }),
+});
+</script>
+</body>
+</html>

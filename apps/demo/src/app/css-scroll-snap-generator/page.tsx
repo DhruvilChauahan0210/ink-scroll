@@ -9,8 +9,10 @@ import { jsonLd, SITE_URL } from '@/lib/json-ld';
 import { CodeBox } from '@/components/site/CodeBox';
 import { SnapGenerator } from '@/components/snap/SnapGenerator';
 import { SnapFigure } from '@/components/snap/SnapFigure';
-import { DEFAULTS, OUTPUTS, PRESETS, SNAP_DEBOUNCE_MS, SNAP_DEFAULTS, SNAP_EASINGS, css } from '@/components/snap/snap-code';
+import { DEFAULTS, OUTPUTS, PRESETS, SNAP_DEBOUNCE_MS, SNAP_DEFAULTS, SNAP_EASINGS, TOOL_SLUG, css } from '@/components/snap/snap-code';
 import { C, Note, Sec, Toc } from '@/components/stack/parts';
+import { ToolNextStep } from '@/components/tool-kit/ToolNextStep';
+import { withSource } from '@/lib/tool-export';
 
 // Searches this page is for: "css scroll snap", "scroll snap generator",
 // "scroll-snap-type", "css carousel scroll snap". Every CSS listing on it is
@@ -119,21 +121,23 @@ const OPTIONS: { k: string; def: string; d: string }[] = [
   },
 ];
 
-const CAROUSEL_CSS = css(DEFAULTS);
+// Complete files a visitor would paste, so each starts with the source line.
+const CAROUSEL_CSS = withSource(css(DEFAULTS), TOOL_SLUG, 'css');
 
-const PAGE_SNAP = `html {
+const PAGE_SNAP = withSource(`html {
   scroll-snap-type: y mandatory;
 }
 
 section {
   height: 100vh;
   scroll-snap-align: start;
-}`;
+}`, TOOL_SLUG, 'css');
 
-const LIB_JS = `import { scrollSnap } from 'svg-scroll-draw/snap';
+const LIB_JS = withSource(`import { scrollSnap } from 'svg-scroll-draw/snap';
 
 // Full-height <section>s on the page itself: no scrollContainer, so it
-// snaps the window. No scroll-snap-type on html, and no smooth scrolling.
+// snaps the window. No scroll-snap-type on html, and, for 2.23.3 and
+// earlier, no scroll-behavior: smooth on it either.
 const snap = scrollSnap('section', {
   duration: 800,
   easing: 'ease-out',
@@ -144,7 +148,7 @@ const snap = scrollSnap('section', {
 document.querySelector('#to-pricing').addEventListener('click', () => snap.snapTo(2));
 
 // snap.getCurrentIndex() is the section it last landed on, and
-// snap.destroy() stops snapping and removes its listener.`;
+// snap.destroy() stops snapping and removes its listener.`, TOOL_SLUG, 'js');
 
 const FAQ: { q: string; a: string }[] = [
   {
@@ -182,6 +186,7 @@ const TOC = [
   { id: 'how', label: 'How scroll snap works' },
   { id: 'properties', label: `Every property · ${PROPS.length}` },
   { id: 'library', label: 'CSS or scrollSnap()' },
+  { id: 'use', label: 'Use it in your project' },
   { id: 'faq', label: `Questions · ${FAQ.length}` },
 ];
 
@@ -263,7 +268,7 @@ export default function CssScrollSnapGeneratorPage() {
                 the snap line; under the box, each item’s snap position along the scroll, with a marker where the box
                 is now.
               </p>
-              <SnapGenerator />
+              <SnapGenerator version={SELF.version} />
             </Sec>
 
             <Sec n={2} k="The model" id="how" title="How scroll snap works">
@@ -344,18 +349,36 @@ export default function CssScrollSnapGeneratorPage() {
               <CodeBox file="main.js">{LIB_JS}</CodeBox>
               <Note k="Not both">
                 Do not give the container <C>scroll-snap-type</C> too: the browser would snap to its own positions
-                while scrollSnap glides to its. Keep <C>scroll-behavior: auto</C> on it as well (on <C>html</C> for the
-                window). scrollSnap sets the scroll position every frame, and smooth scrolling turns each of those into
-                a separate glide, so <C>onSnap</C> fires long before it lands.
+                while scrollSnap glides to its.
               </Note>
-              <Note k={`in ${SELF.version}`}>
-                scrollSnap counts from the first section when it is made, wherever the page is, so make it with the page
-                or box at the top: made further down, its first snap goes to the second section. And a border on the
-                scroll container moves every landing by the border’s width, so put the border on a wrapper.
+              <Note k="2.23.3 and earlier">
+                Three things need working around in these versions, all fixed in 2.23.4. scrollSnap counts from the
+                first section when it is made, wherever the page is, so make it with the page or box at the top: made
+                further down, its first snap goes to the second section. A border on the scroll container moves every
+                landing by the border’s width, so put the border on a wrapper. And it sets the scroll position every
+                frame with no <C>behavior</C>, so <C>scroll-behavior: smooth</C> on the container (on <C>html</C> for
+                the window) turns each frame into a glide of its own and <C>onSnap</C> fires long before it lands: keep{' '}
+                <C>scroll-behavior: auto</C> there, as the generated <C>snap.css</C> does.
               </Note>
             </Sec>
 
-            <Sec n={5} k={`${FAQ.length} questions`} id="faq" title="Scroll snap questions">
+            <Sec n={5} k="Next step" id="use" title="Use it in your project">
+              <p className="stk-p">
+                CSS scroll snap needs nothing installed: the three files are the whole of it, and the page the export
+                row gives you for it loads no library. <C>scrollSnap</C> has an entry of its own,{' '}
+                <C>svg-scroll-draw/snap</C>, which is not in the main entry or the script-tag build, so the scrollSnap
+                page loads that entry from jsDelivr as an ES module, pinned to {SELF.version}.
+              </p>
+              <ToolNextStep
+                slug={TOOL_SLUG}
+                api="scrollSnap"
+                entry="snap"
+                docs="/docs#scroll-snap"
+                related={['easing-visualizer', 'scroll-progress-bar-generator']}
+              />
+            </Sec>
+
+            <Sec n={6} k={`${FAQ.length} questions`} id="faq" title="Scroll snap questions">
               <div className="stk-faq">
                 {FAQ.map((f, i) => (
                   <div key={f.q} className="stk-q">
@@ -367,12 +390,6 @@ export default function CssScrollSnapGeneratorPage() {
                   </div>
                 ))}
               </div>
-              <p className="stk-p stk-more">
-                Pick a curve for scrollSnap’s glide in the <Link href="/easing-visualizer">easing visualizer</Link>, or
-                show how far down the page a reader is with the{' '}
-                <Link href="/scroll-progress-bar-generator">scroll progress bar generator</Link>. All of
-                svg-scroll-draw {SELF.version}: <Link href="/docs">the docs</Link>.
-              </p>
             </Sec>
           </div>
         </div>

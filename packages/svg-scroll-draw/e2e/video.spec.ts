@@ -147,6 +147,21 @@ test.describe('scrollVideo', () => {
     expect(errors).toEqual([]);
   });
 
+  // seek() before the metadata set the progress and nothing else, and the
+  // metadata handler did not look back: getProgress() 0.5, the film on frame 0.
+  test('a seek() before the metadata arrives is applied when it does', async ({ page }) => {
+    await openFixture(page, 'video.html');
+    await requireDecoder(page);
+
+    const r = await call<{ before: { readyState: number; currentTime: number }; currentTime: number; duration: number; progress: number }>(
+      page, 'lateSeek', 0.5,
+    );
+    expect(r.before).toEqual({ readyState: 0, currentTime: 0 });
+    expect(r.progress).toBe(0.5);
+    expect(r.duration).toBeCloseTo(DURATION, 1);
+    expect(r.currentTime, 'the seek was lost').toBeCloseTo(DURATION / 2, 1);
+  });
+
   test('reduced motion shows the end frame without scrolling', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await openFixture(page, 'video.html');

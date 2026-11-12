@@ -35,12 +35,15 @@ export const PARALLAX_LAYERS: { key: LayerKey; label: string; note: string }[] =
 /**
  * ±1, not further. Past 1 a layer travels more than its own size, so the
  * scene's `overflow: hidden` clips its whole box away before its window ends.
- * Measured in 2.23.2: the engine's IntersectionObserver watches that
- * transformed, clipped box, so the layer stops following the scroll there;
- * once its box has left the scene it never comes back into view, and the
- * layer stays where it stopped, even after scrolling back (seen at −1.05 with
- * 40px scroll steps, and at 1.5 with larger jumps, in Chromium, Firefox and
- * WebKit). At ±1 and below the box always overlaps the scene, so it recovers.
+ * In 2.23.3 and earlier the engine's IntersectionObserver watched that
+ * transformed, clipped box, so the layer stopped following the scroll there;
+ * once its box had left the scene it never came back into view, and the layer
+ * stayed where it stopped, even after scrolling back (seen at −1.05 with 40px
+ * scroll steps, and at 1.5 with larger jumps, in Chromium, Firefox and
+ * WebKit). At ±1 and below the box always overlaps the scene, so it recovered.
+ * 2.23.4 runs the frame loop from the trigger window instead, which fixes it;
+ * the sliders stay at ±1 so the generated code's layers still recover on a
+ * visitor's 2.23.3, and the scene's art is drawn far enough past its grid for ±1.
  */
 export const SPEED_MIN = -1;
 export const SPEED_MAX = 1;

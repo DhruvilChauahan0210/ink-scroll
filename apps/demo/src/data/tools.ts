@@ -15,6 +15,7 @@ export const TOOL_GROUPS: ToolGroup[] = [
     tools: [
       { slug: 'text-animation-generator', name: 'Text animation generator', blurb: 'Split a line by word, letter or line, choose how each piece arrives, and copy the JavaScript or React.' },
       { slug: 'text-fill-scroll-generator', name: 'Text fill on scroll generator', blurb: 'Make text fill with colour, or light up word by word, as it scrolls: pure CSS, scrollProgress or scrollText, scrolled live, with the code.' },
+      { slug: 'typewriter-effect-generator', name: 'Typewriter effect generator', blurb: 'Text that types one letter at a time behind a blinking caret: pure CSS steps(), typed on scroll by scrollText, or a JS typer.' },
       { slug: 'counter-animation-generator', name: 'Counter animation generator', blurb: 'Set from, to, decimals, a prefix or suffix and the easing, watch the number count, and copy a scrollCounter call or a React component.' },
       { slug: 'scroll-reveal-generator', name: 'Scroll reveal generator', blurb: 'Pick a preset, stagger, easing and trigger, watch cards reveal in a box that scrolls, and copy one scrollReveal call or a React component.' },
       { slug: 'parallax-scrolling-generator', name: 'Parallax scrolling generator', blurb: 'Give each layer of a scene its own speed, scroll the little window to see the depth, and copy the scrollParallax code.' },
@@ -24,6 +25,7 @@ export const TOOL_GROUPS: ToolGroup[] = [
       { slug: 'css-scroll-snap-generator', name: 'CSS scroll snap generator', blurb: 'Build a snapping carousel, full-height sections or a two-way grid, swipe the live preview, and copy the CSS, HTML and button JS.' },
       { slug: 'horizontal-scroll-generator', name: 'Horizontal scroll generator', blurb: 'A pinned section that scrolls sideways: panels, width, gap and scroll length, run in a box you scroll; HTML, CSS, JS, React or CSS only.' },
       { slug: 'scroll-pin-generator', name: 'Scroll pin generator', blurb: 'Set a pin distance, top and steps, scroll a feature tour pinned by scrollPin, and copy HTML, CSS, JS, React or a CSS-only version.' },
+      { slug: 'scroll-video-scrub-generator', name: 'Scroll video scrub generator', blurb: 'A video that plays forwards and backwards with the scroll: pin it, set the window, range and easing, try your own file, copy the code.' },
       { slug: 'cubic-bezier-generator', name: 'Cubic-bezier generator', blurb: 'Drag two control points to make a CSS cubic-bezier(), race it against ease or easeOutBack, and copy the CSS or a JS easing function.' },
     ],
   },
@@ -33,6 +35,7 @@ export const TOOL_GROUPS: ToolGroup[] = [
     note: 'Get a drawing ready to animate.',
     tools: [
       { slug: 'svg-path-viewer', name: 'SVG path viewer', blurb: 'Paste an SVG: every path’s length and commands, what stops it drawing, and the draw code.' },
+      { slug: 'svg-path-editor', name: 'SVG path editor', blurb: 'Drag a path’s points and handles or type into each command; make it absolute or relative, round, scale or reverse it, then draw it on scroll.' },
       { slug: 'svg-line-drawing-generator', name: 'SVG line drawing generator', blurb: 'Paste any SVG and get one self-contained file that draws itself line by line with CSS and no JavaScript, or the scroll version.' },
       { slug: 'svg-morph-generator', name: 'SVG morph generator', blurb: 'Pick or paste two shapes, match their points so nothing twists, watch scrollDraw morph them as you scroll, and copy the morphTo code.' },
       { slug: 'svg-shape-to-path-converter', name: 'SVG shape to path converter', blurb: 'Turn every rect, circle, ellipse, line, polyline and polygon into the exact path it equals, watch both draw, and copy the SVG.' },

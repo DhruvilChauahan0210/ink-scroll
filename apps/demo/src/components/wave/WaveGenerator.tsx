@@ -2,9 +2,11 @@
 
 import { useEffect, useId, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { CodeBox } from '@/components/site/CodeBox';
+import { ToolExport } from '@/components/tool-kit/ToolExport';
+import { downloadText } from '@/lib/tool-export';
 import {
-  FILL_TABS, LINE_TABS, MAX_LAYERS, RANGE, SMOOTHS, TOKENS, WIDTH, buildWave, cssBackground, isColour, jsLine,
-  layerFrame, num, reactFill, reactLine, svgFile, wavelength, type Smooth, type Tab, type Token, type WaveSettings,
+  FILL_TABS, LINE_TABS, MAX_LAYERS, RANGE, RUN, SMOOTHS, TOKENS, WIDTH, buildWave, htmlPage, isColour, layerFrame,
+  listing, num, reactProject, svgFile, wavelength, type PageColours, type Smooth, type Tab, type Token, type WaveSettings,
 } from './wave';
 
 /**
@@ -25,6 +27,9 @@ import {
  * - Colours: a swatch is one of the site's neutral tokens, shown as var() and
  *   written into the code as the value it has in the theme on screen, read
  *   from the page's CSS. Typed text is used only when isColour() accepts it.
+ * - Every listing starts with the source line (wave.ts `listing`), and the Run
+ *   it row under the code saves or opens a page with the wave in it, on the
+ *   preview's background, importing svg-scroll-draw `version` from jsDelivr.
  */
 
 type Instance = ReturnType<typeof import('svg-scroll-draw').scrollDraw>;
@@ -51,6 +56,8 @@ const INITIAL: WaveSettings = {
 const INITIAL_PICKS: Token[] = ['fg', 'fg-3', 'line-2', 'line'];
 const PLAY_MS = 1600;
 const NS = 'http://www.w3.org/2000/svg';
+/** The run-it page's colours until the theme's are read: the light theme's panel and text. */
+const LIGHT_PAGE: PageColours = { bg: '#f8f6f1', fg: '#121110' };
 
 // ── What the page and the system say ────────────────────────────────────────
 
@@ -86,7 +93,7 @@ const supportsColour = (v: string) => typeof CSS !== 'undefined' && CSS.supports
 
 // ── The component ───────────────────────────────────────────────────────────
 
-export function WaveGenerator() {
+export function WaveGenerator({ version }: { version: string }) {
   const [s, setS] = useState<WaveSettings>(INITIAL);
   const [seedText, setSeedText] = useState(String(INITIAL.seed));
   const [picks, setPicks] = useState<Token[]>(INITIAL_PICKS);
@@ -131,6 +138,12 @@ export function WaveGenerator() {
     });
   }, [s.layers, texts, picks, tokenValues]);
   const values = colours.every((c) => c.value) ? colours.map((c) => c.value as string) : null;
+  /** The preview's background and text, for the page the Run it row writes. */
+  const page = useMemo<PageColours>(() => {
+    const bg = tokenValues?.panel ?? '';
+    const fg = tokenValues?.fg ?? '';
+    return isColour(bg, supportsColour) && isColour(fg, supportsColour) ? { bg, fg } : LIGHT_PAGE;
+  }, [tokenValues]);
 
   // ── Line mode: a scrollDraw instance on the edges, driven by seek() ──────
 
@@ -236,27 +249,20 @@ export function WaveGenerator() {
   }
 
   function download() {
-    if (!values) return;
-    const url = URL.createObjectURL(new Blob([svgFile(s, layers, values)], { type: 'image/svg+xml' }));
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = s.mode === 'fill' ? 'wave.svg' : 'wave-line.svg';
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    if (values) downloadText(s.mode === 'fill' ? 'wave.svg' : 'wave-line.svg', listing('svg', s, layers, values), 'image/svg+xml');
   }
 
   // ── The code ─────────────────────────────────────────────────────────────
 
   const tabs = s.mode === 'fill' ? FILL_TABS : LINE_TABS;
   const active = tabs.find(([k]) => k === tab) ?? tabs[0];
-  const code = useMemo(() => {
-    if (!values) return '…';
-    const k = active[0];
-    if (k === 'svg') return svgFile(s, layers, values);
-    if (k === 'css') return cssBackground(s, layers, values);
-    if (k === 'js') return jsLine(s);
-    return s.mode === 'fill' ? reactFill(s, layers, values) : reactLine(s, layers, values);
-  }, [active, s, layers, values]);
+  const code = useMemo(() => (values ? listing(active[0], s, layers, values) : '…'), [active, s, layers, values]);
+  const run = useMemo(
+    () => (values
+      ? { html: htmlPage(s, layers, values, page, version), react: reactProject(s, layers, values, page, version) }
+      : null),
+    [s, layers, values, page, version],
+  );
   const bytes = values ? svgFile(s, layers, values).length : 0;
 
   const front = layerFrame(s, s.layers - 1);
@@ -509,6 +515,7 @@ export function WaveGenerator() {
           <button type="button" className="wv-btn" onClick={download} disabled={!values}>↓ Download .svg</button>
         </div>
         <CodeBox file={active[2]}>{code}</CodeBox>
+        {run && <ToolExport title={RUN[s.mode].title} filename={RUN[s.mode].filename} html={run.html} react={run.react} />}
       </div>
     </div>
   );

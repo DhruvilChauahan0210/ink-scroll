@@ -17,9 +17,12 @@ import type { Page } from '@playwright/test';
 /**
  * Projects whose browser ships the native CSS fast path (`animation-timeline:
  * view()`), so a parity suite that finds it missing fails rather than comparing
- * the JS engine with itself. Firefox joined at 159, bundled by Playwright 1.65.0.
+ * the JS engine with itself. Firefox joined at 159, bundled by Playwright 1.65.0,
+ * and Playwright's WebKit has view timelines too: `CSS.supports('animation-timeline:
+ * view()')` is true there, and the autoplay and debug suites saw it take the fast
+ * path in 2.23.3. Leaving it out only skipped the comparisons in WebKit.
  */
-export const NATIVE_PROJECTS = ['chromium', 'firefox'];
+export const NATIVE_PROJECTS = ['chromium', 'firefox', 'webkit'];
 
 type ProbeWindow = {
   __probe: Record<string, (...args: unknown[]) => unknown>;

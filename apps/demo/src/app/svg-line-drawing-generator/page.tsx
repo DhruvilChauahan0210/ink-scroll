@@ -10,11 +10,13 @@ import { CodeBox } from '@/components/site/CodeBox';
 import { LineDrawingGenerator } from '@/components/linedraw/LineDrawingGenerator';
 import { PathLengthFigure } from '@/components/linedraw/PathLengthFigure';
 import {
-  DEFAULTS, DRAWABLE, EASINGS, LOOPS, OUTPUTS, OUT_NAME, SCROLL_END, SCROLL_START, fmt, plan, scrollPlan, timeline,
+  DEFAULTS, DRAWABLE, EASINGS, LOOPS, OUTPUTS, OUT_NAME, SCROLL_END, SCROLL_START, SLUG, fmt, plan, scrollPlan, timeline,
   writeCss, type Measured, type Settings,
 } from '@/components/linedraw/generate';
 import { SAMPLE } from '@/components/linedraw/sample';
 import { C, Note, Sec, Toc } from '@/components/stack/parts';
+import { ToolNextStep } from '@/components/tool-kit/ToolNextStep';
+import { withSource } from '@/lib/tool-export';
 
 // Searches this page is for: "svg line drawing animation", "animated svg
 // generator", "svg line animation css", "svg stroke animation". The CSS quoted
@@ -33,7 +35,7 @@ const SAMPLE_FILLS = SAMPLE_TAGS.filter((a) => /\sfill="(?!none)/.test(a)).map((
 const ONE: Measured = { length: 1, stroked: true, filled: false, fillOpacity: 1, nonScaling: false, pieces: 1 };
 const SINGLE: Settings = { ...DEFAULTS, stagger: 0, fill: 0 };
 const SINGLE_T = plan([1], SINGLE);
-const SINGLE_CSS = writeCss(SINGLE_T, [ONE], SINGLE, timeline(SINGLE_T, [ONE], SINGLE), OUT_NAME, OUT_NAME);
+const SINGLE_CSS = withSource(writeCss(SINGLE_T, [ONE], SINGLE, timeline(SINGLE_T, [ONE], SINGLE), OUT_NAME, OUT_NAME), SLUG, 'css');
 const SCROLL_DEFAULT = scrollPlan(SAMPLE_SHAPES, true, SAMPLE_FILLS, DEFAULTS);
 const SCROLL_STAGGER = SCROLL_DEFAULT.options.stagger ?? 0;
 
@@ -126,6 +128,7 @@ const TOC = [
   { id: 'how', label: 'How pathLength draws it' },
   { id: 'browsers', label: `What the browsers do · ${CHECKS.length}` },
   { id: 'scroll', label: 'On time or on scroll' },
+  { id: 'use', label: 'Use it in your project' },
   { id: 'faq', label: `Questions · ${FAQ.length}` },
 ];
 
@@ -209,7 +212,7 @@ export default function SvgLineDrawingGeneratorPage() {
                 download, playing in this page. Nothing is uploaded: the SVG is read in your browser, and only its
                 drawing elements and attributes are kept.
               </p>
-              <LineDrawingGenerator />
+              <LineDrawingGenerator version={SELF.version} />
             </Sec>
 
             <Sec n={2} k="The technique" id="how" title="How pathLength draws it">
@@ -258,8 +261,9 @@ export default function SvgLineDrawingGeneratorPage() {
             <Sec n={4} k="Time or scroll" id="scroll" title="On time or on scroll">
               <p className="stk-p">
                 The file plays over time, when it loads. To draw as the reader scrolls instead, the Scroll version tab
-                gives the same drawing to <Link href="/docs">scrollDraw</Link>: each line takes a stretch of the
-                scroll, and the lines overlap as they do in the CSS. Here is how each setting carries over.
+                gives the same drawing to <Link href="/docs#core-options">scrollDraw</Link>: each line takes a
+                stretch of the scroll, and the lines overlap as they do in the CSS. Here is how each setting carries
+                over.
               </p>
               <div className="ldg-ref-scroll" tabIndex={0} role="region" aria-label="How each setting carries over">
                 <table className="ldg-ref">
@@ -274,7 +278,19 @@ export default function SvgLineDrawingGeneratorPage() {
               <CodeBox file="main.js">{SCROLL_DEFAULT.code}</CodeBox>
             </Sec>
 
-            <Sec n={5} k={`${FAQ.length} questions`} id="faq" title="Line drawing questions">
+            <Sec n={5} k="Next" id="use" title="Use it in your project">
+              <ToolNextStep
+                slug={SLUG}
+                api="scrollDraw"
+                docs="/docs#core-options"
+                related={['scroll-trigger-visualizer', 'easing-visualizer']}
+              />
+              <Note k="CSS only">
+                The SVG file and the CSS + markup need no package at all: only the scroll version imports scrollDraw.
+              </Note>
+            </Sec>
+
+            <Sec n={6} k={`${FAQ.length} questions`} id="faq" title="Line drawing questions">
               <div className="stk-faq">
                 {FAQ.map((f, i) => (
                   <div key={f.q} className="stk-q">

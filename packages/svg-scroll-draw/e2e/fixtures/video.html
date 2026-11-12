@@ -90,6 +90,30 @@ publish({
     };
   },
 
+  /**
+   * scrollVideo on a video that has no metadata yet (preload="none" holds it
+   * back), seek(p), then let it load. Resolves with where the film is once the
+   * metadata is in and any seek has settled.
+   */
+  lateSeek: (p) => new Promise((resolve) => {
+    const v = document.createElement('video');
+    v.muted = true;
+    v.preload = 'none';
+    v.src = clip.currentSrc || clip.src;
+    v.style.cssText = 'width:200px;height:100px;';
+    document.body.appendChild(v);
+    const inst = scrollVideo(v);
+    inst.seek(p);
+    const before = { readyState: v.readyState, currentTime: v.currentTime };
+    v.addEventListener('loadedmetadata', () => {
+      const done = () => resolve({ before, currentTime: v.currentTime, duration: v.duration, progress: inst.getProgress() });
+      if (v.seeking) v.addEventListener('seeked', done, { once: true });
+      else setTimeout(done, 50);
+    }, { once: true });
+    v.preload = 'auto';
+    v.load();
+  }),
+
   destroyClip: () => clipInst.destroy(),
   destroyBroken: () => brokenInst.destroy(),
 });

@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { openFixture, collectErrors, scrollToY, read, call, table } from './helpers';
+import { openFixture, collectErrors, scrollToY, read, call, settle, table } from './helpers';
 
 /**
  * `scrollText` in real browsers.
@@ -58,9 +58,10 @@ test.describe('scrollText', () => {
     // hold the spacing open (which the engine deliberately never animates).
     expect(row.words.unitCount).toBe(4);
     expect(row.words.spanCount).toBe(7);
-    // 'Phase two' → 8 animated characters plus one space span.
+    // 'Phase two' → 8 animated characters, one space span, and a box per word
+    // holding its letters together (2.23.4).
     expect(row.chars.unitCount).toBe(8);
-    expect(row.chars.spanCount).toBe(9);
+    expect(row.chars.spanCount).toBe(11);
   });
 
   test('keeps the sentence readable to assistive technology', async ({ page }) => {
@@ -221,5 +222,66 @@ test.describe('scrollText — split: lines', () => {
     const after = await call<{ text: string; html: string }>(page, 'destroyLines');
     expect(after.text).toBe(before.originalText);
     expect(after.html, 'spans were left behind').not.toContain('<span');
+  });
+});
+
+test.describe('scrollText replay()', () => {
+  // replay() after pause() or seek() cleared `paused` and requested no frame,
+  // so the text stopped following the scroll until it left the screen.
+  for (const stop of ['pause', 'seek'] as const) {
+    test(`replay() after ${stop}() follows the scroll again`, async ({ page }) => {
+      await openFixture(page, 'text.html');
+      await scrollToY(page, MID);
+      expect(await call<number>(page, 'words', 'getProgress')).toBeCloseTo(0.5, 2);
+
+      await call(page, 'words', stop, 0.2);
+      await call(page, 'words', 'replay');
+      // replay() resets, and its next frame follows the scroll again: no
+      // scroll has to come first.
+      await settle(page);
+      expect(await call<number>(page, 'words', 'getProgress'), 'replay() left the frames stopped').toBeCloseTo(0.5, 2);
+      await scrollToY(page, 790);
+      expect(await call<number>(page, 'words', 'getProgress'), 'replay() left the frames stopped').toBeCloseTo(0.75, 2);
+    });
+  }
+});
+
+test.describe("scrollText split: 'chars'", () => {
+  // Every letter was an inline-block of its own, so a line could break between
+  // any two: 'Typewriters type' broke as 'Typewriters ty' / 'pe'. Each word's
+  // letters sit in one nowrap inline-block now, and the paragraph keeps the
+  // height it had before the split.
+  test('breaks lines only at spaces, as the text did', async ({ page }) => {
+    await openFixture(page, 'text.html');
+    const r = await call<{ before: number; after: number; broken: string[] }>(page, 'charsWrap');
+    expect(r.broken, 'words broken across lines').toEqual([]);
+    expect(r.after).toBe(r.before);
+  });
+
+  // Chinese and Japanese put no spaces between words: in one word box a whole
+  // line of them never wrapped and ran out of its paragraph.
+  test('a line of Chinese, which has no spaces, still wraps as it did', async ({ page }) => {
+    await openFixture(page, 'text.html');
+    const r = await call<{ before: number; after: number; overflow: boolean }>(page, 'cjkWrap');
+    expect(r.before, 'the fixture line has to wrap for this to test anything').toBeGreaterThan(80);
+    expect(r.overflow, 'the line ran out of its paragraph').toBe(false);
+    expect(r.after).toBe(r.before);
+  });
+
+  // Past 1 / stagger units (26 at the default 0.04) every unit was a step: the
+  // first shown at progress 0, and from the 27th on none shown even at 1.
+  test('a line of many characters starts hidden and ends shown, every one', async ({ page }) => {
+    await openFixture(page, 'text.html');
+    const at0 = await call<number[]>(page, 'manyAt', 0);
+    const at1 = await call<number[]>(page, 'manyAt', 1);
+    expect(at0.length).toBe(36);
+    expect(at0.filter((o) => o !== 0), 'shown at progress 0').toEqual([]);
+    expect(at1.filter((o) => o !== 1), 'not shown at progress 1').toEqual([]);
+  });
+
+  // text.split('') cut an emoji into two lone surrogates, two U+FFFD on screen.
+  test('keeps a character outside the BMP whole', async ({ page }) => {
+    await openFixture(page, 'text.html');
+    expect(await call<string[]>(page, 'emojiUnits')).toEqual(['48', '69', '1f44b', '74', '68', '65', '72', '65']);
   });
 });

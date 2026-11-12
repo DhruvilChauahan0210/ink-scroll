@@ -84,6 +84,10 @@
 .site .sv-tab:focus-visible { outline: 1px solid var(--fg); outline-offset: -3px; }
 .site .sv-code .code-box { margin-top: 0; }
 
+/* Links in the page's margin notes (stack.css styles them only in .stk-p). */
+.site .sv-a { color: var(--fg); text-decoration: underline; text-decoration-color: var(--line-2); text-underline-offset: 3px; }
+.site .sv-a:hover { text-decoration-color: var(--fg); }
+
 /* The command reference. */
 .site .sv-cmds { width: 100%; border-collapse: collapse; font-size: 13.5px; }
 .site .sv-cmds th, .site .sv-cmds td { padding: 10px 12px 10px 0; border-top: 1px solid var(--line); text-align: left; vertical-align: top; }
@@ -97,3 +101,4 @@
 .site .svf-ink { color: var(--fg); }
 .site .svf-k { font: 500 11px var(--mono); fill: var(--fg-2); }
 .site .svf-n { font: 500 10px var(--mono); fill: var(--fg-3); }
+.site .sv-runnote { margin: 12px 0 0; padding-top: 12px; border-top: 1px solid var(--line); }

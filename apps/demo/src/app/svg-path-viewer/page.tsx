@@ -9,6 +9,7 @@ import { jsonLd, SITE_URL } from '@/lib/json-ld';
 import { CodeBox } from '@/components/site/CodeBox';
 import { SvgPathViewer } from '@/components/svg-tool/SvgPathViewer';
 import { DashFigure } from '@/components/svg-tool/DashFigure';
+import { ToolNextStep } from '@/components/tool-kit/ToolNextStep';
 import { C, Note, Sec, Toc } from '@/components/stack/parts';
 
 // Bing keyword research (2026-11-11): "svg path" 526 and "svg path editor" 316
@@ -80,6 +81,7 @@ const TOC = [
   { id: 'draw', label: 'How a line draws itself' },
   { id: 'length', label: 'Getting the length' },
   { id: 'commands', label: `Path commands · ${COMMANDS.length}` },
+  { id: 'use', label: 'Use it in your project' },
   { id: 'faq', label: `Questions · ${FAQ.length}` },
 ];
 
@@ -151,7 +153,7 @@ export default function SvgPathViewerPage() {
           <div className="stk-main">
 
             <Sec n={1} k="The tool" id="viewer" title="Paste an SVG">
-              <SvgPathViewer />
+              <SvgPathViewer version={SELF.version} />
             </Sec>
 
             <Sec n={2} k="The trick" id="draw" title="How a line draws itself">
@@ -163,7 +165,8 @@ export default function SvgPathViewerPage() {
               <CodeBox file="draw.css">{DRAW_CSS}</CodeBox>
               <Note k="Scroll instead of time">
                 To draw as the reader scrolls rather than over two seconds, the offset follows the scroll position
-                instead of a clock. <Link href="/docs">scrollDraw</Link> measures every path and does that for you.
+                instead of a clock. <Link href="/docs#quick-start" className="sv-a">scrollDraw</Link> measures every
+                path and does that for you.
               </Note>
             </Sec>
 
@@ -192,7 +195,21 @@ export default function SvgPathViewerPage() {
               </div>
             </Sec>
 
-            <Sec n={5} k={`${FAQ.length} questions`} id="faq" title="SVG path questions">
+            <Sec n={5} k="Next" id="use" title="Use it in your project">
+              <ToolNextStep
+                slug="svg-path-viewer"
+                api="scrollDraw"
+                docs="/docs#quick-start"
+                related={['svg-to-jsx-converter', 'svg-shape-to-path-converter']}
+              />
+              <Note k="React and CSS">
+                The React tab wraps the drawing in <C>ScrollDraw</C> from <C>svg-scroll-draw/react</C>, which takes
+                the same options as props: <Link href="/docs#react" className="sv-a">ScrollDraw in the docs</Link>. The
+                CSS tab needs no package at all.
+              </Note>
+            </Sec>
+
+            <Sec n={6} k={`${FAQ.length} questions`} id="faq" title="SVG path questions">
               <div className="stk-faq">
                 {FAQ.map((f, i) => (
                   <div key={f.q} className="stk-q">
@@ -204,10 +221,6 @@ export default function SvgPathViewerPage() {
                   </div>
                 ))}
               </div>
-              <p className="stk-p stk-more">
-                Drawing on scroll with svg-scroll-draw {SELF.version}: <Link href="/docs">the docs</Link>, or the{' '}
-                <Link href="/text-animation-generator">text animation generator</Link> for words instead of lines.
-              </p>
             </Sec>
           </div>
         </div>

@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>scrollDraw morphTo — a line drawing that morphs to a longer outline</title>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+  .spacer { height: 1200px; }
+  .tail   { height: 2000px; }
+  #art    { height: 300px; }
+  #art svg { width: 300px; height: 300px; display: block; }
+</style>
+</head>
+<body>
+
+<div class="spacer"></div>
+<!-- A 40-unit square that morphs to a 320-unit one: the same commands, eight
+     times the outline. Window: 1200 - 800 = 400 → 1200 + 300 = 1500. -->
+<div id="art">
+  <svg viewBox="0 0 100 100">
+    <path id="p" d="M45 45 L55 45 L55 55 L45 55 Z" fill="none" stroke="#000" stroke-width="2"></path>
+  </svg>
+</div>
+<div class="tail"></div>
+
+<script type="module">
+import { scrollDraw } from '/dist/index.mjs';
+import { publish } from './_probe.mjs';
+
+const path = document.querySelector('#p');
+const inst = scrollDraw('#art', { morphTo: 'M10 10 L90 10 L90 90 L10 90 Z' });
+
+publish({
+  read: () => {
+    const cs = getComputedStyle(path);
+    return {
+      scrollY: window.scrollY,
+      d: path.getAttribute('d'),
+      length: path.getTotalLength(),
+      dash: parseFloat(cs.strokeDasharray),
+      offset: parseFloat(cs.strokeDashoffset) || 0,
+      progress: inst.getProgress(),
+    };
+  },
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>animate engine — what starts and stops its frames</title>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+  .spacer { height: 1200px; }
+  .gap    { height: 400px; }
+  .tail   { height: 2400px; }
+
+  /* Each parallax layer fills a clip of its own size, so its travel carries it
+     out of the clip long before its window ends. */
+  .clip  { height: 300px; overflow: hidden; background: #eee; }
+  .layer { height: 300px; background: #9cf; }
+  .box   { height: 200px; background: #fc9; }
+</style>
+</head>
+<body>
+
+<div class="spacer"></div>
+<div class="clip"><div class="layer" id="px"></div></div>
+<div class="clip"><div class="layer" id="py"></div></div>
+<div class="gap"></div>
+<div class="box" id="fade"></div>
+<div class="gap"></div>
+<div class="box" id="jump"></div>
+<div class="tail"></div>
+
+<script type="module">
+import { scrollParallax, scrollAnimate } from '/dist/index.mjs';
+import { transformOf, opacityOf, docTop, publish } from './_probe.mjs';
+
+const $ = (id) => document.getElementById(id);
+let completed = 0;
+
+const instances = {
+  // travel −150% of its 900px width: out of its clip a third of the way in.
+  px: scrollParallax('#px', { speed: 1.5, axis: 'x' }),
+  // travel +105% of its 300px height: out of its clip just before the end.
+  py: scrollParallax('#py', { speed: -1.05 }),
+  // A fade-up whose from-transform starts it 120px below its own box.
+  fade: scrollAnimate('#fade', {
+    props: { opacity: [0, 1], transform: ['translateY(120px)', 'translateY(0px)'] },
+    easing: 'linear',
+    native: false,
+  }),
+  // A callback keeps it on the JS engine in every browser.
+  jump: scrollAnimate('#jump', {
+    props: { opacity: [0, 1] },
+    easing: 'linear',
+    onComplete: () => completed++,
+  }),
+};
+
+publish({
+  read: () => ({
+    scrollY: window.scrollY,
+    px: transformOf($('px')).x,
+    py: transformOf($('py')).y,
+    fade: opacityOf($('fade')),
+    jump: opacityOf($('jump')),
+    jumpProgress: instances.jump.getProgress(),
+    completed,
+  }),
+  /** pause(), seek(p), replay() and friends on the #jump instance. */
+  jumpCall: (method, ...args) => instances.jump[method](...args),
+  /** Document tops of the layout boxes, which the transforms leave alone. */
+  geometry: () => ({
+    px: docTop($('px').parentElement),
+    py: docTop($('py').parentElement),
+    fade: docTop($('fade').previousElementSibling) + 400,
+    jump: docTop($('jump').previousElementSibling) + 400,
+    width: $('px').offsetWidth,
+  }),
+});
+</script>
+</body>
+</html>

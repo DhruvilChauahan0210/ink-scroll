@@ -51,35 +51,42 @@ export const MEASURED_ON = '2026-08-14';
 export const SELF: Competitor = {
   name: 'svg-scroll-draw',
   label: 'svg-scroll-draw (all APIs)',
-  version: '2.23.3',
+  version: '2.23.4',
   license: 'MIT',
   gzipKb: 11.6,
   lastPublish: '2026-08-14',
   command: 'npm run size',
   measured: true,
   caveat:
-    'Main entry, every API at once. Each API is a separate entry point — scrollReveal alone is 5.8 KB, scrollPin 1.6 KB, scrollSnap 1.9 KB.',
+    'Main entry, every API at once. Each API is a separate entry point — scrollReveal alone is 5.7 KB, scrollPin 1.6 KB, scrollSnap 2.0 KB.',
 };
 
 /** Per-entry-point sizes, for like-for-like comparisons against single-purpose libraries. */
 export const SELF_ENTRIES: Record<string, number> = {
-  reveal: 5.8,
+  reveal: 5.7,
   pin: 1.6,
-  snap: 1.9,
+  snap: 2.0,
   // The AOS drop-in, its stylesheet included (`svg-scroll-draw/aos`).
   aos: 3.2,
   // The ScrollReveal drop-in (`svg-scroll-draw/scrollreveal`).
   scrollreveal: 4.7,
   // The vivus drop-in (`svg-scroll-draw/vivus`).
   vivus: 4.2,
-  text: 3.4,
+  text: 3.5,
+  // The rest of the entries the tool pages import, so each one's next step can
+  // quote its own size.
+  progress: 2.4,
+  horizontal: 5.6,
+  video: 2.8,
+  // `svg-scroll-draw/react`: every component, engines included.
+  react: 13.2,
   // Each framework landing quotes its own entry, wrapper and engines included.
-  vue: 13.1,
-  nuxt: 13.2,
-  svelte: 12.5,
-  solid: 12.5,
-  angular: 12.5,
-  astro: 12.0,
+  vue: 13.2,
+  nuxt: 13.3,
+  svelte: 12.6,
+  solid: 12.6,
+  angular: 12.6,
+  astro: 12.2,
 };
 
 export const COMPETITORS: Record<string, Competitor> = {

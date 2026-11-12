@@ -14,7 +14,16 @@
  * 3. Cut at exactly x = 0 and x = width (`clip`, de Casteljau), so a closed
  *    shape spans the box edge to edge at any phase, then scaled toward its
  *    baseline if the curve would leave the box.
+ *
+ * Then the code: every listing the visitor copies or downloads starts with the
+ * source line (`listing`), and `htmlPage` / `reactProject` put the wave in a
+ * page of its own for the Run it row.
  */
+
+import { cdnModule, htmlFile, withSource, type CodeLang, type ReactProject } from '@/lib/tool-export';
+
+/** This tool's page, for the source line on everything it writes. */
+export const SLUG = 'svg-wave-generator';
 
 export const WIDTH = 1440;
 export const MAX_LAYERS = 4;
@@ -407,9 +416,9 @@ export function svgFile(s: WaveSettings, layers: Layer[], colours: string[]): st
   return `<svg${root}>\n${layers.map((l, i) => `  <path stroke="${colours[i]}" d="${l.line}"/>`).join('\n')}\n</svg>\n`;
 }
 
-/** The fill as a React component. */
-export function reactFill(s: WaveSettings, layers: Layer[], colours: string[]): string {
-  return `export function WaveDivider({ className }: { className?: string }) {
+/** The fill as a React component: TypeScript, or plain JSX for App.jsx (`ts` false). */
+export function reactFill(s: WaveSettings, layers: Layer[], colours: string[], ts = true): string {
+  return `export function WaveDivider({ className }${ts ? ': { className?: string }' : ''}) {
   return (
     <svg
       className={className}
@@ -463,21 +472,30 @@ export function drawOptions(s: WaveSettings): string[] {
   return out;
 }
 
-/** The line drawn by scrollDraw: one call. */
-export function jsLine(s: WaveSettings): string {
-  const o = drawOptions(s);
-  const call = o.length ? `scrollDraw('#wave', { ${o.join(', ')} });` : `scrollDraw('#wave');`;
-  const what = s.plays === 'seen'
+/** What the line does, in one sentence: the comment over the call, and the run-it page's intro. */
+function drawWhat(s: WaveSettings): string {
+  return s.plays === 'seen'
     ? `Draws once, ${s.layers > 1 && s.stagger > 0 ? 'each line over a second, one after another,' : 'over a second,'} when the wave first comes on screen.`
     : s.finish === 'middle'
       ? 'Draws as the wave scrolls up the window, done when it reaches the middle.'
       : 'Draws as the wave scrolls through the window, done as it leaves the top.';
-  return `// <div id="wave"> + the SVG + </div>
+}
 
-import { scrollDraw } from 'svg-scroll-draw';
+/** The comment and the scrollDraw call, without the import. */
+function drawCall(s: WaveSettings): string[] {
+  const o = drawOptions(s);
+  return [`// ${drawWhat(s)}`, o.length ? `scrollDraw('#wave', { ${o.join(', ')} });` : `scrollDraw('#wave');`];
+}
 
-// ${what}
-${call}`;
+/** The line drawn by scrollDraw: one call. */
+export function jsLine(s: WaveSettings): string {
+  return [
+    '// <div id="wave"> + the SVG + </div>',
+    '',
+    "import { scrollDraw } from 'svg-scroll-draw';",
+    '',
+    ...drawCall(s),
+  ].join('\n');
 }
 
 /** The line as a React component, inside <ScrollDraw>. */
@@ -505,4 +523,165 @@ ${layers.map((l, i) => `        <path stroke="${colours[i]}" d="${l.line}" />`).
     </ScrollDraw>
   );
 }`;
+}
+
+// ── What leaves the page ────────────────────────────────────────────────────
+
+const LANG: Record<Tab, CodeLang> = { svg: 'svg', react: 'tsx', css: 'css', js: 'js' };
+
+/** One tab's code as it is shown, copied and downloaded: the source line, then the code. */
+export function listing(tab: Tab, s: WaveSettings, layers: Layer[], colours: string[]): string {
+  const code = tab === 'svg'
+    ? svgFile(s, layers, colours)
+    : tab === 'css'
+      ? cssBackground(s, layers, colours)
+      : tab === 'js'
+        ? jsLine(s)
+        : s.mode === 'fill' ? reactFill(s, layers, colours) : reactLine(s, layers, colours);
+  return withSource(code, SLUG, LANG[tab]);
+}
+
+/** The Run it row's title and file name, per mode. */
+export const RUN: Record<Mode, { title: string; filename: string }> = {
+  fill: { title: 'SVG wave divider', filename: 'wave-divider.html' },
+  line: { title: 'SVG wave drawn on scroll', filename: 'wave-line.html' },
+};
+
+/**
+ * The page around the wave in the files that run it: the preview's background
+ * (the panel) and text colour, as values in the theme on screen, so the
+ * translucent back layers look as they do in the preview.
+ */
+export type PageColours = { bg: string; fg: string };
+
+const indent = (text: string, n: number) => text.split('\n').map((l) => (l ? ' '.repeat(n) + l : l)).join('\n');
+
+const frontName = (s: WaveSettings) => (s.layers > 1 ? 'front layer’s' : 'wave’s');
+
+function fillIntro(s: WaveSettings): string {
+  return s.flipY
+    ? `The wave is the bottom edge of the section above it, in that section’s colour. It stretches to any width at a fixed height: resize the window.`
+    : `The wave is the top edge of the section under it, in that section’s colour. It stretches to any width at a fixed height: resize the window.`;
+}
+
+function fillCss(page: PageColours, front: string): string {
+  return `body { margin: 0; font: 16px/1.6 system-ui, sans-serif; background: ${page.bg}; color: ${page.fg}; }
+h1 { margin: 0 0 8px; font-size: 1.5rem; }
+p { margin: 0; }
+.intro { max-width: 40rem; padding: 64px 24px 24px; }
+.plain { padding: 64px 24px 32px; }
+.gap { height: 40px; }
+/* The section the wave belongs to, in its colour. */
+.band { min-height: 50vh; padding: 32px 24px; background: ${front}; }
+.tag { display: inline-block; padding: 6px 12px; background: ${page.bg}; color: ${page.fg}; font-size: 14px; }`;
+}
+
+const LINE_CSS = (page: PageColours) => `body { margin: 0; font: 16px/1.6 system-ui, sans-serif; background: ${page.bg}; color: ${page.fg}; }
+h1 { margin: 0 0 8px; font-size: 1.5rem; }
+p { margin: 0; }
+/* Room to scroll the wave in from below the window and out past the top. */
+.intro, .outro { display: grid; place-content: center; min-height: 110vh; padding: 0 24px; text-align: center; }
+.outro { min-height: 120vh; }
+#wave { padding: 0 16px; }`;
+
+const lineOutro = (s: WaveSettings) =>
+  s.plays === 'seen' ? 'It drew once and stays drawn: reload to see it again.' : 'Scroll back up and it undraws.';
+
+/**
+ * A complete page for the current settings, loading the library (line mode
+ * only) from jsDelivr. Fill: the wave between two sections as an inline SVG,
+ * then again as the CSS background. Line: the wave between two screens of
+ * room, drawn by the generated call.
+ */
+export function htmlPage(s: WaveSettings, layers: Layer[], colours: string[], page: PageColours, version: string): string {
+  const svg = svgFile(s, layers, colours).trimEnd();
+  if (s.mode === 'fill') {
+    const front = colours[colours.length - 1];
+    const band = (what: string) =>
+      `<section class="band"><p class="tag">${what}: the section ${s.flipY ? 'above' : 'below'}, in the ${frontName(s)} colour</p></section>`;
+    const around = (wave: string, what: string) => (s.flipY
+      ? [band(what), wave, '<div class="gap"></div>']
+      : ['<div class="gap"></div>', wave, band(what)]);
+    return htmlFile({
+      slug: SLUG,
+      title: RUN.fill.title,
+      css: `${fillCss(page, front)}\n\n${cssBackground(s, layers, colours)}`,
+      body: [
+        '<header class="intro">',
+        `  <h1>${RUN.fill.title}</h1>`,
+        `  <p>${fillIntro(s)}</p>`,
+        '</header>',
+        ...around(svg, 'Inline SVG'),
+        '<p class="plain">The same wave as a CSS background, the .wave-divider rule:</p>',
+        ...around('<div class="wave-divider"></div>', 'CSS background'),
+      ].join('\n'),
+    });
+  }
+  return htmlFile({
+    slug: SLUG,
+    title: RUN.line.title,
+    css: LINE_CSS(page),
+    body: [
+      '<header class="intro">',
+      `  <h1>${RUN.line.title}</h1>`,
+      `  <p>${drawWhat(s)} Scroll down.</p>`,
+      '</header>',
+      '<div id="wave">',
+      indent(svg, 2),
+      '</div>',
+      '<footer class="outro">',
+      `  <p>${lineOutro(s)}</p>`,
+      '</footer>',
+    ].join('\n'),
+    script: [`import { scrollDraw } from '${cdnModule(version)}';`, '', ...drawCall(s)].join('\n'),
+  });
+}
+
+/** The same page as a Vite + React project: the generated component in an App. */
+export function reactProject(
+  s: WaveSettings, layers: Layer[], colours: string[], page: PageColours, version: string,
+): Omit<ReactProject, 'title'> {
+  if (s.mode === 'fill') {
+    const band = `      <section className="band"><p className="tag">WaveDivider: the section ${s.flipY ? 'above' : 'below'}, in the ${frontName(s)} colour</p></section>`;
+    const around = s.flipY
+      ? [band, '      <WaveDivider />', '      <div className="gap" />']
+      : ['      <div className="gap" />', '      <WaveDivider />', band];
+    const app = [
+      reactFill(s, layers, colours, false).replace(/^export /, ''),
+      '',
+      'export default function App() {',
+      '  return (',
+      '    <main>',
+      '      <header className="intro">',
+      `        <h1>${RUN.fill.title}</h1>`,
+      `        <p>${fillIntro(s)}</p>`,
+      '      </header>',
+      ...around,
+      '    </main>',
+      '  );',
+      '}',
+    ].join('\n');
+    return { slug: SLUG, app, css: withSource(fillCss(page, colours[colours.length - 1]), SLUG, 'css'), version };
+  }
+  const app = [
+    reactLine(s, layers, colours).replace('export function WaveLine', 'function WaveLine'),
+    '',
+    'export default function App() {',
+    '  return (',
+    '    <main>',
+    '      <header className="intro">',
+    `        <h1>${RUN.line.title}</h1>`,
+    `        <p>${drawWhat(s)} Scroll down.</p>`,
+    '      </header>',
+    '      <div id="wave">',
+    '        <WaveLine />',
+    '      </div>',
+    '      <footer className="outro">',
+    `        <p>${lineOutro(s)}</p>`,
+    '      </footer>',
+    '    </main>',
+    '  );',
+    '}',
+  ].join('\n');
+  return { slug: SLUG, app, css: withSource(LINE_CSS(page), SLUG, 'css'), version };
 }

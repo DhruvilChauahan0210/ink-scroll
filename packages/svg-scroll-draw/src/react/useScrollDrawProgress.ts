@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef, type RefObject } from 'react';
 import { EASINGS } from '../core/easing';
 import { parseTrigger, computeProgress, computeTriggers } from '../core/trigger';
+import { measureTriggerFrame } from '../core/trigger-frame';
+import { watchLayout } from '../core/layout-watch';
 import { watchReducedMotion } from '../core/motion-watch';
 import type { EasingName, TriggerConfig } from '../core/types';
 
@@ -88,20 +90,13 @@ export function useScrollDrawProgress(
       return axis === 'x' ? window.innerWidth : window.innerHeight;
     }
 
+    // Measured as the engines measure it (core/trigger-frame). With a
+    // scrollContainer this added the element's viewport top to the container's
+    // scroll offset, leaving out where the container sits: a panel 400px down
+    // read 0.19 where scrollProgress read 0.5, and never reached 1.
     function cacheTriggers(): void {
-      const rect   = el.getBoundingClientRect();
-      const scroll = scrollPos();
-      const pos    = axis === 'x' ? rect.left : rect.top;
-      const size   = axis === 'x' ? rect.width : rect.height;
-      const result = computeTriggers(
-        { top: pos, height: size },
-        scroll,
-        vpSize(),
-        startConfig,
-        endConfig,
-      );
-      tStart = result.tStart;
-      tEnd   = result.tEnd;
+      const frame = measureTriggerFrame(el, scrollEl, axis);
+      ({ tStart, tEnd } = computeTriggers(frame, frame.scroll, vpSize(), startConfig, endConfig));
     }
 
     function tick(): void {
@@ -138,6 +133,8 @@ export function useScrollDrawProgress(
     }
     window.addEventListener('resize', onResize);
     window.addEventListener('orientationchange', onResize);
+    // Layout changes that are not window resizes: images, fonts, late content.
+    const unwatch = watchLayout([el], onResize);
 
     // Reduced motion turned on mid-visit: complete, and no more ticks, as at
     // mount under it. One way, as in every engine (core/motion-live).
@@ -151,6 +148,7 @@ export function useScrollDrawProgress(
 
     return () => {
       unwatchMotion();
+      unwatch();
       cancelAnimationFrame(rafId);
       clearTimeout(resizeTimer);
       observer.disconnect();

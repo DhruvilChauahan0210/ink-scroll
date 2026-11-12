@@ -163,7 +163,10 @@ export function scrollVideo(
     }
     cacheTriggers();
     onReady?.();
-    if (isVisible && !paused) rafId = requestAnimationFrame(update);
+    // A seek() made before the metadata had nothing to write to yet: write it
+    // now. It used to be lost, the video on frame 0 and getProgress() at 0.5.
+    if (paused) applyAlpha(currentAlpha);
+    else if (isVisible) rafId = requestAnimationFrame(update);
   }
 
   // video may already have metadata
@@ -212,6 +215,12 @@ export function scrollVideo(
     getTrigger: () => ({ tStart, tEnd }),
   });
 
+  function resume(): void {
+    if (!paused) return;
+    paused = false;
+    if (isVisible && ready) rafId = requestAnimationFrame(update);
+  }
+
   return {
     destroy() {
       cancelAnimationFrame(rafId);
@@ -229,19 +238,17 @@ export function scrollVideo(
       frozenRaw    = 0;
       completed    = false;
       currentAlpha = 0;
-      paused       = false;
       lastTime     = NaN;   // an explicit replay always seeks
       applyAlpha(0);
+      // After pause() or seek() the loop is stopped. replay() used to clear
+      // `paused` and leave it so, and resume() then had nothing to restart.
+      resume();
     },
     pause() {
       paused = true;
       cancelAnimationFrame(rafId);
     },
-    resume() {
-      if (!paused) return;
-      paused = false;
-      if (isVisible && ready) rafId = requestAnimationFrame(update);
-    },
+    resume,
     seek(p: number) {
       const clamped = Math.min(1, Math.max(0, p));
       currentAlpha  = clamped;

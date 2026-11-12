@@ -230,6 +230,77 @@ describe('createEngine — morphTo', () => {
 
     expect(path.getAttribute('d')).toBe('M10 20');
   });
+
+  // The dash was sized once, to the starting path, so a morph to a longer
+  // outline ended at progress 1 with the line still open: 100 of its 300 drawn.
+  // The length here is whatever `d` says at the time it is read.
+  describe('the dash fits the longer of the two outlines', () => {
+    const SHORT = 'M0 0 L100 0';
+    const LONG = 'M0 0 L300 0';
+    function measured(d: string): SVGPathElement {
+      const path = makePath({ d });
+      (path as unknown as { getTotalLength: () => number }).getTotalLength = () =>
+        parseFloat((path.getAttribute('d') ?? '').split('L')[1] ?? '0');
+      return path;
+    }
+
+    it('a longer target: drawn whole at 1, hidden at 0', () => {
+      const path = measured(SHORT);
+      const instance = createEngine(makeContainer([path]), { morphTo: LONG });
+      expect(path.style.strokeDasharray).toBe('300');
+      expect(path.style.strokeDashoffset).toBe('300'); // ≥ the 100 the path is now
+      instance.seek(1);
+      expect(path.getAttribute('d')).toBe('M0 0 L300 0');
+      expect(path.style.strokeDashoffset).toBe('0');
+      expect(path.style.strokeDasharray).toBe('300');
+    });
+
+    it('a shorter target keeps the starting length', () => {
+      const path = measured(LONG);
+      createEngine(makeContainer([path]), { morphTo: SHORT });
+      expect(path.style.strokeDasharray).toBe('300');
+    });
+
+    it('a re-measure mid-morph reads both ends, and leaves the path where it was', () => {
+      const path = measured(SHORT);
+      const instance = createEngine(makeContainer([path]), { morphTo: LONG });
+      instance.seek(0.5);
+      const mid = path.getAttribute('d');
+      instance.refresh!();
+      expect(path.style.strokeDasharray).toBe('300');
+      expect(path.getAttribute('d')).toBe(mid);
+    });
+
+    it('under reduced motion the target is drawn whole', () => {
+      vi.stubGlobal('matchMedia', (q: string) => ({
+        matches: q.includes('reduce'), media: q, addEventListener: vi.fn(), removeEventListener: vi.fn(),
+      }));
+      const path = measured(SHORT);
+      createEngine(makeContainer([path]), { morphTo: LONG });
+      expect(path.getAttribute('d')).toBe(LONG);
+      expect(path.style.strokeDasharray).toBe('300');
+      expect(path.style.strokeDashoffset).toBe('0');
+    });
+  });
+});
+
+// ── pathLength ────────────────────────────────────────────────────────────────
+
+// The dash was the user-unit length, 280 here, but with pathLength="1" the
+// browser reads dash values in pathLength units: the line was whole by
+// seek(0.004), and at seek(0.5) drawn where the same line without it was half.
+describe('createEngine — pathLength', () => {
+  it('sizes the dash in pathLength units', () => {
+    const path = makePath({ d: 'M10 50 L290 50', pathLength: '1' });
+    (path as unknown as { getTotalLength: () => number }).getTotalLength = () => 280;
+    const instance = createEngine(makeContainer([path]), {});
+    expect(path.style.strokeDasharray).toBe('1');
+    expect(path.style.strokeDashoffset).toBe('1');
+    instance.seek(0.5);
+    expect(path.style.strokeDashoffset).toBe('0.5');
+    instance.seek(1);
+    expect(path.style.strokeDashoffset).toBe('0');
+  });
 });
 
 // ── clip mode ─────────────────────────────────────────────────────────────────

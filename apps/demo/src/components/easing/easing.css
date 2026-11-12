@@ -134,10 +134,11 @@
    pinned stage the track scrolls behind. */
 .site .ez-live { display: grid; gap: 12px; min-width: 0; }
 .site .ez-live-k { margin: 0; font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
-/* The frame is an inset shadow, not a border: svg-scroll-draw 2.23.2 measures
-   a scroll container's trigger from its border box (core/trigger-frame.ts;
-   2.23.3 measures inside it), so a 1px border kept the box's full scroll at
-   progress 0.9985, never 1. Without one, every version reads the same. */
+/* The frame is an inset shadow, not a border: svg-scroll-draw 2.23.2 and
+   earlier measure a scroll container's trigger from its border box
+   (core/trigger-frame.ts; fixed in 2.23.3, which measures inside it), so a 1px
+   border kept the box's full scroll at progress 0.9985, never 1. Without one,
+   every version reads the same. */
 .site .ez-sbox {
   height: 300px;
   overflow-y: auto;

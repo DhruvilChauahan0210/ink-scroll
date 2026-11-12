@@ -2,14 +2,22 @@ import {
   DEFAULT_PRESET, LIMITS, presetOf,
   type Direction, type Fill, type Frame, type FrameProps, type Iterations, type Jump, type Preset, type TimingKind,
 } from '@/data/keyframes';
+import { cdnModule, escapeHtml, htmlFile, withSource } from '@/lib/tool-export';
 
 /**
  * Everything the CSS keyframes animation generator writes, from one settings
  * object: the @keyframes and the class, the shorthand, the scroll-driven CSS,
- * the svg-scroll-draw version, the preview's own scoped copies, and the
- * timeline the transport and the header figure draw. Pure functions, so the
- * preview, the code and the drawing cannot disagree.
+ * the svg-scroll-draw version, the pages the export row runs, the preview's
+ * own scoped copies, and the timeline the transport and the header figure
+ * draw. Pure functions, so the preview, the code and the drawing cannot
+ * disagree.
+ *
+ * Every listing a visitor copies starts with the source line (withSource);
+ * the *Body functions are the same code without it, for the pages, which
+ * carry the line once at their top.
  */
+
+export const SLUG = 'css-keyframes-animation-generator';
 
 export type Settings = {
   preset: string;
@@ -236,7 +244,10 @@ function reducedRule(s: Settings, sel: string): string[] {
 /** The reduced-motion rule on its own, for the page to quote. */
 export const reducedCss = (s: Settings) => reducedRule(s, `.${s.cls}`).join('\n');
 
-export function cssCode(s: Settings): string {
+/** The CSS tab: the @keyframes, the class and the reduced-motion rule. */
+export const cssCode = (s: Settings) => withSource(cssBody(s), SLUG, 'css');
+
+function cssBody(s: Settings): string {
   const p = presetOf(s.preset);
   const sel = `.${s.cls}`;
   return [
@@ -267,7 +278,7 @@ export function shorthandCode(s: Settings): string {
     ['animation-play-state', 'running', true],
   ];
   const width = Math.max(...longs.map(([k, v]) => k.length + v.length + 3));
-  return [
+  return withSource([
     '/* One declaration: name, duration, easing, delay, count, direction, fill.',
     '   The first time is the duration, the second the delay. */',
     `${sel} {`,
@@ -281,7 +292,7 @@ export function shorthandCode(s: Settings): string {
       return def ? `  ${decl.padEnd(width)} /* default */` : `  ${decl}`;
     }),
     '}',
-  ].join('\n');
+  ].join('\n'), SLUG, 'css');
 }
 
 // ── Run it when it scrolls into view: CSS ────────────────────────────────────
@@ -310,7 +321,10 @@ function scrollRule(s: Settings, sel: string, name: string, pad: string): string
   ];
 }
 
-export function scrollCssCode(s: Settings): string {
+/** The On scroll · CSS tab: the same keyframes on a view() timeline. */
+export const scrollCssCode = (s: Settings) => withSource(scrollCssBody(s), SLUG, 'css');
+
+function scrollCssBody(s: Settings): string {
   const p = presetOf(s.preset);
   const exit = p.group === 'exit';
   return [
@@ -516,8 +530,17 @@ const lit = (o: RevealFrom) => `{ ${Object.entries(o).map(([k, v]) => `${k}: ${v
 const q = (v: string | number) => (typeof v === 'number' ? String(v) : `'${v}'`);
 const camel = (prop: string) => prop.replace(/-([a-z])/g, (_, c: string) => c.toUpperCase());
 
-/** The svg-scroll-draw code, or null with the reason when no call can play this effect. */
+/** Where an import comes from: the package name for the tab, a jsDelivr URL for a page. */
+type From = (entry: string) => string;
+const NPM: From = (entry) => (entry ? `svg-scroll-draw/${entry}` : 'svg-scroll-draw');
+
+/** The On scroll · JS tab: the svg-scroll-draw code, or null with the reason when no call can play this effect. */
 export function jsCode(s: Settings): { code: string | null; why: string } {
+  const r = jsBody(s, NPM);
+  return r.code === null ? r : { code: withSource(r.code, SLUG, 'js'), why: '' };
+}
+
+function jsBody(s: Settings, from: From): { code: string | null; why: string } {
   const p = presetOf(s.preset);
   const map = libMapOf(p);
   if (map.kind === 'none') return { code: null, why: map.why };
@@ -547,7 +570,7 @@ export function jsCode(s: Settings): { code: string | null; why: string } {
     return {
       code: [
         ...head,
-        "import { scrollReveal } from 'svg-scroll-draw/reveal';",
+        `import { scrollReveal } from '${from('reveal')}';`,
         ...helper,
         '',
         '// Plays as it scrolls into view, from when its top passes 88% of the window',
@@ -583,7 +606,7 @@ export function jsCode(s: Settings): { code: string | null; why: string } {
   return {
     code: [
       ...head,
-      "import { scrollAnimate } from 'svg-scroll-draw';",
+      `import { scrollAnimate } from '${from('')}';`,
       ...helper,
       '',
       ...(exit
@@ -617,6 +640,166 @@ const onceNote = [
   '// the highest eased value reached, so it would stop on that peak; 2.23.3 keeps',
   '// the furthest scroll progress and eases it after, so it settles at the end.',
 ];
+
+// ── The pages the export row runs ────────────────────────────────────────────
+
+/** What the "Run it" row saves and opens for the tab on show. */
+export type Runnable = { title: string; filename: string; html: string };
+
+/** How many cards a scroll page runs, one under another, so each plays on its own. */
+const PAGE_CARDS = 3;
+
+// The page's own classes carry a prefix, so a class name the visitor picks
+// (the one their CSS animates) cannot also be the page's layout.
+const PAGE_CSS = `*, *::before, *::after { box-sizing: border-box; }
+body {
+  margin: 0;
+  font: 16px/1.5 system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: #18181b;
+  background: #f4f4f5;
+}
+code { font: 13px/1.5 ui-monospace, Menlo, Consolas, monospace; }
+.demo-card {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  width: 280px;
+  max-width: 100%;
+  padding: 20px;
+  border: 1px solid #d4d4d8;
+  border-radius: 12px;
+  background: #fff;
+}
+.demo-card b { font: 600 13px/1.4 ui-monospace, Menlo, Consolas, monospace; }
+.demo-card i { display: block; height: 8px; border-radius: 4px; background: #e4e4e7; }
+.demo-card i + i { width: 70%; }`;
+
+const card = (cls: string) => [`<div class="demo-card ${cls}">`, `  <b>.${cls}</b>`, '  <i></i>', '  <i></i>', '</div>'];
+
+/** The CSS tab (and the shorthand, which is the same animation) on a card, with a Replay button. */
+function timePage(s: Settings, title: string): string {
+  return htmlFile({
+    slug: SLUG,
+    title,
+    css: `${PAGE_CSS}
+.demo-stage {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 28px;
+  min-height: 100vh;
+  padding: 48px 16px;
+  overflow-x: clip;
+}
+.demo-replay {
+  padding: 8px 16px;
+  border: 1px solid #a1a1aa;
+  border-radius: 8px;
+  background: #fff;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+${cssBody(s)}`,
+    body: [
+      '<main class="demo-stage">',
+      ...card(s.cls).map((l) => `  ${l}`),
+      `  <p><code>animation: ${escapeHtml(shorthandValue(s, s.preset))};</code></p>`,
+      '  <button type="button" class="demo-replay">↺ Replay</button>',
+      '</main>',
+    ].join('\n'),
+    script: [
+      '// Replay: take the class off, make the browser notice (a forced layout), put it back.',
+      "const el = document.querySelector('.demo-card');",
+      "document.querySelector('.demo-replay').addEventListener('click', () => {",
+      `  el.classList.remove('${s.cls}');`,
+      '  void el.offsetWidth;',
+      `  el.classList.add('${s.cls}');`,
+      '});',
+    ].join('\n'),
+  });
+}
+
+/**
+ * A page tall enough to scroll the cards in and out: a screen above them, the
+ * cards a little under a screen apart, a screen below. `js` is the On scroll ·
+ * JS code with its imports from jsDelivr; without it the page runs the On
+ * scroll · CSS tab.
+ */
+function scrollPage(s: Settings, title: string, js: string | null): string {
+  const p = presetOf(s.preset);
+  const exit = p.group === 'exit';
+  const how = exit ? 'as it scrolls out at the top' : 'as it scrolls into view';
+  const intro = js
+    ? `Each card plays ${p.label.toLowerCase()} ${how}, run by svg-scroll-draw${exit ? '' : ', and stays once it has played'}.`
+    : `Each card plays ${p.label.toLowerCase()} ${how}, on a CSS scroll timeline: scroll back and it plays backwards.`;
+  return htmlFile({
+    slug: SLUG,
+    title,
+    css: `${PAGE_CSS}
+.demo-spacer {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  min-height: 100vh;
+  padding: 32px 16px;
+  text-align: center;
+  color: #52525b;
+}
+.demo-spacer p { max-width: 42ch; margin: 4px 0; }
+.demo-list {
+  display: grid;
+  justify-items: center;
+  gap: 40vh;
+  padding: 0 16px;
+  overflow-x: clip;
+}${js ? '' : `
+.demo-nosupport { display: none; }
+@supports not (animation-timeline: view()) {
+  .demo-nosupport { display: block; }
+}
+
+${scrollCssBody(s)}`}`,
+    body: [
+      '<header class="demo-spacer">',
+      '  <p><b>Scroll down</b></p>',
+      `  <p>${escapeHtml(intro)}</p>`,
+      ...(js ? [] : ['  <p class="demo-nosupport">This browser has no <code>animation-timeline: view()</code>, so the cards are simply shown.</p>']),
+      '</header>',
+      '',
+      '<main class="demo-list">',
+      ...Array.from({ length: PAGE_CARDS }, () => card(s.cls).map((l) => `  ${l}`)).flat(),
+      '</main>',
+      '',
+      '<footer class="demo-spacer"><p>The end of the page</p></footer>',
+    ].join('\n'),
+    script: js ?? undefined,
+  });
+}
+
+/**
+ * The page the export row saves and opens for the tab on show: the CSS (or
+ * the shorthand, the same animation) on a card with a Replay button, or a page
+ * to scroll for the two scroll versions. The JS one imports svg-scroll-draw
+ * from jsDelivr, pinned to `version`; an effect with no library version runs
+ * the On scroll · CSS page there, as the tab says. Files are named after the
+ * effect, which is short, rather than a class name of up to 40 characters.
+ */
+export function runnable(s: Settings, tab: OutputKey, version: string): Runnable {
+  const p = presetOf(s.preset);
+  if (tab === 'css' || tab === 'shorthand') {
+    const title = `${p.label}: CSS keyframes animation`;
+    return { title, filename: `${p.key}.html`, html: timePage(s, title) };
+  }
+  const js = tab === 'scroll-js' ? jsBody(s, (entry) => cdnModule(version, entry)).code : null;
+  if (js) {
+    const title = `${p.label} on scroll: svg-scroll-draw`;
+    return { title, filename: `${p.key}-scroll-js.html`, html: scrollPage(s, title, js) };
+  }
+  const title = `${p.label} on scroll: CSS`;
+  return { title, filename: `${p.key}-scroll.html`, html: scrollPage(s, title, null) };
+}
 
 // ── The preview's own CSS ────────────────────────────────────────────────────
 

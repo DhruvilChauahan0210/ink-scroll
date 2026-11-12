@@ -39,8 +39,17 @@ beforeEach(() => {
   vi.stubGlobal('scrollTo', vi.fn((opts: ScrollToOptions) => {
     if (opts.top !== undefined) vi.stubGlobal('scrollY', opts.top);
   }));
+  // jsdom has no layout, so no scroll range: the page is as tall as its
+  // 800px sections, in an 800px viewport. Offsets are clamped to this range.
+  pageSize(() => document.body.children.length * 800);
   setReducedMotion(false);
 });
+
+function pageSize(height: () => number): void {
+  const root = document.documentElement;
+  Object.defineProperty(root, 'scrollHeight', { get: height, configurable: true });
+  Object.defineProperty(root, 'clientHeight', { get: () => 800, configurable: true });
+}
 
 /**
  * jsdom does not implement matchMedia, so stub it. `listeners` is exposed so a
@@ -65,6 +74,9 @@ function emitReducedMotion(matches: boolean) {
 afterEach(() => {
   vi.unstubAllGlobals();
   document.body.innerHTML = '';
+  const root = document.documentElement as unknown as Record<string, unknown>;
+  delete root.scrollHeight;
+  delete root.clientHeight;
 });
 
 function flush(times = 1) {
@@ -310,6 +322,9 @@ describe('scrollSnap — reacting to a user scroll', () => {
       configurable: true,
     });
     Object.defineProperty(scroller, 'clientHeight', { get: () => 600, configurable: true });
+    Object.defineProperty(scroller, 'scrollHeight', { get: () => 1800, configurable: true });
+    // jsdom has no Element.scrollTo.
+    scroller.scrollTo = ((opts: ScrollToOptions) => { scroller.scrollTop = opts.top!; }) as typeof scroller.scrollTo;
 
     // Sections positioned inside the container's scroll space, not the page's:
     // their client rects move with the container's own scrollTop.
@@ -345,5 +360,155 @@ describe('scrollSnap — reacting to a user scroll', () => {
     expect(snapped, 'the container scroll was never handled').toContain(1);
     // Landed by writing the container's scrollTop, not the window's.
     expect(scroller.scrollTop, 'the container was not scrolled to the section').toBe(600);
+  });
+});
+
+describe('scrollSnap — where it starts and where it lands', () => {
+  beforeEach(() => vi.useFakeTimers());
+  afterEach(() => vi.useRealTimers());
+
+  function flushAnimation(): void {
+    let guard = 0;
+    while (rafCallbacks.length && guard++ < 50) rafCallbacks.shift()!(performance.now() + 10_000);
+  }
+
+  function userScrollTo(y: number): void {
+    vi.stubGlobal('scrollY', y);
+    window.dispatchEvent(new Event('scroll'));
+    vi.advanceTimersByTime(150);
+    flushAnimation();
+  }
+
+  /** `count` sections `size` px tall, stacked from the top of the page. */
+  function sectionsOf(count: number, size: number): HTMLElement[] {
+    pageSize(() => count * size);
+    return Array.from({ length: count }, (_, i) => {
+      const el = document.createElement('div');
+      document.body.appendChild(el);
+      Object.defineProperty(el, 'getBoundingClientRect', {
+        value: () => ({ top: i * size - window.scrollY, bottom: (i + 1) * size - window.scrollY, left: 0, right: 1200, width: 1200, height: size }),
+        configurable: true,
+      });
+      Object.defineProperty(el, 'offsetHeight', { get: () => size, configurable: true });
+      return el;
+    });
+  }
+
+  // currentIndex started at 0 wherever the page was: created on section 2, a
+  // nudge of 100px snapped to section 1.
+  it('starts from the section the page is on', () => {
+    const sections = makeSections(4);
+    vi.stubGlobal('scrollY', 1600);
+    const snapped: number[] = [];
+    const instance = scrollSnap(sections, { onSnap: (i) => snapped.push(i) });
+    expect(instance.getCurrentIndex()).toBe(2);
+
+    userScrollTo(1700); // under the threshold: back to section 2
+    expect(snapped).toEqual([2]);
+    expect(window.scrollY).toBe(1600);
+  });
+
+  it('starts from the nearest section between two', () => {
+    const sections = makeSections(4);
+    vi.stubGlobal('scrollY', 1300); // 500 past section 1, 300 before section 2
+    expect(scrollSnap(sections).getCurrentIndex()).toBe(2);
+  });
+
+  // A plain write follows CSS `scroll-behavior: smooth`, so each frame of the
+  // glide became a smooth scroll of its own.
+  it('writes every frame of the glide with behavior: instant', () => {
+    const sections = makeSections(3);
+    const instance = scrollSnap(sections);
+    instance.snapTo(1);
+    flushAnimation();
+    const calls = (window.scrollTo as unknown as { mock: { calls: [ScrollToOptions][] } }).mock.calls;
+    expect(calls.length).toBeGreaterThan(0);
+    for (const [opts] of calls) expect(opts.behavior).toBe('instant');
+    expect(window.scrollY).toBe(800);
+  });
+
+  it('falls back to a plain write where behavior: instant is unknown', () => {
+    vi.stubGlobal('scrollTo', vi.fn((opts: ScrollToOptions) => {
+      if (opts.behavior === 'instant') throw new TypeError("'instant' is not a valid enum value");
+      vi.stubGlobal('scrollY', opts.top);
+    }));
+    const sections = makeSections(3);
+    scrollSnap(sections).snapTo(2);
+    flushAnimation();
+    expect(window.scrollY).toBe(1600);
+  });
+
+  // Offsets were never clamped to the scroll range: 400px sections on an
+  // 800px viewport put the last one at 1600 on a page that scrolls to 1200, so
+  // a snap there never arrived and the next scroll event sent it back.
+  it('the last sections of a page that ends sooner become current, and stay', () => {
+    const sections = sectionsOf(5, 400); // page 2000, scrolls to 1200
+    const snapped: number[] = [];
+    const instance = scrollSnap(sections, { onSnap: (i) => snapped.push(i) });
+
+    instance.snapTo(4);
+    flushAnimation();
+    expect(window.scrollY).toBe(1200);
+    expect(instance.getCurrentIndex()).toBe(4);
+
+    userScrollTo(1200); // the event the snap's own last frame produces
+    expect(instance.getCurrentIndex()).toBe(4);
+    expect(snapped).toEqual([4]);
+  });
+
+  // The offsets came from the container's border box, so a 4px border landed
+  // every snap 4px past its section.
+  it('measures a container from inside its border', () => {
+    const scroller = document.createElement('div');
+    document.body.appendChild(scroller);
+    let top = 0;
+    Object.defineProperty(scroller, 'scrollTop', { get: () => top, set: (v) => { top = v; }, configurable: true });
+    Object.defineProperty(scroller, 'clientTop', { get: () => 4, configurable: true });
+    Object.defineProperty(scroller, 'clientHeight', { get: () => 600, configurable: true });
+    Object.defineProperty(scroller, 'scrollHeight', { get: () => 1800, configurable: true });
+    Object.defineProperty(scroller, 'getBoundingClientRect', {
+      value: () => ({ top: 100, bottom: 708, left: 0, right: 800, width: 800, height: 608 }),
+      configurable: true,
+    });
+    scroller.scrollTo = ((opts: ScrollToOptions) => { top = opts.top!; }) as typeof scroller.scrollTo;
+    const sections = [0, 1, 2].map((i) => {
+      const el = document.createElement('div');
+      scroller.appendChild(el);
+      Object.defineProperty(el, 'getBoundingClientRect', {
+        value: () => ({ top: 100 + 4 + i * 600 - top, bottom: 100 + 4 + (i + 1) * 600 - top, left: 0, right: 800, width: 800, height: 600 }),
+        configurable: true,
+      });
+      Object.defineProperty(el, 'offsetHeight', { get: () => 600, configurable: true });
+      return el;
+    });
+
+    const instance = scrollSnap(sections, { scrollContainer: scroller });
+    instance.snapTo(1);
+    flushAnimation();
+    expect(top).toBe(600);
+    instance.snapTo(2);
+    flushAnimation();
+    expect(top).toBe(1200);
+  });
+
+  // A page without a doctype scrolls through body, and there the root's
+  // clientHeight is the whole page: measured from the root the range was 0,
+  // and every snap went to the top.
+  it('on a page in quirks mode, takes the range from the element that scrolls it', () => {
+    const sections = makeSections(4);
+    const body = document.body as unknown as Record<string, unknown>;
+    Object.defineProperty(document.documentElement, 'clientHeight', { get: () => 3200, configurable: true });
+    Object.defineProperty(body, 'scrollHeight', { get: () => 3200, configurable: true });
+    Object.defineProperty(body, 'clientHeight', { get: () => 800, configurable: true });
+    Object.defineProperty(document, 'scrollingElement', { get: () => document.body, configurable: true });
+    try {
+      scrollSnap(sections).snapTo(2);
+      flushAnimation();
+      expect(window.scrollY).toBe(1600);
+    } finally {
+      delete (document as unknown as Record<string, unknown>).scrollingElement;
+      delete body.scrollHeight;
+      delete body.clientHeight;
+    }
   });
 });

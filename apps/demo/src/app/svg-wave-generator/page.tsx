@@ -11,9 +11,11 @@ import { WaveGenerator } from '@/components/wave/WaveGenerator';
 import { WaveFigure } from '@/components/wave/WaveFigure';
 import { TensionFigure } from '@/components/wave/TensionFigure';
 import {
-  FILL_TABS, JITTER_H, JITTER_X, LINE_TABS, MAX_LAYERS, SMOOTHS, buildWave, cssBackground, type WaveSettings,
+  FILL_TABS, JITTER_H, JITTER_X, LINE_TABS, MAX_LAYERS, SLUG, SMOOTHS, buildWave, cssBackground, type WaveSettings,
 } from '@/components/wave/wave';
 import { C, Note, Sec, Toc } from '@/components/stack/parts';
+import { ToolNextStep } from '@/components/tool-kit/ToolNextStep';
+import { withSource } from '@/lib/tool-export';
 
 // Searches this page is for: "svg wave generator", "wave divider svg", "css
 // wave background", "animated svg wave". Every path and data URI quoted below
@@ -30,9 +32,9 @@ const SMALL: WaveSettings = {
   mode: 'fill', layers: 1, amplitude: 0.8, waves: 1, smooth: 'peaks', tension: 0, steps: 8, variation: 0, seed: 1,
   flipX: false, flipY: false, height: 48, strokeWidth: 4, stagger: 0, plays: 'scroll', finish: 'leave',
 };
-const SMALL_CSS = cssBackground(SMALL, buildWave(SMALL), ['#121110']);
+const SMALL_CSS = withSource(cssBackground(SMALL, buildWave(SMALL), ['#121110']), SLUG, 'css');
 
-const CATMULL_JS = `// One cubic Bézier per gap, through every point.
+const CATMULL_JS = withSource(`// One cubic Bézier per gap, through every point.
 // p: the points, left to right; tension 0 is Catmull-Rom.
 function catmullRom(p, tension = 0) {
   const f = (1 - tension) / 6;
@@ -44,7 +46,7 @@ function catmullRom(p, tension = 0) {
          \`\${c.x},\${c.y}\`;
   }
   return d; // from p[1] to the point before last: the ends only steer
-}`;
+}`, SLUG, 'js');
 
 const DIVIDER_HTML = `<section class="hero">…</section>
 
@@ -106,6 +108,7 @@ const TOC = [
   { id: 'maths', label: 'Points, then a curve' },
   { id: 'divider', label: 'As a section divider' },
   { id: 'draw', label: 'Drawing the line on scroll' },
+  { id: 'use', label: 'Use it in your project' },
   { id: 'faq', label: `Questions · ${FAQ.length}` },
 ];
 
@@ -183,7 +186,7 @@ export default function SvgWaveGeneratorPage() {
                 to the next section: give the front layer that section’s colour. Switch the output to line to keep only
                 the waves themselves, as strokes that scrollDraw draws.
               </p>
-              <WaveGenerator />
+              <WaveGenerator version={SELF.version} />
             </Sec>
 
             <Sec n={2} k="The maths" id="maths" title="Points first, then a curve">
@@ -273,7 +276,20 @@ export default function SvgWaveGeneratorPage() {
               </Note>
             </Sec>
 
-            <Sec n={5} k={`${FAQ.length} questions`} id="faq" title="SVG wave questions">
+            <Sec n={5} k="Next" id="use" title="Use it in your project">
+              <ToolNextStep
+                slug={SLUG}
+                api="scrollDraw"
+                docs="/docs#core-options"
+                related={['svg-blob-generator', 'scroll-trigger-visualizer']}
+              />
+              <Note k="Fill needs nothing">
+                The fill’s SVG, React component and CSS background need no package at all: only the line, drawn on
+                scroll, imports scrollDraw (or <C>ScrollDraw</C> from <C>svg-scroll-draw/react</C>).
+              </Note>
+            </Sec>
+
+            <Sec n={6} k={`${FAQ.length} questions`} id="faq" title="SVG wave questions">
               <div className="stk-faq">
                 {FAQ.map((f, i) => (
                   <div key={f.q} className="stk-q">
@@ -285,10 +301,6 @@ export default function SvgWaveGeneratorPage() {
                   </div>
                 ))}
               </div>
-              <p className="stk-p stk-more">
-                Drawing on scroll with svg-scroll-draw {SELF.version}: <Link href="/docs">the docs</Link>, or the{' '}
-                <Link href="/svg-path-viewer">SVG path viewer</Link> to measure and check a line before it draws.
-              </p>
             </Sec>
           </div>
         </div>

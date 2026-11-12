@@ -12,6 +12,7 @@ import { jsonLd, SITE_URL } from '@/lib/json-ld';
 import { CodeBox } from '@/components/site/CodeBox';
 import { TriggerVisualizer } from '@/components/trigger/TriggerVisualizer';
 import { TriggerFigure } from '@/components/trigger/TriggerFigure';
+import { ToolNextStep } from '@/components/tool-kit/ToolNextStep';
 import { C, Note, Sec, Toc } from '@/components/stack/parts';
 
 // Searches this answers: "scrolltrigger start end", "scroll trigger explained",
@@ -109,6 +110,7 @@ const TOC = [
   { id: 'syntax', label: `What the parser reads · ${SYNTAX_SAMPLES.length}` },
   { id: 'defaults', label: `Defaults · ${TRIGGER_DEFAULTS.length}` },
   { id: 'gsap', label: 'Next to GSAP' },
+  { id: 'use', label: 'Use it in your project' },
   { id: 'faq', label: `Questions · ${FAQ.length}` },
 ];
 
@@ -168,7 +170,8 @@ export default function ScrollTriggerVisualizerPage() {
             <p className="pg-lede">
               <C>{"start: 'top 85%'"}</C> is two words: an edge of the element, and a line across the viewport. Pick both
               for start and end, scroll the preview, and watch where progress is 0, where it is 1, and the arithmetic in
-              between. Then copy the trigger.
+              between. Then copy the trigger, or run it outside this page: download a page of its own, or open it in
+              StackBlitz.
             </p>
             <div className="pg-actions">
               <a href="#visualizer" className="btn btn-solid" data-magnetic>Open the visualizer ↓</a>
@@ -194,7 +197,7 @@ export default function ScrollTriggerVisualizerPage() {
                 two lines, and the drawing inside it is scrollDraw itself, given your trigger and told to watch the box
                 instead of the window.
               </p>
-              <TriggerVisualizer />
+              <TriggerVisualizer version={SELF.version} />
             </Sec>
 
             <Sec n={2} k="The arithmetic" id="model" title="How start and end become progress">
@@ -317,7 +320,24 @@ export default function ScrollTriggerVisualizerPage() {
               </Note>
             </Sec>
 
-            <Sec n={6} k={`${FAQ.length} questions`} id="faq" title="Scroll trigger questions">
+            <Sec n={6} k="Next step" id="use" title="Use it in your project">
+              <p className="stk-p">
+                The visualizer’s drawing is scrollDraw, from the main entry. scrollText, scrollReveal and scrollProgress
+                have entries of their own (<C>svg-scroll-draw/text</C>, <C>/reveal</C> and <C>/progress</C>), and the
+                React tab’s ScrollDraw, ScrollText and useScrollDrawProgress come from <C>svg-scroll-draw/react</C>.
+                The page Run it downloads loads the entry its code needs from jsDelivr as an ES module, pinned to{' '}
+                {SELF.version}, and draws the two lines and the progress over it, worked from the element’s place on
+                the page as in the preview.
+              </p>
+              <ToolNextStep
+                slug="scroll-trigger-visualizer"
+                api="scrollDraw"
+                docs="/docs#trigger"
+                related={['easing-visualizer', 'scroll-reveal-generator']}
+              />
+            </Sec>
+
+            <Sec n={7} k={`${FAQ.length} questions`} id="faq" title="Scroll trigger questions">
               <div className="stk-faq">
                 {FAQ.map((f, i) => (
                   <div key={f.q} className="stk-q">
@@ -329,11 +349,6 @@ export default function ScrollTriggerVisualizerPage() {
                   </div>
                 ))}
               </div>
-              <p className="stk-p stk-more">
-                The rest of svg-scroll-draw {SELF.version}: <Link href="/docs">the docs</Link>, the{' '}
-                <Link href="/text-animation-generator">text animation generator</Link> and the{' '}
-                <Link href="/svg-path-viewer">SVG path viewer</Link>.
-              </p>
             </Sec>
           </div>
         </div>

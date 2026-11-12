@@ -90,13 +90,14 @@ export function scrollSnap(
 
   const easeFn = typeof easing === 'function' ? easing : (EASINGS[easing] ?? EASINGS['ease-in-out']);
   const isHorizontal = direction === 'horizontal';
+  const dim  = isHorizontal ? 'Width' : 'Height';
+  const side = isHorizontal ? 'left' : 'top';
 
   const scrollEl: Element | null =
     typeof scrollContainer === 'string'
       ? document.querySelector(scrollContainer)
       : (scrollContainer ?? null);
 
-  let currentIndex = 0;
   let isAnimating  = false;
   let animRafId    = 0;
 
@@ -105,56 +106,79 @@ export function scrollSnap(
     return isHorizontal ? window.scrollX : window.scrollY;
   }
 
+  /**
+   * Each frame of the glide is written with `behavior: 'instant'`: a plain
+   * write follows CSS `scroll-behavior: smooth`, which turned every frame into
+   * a smooth scroll of its own, each one cancelling the last. A browser too old
+   * to know 'instant' throws on it, and has no smooth scrolling to override.
+   */
   function setScroll(val: number): void {
-    if (scrollEl) {
-      if (isHorizontal) scrollEl.scrollLeft = val;
-      else scrollEl.scrollTop = val;
-    } else {
-      window.scrollTo(isHorizontal ? { left: val } : { top: val });
+    const target = scrollEl ?? window;
+    const to: ScrollToOptions = isHorizontal ? { left: val } : { top: val };
+    try {
+      target.scrollTo({ ...to, behavior: 'instant' });
+    } catch {
+      target.scrollTo(to);
     }
   }
 
+  /**
+   * Where each section starts, in the scroll range: from inside a container's
+   * border (it measured from the border box, so a 4px border landed every snap
+   * 4px past its section), and no further than the scroll can go. Sections near
+   * the end of a page that ends sooner start past the last scroll position; a
+   * snap to one never arrived, and the next scroll event sent it back.
+   */
   function getSectionOffsets(): number[] {
-    return els.map((el) => {
-      const rect = el.getBoundingClientRect();
-      if (scrollEl) {
-        const cr = scrollEl.getBoundingClientRect();
-        return isHorizontal
-          ? rect.left - cr.left + scrollEl.scrollLeft
-          : rect.top  - cr.top  + scrollEl.scrollTop;
-      }
-      return isHorizontal
-        ? rect.left + window.scrollX
-        : rect.top  + window.scrollY;
-    });
+    // The page's scroller is body in quirks mode, where the root's
+    // clientHeight is the whole page: every snap went to 0 on a page without
+    // a doctype.
+    const box    = scrollEl ?? document.scrollingElement ?? document.documentElement;
+    const max    = box[`scroll${dim}` as const] - box[`client${dim}` as const];
+    // Where the scrollport starts on screen: inside a container's border, or
+    // the top of the viewport.
+    const origin = scrollEl
+      ? scrollEl.getBoundingClientRect()[side] + scrollEl[isHorizontal ? 'clientLeft' : 'clientTop']
+      : 0;
+    const scroll = getScroll();
+    return els.map((el) => clamp(el.getBoundingClientRect()[side] - origin + scroll, 0, max));
+  }
+
+  /**
+   * The section the scroll is nearest to. currentIndex started at 0 whatever
+   * the scroll position: created at section 4, a nudge snapped to section 1.
+   */
+  function nearest(): number {
+    const scroll  = getScroll();
+    const offsets = getSectionOffsets();
+    return offsets.reduce((best, at, i) => (Math.abs(at - scroll) < Math.abs(offsets[best] - scroll) ? i : best), 0);
+  }
+
+  let currentIndex = nearest();
+
+  /** The snap is over, on section `i`. */
+  function land(i: number): void {
+    isAnimating  = false;
+    currentIndex = i;
+    onSnap?.(i);
   }
 
   function snapTo(index: number): void {
     const targetIndex = clamp(index, 0, els.length - 1);
-    if (isAnimating) {
-      cancelAnimationFrame(animRafId);
-      isAnimating = false;
-    }
+    // A snap still running is replaced.
+    cancelAnimationFrame(animRafId);
     isAnimating = true;
 
     const offsets    = getSectionOffsets();
     const startScroll = getScroll();
     const endScroll   = offsets[targetIndex];
 
-    if (Math.abs(startScroll - endScroll) < 1) {
-      isAnimating  = false;
-      currentIndex = targetIndex;
-      onSnap?.(targetIndex);
-      return;
-    }
+    if (Math.abs(startScroll - endScroll) < 1) return land(targetIndex);
 
     // Reduced motion: land on the section immediately, no animated scroll.
     if (reduceMotion) {
       setScroll(endScroll);
-      isAnimating  = false;
-      currentIndex = targetIndex;
-      onSnap?.(targetIndex);
-      return;
+      return land(targetIndex);
     }
 
     const startTime = performance.now();
@@ -162,14 +186,8 @@ export function scrollSnap(
     function animate(now: number): void {
       const progress = clamp((now - startTime) / duration, 0, 1);
       setScroll(startScroll + (endScroll - startScroll) * easeFn(progress));
-
-      if (progress < 1) {
-        animRafId = requestAnimationFrame(animate);
-      } else {
-        isAnimating  = false;
-        currentIndex = targetIndex;
-        onSnap?.(targetIndex);
-      }
+      if (progress < 1) animRafId = requestAnimationFrame(animate);
+      else land(targetIndex);
     }
 
     animRafId = requestAnimationFrame(animate);
@@ -199,9 +217,7 @@ export function scrollSnap(
       if (Math.abs(currentScroll - offsets[currentIndex]) < 1) return;
 
       // Threshold check: snap forward only if user passed threshold% of the section
-      const sectionSize = isHorizontal
-        ? els[currentIndex].offsetWidth
-        : els[currentIndex].offsetHeight;
+      const sectionSize = els[currentIndex][`offset${dim}` as const];
       const delta = currentScroll - offsets[currentIndex];
 
       if (delta > sectionSize * threshold && currentIndex < els.length - 1) {

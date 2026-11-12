@@ -442,15 +442,36 @@ function buildEngine(
     });
   }
 
+  /**
+   * Path i's dash, measured. With morphTo it is the longer of the path's own
+   * outline and the target's, so the line is whole at both ends of the morph:
+   * sized to the starting path alone, a morph to a longer outline ended at
+   * progress 1 with most of it undrawn. Read here and on a layout change, not
+   * every frame, with the path's `d` put back as it was.
+   */
+  function measure(el: SVGElement, i: number): void {
+    const d = el.getAttribute('d');
+    let len = getElementLength(el);
+    if (morphTo && originalDs[i]) {
+      el.setAttribute('d', morphTo);
+      const target = getElementLength(el);
+      el.setAttribute('d', originalDs[i]);
+      len = Math.max(getElementLength(el), target);
+      el.setAttribute('d', d!);
+    }
+    lengths[i] = len;
+    el.style.strokeDasharray = `${len}`;
+  }
+
   // ── Init paths ────────────────────────────────────────────────────────────
 
-  paths.forEach((el) => {
+  paths.forEach((el, i) => {
     checkElement(el);
-    const len = getElementLength(el);
-    lengths.push(len);
     const isPath = el.tagName.toLowerCase() === 'path';
     if (isPath) originalDs.push(el.getAttribute('d') ?? '');
     else originalDs.push('');
+    measure(el, i);
+    const len = lengths[i];
 
     if (morphTo) {
       if (!isPath) {
@@ -461,7 +482,6 @@ function buildEngine(
     }
 
     if (prefersReduced) {
-      el.style.strokeDasharray  = `${len}`;
       el.style.strokeDashoffset = direction === 'reverse' ? `${len}` : '0';
       if (fade) el.style.opacity = '1';
       if (colorTo) el.style.stroke = colorTo;
@@ -469,7 +489,6 @@ function buildEngine(
       if (fillOpacityTo !== null) el.style.fillOpacity = `${fillOpacityTo}`;
       if (morphTo && el.tagName.toLowerCase() === 'path') el.setAttribute('d', morphTo);
     } else {
-      el.style.strokeDasharray  = `${len}`;
       el.style.strokeDashoffset = direction === 'reverse' ? '0' : `${len}`;
       if (fade) el.style.opacity = direction === 'reverse' ? '1' : '0';
       else el.style.opacity = '';
@@ -514,8 +533,9 @@ function buildEngine(
     // Autoplay runs on a clock, not the scroll: on 2.23.2 a plain
     // `{ autoplay: true }` came here and the drawing followed the page.
     if (autoplay) return false;
-    // The trigger-line overlay is drawn by the JS engine only (cacheTriggers).
-    if (debug) return false;
+    // The trigger-line overlay is drawn by the JS engine only (cacheTriggers),
+    // and only in a development build: debug left on in production keeps native.
+    if (debug && IS_DEV) return false;
     if (!supportsNativeTimeline()) return false;
     if (!paths.length) return false;
     // Only easings CSS can reproduce (no 'spring', no custom fn).
@@ -643,9 +663,8 @@ function buildEngine(
        */
       refresh() {
         paths.forEach((el, i) => {
-          lengths[i] = getElementLength(el);
+          measure(el, i);
           el.style.setProperty('--ssd-len', String(lengths[i]));
-          el.style.strokeDasharray = `${lengths[i]}`;
         });
       },
     };
@@ -785,12 +804,7 @@ function buildEngine(
     let resizeTimer: ReturnType<typeof setTimeout>;
     function onResize(): void {
       clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(() => {
-        paths.forEach((el, i) => {
-          lengths[i] = getElementLength(el);
-          el.style.strokeDasharray = `${lengths[i]}`;
-        });
-      }, 150);
+      resizeTimer = setTimeout(() => paths.forEach(measure), 150);
     }
     window.addEventListener('resize', onResize);
     window.addEventListener('orientationchange', onResize);
@@ -837,10 +851,7 @@ function buildEngine(
       /** No trigger window on this path — it runs on time — so lengths only. */
       refresh() {
         clearTimeout(resizeTimer);
-        paths.forEach((el, i) => {
-          lengths[i] = getElementLength(el);
-          el.style.strokeDasharray = `${lengths[i]}`;
-        });
+        paths.forEach(measure);
       },
     };
   }
@@ -1071,10 +1082,7 @@ function buildEngine(
 
   /** Everything that depends on layout, re-read. Shared by resize and refresh(). */
   function remeasure(): void {
-    paths.forEach((el, i) => {
-      lengths[i] = getElementLength(el);
-      el.style.strokeDasharray = `${lengths[i]}`;
-    });
+    paths.forEach(measure);
     cacheTriggers();
     // Trigger points moved — the rendered frame is stale even at the same
     // scroll offset.

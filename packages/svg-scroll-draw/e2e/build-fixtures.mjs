@@ -30,6 +30,7 @@ const OUT = join(HERE, 'fixtures', 'build');
 const ENTRIES = [
   { name: 'react' },
   { name: 'dropins-react' },
+  { name: 'react-extras' },
   { name: 'vue' },
   { name: 'solid' },
   {

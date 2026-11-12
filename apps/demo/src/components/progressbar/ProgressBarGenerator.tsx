@@ -2,9 +2,11 @@
 
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type KeyboardEvent, type ReactNode } from 'react';
 import { CodeBox } from '@/components/site/CodeBox';
+import { ToolExport } from '@/components/tool-kit/ToolExport';
+import { withSource } from '@/lib/tool-export';
 import {
-  DEFAULTS, OUTPUTS, PREVIEW, RING, SCOPES, STYLES, THICKNESS, TRIGGER,
-  css, html, isSafeColor, js, react, ringGeometry, supports,
+  DEFAULTS, OUTPUTS, PARAS, PREVIEW, RING, SCOPES, STYLES, THICKNESS, TOOL_SLUG, TRIGGER,
+  css, html, isSafeColor, js, react, ringGeometry, runnable, supports,
   type BarStyle, type Engine, type Scope, type Settings,
 } from './code';
 
@@ -22,6 +24,11 @@ import {
  *
  * Readouts are written to the DOM, never to state: scrollProgress reports on
  * every frame and the page should not re-render on every frame.
+ *
+ * Under the code, the export row runs the same bar outside the site: the CSS
+ * only tab as a page with no script, the other two as a page that loads
+ * scrollProgress from jsDelivr at `version` (SELF.version, passed down by the
+ * page), and the React component as a Vite project.
  */
 
 type Instance = ReturnType<typeof import('svg-scroll-draw/progress').scrollProgress>;
@@ -45,16 +52,6 @@ const TABS: { k: Tab; label: string; note: string }[] = [
   },
 ];
 
-const PARAS = [
-  'A reading progress bar answers one question: how much is left? It fills as you move down the page, and it moves only when you do.',
-  'The number behind it is how far the page has scrolled, divided by how far it can scroll. At the top that is 0; at the very bottom it is 1.',
-  'Scale the bar with a transform instead of changing its width. A transform never makes the browser lay the page out again, so long pages stay smooth.',
-  'On a blog the page is more than the post: a header above it, comments and links below. Follow the article instead, and the bar is full when the last paragraph is on screen.',
-  'Where the browser has scroll-driven animations, CSS can do all of it with animation-timeline. Everywhere else, scrollProgress writes the same number into a CSS variable.',
-  'Keep it thin and out of the way, and hide it from screen readers: it repeats what the scrollbar already says.',
-  'That is the whole trick. Scroll back up and it empties again.',
-];
-
 const subscribeNever = () => () => {};
 /** CSS.supports, read on the client only: null while server rendering, so hydration matches. */
 function useSupports(condition: string): boolean | null {
@@ -68,7 +65,7 @@ function useSupports(condition: string): boolean | null {
 const reducedMotion = () =>
   typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-export function ProgressBarGenerator() {
+export function ProgressBarGenerator({ version }: { version: string }) {
   const [s, setS] = useState<Settings>(DEFAULTS);
   const [tab, setTab] = useState<Tab>('js');
   const [colorText, setColorText] = useState('');
@@ -209,6 +206,7 @@ export function ProgressBarGenerator() {
 
   const previewCss = useMemo(() => css(s, engine, PREVIEW), [s, engine]);
   const files = useMemo(() => listings(s, tab), [s, tab]);
+  const out = useMemo(() => runnable(s, engine, version), [s, engine, version]);
   const note = TABS.find((t) => t.k === tab)?.note;
   const vertical = s.style === 'left';
 
@@ -325,24 +323,30 @@ export function ProgressBarGenerator() {
         </div>
         <p className="pbg-code-note">{note}</p>
         {files.map((f) => <CodeBox key={f.file} file={f.file}>{f.code}</CodeBox>)}
+        <ToolExport title={out.title} filename={out.filename} html={out.html} react={out.react} />
       </div>
     </div>
   );
 }
 
-/** The listings for a tab: markup, stylesheet and script, in the order you add them. */
+/**
+ * The listings for a tab: markup, stylesheet and script, in the order you add
+ * them. Each starts with the source line, which the CodeBox shows and copies.
+ */
 function listings(s: Settings, tab: Tab): { file: string; code: string }[] {
-  if (tab === 'css') return [{ file: 'index.html', code: html(s, 'css') }, { file: 'progress.css', code: css(s, 'css') }];
+  const markup = (e: Engine) => withSource(html(s, e), TOOL_SLUG, 'html');
+  const sheet = (e: Engine) => withSource(css(s, e), TOOL_SLUG, 'css');
+  if (tab === 'css') return [{ file: 'index.html', code: markup('css') }, { file: 'progress.css', code: sheet('css') }];
   if (tab === 'js') {
     return [
-      { file: 'index.html', code: html(s, 'js') },
-      { file: 'progress.css', code: css(s, 'js') },
-      { file: 'main.js', code: js(s) },
+      { file: 'index.html', code: markup('js') },
+      { file: 'progress.css', code: sheet('js') },
+      { file: 'main.js', code: withSource(js(s), TOOL_SLUG, 'js') },
     ];
   }
   return [
-    { file: s.scope === 'page' ? 'ReadingProgress.tsx' : 'Article.tsx', code: react(s) },
-    { file: 'progress.css', code: css(s, 'js') },
+    { file: s.scope === 'page' ? 'ReadingProgress.tsx' : 'Article.tsx', code: withSource(react(s), TOOL_SLUG, 'tsx') },
+    { file: 'progress.css', code: sheet('js') },
   ];
 }
 

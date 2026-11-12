@@ -1,11 +1,10 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import type { ScrollTextOptions } from 'svg-scroll-draw/text';
 import { CodeBox } from '@/components/site/CodeBox';
-import {
-  TEXT_DEFAULTS, TEXT_EASINGS, TEXT_EFFECTS, TEXT_SPLITS, maxStagger, type TextFrom, type TextSplit,
-} from '@/data/text-effects';
+import { ToolExport } from '@/components/tool-kit/ToolExport';
+import { TEXT_EASINGS, TEXT_EFFECTS, TEXT_SPLITS, maxStagger, type TextSplit } from '@/data/text-effects';
+import { TITLE, jsCode, optionsOf, reactCode, reactProject, runnableHtml, type Settings } from './code';
 
 /**
  * The text animation generator. Everything it shows is scrollText itself:
@@ -15,15 +14,15 @@ import {
  *   same progress comes from the scroll position instead.
  * - "On real scroll" below runs the same options with no seek(), as a page
  *   would: it animates as it crosses the trigger window.
- * - The code is generated from the same state, with every option that is at
- *   scrollText's default left out.
+ * - The code (./code.ts) is generated from the same state, with every option
+ *   that is at scrollText's default left out, and so is the page under
+ *   "Run it", which runs that code from jsDelivr.
  *
  * scrollText rewrites its element's children, so each instance gets an element
  * made here by hand, never one React renders and would try to reconcile.
  */
 
 type Instance = ReturnType<typeof import('svg-scroll-draw/text').scrollText>;
-type Settings = { text: string; split: TextSplit; effect: string; stagger: number; easing: string; once: boolean };
 
 const INITIAL: Settings = {
   text: 'Every word arrives as you scroll',
@@ -35,11 +34,6 @@ const INITIAL: Settings = {
 };
 const PLAY_MS = 1400;
 const MAX_TEXT = 140;
-
-function optionsOf(s: Settings): ScrollTextOptions {
-  const from = TEXT_EFFECTS.find((e) => e.key === s.effect)?.from ?? TEXT_DEFAULTS.from;
-  return { split: s.split, stagger: s.stagger, easing: s.easing as ScrollTextOptions['easing'], from, once: s.once };
-}
 
 /** Make a fresh element in `host`, run scrollText on it, report its piece count. */
 function useScrollText(
@@ -60,7 +54,9 @@ function useScrollText(
     import('svg-scroll-draw/text').then(({ scrollText }) => {
       if (!live) return;
       inst.current = scrollText(el, optionsOf(s));
-      const pieces = [...el.querySelectorAll<HTMLElement>('span[aria-hidden="true"]')].filter((p) => p.style.whiteSpace !== 'pre');
+      // The pieces are the element's own hidden spans, gaps left out. Only
+      // direct children: a line is a span with its word spans inside it.
+      const pieces = [...el.querySelectorAll<HTMLElement>(':scope > span[aria-hidden="true"]')].filter((p) => p.style.whiteSpace !== 'pre');
       onPieces?.(pieces.length);
     });
     return () => {
@@ -75,7 +71,7 @@ function useScrollText(
   return inst;
 }
 
-export function TextGenerator() {
+export function TextGenerator({ version }: { version: string }) {
   const [s, setS] = useState<Settings>(INITIAL);
   const [pieces, setPieces] = useState(0);
   const [progress, setProgress] = useState(1);
@@ -117,6 +113,8 @@ export function TextGenerator() {
   const cap = maxStagger(pieces);
   const tooMuch = pieces > 1 && s.stagger >= cap;
   const code = useMemo(() => (tab === 'js' ? jsCode(s) : reactCode(s)), [s, tab]);
+  const html = useMemo(() => runnableHtml(s, version), [s, version]);
+  const react = useMemo(() => reactProject(s, version), [s, version]);
 
   return (
     <div className="tg">
@@ -183,6 +181,7 @@ export function TextGenerator() {
           ))}
         </div>
         <CodeBox file={tab === 'js' ? 'main.js' : 'Headline.tsx'}>{code}</CodeBox>
+        <ToolExport title={TITLE} filename="text-animation.html" html={html} react={react} />
       </div>
 
       <div className="tg-live">
@@ -213,54 +212,4 @@ function Seg({ value, options, onChange, label }: { value: string; options: read
       ))}
     </span>
   );
-}
-
-// ── The generated code ───────────────────────────────────────────────────────
-
-/** The options that differ from scrollText's defaults, as code lines. */
-function changed(s: Settings): string[] {
-  const from = TEXT_EFFECTS.find((e) => e.key === s.effect)?.from ?? TEXT_DEFAULTS.from;
-  const out: string[] = [];
-  if (s.split !== TEXT_DEFAULTS.split) out.push(`split: '${s.split}'`);
-  if (s.stagger !== TEXT_DEFAULTS.stagger) out.push(`stagger: ${s.stagger}`);
-  if (s.easing !== TEXT_DEFAULTS.easing) out.push(`easing: '${s.easing}'`);
-  if (!sameFrom(from, TEXT_DEFAULTS.from)) out.push(`from: ${fromLiteral(from)}`);
-  if (s.once !== TEXT_DEFAULTS.once) out.push(`once: ${s.once}`);
-  return out;
-}
-
-const sameFrom = (a: TextFrom, b: TextFrom) => JSON.stringify(a) === JSON.stringify(b);
-const fromLiteral = (f: TextFrom) => `{ ${Object.entries(f).map(([k, v]) => `${k}: ${v}`).join(', ')} }`;
-const text = (s: Settings) => (s.text || 'Your text').replace(/[<>{}]/g, '');
-
-function jsCode(s: Settings): string {
-  const opts = changed(s);
-  const call = opts.length
-    ? `scrollText('#headline', {\n${opts.map((o) => `  ${o},`).join('\n')}\n});`
-    : `scrollText('#headline');`;
-  return `// <h2 id="headline">${text(s)}</h2>
-
-import { scrollText } from 'svg-scroll-draw/text';
-
-${call}`;
-}
-
-function reactCode(s: Settings): string {
-  const opts = changed(s).map((o) => {
-    const [k, ...rest] = o.split(': ');
-    const v = rest.join(': ');
-    return v.startsWith("'") ? `${k}="${v.slice(1, -1)}"` : `${k}={${v}}`;
-  });
-  const props = ['as="h2"', ...opts];
-  return `import { ScrollText } from 'svg-scroll-draw/react';
-
-export function Headline() {
-  return (
-    <ScrollText
-${props.map((p) => `      ${p}`).join('\n')}
-    >
-      ${text(s)}
-    </ScrollText>
-  );
-}`;
 }

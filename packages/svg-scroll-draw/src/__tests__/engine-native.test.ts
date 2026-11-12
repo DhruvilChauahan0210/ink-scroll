@@ -261,6 +261,23 @@ describe('native fast path — fallback to JS engine', () => {
     expect(instance.getProgress()).toBe(0);
   });
 
+  // The overlay is drawn only in a development build, so a production build
+  // with debug left on gave up the native path and drew nothing either.
+  it('debug left on in a production build keeps the native path', async () => {
+    vi.resetModules();
+    vi.doMock('../core/env', () => ({ IS_DEV: false, warn: () => {} }));
+    try {
+      const { createEngine: prodEngine } = await import('../core/engine');
+      const path = makePath();
+      prodEngine(makeContainer([path]), { debug: true });
+      expect(nativeClass(path)).toBeTruthy();
+      expect(document.querySelector('[data-svg-scroll-draw-debug]')).toBeNull();
+    } finally {
+      vi.doUnmock('../core/env');
+      vi.resetModules();
+    }
+  });
+
   it('debug draws its trigger-line overlay where view timelines exist', () => {
     const instance = createEngine(makeContainer(), { debug: true });
     expect(document.querySelector('[data-svg-scroll-draw-debug]')).not.toBeNull();

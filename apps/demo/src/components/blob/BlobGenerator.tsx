@@ -2,12 +2,17 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { CodeBox } from '@/components/site/CodeBox';
+import { ToolExport } from '@/components/tool-kit/ToolExport';
+import { downloadText } from '@/lib/tool-export';
 import {
   DEFAULTS, GALLERY, MAX_LINE, MAX_POINTS, MAX_RANDOMNESS, MAX_SEED, MAX_SIZE, MIN_LINE, MIN_POINTS, MIN_SIZE,
   blobFromRadii, blobGeometry, clampSettings, commandSummary, fmt, lerpRadii, nextSeed,
   type BlobGeometry, type BlobMode, type BlobSettings,
 } from './blob';
-import { DRAW_TABS, TABS, codeFor, drawCodeFor, downloadName, svgCode, type DrawTab, type Tab } from './code';
+import {
+  DRAW_TABS, RUN_TITLE, TABS, codeFor, drawCodeFor, downloadName, htmlPage, reactProject, runName, svgFile,
+  type DrawTab, type Tab,
+} from './code';
 
 /**
  * The SVG blob generator.
@@ -23,7 +28,9 @@ import { DRAW_TABS, TABS, codeFor, drawCodeFor, downloadName, svgCode, type Draw
  *   the slider is on completion, so seek() is the only thing that moves it.
  *   Play runs progress from 0 to 1 at a steady speed, as a steady scroll would.
  * - The code is written from the same geometry, with no scrollDraw options:
- *   the drawing needs none of the defaults changed.
+ *   the drawing needs none of the defaults changed. Under Draw it's code, the
+ *   Run it row takes the blob and its drawing off the site: an HTML file that
+ *   imports svg-scroll-draw `version` from jsDelivr, or a React project.
  */
 
 type Lib = typeof import('svg-scroll-draw');
@@ -51,7 +58,7 @@ const same = (a: { seed: number; points: number; randomness: number }, b: BlobSe
 /** The gallery's thumbnails: fixed, so made once. */
 const THUMBS = GALLERY.map((g) => ({ ...g, d: blobGeometry({ ...g, size: 120, line: 0 }).d }));
 
-export function BlobGenerator() {
+export function BlobGenerator({ version }: { version: string }) {
   const [s, setS] = useState<BlobSettings>(DEFAULTS);
   const [seedText, setSeedText] = useState(String(DEFAULTS.seed));
   const [morph, setMorph] = useState(false);
@@ -96,12 +103,7 @@ export function BlobGenerator() {
   const custom = s.color !== 'currentColor';
 
   function download() {
-    const url = URL.createObjectURL(new Blob([svgCode(s, g)], { type: 'image/svg+xml' }));
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = downloadName(s);
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    downloadText(downloadName(s), svgFile(s, g), 'image/svg+xml');
   }
 
   return (
@@ -209,7 +211,7 @@ export function BlobGenerator() {
         <CodeBox file={file}>{code}</CodeBox>
       </div>
 
-      <DrawIt s={s} g={g} lib={lib} />
+      <DrawIt s={s} g={g} lib={lib} version={version} />
     </div>
   );
 }
@@ -347,7 +349,7 @@ function Construction({ geo }: { geo: BlobGeometry }) {
 
 // ── Draw it: scrollDraw on the outline ──────────────────────────────────────
 
-function DrawIt({ s, g, lib }: { s: BlobSettings; g: BlobGeometry; lib: Lib | null }) {
+function DrawIt({ s, g, lib, version }: { s: BlobSettings; g: BlobGeometry; lib: Lib | null; version: string }) {
   const host = useRef<HTMLDivElement>(null);
   const inst = useRef<Instance | null>(null);
   const pRef = useRef(0);
@@ -429,6 +431,7 @@ function DrawIt({ s, g, lib }: { s: BlobSettings; g: BlobGeometry; lib: Lib | nu
   }
 
   const code = useMemo(() => drawCodeFor(tab, s, g), [tab, s, g]);
+  const run = useMemo(() => ({ html: htmlPage(s, g, version), react: reactProject(s, g, version) }), [s, g, version]);
 
   return (
     <div className="blb-draw">
@@ -461,6 +464,7 @@ function DrawIt({ s, g, lib }: { s: BlobSettings; g: BlobGeometry; lib: Lib | nu
           ))}
         </div>
         <CodeBox file={DRAW_TABS.find(([k]) => k === tab)?.[2] ?? 'main.js'}>{code}</CodeBox>
+        <ToolExport title={RUN_TITLE} filename={runName(s)} html={run.html} react={run.react} />
       </div>
     </div>
   );

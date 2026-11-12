@@ -4,11 +4,13 @@ import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactN
 import Link from 'next/link';
 import type { ScrollDrawOptions } from 'svg-scroll-draw';
 import { CodeBox } from '@/components/site/CodeBox';
+import { ToolExport } from '@/components/tool-kit/ToolExport';
 import { sanitizeSvg, type Sanitized } from '@/lib/svg-sanitize';
+import { downloadText } from '@/lib/tool-export';
 import {
   DEFAULTS, DRAWABLE_SELECTOR, EASINGS, FILL_FADES, LOOPS, ORDERS, OUTPUTS, SCROLL_END, SCROLL_START, STROKES, buildOutput,
-  fmt, round, toDom, toTree, type Easing, type Loop, type Measured, type Order, type Output, type OutputKey, type Settings,
-  type StrokeMode, type Tree,
+  fmt, htmlPage, round, toDom, toTree, type Easing, type Loop, type Measured, type Order, type Output, type OutputKey,
+  type Settings, type StrokeMode, type Tree,
 } from './generate';
 import { SAMPLE } from './sample';
 
@@ -32,6 +34,9 @@ import { SAMPLE } from './sample';
  * - The scroll version is scrollDraw, the library this site is about, in a
  *   small box of its own (its scrollContainer option), so it scrolls without
  *   the page moving.
+ * - Every listing starts with the source line (generate.ts), and the Run it
+ *   row under the code saves or opens one page with both versions in it,
+ *   importing svg-scroll-draw `version` from jsDelivr.
  */
 
 type Instance = ReturnType<typeof import('svg-scroll-draw').scrollDraw>;
@@ -60,7 +65,7 @@ function widthStep(size: number): number {
   return (n < 1.5 ? 1 : n < 3.5 ? 2 : n < 7.5 ? 5 : 10) * p;
 }
 
-export function LineDrawingGenerator() {
+export function LineDrawingGenerator({ version }: { version: string }) {
   const [input, setInput] = useState(SAMPLE);
   const [source, setSource] = useState<string | null>(null);
   const [s, setS] = useState<Settings>(DEFAULTS);
@@ -102,16 +107,11 @@ export function LineDrawingGenerator() {
     [tree, m, settings],
   );
   const notes = useMemo(() => (parsed?.ok && m ? checks(m, parsed, settings) : []), [parsed, m, settings]);
+  const html = useMemo(() => (out ? htmlPage(out, version) : ''), [out, version]);
   const filled = m?.shapes.some((x) => x.filled) ?? false;
 
   function download() {
-    if (!out) return;
-    const url = URL.createObjectURL(new Blob([`${out.file}\n`], { type: 'image/svg+xml' }));
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'line-drawing.svg';
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    if (out) downloadText('line-drawing.svg', `${out.file}\n`, 'image/svg+xml');
   }
 
   const error = parsed && !parsed.ok ? parsed.error : '';
@@ -277,6 +277,7 @@ export function LineDrawingGenerator() {
               </>
             )}
             </div>
+            <ToolExport title="SVG line drawing" filename="line-drawing.html" html={html} />
           </div>
         </>
       )}

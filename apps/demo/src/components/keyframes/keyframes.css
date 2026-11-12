@@ -182,9 +182,10 @@
 .site .kfg-nomap .kfg-nomap-k { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
 
 /* The box that scrolls. Framed with an inset shadow, not a border:
-   svg-scroll-draw 2.23.2 measures a scrollContainer's trigger from its border
-   box (core/trigger-frame.ts; 2.23.3 measures inside it), so a border would
-   shift the library card's window by its width. Each spacer is one box tall,
+   svg-scroll-draw 2.23.2 and earlier measure a scrollContainer's trigger from
+   its border box, so a border would shift the library card's window by its
+   width (fixed in 2.23.3, which measures from the scrollport:
+   core/trigger-frame.ts). Each spacer is one box tall,
    so at the top of the box the row sits just below its bottom edge: entry 0%. */
 .site .kfg-live { --kfg-box: 320px; display: grid; gap: 12px; min-width: 0; }
 @media (max-width: 559px) { .site .kfg-live { --kfg-box: 280px; } }

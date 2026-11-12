@@ -49,6 +49,12 @@ class FakeIO {
   }
 }
 
+/** Scroll the page: the engine's frame loop wakes on scroll events, as in a browser. */
+function scroll(y: number): void {
+  vi.stubGlobal('scrollY', y);
+  window.dispatchEvent(new Event('scroll'));
+}
+
 // ── setup / teardown ──────────────────────────────────────────────────────────
 
 let raf: RafQueue;
@@ -83,8 +89,6 @@ describe('scroll callbacks — scrollAnimate', () => {
       onEnter,
     });
 
-    FakeIO.instances[0].trigger(true);
-
     // scrollY = 0: rawProgress = (0 - tStart) / (tEnd - tStart)
     // With default trigger top-bottom / bottom-top on el at top:0 h:100 vp:800
     // tStart = (0+0) - 800 = -800, tEnd = (0+100) - 0 = 100
@@ -93,10 +97,10 @@ describe('scroll callbacks — scrollAnimate', () => {
     raf.tick();
 
     // Simulate entering from before (scrollY negative enough to be before zone)
-    vi.stubGlobal('scrollY', -900); // raw = (-900 - (-800)) / 900 = -100/900 < 0 → before zone
+    scroll(-900); // raw = (-900 - (-800)) / 900 = -100/900 < 0 → before zone
     raf.tick(); // update prevRaw to < 0
 
-    vi.stubGlobal('scrollY', -799); // raw > 0 → crossing into zone
+    scroll(-799); // raw > 0 → crossing into zone
     raf.tick();
 
     expect(onEnter).toHaveBeenCalledTimes(1);
@@ -112,15 +116,14 @@ describe('scroll callbacks — scrollAnimate', () => {
       onLeave,
     });
 
-    FakeIO.instances[0].trigger(true);
     raf.tick(); // seed prevRaw
 
     // Put prevRaw inside zone (< 1)
-    vi.stubGlobal('scrollY', 50);
+    scroll(50);
     raf.tick();
 
     // Now cross the end
-    vi.stubGlobal('scrollY', 200); // raw >= 1
+    scroll(200); // raw >= 1
     raf.tick();
 
     expect(onLeave).toHaveBeenCalledTimes(1);
@@ -136,15 +139,14 @@ describe('scroll callbacks — scrollAnimate', () => {
       onEnterBack,
     });
 
-    FakeIO.instances[0].trigger(true);
     raf.tick(); // seed
 
     // Push into "after zone" (raw >= 1)
-    vi.stubGlobal('scrollY', 200);
+    scroll(200);
     raf.tick();
 
     // Scroll back inside zone
-    vi.stubGlobal('scrollY', 50);
+    scroll(50);
     raf.tick();
 
     expect(onEnterBack).toHaveBeenCalledTimes(1);
@@ -160,15 +162,14 @@ describe('scroll callbacks — scrollAnimate', () => {
       onLeaveBack,
     });
 
-    FakeIO.instances[0].trigger(true);
     raf.tick(); // seed
 
     // Put prevRaw inside zone (> 0)
-    vi.stubGlobal('scrollY', 50);
+    scroll(50);
     raf.tick();
 
     // Cross back before zone start
-    vi.stubGlobal('scrollY', -900);
+    scroll(-900);
     raf.tick();
 
     expect(onLeaveBack).toHaveBeenCalledTimes(1);
@@ -184,16 +185,15 @@ describe('scroll callbacks — scrollAnimate', () => {
       onEnter,
     });
 
-    FakeIO.instances[0].trigger(true);
     raf.tick(); // seed
 
-    vi.stubGlobal('scrollY', -900);
+    scroll(-900);
     raf.tick(); // before zone
 
-    vi.stubGlobal('scrollY', -799);
+    scroll(-799);
     raf.tick(); // enter → onEnter fires
 
-    vi.stubGlobal('scrollY', -500);
+    scroll(-500);
     raf.tick(); // still inside → no second onEnter
     raf.tick();
 
@@ -202,15 +202,15 @@ describe('scroll callbacks — scrollAnimate', () => {
   });
 
   it('forces native: false when any scroll callback is provided', () => {
-    // If native were used, no IntersectionObserver would be created
     const el      = makeDiv();
     vi.stubGlobal('CSS', { supports: vi.fn(() => true) });
     const instance = scrollAnimate(el, {
       props: { opacity: [0, 1] },
       onEnter: vi.fn(),
     });
-    // native path does not create an IO — if IO exists, JS engine was used
-    expect(FakeIO.instances.length).toBeGreaterThan(0);
+    // The native path adds its keyframes class and stylesheet; the JS engine neither.
+    expect(document.querySelector('style[data-ssd-animate]')).toBeNull();
+    expect(el.className).not.toMatch(/ssd-a-/);
     instance.destroy();
   });
 });

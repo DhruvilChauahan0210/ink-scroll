@@ -71,8 +71,9 @@
 }
 
 /* The stage: the scroll port in a frame, the rulers under it. The frame has
-   the border, not the port: a border on a scroll container shifts where
-   scrollSnap lands by its width (snap/index.ts:121–124). */
+   the border, not the port: in scrollSnap 2.23.3 and earlier a border on the
+   scroll container shifts where it lands by the border's width (fixed in
+   2.23.4), and the overlay sits on the port's client area either way. */
 .site .snp-stage { display: grid; gap: 10px; padding: 16px; background: var(--panel); }
 .site .snp-stage-k {
   display: flex;

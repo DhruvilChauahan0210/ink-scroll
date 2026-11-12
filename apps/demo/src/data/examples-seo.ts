@@ -16,6 +16,11 @@
  * the index — a page that only repeats the card blurb is a thin page.
  */
 
+import { COMPETITORS, SELF_ENTRIES } from './competitors';
+
+// Sizes come from data/competitors.ts, which check:claims holds to the build:
+// typed here, they went stale (reveal said 4.5 KB long after it was 5.8).
+
 export type ExampleSeo = {
   /** Must match an `id` in EXAMPLES (components/ExamplesPage.tsx). */
   slug: string;
@@ -37,7 +42,7 @@ export const EXAMPLE_SEO: Record<string, ExampleSeo> = {
     slug: 'logo-reveal',
     title: 'Animate a Logo on Scroll — SVG Draw-On Reveal',
     description:
-      'Draw an SVG logo stroke-by-stroke as the user scrolls, then flood it with brand colour on completion. Copy-paste React code, ~11 KB, no GSAP.',
+      'Draw an SVG logo stroke-by-stroke as the user scrolls, then flood it with brand colour on completion. Copy-paste React code, no GSAP or plugins.',
     heading: 'Logo reveal on scroll',
     intro:
       'A logo that draws itself in is the most-requested scroll effect there is, and it is almost always built with GSAP DrawSVG for what amounts to one animated stroke-dashoffset. This example does it with a single component and no plugin registration. The interesting part is not the draw — it is what happens at 100%: onComplete fires, the outline floods with brand colour, and a second animation runs off the back of it.',
@@ -161,7 +166,7 @@ export const EXAMPLE_SEO: Record<string, ExampleSeo> = {
     slug: 'vue',
     title: 'Vue 3 Scroll Animation — ScrollDraw & useScrollDraw',
     description:
-      'Scroll-driven SVG animation in Vue 3 with a component or a composable. Full ref control, SSR-safe, ~11 KB, no GSAP. Copy-paste Vue code.',
+      `Scroll-driven SVG animation in Vue 3 with a component or a composable. Full ref control, SSR-safe, ${SELF_ENTRIES.vue} KB, no GSAP. Copy-paste Vue code.`,
     heading: 'Vue 3 scroll animation',
     intro:
       'Vue gets first-class treatment here rather than a vanilla escape hatch: a <ScrollDraw> component for the common case, and a useScrollDraw composable when you need the instance to pause, seek or replay it. Both ship in the same package — there is no separate Vue build to install, and both clean up on unmount so nothing leaks across route changes.',
@@ -201,7 +206,7 @@ export const EXAMPLE_SEO: Record<string, ExampleSeo> = {
     slug: 'solid',
     title: 'Solid.js Scroll Animation — useScrollDraw Hook',
     description:
-      'Scroll-driven SVG animation in Solid.js with a hook that respects fine-grained reactivity. No re-renders, ~11 KB, zero dependencies.',
+      `Scroll-driven SVG animation in Solid.js with a hook that respects fine-grained reactivity. No re-renders, ${SELF_ENTRIES.solid} KB, zero dependencies.`,
     heading: 'Solid.js scroll animation',
     intro:
       'Solid’s fine-grained reactivity means an animation library must not force re-renders to move a value, and this one does not — the draw runs outside the reactive graph entirely, driven by scroll position. The example animates a signal feeding two memos into an effect, which is a fitting subject: the diagram explains the model the code is written in.',
@@ -285,10 +290,10 @@ export const EXAMPLE_SEO: Record<string, ExampleSeo> = {
     slug: 'scroll-reveal',
     title: 'Scroll Reveal Without AOS — One Call, No Attributes',
     description:
-      'Fade and cascade elements into view with one scrollReveal call. A 4.5 KB, typed replacement for AOS and ScrollReveal.js — no data attributes.',
+      `Fade and cascade elements into view with one scrollReveal call. A ${SELF_ENTRIES.reveal} KB, typed replacement for AOS and ScrollReveal.js — no data attributes.`,
     heading: 'Card cascade reveal on scroll',
     intro:
-      'Reveal-on-scroll is the most common scroll effect on the web and usually arrives via data attributes sprinkled through the markup, which couples your animation config to your HTML and gives you nothing typed to refactor against. One scrollReveal call on a selector replaces the lot. Worth being straight: AOS (6.7 KB) and ScrollReveal (5.6 KB) are fine at this and are not much bigger than our 4.5 KB reveal entry — the case for switching is types, tree-shaking and not touching your markup.',
+      `Reveal-on-scroll is the most common scroll effect on the web and usually arrives via data attributes sprinkled through the markup, which couples your animation config to your HTML and gives you nothing typed to refactor against. One scrollReveal call on a selector replaces the lot. Worth being straight: AOS (${COMPETITORS.aos.gzipKb} KB) and ScrollReveal (${COMPETITORS.scrollreveal.gzipKb} KB) are fine at this, and our reveal entry (${SELF_ENTRIES.reveal} KB) is about their size — the case for switching is types, tree-shaking and not touching your markup, not bytes.`,
     keywords: [
       'scroll reveal javascript',
       'aos alternative',
@@ -365,10 +370,10 @@ export const EXAMPLE_SEO: Record<string, ExampleSeo> = {
     slug: 'scroll-text',
     title: 'Text Reveal on Scroll — Split Words & Characters',
     description:
-      'Split a headline into words or characters and stagger them in on scroll. A 2.5 KB alternative to GSAP SplitText, with accessible markup.',
+      `Split a headline into words or characters and stagger them in on scroll. A ${SELF_ENTRIES.text} KB alternative to GSAP SplitText, with accessible markup.`,
     heading: 'Headline text reveal on scroll',
     intro:
-      'Word-by-word headline reveals are the signature effect of an agency landing page, and the accessibility trap is that splitting text into spans normally destroys it for screen readers. This keeps an aria-label on the container and marks the fragments aria-hidden, so the headline is still read as one sentence — and destroy() puts the original HTML back.',
+      'Word-by-word headline reveals are the signature effect of an agency landing page, and the accessibility trap is that splitting text into spans normally destroys it for screen readers. This keeps one visually hidden copy of the whole text and marks the fragments aria-hidden, so the headline is still read once, as one sentence — and destroy() puts the original HTML back.',
     keywords: [
       'text reveal animation scroll',
       'split text animation',
@@ -447,7 +452,7 @@ export const EXAMPLE_SEO: Record<string, ExampleSeo> = {
     slug: 'scroll-snap',
     title: 'Horizontal Snap Carousel on Scroll — scrollSnap',
     description:
-      'Drag or swipe between cards with threshold-based snapping and custom easing. onSnap keeps indicators in sync. 1.9 KB, no carousel library.',
+      `Drag or swipe between cards with threshold-based snapping and custom easing. onSnap keeps indicators in sync. ${SELF_ENTRIES.snap} KB, no carousel library.`,
     heading: 'Horizontal snap carousel',
     intro:
       'CSS scroll-snap is excellent until you need to know which slide you landed on, or want easing other than the browser default. scrollSnap keeps the drag feel but adds a threshold you control, custom easing, and an onSnap callback — which is what the dot indicators in this example are wired to, rather than polling scroll position.',

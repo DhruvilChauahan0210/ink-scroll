@@ -3,10 +3,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { ScrollRevealOptions } from 'svg-scroll-draw/reveal';
 import { CodeBox } from '@/components/site/CodeBox';
+import { ToolExport } from '@/components/tool-kit/ToolExport';
 import {
   PRESET_AMOUNT, REVEAL_DEFAULTS, REVEAL_EASINGS, REVEAL_FROM, REVEAL_PRESETS, fromToProps, presetAmount,
   rowIndices, shiftPct, trig, type RevealEasing, type RevealFrom, type RevealPreset,
 } from '@/data/reveal';
+import { CARDS, PERSPECTIVE, jsCode, reactCode, reactProject, revealHtml } from './reveal-code';
 
 /**
  * The scroll reveal generator. One set of options, built from the controls
@@ -25,6 +27,10 @@ import {
  *   scrolling the box; scrolling it by hand stops that. Under reduced motion
  *   the cards are in place at once, as scrollReveal shows them, and the box
  *   jumps to them instead of scrolling.
+ *
+ * The code tabs and the Run it row come from reveal-code.ts: the downloaded
+ * page and the StackBlitz projects run that same call on nine cards, with the
+ * library from jsDelivr at `version` (SELF.version, passed down by the page).
  *
  * The number in each card's corner is getProgress(): the eased progress, which
  * spring and elastic take past 1 on the way.
@@ -70,7 +76,6 @@ const INITIAL: Settings = {
   depth: true,
 };
 const MIN_WINDOW = 5;
-const PERSPECTIVE = 800;
 const FLIPS: RevealPreset[] = ['flip', 'flipX'];
 
 // ── The options, with every default left out ────────────────────────────────
@@ -132,9 +137,6 @@ function revealInBox(els: HTMLElement[], box: HTMLElement, o: ScrollRevealOption
   return { instances, ends, perRow: Math.max(0, ...rows) + 1 };
 }
 
-/** The once: true easings whose look changed in 2.23.3 (see the comment at the top). */
-const ONCE_CHANGED: RevealEasing[] = ['spring', 'elastic', 'bounce'];
-
 /**
  * A card's place in the box's content, from offsetTop, which ignores
  * transforms: where it sits, not where its start state draws it.
@@ -165,7 +167,7 @@ const GLYPHS: ReactNode[] = [
   <g key="steps"><path d="M8 52H30V40H52V28H74V16H96V6H112" /><path d="M8 52.5H112" strokeDasharray="2 4" /></g>,
   <g key="pie"><circle cx="60" cy="30" r="22" /><path d="M60 30V8M60 30L79 41" /></g>,
 ];
-const BOX_CARDS = GLYPHS.length;
+const BOX_CARDS = CARDS;
 const LIVE_CARDS = 6;
 
 function MockCard({ n }: { n: number }) {
@@ -189,7 +191,7 @@ function MockCard({ n }: { n: number }) {
 
 // ── The generator ───────────────────────────────────────────────────────────
 
-export function RevealGenerator() {
+export function RevealGenerator({ version }: { version: string }) {
   const [s, setS] = useState<Settings>(INITIAL);
   const [tab, setTab] = useState<'js' | 'react'>('js');
   const [lines, setLines] = useState(true);
@@ -360,11 +362,9 @@ export function RevealGenerator() {
     return () => events.forEach((e) => el.removeEventListener(e, stop));
   }, []);
 
-  const onceNote = s.once && ONCE_CHANGED.includes(s.easing);
-  const code = useMemo(
-    () => (tab === 'js' ? jsCode(opts, depth, onceNote) : reactCode(opts, depth, onceNote)),
-    [opts, depth, tab, onceNote],
-  );
+  const code = useMemo(() => (tab === 'js' ? jsCode(opts, depth) : reactCode(opts, depth)), [opts, depth, tab]);
+  const html = useMemo(() => revealHtml(opts, depth, version), [opts, depth, version]);
+  const react = useMemo(() => reactProject(opts, depth, version), [opts, depth, version]);
   const gridStyle = depth ? { perspective: `${PERSPECTIVE}px` } : undefined;
   // The first row starts just below the start line, so a replay begins with
   // every card at 0 wherever the line is.
@@ -529,6 +529,7 @@ export function RevealGenerator() {
           ))}
         </div>
         <CodeBox file={tab === 'js' ? 'main.js' : 'Cards.tsx'}>{code}</CodeBox>
+        <ToolExport title="Scroll reveal" filename="scroll-reveal.html" html={html} react={react} />
       </div>
 
       <div className="srg-live">
@@ -564,64 +565,4 @@ function Seg({ value, options, onChange, label }: { value: string; options: read
       ))}
     </span>
   );
-}
-
-// ── The generated code ──────────────────────────────────────────────────────
-
-function optionLines(o: ScrollRevealOptions): string[] {
-  const out: string[] = [];
-  if (o.preset) out.push(`preset: '${o.preset}'`);
-  if (o.from) out.push(`from: { ${Object.entries(o.from).map(([k, v]) => `${k}: ${v}`).join(', ')} }`);
-  if (o.stagger !== undefined) out.push(`stagger: ${o.stagger}`);
-  if (typeof o.easing === 'string') out.push(`easing: '${o.easing}'`);
-  if (o.once !== undefined) out.push(`once: ${o.once}`);
-  if (o.trigger) out.push(`trigger: { ${Object.entries(o.trigger).map(([k, v]) => `${k}: '${v}'`).join(', ')} }`);
-  return out;
-}
-
-const block = (lines: string[], indent: string) =>
-  lines.length ? `, {\n${lines.map((l) => `${indent}  ${l},`).join('\n')}\n${indent}}` : '';
-
-/** For spring, elastic and bounce with once: true, whose look changed in 2.23.3. */
-const onceLine = (o: ScrollRevealOptions, indent: string) =>
-  `${indent}// ${o.easing} with once: true needs 2.23.3 or later: 2.23.2 and earlier ${
-    o.easing === 'bounce' ? 'drop its dips' : 'stop it past its place'
-  }.\n`;
-
-function jsCode(o: ScrollRevealOptions, depth: boolean, onceNote: boolean): string {
-  const css = depth ? `\n// CSS: .cards { perspective: ${PERSPECTIVE}px; } gives the flip its depth` : '';
-  return `// <div class="cards">
-//   <article class="card">…</article>
-//   <article class="card">…</article>
-// </div>${css}
-
-import { scrollReveal } from 'svg-scroll-draw/reveal';
-
-${onceNote ? onceLine(o, '') : ''}scrollReveal('.card'${block(optionLines(o), '')});`;
-}
-
-function reactCode(o: ScrollRevealOptions, depth: boolean, onceNote: boolean): string {
-  const style = depth ? ` style={{ perspective: ${PERSPECTIVE} }}` : '';
-  return `'use client';
-
-import { useEffect, useRef } from 'react';
-import { scrollReveal } from 'svg-scroll-draw/reveal';
-${onceNote ? `\n${onceLine(o, '').trimEnd()}` : ''}
-export function Cards({ items }: { items: { id: string; title: string }[] }) {
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!ref.current) return;
-    const reveal = scrollReveal(ref.current.querySelectorAll('.card')${block(optionLines(o), '    ')});
-    return () => reveal.destroy();
-  }, [items]);
-
-  return (
-    <div ref={ref} className="cards"${style}>
-      {items.map((item) => (
-        <article key={item.id} className="card">{item.title}</article>
-      ))}
-    </div>
-  );
-}`;
 }

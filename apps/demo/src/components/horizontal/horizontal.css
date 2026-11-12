@@ -65,10 +65,11 @@
 .site .hz-seg button:focus-visible { outline: 1px solid var(--fg); outline-offset: 2px; }
 
 /* The preview: a scroll container standing in for the window. Its frame is an
-   inset shadow, not a border: svg-scroll-draw 2.23.2 measures a scroll
-   container's trigger from its border box (core/trigger-frame.ts), so a border
-   would shift the scroll window by its width. No padding either, so the stage
-   is exactly as wide as the box and cqw means the same in both. */
+   inset shadow, not a border: svg-scroll-draw 2.23.2 and earlier measured a
+   scroll container's trigger from its border box, so a border shifted the
+   scroll window by its width (fixed in 2.23.3, core/trigger-frame.ts). No
+   padding either, so the stage is exactly as wide as the box and cqw means the
+   same in both. */
 .site .hz-stagewrap { padding: 16px; background: var(--panel); }
 .site .hz-box {
   --hz-h: 300px;

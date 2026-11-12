@@ -1,57 +1,31 @@
 # Next Session Plan — svg-scroll-draw
 
-> Updated: 2026-11-11 — **Branch `feat/tools-expansion`** (pushed, not merged): `/tools` and 20 new tools (23 in all), a shared tool kit, site-wide accessibility fixes, and **2.23.3 staged** (not tagged). **npm `latest` is still 2.23.1**: `v2.23.2` is tagged, but its release job failed three times on "Install Playwright browsers" (GitHub runners could not resolve `*.ubuntu.com`), so `main`'s recipe pages point at a 2.23.2 the CDNs do not have. Earlier history below.
+> Updated: 2026-11-12 — **Branch `feat/tools-kit-and-fixes`**: the tool kit in all 26 tools, three new tools (SVG path editor, typewriter, scroll video scrub), the release job in Playwright's image, and **2.23.4 staged** (not tagged). **npm `latest` is 2.23.3** (`v2.23.3` on `f4ee078`). Earlier history below.
 
 ---
 
-## Tools expansion and 2.23.3 (2026-11-11) — branch `feat/tools-expansion`
+## Tool kit, three tools and 2.23.4 (2026-11-12) — branch `feat/tools-kit-and-fixes`
 
 **Owner, in this order:**
-1. Set up GitHub Sponsors (github.com/sponsors → Get sponsored), so the
-   footer link and the repo's Sponsor button have somewhere to go.
-2. Check the PR's CI, above all the browser job in its new Playwright
-   container. If it passes, port the same `container:` to the release job.
-3. Merge the branch, then `git tag v2.23.3 <merge sha> && git push origin v2.23.3`.
-   2.23.3 supersedes the unpublished 2.23.2: the site pins 2.23.3 now. If the
-   release job still hangs on apt, re-run it once GitHub's runners resolve
-   `*.ubuntu.com` again (`gh run rerun <id>`).
-4. Request indexing for the new tool pages, best first: svg-line-drawing-generator,
-   scroll-reveal-generator, css-scroll-driven-animation-generator,
-   scroll-trigger-visualizer, scroll-progress-bar-generator, counter-animation-generator.
+1. After the branch reaches `main`: `git tag v2.23.4 <sha> && git push origin v2.23.4`.
+   Until 2.23.4 is on npm, the tools' downloads and the recipe files point at a
+   jsDelivr version that does not exist yet. The release job now runs in
+   Playwright's image, so a mirror outage cannot hold it.
+2. GitHub Sponsors profile, if not done yet (the footer links to it).
+3. Request indexing for the three new tools: /svg-path-editor,
+   /typewriter-effect-generator, /scroll-video-scrub-generator.
 
 **Next work:**
-- Wire the tool kit (`withSource`, `<ToolExport>`, `<ToolNextStep>`) into the
-  20 tools built before it — one per tool, its own files only.
-- Build the three tools that were stopped before writing anything:
-  typewriter effect, SVG path editor, scroll video scrub (briefs in the
-  session's round-3 workflow script).
-- Library bugs found by the tools' QA, confirmed by measurement, not fixed:
-  - scrollAnimate/scrollParallax: the IntersectionObserver watches the
-    transformed element, so a parallax layer whose own travel takes it out of
-    view stops updating (speed 1.5 on x froze at translateX(−105%)), and an
-    entrance pushed below the fold by its from-transform starts late and jumps.
-  - `replay()` after `pause()`/`seek()` never restarts the frame loop
-    (animate engine and scrollCounter).
-  - scrollCounter's `destroy()` leaves `--scroll-draw-progress`.
-  - `useScrollDrawProgress` with `scrollContainer` adds a viewport-relative
-    rect to `scrollTop` (never reaches 1 for a panel lower on the page).
-  - scrollSnap: starts at index 0 wherever the page is; measures a container's
-    border box; fought by CSS `scroll-behavior: smooth`; offsets not clamped.
-  - morphTo: the dash is sized to the start shape, so a longer target stays
-    part drawn (circle → star 82%); `destroy()` leaves the last frame's `d`.
-  - `debug: true` gives up the native path in production builds too, where it
-    draws nothing: use `debug && IS_DEV`.
-  - scrollText has no `scrollContainer`, and in Chromium a wrapped line after
-    the first starts with the space span.
-  - scrollPin: a jump across the whole pin fires no callbacks.
-  - scrollAnimate clip-path tuples join with ", " (invalid `inset()`), blocked
-    by the reveal and horizontal budgets.
-  - Docs: root README createBounce (`bounces − 1` dips), reveal's `from`
-    comment, horizontal's doc example (`overflow: clip`, no `distance`),
-    DocsPage's horizontal snap example and "scrollText 2.5 KB",
-    examples-seo's reveal "4.5 KB" and "~11 KB"; NATIVE_PROJECTS in
-    e2e/helpers.ts could include webkit.
-
+- Move scrollDraw's JS engine, scrollCounter, scrollText, scrollVideo and
+  useScrollDrawProgress from their IntersectionObserver to the trigger-window
+  gate the animate engine got in 2.23.4: a jump across a whole window (End, an
+  anchor link) still paints nothing there.
+- scrollAnimate clip-path tuples (`inset(0, 50%, 0, 0)`), blocked by budgets.
+- scrollSnap: Next pressed twice during one glide moves one section; Next on
+  the last section fires onSnap again.
+- scrollVideo: no clamp of the time to [from, to] under overshooting easings.
+- Measure before building more tools: `npm run report:numbers` weekly; Search
+  Console per page after 2–3 weeks.
 
 ## 2.23.0 and the unslop post (2026-11-07) — published
 

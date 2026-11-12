@@ -32,8 +32,11 @@ export type ScrollRevealPreset =
 
 export interface ScrollRevealOptions {
   /**
-   * Named preset for the reveal animation. Default: `'fadeUp'`.
-   * Custom `from` overrides the preset when both are provided.
+   * Named preset for the reveal animation. Default: `'fadeUp'`, which also
+   * applies when only `from` is given. `from` is merged over the preset: its
+   * keys replace the preset's, and the preset's other keys stay, so
+   * `{ from: { scale: 0.95 } }` still fades up 32px. Set every key the preset
+   * has, or pick the preset you want, to leave one out.
    *
    * Presets:
    * - `fadeUp`    — opacity 0→1, y +32→0 (default)
@@ -45,7 +48,10 @@ export interface ScrollRevealOptions {
    * - `flipX`     — opacity 0→1, rotateY 20→0
    */
   preset?: ScrollRevealPreset;
-  /** Custom start state. Keys: opacity, x, y, scale, rotate, rotateX, rotateY. */
+  /**
+   * Custom start state, merged over `preset` (see there). Keys: opacity, x, y,
+   * scale, rotate, rotateX, rotateY.
+   */
   from?: ScrollRevealFrom;
   /**
    * How far behind its neighbour each element in the same row starts, as a

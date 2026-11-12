@@ -1,0 +1,37 @@
+<html>
+<!-- No doctype, on purpose: quirks mode, where body scrolls the page and the
+     root's clientHeight is the height of the whole page, not the viewport. -->
+<head>
+<meta charset="utf-8">
+<title>scrollSnap — a page in quirks mode</title>
+<style>
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+  /* Four 800px sections in an 800px viewport: section i is at i * 800, and the
+     page scrolls to 2400. */
+  section { height: 800px; }
+  section:nth-child(odd)  { background: #dde; }
+  section:nth-child(even) { background: #eed; }
+</style>
+</head>
+<body>
+<section>0</section><section>1</section><section>2</section><section>3</section>
+
+<script type="module">
+import { scrollSnap } from '/dist/snap/index.mjs';
+import { publish } from './_probe.mjs';
+
+const snaps = [];
+const inst = scrollSnap('section', { duration: 300, onSnap: (i) => snaps.push(i) });
+
+publish({
+  read: () => ({ scroll: window.scrollY, index: inst.getCurrentIndex(), snaps: snaps.slice(), at: [] }),
+  geometry: () => ({
+    mode: document.compatMode,
+    max: document.scrollingElement.scrollHeight - document.scrollingElement.clientHeight,
+  }),
+  snapTo: (i) => inst.snapTo(i),
+  scrollTo: (y) => window.scrollTo({ top: y, behavior: 'instant' }),
+});
+</script>
+</body>
+</html>

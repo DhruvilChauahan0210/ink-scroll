@@ -19,7 +19,8 @@ class RafQueue {
   id = 0;
   schedule = vi.fn((cb: FrameRequestCallback) => { this.queue.push(cb); return ++this.id; });
   cancel   = vi.fn();
-  tick()   { const cb = this.queue.shift(); cb?.(performance.now()); }
+  /** One frame: every callback queued before it, as a browser runs them. */
+  tick()   { const frame = this.queue; this.queue = []; for (const cb of frame) cb(performance.now()); }
 }
 
 class FakeIO {
@@ -33,9 +34,19 @@ class FakeIO {
   }
 }
 
+/** Scroll the page: the engines' frame loops wake on scroll events, as in a browser. */
+function scroll(y: number): void {
+  vi.stubGlobal('scrollY', y);
+  window.dispatchEvent(new Event('scroll'));
+}
+
 let raf: RafQueue;
+/** How many animate engines were built: each listens for scroll on the window once. */
+let built: () => number;
 
 beforeEach(() => {
+  const listen = vi.spyOn(window, 'addEventListener');
+  built = () => listen.mock.calls.filter(([type]) => type === 'scroll').length;
   FakeIO.instances = [];
   raf = new RafQueue();
   vi.stubGlobal('IntersectionObserver', FakeIO);
@@ -49,6 +60,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  vi.restoreAllMocks();
   vi.unstubAllGlobals();
   document.body.innerHTML = '';
 });
@@ -61,10 +73,10 @@ describe('scrollReveal', () => {
     expect(() => inst.destroy()).not.toThrow();
   });
 
-  it('creates one IntersectionObserver per element', () => {
+  it('creates one engine per element', () => {
     const els  = [makeEl(), makeEl(), makeEl()];
     const inst = scrollReveal(els);
-    expect(FakeIO.instances.length).toBe(3);
+    expect(built()).toBe(3);
     inst.destroy();
   });
 
@@ -72,7 +84,7 @@ describe('scrollReveal', () => {
     makeEl().className = 'rev-item';
     makeEl().className = 'rev-item';
     const inst = scrollReveal('.rev-item');
-    expect(FakeIO.instances.length).toBe(2);
+    expect(built()).toBe(2);
     inst.destroy();
   });
 
@@ -81,7 +93,7 @@ describe('scrollReveal', () => {
     makeEl().className = 'nl';
     const nl   = document.querySelectorAll('.nl');
     const inst = scrollReveal(nl);
-    expect(FakeIO.instances.length).toBe(2);
+    expect(built()).toBe(2);
     inst.destroy();
   });
 
@@ -148,20 +160,18 @@ describe('scrollReveal', () => {
     const els     = [makeEl(), makeEl(), makeEl()];
     const inst    = scrollReveal(els, { onEnter });
 
-    // First tick: make element visible and seed prevRaw (scrollY=0, element at top:1200 → raw < 0)
-    FakeIO.instances[0].trigger(true);
+    // First frame: seeds prevRaw (scrollY=0, element at top:1200 → raw < 0)
     raf.tick();
     expect(onEnter).not.toHaveBeenCalled(); // first tick just seeds prevRaw
 
     // Push scroll past the trigger start so raw > 0 → onEnter fires
-    vi.stubGlobal('scrollY', 600);
+    scroll(600);
     raf.tick();
     expect(onEnter).toHaveBeenCalledTimes(1);
 
-    // Triggering other IOs should NOT re-fire onEnter (they have no onEnter attached)
-    FakeIO.instances[1].trigger(true);
+    // Further frames of the other elements should NOT re-fire onEnter (they have no onEnter attached)
+    scroll(700);
     raf.tick();
-    FakeIO.instances[2].trigger(true);
     raf.tick();
     expect(onEnter).toHaveBeenCalledTimes(1);
 
@@ -171,7 +181,7 @@ describe('scrollReveal', () => {
   it('stagger creates one engine per element', () => {
     const els  = Array.from({ length: 5 }, () => makeEl());
     const inst = scrollReveal(els, { stagger: 0.1 });
-    expect(FakeIO.instances.length).toBe(5);
+    expect(built()).toBe(5);
     inst.destroy();
   });
 
@@ -179,13 +189,12 @@ describe('scrollReveal', () => {
     const el   = makeEl();
     const inst = scrollReveal([el], { once: true });
 
-    FakeIO.instances[0].trigger(true);
     // Scroll element into view
     Object.defineProperty(el, 'getBoundingClientRect', {
       value: () => ({ top: 200, height: 100, left: 0, width: 200 }),
       configurable: true,
     });
-    vi.stubGlobal('scrollY', 600);
+    scroll(600);
     raf.tick();
 
     const opacityAfter = parseFloat(el.style.opacity || '0');
@@ -199,11 +208,10 @@ describe('scrollReveal', () => {
   it('an elastic reveal overshoots on the way, and ends in its place', () => {
     const el   = makeEl();
     const inst = scrollReveal([el], { easing: 'elastic' });
-    FakeIO.instances[0].trigger(true);
-    vi.stubGlobal('scrollY', 552);
+    scroll(552);
     raf.tick();
     expect(el.style.transform).toContain('translateY(-8px)');
-    vi.stubGlobal('scrollY', 900);
+    scroll(900);
     raf.tick();
     expect(el.style.transform).toContain('translateY(0px)');
     expect(el.style.opacity).toBe('1');

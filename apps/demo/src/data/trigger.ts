@@ -78,7 +78,16 @@ export function readTrigger(str: string): Reading {
   const known = KNOWN.has(viewport) || PCT.test(viewport);
   const line = known ? viewport : 'bottom';
 
-  if (!words.length) notes.push('Empty, so both words take their defaults: top, bottom.');
+  if (!words.length) {
+    notes.push('Empty, so both words take their defaults: top, bottom.');
+    // The engines read `trigger.start || default`: an empty string is unset,
+    // a string of spaces is not (2.23.3; 2.23.2 used `??`).
+    if (str === '') {
+      notes.push(
+        'As a trigger’s start or end, though, an empty string counts as unset and the function’s own default applies; 2.23.2 and earlier read it as top bottom, fixed in 2.23.3.',
+      );
+    }
+  }
   else if (PCT.test(str.trim())) notes.push('A percentage on its own is the viewport line; the element edge is top.');
   else {
     if (!KNOWN.has(element)) {

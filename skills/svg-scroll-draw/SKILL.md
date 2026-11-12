@@ -137,12 +137,12 @@ const svgWrap = useScrollDraw({ easing: 'ease-out', fade: true });
 **CDN, no build** — the global build exposes the main entry as `SvgScrollDraw` and registers `<scroll-draw>`:
 
 ```html
-<script src="https://unpkg.com/svg-scroll-draw@2.23.3/dist/cdn/svg-scroll-draw.global.js"></script>
+<script src="https://unpkg.com/svg-scroll-draw@2.23.4/dist/cdn/svg-scroll-draw.global.js"></script>
 <script>SvgScrollDraw.scrollDraw('#logo', { easing: 'ease-out' });</script>
 ```
 
 For other entries without a bundler, import the self-contained ESM file:
-`import { scrollReveal } from 'https://cdn.jsdelivr.net/npm/svg-scroll-draw@2.23.3/dist/reveal/index.mjs'`.
+`import { scrollReveal } from 'https://cdn.jsdelivr.net/npm/svg-scroll-draw@2.23.4/dist/reveal/index.mjs'`.
 
 ## SSR safety
 

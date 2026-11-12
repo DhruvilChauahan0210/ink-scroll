@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>React — useScrollDrawProgress in a container, ScrollVideo attributes</title>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+
+  /* The container sits 400px down the page, 400px tall, with a 20px border;
+     the panel, 200px tall, is 600px into its content. Default window, in the
+     container's scrollTop: [600 - 400, 600 + 200] = [200, 800]. */
+  #lead  { height: 400px; }
+  #box   { height: 440px; overflow-y: auto; border: 20px solid #ccc; }
+  #above { height: 600px; }
+  #panel { height: 200px; background: #0a7; }
+  #below { height: 600px; }
+  #tail  { height: 1200px; }
+</style>
+</head>
+<body>
+
+<div id="lead"></div>
+<div id="box">
+  <div id="above"></div>
+  <div id="slot"></div>
+  <div id="below"></div>
+</div>
+<div id="film"></div>
+<div id="tail"></div>
+
+<script type="module">
+import { mount } from './build/react-extras.mjs';
+import { publish } from './_probe.mjs';
+
+mount();
+const box = document.querySelector('#box');
+
+publish({
+  read: () => ({
+    scrollTop: box.scrollTop,
+    progress: Number(document.querySelector('#panel').dataset.progress),
+  }),
+  scrollBox: (y) => { box.scrollTop = y; },
+  /** Content arrives above the panel, as an image loading would. */
+  growAbove: (h) => { document.querySelector('#above').style.height = `${h}px`; },
+  /** The <video> the React <ScrollVideo> rendered. */
+  video: () => {
+    const v = document.querySelector('#rv');
+    return { preload: v.getAttribute('preload'), poster: v.getAttribute('poster') };
+  },
+  geometry: () => ({
+    boxTop: box.getBoundingClientRect().top + window.scrollY,
+    clientHeight: box.clientHeight,
+    panelInContent: document.querySelector('#panel').getBoundingClientRect().top
+      - box.getBoundingClientRect().top - box.clientTop + box.scrollTop,
+  }),
+});
+</script>
+</body>
+</html>

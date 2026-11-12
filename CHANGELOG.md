@@ -8,6 +8,47 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### Site
 
+- **New tool: SVG path editor** (`/svg-path-editor`). Edit a path's `d` on a
+  canvas or as text: drag points and control handles (mouse, touch or arrow
+  keys), type into any command, undo and redo. It reads `d` strings as Chromium
+  and Safari do (implicit repeats, numbers and arc flags run together, drawing
+  up to the first error; 261 strings cross-checked in both) and says where
+  Firefox differs. Absolute or relative, rounding without drift, move,
+  scale and flip (arcs get new radii and sweep), reverse and compact; the
+  path's length and bounding box; a scrollDraw preview through `seek()`.
+
+- **New tool: typewriter effect generator** (`/typewriter-effect-generator`).
+  Three ways to type, each with its limits stated: pure CSS (width in `ch`
+  with `steps()` and a border caret), letters typed by the scroll (scrollText
+  with `split: 'chars'`, a stagger of 1 ÷ letters and a step easing, with a
+  caret that follows the last letter shown), and a 49-line JS typer that
+  deletes and retypes several phrases. Screen readers get the whole text once,
+  from the start; reduced motion shows it whole.
+
+- **New tool: scroll video scrub generator** (`/scroll-video-scrub-generator`).
+  The Apple-style scrub: pinned or in the flow, trigger window, from/to and
+  easing, driven through a real scrollVideo's `seek()` with the time and frame
+  read back. Try a video from your own disk (never uploaded) and save a poster
+  frame; the encoding section's keyframe advice and ffmpeg commands come from
+  encodes timed in Chromium, Firefox and WebKit.
+
+- **Every tool's code leaves the page running.** All 26 tools now carry the
+  tool kit: their generated code starts with a source line, a Run it row saves
+  a complete HTML page for the current settings (or opens it, or a Vite +
+  React project, in StackBlitz), and a "Use it in your project" block before
+  the questions gives the install line, the import, the entry's size and the
+  docs. Each exported page was run in a browser against the built library.
+  Found and fixed on the way: the text generator counted every hidden word
+  span as a line; the SVG path viewer told readers to pass `selector: 'path,
+  ellipse'`, which stops every other shape drawing, and saved an SVG without
+  `xmlns`; the AOS gallery's copied markup left out the duration and easing
+  set on the page; the parallax HTML imports the ES module from jsDelivr like
+  every other tool's, instead of the script-tag build.
+
+- **The SVG path viewer's sample is not handed on.** It is Tibbixel's cat,
+  licensed for showing here: with it loaded, the Run it row is a note asking
+  for your own SVG instead of a download or a StackBlitz upload.
+
 - **New tool: SVG morph generator** (`/svg-morph-generator`). Pick or paste
   two shapes; both are rewritten as absolute cubic Béziers with the same number
   of segments, the start point can be rotated so nothing twists, and the
@@ -221,6 +262,13 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### CI
 
+- **The release job runs in Playwright's image too.** It installed its
+  browsers through apt, and on 2026-11-11 three attempts at 2.23.2 waited
+  there until the job's limit while the runners could not resolve
+  `*.ubuntu.com`. It now runs in `mcr.microsoft.com/playwright:v1.65.0-noble`,
+  as CI's browser job does since f4ee078; a dry run on a branch passed verify
+  and the browser tests in it. `scripts/check-playwright-image.mjs`, in
+  `verify`, fails when a workflow's image is not the lockfile's Playwright.
 - **Browser tests run in Playwright's own image.** On 2026-11-11 GitHub's
   runners could not resolve `*.ubuntu.com` for hours, so `playwright install
   --with-deps` waited on apt until the job's limit, in CI and in three release
@@ -892,6 +940,125 @@ All notable changes to `svg-scroll-draw` are documented here.
   allowed, followed by `check-jsx-text` and `check-nav`.
 
 ---
+
+## [2.23.4] — 2026-11-12
+
+### Fixed
+
+- **`scrollAnimate` keeps up when its own animation carries the element out
+  of view.** Its frames ran while an IntersectionObserver saw the element, and
+  that box includes the element's own transform and is cut by any
+  `overflow: hidden` parent. `scrollParallax`, `scrollReveal` and
+  `scrollHorizontal` run on it. Measured in Chromium, Firefox and WebKit: a
+  parallax layer at speed 1.5 on the x axis stopped at translateX(−109%) when
+  it left its clip and stayed there all the way back up; one at speed −1.05
+  stayed at its end, 105% down, after the page scrolled back; a fade-up from
+  120px below read 0 for the first 120px of its window, then jumped; and a jump
+  across the whole window (End, an anchor link) painted nothing and never fired
+  `onComplete`. The trigger window, measured from layout without the engine's
+  own props, decides now: the frames start on the scroll that changes what the
+  element should show, run while the scroll is inside the window, and paint the
+  clamped frame on the way out. Nothing runs outside the window. `onEnter` now
+  also fires the first time an element below the fold is scrolled into its
+  window; it never did. `onProgress` fires once more at creation, for the
+  first painted frame.
+- **`replay()` after `pause()` or `seek()` follows the scroll again.**
+  `scrollAnimate`, `scrollCounter`, `scrollText` and `scrollVideo` cleared
+  `paused` and asked for no frame, and `resume()` then had nothing to restart,
+  so the element stayed on its first frame until it left the screen and came
+  back.
+- **`scrollCounter`'s `destroy()` takes `--scroll-draw-progress` off the
+  element**, or puts back a value the page had set, as every other engine
+  does. The number stays as last drawn.
+- **`useScrollDrawProgress` with a `scrollContainer`.** It added the element's
+  viewport top to the container's `scrollTop`, leaving out where the container
+  sits and its border: a panel 400px down read 0, 0, 0, 0.05, 0.30 where the
+  engines read 0, 0.25, 0.5, 0.75, 1. It measures as the engines do now, and
+  follows layout changes that are not window resizes.
+- **`scrollSnap`** starts from the section the page is on (created on section
+  2, a nudge snapped to section 1); measures a container from inside its border
+  (a 4px border landed every snap 4px past its section); writes each frame of
+  its glide with `behavior: 'instant'`, so a page with `scroll-behavior:
+  smooth` no longer turns every frame into a smooth scroll of its own, and the
+  snap is where it says when `onSnap` fires; and clamps each section's offset to
+  the scroll range (read from the element that scrolls the page, the body on a
+  page without a doctype), so the last sections of a page that ends before they
+  start become current and stay there.
+- **`morphTo` to a longer outline ends drawn whole.** The dash was sized once,
+  to the starting path: a 40-unit square morphing to a 320-unit one had 40
+  units drawn at progress 1. The dash fits the longer of the two outlines,
+  measured at init and on a layout change, not every frame: hidden at 0, whole
+  at 1, and whole under reduced motion.
+- **A path with a `pathLength` draws in step with the scroll.** The browser
+  reads dash values in `pathLength` units, and the engine wrote user units: a
+  280-unit line with `pathLength="1"` was drawn whole by `seek(0.004)`. The
+  dash length is the `pathLength` when one is set, in `scrollDraw` and the
+  timeline.
+- **`scrollText` with `split: 'chars'`**: an emoji is one piece, not two lone
+  surrogates drawn as two U+FFFD; a word's letters stay on one line, where any
+  two letters could be split across lines before, so the split paragraph keeps
+  its height (Thai, Lao, Khmer, Myanmar, CJK, kana, Hangul and emoji, which
+  break between characters, keep a box per character); and a line of more
+  than 25 characters (at the default `stagger`)
+  starts hidden and ends shown, where the first character showed at progress 0
+  and none from the 27th on ever appeared.
+- **`debug: true` left on in a production build keeps the native path.**
+  2.23.3 sent every debug drawing to the JS engine, but the trigger lines are
+  drawn only in a development build.
+- **`scrollVideo`: a `seek()` before the metadata loads is applied when it
+  arrives.** It was lost: `getProgress()` 0.5, the film on frame 0.
+- **React `<ScrollVideo>`: `preload` follows the option, and `poster` reaches
+  the `<video>`.** It always rendered `preload="auto"`, and `scrollVideo`
+  leaves a preload attribute the page set alone, so the option did nothing.
+
+### Changed
+
+- `scrollSnap`'s three copies of the end of a snap are one function, and its
+  window and container offsets one expression; `scrollText`'s splitters share
+  one span helper; the animate engine's zero-length-window warning is worded
+  as `scrollVideo`'s. With the observer gone that pays for the rest:
+  `scrollReveal` is 5.7 KB gzipped (was 5.8), `svg-scroll-draw/horizontal` 5.6
+  (5.7), the main entry stays 11.6; `svg-scroll-draw/react` is 13.2 (13.1),
+  `scrollText` 3.5 (3.4), `scrollSnap` 2.0 (1.9).
+
+### Docs
+
+- `createBounce` in the README makes `bounces − 1` dips, the rise being the
+  first of its `bounces` segments; it said "bounces after the initial approach".
+- `scrollReveal`'s comment: `from` is merged over the preset, and `fadeUp`
+  applies when no preset is given, so `{ from: { scale: 0.95 } }` still fades
+  up 32px. It said `from` replaced the preset.
+- `scrollHorizontal`'s comment sets the stage to `overflow: clip`, as the guide
+  and the generator do (a hidden stage still scrolls to a focused panel), and
+  its example no longer passes the fixed `distance` its own option advises
+  against.
+- The docs page: the horizontal `scrollSnap` example passes `scrollContainer`
+  (it snapped the window); a custom easing may return values outside 0–1;
+  `scrollText` keeps a visually hidden copy of its text, not an `aria-label`
+  (since 2.21.0); `debug` leaves the fast path in development builds only; the
+  React `<ScrollVideo>` example passes a `poster`.
+- Sizes on the docs and example pages come from `data/competitors.ts`:
+  `scrollText` said 2.5 KB and `scrollReveal` 4.5 KB. The reveal page no longer
+  calls its entry smaller than ScrollReveal's, and the text page no longer says
+  `aria-label`. The npm README's `scrollText` and ScrollReveal drop-in figures
+  are the measured ones.
+
+### Tests
+
+- 44 unit tests (795 in all); 29 browser tests per engine (284):
+  `e2e/animate-gate.spec.ts`, `e2e/snap-edges.spec.ts`, `e2e/morph.spec.ts`,
+  `e2e/path-length.spec.ts`, `e2e/react-extras.spec.ts` (a second React
+  fixture, for `useScrollDrawProgress` in a container and `<ScrollVideo>`), and
+  new cases in the counter, text and video specs. WebKit is one of the
+  native-path projects, so the `view()` cross-checks run there too. 30 unit
+  tests drive the animate engine with scroll events instead of a fake
+  IntersectionObserver. 21 mutations, each caught by its test (123 in all);
+  `native-optout/debug` is re-anchored. An independent review found two
+  regressions in the fixes before release and they are fixed with tests:
+  `scrollSnap`'s clamp read the range from `<html>`, which on a page without a
+  doctype is the whole page, so every snap went to the top; and the word boxes
+  put a line of Chinese, which has no spaces, into one box that never
+  wrapped.
 
 ## [2.23.3] — 2026-11-11
 

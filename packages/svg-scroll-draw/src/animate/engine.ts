@@ -379,8 +379,10 @@ function buildAnimateEngine(
 
   let tStart           = 0;
   let tEnd             = 0;
+  /** The pending frame, 0 when the loop is stopped: one loop at a time. */
   let rafId            = 0;
-  let isVisible        = false;
+  /** Where in its window the frame on screen was painted (gate()): NaN for none. */
+  let painted          = NaN;
   let paused           = false;
   /** With `once`, the floor seek() set, eased: -1 when there is none. */
   let frozenAlpha      = -1;
@@ -448,8 +450,31 @@ function buildAnimateEngine(
     prevRawProgress = raw;
   }
 
+  /**
+   * How far `scroll` is through the window, clamped: in (0, 1) the frame moves
+   * with the scroll, at 0 or 1 it is fixed. Never faster than the raw window,
+   * so a fast `speed` still sees the end for onLeave, and a slow one runs on
+   * until its progress reaches 1.
+   */
+  const gate = (scroll: number): number => computeProgress(scroll, tStart, tEnd, Math.min(speed, 1));
+
+  /**
+   * Start the frame loop if the frame on screen is no longer the one the scroll
+   * calls for. The loop used to run while an IntersectionObserver saw the
+   * element, but the element's box includes its own transform and is cut by
+   * any overflow-hidden parent: a parallax layer whose travel carried it out of
+   * its clip stopped updating and stayed there for good, a fade-up started
+   * only once its offset box crossed the fold, then jumped, and a jump across
+   * the whole window never painted its last frame or fired onComplete. The
+   * window comes from layout with the engine's own props left out
+   * (cacheTriggers), so it is what decides now, checked on every scroll.
+   */
+  function wake(): void {
+    if (!rafId && !paused && gate(scrollPos()) !== painted) rafId = requestAnimationFrame(update);
+  }
+
   function update(): void {
-    if (!isVisible || paused) return;
+    if (paused) return;
     const now           = performance.now();
     const currentScroll = scrollPos();
 
@@ -477,7 +502,12 @@ function buildAnimateEngine(
     } else if (alpha < 1 && !once) {
       completed = false;
     }
-    rafId = requestAnimationFrame(update);
+    // A callback paused, sought or destroyed it: no next frame.
+    if (paused) return;
+    // Out of the window this frame is the clamped one, and the next scroll
+    // that changes it wakes the loop again.
+    painted = gate(currentScroll);
+    rafId = painted > 0 && painted < 1 ? requestAnimationFrame(update) : 0;
   }
 
   cacheTriggers();
@@ -489,45 +519,36 @@ function buildAnimateEngine(
   // viewport tall, which collapses both ends onto the same scroll position.
   // Cheap to detect here, and it names the likely cause.
   if (tEnd === tStart) {
-    warn(
-      'scrollAnimate: the trigger window has zero length (start and end resolve to the ' +
-        'same scroll position), so this element will never animate. If the target is ' +
-        'inside a position:sticky stage, measure the trigger from the container that ' +
-        'holds the scroll room via `triggerElement`.',
-      el,
-    );
+    // Worded as scrollVideo's warning is, which ships beside it.
+    warn('scrollAnimate: zero-length trigger window, so it never animates. In a sticky stage, set triggerElement.', el);
   }
 
   // Apply initial state immediately so elements never flash at their "to" value
-  // before the IntersectionObserver fires for the first time.
+  // before the first frame.
   {
     frozenRaw    = computeProgress(scrollPos(), tStart, tEnd, speed);
     currentAlpha = easeFn(frozenRaw);
     applyAlpha(currentAlpha);
   }
 
-  const observer = new IntersectionObserver(
-    (ioEntries) => {
-      ioEntries.forEach((e) => {
-        isVisible = e.isIntersecting;
-        if (isVisible && !paused) rafId = requestAnimationFrame(update);
-        else cancelAnimationFrame(rafId);
-      });
-    },
-    { root: scrollEl ?? null },
-  );
+  function remeasure(): void {
+    cacheTriggers();
+    wake();
+  }
 
   let resizeTimer: ReturnType<typeof setTimeout>;
   function onResize(): void {
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(cacheTriggers, 150);
+    resizeTimer = setTimeout(remeasure, 150);
   }
+  const scroller = scrollEl ?? window;
+  scroller.addEventListener('scroll', wake, { passive: true });
   window.addEventListener('resize', onResize);
   window.addEventListener('orientationchange', onResize);
   // Most layout changes are not window resizes: an image loading above the
   // element, a font swapping in, content arriving late.
   const unwatch = watchLayout([triggerEl], onResize);
-  observer.observe(el);
+  wake();
 
   _register(el, {
     type: 'animate',
@@ -535,10 +556,19 @@ function buildAnimateEngine(
     getTrigger: () => ({ tStart, tEnd }),
   });
 
+  function halt(): void {
+    paused  = true;
+    cancelAnimationFrame(rafId);
+    rafId   = 0;
+    // seek() paints a frame of its own, and a paused loop may have stopped
+    // mid-window: resume() repaints from the scroll either way.
+    painted = NaN;
+  }
+
   return {
     destroy() {
-      cancelAnimationFrame(rafId);
-      observer.disconnect();
+      halt();
+      scroller.removeEventListener('scroll', wake);
       window.removeEventListener('resize', onResize);
       window.removeEventListener('orientationchange', onResize);
       unwatch();
@@ -553,26 +583,27 @@ function buildAnimateEngine(
       currentAlpha = 0;
       paused       = false;
       applyAlpha(0);
+      // The frame on screen is the one before the window. replay() used to
+      // leave the loop as it found it, so after pause() or seek() it never
+      // ran again until the element left the screen and came back.
+      painted      = 0;
+      wake();
     },
-    pause() {
-      paused = true;
-      cancelAnimationFrame(rafId);
-    },
+    pause: halt,
     resume() {
       if (!paused) return;
       paused = false;
-      if (isVisible) rafId = requestAnimationFrame(update);
+      wake();
     },
     seek(p: number) {
       const clamped = Math.min(1, Math.max(0, p));
       currentAlpha  = clamped;
       frozenAlpha   = clamped;
       frozenRaw     = 0;
-      paused        = true;
-      cancelAnimationFrame(rafId);
+      halt();
       applyAlpha(clamped);
     },
     getProgress() { return currentAlpha; },
-    refresh() { cacheTriggers(); },
+    refresh: remeasure,
   };
 }

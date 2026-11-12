@@ -11,6 +11,7 @@ import { seoTitle } from '../_lib/seo';
 import { SiteShell } from '@/components/site/SiteShell';
 import { jsonLd, SITE_URL } from '@/lib/json-ld';
 import { CodeBox } from '@/components/site/CodeBox';
+import { ToolNextStep } from '@/components/tool-kit/ToolNextStep';
 import { EasingVisualizer } from '@/components/easing/EasingVisualizer';
 import { CurvesFigure } from '@/components/easing/CurvesFigure';
 import { RemapFigure } from '@/components/easing/RemapFigure';
@@ -80,6 +81,7 @@ const TOC = [
   { id: 'overshoot', label: 'Overshoot' },
   { id: 'named', label: `Every easing · ${EASING_NAMES.length} + ${FACTORY_KEYS.length}` },
   { id: 'apis', label: `Where easing goes · ${EASING_APIS.length}` },
+  { id: 'use', label: 'Use it in your project' },
   { id: 'faq', label: `Questions · ${FAQ.length}` },
 ];
 
@@ -152,7 +154,7 @@ export default function EasingVisualizerPage() {
           <div className="stk-main">
 
             <Sec n={1} k="The tool" id="visualizer" title="See an easing move">
-              <EasingVisualizer />
+              <EasingVisualizer version={SELF.version} />
             </Sec>
 
             <Sec n={2} k="The model" id="how" title="Progress in, eased progress out">
@@ -183,7 +185,14 @@ export default function EasingVisualizerPage() {
               <div className="stk-faq">
                 <div className="stk-q">
                   <span className="stk-q-n">move</span>
-                  <div><p className="stk-p">A transform or position runs past its target and swings back, the feel a spring is for.</p></div>
+                  <div>
+                    <p className="stk-p">
+                      A transform or position runs past its target and swings back, the feel a spring is for. Leave it
+                      room: in 2.23.3 and earlier, scrollAnimate stops updating an element once its own transform has
+                      carried it wholly out of view, or out of an <C>overflow: hidden</C> parent, so an overshoot that
+                      far leaves it there. Fixed in 2.23.4.
+                    </p>
+                  </div>
                 </div>
                 <div className="stk-q">
                   <span className="stk-q-n">draw</span>
@@ -207,10 +216,11 @@ export default function EasingVisualizerPage() {
               </div>
               <Note k="once">
                 With <C>once: true</C>, svg-scroll-draw 2.23.2 and earlier keep the highest eased value reached. In
-                scrollDraw, scrollAnimate, scrollReveal and scrollCounter (the last two have <C>once</C> on by
-                default) that freezes spring and elastic on their overshoot, so a counter to 100 stops near 127 with
-                elastic, and it flattens bounce’s dips. 2.23.3 keeps the furthest scroll progress instead and eases it
-                after, as scrollText already did, so the curve plays out and settles at 1.
+                scrollDraw, scrollAnimate, scrollReveal, scrollCounter, scrollVideo and useScrollDrawProgress
+                (scrollReveal and scrollCounter have <C>once</C> on by default) that freezes spring and elastic on
+                their overshoot, so a counter to 100 stops near 127 with elastic, and it flattens bounce’s dips. Fixed
+                in 2.23.3, which keeps the furthest scroll progress instead and eases it after, as scrollText already
+                did, so the curve plays out and settles at 1.
               </Note>
             </Sec>
 
@@ -281,7 +291,7 @@ export default function EasingVisualizerPage() {
                 In svg-scroll-draw 2.23.2 and earlier, a scrollDraw with <C>autoplay</C> whose other options CSS can
                 express (linear or one of the three eases, no callbacks, no <C>once</C>, no <C>stagger</C>, the
                 default trigger) is handed to the browser’s native scroll timeline where there is one, and follows the
-                scroll instead of playing over its <C>duration</C>. 2.23.3 always plays it on time.
+                scroll instead of playing over its <C>duration</C>. Fixed in 2.23.3, which always plays it on time.
               </Note>
               <Note k="Reduced motion">
                 For readers who ask their system for less motion, scrollDraw and scrollAnimate show the end state at
@@ -289,7 +299,24 @@ export default function EasingVisualizerPage() {
               </Note>
             </Sec>
 
-            <Sec n={6} k={`${FAQ.length} questions`} id="faq" title="Easing questions">
+            <Sec n={6} k="Next step" id="use" title="Use it in your project">
+              <p className="stk-p">
+                createSpring, createBounce and createElastic are in the main entry, <C>svg-scroll-draw</C>, beside
+                scrollDraw and scrollAnimate, and not in <C>svg-scroll-draw/react</C>, where the React tab’s{' '}
+                <C>{'<ScrollDraw>'}</C> comes from. Run it, under the code, downloads a page with your easing on a
+                scrollDraw line and a scrollAnimate dot over real page scroll, the library loaded from jsDelivr as an
+                ES module, pinned to {SELF.version}.
+              </p>
+              <ToolNextStep
+                slug="easing-visualizer"
+                api="scrollDraw"
+                entry=""
+                docs="/docs#core-options"
+                related={['cubic-bezier-generator', 'scroll-trigger-visualizer']}
+              />
+            </Sec>
+
+            <Sec n={7} k={`${FAQ.length} questions`} id="faq" title="Easing questions">
               <div className="stk-faq">
                 {FAQ.map((f, i) => (
                   <div key={f.q} className="stk-q">
@@ -301,11 +328,6 @@ export default function EasingVisualizerPage() {
                   </div>
                 ))}
               </div>
-              <p className="stk-p stk-more">
-                Use an easing on words: the <Link href="/text-animation-generator">text animation generator</Link>. On
-                your own drawing: the <Link href="/svg-path-viewer">SVG path viewer</Link>. All of svg-scroll-draw{' '}
-                {SELF.version}: <Link href="/docs">the docs</Link>.
-              </p>
             </Sec>
           </div>
         </div>

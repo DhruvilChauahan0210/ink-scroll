@@ -5,9 +5,10 @@ import {
   type KeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode,
 } from 'react';
 import { CodeBox } from '@/components/site/CodeBox';
+import { ToolExport } from '@/components/tool-kit/ToolExport';
 import { Y_MAX, Y_MIN, bezierEasing, bezierRange, cssOf, fmt, mirror, parseBezier, round6, type Bezier } from './bezier';
 import { CSS_PRESETS, FAMILY_NAMES, LIB_PRESETS, NAMED_PRESETS, ceil1, presetByKey, presetLabel, type Preset } from './presets';
-import { TABS, codeFor, matchPreset, type Tab } from './code';
+import { FILENAME, TABS, TITLE, WAVE, bezierHtml, codeFor, matchPreset, type Tab } from './code';
 
 /**
  * The cubic-bezier generator. Drag P1 and P2 (or move them with the arrow
@@ -18,13 +19,16 @@ import { TABS, codeFor, matchPreset, type Tab } from './code';
  *   Play jumps to the end.
  * - The drawing is a scrollDraw instance whose `easing` is the curve as a
  *   function, driven by seek(). It runs in autoplay mode because only there
- *   does seek() take time and ease it (core/engine.ts:827-834, applyAutoAlpha
- *   at :690); a scroll-mode seek() takes progress already eased, and clamps it
- *   to 1 (:1154-1163), so a curve past 1 could not show. It is rebuilt, the
- *   old one destroyed, whenever the curve changes.
+ *   does seek() take time and ease it (buildAutoplay's seek() and
+ *   applyAutoAlpha() in core/engine.ts); a scroll-mode seek() takes progress
+ *   already eased, and clamps it to 1, so a curve past 1 could not show. It is
+ *   rebuilt, the old one destroyed, whenever the curve changes.
  * - The browser check runs the same cubic-bezier() through the Web Animations
  *   API and compares it with the JavaScript function.
- * - The code is generated from the same state (code.ts).
+ * - The code is generated from the same state (code.ts), and so is the page
+ *   Run it downloads or opens in StackBlitz: the same curves on real page
+ *   scroll, the library loaded from jsDelivr at `version` (SELF.version,
+ *   passed down by the page).
  */
 
 type Lib = typeof import('svg-scroll-draw');
@@ -35,7 +39,6 @@ const START: Bezier = presetByKey('named:easeOutBack')?.v ?? [0.34, 1.56, 0.64, 
 const START_CMP = 'css:ease';
 const DURATIONS = [200, 300, 400, 600, 800, 1000, 1500, 2000];
 const START_MS = 1000;
-const WAVE = 'M14 46 C 44 46, 52 12, 86 12 S 128 46, 160 46 S 202 12, 236 12 S 278 46, 306 46';
 const FIELDS = ['x1', 'y1', 'x2', 'y2'] as const;
 
 const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n));
@@ -113,7 +116,7 @@ function browserGap(v: Bezier, el: HTMLElement | null): Check {
 
 // ── The component ───────────────────────────────────────────────────────────
 
-export function CubicBezierGenerator() {
+export function CubicBezierGenerator({ version }: { version: string }) {
   const [v, setV] = useState<Bezier>(START);
   const [cmpKey, setCmpKey] = useState<string>(START_CMP);
   const [ms, setMs] = useState(START_MS);
@@ -250,6 +253,9 @@ export function CubicBezierGenerator() {
   const trackLo = Math.min(0, rangeA.min, rangeB?.min ?? 0);
   const trackHi = Math.max(1, rangeA.max, rangeB?.max ?? 1);
   const code = useMemo(() => codeFor(tab, v, ms), [tab, v, ms]);
+  // Run it: a page with the same curves on real scroll, and the CSS tab on a card.
+  const cmpV = cmp?.v ?? null;
+  const html = useMemo(() => bezierHtml({ v, cmp: cmpV, ms, version }), [v, cmpV, ms, version]);
   const checkNow = check && check.css === cssOf(v) ? check : null;
   const named = match?.group === 'named' ? match.key : '';
 
@@ -409,6 +415,7 @@ export function CubicBezierGenerator() {
           ))}
         </div>
         <CodeBox file={TABS.find((x) => x.k === tab)?.file ?? 'easing.css'}>{code}</CodeBox>
+        <ToolExport title={TITLE} filename={FILENAME} html={html} />
       </div>
     </div>
   );

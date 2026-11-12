@@ -1,4 +1,5 @@
 import type { ScrollDrawOptions } from 'svg-scroll-draw';
+import { cdnModule, htmlFile, withSource } from '@/lib/tool-export';
 
 /**
  * The SVG line drawing generator's output, written from data.
@@ -6,7 +7,8 @@ import type { ScrollDrawOptions } from 'svg-scroll-draw';
  * The pasted SVG reaches this file only as a Tree read off sanitizeSvg's
  * rebuilt element (lib/svg-sanitize.ts), so every tag and attribute in the
  * output is one the sanitiser allows, plus the few written here: pathLength,
- * a class on the root, one custom property per shape and the <style>.
+ * a class on the root, one custom property per shape, the <style> and the
+ * source-line comment above everything you copy.
  *
  * The technique, checked in Chromium, Firefox and WebKit:
  *
@@ -95,6 +97,8 @@ export const DEFAULTS: Settings = {
 
 /** The root class and keyframe prefix of the code you copy. */
 export const OUT_NAME = 'line-drawing';
+/** This tool's page, for the source line on every listing it writes. */
+export const SLUG = 'svg-line-drawing-generator';
 
 /** What the tool measured of one shape in the browser. */
 export type Measured = {
@@ -384,7 +388,9 @@ export type Output = {
   markup: string;
   /** The SVG for scrollDraw: no pathLength, no animation. */
   scrollMarkup: string;
-  scroll: { code: string; options: ScrollDrawOptions };
+  scroll: ScrollPlan;
+  /** css, markup and scrollMarkup without the source line, for htmlPage() (htmlFile writes its own). */
+  raw: { css: string; markup: string; scrollMarkup: string };
   /** The file again, with the preview's own class and keyframe names (inline CSS applies to the whole page). */
   preview: Tree;
   previewScroll: Tree;
@@ -417,12 +423,14 @@ export function buildOutput(
   };
   const hasEllipse = hasTag(src, 'ellipse');
   const fills = tl.fade > 0 ? m.filter((x) => x.filled).map((x) => x.fillOpacity) : [];
+  const raw = { css: ctx.css, markup: serialize(shape(src, 'page', ctx)), scrollMarkup: serialize(shape(src, 'scroll', ctx)) };
   return {
-    file: serialize(shape(src, 'file', ctx)),
-    css: ctx.css,
-    markup: serialize(shape(src, 'page', ctx)),
-    scrollMarkup: serialize(shape(src, 'scroll', ctx)),
+    file: withSource(serialize(shape(src, 'file', ctx)), SLUG, 'svg'),
+    css: withSource(raw.css, SLUG, 'css'),
+    markup: withSource(raw.markup, SLUG, 'html'),
+    scrollMarkup: withSource(raw.scrollMarkup, SLUG, 'html'),
     scroll: scrollPlan(m.length, hasEllipse, fills, s),
+    raw,
     preview: shape(src, 'preview', ctx),
     previewScroll: shape(src, 'preview-scroll', ctx),
     timeline: tl,
@@ -448,6 +456,14 @@ const LIB_EASING: Record<Easing, ScrollDrawOptions['easing'] | null> = {
   'ease-in-out': 'ease-in-out',
 };
 
+export type ScrollPlan = {
+  /** main.js, source line and all. */
+  code: string;
+  options: ScrollDrawOptions;
+  /** The comments and the scrollDraw call, without the import, for htmlPage(). */
+  call: string[];
+};
+
 /**
  * The same drawing on scroll. scrollDraw gives every line the whole trigger
  * window and starts each `stagger` of it after the one before, so the run is
@@ -460,7 +476,7 @@ const LIB_EASING: Record<Easing, ScrollDrawOptions['easing'] | null> = {
  * fillOpacity sets one value on every shape, so it is used only when they all
  * share it: otherwise a light fill (fill-opacity 0.18) would end up solid.
  */
-export function scrollPlan(n: number, ellipse: boolean, fills: readonly number[], s: Settings): { code: string; options: ScrollDrawOptions } {
+export function scrollPlan(n: number, ellipse: boolean, fills: readonly number[], s: Settings): ScrollPlan {
   const options: ScrollDrawOptions = {};
   const lines: string[] = [];
   if (ellipse) {
@@ -493,11 +509,7 @@ export function scrollPlan(n: number, ellipse: boolean, fills: readonly number[]
     s.hand > 0 ? 'the hand-drawn timing' : '',
     s.loop !== 'none' ? 'the loop' : '',
   ].filter(Boolean);
-  const code = [
-    '// <div id="drawing"> + the markup below + </div>',
-    '',
-    "import { scrollDraw } from 'svg-scroll-draw';",
-    '',
+  const call = [
     `// Draws as the page scrolls: it starts when the drawing's top is ${SCROLL_START}% down`,
     `// the window and the last line lands at ${SCROLL_END}%. Scrolling back undraws it.`,
     ...(lost.length ? [`// Not carried over: ${lost.join(', ')}.`] : []),
@@ -507,6 +519,72 @@ export function scrollPlan(n: number, ellipse: boolean, fills: readonly number[]
     `scrollDraw('#drawing', {`,
     ...lines,
     '});',
+  ];
+  const code = [
+    '// <div id="drawing"> + the markup below + </div>',
+    '',
+    "import { scrollDraw } from 'svg-scroll-draw';",
+    '',
+    ...call,
   ].join('\n');
-  return { code, options };
+  return { code: withSource(code, SLUG, 'js'), options, call };
+}
+
+// ── The page: both versions, run outside this site ──────────────────────────
+
+const indent = (text: string, n: number) => text.split('\n').map((l) => (l ? ' '.repeat(n) + l : l)).join('\n');
+
+/** The page around the drawing; the generated CSS follows it. */
+const PAGE_CSS = `:root { color-scheme: light dark; }
+body { margin: 0; font: 16px/1.6 system-ui, sans-serif; }
+h1 { margin: 0; font-size: 1.5rem; }
+p { margin: 0; }
+svg { display: block; width: min(100%, 560px); height: auto; max-height: 60vh; margin: 0 auto; }
+button { padding: 8px 16px; font: inherit; cursor: pointer; }
+.stage { display: grid; place-items: center; align-content: center; gap: 20px; min-height: 100vh; padding: 32px 16px; box-sizing: border-box; text-align: center; }
+.hint { padding: 30vh 16px; text-align: center; opacity: 0.7; }
+.end { padding-bottom: 70vh; }
+#drawing { padding: 0 16px; }
+@media (prefers-reduced-motion: reduce) {
+  #replay { display: none; }
+}`;
+
+/**
+ * A complete page for the current settings: the CSS drawing as the page loads
+ * (the CSS + markup output, which is what the preview plays), then the scroll
+ * version further down, drawn by scrollDraw from jsDelivr, with room to
+ * scroll it through.
+ */
+export function htmlPage(out: Output, version: string): string {
+  return htmlFile({
+    slug: SLUG,
+    title: 'SVG line drawing',
+    css: `${PAGE_CSS}\n\n${out.raw.css}`,
+    body: [
+      '<header class="stage">',
+      '  <h1>SVG line drawing</h1>',
+      '  <p>Drawn with CSS as the page loads, no JavaScript. Scroll down for the scroll version.</p>',
+      indent(out.raw.markup, 2),
+      '  <button type="button" id="replay">Replay</button>',
+      '</header>',
+      '<p class="hint">On scroll: scrollDraw draws the same drawing as it rises.</p>',
+      '<div id="drawing">',
+      indent(out.raw.scrollMarkup, 2),
+      '</div>',
+      '<p class="hint end">Scroll back up and it undraws.</p>',
+    ].join('\n'),
+    script: [
+      `import { scrollDraw } from '${cdnModule(version)}';`,
+      '',
+      '// Replay starts the CSS drawing again.',
+      "document.getElementById('replay').addEventListener('click', () => {",
+      "  for (const a of document.querySelector('.line-drawing').getAnimations({ subtree: true })) {",
+      '    a.currentTime = 0;',
+      '    a.play();',
+      '  }',
+      '});',
+      '',
+      ...out.scroll.call,
+    ].join('\n'),
+  });
 }

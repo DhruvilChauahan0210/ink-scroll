@@ -1,0 +1,243 @@
+/* ── The typewriter effect generator (/typewriter-effect-generator) ──────
+   One hairline panel: the way to type, then the preview with its transport
+   and readouts beside the controls; then the code. Mono labels; the accent
+   only on the warnings' rule. The generated CSS itself is injected, scoped to
+   .typ-stage, by the component. Prefix typ- (figure: typf-). */
+
+.site .typ { display: grid; gap: 32px; min-width: 0; }
+.site .typ-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: 'mode' 'view' 'controls' 'msgs';
+  min-width: 0;
+  border: 1px solid var(--line-2);
+}
+.site .typ-mode { grid-area: mode; }
+.site .typ-view { grid-area: view; }
+.site .typ-controls { grid-area: controls; }
+.site .typ-msgs { grid-area: msgs; }
+@media (min-width: 900px) {
+  .site .typ-panel {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    grid-template-areas: 'mode mode' 'view controls' 'msgs msgs';
+  }
+  .site .typ-controls { border-left: 1px solid var(--line); }
+}
+
+.site .typ-k { margin: 0; font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+
+/* ── The way to type ─────────────────────────────────────────────────── */
+
+.site .typ-mode { display: grid; gap: 8px; padding: 16px; border-bottom: 1px solid var(--line); }
+.site .typ-mode .typ-seg { max-width: 600px; }
+.site .typ-mode-d { margin: 0; max-width: 72ch; font-size: 14px; line-height: 1.6; color: var(--fg-2); }
+/* Three names in a row do not fit a phone: one under another. */
+@media (max-width: 479px) {
+  .site .typ-mode .typ-seg { grid-auto-flow: row; }
+  .site .typ-mode .typ-seg button { border-left: 0; border-top: 1px solid var(--line-2); }
+  .site .typ-mode .typ-seg button:first-child { border-top: 0; }
+}
+
+/* ── Controls ────────────────────────────────────────────────────────── */
+
+.site .typ-controls { display: grid; align-content: start; min-width: 0; }
+.site .typ-group {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  margin: 0;
+  padding: 16px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+}
+.site .typ-group:last-child { border-bottom: 0; }
+.site .typ-group legend { float: left; width: 100%; padding: 0; font: 500 11px/1.4 var(--mono); color: var(--fg); }
+.site .typ-group legend + * { clear: both; }
+.site .typ-field { display: grid; gap: 6px; align-content: start; min-width: 0; }
+.site .typ-field > span:first-child { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .typ-field em { font-style: normal; }
+.site .typ-field.is-off > span:first-child { text-decoration: line-through; text-decoration-color: var(--line-2); }
+.site .typ-field textarea {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  min-width: 0;
+  min-height: 92px;
+  padding: 8px 12px;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  font: 400 13px/1.5 var(--mono);
+  color: var(--fg);
+  resize: vertical;
+}
+.site .typ-field textarea:focus-visible { border-color: var(--fg); outline: 0; }
+.site .typ input[type='range'] { width: 100%; margin: 8px 0 4px; accent-color: var(--fg); }
+/* globals.css gives every range `outline: none`, which outranks :focus-visible. */
+.site .typ input[type='range']:focus-visible { outline: 1px solid var(--fg); outline-offset: 4px; }
+.site .typ input[type='range']:disabled { opacity: 0.4; cursor: not-allowed; }
+.site .typ-help { margin: 0; font-size: 13px; line-height: 1.55; color: var(--fg-2); }
+
+.site .typ-seg { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); border: 1px solid var(--line-2); }
+.site .typ-seg button {
+  min-width: 0;
+  padding: 8px 4px;
+  border: 0;
+  border-left: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  font: 500 11px/1.2 var(--mono);
+  color: var(--fg-2);
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+.site .typ-seg button:first-child { border-left: 0; }
+.site .typ-seg button[aria-checked='true'] { background: var(--fg); color: var(--bg); }
+.site .typ-seg button:focus-visible { outline: 1px solid var(--fg); outline-offset: -3px; }
+.site .typ-seg button:disabled { cursor: not-allowed; }
+.site .typ-seg[aria-disabled='true'] { opacity: 0.45; }
+
+/* ── The preview ─────────────────────────────────────────────────────── */
+
+.site .typ-view { display: grid; gap: 10px; align-content: start; min-width: 0; padding: 16px; background: var(--panel); }
+.site .typ-stage { position: relative; min-width: 0; color: var(--fg); }
+.site .typ-stage p { margin: 0; }
+.site .typ-stage.is-css,
+.site .typ-stage.is-typer {
+  display: grid;
+  place-items: center;
+  min-height: clamp(160px, 20vw, 220px);
+  padding: 24px 16px;
+  border: 1px solid var(--line-2);
+  background: var(--bg);
+  overflow: hidden;
+}
+/* The generated CSS sizes its font to the screen in vw; here, to the stage. */
+.site .typ-stage.is-css { container-type: inline-size; }
+.site .typ-stage.is-typer { place-items: center start; }
+.site .typ-stage .typer,
+.site .typ-stage .typed {
+  font-family: var(--sans);
+  font-size: clamp(22px, 2.6vw, 30px);
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  overflow-wrap: anywhere;
+}
+
+/* The scroll box: a small window, with the trigger's two lines over it. */
+.site .typ-frame { position: relative; border: 1px solid var(--line-2); background: var(--bg); }
+.site .typ-box {
+  height: 280px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+@media (max-width: 599px) { .site .typ-box { height: 240px; } }
+.site .typ-box:focus-visible { outline: 1px solid var(--fg); outline-offset: 3px; }
+.site .typ-room { height: 100%; }
+.site .typ-host { padding: 0 72px 0 16px; }
+.site .typ-overlay { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.site .typ-line { position: absolute; left: 0; right: 0; height: 0; border-top: 1px dashed var(--fg-3); }
+.site .typ-line.is-end { border-top-style: dotted; }
+.site .typ-line i {
+  position: absolute;
+  right: 6px;
+  bottom: 3px;
+  font: 500 9.5px/1.2 var(--mono);
+  font-style: normal;
+  color: var(--fg-3);
+}
+
+.site .typ-transport { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+.site .typ-btns { display: flex; gap: 8px; }
+.site .typ-btn {
+  padding: 8px 14px;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  font: 500 12px/1 var(--mono);
+  color: var(--fg);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.site .typ-btn:hover, .site .typ-btn:focus-visible { border-color: var(--fg); outline: 0; }
+.site .typ-scrub { display: grid; gap: 4px; flex: 1 1 220px; min-width: 0; }
+.site .typ-scrub span { font: 500 10px/1.4 var(--mono); color: var(--fg-3); font-variant-numeric: tabular-nums; }
+
+.site .typ-facts { display: grid; margin: 0; border-top: 1px solid var(--line); }
+.site .typ-facts > div { display: grid; grid-template-columns: 84px minmax(0, 1fr); gap: 12px; padding: 7px 0; border-bottom: 1px solid var(--line); }
+.site .typ-facts dt { font: 500 10px/1.8 var(--mono); color: var(--fg-3); }
+.site .typ-facts dd { margin: 0; min-width: 0; font-size: 13px; line-height: 1.5; color: var(--fg-2); overflow-wrap: anywhere; }
+
+/* ── Messages ────────────────────────────────────────────────────────── */
+
+.site .typ-msgs { display: grid; }
+.site .typ-warn,
+.site .typ-note {
+  margin: 0;
+  padding: 10px 16px;
+  border-top: 1px solid var(--line);
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--fg-2);
+}
+.site .typ-warn { border-left: 2px solid var(--accent); }
+
+/* ── Code ────────────────────────────────────────────────────────────── */
+
+.site .typ-code { display: grid; min-width: 0; }
+.site .typ-tabs { display: flex; flex-wrap: wrap; }
+.site .typ-tab {
+  padding: 8px 14px;
+  border: 1px solid var(--line-2);
+  border-bottom: 0;
+  border-left-width: 0;
+  border-radius: 0;
+  background: transparent;
+  font: 500 11.5px/1 var(--mono);
+  color: var(--fg-2);
+  cursor: pointer;
+}
+.site .typ-tab:first-child { border-left-width: 1px; }
+.site .typ-tab[aria-selected='true'] { color: var(--fg); background: var(--panel); }
+.site .typ-tab:focus-visible { outline: 1px solid var(--fg); outline-offset: -3px; }
+.site .typ-code .code-box { margin-top: 0; }
+.site .typ-hint { margin: 12px 0 0; font-size: 13px; line-height: 1.55; color: var(--fg-2); }
+
+/* ── The page's comparison table ─────────────────────────────────────── */
+
+.site .typ-table { width: 100%; margin: 8px 0 0; border-collapse: collapse; font-size: 13.5px; }
+.site .typ-table th,
+.site .typ-table td { padding: 10px 14px 10px 0; border-top: 1px solid var(--line); text-align: left; vertical-align: top; }
+.site .typ-table thead th { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .typ-table tbody th { width: 112px; font: 500 10.5px/1.6 var(--mono); color: var(--fg); }
+.site .typ-table td { line-height: 1.6; color: var(--fg-2); }
+/* On a phone each row is a block: what it is about, then the three answers, labelled. */
+@media (max-width: 699px) {
+  .site .typ-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .site .typ-table, .site .typ-table tbody, .site .typ-table tr { display: block; }
+  .site .typ-table tr { padding: 10px 0; border-top: 1px solid var(--line); }
+  .site .typ-table th, .site .typ-table td { display: block; width: auto; padding: 2px 0; border-top: 0; }
+  .site .typ-table tbody th { padding-bottom: 4px; }
+  .site .typ-table td::before { content: attr(data-k) ' · '; font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+}
+.site .typ-b { font-weight: 500; color: var(--fg); }
+
+/* ── Fig. 1: the steps() staircase ───────────────────────────────────── */
+
+.site .typf svg { display: block; width: 100%; height: auto; overflow: visible; }
+.site .typf-axis { color: var(--fg-3); }
+.site .typf-grid { color: var(--line-2); }
+.site .typf-ramp { color: var(--fg-3); }
+.site .typf-step { color: var(--fg); }
+.site .typf-now { color: var(--fg-2); }
+.site .typf-cell { color: var(--line-2); }
+.site .typf-edge { color: var(--fg); }
+.site .typf-dot { fill: var(--fg); }
+.site .typf-dot.is-ramp { fill: var(--bg); stroke: var(--fg-3); }
+.site .typf-k { font: 500 10.5px var(--mono); fill: var(--fg-3); }
+.site .typf-n { font: 500 11px var(--mono); fill: var(--fg-2); }
+.site .typf-code { font: 500 11.5px var(--mono); fill: var(--fg); }
+.site .typf-ch { font: 500 17px var(--mono); fill: var(--fg); }
+.site .typf-caret { fill: var(--fg); }

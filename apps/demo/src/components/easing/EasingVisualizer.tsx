@@ -3,10 +3,15 @@
 import { useCallback, useDeferredValue, useEffect, useId, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { ScrollDrawOptions } from 'svg-scroll-draw';
 import { CodeBox } from '@/components/site/CodeBox';
+import { ToolExport } from '@/components/tool-kit/ToolExport';
 import {
-  EASING_NAMES, EXACT_CSS, FACTORIES, FACTORY_KEYS, NAMED, curvePath, curveStats, factoryCurve, linearCss, linearText,
-  num, type Curve, type CurveStats, type EasingName, type FactoryKey,
+  EASING_NAMES, FACTORIES, FACTORY_KEYS, NAMED, curvePath, curveStats, factoryCurve, num,
+  type Curve, type CurveStats, type EasingName, type FactoryKey,
 } from '@/data/easing';
+import {
+  DEFAULTS, TAB_FILES, TITLE, WAVE, codeFor, easingHtml, factoryOf, isDefault, labelOf, rangeOf, reactProject,
+  type Choice, type Params, type Tab,
+} from './code';
 
 /**
  * The easing visualizer. Every moving thing in it is svg-scroll-draw:
@@ -22,26 +27,17 @@ import {
  * - "On real scroll" runs the same easing with no seek(), in a small scroll
  *   container (the scrollContainer option), as a page would.
  * - The code is generated from the same state, leaving out anything at its
- *   default.
+ *   default (code.ts), and so is the page that Run it downloads or opens in
+ *   StackBlitz: the same easings on real page scroll, the library loaded from
+ *   jsDelivr at `version` (SELF.version, passed down by the page).
  */
 
 type Lib = typeof import('svg-scroll-draw');
 type Instance = ReturnType<Lib['scrollDraw']>;
 type LibEasing = NonNullable<ScrollDrawOptions['easing']>;
-/** A named easing, or 'f:' and a factory key. */
-type Choice = EasingName | `f:${FactoryKey}`;
-type Params = Record<FactoryKey, [number, number]>;
 
-const DEFAULTS: Params = {
-  spring: [FACTORIES.spring.params[0].def, FACTORIES.spring.params[1].def],
-  bounce: [FACTORIES.bounce.params[0].def, FACTORIES.bounce.params[1].def],
-  elastic: [FACTORIES.elastic.params[0].def, FACTORIES.elastic.params[1].def],
-};
 const PLAY_MS = 1600;
-const WAVE = 'M14 58 C 44 58, 52 18, 86 18 S 128 58, 160 58 S 202 18, 236 18 S 278 58, 306 58';
 
-const factoryOf = (p: Choice): FactoryKey | null => (p.startsWith('f:') ? (p.slice(2) as FactoryKey) : null);
-const isDefault = (key: FactoryKey, v: [number, number]) => v[0] === DEFAULTS[key][0] && v[1] === DEFAULTS[key][1];
 const reducedMotion = () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /** The curve to plot: the library's factories when loaded, the copies before. */
@@ -67,36 +63,14 @@ function libEasingOf(p: Choice, params: Params, lib: Lib): LibEasing {
   return lib.createElastic({ amplitude: a, period: b });
 }
 
-function labelOf(p: Choice, params: Params): string {
-  const key = factoryOf(p);
-  if (!key) return `'${p}'`;
-  const args = changedArgs(key, params[key]);
-  return `${FACTORIES[key].fn}(${args ? `{ ${args} }` : ''})`;
-}
-
-/** The factory arguments that differ from their defaults, as code. */
-function changedArgs(key: FactoryKey, v: [number, number]): string {
-  return FACTORIES[key].params
-    .map((spec, i) => (v[i] === spec.def ? null : `${spec.k}: ${num(v[i], 2)}`))
-    .filter(Boolean)
-    .join(', ');
-}
-
-/** The plot's value range: at least -0.25 to 1.5, wider in steps of 0.25 when a curve needs it, with room for the peak's label. */
-function rangeOf(stats: CurveStats[]): [number, number] {
-  const min = Math.min(...stats.map((s) => s.min));
-  const max = Math.max(...stats.map((s) => s.max));
-  return [Math.min(-0.25, Math.floor((min - 0.05) * 4) / 4), Math.max(1.5, Math.ceil((max + 0.1) * 4) / 4)];
-}
-
 // ── The component ───────────────────────────────────────────────────────────
 
-export function EasingVisualizer() {
+export function EasingVisualizer({ version }: { version: string }) {
   const [pick, setPick] = useState<Choice>('spring');
   const [params, setParams] = useState<Params>(DEFAULTS);
   const [cmp, setCmp] = useState<EasingName | 'none'>('ease-out');
   const [t, setT] = useState(1);
-  const [tab, setTab] = useState<'draw' | 'animate' | 'react' | 'css'>('draw');
+  const [tab, setTab] = useState<Tab>('draw');
   const [lib, setLib] = useState<Lib | null>(null);
   const panel = useRef<HTMLDivElement>(null);
   const hostA = useRef<HTMLDivElement>(null);
@@ -182,6 +156,9 @@ export function EasingVisualizer() {
   const codeKey = useMemo(() => ({ tab, pick, params, curveA }), [tab, pick, params, curveA]);
   const codeIn = useDeferredValue(codeKey);
   const code = useMemo(() => codeFor(codeIn.tab, codeIn.pick, codeIn.params, codeIn.curveA), [codeIn]);
+  // Run it: a page with the same easings on real scroll, and the React tab as a project.
+  const html = useMemo(() => easingHtml({ pick, params, cmp, range: [lo, hi], version }), [pick, params, cmp, lo, hi, version]);
+  const react = useMemo(() => reactProject(pick, params, version), [pick, params, version]);
 
   return (
     <div className="ez">
@@ -275,7 +252,8 @@ export function EasingVisualizer() {
             <button key={k} type="button" role="tab" aria-selected={tab === k} className="ez-tab" onClick={() => setTab(k)}>{label}</button>
           ))}
         </div>
-        <CodeBox file={{ draw: 'main.js', animate: 'motion.js', react: 'Drawing.tsx', css: 'easing.css' }[codeIn.tab]}>{code}</CodeBox>
+        <CodeBox file={TAB_FILES[codeIn.tab]}>{code}</CodeBox>
+        <ToolExport title={TITLE} filename="easing.html" html={html} react={react} />
       </div>
 
       <ScrollBox lib={lib} easingA={easingA} easingB={cmp === 'none' ? null : cmp} curveA={curveA} curveB={curveB} lo={lo} hi={hi} nameA={nameA} nameB={nameB} />
@@ -547,132 +525,4 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
       {children}
     </div>
   );
-}
-
-// ── The generated code ──────────────────────────────────────────────────────
-
-type Expr = { value: string | null; imports: string[]; decl: string; note: string };
-
-/**
- * How the chosen easing is written, for an API whose default is `def`:
- * value null when it is that default; a factory at its defaults is written as
- * the named easing it equals ('spring', 'bounce', 'elastic' are createSpring(),
- * createBounce() and createElastic() at their defaults, core/easing.ts:107-109).
- */
-function exprOf(pick: Choice, params: Params, def: EasingName, api: string): Expr {
-  const key = factoryOf(pick);
-  if (key && !isDefault(key, params[key])) {
-    const f = FACTORIES[key];
-    const defaults = f.params.map((p) => `${p.k} ${p.def}`).join(', ');
-    return {
-      value: key,
-      imports: [f.fn],
-      decl: `// ${f.fn} defaults: ${defaults}.\nconst ${key} = ${f.fn}({ ${changedArgs(key, params[key])} });\n\n`,
-      note: '',
-    };
-  }
-  const name = (key ?? pick) as EasingName;
-  const same = key ? `// ${FACTORIES[key].fn}() at its defaults is the named '${name}' easing.\n` : '';
-  if (name === def) return { value: null, imports: [], decl: '', note: `${same}// '${def}' is ${api}'s default easing, so there is nothing to set.\n` };
-  return { value: `'${name}'`, imports: [], decl: '', note: same };
-}
-
-function codeFor(tab: 'draw' | 'animate' | 'react' | 'css', pick: Choice, params: Params, curve: Curve): string {
-  if (tab === 'css') return cssCode(pick, params, curve);
-  if (tab === 'draw') {
-    const e = exprOf(pick, params, 'linear', 'scrollDraw');
-    const call = e.value ? `scrollDraw('#drawing', { easing: ${e.value} });` : `scrollDraw('#drawing');`;
-    return `// <div id="drawing"><svg viewBox="…"><path d="…" /></svg></div>
-
-import { ${['scrollDraw', ...e.imports].join(', ')} } from 'svg-scroll-draw';
-
-${e.decl}${e.note}${call}`;
-  }
-  if (tab === 'animate') {
-    const e = exprOf(pick, params, 'ease-out', 'scrollAnimate');
-    return `// <div id="card">…</div>
-
-import { ${['scrollAnimate', ...e.imports].join(', ')} } from 'svg-scroll-draw';
-
-${e.decl}${e.note}// Moves #card 240px to the right as it scrolls through the window.
-scrollAnimate('#card', {
-  props: { transform: ['translateX(0px)', 'translateX(240px)'] },${e.value ? `\n  easing: ${e.value},` : ''}
-});`;
-  }
-  const e = exprOf(pick, params, 'linear', 'ScrollDraw');
-  const prop = e.value ? (e.value.startsWith("'") ? ` easing="${e.value.slice(1, -1)}"` : ` easing={${e.value}}`) : '';
-  const imports = e.imports.length ? `\nimport { ${e.imports.join(', ')} } from 'svg-scroll-draw';` : '';
-  const decl = e.decl ? `\n${e.decl.replace(/\n\n$/, '\n').replace(/^(\/\/.*\n)/, '$1// Made once, outside the component.\n')}` : '';
-  const note = e.note ? `\n${e.note}` : '';
-  // A function cannot be passed from a Server Component to a Client one, and
-  // ScrollDraw is a Client Component: with a factory, this file must be one too.
-  const client = e.imports.length
-    ? `'use client';\n// easing is a function, and a Server Component cannot pass one to ScrollDraw.\n\n`
-    : '';
-  return `${client}import { ScrollDraw } from 'svg-scroll-draw/react';${imports}
-${decl}${note}
-export function Drawing() {
-  return (
-    <ScrollDraw${prop}>
-      <svg viewBox="…">{/* your paths */}</svg>
-    </ScrollDraw>
-  );
-}`;
-}
-
-/** Words as a CSS comment, wrapped to `width` columns. */
-function comment(text: string, width = 76): string {
-  const lines: string[] = [];
-  let line = '';
-  for (const word of text.split(' ')) {
-    if (line && line.length + 1 + word.length > width - 3) { lines.push(line); line = word; } else line = line ? `${line} ${word}` : word;
-  }
-  lines.push(line);
-  return `/* ${lines.join('\n   ')} */`;
-}
-
-/** Up to 4 decimals, rounded up, so "within" is never an understatement. */
-const ceil4 = (n: number) => num(Math.ceil(Math.max(n, 0.0001) * 1e4) / 1e4, 4);
-
-function cssCode(pick: Choice, params: Params, curve: Curve): string {
-  const key = factoryOf(pick);
-  const name = key ?? (pick as EasingName);
-  const label = labelOf(pick, params);
-  const exact = !key ? EXACT_CSS[pick as EasingName] : undefined;
-  const usage = (v: string) => `.card {
-  transition: transform 0.8s ${v};
-}
-
-/* Add the class and the card moves 240px along the curve. */
-.card.is-moved {
-  transform: translateX(240px);
-}`;
-  if (exact === 'linear') {
-    return `/* 'linear' is the same curve in CSS: the keyword linear. */
-${usage('linear')}`;
-  }
-  if (exact) {
-    const v = `--ease-${name.replace('ease-', '')}-quad`;
-    return `${comment(`svg-scroll-draw's ${label} is ${name === 'ease-in' ? 't²' : 't(2 − t)'}, and this cubic-bezier is that curve to within 0.0000003. CSS's own ${name} keyword is a different curve, up to 0.069 away.`)}
-:root {
-  ${v}: ${exact};
-}
-
-${usage(`var(${v})`)}`;
-  }
-  const { stops, error, tailError } = linearCss(curve);
-  const v = `--ease-${name.replace('ease-', '')}`;
-  // A spring with friction under 1 shoots up to 1 at the very end, faster than
-  // any list of points can follow: say where the error is, not only how big.
-  const fit = tailError > Math.max(error * 1.5, 0.002)
-    ? `within ${ceil4(error)} of the curve until the last 0.1% of the run, where the curve jumps to 1 faster than any list of points can follow and this is up to ${ceil4(tailError)} off.`
-    : `within ${ceil4(Math.max(error, tailError))} of the curve everywhere.`;
-  return `${comment(`svg-scroll-draw's ${label} as a CSS easing: linear() through ${stops.length} points, ${fit} Chrome 113+, Firefox 112+, Safari 17.2+.`)}
-:root {
-  ${v}: linear(
-${linearText(stops, 4)}
-  );
-}
-
-${usage(`var(${v})`)}`;
 }

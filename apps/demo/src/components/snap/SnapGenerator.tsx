@@ -2,9 +2,11 @@
 
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type KeyboardEvent, type ReactNode } from 'react';
 import { CodeBox } from '@/components/site/CodeBox';
+import { ToolExport } from '@/components/tool-kit/ToolExport';
+import { withSource } from '@/lib/tool-export';
 import {
-  ALIGNS, AXES, DEFAULTS, PRESETS, RANGES, SNAP_DEFAULTS, SNAP_EASINGS, STOPS, STRICTNESS,
-  css, html, js, libAxisOk, libJs, presetOf, snapPosition,
+  ALIGNS, AXES, DEFAULTS, PRESETS, RANGES, SNAP_DEFAULTS, SNAP_EASINGS, STOPS, STRICTNESS, TOOL_SLUG,
+  css, html, js, libAxisOk, libJs, presetOf, runnable, snapPosition,
   type Align, type Axis, type Engine, type Settings, type SnapEasing, type Stop, type Strictness,
 } from './snap-code';
 
@@ -23,6 +25,10 @@ import {
  * Scroll positions are written to the DOM, never to state: the box can scroll
  * every frame, and the page should not re-render every frame. The readout of
  * which item is snapped is state, set when a scroll ends.
+ *
+ * Under the code, the export row runs the same three files as one page
+ * (runnable() in ./snap-code), loading svg-scroll-draw/snap from jsDelivr at
+ * `version` (SELF.version, passed down by the server page) in scrollSnap mode.
  */
 
 type Instance = ReturnType<typeof import('svg-scroll-draw/snap').scrollSnap>;
@@ -53,12 +59,12 @@ function measure(port: HTMLElement, s: Settings, engine: Engine): Geo {
   const box = port.getBoundingClientRect();
   const maxX = Math.max(0, port.scrollWidth - port.clientWidth);
   const maxY = Math.max(0, port.scrollHeight - port.clientHeight);
-  // scrollSnap lines each section's start edge up with the box's start, and
-  // reads no scroll-padding: snap/index.ts:117–130. The padding is the one
-  // css() writes, on the snap axis only; it is taken from the settings, not
-  // from getComputedStyle as snap.js does, because under reduced motion
-  // globals.css gives it a 0.01ms transition and a read can still see the
-  // old value.
+  // scrollSnap lines each section's start edge up with the box's start,
+  // clamped to the scroll range, and reads no scroll-padding (getSectionOffsets()
+  // in snap/index.ts). The padding is the one css() writes, on the snap axis
+  // only; it is taken from the settings, not from getComputedStyle as snap.js
+  // does, because under reduced motion globals.css gives it a 0.01ms
+  // transition and a read can still see the old value.
   const align: Align = engine === 'js' ? 'start' : s.align;
   const p = engine === 'js' ? 0 : s.padding;
   const [l, r] = s.axis === 'y' ? [0, 0] : [p, p];
@@ -87,7 +93,7 @@ function readOf(port: HTMLElement, geo: Geo, axis: Axis): Read {
   return { snapped, x, y, maxX: geo.maxX, maxY: geo.maxY };
 }
 
-export function SnapGenerator() {
+export function SnapGenerator({ version }: { version: string }) {
   const [s, setS] = useState<Settings>(DEFAULTS);
   const [chosen, setChosen] = useState<Engine>('css');
   const [read, setRead] = useState<Read | null>(null);
@@ -106,21 +112,22 @@ export function SnapGenerator() {
   const set = <K extends keyof Settings>(k: K, v: Settings[K]) => setS((p) => ({ ...p, [k]: v }));
   const preset = presetOf(s);
   const previewCss = useMemo(() => css(s, engine, `.${SEL}`), [s, engine]);
+  // Each listing starts with the source line, which the CodeBox shows and copies.
   const files = useMemo(
     () => [
-      { file: 'index.html', code: html(s) },
-      { file: 'snap.css', code: css(s, engine) },
-      { file: 'snap.js', code: lib ? libJs(s) : js(s) },
+      { file: 'index.html', code: withSource(html(s), TOOL_SLUG, 'html') },
+      { file: 'snap.css', code: withSource(css(s, engine), TOOL_SLUG, 'css') },
+      { file: 'snap.js', code: withSource(lib ? libJs(s) : js(s), TOOL_SLUG, 'js') },
     ],
     [s, engine, lib],
   );
+  const out = useMemo(() => runnable(s, engine, version), [s, engine, version]);
   const layoutKey = `${engine}|${s.axis}|${s.count}|${s.size}|${s.gap}`;
   // One scrollSnap instance per key: its onSnap readout belongs to it alone.
   const instKey = `${lib}|${s.axis}|${s.count}|${s.gap}|${s.duration}|${s.easing}|${s.threshold}`;
   const snapIndex = lastSnap?.key === instKey ? lastSnap.i : null;
 
-  // A new layout starts at the top. scrollSnap needs it too: it counts from the
-  // first section whatever the scroll position (snap/index.ts:99).
+  // A new layout starts at the top.
   useEffect(() => {
     port.current?.scrollTo({ left: 0, top: 0, behavior: 'instant' });
   }, [layoutKey]);
@@ -184,13 +191,15 @@ export function SnapGenerator() {
   }, [s, engine]);
 
   // scrollSnap, made again on any of its settings and destroyed on unmount.
+  // It is made where the box is: since 2.23.4 it starts from the nearest
+  // section (2.23.3 and earlier counted from the first, so the box had to be
+  // scrolled back to the top first).
   useEffect(() => {
     const el = port.current;
     if (!el || !lib) return;
     let live = true;
     import('svg-scroll-draw/snap').then(({ scrollSnap }) => {
       if (!live) return;
-      el.scrollTo({ left: 0, top: 0, behavior: 'instant' });
       inst.current = scrollSnap([...el.children], {
         direction: s.axis === 'x' ? 'horizontal' : 'vertical',
         duration: s.duration,
@@ -352,6 +361,7 @@ export function SnapGenerator() {
       <div className="snp-code">
         <p className="snp-code-note">{NOTE[engine]}</p>
         {files.map((f) => <CodeBox key={f.file} file={f.file}>{f.code}</CodeBox>)}
+        <ToolExport title={out.title} filename={out.filename} html={out.html} />
       </div>
     </div>
   );

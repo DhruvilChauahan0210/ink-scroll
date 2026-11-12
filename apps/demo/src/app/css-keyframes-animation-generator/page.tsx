@@ -9,6 +9,7 @@ import { seoTitle } from '../_lib/seo';
 import { SiteShell } from '@/components/site/SiteShell';
 import { jsonLd, SITE_URL } from '@/lib/json-ld';
 import { CodeBox } from '@/components/site/CodeBox';
+import { ToolNextStep } from '@/components/tool-kit/ToolNextStep';
 import { KeyframesGenerator } from '@/components/keyframes/KeyframesGenerator';
 import { TimelineFigure } from '@/components/keyframes/TimelineFigure';
 import {
@@ -85,6 +86,7 @@ const TOC = [
   { id: 'keyframes', label: `Keyframes · ${PRESETS.length} effects` },
   { id: 'scroll', label: 'When it scrolls into view' },
   { id: 'motion', label: 'Reduced motion' },
+  { id: 'use', label: 'Use it in your project' },
   { id: 'faq', label: `Questions · ${FAQ.length}` },
 ];
 
@@ -162,7 +164,7 @@ export default function CssKeyframesAnimationGeneratorPage() {
           <div className="stk-main">
 
             <Sec n={1} k="The tool" id="generator" title="Make a CSS animation">
-              <KeyframesGenerator />
+              <KeyframesGenerator version={SELF.version} />
             </Sec>
 
             <Sec n={2} k="The model" id="timeline" title="Delay, duration, cycles, fill">
@@ -273,7 +275,26 @@ export default function CssKeyframesAnimationGeneratorPage() {
               </Note>
             </Sec>
 
-            <Sec n={6} k={`${FAQ.length} questions`} id="faq" title="CSS animation questions">
+            <Sec n={6} k="Next step" id="use" title="Use it in your project">
+              <p className="stk-p">
+                The CSS, Shorthand and On scroll · CSS tabs need nothing installed. The On scroll · JS tab calls
+                svg-scroll-draw: <C>scrollReveal</C>, from <C>svg-scroll-draw/reveal</C>, for {BY_REVEAL} of the
+                entrances, and <C>scrollAnimate</C>, from the main entry, for {BY_ANIMATE} more effects:{' '}
+                <Link href="/docs#scroll-animate">scrollAnimate in the docs</Link>. The row under the code saves the tab
+                on show as a page that runs on its own: the CSS on a card with a Replay button, or a page to scroll for
+                the scroll versions, where the JavaScript one loads the library from jsDelivr as an ES module, pinned to{' '}
+                {SELF.version}.
+              </p>
+              <ToolNextStep
+                slug="css-keyframes-animation-generator"
+                api="scrollReveal"
+                entry="reveal"
+                docs="/docs#scroll-reveal"
+                related={['css-scroll-driven-animation-generator', 'cubic-bezier-generator']}
+              />
+            </Sec>
+
+            <Sec n={7} k={`${FAQ.length} questions`} id="faq" title="CSS animation questions">
               <div className="stk-faq">
                 {FAQ.map((f, i) => (
                   <div key={f.q} className="stk-q">
@@ -286,10 +307,6 @@ export default function CssKeyframesAnimationGeneratorPage() {
                   </div>
                 ))}
               </div>
-              <p className="stk-p stk-more">
-                Shape the easing first: the <Link href="/easing-visualizer">easing visualizer</Link>. All of
-                svg-scroll-draw {SELF.version}: <Link href="/docs">the docs</Link>.
-              </p>
             </Sec>
           </div>
         </div>

@@ -317,6 +317,67 @@ describe('scrollCounter', () => {
   });
 
   // `end: ''` was read as 'top bottom'. Blank is the default now: top 20%.
+  // replay() set `paused` to false and requested no frame, so after pause() or
+  // seek() the count stayed stopped, and resume() then returned early.
+  // Window [−340, 140]; y 20 is three quarters in.
+  describe('replay() restarts the frame loop', () => {
+    it('after pause()', () => {
+      const el = makeSpan();
+      const inst = scrollCounter(el, { to: 100, easing: 'linear', once: false });
+      FakeIO.instances[0].trigger(true);
+      raf.tick();
+      inst.pause();
+      raf.tick(); // a frame pause() could not cancel in this fake sees `paused` and stops
+      inst.replay();
+      expect(el.textContent).toBe('0');
+      vi.stubGlobal('scrollY', 20);
+      raf.tick();
+      expect(inst.getProgress()).toBeCloseTo(0.75, 6);
+      expect(el.textContent).toBe('75');
+    });
+
+    it('after seek()', () => {
+      const el = makeSpan();
+      const inst = scrollCounter(el, { to: 100, easing: 'linear' });
+      FakeIO.instances[0].trigger(true);
+      raf.tick();
+      inst.seek(0.3);
+      raf.tick();
+      inst.replay();
+      vi.stubGlobal('scrollY', 20);
+      raf.tick();
+      expect(el.textContent).toBe('75');
+    });
+
+    it('does not start a second loop when it was running', () => {
+      const el = makeSpan();
+      const inst = scrollCounter(el, { to: 100 });
+      FakeIO.instances[0].trigger(true);
+      const frames = raf.schedule.mock.calls.length;
+      inst.replay();
+      expect(raf.schedule.mock.calls.length).toBe(frames);
+    });
+  });
+
+  // destroy() left --scroll-draw-progress behind, where every other engine puts
+  // the element back as it found it (core/motion-live).
+  it('destroy() takes --scroll-draw-progress off the element', () => {
+    const el = makeSpan();
+    const inst = scrollCounter(el, { to: 100 });
+    expect(el.style.getPropertyValue('--scroll-draw-progress')).not.toBe('');
+    inst.destroy();
+    expect(el.style.getPropertyValue('--scroll-draw-progress')).toBe('');
+  });
+
+  it('destroy() puts back a --scroll-draw-progress the page had set', () => {
+    const el = makeSpan();
+    el.style.setProperty('--scroll-draw-progress', '0.5');
+    const inst = scrollCounter(el, { to: 100 });
+    inst.seek(1);
+    inst.destroy();
+    expect(el.style.getPropertyValue('--scroll-draw-progress')).toBe('0.5');
+  });
+
   it('a blank trigger is the default one', () => {
     const el = makeSpan();
     const inst = scrollCounter(el, { to: 100, easing: 'linear', once: false, trigger: { start: '', end: '' } });

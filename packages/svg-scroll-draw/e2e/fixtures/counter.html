@@ -50,7 +50,11 @@ publish({
     plain: plain.textContent,
     decimals: decimals.textContent,
     formatted: formatted.textContent,
+    // What CSS reads off the element; destroy() must take it away.
+    plainVar: plain.style.getPropertyValue('--scroll-draw-progress'),
   }),
+  /** pause(), seek(p), replay() and friends on the #plain counter. */
+  plainCall: (method, ...args) => instances[0][method](...args),
   preInit: () => preInit,
   geometry: () => ({ rowTop: docTop(document.querySelector('#row')), viewport: window.innerHeight }),
 

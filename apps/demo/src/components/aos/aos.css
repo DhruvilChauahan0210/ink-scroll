@@ -5,14 +5,16 @@
 
 .site .aosg { display: grid; gap: 40px; }
 
+/* The timing controls, then the Run it row (tool-kit/ToolExport) under its
+   own hairline, inside one frame. */
+.site .aosg-bar { padding-bottom: 16px; border-top: 1px solid var(--fg-3); border-bottom: 1px solid var(--line); }
+.site .aosg-bar .tk-export { margin-top: 16px; }
 .site .aosg-controls {
   display: flex;
   flex-wrap: wrap;
   align-items: end;
   gap: 16px 24px;
-  padding: 16px 0;
-  border-top: 1px solid var(--fg-3);
-  border-bottom: 1px solid var(--line);
+  padding: 16px 0 0;
 }
 .site .aosg-control { display: grid; gap: 6px; min-width: 0; }
 .site .aosg-control span { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }

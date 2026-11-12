@@ -20,6 +20,7 @@ export function ToolNextStep({
   entry = '',
   docs,
   related = [],
+  importLine,
 }: {
   /** This tool's slug, left out of the suggestions. */
   slug: string;
@@ -31,6 +32,11 @@ export function ToolNextStep({
   docs: string;
   /** Up to two more tool slugs that follow on from this one. */
   related?: string[];
+  /**
+   * The import line, when it is not `import { api } from …`: the AOS drop-in
+   * is a default export (`import AOS from 'svg-scroll-draw/aos'`).
+   */
+  importLine?: string;
 }) {
   const from = entry ? `svg-scroll-draw/${entry}` : 'svg-scroll-draw';
   const kb: number | undefined = entry ? SELF_ENTRIES[entry] : SELF.gzipKb;
@@ -45,7 +51,7 @@ export function ToolNextStep({
       <div className="tk-next-install">
         <CodeBox file="terminal">{`npm i svg-scroll-draw`}</CodeBox>
         <dl className="tk-next-facts">
-          <div><dt>Import</dt><dd><code>{`import { ${api} } from '${from}'`}</code></dd></div>
+          <div><dt>Import</dt><dd><code>{importLine ?? `import { ${api} } from '${from}'`}</code></dd></div>
           {kb != null ? <div><dt>Size</dt><dd>{kb} KB gzipped{entry ? ' for this entry' : ', the whole main entry'}</dd></div> : null}
           <div><dt>Licence</dt><dd>{SELF.license}, version {SELF.version}</dd></div>
         </dl>

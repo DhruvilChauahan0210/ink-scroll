@@ -174,7 +174,7 @@ const TRAIL = (() => {
 const STONES = [[372, 7], [392, 4], [612, 6], [180, 5], [1030, 5], [-120, 6], [1240, 4]]
   .map(([x, r]) => {
     const g = r1(groundY(x) + (x > 300 && x < 700 ? 52 : 12));
-    return `M${x - r} ${g}a${r} ${r * 0.6} 0 0 1 ${2 * r} 0Z`;
+    return `M${x - r} ${g}a${r} ${r1(r * 0.6)} 0 0 1 ${2 * r} 0Z`;
   })
   .join('');
 const FLOWERS = [[240, 30], [268, 44], [690, 36], [716, 52], [120, 58], [840, 62]]
@@ -184,40 +184,66 @@ const FLOWERS = [[240, 30], [268, 44], [690, 36], [716, 52], [120, 58], [840, 62
   })
   .join('');
 
+/**
+ * One stroke of a layer's drawing, as data, so the page can draw it here and
+ * the generator's downloaded page and React project can write it out
+ * (parallax-code.ts). `cls` names a style: fill (filled with the scene's
+ * background, to hide what is behind), thin, dash, sun.
+ */
+export type ArtShape =
+  | { tag: 'path'; d: string; cls?: string }
+  | { tag: 'circle'; cx: number; cy: number; r: number; cls?: string };
+
+/** The grid every layer's SVG is drawn on, and how it fits its layer. */
+export const SCENE_VIEW = { viewBox: `0 0 ${W} ${H}`, fit: 'xMidYMax slice' } as const;
+
+export const SCENE_LABEL =
+  'A line drawing of a landscape in four layers: the sky with the sun, clouds and birds, a mountain ridge, hills with trees, and the ground with grass and a fence.';
+
 /** Each layer's drawing. Strokes use currentColor; the layer's class sets it. */
+export const SCENE_ART: Record<LayerKey, ArtShape[]> = {
+  sky: [
+    { tag: 'circle', cx: SUN.x, cy: SUN.y, r: SUN.r, cls: 'sun' },
+    { tag: 'path', d: RAYS, cls: 'sun' },
+    { tag: 'path', d: CLOUDS, cls: 'fill' },
+    { tag: 'path', d: BIRDS },
+  ],
+  mountains: [
+    { tag: 'path', d: filled(MOUNTAINS.line), cls: 'fill' },
+    { tag: 'path', d: MOUNTAINS.snow },
+    { tag: 'path', d: MOUNTAINS.hatch, cls: 'thin' },
+  ],
+  hills: [
+    { tag: 'path', d: filled(HILLS), cls: 'fill' },
+    { tag: 'path', d: FIELDS, cls: 'thin dash' },
+    { tag: 'path', d: TREES, cls: 'fill' },
+  ],
+  ground: [
+    { tag: 'path', d: filled(GROUND), cls: 'fill' },
+    { tag: 'path', d: TRAIL },
+    { tag: 'path', d: GRASS },
+    { tag: 'path', d: FENCE },
+    { tag: 'path', d: STONES, cls: 'fill' },
+    { tag: 'path', d: FLOWERS, cls: 'fill' },
+  ],
+};
+
+/** The site's class names for a shape's styles: plx-fill and so on. */
+const plx = (cls?: string) => cls?.split(' ').map((c) => `plx-${c}`).join(' ');
+
+const draw = (shapes: ArtShape[]): ReactNode =>
+  shapes.map((p, i) =>
+    p.tag === 'circle'
+      ? <circle key={i} className={plx(p.cls)} cx={p.cx} cy={p.cy} r={p.r} />
+      : <path key={i} className={plx(p.cls)} d={p.d} />,
+  );
+
+/** Drawn once: the scene never changes. */
 const ART: Record<LayerKey, ReactNode> = {
-  sky: (
-    <>
-      <circle className="plx-sun" cx={SUN.x} cy={SUN.y} r={SUN.r} />
-      <path className="plx-sun" d={RAYS} />
-      <path className="plx-fill" d={CLOUDS} />
-      <path d={BIRDS} />
-    </>
-  ),
-  mountains: (
-    <>
-      <path className="plx-fill" d={filled(MOUNTAINS.line)} />
-      <path d={MOUNTAINS.snow} />
-      <path className="plx-thin" d={MOUNTAINS.hatch} />
-    </>
-  ),
-  hills: (
-    <>
-      <path className="plx-fill" d={filled(HILLS)} />
-      <path className="plx-thin plx-dash" d={FIELDS} />
-      <path className="plx-fill" d={TREES} />
-    </>
-  ),
-  ground: (
-    <>
-      <path className="plx-fill" d={filled(GROUND)} />
-      <path d={TRAIL} />
-      <path d={GRASS} />
-      <path d={FENCE} />
-      <path className="plx-fill" d={STONES} />
-      <path className="plx-fill" d={FLOWERS} />
-    </>
-  ),
+  sky: draw(SCENE_ART.sky),
+  mountains: draw(SCENE_ART.mountains),
+  hills: draw(SCENE_ART.hills),
+  ground: draw(SCENE_ART.ground),
 };
 
 /**
@@ -230,7 +256,7 @@ export const ParallaxScene = memo(function ParallaxScene({ ref, label }: { ref?:
     <div ref={ref} className="plx-scene" role="img" aria-label={label}>
       {PARALLAX_LAYERS.map(({ key }) => (
         <div key={key} className={`plx-layer plx-l-${key}`} data-plx-layer={key}>
-          <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">
+          <svg viewBox={SCENE_VIEW.viewBox} preserveAspectRatio={SCENE_VIEW.fit} aria-hidden="true" focusable="false">
             <g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
               {ART[key]}
             </g>

@@ -110,6 +110,9 @@ function buildCounter(el: HTMLElement, options: ScrollCounterOptions, prefersRed
     tEnd   = result.tEnd;
   }
 
+  /** The page's own --scroll-draw-progress, for destroy() to put back: '' removes it. */
+  const savedVar = el.style.getPropertyValue('--scroll-draw-progress');
+
   function applyAlpha(alpha: number): void {
     el.textContent = fmt(from + (to - from) * alpha);
     el.style.setProperty('--scroll-draw-progress', String(alpha));
@@ -169,6 +172,12 @@ function buildCounter(el: HTMLElement, options: ScrollCounterOptions, prefersRed
     getTrigger: () => ({ tStart, tEnd }),
   });
 
+  function resume(): void {
+    if (!paused) return;
+    paused = false;
+    if (isVisible) rafId = requestAnimationFrame(update);
+  }
+
   return {
     destroy() {
       cancelAnimationFrame(rafId);
@@ -177,6 +186,9 @@ function buildCounter(el: HTMLElement, options: ScrollCounterOptions, prefersRed
       window.removeEventListener('orientationchange', onResize);
       unwatch();
       clearTimeout(resizeTimer);
+      // The number stays as it was last drawn; the progress variable goes, as
+      // every other engine's does (core/motion-live: destroy puts it back).
+      el.style.setProperty('--scroll-draw-progress', savedVar);
       _unregister(el);
     },
     replay() {
@@ -184,18 +196,16 @@ function buildCounter(el: HTMLElement, options: ScrollCounterOptions, prefersRed
       frozenRaw    = 0;
       completed    = false;
       currentAlpha = 0;
-      paused       = false;
       applyAlpha(0);
+      // After pause() or seek() the loop is stopped. replay() used to clear
+      // `paused` and leave it so, and resume() then had nothing to restart.
+      resume();
     },
     pause() {
       paused = true;
       cancelAnimationFrame(rafId);
     },
-    resume() {
-      if (!paused) return;
-      paused = false;
-      if (isVisible) rafId = requestAnimationFrame(update);
-    },
+    resume,
     seek(p: number) {
       const clamped = Math.min(1, Math.max(0, p));
       currentAlpha  = clamped;

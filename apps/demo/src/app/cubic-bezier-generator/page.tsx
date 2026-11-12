@@ -8,13 +8,14 @@ import { seoTitle } from '../_lib/seo';
 import { SiteShell } from '@/components/site/SiteShell';
 import { jsonLd, SITE_URL } from '@/lib/json-ld';
 import { CodeBox } from '@/components/site/CodeBox';
+import { ToolNextStep } from '@/components/tool-kit/ToolNextStep';
 import { CubicBezierGenerator } from '@/components/bezier/CubicBezierGenerator';
 import { AnatomyFigure } from '@/components/bezier/AnatomyFigure';
 import { CSS_KEYWORDS, bezierEasing, bezierRange, cssOf, pointAt, solveS, type Bezier } from '@/components/bezier/bezier';
 import {
   CSS_PRESETS, FAMILY_NAMES, LIB_PRESETS, NAMED_PRESETS, ceil1, exactOf, gapBetween, gapOf, presetByKey, type Preset,
 } from '@/components/bezier/presets';
-import { TABS } from '@/components/bezier/code';
+import { SLUG, TABS } from '@/components/bezier/code';
 import { C, Note, Sec, Toc } from '@/components/stack/parts';
 
 // Searches this page is for: "cubic bezier generator", "cubic-bezier css",
@@ -117,6 +118,7 @@ const TOC = [
   { id: 'overshoot', label: 'Below 0 and past 1' },
   { id: 'named', label: `Named curves · ${CSS_PRESETS.length} + ${NAMED_PRESETS.length}` },
   { id: 'library', label: 'With svg-scroll-draw' },
+  { id: 'use', label: 'Use it in your project' },
   { id: 'faq', label: `Questions · ${FAQ.length}` },
 ];
 
@@ -200,7 +202,7 @@ export default function CubicBezierGeneratorPage() {
                 scrollDraw with your curve as its easing, and the browser check compares the JavaScript function with
                 your browser’s own <C>cubic-bezier()</C>.
               </p>
-              <CubicBezierGenerator />
+              <CubicBezierGenerator version={SELF.version} />
             </Sec>
 
             <Sec n={2} k="The model" id="how" title="How cubic-bezier() works">
@@ -255,7 +257,14 @@ export default function CubicBezierGeneratorPage() {
               <div className="stk-faq">
                 <div className="stk-q">
                   <span className="stk-q-n">move</span>
-                  <div><p className="stk-p">A transform or a length goes past its end value and comes back.</p></div>
+                  <div>
+                    <p className="stk-p">
+                      A transform or a length goes past its end value and comes back. In svg-scroll-draw 2.23.3 and
+                      earlier, scrollAnimate stops updating an element once its own transform has carried it wholly
+                      out of view, or out of an <C>overflow: hidden</C> parent, so an overshoot that far leaves it
+                      there. Fixed in 2.23.4.
+                    </p>
+                  </div>
                 </div>
                 <div className="stk-q">
                   <span className="stk-q-n">clamp</span>
@@ -285,10 +294,10 @@ export default function CubicBezierGeneratorPage() {
               </Note>
               <Note k="once">
                 With <C>once: true</C>, svg-scroll-draw 2.23.2 and earlier keep the highest eased value reached in
-                scrollDraw, scrollAnimate, scrollReveal and scrollCounter, so an easing that overshoots freezes on its
-                peak: easeOutBack’s line stays short at its start, and a card stays {v3(OUT_BACK_R.max)} of the way along. 2.23.3
-                keeps the furthest scroll progress instead and eases it after, as scrollText already did, so the curve
-                plays out and ends at 1.
+                scrollDraw, scrollAnimate, scrollReveal, scrollCounter, scrollVideo and useScrollDrawProgress, so an
+                easing that overshoots freezes on its peak: easeOutBack’s line stays short at its start, and a card
+                stays {v3(OUT_BACK_R.max)} of the way along. Fixed in 2.23.3, which keeps the furthest scroll progress
+                instead and eases it after, as scrollText already did, so the curve plays out and ends at 1.
               </Note>
             </Sec>
 
@@ -372,7 +381,22 @@ export default function CubicBezierGeneratorPage() {
               </Note>
             </Sec>
 
-            <Sec n={6} k={`${FAQ.length} questions`} id="faq" title="Cubic-bezier questions">
+            <Sec n={6} k="Next" id="use" title="Use it in your project">
+              <ToolNextStep
+                slug={SLUG}
+                api="scrollDraw"
+                docs="/docs#core-options"
+                related={['easing-visualizer', 'css-keyframes-animation-generator']}
+              />
+              <Note k="CSS needs nothing">
+                The CSS tab needs no package at all. The scrollDraw and scrollAnimate tabs import from the main entry,
+                and the <C>cubicBezier()</C> they paste has no imports of its own. Run it, under the code, writes one
+                page with your curve as the CSS tab’s transition, then on a scrollDraw line and a scrollAnimate dot
+                over real page scroll, the library loaded from jsDelivr, pinned to {SELF.version}.
+              </Note>
+            </Sec>
+
+            <Sec n={7} k={`${FAQ.length} questions`} id="faq" title="Cubic-bezier questions">
               <div className="stk-faq">
                 {FAQ.map((f, i) => (
                   <div key={f.q} className="stk-q">
@@ -384,11 +408,6 @@ export default function CubicBezierGeneratorPage() {
                   </div>
                 ))}
               </div>
-              <p className="stk-p stk-more">
-                Springs, bounces and every easing svg-scroll-draw names: the{' '}
-                <Link href="/easing-visualizer">easing visualizer</Link>. Everything else in svg-scroll-draw{' '}
-                {SELF.version}: <Link href="/docs">the docs</Link>.
-              </p>
             </Sec>
           </div>
         </div>

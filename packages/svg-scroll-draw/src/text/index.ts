@@ -41,41 +41,59 @@ function readable(el: Element, text: string): void {
   el.appendChild(sr);
 }
 
+/** A split piece: hidden from screen readers, which read the copy readable() adds. */
+function piece(text = ''): HTMLSpanElement {
+  const span = document.createElement('span');
+  span.setAttribute('aria-hidden', 'true');
+  span.textContent = text;
+  return span;
+}
 
 function splitIntoWords(el: Element): HTMLSpanElement[] {
   const text = el.textContent ?? '';
   el.textContent = '';
   return text.split(/(\s+)/).filter(Boolean).map((chunk) => {
-    const span = document.createElement('span');
-    span.setAttribute('aria-hidden', 'true');
-    if (/^\s+$/.test(chunk)) {
-      // Whitespace — use a non-breaking space span
-      span.textContent = chunk;
-      span.style.whiteSpace = 'pre';
-    } else {
-      span.textContent = chunk;
-      span.style.display = 'inline-block';
-    }
-    el.appendChild(span);
-    return /^\s+$/.test(chunk) ? null : span;
+    const span = el.appendChild(piece(chunk));
+    // Whitespace keeps its width in a `pre` span, and is not animated.
+    const gap = /^\s+$/.test(chunk);
+    if (gap) span.style.whiteSpace = 'pre';
+    else span.style.display = 'inline-block';
+    return gap ? null : span;
   }).filter((s): s is HTMLSpanElement => s !== null);
 }
 
 function splitIntoChars(el: Element): HTMLSpanElement[] {
   const text = el.textContent ?? '';
   el.textContent = '';
-  return text.split('').map((char) => {
-    const span = document.createElement('span');
-    span.setAttribute('aria-hidden', 'true');
-    span.textContent = char;
-    if (char === ' ') {
-      span.style.whiteSpace = 'pre';
-    } else {
+  const units: HTMLSpanElement[] = [];
+  let word: HTMLSpanElement | null = null;
+  // By code point, not split(''): an emoji is two UTF-16 units, and splitting
+  // them made two spans of lone surrogates, drawn as two U+FFFD.
+  for (const char of text) {
+    const span = piece(char);
+    const gap  = char === ' ';
+    if (gap) span.style.whiteSpace = 'pre';
+    else {
       span.style.display = 'inline-block';
+      units.push(span);
     }
-    el.appendChild(span);
-    return char === ' ' ? null : span;
-  }).filter((s): s is HTMLSpanElement => s !== null);
+    // From Thai (U+0E00) on — Thai, Lao, Khmer, Myanmar, CJK, kana, Hangul,
+    // emoji — scripts either put no spaces between words or may break between
+    // any two characters: in a word box a whole line of them never wrapped and
+    // ran out of its paragraph. Each is a box of its own, so a line breaks
+    // between them, as it did before word boxes. Latin, Greek, Cyrillic and
+    // the other space-separated scripts below keep whole words.
+    if (gap || char > '\u0dff') word = null;
+    // Each word's letters sit in a nowrap inline-block: side by side as
+    // inline-blocks, a line could break between any two of them, mid-word. As
+    // one box a word breaks only where the text did, at its spaces.
+    else if (!word) {
+      word = el.appendChild(piece());
+      word.style.cssText = 'display:inline-block;white-space:nowrap';
+    }
+    (word ?? el).appendChild(span);
+  }
+  return units;
 }
 
 function splitIntoLines(el: Element): HTMLSpanElement[] {
@@ -93,8 +111,7 @@ function splitIntoLines(el: Element): HTMLSpanElement[] {
   const sortedTops = Array.from(lineMap.keys()).sort((a, b) => a - b);
   for (const top of sortedTops) {
     const words = lineMap.get(top)!;
-    const lineSpan = document.createElement('span');
-    lineSpan.setAttribute('aria-hidden', 'true');
+    const lineSpan = piece();
     lineSpan.style.display = 'inline-block';
 
     words.forEach((ws, i) => {
@@ -134,6 +151,10 @@ function splitIntoLines(el: Element): HTMLSpanElement[] {
 
 function unitAlpha(masterAlpha: number, index: number, total: number, stagger: number): number {
   if (total <= 1 || stagger === 0) return masterAlpha;
+  // No more stagger than the units fit in the window. Past 1 / total (26 units
+  // at the default 0.04, a short line split into chars) each unit was a step:
+  // the first shown at progress 0, and every unit from the 27th on never shown.
+  stagger = Math.min(stagger, 1 / total);
   const totalDelay = (total - 1) * stagger;
   const start = index * stagger;
   const end   = start + (1 - totalDelay);
@@ -153,7 +174,7 @@ function buildTransform(
     const s = from.scale + (1 - from.scale) * alpha;
     parts.push(`scale(${s})`);
   }
-  return parts.join(' ') || '';
+  return parts.join(' ');
 }
 
 // ── Engine ────────────────────────────────────────────────────────────────────
@@ -229,13 +250,7 @@ function buildText(el: HTMLElement, options: ScrollTextOptions, prefersReduced: 
   if (prefersReduced) {
     applyAll(1);
     onComplete?.();
-    return {
-      destroy() {
-        el.innerHTML = originalHTML;
-      },
-      replay: () => {}, pause: () => {}, resume: () => {},
-      seek: () => {}, getProgress: () => 1,
-    };
+    return { ...NOOP, destroy: () => { el.innerHTML = originalHTML; }, getProgress: () => 1 };
   }
 
   // Set initial state
@@ -320,6 +335,12 @@ function buildText(el: HTMLElement, options: ScrollTextOptions, prefersReduced: 
     getTrigger: () => ({ tStart, tEnd }),
   });
 
+  function resume(): void {
+    if (!paused) return;
+    paused = false;
+    if (isVisible) rafId = requestAnimationFrame(update);
+  }
+
   return {
     destroy() {
       cancelAnimationFrame(rafId);
@@ -335,18 +356,16 @@ function buildText(el: HTMLElement, options: ScrollTextOptions, prefersReduced: 
       frozenAlpha  = -1;
       completed    = false;
       currentAlpha = 0;
-      paused       = false;
       applyAll(0);
+      // After pause() or seek() the loop is stopped. replay() used to clear
+      // `paused` and leave it so, and resume() then had nothing to restart.
+      resume();
     },
     pause() {
       paused = true;
       cancelAnimationFrame(rafId);
     },
-    resume() {
-      if (!paused) return;
-      paused = false;
-      if (isVisible) rafId = requestAnimationFrame(update);
-    },
+    resume,
     seek(p: number) {
       const clamped = Math.min(1, Math.max(0, p));
       currentAlpha  = clamped;

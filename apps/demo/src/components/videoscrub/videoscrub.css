@@ -1,0 +1,386 @@
+/* ── The scroll video scrub generator (/scroll-video-scrub-generator) ─────
+   One hairline panel: the video source, the controls, then the preview
+   window and its transport beside the readouts; then the code. Mono labels;
+   the accent only on the playhead of the film's timeline. Prefix vsg-, the
+   header figure vsgf-.
+
+   Wide: source, controls, then preview | readouts. Phone: the preview right
+   under the source, so a change is seen next to what made it. */
+
+.site .vsg { display: grid; gap: 32px; }
+.site .vsg-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: 'source' 'view' 'transport' 'controls' 'read' 'poster' 'rm';
+  border: 1px solid var(--line-2);
+  min-width: 0;
+}
+.site .vsg-source { grid-area: source; }
+.site .vsg-controls { grid-area: controls; }
+.site .vsg-view { grid-area: view; }
+.site .vsg-transport { grid-area: transport; }
+.site .vsg-read { grid-area: read; }
+.site .vsg-poster-area { grid-area: poster; }
+.site .vsg-rm { grid-area: rm; }
+@media (min-width: 760px) {
+  .site .vsg-panel {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    grid-template-rows: auto auto auto auto 1fr auto;
+    grid-template-areas:
+      'source source'
+      'controls controls'
+      'view read'
+      'transport read'
+      'poster read'
+      'rm rm';
+  }
+}
+.site .vsg-k { margin: 0; font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+
+/* ── Source and controls ─────────────────────────────────────────────── */
+
+.site .vsg-source {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  border-bottom: 1px solid var(--line);
+}
+@media (min-width: 760px) {
+  .site .vsg-source { grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.1fr); align-items: end; gap: 8px 24px; }
+  .site .vsg-source .vsg-warn { grid-column: 1 / -1; }
+}
+.site .vsg-source b { font: 500 12px/1.5 var(--mono); color: var(--fg); overflow-wrap: anywhere; }
+
+.site .vsg-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 20px;
+  padding: 16px;
+}
+@media (min-width: 760px) {
+  .site .vsg-controls { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px 24px; border-bottom: 1px solid var(--line); }
+}
+@media (max-width: 759px) { .site .vsg-controls { border-top: 1px solid var(--line); } }
+.site .vsg-field { display: grid; gap: 8px; align-content: start; min-width: 0; }
+.site .vsg-field-k { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .vsg-seg { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); border: 1px solid var(--line-2); }
+.site .vsg-seg.is-wrap { grid-auto-flow: row; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.site .vsg-seg > button,
+.site .vsg-pick {
+  position: relative;
+  min-width: 0;
+  padding: 8px 4px;
+  border: 0;
+  border-left: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  font: 500 11.5px/1.2 var(--mono);
+  color: var(--fg-2);
+  text-align: center;
+  cursor: pointer;
+}
+.site .vsg-seg > :first-child { border-left: 0; }
+.site .vsg-seg.is-wrap > button:nth-child(odd) { border-left: 0; }
+.site .vsg-seg.is-wrap > button:nth-child(n + 3) { border-top: 1px solid var(--line-2); }
+.site .vsg-seg > button:hover,
+.site .vsg-pick:hover { color: var(--fg); }
+.site .vsg-seg > button[aria-checked='true'],
+.site .vsg-seg > button[aria-pressed='true'],
+.site .vsg-pick[data-on] { background: var(--fg); color: var(--bg); }
+.site .vsg-seg > button:focus-visible { outline: 1px solid var(--fg); outline-offset: -3px; }
+.site .vsg-seg > button[aria-checked='true']:focus-visible,
+.site .vsg-seg > button[aria-pressed='true']:focus-visible { outline-color: var(--bg); }
+/* The file input stays in the tab order, drawn as the button around it. */
+.site .vsg-pick input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+.site .vsg-pick:focus-within { outline: 1px solid var(--fg); outline-offset: -3px; }
+.site .vsg-pick[data-on]:focus-within { outline-color: var(--bg); }
+
+.site .vsg-range { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 12px; }
+.site .vsg-val { min-width: 56px; font: 500 12px/1 var(--mono); font-variant-numeric: tabular-nums; color: var(--fg); text-align: right; }
+.site .vsg input[type='range'] { width: 100%; accent-color: var(--fg); }
+/* globals.css gives every range `outline: none`, which outranks :focus-visible. */
+.site .vsg input[type='range']:focus-visible { outline: 1px solid var(--fg); outline-offset: 4px; }
+.site .vsg input[type='range']:disabled { opacity: 0.4; }
+.site .vsg-hint { margin: 0; font-size: 12.5px; line-height: 1.5; color: var(--fg-3); }
+.site .vsg-hint code { font: 500 11.5px/1.5 var(--mono); color: var(--fg-2); }
+.site .vsg-warn {
+  margin: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--fg-3);
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--fg);
+}
+
+.site .vsg-words { display: grid; gap: 6px; }
+.site .vsg-pair { display: grid; grid-template-columns: 40px minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: 6px; }
+.site .vsg-pair-k { font: 500 10.5px/1 var(--mono); color: var(--fg-3); }
+.site .vsg-pair select {
+  min-width: 0;
+  padding: 6px 6px;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: var(--bg);
+  font: 500 12px/1.2 var(--mono);
+  color: var(--fg);
+}
+.site .vsg-pair select:focus-visible { outline: 1px solid var(--fg); outline-offset: 1px; }
+
+.site .vsg-btn {
+  justify-self: start;
+  padding: 8px 14px;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  font: 500 11.5px/1.2 var(--mono);
+  color: var(--fg);
+  cursor: pointer;
+}
+.site .vsg-btn:hover, .site .vsg-btn:focus-visible { border-color: var(--fg); outline: 0; }
+.site .vsg-btn:disabled { color: var(--fg-3); cursor: default; }
+.site .vsg-btn.is-link { display: inline-block; margin-top: 6px; padding: 6px 10px; text-decoration: none; }
+
+/* ── The preview window ─────────────────────────────────────────────── */
+
+.site .vsg-view,
+.site .vsg-transport,
+.site .vsg-read,
+.site .vsg-poster-area { min-width: 0; background: var(--panel); }
+.site .vsg-view { display: grid; gap: 8px; align-content: start; padding: 16px 16px 12px; }
+@media (min-width: 760px) {
+  .site .vsg-view { padding-right: 12px; }
+  .site .vsg-read { padding-left: 12px; }
+}
+.site .vsg-frame { position: relative; border: 1px solid var(--line-2); background: var(--bg); }
+/* No border or padding on the box: its top edge is the window's top, and
+   --vsg-v, its height, is what the preview's vh are of. */
+.site .vsg-box {
+  --vsg-v: 360px;
+  position: relative;
+  height: var(--vsg-v);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.site .vsg-box:focus-visible { outline: 1px solid var(--fg); outline-offset: -2px; }
+@media (max-width: 759px) { .site .vsg-box { --vsg-v: 300px; } }
+
+.site .vsg-flow {
+  display: flex;
+  height: var(--vsg-v);
+  box-sizing: border-box;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 4px;
+  padding: 0 16px 16px;
+  font: 500 10.5px/1.4 var(--mono);
+  color: var(--fg-3);
+}
+.site .vsg-flow.is-after { justify-content: flex-start; padding: 16px; }
+
+/* The track: as tall as the scroll room, its extent ruled down the left. */
+.site .vsg-track { position: relative; border-left: 3px solid var(--fg-3); }
+.site .vsg-stage {
+  position: sticky;
+  top: 0;
+  height: var(--vsg-v);
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  border-top: 1px solid var(--fg-3);
+  border-bottom: 1px solid var(--fg-3);
+  background: var(--panel);
+}
+.site .vsg-inflow { position: relative; padding: 0 16px; }
+.site .vsg-inflow .vsg-video { outline: 1px dashed var(--fg-3); outline-offset: 3px; }
+.site .vsg-video { display: block; width: 100%; height: 100%; object-fit: contain; background: var(--bg); }
+.site .vsg-stage .vsg-video { position: absolute; inset: 0; }
+
+/* The start and end lines stay put while the content scrolls under them. */
+.site .vsg-overlay { position: absolute; inset: 0; z-index: 1; overflow: hidden; pointer-events: none; }
+.site .vsg-line { position: absolute; left: 0; right: 0; height: 0; border-top: 1px dashed var(--fg); }
+.site .vsg-line i {
+  position: absolute;
+  left: 12px;
+  bottom: 3px;
+  padding: 1px 4px;
+  background: var(--bg);
+  font: 500 10px/1 var(--mono);
+  font-style: normal;
+  color: var(--fg);
+  white-space: nowrap;
+}
+.site .vsg-line.is-end { border-top-style: dotted; }
+.site .vsg-line.is-end i { left: auto; right: 12px; }
+.site .vsg-line.is-low i { bottom: auto; top: 3px; }
+
+.site .vsg-transport {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: start;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 16px 16px;
+}
+@media (min-width: 760px) { .site .vsg-transport { padding-right: 12px; } }
+.site .vsg-scrub { display: grid; gap: 4px; flex: 1 1 200px; min-width: 0; }
+.site .vsg-scrub span { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .vsg-check { display: flex; align-items: center; gap: 8px; flex: 1 1 100%; font-size: 13px; color: var(--fg-2); cursor: pointer; }
+.site .vsg-check input { width: 16px; height: 16px; margin: 0; accent-color: var(--fg); }
+.site .vsg-check input:focus-visible { outline: 1px solid var(--fg); outline-offset: 2px; }
+
+/* ── Readouts ────────────────────────────────────────────────────────── */
+
+.site .vsg-read { display: grid; gap: 16px; align-content: start; padding: 16px; }
+@media (max-width: 759px) { .site .vsg-read { border-top: 1px solid var(--line); } }
+.site .vsg-big { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.site .vsg-big > div { display: grid; gap: 6px; min-width: 0; }
+.site .vsg-num {
+  font-size: clamp(34px, 4.2vw, 50px);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  color: var(--fg);
+}
+.site .vsg-num small { font-size: 0.45em; letter-spacing: 0; color: var(--fg-3); }
+
+/* The film's timeline: the scrubbed range shaded, keyframes ticked, the
+   time asked for and the time read back. */
+.site .vsg-tl { display: grid; gap: 6px; }
+.site .vsg-tl-bar { position: relative; height: 28px; border: 1px solid var(--line-2); background: var(--bg); }
+.site .vsg-tl-range { position: absolute; top: 0; bottom: 0; background: var(--line); }
+.site .vsg-tl-key { position: absolute; bottom: 0; height: 8px; border-left: 1px solid var(--fg-3); }
+.site .vsg-tl-ask { position: absolute; top: 0; height: 10px; margin-left: -3px; border: 3px solid transparent; border-top-color: var(--fg); }
+.site .vsg-tl-now { position: absolute; top: -4px; bottom: -4px; margin-left: -1px; border-left: 2px solid var(--accent); }
+.site .vsg-tl-read { margin: 0; font-size: 12.5px; line-height: 1.5; color: var(--fg-2); }
+
+.site .vsg-seeks { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0; border-top: 1px solid var(--line-2); border-bottom: 1px solid var(--line); }
+.site .vsg-seeks > div { display: grid; gap: 4px; padding: 8px 0; }
+.site .vsg-seeks dt { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .vsg-seeks dd { margin: 0; font: 500 14px/1.2 var(--mono); font-variant-numeric: tabular-nums; color: var(--fg); }
+
+/* Scroll positions, 0 to the end of the box: the window is the thick part. */
+.site .vsg-rail-wrap { display: grid; gap: 4px; }
+.site .vsg-rail { position: relative; height: 52px; margin: 0 2px; }
+.site .vsg-rail::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; border-top: 1px solid var(--line-2); }
+.site .vsg-win { position: absolute; top: calc(50% - 3px); height: 6px; background: var(--fg-3); }
+.site .vsg-mark { position: absolute; top: calc(50% - 8px); height: 16px; border-left: 1px solid var(--fg); }
+.site .vsg-mark i {
+  position: absolute;
+  left: 0;
+  bottom: 19px;
+  transform: translateX(-50%);
+  font: 500 10px/1 var(--mono);
+  font-style: normal;
+  color: var(--fg-2);
+  white-space: nowrap;
+}
+.site .vsg-mark.is-below i { bottom: auto; top: 19px; }
+.site .vsg-mark.is-l i { transform: none; }
+.site .vsg-mark.is-r i { transform: translateX(-100%); }
+.site .vsg-now { position: absolute; top: calc(50% - 12px); height: 24px; margin-left: -1px; border-left: 2px solid var(--fg); }
+
+.site .vsg-math { margin: 0; border-top: 1px solid var(--line-2); }
+.site .vsg-math > div {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+}
+.site .vsg-math dt { font: 500 10px/1.9 var(--mono); color: var(--fg-3); }
+.site .vsg-math dd {
+  margin: 0;
+  font: 400 12.5px/1.6 var(--mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--fg);
+  overflow-wrap: anywhere;
+}
+
+.site .vsg-poster { display: grid; gap: 8px; padding: 12px 16px 16px; border-top: 1px solid var(--line-2); }
+@media (min-width: 760px) { .site .vsg-poster { margin-left: 16px; margin-right: 12px; padding: 12px 0 16px; } }
+.site .vsg-thumb { width: min(100%, 240px); border: 1px solid var(--line-2); background: var(--bg) center / contain no-repeat; }
+.site .vsg-cmd { margin: 0; padding: 8px 10px; border: 1px solid var(--line); background: var(--bg); overflow-x: auto; }
+.site .vsg-cmd code { font: 400 11.5px/1.6 var(--mono); color: var(--fg); white-space: pre; }
+
+.site .vsg-rm {
+  margin: 0;
+  padding: 10px 16px;
+  border-top: 1px solid var(--line);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--fg-2);
+}
+
+/* ── The code ─────────────────────────────────────────────────────────── */
+
+.site .vsg-code { display: grid; min-width: 0; }
+.site .vsg-tabs { display: flex; flex-wrap: wrap; }
+.site .vsg-tab {
+  padding: 8px 14px;
+  border: 1px solid var(--line-2);
+  border-bottom: 0;
+  border-left-width: 0;
+  border-radius: 0;
+  background: transparent;
+  font: 500 11.5px/1 var(--mono);
+  color: var(--fg-2);
+  cursor: pointer;
+}
+.site .vsg-tab:first-child { border-left-width: 1px; }
+.site .vsg-tab[aria-selected='true'] { color: var(--fg); background: var(--panel); }
+.site .vsg-tab:focus-visible { outline: 1px solid var(--fg); outline-offset: -3px; }
+@media (max-width: 479px) { .site .vsg-tab { padding: 8px 10px; } }
+.site .vsg-code .code-box { margin-top: 0; }
+.site .vsg-code > .vsg-hint { margin-top: 8px; }
+
+/* ── Reference tables on the page ───────────────────────────────────── */
+
+.site .vsg-a { color: var(--fg); text-decoration: underline; text-decoration-color: var(--line-2); text-underline-offset: 3px; }
+.site .vsg-a:hover { text-decoration-color: var(--fg); }
+.site .vsg-scroll { overflow-x: auto; }
+.site .vsg-scroll:focus-visible { outline: 1px solid var(--fg); outline-offset: 2px; }
+.site .vsg-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.site .vsg-table th,
+.site .vsg-table td { padding: 10px 12px 10px 0; border-top: 1px solid var(--line); text-align: left; vertical-align: top; }
+.site .vsg-table th { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .vsg-table td { line-height: 1.6; color: var(--fg-2); }
+.site .vsg-table td.is-code { font: 400 12.5px/1.6 var(--mono); color: var(--fg); white-space: nowrap; }
+.site .vsg-table td.is-num { font: 400 12.5px/1.6 var(--mono); font-variant-numeric: tabular-nums; color: var(--fg); white-space: nowrap; }
+.site .vsg-table th.is-key { min-width: 120px; font: 400 12.5px/1.6 var(--mono); color: var(--fg); }
+
+/* ── Fig. 1: scroll mapped onto the film, keyframes and a seek ───────── */
+
+.site .vsgf svg { width: 100%; height: auto; }
+.site .vsgf-axis, .site .vsgf-dim, .site .vsgf-map { color: var(--fg-3); }
+.site .vsgf-win { color: var(--fg-2); }
+.site .vsgf-bar { fill: var(--fg); }
+.site .vsgf-range { fill: var(--line); stroke: none; }
+.site .vsgf-hatch { color: var(--fg-3); }
+.site .vsgf-now { color: var(--fg); stroke-width: 1.5; }
+.site .vsgf-key { color: var(--fg); }
+.site .vsgf-frame { fill: var(--panel); stroke: var(--line-2); }
+.site .vsgf-frame.is-key { fill: var(--fg); stroke: var(--fg); }
+.site .vsgf-frame.is-dec { fill: var(--line); stroke: var(--fg-3); }
+.site .vsgf-frame.is-target { fill: var(--panel); stroke: var(--fg); stroke-width: 2; }
+.site .vsgf-arrow { color: var(--fg); }
+.site .vsgf-dot { fill: var(--fg); }
+.site .vsgf-code { font: 500 12.5px var(--mono); fill: var(--fg); }
+.site .vsgf-l { font: 500 11.5px var(--mono); fill: var(--fg); }
+.site .vsgf-k, .site .vsgf-s { font: 500 10.5px var(--mono); fill: var(--fg-3); }
+.site .vsgf-n { font: 500 10.5px var(--mono); fill: var(--fg-2); }
+/* The figure scales with its column; on a phone that is about two thirds, so
+   the labels are drawn larger to land near 10px on screen. */
+@media (max-width: 560px) {
+  .site .vsgf-code { font-size: 14px; }
+  .site .vsgf-l { font-size: 12.5px; }
+  .site .vsgf-k, .site .vsgf-s, .site .vsgf-n { font-size: 11.5px; }
+}

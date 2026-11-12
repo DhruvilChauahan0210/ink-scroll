@@ -13,6 +13,8 @@ import {
   RENAMED_ATTRIBUTES, SVG_NS, WRAP_DEFAULTS, convertSnippet, toComponent, toSvgText, type SvgEl, type SvgKid,
 } from '@/components/jsx/convert';
 import { C, Note, Sec, Toc } from '@/components/stack/parts';
+import { ToolNextStep } from '@/components/tool-kit/ToolNextStep';
+import { withSource } from '@/lib/tool-export';
 
 // Searches this page is for: "svg to jsx", "svg to react component", "convert
 // svg to jsx online", "svg to tsx". Every converted line quoted below is
@@ -21,6 +23,8 @@ import { C, Note, Sec, Toc } from '@/components/stack/parts';
 const TITLE = 'SVG to JSX Converter: SVG to React Component & TSX';
 const DESCRIPTION =
   'Convert SVG to JSX or a typed TSX React component: camelCase props, style objects, {...props} and an optional scroll-drawing wrapper. Runs in your browser.';
+
+const SLUG = 'svg-to-jsx-converter';
 
 const el = (tag: string, attrs: Record<string, string> = {}, kids: SvgKid[] = []): SvgEl => ({ tag, attrs: Object.entries(attrs), kids });
 
@@ -60,14 +64,14 @@ const WRAPPED = toComponent(CHECK, {
   name: 'CheckDrawn', ts: true, spread: true, size: '1em', title: '',
   wrap: { ...WRAP_DEFAULTS, easing: 'ease-out', stagger: 0.2, once: true },
 });
-const WRAPPED_CODE = 'code' in WRAPPED ? WRAPPED.code : '';
+const WRAPPED_CODE = 'code' in WRAPPED ? withSource(WRAPPED.code, SLUG, 'tsx') : '';
 
-const PAGE_USE = `// app/page.tsx: a Server Component. No "use client" anywhere.
+const PAGE_USE = withSource(`// app/page.tsx: a Server Component. No "use client" anywhere.
 import { CheckDrawn } from './CheckDrawn';
 
 export default function Page() {
   return <CheckDrawn className="check" aria-label="Done" />;
-}`;
+}`, SLUG, 'tsx');
 
 const LEFT_OUT: { what: string; all: string; drawing: string }[] = [
   { what: '<script>, onclick and other on… attributes, javascript: links', all: 'Left out: they would run code', drawing: 'Left out' },
@@ -108,7 +112,7 @@ const FAQ: { q: string; a: string }[] = [
   },
   {
     q: 'Is it safe to paste my SVG here?',
-    a: 'Yes. Nothing is uploaded: the SVG is read in your browser as an inert XML document, never inserted into the page, and the code is shown only as text. The preview is rebuilt separately from drawing elements alone. The code leaves out anything that could run, <script>, event handler attributes and javascript: links, and so cannot run anything from the paste either.',
+    a: 'Yes. The SVG is read in your browser as an inert XML document, never inserted into the page, and the code is shown here only as text; nothing leaves your browser unless you open the result in StackBlitz. The preview is rebuilt separately from drawing elements alone, and so is the page you download or open in StackBlitz. The code, which the React project on StackBlitz runs, leaves out anything that could run, <script>, event handler attributes and javascript: links, and so cannot run anything from the paste either.',
   },
 ];
 
@@ -117,6 +121,7 @@ const TOC = [
   { id: 'rules', label: `What changes · ${RULES.length} rules` },
   { id: 'scroll', label: 'Drawing it on scroll' },
   { id: 'left-out', label: 'What is left out' },
+  { id: 'use', label: 'Use it in your project' },
   { id: 'faq', label: `Questions · ${FAQ.length}` },
 ];
 
@@ -192,9 +197,11 @@ export default function SvgToJsxPage() {
               <p className="stk-p">
                 The sample is a cup of coffee, exported the way a drawing tool writes a file. Change any option and the
                 code follows; the table under it says what changed and why. The preview is the drawing itself, rebuilt
-                from its shapes, never the code.
+                from its shapes, never the code. Under the code, Run it takes both outside this page: the preview’s
+                drawing as a page of its own, drawn on scroll when the wrap is on, or the component itself in a React
+                project on StackBlitz.
               </p>
-              <SvgToJsx />
+              <SvgToJsx version={SELF.version} />
             </Sec>
 
             <Sec n={2} k={`${RULES.length} rules`} id="rules" title="What changes, and why">
@@ -239,7 +246,8 @@ export default function SvgToJsxPage() {
               <CodeBox file="app/page.tsx">{PAGE_USE}</CodeBox>
               <p className="stk-p">
                 <C>className</C> and <C>style</C> on <C>{'<ScrollDraw>'}</C> go on its div, and so do <C>data-*</C>,{' '}
-                <C>aria-*</C>, <C>id</C> and <C>role</C>; every other prop is an option. Changing one draws it afresh,
+                <C>aria-*</C>, <C>id</C>, <C>role</C>, <C>title</C>, <C>tabIndex</C>, <C>lang</C>, <C>dir</C> and{' '}
+                <C>hidden</C>; every other prop is an option. Changing one draws it afresh,
                 and an inline object such as <C>{"trigger={{ end: 'center center' }}"}</C> does not count as a change
                 each render, because options are compared by value. Left at its defaults, or with only the easing
                 changed to ease-in, ease-out or ease-in-out, the drawing runs on the browser’s own scroll timeline
@@ -255,8 +263,8 @@ export default function SvgToJsxPage() {
               </Note>
               <Note k="once, 2.23.2">
                 On 2.23.2 and earlier, <C>once</C> with spring or elastic stopped on the overshoot past the end, and
-                with bounce lost its dips, because it held the eased value. 2.23.3 holds the scroll progress and eases
-                it after, so they settle as they should.
+                with bounce lost its dips, because it held the eased value. Fixed in 2.23.3, which holds the scroll
+                progress and eases it after, so they settle as they should.
               </Note>
             </Sec>
 
@@ -267,7 +275,8 @@ export default function SvgToJsxPage() {
                 from that document, and <b>Convert: everything</b> keeps all of it but what could run or what only an
                 editor reads. <b>Convert: drawing only</b> writes the code from what the preview shows instead: the
                 same strict rebuild the <Link href="/svg-path-viewer">SVG path viewer</Link> uses, drawing elements and
-                drawing attributes only.
+                drawing attributes only. The page <b>Run it</b> downloads or opens in StackBlitz is built from that
+                rebuild too, so it carries no more of the paste than the preview does.
               </p>
               <div className="jx-scroll" tabIndex={0} role="region" aria-label="What each setting keeps">
                 <table className="jx-ref">
@@ -286,7 +295,23 @@ export default function SvgToJsxPage() {
               </Note>
             </Sec>
 
-            <Sec n={5} k={`${FAQ.length} questions`} id="faq" title="SVG to JSX questions">
+            <Sec n={5} k="Next" id="use" title="Use it in your project">
+              <p className="stk-p">
+                The component on its own needs nothing installed. Wrapped in <C>{'<ScrollDraw>'}</C>, it needs
+                svg-scroll-draw, whose React entry is below; the guides for{' '}
+                <Link href="/react-scroll-animation">React</Link> and{' '}
+                <Link href="/nextjs-scroll-animation">Next.js</Link> take it further.
+              </p>
+              <ToolNextStep
+                slug={SLUG}
+                api="ScrollDraw"
+                entry="react"
+                docs="/docs#react"
+                related={['svg-shape-to-path-converter', 'easing-visualizer']}
+              />
+            </Sec>
+
+            <Sec n={6} k={`${FAQ.length} questions`} id="faq" title="SVG to JSX questions">
               <div className="stk-faq">
                 {FAQ.map((f, i) => (
                   <div key={f.q} className="stk-q">
@@ -298,10 +323,6 @@ export default function SvgToJsxPage() {
                   </div>
                 ))}
               </div>
-              <p className="stk-p stk-more">
-                Drawing on scroll with svg-scroll-draw {SELF.version}: <Link href="/react-scroll-animation">React</Link>,{' '}
-                <Link href="/nextjs-scroll-animation">Next.js</Link>, or <Link href="/docs">the docs</Link>.
-              </p>
             </Sec>
           </div>
         </div>

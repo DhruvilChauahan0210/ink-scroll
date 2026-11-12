@@ -2,14 +2,36 @@ import {
   CSS_TIMING, LIB, presetOf,
   type ClipFrom, type EasingKey, type PresetKey, type Prop, type RangeEdge,
 } from '@/data/cssdriven';
+import { cdnModule, escapeHtml, htmlFile, withSource, type ReactProject } from '@/lib/tool-export';
 
 /**
  * Everything the CSS scroll-driven animation generator writes, from one
  * settings object: the CSS, its preview copy, the svg-scroll-draw equivalent
- * (JavaScript and React), and whether the library would compile that
- * equivalent to the very same CSS. Pure functions, so the preview, the code
- * and the verdict cannot disagree.
+ * (JavaScript and React), whether the library would compile that equivalent
+ * to the very same CSS, and the files that run it outside the site. Pure
+ * functions, so the preview, the code and the verdict cannot disagree.
+ *
+ * - cssCode, fallbackCode, jsCode, reactCode: the code tabs, each with the
+ *   source line.
+ * - runnable: for the tab on show, a complete page (the CSS tab's CSS, with
+ *   fallback.js when it is on; or the JavaScript tab's call, the library from
+ *   jsDelivr) and, for the JavaScript and React tabs, the component as a
+ *   React project.
  */
+
+export const SLUG = 'css-scroll-driven-animation-generator';
+
+/**
+ * Where a listing is going. On the site its imports name the package and its
+ * comments the tabs beside it; in a downloaded page the imports come from
+ * jsDelivr, and in the StackBlitz project from npm, with comments that make
+ * sense without the site.
+ */
+type Where = { from: (entry: string) => string; css: string };
+const npm = (entry: string) => (entry ? `svg-scroll-draw/${entry}` : 'svg-scroll-draw');
+const SITE: Where = { from: npm, css: 'the CSS tab' };
+const PROJECT: Where = { from: npm, css: 'the generator’s CSS' };
+const cdn = (version: string): Where => ({ from: (entry) => cdnModule(version, entry), css: 'the generator’s CSS' });
 
 export type Settings = {
   preset: PresetKey;
@@ -202,24 +224,36 @@ export function previewCss(s: Settings, scope: string, name: string): string {
   return `${keyframes(name, propsOf(s))}\n${gated}`;
 }
 
+/** The bar's own rule, for the CSS tab and for the pages that run scrollProgress. */
+function barRule(hidden: string): string[] {
+  return [
+    '/* A reading-progress bar. Markup: <div class="progress"></div> */',
+    '.progress {',
+    '  position: fixed;',
+    '  inset: 0 0 auto;',
+    '  z-index: 10;',
+    '  height: 4px;',
+    '  background: currentColor;',
+    '  transform-origin: 0 50%;',
+    `  /* ${hidden} */`,
+    '  transform: scaleX(var(--scroll-progress, 0));',
+    '}',
+  ];
+}
+
+/** The CSS tab. */
 export function cssCode(s: Settings): string {
+  return withSource(cssBody(s), SLUG, 'css');
+}
+
+function cssBody(s: Settings): string {
   const preset = presetOf(s.preset);
   const name = keyframesName(s);
   const kf = keyframes(name, propsOf(s));
   const lib = s.fallback === 'library';
   if (preset.kind === 'scroll') {
     return [
-      '/* A reading-progress bar. Markup: <div class="progress"></div> */',
-      '.progress {',
-      '  position: fixed;',
-      '  inset: 0 0 auto;',
-      '  z-index: 10;',
-      '  height: 4px;',
-      '  background: currentColor;',
-      '  transform-origin: 0 50%;',
-      `  /* Hidden until something drives it: the animation below${lib ? ', or fallback.js' : ''}. */`,
-      '  transform: scaleX(var(--scroll-progress, 0));',
-      '}',
+      ...barRule(`Hidden until something drives it: the animation below${lib ? ', or fallback.js' : ''}.`),
       '',
       kf,
       '',
@@ -268,7 +302,7 @@ function propsEntries(s: Settings): string[] {
   return propsOf(s).map((p) => `${camel(p.prop)}: [${q(p.from)}, ${q(p.to)}]`);
 }
 
-function notesOf(s: Settings, pad: string): string[] {
+function notesOf(s: Settings, pad: string, w: Where): string[] {
   const t = triggerOf(s);
   const out = t.notes.map((n) => `${pad}// ${n}`);
   if (t.tallCaveat) out.push(`${pad}// These edges match animation-range for an element shorter than the viewport.`);
@@ -276,19 +310,19 @@ function notesOf(s: Settings, pad: string): string[] {
   // is simply off. For a fade that plays out, those differ.
   if (kindOf(s) === 'view' && s.dir === 'out') {
     out.push(`${pad}// Under reduced motion scrollAnimate sets the end values at once, so this`);
-    out.push(`${pad}// element stays hidden; the CSS tab leaves it as written.`);
+    out.push(`${pad}// element stays hidden; ${w.css} leaves it as written.`);
   }
   return out;
 }
 
-function verdictLines(s: Settings): string[] {
+function verdictLines(s: Settings, w: Where): string[] {
   const v = nativeVerdict(s);
   const kind = kindOf(s);
   if (v.native) {
     return [
       '// The default window and an easing CSS can express: where the browser supports',
       '// animation-timeline: view(), scrollAnimate writes the same keyframes and range as',
-      '// the CSS tab itself, and runs its JS engine everywhere else.',
+      `// ${w.css} itself, and runs its JS engine everywhere else.`,
     ];
   }
   if (kind === 'clip') return ['// scrollDraw’s clip reveal runs on its JS engine in every browser.'];
@@ -323,17 +357,20 @@ function callLines(s: Settings, el: string, pad: string): string[] {
   ];
 }
 
-function importLine(s: Settings): string {
+/** The library's entry the code imports from: '' is the main one. */
+const entryOf = (s: Settings) => (kindOf(s) === 'scroll' ? 'progress' : '');
+
+function importLine(s: Settings, w: Where): string {
   const kind = kindOf(s);
-  if (kind === 'scroll') return "import { scrollProgress } from 'svg-scroll-draw/progress';";
-  return `import { ${kind === 'clip' ? 'scrollDraw' : 'scrollAnimate'} } from 'svg-scroll-draw';`;
+  const api = kind === 'scroll' ? 'scrollProgress' : kind === 'clip' ? 'scrollDraw' : 'scrollAnimate';
+  return `import { ${api} } from '${w.from(entryOf(s))}';`;
 }
 
-export function jsCode(s: Settings): string {
+/** The import, the comments and the calls: the JavaScript tab under its markup line, and the page's script. */
+function jsBody(s: Settings, w: Where): string {
   if (kindOf(s) === 'scroll') {
     return [
-      '// <div class="progress"></div>, styled by the first rule in the CSS tab.',
-      importLine(s),
+      importLine(s, w),
       '',
       '// Writes the page’s scroll progress, 0 to 1, to --scroll-progress on <html>',
       '// on every frame, in every browser; the bar reads it.',
@@ -341,46 +378,58 @@ export function jsCode(s: Settings): string {
     ].join('\n');
   }
   return [
-    '// <div class="reveal">…</div>, as many as you like. No CSS needed.',
-    importLine(s),
+    importLine(s, w),
     '',
-    ...verdictLines(s),
-    ...notesOf(s, ''),
+    ...verdictLines(s, w),
+    ...notesOf(s, '', w),
     "document.querySelectorAll('.reveal').forEach((el) => {",
     ...callLines(s, 'el', '  '),
     '});',
   ].join('\n');
 }
 
+/** The JavaScript tab. */
+export function jsCode(s: Settings): string {
+  const markup = kindOf(s) === 'scroll'
+    ? '// <div class="progress"></div>, styled by the first rule in the CSS tab.'
+    : '// <div class="reveal">…</div>, as many as you like. No CSS needed.';
+  return withSource(`${markup}\n${jsBody(s, SITE)}`, SLUG, 'js');
+}
+
 /** fallback.js: the library only where the CSS cannot run. */
-export function fallbackCode(s: Settings): string {
+function fallbackBody(s: Settings, w: Where): string {
   const scroll = kindOf(s) === 'scroll';
   const test = scroll ? 'scroll()' : 'view()';
   const body = scroll
     ? callLines(s, '', '  ')
     : ["  document.querySelectorAll('.reveal').forEach((el) => {", ...callLines(s, 'el', '    '), '  });'];
   return [
-    importLine(s),
+    importLine(s, w),
     '',
     '// Only where CSS has no scroll timelines: the same animation on',
     `// svg-scroll-draw’s JS engine, ${scroll ? 'over the same stretch of scroll' : stretchOf(s)}.`,
-    ...notesOf(s, ''),
+    ...notesOf(s, '', w),
     `if (!CSS.supports('animation-timeline: ${test}')) {`,
     ...body,
     '}',
   ].join('\n');
 }
 
-export function reactCode(s: Settings): string {
+/** The CSS tab's fallback.js. */
+export function fallbackCode(s: Settings): string {
+  return withSource(fallbackBody(s, SITE), SLUG, 'js');
+}
+
+/** The component: TypeScript for the React tab, plain JSX for the StackBlitz project. */
+function reactComponent(s: Settings, ts: boolean, w: Where): string {
   const kind = kindOf(s);
   if (kind === 'scroll') {
     return [
-      "'use client';",
-      '',
+      ...(ts ? ["'use client';", ''] : []),
       "import { useEffect } from 'react';",
-      importLine(s),
+      importLine(s, w),
       '',
-      '// Style .progress with the first rule in the CSS tab.',
+      ts ? '// Style .progress with the first rule in the CSS tab.' : '// .progress is styled in styles.css.',
       'export function ReadingProgress() {',
       '  useEffect(() => {',
       ...callLines(s, '', '    ').map((l, i) => (i === 0 ? l.replace('scrollProgress(', 'const progress = scrollProgress(') : l)),
@@ -399,12 +448,12 @@ export function reactCode(s: Settings): string {
       ? [`props={{ ${props.join(', ')} }}`]
       : ['props={{', ...props.map((p) => `  ${p},`), '}}'];
   return [
-    "import type { ReactNode } from 'react';",
-    `import { ${tag} } from 'svg-scroll-draw/react';`,
+    ...(ts ? ["import type { ReactNode } from 'react';"] : []),
+    `import { ${tag} } from '${w.from('react')}';`,
     '',
-    ...verdictLines(s),
-    ...notesOf(s, ''),
-    'export function Reveal({ children }: { children: ReactNode }) {',
+    ...verdictLines(s, w),
+    ...notesOf(s, '', w),
+    `export function Reveal(${ts ? '{ children }: { children: ReactNode }' : '{ children }'}) {`,
     '  return (',
     `    <${tag}`,
     ...[...propsAttr, ...attrs].map((a) => `      ${a}`),
@@ -414,6 +463,217 @@ export function reactCode(s: Settings): string {
     '  );',
     '}',
   ].join('\n');
+}
+
+/** The React tab. */
+export function reactCode(s: Settings): string {
+  return withSource(reactComponent(s, true, SITE), SLUG, 'tsx');
+}
+
+// ── Runnable files ───────────────────────────────────────────────────────────
+
+/** Cards on the page and in the App, each shorter than a phone's screen. */
+const PAGE_CARDS = 6;
+/** Paragraphs of the article the progress bar measures. */
+const PARAGRAPHS = 18;
+const PARAGRAPH = 'The bar along the top of the window is this page’s scroll position: empty at the top, full at the bottom. Scroll back up and it empties again.';
+
+/**
+ * The page around the effect: a screen of room above the cards, so each one
+ * starts below the fold, and a screen below, so the last can leave at the top.
+ * The cards' row spans the window and clips sideways at its edges, so a card
+ * sliding in from the right never widens the page (overflow: clip, unlike
+ * hidden, is not a scroll container, so view() still follows the page).
+ */
+const PAGE_CSS = `* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font: 16px/1.5 system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: #16161a;
+  background: #f4f4f1;
+}
+.spacer {
+  display: grid;
+  place-content: center;
+  gap: 8px;
+  min-height: 100vh;
+  margin: 0;
+  padding: 24px;
+  color: #6b6b70;
+  text-align: center;
+}
+.spacer p { margin: 0; }
+.cards {
+  display: grid;
+  gap: 48px;
+  padding: 0 max(16px, calc(50% - 264px));
+  overflow-x: clip;
+}
+.card {
+  min-height: 180px;
+  padding: 24px;
+  background: #16161a;
+  color: #f4f4f1;
+  font-weight: 600;
+}`;
+
+const ARTICLE_CSS = `* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font: 18px/1.6 Georgia, 'Times New Roman', serif;
+  color: #16161a;
+  background: #f4f4f1;
+}
+.article {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 64px 16px 50vh;
+}
+.article p { margin: 0 0 1.4em; }`;
+
+/** A line for readers whose browser or settings leave the CSS off, shown only to them. */
+const NOTE_CSS = `.note { display: none; max-width: 36em; font-size: 14px; color: #8a3b12; }`;
+
+function pageCss(s: Settings): string {
+  return kindOf(s) === 'scroll' ? ARTICLE_CSS : PAGE_CSS;
+}
+
+function cardsBody(notes: string[]): string {
+  const cards = Array.from({ length: PAGE_CARDS }, (_, i) => `  <div class="card reveal">Card ${i + 1}</div>`);
+  return [
+    '<div class="spacer">',
+    '  <p>Scroll down</p>',
+    ...notes.map((n) => `  ${n}`),
+    '</div>',
+    '',
+    '<main class="cards">',
+    ...cards,
+    '</main>',
+    '',
+    '<div class="spacer"><p>The end of the page</p></div>',
+  ].join('\n');
+}
+
+function articleBody(notes: string[]): string {
+  const paras = Array.from({ length: PARAGRAPHS }, (_, i) => `  <p>${i + 1}. ${escapeHtml(PARAGRAPH)}</p>`);
+  return [
+    '<div class="progress"></div>',
+    '',
+    '<article class="article">',
+    '  <h1>Reading progress</h1>',
+    ...notes.map((n) => `  ${n}`),
+    ...paras,
+    '</article>',
+  ].join('\n');
+}
+
+/**
+ * The CSS tab as a page: its stylesheet, with fallback.js inline when the
+ * fallback is on. Readers for whom the CSS is off are told so on the page,
+ * so a still card does not look like a broken file.
+ */
+function cssPage(s: Settings, title: string, version: string): string {
+  const scroll = kindOf(s) === 'scroll';
+  const lib = s.fallback === 'library';
+  const test = scroll ? 'scroll()' : 'view()';
+  const unsupported = `<p class="note no-timeline">This browser has no CSS scroll timelines, so ${
+    lib ? 'the script at the end of the page runs the same animation on svg-scroll-draw.'
+      : scroll ? 'the CSS is skipped and the bar stays empty.' : 'the CSS is skipped and the cards show as written.'
+  }</p>`;
+  // The bar is not gated on reduced motion: it only moves as the reader scrolls.
+  const reduced = '<p class="note reduced">Your system asks for reduced motion, so the CSS is off and the cards show as written.</p>';
+  const notes = scroll ? [unsupported] : [unsupported, reduced];
+  const noteCss = [
+    NOTE_CSS,
+    `@supports not (animation-timeline: ${test}) {\n  .no-timeline { display: block; }\n}`,
+    ...(scroll ? [] : [`@supports (animation-timeline: ${test}) {\n  @media (prefers-reduced-motion: reduce) {\n    .reduced { display: block; }\n  }\n}`]),
+  ].join('\n');
+  return htmlFile({
+    slug: SLUG,
+    title,
+    css: `${pageCss(s)}\n${noteCss}\n\n${cssBody(s)}`,
+    body: scroll ? articleBody(notes) : cardsBody(notes),
+    script: lib ? fallbackBody(s, cdn(version)) : undefined,
+  });
+}
+
+/** The JavaScript tab as a page: its call, the library from jsDelivr, in every browser. */
+function jsPage(s: Settings, title: string, version: string): string {
+  const scroll = kindOf(s) === 'scroll';
+  return htmlFile({
+    slug: SLUG,
+    title,
+    css: scroll ? `${pageCss(s)}\n\n${barRule('Hidden until scrollProgress drives it.').join('\n')}` : pageCss(s),
+    body: scroll ? articleBody([]) : cardsBody([]),
+    script: jsBody(s, cdn(version)),
+  });
+}
+
+/** The React tab as a Vite project: the component in plain JSX, and a page to scroll it in. */
+function reactProject(s: Settings, version: string): Omit<ReactProject, 'title'> {
+  const scroll = kindOf(s) === 'scroll';
+  const app = scroll
+    ? `${reactComponent(s, false, PROJECT)}
+
+const PARAGRAPHS = Array.from({ length: ${PARAGRAPHS} }, (_, i) => i + 1);
+
+export default function App() {
+  return (
+    <>
+      <ReadingProgress />
+      <article className="article">
+        <h1>Reading progress</h1>
+        {PARAGRAPHS.map((n) => (
+          <p key={n}>{n}. ${PARAGRAPH}</p>
+        ))}
+      </article>
+    </>
+  );
+}
+`
+    : `${reactComponent(s, false, PROJECT)}
+
+const CARDS = Array.from({ length: ${PAGE_CARDS} }, (_, i) => i + 1);
+
+export default function App() {
+  return (
+    <>
+      <div className="spacer"><p>Scroll down</p></div>
+      <main className="cards">
+        {CARDS.map((n) => (
+          <Reveal key={n}>
+            <div className="card">Card {n}</div>
+          </Reveal>
+        ))}
+      </main>
+      <div className="spacer"><p>The end of the page</p></div>
+    </>
+  );
+}
+`;
+  const css = scroll ? `${pageCss(s)}\n\n${barRule('Hidden until scrollProgress drives it.').join('\n')}\n` : `${pageCss(s)}\n`;
+  return { slug: SLUG, app, css, version };
+}
+
+/**
+ * What the export row under the code runs, for the tab on show: the CSS tab
+ * gives a page of CSS (and fallback.js when it is on); the JavaScript and React
+ * tabs a page running the library, and the React component as a project.
+ */
+export function runnable(s: Settings, tab: 'css' | 'js' | 'react', version: string): {
+  title: string;
+  filename: string;
+  html: string;
+  react?: Omit<ReactProject, 'title'>;
+} {
+  // "Progress bar · scroll()" names the timeline for the preset menu; a title needs only the effect.
+  const label = presetOf(s.preset).label.split(' · ')[0];
+  if (tab === 'css') {
+    const title = `${label}: CSS scroll-driven animation`;
+    return { title, filename: `${s.preset}-css.html`, html: cssPage(s, title, version) };
+  }
+  const title = `${label}: svg-scroll-draw`;
+  return { title, filename: `${s.preset}-svg-scroll-draw.html`, html: jsPage(s, title, version), react: reactProject(s, version) };
 }
 
 // ── The preview's library call ───────────────────────────────────────────────

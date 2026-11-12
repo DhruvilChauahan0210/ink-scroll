@@ -48,7 +48,7 @@ export interface ScrollHorizontalOptions {
    * motion. It advances only as the user scrolls, 1:1 with their input, so it is
    * direct manipulation rather than something that plays at them. And the
    * alternative is worse than the motion — the panels are only reachable *via*
-   * the transform, inside a sticky `overflow: hidden` container, so applying a
+   * the transform, inside a sticky `overflow: clip` stage, so applying a
    * final state (or none at all) silently hides all of the content except one
    * panel from exactly the users who asked for less motion.
    *
@@ -81,15 +81,18 @@ const NOOP: ScrollHorizontalInstance = {
  *
  * Minimal CSS setup:
  *   .outer  { height: 400vh; }
- *   .sticky { position: sticky; top: 0; height: 100vh; overflow: hidden; }
+ *   .sticky { position: sticky; top: 0; height: 100vh; overflow: clip; }
  *   .track  { display: flex; width: max-content; }
  *
+ * `overflow: clip`, not `hidden`: a hidden stage is still a scroll container,
+ * so Tab to a panel off to the side scrolls the stage itself and leaves the
+ * strip shifted against the page. Keyboard users then need the page scrolled
+ * to the focused panel; the horizontal-scroll generator writes that handler.
+ *
  * @example
- * scrollHorizontal('.track', {
- *   distance: 3 * window.innerWidth,
- *   trigger:  { start: 'top top', end: 'bottom bottom' },
- *   easing:   'linear',
- * });
+ * // Measures its own travel (the track's width less the stage's) and follows
+ * // the layout: pass `distance` only for a fixed number of pixels.
+ * scrollHorizontal('.track');
  */
 export function scrollHorizontal(
   track: string | Element,

@@ -2,9 +2,11 @@
 
 import { useCallback, useEffect, useId, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { CodeBox } from '@/components/site/CodeBox';
+import { ToolExport } from '@/components/tool-kit/ToolExport';
 import { EASING_NAMES, NAMED, type EasingName } from '@/data/easing';
 import {
-  DEFAULTS, LIB, LIMITS, TABS, cssOnlyCss, firstReach, geometry, htmlCode, jsCode, previewDialect, reactCode, scriptCss,
+  DEFAULTS, LIB, LIMITS, SLUG, TABS, cssCode, cssOnlyCode, cssOnlyCss, cssOnlyFile, firstReach, geometry, htmlCode, jsCode,
+  jsFile, previewDialect, reactApp, reactCode, scriptCss,
   type Engine, type Settings, type Tab, type Unit,
 } from './code';
 import { PANEL_NAMES, PanelArt } from './PanelArt';
@@ -21,7 +23,11 @@ import { PANEL_NAMES, PanelArt } from './PanelArt';
  * - The preview's stylesheet is the generated CSS itself, with its units mapped
  *   onto the box: vw is the box's width (cqw), 100svh the box's height.
  * - The code is written from the same settings, leaving out every option at
- *   scrollHorizontal's default.
+ *   scrollHorizontal's default. Under it, the same section as a page that runs
+ *   on its own (the CSS only tab's, or the script version's), and the React
+ *   tab's component as a StackBlitz project.
+ *
+ * `version` is the library's, from the server page: the CDN URLs pin it.
  */
 
 type Lib = typeof import('svg-scroll-draw/horizontal');
@@ -34,7 +40,7 @@ const reducedNow = () => typeof window !== 'undefined' && window.matchMedia(REDU
 const noop = () => () => {};
 const supportsTimeline = () => typeof CSS !== 'undefined' && CSS.supports('animation-timeline: view()');
 
-export function HorizontalGenerator() {
+export function HorizontalGenerator({ version }: { version: string }) {
   const [s, setS] = useState<Settings>(DEFAULTS);
   const [fixedVh, setFixedVh] = useState<number>(LIMITS.vh.def);
   const [engine, setEngine] = useState<Engine>('js');
@@ -195,12 +201,15 @@ export function HorizontalGenerator() {
   const code = useMemo(() => {
     switch (tab) {
       case 'html': return htmlCode(s);
-      case 'css': return scriptCss(s);
-      case 'js': return jsCode(s);
+      case 'css': return cssCode(s);
+      case 'js': return jsCode(s, version);
       case 'react': return reactCode(s);
-      case 'only': return cssOnlyCss(s);
+      case 'only': return cssOnlyCode(s);
     }
-  }, [s, tab]);
+  }, [s, tab, version]);
+  const cssOnly = tab === 'only';
+  const page = useMemo(() => (cssOnly ? cssOnlyFile(s) : jsFile(s, version)), [s, cssOnly, version]);
+  const app = useMemo(() => reactApp(s), [s]);
   const file = TABS.find((t) => t.k === tab)?.file ?? '';
   const limits = LIMITS[s.unit];
   const lengthLabel = s.length === 'match' ? '1:1 with the travel' : `${s.length}vh`;
@@ -339,6 +348,12 @@ export function HorizontalGenerator() {
               ? 'Import the CSS tab as horizontal-scroll.css next to this file. A client component, so it works in the Next.js App Router.'
               : 'Three files: the HTML, the CSS and main.js. Without the script the section is a row you scroll sideways; with it, it pins and moves as the page scrolls.'}
         </p>
+        <ToolExport
+          title={cssOnly ? 'Horizontal scroll section, CSS only' : 'Horizontal scroll section'}
+          filename={cssOnly ? 'horizontal-scroll-css-only.html' : 'horizontal-scroll.html'}
+          html={page}
+          react={cssOnly ? undefined : { slug: SLUG, app: app.app, css: app.css, version }}
+        />
       </div>
     </div>
   );

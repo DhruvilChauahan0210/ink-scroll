@@ -82,8 +82,9 @@ describe('velocityScale on scrollAnimate', () => {
       props: { opacity: [0, 1] },
       velocityScale: true,
     });
-    // If native were used, IntersectionObserver would not be created
-    expect(FakeIO.instances.length).toBeGreaterThan(0);
+    // The native path adds its keyframes class and stylesheet; the JS engine neither.
+    expect(document.querySelector('style[data-ssd-animate]')).toBeNull();
+    expect(el.className).not.toMatch(/ssd-a-/);
     inst.destroy();
   });
 
@@ -93,8 +94,8 @@ describe('velocityScale on scrollAnimate', () => {
       props: { opacity: [0, 1] },
       native: false,
     });
-    FakeIO.instances[0].trigger(true);
     vi.stubGlobal('scrollY', 50);
+    window.dispatchEvent(new Event('scroll'));
     raf.tick();
     const opacity = parseFloat(el.style.opacity || '0');
     expect(opacity).toBeGreaterThanOrEqual(0);

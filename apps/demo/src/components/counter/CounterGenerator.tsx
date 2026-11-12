@@ -3,11 +3,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import type { ScrollCounterOptions } from 'svg-scroll-draw';
 import { CodeBox } from '@/components/site/CodeBox';
+import { ToolExport } from '@/components/tool-kit/ToolExport';
 import {
-  COUNTER_DECIMALS, COUNTER_DEFAULTS, COUNTER_EASINGS, COUNTER_EXAMPLES, COUNTER_INITIAL, COUNTER_LOCALES,
-  COUNTER_TRIGGERS, AFFIX_MAX, cleanAffix, formatExpr, formatPlan, formatterOf, intlLiteral, lit, parseNumber,
-  type CounterEasing, type CounterLocale, type CounterNumber, type CounterSettings, type CounterTrigger, type FormatPlan,
+  COUNTER_DECIMALS, COUNTER_EASINGS, COUNTER_EXAMPLES, COUNTER_INITIAL, COUNTER_LOCALES, COUNTER_TRIGGERS,
+  AFFIX_MAX, cleanAffix, parseNumber, type CounterEasing, type CounterLocale, type CounterSettings, type CounterTrigger,
 } from '@/data/counter';
+import { TITLE, jsCode, reactCode, reactProject, resolve, runnableHtml, triggerOf, type Resolved } from './code';
 
 /**
  * The animated counter generator. Everything it shows is scrollCounter itself:
@@ -23,8 +24,9 @@ import {
  *   Play runs that as a steady scroll through the window; the slider sets it.
  * - The cards below are scrollCounter instances with no seek(), as a page
  *   would run them: they count as they cross their window.
- * - The code is generated from the same state, leaving out every option that
- *   is at the counter's default.
+ * - The code (./code.ts) is generated from the same state, leaving out every
+ *   option that is at the counter's default, and so is the page under
+ *   "Run it", which runs that code from jsDelivr.
  *
  * scrollCounter rewrites its element's text, so every element it runs on is
  * one React renders empty and never fills.
@@ -91,13 +93,6 @@ function curveOf(ease: Ease) {
 
 // ── Settings → options ───────────────────────────────────────────────────────
 
-type Resolved = { from: number; to: number; plan: FormatPlan; fmt: (n: number) => string };
-
-function resolve(s: CounterNumber): Resolved {
-  const plan = formatPlan(s);
-  return { from: parseNumber(s.from) ?? 0, to: parseNumber(s.to) ?? 0, plan, fmt: formatterOf(plan) };
-}
-
 /** The number at eased progress e. */
 const valueAt = (r: Resolved, e: number) => r.from + (r.to - r.from) * e;
 
@@ -118,8 +113,6 @@ function widest(r: Resolved, top: number): string {
 
 /** The texts whose space is held: the start, the end and the widest on the way, once each. */
 const holdsOf = (r: Resolved, wide: string) => [...new Set([r.fmt(r.from), r.fmt(r.to), wide])];
-
-const triggerOf = (k: CounterTrigger) => COUNTER_TRIGGERS.find((t) => t.key === k) ?? COUNTER_TRIGGERS[0];
 
 function formatOptions(r: Resolved): Pick<ScrollCounterOptions, 'format' | 'decimals'> {
   if (r.plan.kind === 'decimals') return { decimals: r.plan.decimals };
@@ -145,7 +138,7 @@ function previewOptions(r: Resolved, top: number, reduced: boolean): ScrollCount
 
 // ── The generator ────────────────────────────────────────────────────────────
 
-export function CounterGenerator() {
+export function CounterGenerator({ version }: { version: string }) {
   const [s, setS] = useState<CounterSettings>(COUNTER_INITIAL);
   // The two number fields as typed. Only a valid number reaches `s`, so the
   // preview and the code keep the last good one while a field is mid-edit.
@@ -231,6 +224,8 @@ export function CounterGenerator() {
   }
 
   const code = useMemo(() => (tab === 'js' ? jsCode(s, r) : reactCode(s, r)), [s, r, tab]);
+  const html = useMemo(() => runnableHtml(s, r, version), [s, r, version]);
+  const react = useMemo(() => reactProject(s, r, version), [s, r, version]);
   const final = r.fmt(r.to);
   const t = reduced ? 1 : progress;
   const eased = !reduced && ease ? ease(t) : 1;
@@ -321,6 +316,7 @@ export function CounterGenerator() {
           ))}
         </div>
         <CodeBox file={tab === 'js' ? 'main.js' : 'Stat.tsx'}>{code}</CodeBox>
+        <ToolExport title={TITLE} filename="animated-counter.html" html={html} react={react} />
       </div>
 
       <div className="ctr-live">
@@ -444,67 +440,4 @@ function Seg({ value, options, onChange, label }: { value: string; options: read
       ))}
     </span>
   );
-}
-
-// ── The generated code ───────────────────────────────────────────────────────
-
-/** The options that differ from scrollCounter's defaults (`to` has none), as `key: value` pairs. */
-function changed(s: CounterSettings, r: Resolved): [string, string][] {
-  const out: [string, string][] = [];
-  if (r.from !== COUNTER_DEFAULTS.from) out.push(['from', String(r.from)]);
-  out.push(['to', String(r.to)]);
-  if (r.plan.kind === 'decimals') out.push(['decimals', String(r.plan.decimals)]);
-  if (r.plan.kind === 'format') out.push(['format', `(n) => ${formatExpr(r.plan)}`]);
-  if (s.easing !== COUNTER_DEFAULTS.easing) out.push(['easing', lit(s.easing)]);
-  const t = triggerOf(s.trigger);
-  if (t.start !== COUNTER_DEFAULTS.start || t.end !== COUNTER_DEFAULTS.end) {
-    out.push(['trigger', `{ start: ${lit(t.start)}, end: ${lit(t.end)} }`]);
-  }
-  if (s.once !== COUNTER_DEFAULTS.once) out.push(['once', String(s.once)]);
-  return out;
-}
-
-const SR_NOTE = '// sr-only hides the copy from sight, not from screen readers (Tailwind has the class).';
-
-function formatter(r: Resolved): string {
-  if (r.plan.kind !== 'format') return '';
-  const zero = r.plan.zero === undefined ? '' : `// Close to zero, Intl.NumberFormat prints -0: those show as 0.\n`;
-  return `const nf = new Intl.NumberFormat(${lit(r.plan.locale)}, ${intlLiteral(r.plan.intl)});\n${zero}\n`;
-}
-
-function jsCode(s: CounterSettings, r: Resolved): string {
-  const final = r.fmt(r.to);
-  const markup = s.srCopy
-    ? `// <span class="sr-only">${final}</span>\n// <span id="stat" aria-hidden="true">${final}</span>\n${SR_NOTE}`
-    : `// <span id="stat">${final}</span>`;
-  const opts = changed(s, r).map(([k, v]) => `  ${k}: ${v},`).join('\n');
-  return `${markup}
-
-import { scrollCounter } from 'svg-scroll-draw';
-
-${formatter(r)}scrollCounter('#stat', {
-${opts}
-});`;
-}
-
-function reactCode(s: CounterSettings, r: Resolved): string {
-  const props = changed(s, r).map(([k, v]) => (v.startsWith("'") ? `${k}="${v.slice(1, -1)}"` : `${k}={${v}}`));
-  const client = r.plan.kind === 'format'
-    ? `'use client';\n// format is a function, so in the Next.js App Router this is a client component.\n\n`
-    : '';
-  const counter = (pad: string, extra: string[]) =>
-    `${pad}<ScrollCounter\n${[...extra, ...props].map((p) => `${pad}  ${p}`).join('\n')}\n${pad}/>`;
-  const body = s.srCopy
-    ? `    <>
-      <span className="sr-only">${r.fmt(r.to)}</span>
-${counter('      ', ['aria-hidden="true"'])}
-    </>`
-    : counter('    ', []);
-  return `${client}import { ScrollCounter } from 'svg-scroll-draw/react';
-
-${formatter(r)}${s.srCopy ? `${SR_NOTE}\n` : ''}export function Stat() {
-  return (
-${body}
-  );
-}`;
 }

@@ -12,6 +12,7 @@ import { CodeBox } from '@/components/site/CodeBox';
 import { CopyCommand } from '@/components/home/CopyCommand';
 import { ParallaxGenerator } from '@/components/parallax/ParallaxGenerator';
 import { DepthFigure } from '@/components/parallax/DepthFigure';
+import { ToolNextStep } from '@/components/tool-kit/ToolNextStep';
 import { C, Note, Sec, Toc } from '@/components/stack/parts';
 
 // Searchers type "parallax scrolling", "parallax generator", "parallax effect
@@ -40,7 +41,7 @@ const OPTIONS: { k: string; def: string; d: string }[] = [
   { k: 'axis', def: `'${PARALLAX_DEFAULTS.axis}'`, d: "'x' moves it sideways by speed × its own width instead, a positive speed to the left. It still follows the page’s vertical scroll." },
   { k: 'easing', def: `'${PARALLAX_DEFAULTS.easing}'`, d: `How the travel is spread over the window: ${TEXT_EASINGS.map((e) => `'${e}'`).join(', ')}, or any function of t. Linear keeps the layer locked to the scroll, which is what parallax wants.` },
   { k: 'trigger', def: `{ start: '${PARALLAX_DEFAULTS.start}', end: '${PARALLAX_DEFAULTS.end}' }`, d: 'The window the travel is spread over, element edge then window edge, as in ScrollTrigger: from the element’s top at the window’s bottom to its bottom at the window’s top.' },
-  { k: 'onProgress', def: 'none', d: 'Called with the progress (after the easing, so 0 to 1 when it is linear) on every frame while the element is on screen, for anything else that should follow it.' },
+  { k: 'onProgress', def: 'none', d: 'Called with the progress (after the easing, so 0 to 1 when it is linear) on every frame while the scroll is inside the element’s window, for anything else that should follow it.' },
 ];
 
 const SINGLE = `import { scrollParallax } from 'svg-scroll-draw';
@@ -65,7 +66,7 @@ const FAQ: { q: string; a: string }[] = [
   },
   {
     q: 'How do I make a parallax effect with CSS and JavaScript?',
-    a: "Stack the layers in one container with position: relative and overflow: hidden, make each one position: absolute with inset: 0, then call scrollParallax('#layer', { speed }) for each layer that should move. The generator above writes the CSS and the calls; its HTML tab is a whole file, with a comment where each layer’s art goes; give the scene a page to scroll through and it runs as it is. CSS alone can tie an animation to scroll with animation-timeline: view() in the browsers that support it; scrollParallax always runs on its own JavaScript engine, so it does not depend on that support.",
+    a: "Stack the layers in one container with position: relative and overflow: hidden, make each one position: absolute with inset: 0, then call scrollParallax('#layer', { speed }) for each layer that should move. The generator above writes the CSS and the calls. Its HTML tab is a whole page, with a screen of room to scroll above and below the scene and a comment where each layer’s art goes, and its Download button saves the same page with the generator’s drawing in the layers, ready to open. CSS alone can tie an animation to scroll with animation-timeline: view() in the browsers that support it; scrollParallax always runs on its own JavaScript engine, so it does not depend on that support.",
   },
   {
     q: 'How do I add a parallax effect in React or Next.js?',
@@ -77,7 +78,7 @@ const FAQ: { q: string; a: string }[] = [
   },
   {
     q: 'Does parallax scrolling hurt performance?',
-    a: 'Not when it only moves transforms, which is all scrollParallax changes: it writes transform (and a progress variable for CSS) once a frame while a layer is on screen, measures the layer only at the start and when the window or the layout around it changes, never while scrolling, and stops when the layer leaves the screen. Keep the layers few, clip the scene with overflow: hidden, and give large layers will-change: transform.',
+    a: 'Not when it only moves transforms, which is all scrollParallax changes: it writes transform (and a progress variable for CSS) once a frame while the scroll is inside a layer’s window, measures the layer only at the start and when the window or the layout around it changes, never while scrolling, and stops once the scroll has left that window. Keep the layers few, clip the scene with overflow: hidden, and give large layers will-change: transform.',
   },
   {
     q: 'Is parallax scrolling bad for accessibility?',
@@ -95,6 +96,7 @@ const TOC = [
   { id: 'options', label: `Options · ${OPTIONS.length}` },
   { id: 'performance', label: 'Performance' },
   { id: 'reduced-motion', label: 'Reduced motion' },
+  { id: 'use', label: 'Use it in your project' },
   { id: 'faq', label: `Questions · ${FAQ.length}` },
 ];
 
@@ -151,6 +153,7 @@ export default function ParallaxScrollingGeneratorPage() {
             <p className="pg-lede">
               Give each layer of a scene its own speed, scroll the little window to see the depth, then copy the code:
               one <C>scrollParallax</C> call per layer, as plain JavaScript, a React component or a single HTML file.
+              Or run it outside this page: download the scene as a page of its own, or open it in StackBlitz.
             </p>
             <div className="pg-actions">
               <a href="#generator" className="btn btn-solid" data-magnetic>Open the generator ↓</a>
@@ -215,9 +218,10 @@ export default function ParallaxScrollingGeneratorPage() {
               </Note>
               <Note k={`Why ±${SPEED_MAX}`}>
                 Beyond ±{SPEED_MAX} a layer travels further than its own size, so the scene’s <C>overflow: hidden</C> clips
-                its whole box away before the window ends. Measured with 2.23.2 in Chromium, Firefox and WebKit, the
-                layer then stops following the scroll, and when its box has left the scene it stays where it stopped,
-                even after scrolling back. The generator’s sliders stop at ±{SPEED_MAX}.
+                its whole box away before the window ends. In 2.23.3 and earlier the layer then stopped following the
+                scroll, and once its box had left the scene it stayed where it stopped, even after scrolling back
+                (measured in Chromium, Firefox and WebKit); fixed in 2.23.4. The generator’s sliders stop at
+                ±{SPEED_MAX}, where every layer comes back to the scroll on 2.23.3 as well.
               </Note>
             </Sec>
 
@@ -249,7 +253,8 @@ export default function ParallaxScrollingGeneratorPage() {
                 scrollParallax changes one property per layer, <C>transform</C>, plus the <C>--scroll-draw-progress</C>{' '}
                 variable for your own CSS, so moving a layer never makes the browser lay the page out again. It
                 measures each layer when it starts and again when the window resizes or the layout around the layer
-                changes, never while you scroll, and runs its frame loop only while the layer is on screen.
+                changes, never while you scroll, and runs its frame loop only while the scroll is inside the layer’s
+                window, from its top reaching the bottom of the window to its bottom leaving the top.
               </p>
               <p className="stk-p">
                 The travel is a percentage of the layer’s own box, which the browser resolves every frame, so a layer
@@ -276,7 +281,21 @@ export default function ParallaxScrollingGeneratorPage() {
               </p>
             </Sec>
 
-            <Sec n={6} k={`${FAQ.length} questions`} id="faq" title="Parallax scrolling questions">
+            <Sec n={6} k="Next step" id="use" title="Use it in your project">
+              <p className="stk-p">
+                scrollParallax is in the main entry, <C>svg-scroll-draw</C>, which the code above imports. The page the
+                generator downloads loads that entry from jsDelivr as an ES module, pinned to {SELF.version}, and the
+                React project on StackBlitz installs it from npm.
+              </p>
+              <ToolNextStep
+                slug="parallax-scrolling-generator"
+                api="scrollParallax"
+                docs="/docs#scroll-parallax"
+                related={['scroll-trigger-visualizer', 'svg-wave-generator']}
+              />
+            </Sec>
+
+            <Sec n={7} k={`${FAQ.length} questions`} id="faq" title="Parallax scrolling questions">
               <div className="stk-faq">
                 {FAQ.map((f, i) => (
                   <div key={f.q} className="stk-q">
@@ -289,10 +308,8 @@ export default function ParallaxScrollingGeneratorPage() {
                 ))}
               </div>
               <p className="stk-p stk-more">
-                More: <Link href="/blog/scroll-animation-groups">parallax on many elements at once</Link>,{' '}
-                <Link href="/blog/reduced-motion-scroll-animations">scroll animation and reduced motion</Link>, and the{' '}
-                <Link href="/text-animation-generator">text animation generator</Link>. All of svg-scroll-draw{' '}
-                {SELF.version}: <Link href="/docs">the docs</Link>.
+                More: <Link href="/blog/scroll-animation-groups">parallax on many elements at once</Link> and{' '}
+                <Link href="/blog/reduced-motion-scroll-animations">scroll animation and reduced motion</Link>.
               </p>
             </Sec>
           </div>

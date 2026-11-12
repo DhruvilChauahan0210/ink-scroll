@@ -44,8 +44,21 @@ class FakeIO {
 // ── Setup ─────────────────────────────────────────────────────────────────────
 
 let raf: RafQueue;
+/**
+ * How many animate engines were built (scrollAnimate and scrollParallax
+ * members): each listens for scroll on the window once. The draw engines below
+ * still keep an IntersectionObserver each.
+ */
+let built: () => number;
+/** Scroll the page: animate engines wake on scroll events, as in a browser. */
+function scroll(y?: number): void {
+  if (y !== undefined) vi.stubGlobal('scrollY', y);
+  window.dispatchEvent(new Event('scroll'));
+}
 
 beforeEach(() => {
+  const listen = vi.spyOn(window, 'addEventListener');
+  built = () => listen.mock.calls.filter(([type]) => type === 'scroll').length;
   raf = new RafQueue();
   FakeIO.instances = [];
   vi.stubGlobal('requestAnimationFrame', raf.schedule);
@@ -431,7 +444,7 @@ describe('scrollAnimateGroup', () => {
     const a = makeBox();
     const b = makeBox();
     scrollAnimateGroup([a, b, '#not-in-the-dom'], FADE_IN);
-    expect(FakeIO.instances.length).toBe(2);
+    expect(built()).toBe(2);
   });
 
   it('writes an initial frame to every member, not just the first', () => {
@@ -481,11 +494,10 @@ describe('scrollAnimateGroup', () => {
 
     instance.pause();
     const callsBefore = raf.schedule.mock.calls.length;
-    FakeIO.instances[0].trigger(true);
+    scroll(10);
     expect(raf.schedule.mock.calls.length, 'a paused member scheduled a frame').toBe(callsBefore);
 
     instance.resume();
-    FakeIO.instances[0].trigger(true);
     expect(raf.schedule.mock.calls.length).toBeGreaterThan(callsBefore);
   });
 
@@ -507,10 +519,10 @@ describe('scrollAnimateSequence', () => {
     const b = makeBox();
     scrollAnimateSequence([a, b], FADE_IN);
 
-    // Card 1's observer fires while card 0 is still mid-flight: it must not
+    // The page scrolls while card 0 is still mid-flight: card 1 must not
     // schedule a frame, and must stay at its from-state.
     const callsBefore = raf.schedule.mock.calls.length;
-    FakeIO.instances[1].trigger(true);
+    scroll(10); // card 0 already has a frame pending
     expect(raf.schedule.mock.calls.length, 'a later card started early').toBe(callsBefore);
 
     // Its opacity is whatever the shared stubbed rect produced at construction;
@@ -528,9 +540,7 @@ describe('scrollAnimateSequence', () => {
       onComplete: () => completions.push(1),
     });
 
-    FakeIO.instances[1].trigger(true); // paused, no effect
-    vi.stubGlobal('scrollY', 5000);    // well past the trigger window
-    FakeIO.instances[0].trigger(true);
+    scroll(5000); // well past the trigger window
     raf.tick();
 
     expect(completions.length, 'the first card never completed').toBeGreaterThan(0);
@@ -546,8 +556,7 @@ describe('scrollAnimateSequence', () => {
     const a = makeBox();
     const instance = scrollAnimateSequence([a], FADE_IN);
 
-    vi.stubGlobal('scrollY', 5000);
-    FakeIO.instances[0].trigger(true);
+    scroll(5000);
     raf.tick();
 
     // The cursor must stay on the last card rather than walking off the end,
@@ -560,8 +569,9 @@ describe('scrollAnimateSequence', () => {
     const b = makeBox();
     const instance = scrollAnimateSequence([a, b], FADE_IN);
 
+    const unlisten = vi.spyOn(window, 'removeEventListener');
     instance.destroy();
-    for (const io of FakeIO.instances) expect(io.disconnect).toHaveBeenCalled();
+    expect(unlisten.mock.calls.filter(([type]) => type === 'scroll')).toHaveLength(2);
     expect(a.style.opacity).toBe('');
     expect(b.style.opacity).toBe('');
   });
@@ -583,7 +593,7 @@ describe('scrollParallaxGroup', () => {
 
   it('creates one engine per member', () => {
     scrollParallaxGroup([makeBox(), makeBox(), makeBox()]);
-    expect(FakeIO.instances.length).toBe(3);
+    expect(built()).toBe(3);
   });
 
   it('translates every member, in the direction the speed asks for', () => {

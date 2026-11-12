@@ -32,7 +32,7 @@
 | `scrollParallax` | `svg-scroll-draw` | Move any element at a different rate than scroll. Speed multiplier, reverse direction. |
 | `scrollDraw` | `svg-scroll-draw` | The original — scroll-driven SVG path drawing via `stroke-dashoffset`. |
 | `scrollVideo` | `svg-scroll-draw/video` | Tie `<video>.currentTime` to scroll. The Apple/Stripe product-page pattern. |
-| `scrollText` | `svg-scroll-draw/text` | Split text into chars/words/lines and stagger-animate each on scroll. 3.4 KB, nothing else to load. |
+| `scrollText` | `svg-scroll-draw/text` | Split text into chars/words/lines and stagger-animate each on scroll. 3.5 KB, nothing else to load. |
 | `devtools` | `svg-scroll-draw/devtools` | Visual overlay showing every active animation's triggers and progress. Dev-only. |
 | `AOS` | `svg-scroll-draw/aos` | Drop-in replacement for AOS: same `AOS.init()`, same `data-aos` markup, no `aos.css`. |
 | `ScrollReveal` | `svg-scroll-draw/scrollreveal` | Drop-in replacement for ScrollReveal.js 4, MIT instead of GPL-3.0. |
@@ -211,7 +211,7 @@ scrollVideo('#product-reveal', {
 ```tsx
 import { ScrollVideo } from 'svg-scroll-draw/react';
 
-<ScrollVideo src="/hero.mp4" trigger={{ start: 'top top', end: 'bottom top' }} />
+<ScrollVideo src="/hero.mp4" poster="/hero.jpg" trigger={{ start: 'top top', end: 'bottom top' }} />
 ```
 
 #### scrollVideo options
@@ -223,7 +223,7 @@ import { ScrollVideo } from 'svg-scroll-draw/react';
 | `trigger` | `TriggerConfig` | `{ start: 'top top', end: 'bottom top' }` | — |
 | `easing` | `string \| fn` | `"linear"` | — |
 | `once` | `boolean` | `false` | — |
-| `preload` | `"auto" \| "metadata"` | `"auto"` | Sets `preload` attribute if not already present |
+| `preload` | `"auto" \| "metadata"` | `"auto"` | Sets `preload` attribute if not already present. The React `<ScrollVideo>` renders it from this option (2.23.4), and passes `poster` through to the `<video>` |
 | `triggerElement` | `Element` | the video | Measure the trigger window from this element — the tall track behind a `position: sticky` stage, so a pinned film scrubs the length of the pin (2.18.0) |
 | `onReady` | `() => void` | — | Fires when video metadata is loaded |
 | `onProgress` | `(n: number) => void` | — | — |
@@ -233,7 +233,7 @@ import { ScrollVideo } from 'svg-scroll-draw/react';
 
 ## scrollText — text reveal on scroll
 
-A 2.5 KB alternative to GSAP SplitText. SplitText is free and 3.6 KB, but it only splits — animating the pieces needs GSAP core (27.7 KB) on top.
+A 3.5 KB alternative to GSAP SplitText. SplitText is free and 3.6 KB, but it only splits — animating the pieces needs GSAP core (27.7 KB) on top.
 
 ```js
 import { scrollText } from 'svg-scroll-draw/text';
@@ -437,7 +437,7 @@ Differences, on purpose:
 On [ScrollReveal](https://scrollrevealjs.org)? It is GPL-3.0 (with a paid licence for commercial work)
 and has not shipped since 4.0.9. `svg-scroll-draw/scrollreveal` is an independent, MIT-licensed
 implementation of the same API, so the move is an import change — or one command: `npx svg-scroll-draw migrate`.
-4.5 KB gzipped, against 5.6 KB.
+4.7 KB gzipped, against 5.6 KB.
 
 ```diff
 - import ScrollReveal from 'scrollreveal';
@@ -635,15 +635,15 @@ devtools.highlight('#my-element'); // outline for 2 seconds
 | Entry | Gzipped |
 |---|---|
 | `svg-scroll-draw` (main, every core API) | 11.6 KB |
-| `svg-scroll-draw/react` (includes the engine) | 13.1 KB |
-| `svg-scroll-draw` + `svg-scroll-draw/react` (together; the engine ships once) | 14.7 KB |
-| `svg-scroll-draw/reveal` | 5.8 KB |
-| `svg-scroll-draw/text` | 3.4 KB |
+| `svg-scroll-draw/react` (includes the engine) | 13.2 KB |
+| `svg-scroll-draw` + `svg-scroll-draw/react` (together; the engine ships once) | 14.8 KB |
+| `svg-scroll-draw/reveal` | 5.7 KB |
+| `svg-scroll-draw/text` | 3.5 KB |
 | `svg-scroll-draw/video` | 2.8 KB |
 | `svg-scroll-draw/scrollreveal` | 4.7 KB |
 | `svg-scroll-draw/vivus` | 4.2 KB |
 | `svg-scroll-draw/aos` (styles included) | 3.2 KB |
-| `svg-scroll-draw/snap` | 1.9 KB |
+| `svg-scroll-draw/snap` | 2.0 KB |
 | `svg-scroll-draw/devtools` | 1.8 KB (dev only) |
 | `svg-scroll-draw/pin` | 1.6 KB |
 <!-- size-table:end -->

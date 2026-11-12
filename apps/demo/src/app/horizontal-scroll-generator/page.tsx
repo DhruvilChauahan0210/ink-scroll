@@ -8,9 +8,10 @@ import { seoTitle } from '../_lib/seo';
 import { SiteShell } from '@/components/site/SiteShell';
 import { jsonLd, SITE_URL } from '@/lib/json-ld';
 import { CodeBox } from '@/components/site/CodeBox';
+import { ToolNextStep } from '@/components/tool-kit/ToolNextStep';
 import { HorizontalGenerator } from '@/components/horizontal/HorizontalGenerator';
 import { TripFigure } from '@/components/horizontal/TripFigure';
-import { LIB, TABS } from '@/components/horizontal/code';
+import { LIB, SLUG, TABS } from '@/components/horizontal/code';
 import { C, Note, Sec, Toc, pad } from '@/components/stack/parts';
 
 // Searches this answers: "horizontal scroll", "horizontal scroll section",
@@ -56,7 +57,7 @@ const OPTIONS: { k: string; def: string; d: string }[] = [
   {
     k: 'onProgress',
     def: 'none',
-    d: 'Called with the eased progress, 0 to 1 (past 1 with spring or elastic), on every frame while the strip is on screen. The generator’s progress bar is one line of it.',
+    d: 'Called with the eased progress, 0 to 1 (past 1 with spring or elastic), on every frame while the stage is pinned, and as the strip reaches either end. The generator’s progress bar is one line of it.',
   },
 ];
 
@@ -78,7 +79,7 @@ const COSTS: { k: string; js: string; css: string }[] = [
   { k: 'JavaScript', js: 'The svg-scroll-draw/horizontal entry, on its own.', css: 'None.' },
   {
     k: 'Each frame',
-    js: 'While the strip is on screen, one requestAnimationFrame loop reads the scroll position and writes the track’s transform.',
+    js: 'While the stage is pinned, one requestAnimationFrame loop reads the scroll position and writes the track’s transform; before and after, it waits for the next scroll. 2.23.3 and earlier ran the loop the whole time the track was on screen; 2.23.4 stops it outside the pin.',
     css: 'The browser moves the transform itself, and can do it off the main thread.',
   },
   {
@@ -169,6 +170,7 @@ const TOC = [
   { id: 'costs', label: 'Script or CSS' },
   { id: 'a11y', label: 'Every panel in reach' },
   { id: 'options', label: `Options · ${OPTIONS.length}` },
+  { id: 'use', label: 'Use it in your project' },
   { id: 'faq', label: `Questions · ${FAQ.length}` },
 ];
 
@@ -235,7 +237,7 @@ export default function HorizontalScrollGeneratorPage() {
               <div><dt>Options</dt><dd>{OPTIONS.length}</dd></div>
               <div><dt>Easings</dt><dd>{EASING_NAMES.length}</dd></div>
               <div><dt>Code outputs</dt><dd>{TABS.length}</dd></div>
-              <div><dt>Every API, gzipped</dt><dd>{SELF.gzipKb} KB</dd></div>
+              <div><dt>Library</dt><dd>{SELF.version}</dd></div>
             </dl>
           </div>
           <TripFigure />
@@ -246,7 +248,7 @@ export default function HorizontalScrollGeneratorPage() {
           <div className="stk-main">
 
             <Sec n={1} k="The tool" id="generator" title="Build a horizontal scroll section">
-              <HorizontalGenerator />
+              <HorizontalGenerator version={SELF.version} />
             </Sec>
 
             <Sec n={2} k="The model" id="how" title="How vertical scroll moves it sideways">
@@ -339,7 +341,21 @@ export default function HorizontalScrollGeneratorPage() {
               </p>
             </Sec>
 
-            <Sec n={6} k={`${FAQ.length} questions`} id="faq" title="Horizontal scroll questions">
+            <Sec n={6} k="Next step" id="use" title="Use it in your project">
+              <p className="stk-p">
+                scrollHorizontal has an entry of its own, <C>svg-scroll-draw/horizontal</C>, and the generated code
+                imports it from there. It is not in the main entry, the CDN build or <C>svg-scroll-draw/react</C>.
+              </p>
+              <ToolNextStep
+                slug={SLUG}
+                api="scrollHorizontal"
+                entry="horizontal"
+                docs="/docs#scroll-horizontal"
+                related={['scroll-pin-generator', 'css-scroll-driven-animation-generator']}
+              />
+            </Sec>
+
+            <Sec n={7} k={`${FAQ.length} questions`} id="faq" title="Horizontal scroll questions">
               <div className="stk-faq">
                 {FAQ.map((f, i) => (
                   <div key={f.q} className="stk-q">
@@ -353,9 +369,7 @@ export default function HorizontalScrollGeneratorPage() {
               </div>
               <p className="stk-p stk-more">
                 Built step by step: <Link href="/blog/horizontal-scroll-sections">horizontal scroll sections without
-                GSAP</Link>. More scroll-driven CSS: the <Link href="/css-scroll-driven-animation-generator">CSS
-                scroll-driven animation generator</Link>. All of svg-scroll-draw {SELF.version}:{' '}
-                <Link href="/docs">the docs</Link>.
+                GSAP</Link>.
               </p>
             </Sec>
           </div>

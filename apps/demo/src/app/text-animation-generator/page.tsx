@@ -10,6 +10,7 @@ import { jsonLd, SITE_URL } from '@/lib/json-ld';
 import { CodeBox } from '@/components/site/CodeBox';
 import { CopyCommand } from '@/components/home/CopyCommand';
 import { TextGenerator } from '@/components/text-gen/TextGenerator';
+import { ToolNextStep } from '@/components/tool-kit/ToolNextStep';
 import { StaggerFigure } from '@/components/text-gen/StaggerFigure';
 import { C, Note, Sec, Toc } from '@/components/stack/parts';
 
@@ -32,7 +33,7 @@ const OPTIONS: { k: string; def: string; d: string }[] = [
   { k: 'easing', def: `'${TEXT_DEFAULTS.easing}'`, d: `${TEXT_EASINGS.map((e) => `'${e}'`).join(', ')}, or any function of t.` },
   { k: 'from', def: '{ opacity: 0, y: 24 }', d: 'Where each piece starts: opacity, x, y, rotate (degrees), scale. It ends at its natural place.' },
   { k: 'trigger', def: `{ start: '${TEXT_DEFAULTS.start}', end: '${TEXT_DEFAULTS.end}' }`, d: 'Element edge and window edge, as in ScrollTrigger: start when its top is at 85% of the window, finish at 40%.' },
-  { k: 'once', def: String(TEXT_DEFAULTS.once), d: 'Keep the text in place after it has arrived, instead of reversing when you scroll back up.' },
+  { k: 'once', def: String(TEXT_DEFAULTS.once), d: 'Never play backwards: the text keeps the furthest point the scroll has taken it to, instead of reversing when you scroll back up.' },
 ];
 
 const SCROLL_TRIGGERED = `import { scrollText } from 'svg-scroll-draw/text';
@@ -45,8 +46,8 @@ const headline = scrollText('#headline', {
 });
 
 // The same instance can be driven by hand, as the generator does:
-headline.seek(0.5);   // half way
-headline.replay();    // back to the start, following the scroll again`;
+headline.seek(0.5);   // half way, and it stops following the scroll
+headline.resume();    // following the scroll again`;
 
 const FAQ: { q: string; a: string }[] = [
   {
@@ -80,6 +81,7 @@ const TOC = [
   { id: 'how', label: 'How scroll drives it' },
   { id: 'split', label: 'Words, letters or lines' },
   { id: 'options', label: `Options · ${OPTIONS.length}` },
+  { id: 'use', label: 'Use it in your project' },
   { id: 'faq', label: `Questions · ${FAQ.length}` },
 ];
 
@@ -156,7 +158,7 @@ export default function TextAnimationGeneratorPage() {
           <div className="stk-main">
 
             <Sec n={1} k="The tool" id="generator" title="Make your text animation">
-              <TextGenerator />
+              <TextGenerator version={SELF.version} />
             </Sec>
 
             <Sec n={2} k="The model" id="how" title="How scroll drives it">
@@ -164,7 +166,8 @@ export default function TextAnimationGeneratorPage() {
                 The animation has one number behind it, its progress from 0 to 1. On a page that number comes from the
                 scroll: 0 when the element’s top reaches 85% of the window, 1 when it reaches 40%. Each piece
                 takes its own slice of that range, <C>stagger</C> after the one before (fig. 1), so scrolling faster
-                plays it faster and scrolling back plays it backwards, unless <C>once</C> keeps it in place.
+                plays it faster and scrolling back plays it backwards, unless <C>once</C>, which is on by default,
+                keeps it in place.
               </p>
               <CodeBox file="main.js">{SCROLL_TRIGGERED}</CodeBox>
               <Note k="Reduced motion">
@@ -196,7 +199,21 @@ export default function TextAnimationGeneratorPage() {
               </div>
             </Sec>
 
-            <Sec n={5} k={`${FAQ.length} questions`} id="faq" title="Text animation questions">
+            <Sec n={5} k="Next" id="use" title="Use it in your project">
+              <ToolNextStep
+                slug="text-animation-generator"
+                api="scrollText"
+                entry="text"
+                docs="/docs#scroll-text"
+                related={['text-fill-scroll-generator', 'scroll-trigger-visualizer']}
+              />
+              <Note k="React">
+                The React tab’s <C>{'<ScrollText>'}</C> comes from <C>svg-scroll-draw/react</C> and takes the same
+                options as props; it is in the same section of the docs.
+              </Note>
+            </Sec>
+
+            <Sec n={6} k={`${FAQ.length} questions`} id="faq" title="Text animation questions">
               <div className="stk-faq">
                 {FAQ.map((f, i) => (
                   <div key={f.q} className="stk-q">
@@ -210,7 +227,7 @@ export default function TextAnimationGeneratorPage() {
               </div>
               <p className="stk-p stk-more">
                 Accessible splitting in depth: <Link href="/blog/accessible-split-text-animation">split text a screen
-                reader can read</Link>. All of svg-scroll-draw {SELF.version}: <Link href="/docs">the docs</Link>.
+                reader can read</Link>.
               </p>
             </Sec>
           </div>

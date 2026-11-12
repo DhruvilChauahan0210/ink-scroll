@@ -11,6 +11,7 @@ import { CodeBox } from '@/components/site/CodeBox';
 import { CopyCommand } from '@/components/home/CopyCommand';
 import { CounterGenerator } from '@/components/counter/CounterGenerator';
 import { CountFigure } from '@/components/counter/CountFigure';
+import { ToolNextStep } from '@/components/tool-kit/ToolNextStep';
 import { C, Note, Sec, Toc } from '@/components/stack/parts';
 
 // Searchers type "animated counter", "number counter animation", "count up
@@ -124,6 +125,7 @@ const TOC = [
   { id: 'format', label: 'Formatting the number' },
   { id: 'a11y', label: 'Screen readers' },
   { id: 'options', label: `Options · ${OPTIONS.length}` },
+  { id: 'use', label: 'Use it in your project' },
   { id: 'faq', label: `Questions · ${FAQ.length}` },
 ];
 
@@ -180,6 +182,7 @@ export default function CounterAnimationGeneratorPage() {
             <p className="pg-lede">
               Set where the number starts and ends, its decimals, a prefix or suffix and the easing, and watch it
               count. Then copy the code: plain JavaScript or a React component that counts up as the reader scrolls.
+              Or run it outside this page: download it as a page of its own, or open it in StackBlitz.
             </p>
             <div className="pg-actions">
               <a href="#generator" className="btn btn-solid" data-magnetic>Open the generator ↓</a>
@@ -200,7 +203,7 @@ export default function CounterAnimationGeneratorPage() {
           <div className="stk-main">
 
             <Sec n={1} k="The tool" id="generator" title="Make your counter">
-              <CounterGenerator />
+              <CounterGenerator version={SELF.version} />
             </Sec>
 
             <Sec n={2} k="The model" id="how" title="How the number follows the scroll">
@@ -222,7 +225,8 @@ export default function CounterAnimationGeneratorPage() {
                 For readers who ask their system for less motion, the final number is written at once, with no count,
                 and <C>onComplete</C> still runs; that holds when the setting is turned on while the page is open, too.
                 On a page that loads that way the CSS variable is never written, so give <C>var()</C> a fallback of 1.
-                Turned on mid-visit, the variable keeps the last value it had.
+                Turned on mid-visit, the counter removes the variable and the fallback takes over; 2.23.3 and earlier
+                left it at the last value it had, fixed in 2.23.4.
               </Note>
               <Note k="Already past">
                 An element already above its window when the page loads shows its final number straight away, not{' '}
@@ -296,7 +300,20 @@ export default function CounterAnimationGeneratorPage() {
               </div>
             </Sec>
 
-            <Sec n={6} k={`${FAQ.length} questions`} id="faq" title="Animated counter questions">
+            <Sec n={6} k="Next" id="use" title="Use it in your project">
+              <ToolNextStep
+                slug="counter-animation-generator"
+                api="scrollCounter"
+                docs="/docs#scroll-counter"
+                related={['scroll-trigger-visualizer', 'text-animation-generator']}
+              />
+              <Note k="React">
+                The React tab’s <C>{'<ScrollCounter>'}</C> comes from <C>svg-scroll-draw/react</C> and takes the same
+                options as props; it is in the same section of the docs.
+              </Note>
+            </Sec>
+
+            <Sec n={7} k={`${FAQ.length} questions`} id="faq" title="Animated counter questions">
               <div className="stk-faq">
                 {FAQ.map((f, i) => (
                   <div key={f.q} className="stk-q">
@@ -308,11 +325,6 @@ export default function CounterAnimationGeneratorPage() {
                   </div>
                 ))}
               </div>
-              <p className="stk-p stk-more">
-                All of svg-scroll-draw {SELF.version}: <Link href="/docs#scroll-counter">scrollCounter in the docs</Link>,
-                or the <Link href="/text-animation-generator">text animation generator</Link> for words instead of
-                numbers.
-              </p>
             </Sec>
           </div>
         </div>

@@ -229,6 +229,113 @@ describe('scrollText', () => {
  * module: it rewrites innerHTML from the saved original, which is exactly how a
  * split element loses its accessible name or its animation progress.
  */
+// replay() set `paused` to false and requested no frame, so after pause() or
+// seek() the text stopped following the scroll until it left the screen and
+// came back. Window [−480, −120]; y −300 is half way.
+describe('scrollText replay() restarts the frame loop', () => {
+  it('after pause()', () => {
+    const el = makeParagraph();
+    const inst = scrollText(el, { once: false });
+    FakeIO.instances[0].trigger(true);
+    raf.tick();
+    inst.pause();
+    raf.tick(); // a frame pause() could not cancel in this fake sees `paused` and stops
+    inst.replay();
+    expect(inst.getProgress()).toBe(0);
+    vi.stubGlobal('scrollY', -300);
+    raf.tick();
+    expect(inst.getProgress()).toBeCloseTo(0.5, 6);
+  });
+
+  it('after seek()', () => {
+    const el = makeParagraph();
+    const inst = scrollText(el);
+    FakeIO.instances[0].trigger(true);
+    raf.tick();
+    inst.seek(0.2);
+    raf.tick();
+    inst.replay();
+    vi.stubGlobal('scrollY', -300);
+    raf.tick();
+    expect(inst.getProgress()).toBeCloseTo(0.5, 6);
+  });
+
+  it('does not start a second loop when it was running', () => {
+    const el = makeParagraph();
+    const inst = scrollText(el);
+    FakeIO.instances[0].trigger(true);
+    const frames = raf.schedule.mock.calls.length;
+    inst.replay();
+    expect(raf.schedule.mock.calls.length).toBe(frames);
+  });
+});
+
+// split: 'chars' split by UTF-16 unit: an emoji became two spans of lone
+// surrogates, drawn as two U+FFFD. And as inline-blocks side by side, a line
+// could break between any two letters; a word's letters share a nowrap box now.
+describe("scrollText split: 'chars'", () => {
+  it('keeps a character outside the BMP whole', () => {
+    const el = makeParagraph('Hi 👋 there');
+    scrollText(el, { split: 'chars' });
+    const units = Array.from(el.querySelectorAll<HTMLSpanElement>('span')).filter((s) => s.style.opacity !== '');
+    expect(units.map((s) => s.textContent)).toEqual(['H', 'i', '👋', 't', 'h', 'e', 'r', 'e']);
+    expect(units.some((s) => /[\uD800-\uDFFF]/.test(s.textContent ?? '') && s.textContent!.length === 1)).toBe(false);
+  });
+
+  it("puts each word's letters in one nowrap box, hidden like the letters", () => {
+    const el = makeParagraph('Hi there');
+    scrollText(el, { split: 'chars' });
+    const boxes = Array.from(el.children).filter((c) => (c as HTMLElement).style.whiteSpace === 'nowrap' && c.childElementCount);
+    expect(boxes.map((b) => b.textContent)).toEqual(['Hi', 'there']);
+    for (const b of boxes) {
+      expect((b as HTMLElement).style.display).toBe('inline-block');
+      expect(b.getAttribute('aria-hidden')).toBe('true');
+    }
+  });
+
+  // Chinese and Japanese put no spaces between words, so a line of them in one
+  // word box never wrapped and ran out of its paragraph.
+  it('gives each CJK character a box of its own, so a line can break between them', () => {
+    const el = makeParagraph('Hi 你好吗');
+    scrollText(el, { split: 'chars' });
+    const units = Array.from(el.querySelectorAll<HTMLSpanElement>('span')).filter((s) => s.style.opacity !== '');
+    expect(units.map((s) => s.textContent)).toEqual(['H', 'i', '你', '好', '吗']);
+    expect(units.filter((s) => s.parentElement === el).map((s) => s.textContent)).toEqual(['你', '好', '吗']);
+    expect((units[0].parentElement as HTMLElement).style.whiteSpace).toBe('nowrap');
+  });
+
+  it('gives each Thai character a box of its own too: Thai puts no spaces between words', () => {
+    const el = makeParagraph('Hi สวัสดี');
+    scrollText(el, { split: 'chars' });
+    const units = Array.from(el.querySelectorAll<HTMLSpanElement>('span')).filter((s) => s.style.opacity !== '');
+    expect(units.filter((s) => s.parentElement === el).map((s) => s.textContent).join('')).toBe('สวัสดี');
+    expect((units[0].parentElement as HTMLElement).style.whiteSpace).toBe('nowrap');
+  });
+
+  // Past 1 / stagger units the stagger did not fit the window: every unit was
+  // a step, the first shown at progress 0, and from the 27th on (at the default
+  // 0.04) none was ever shown, even at 1.
+  it('a line of many characters starts hidden and ends shown, every one of them', () => {
+    const el = makeParagraph('abcdefghijklmnopqrstuvwxyzABCDEFGHIJ');
+    const inst = scrollText(el, { split: 'chars', easing: 'linear' });
+    const opacities = () => Array.from(el.querySelectorAll<HTMLSpanElement>('span')).filter((s) => s.style.opacity !== '').map((s) => Number(s.style.opacity));
+    inst.seek(0);
+    expect(opacities().every((o) => o === 0)).toBe(true);
+    inst.seek(1);
+    expect(opacities().every((o) => o === 1)).toBe(true);
+    inst.seek(0.51);
+    const mid = opacities();
+    expect(mid.some((o) => o > 0 && o < 1), 'units should fade, not step').toBe(true);
+  });
+
+  it('destroy() puts the original markup back', () => {
+    const el = makeParagraph('Hi 👋 there');
+    const original = el.innerHTML;
+    scrollText(el, { split: 'chars' }).destroy();
+    expect(el.innerHTML).toBe(original);
+  });
+});
+
 describe('scrollText — resize handling', () => {
   beforeEach(() => vi.useFakeTimers());
   afterEach(() => vi.useRealTimers());

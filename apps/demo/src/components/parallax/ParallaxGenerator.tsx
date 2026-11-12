@@ -3,11 +3,13 @@
 import { useEffect, useId, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import type { ScrollParallaxOptions } from 'svg-scroll-draw';
 import { CodeBox } from '@/components/site/CodeBox';
+import { ToolExport } from '@/components/tool-kit/ToolExport';
 import {
   PARALLAX_DEFAULTS, PARALLAX_LAYERS, PARALLAX_PRESETS, SPEED_MAX, SPEED_MIN, SPEED_STEP,
   screenRate, travelPx, type LayerKey, type LayerSetting, type LayerSettings, type ParallaxAxis,
 } from '@/data/parallax';
-import { ParallaxScene } from './ParallaxScene';
+import { ParallaxScene, SCENE_LABEL } from './ParallaxScene';
+import { jsCode, parallaxHtml, reactCode, reactProject } from './parallax-code';
 
 /**
  * The parallax scrolling generator. Everything that moves is scrollParallax
@@ -23,7 +25,10 @@ import { ParallaxScene } from './ParallaxScene';
  * - "On real scroll" below runs the same settings with no seek(), on the
  *   page's own scroll, exactly as the generated code would.
  * - The code is generated from the same state, with every option that is at
- *   scrollParallax's default left out.
+ *   scrollParallax's default left out (parallax-code.ts). The Run it row under
+ *   it saves the HTML tab's page with this scene drawn in its layers, or opens
+ *   it, or the React tab's component in an App, in StackBlitz, with the
+ *   library at `version` (SELF.version, passed down by the page).
  *
  * A layer whose speed or axis changes is destroyed and made again; the others
  * keep running. Every instance is destroyed on unmount.
@@ -69,7 +74,6 @@ const layerIn = (root: HTMLElement, key: LayerKey) => root.querySelector<HTMLEle
 const optionsOf = (l: LayerSetting): ScrollParallaxOptions => ({ speed: l.speed, axis: l.axis });
 const same = (a: LayerSettings, b: LayerSettings) => KEYS.every((k) => a[k].speed === b[k].speed && a[k].axis === b[k].axis);
 
-const fmt = (n: number) => String(Math.round(n * 100) / 100);
 /** A speed as the slider label shows it: a real minus sign, a plus on the positive side. */
 const signed = (n: number) => (n === 0 ? '0' : n < 0 ? `−${Math.abs(n).toFixed(2)}` : `+${n.toFixed(2)}`);
 
@@ -82,9 +86,6 @@ function readout(l: LayerSetting, geo: Geo): { travel: string; rate: string } {
   const t = travelPx(l.speed, geo.h);
   return { travel: `${t > 0 ? '↑' : '↓'} ${Math.round(Math.abs(t))}px`, rate: `${screenRate(l.speed, geo.h, geo.v).toFixed(2)}×` };
 }
-
-const SCENE_LABEL =
-  'A line drawing of a landscape in four layers: the sky with the sun, clouds and birds, a mountain ridge, hills with trees, and the ground with grass and a fence.';
 
 export function ParallaxGenerator({ version }: { version: string }) {
   const [layers, setLayers] = useState<LayerSettings>(PARALLAX_PRESETS[0].layers);
@@ -213,9 +214,11 @@ export function ParallaxGenerator({ version }: { version: string }) {
   const preset = useMemo(() => PARALLAX_PRESETS.find((p) => same(p.layers, layers)) ?? null, [layers]);
   const moving = KEYS.filter((k) => layers[k].speed !== 0).length;
   const code = useMemo(
-    () => (tab === 'js' ? jsCode(layers) : tab === 'react' ? reactCode(layers) : htmlCode(layers, version)),
+    () => (tab === 'js' ? jsCode(layers) : tab === 'react' ? reactCode(layers) : parallaxHtml(layers, version, false)),
     [layers, tab, version],
   );
+  const html = useMemo(() => parallaxHtml(layers, version, true), [layers, version]);
+  const react = useMemo(() => reactProject(layers, version), [layers, version]);
 
   return (
     <div className="plx">
@@ -329,6 +332,7 @@ export function ParallaxGenerator({ version }: { version: string }) {
           ))}
         </div>
         <CodeBox file={tab === 'js' ? 'parallax.js' : tab === 'react' ? 'ParallaxScene.tsx' : 'index.html'}>{code}</CodeBox>
+        <ToolExport title="Parallax scrolling" filename="parallax-scrolling.html" html={html} react={react} />
       </div>
 
       <div className="plx-live">
@@ -360,124 +364,4 @@ function Bars(): ReactNode {
       <i /><i /><i /><i /><i />
     </span>
   );
-}
-
-// ── The generated code ───────────────────────────────────────────────────────
-
-const WHAT: Record<LayerKey, string> = {
-  sky: 'sun and clouds',
-  mountains: 'the far ridge',
-  hills: 'the near hills',
-  ground: 'the foreground',
-};
-
-/** The options that differ from scrollParallax's defaults, as an object literal, or null for none. */
-function optionText(l: LayerSetting): string | null {
-  const out: string[] = [];
-  if (l.speed !== PARALLAX_DEFAULTS.speed) out.push(`speed: ${fmt(l.speed)}`);
-  if (l.axis !== PARALLAX_DEFAULTS.axis) out.push(`axis: '${l.axis}'`);
-  return out.length ? `{ ${out.join(', ')} }` : null;
-}
-
-/** One line per layer: a call, or why there is none. */
-function calls(s: LayerSettings, target: (k: LayerKey) => string, indent: string, end: string): string[] {
-  return KEYS.map((k) => {
-    if (s[k].speed === 0) return `${indent}// #${k}: at speed 0 it moves with the page, so no call.`;
-    const o = optionText(s[k]);
-    const call = `${indent}scrollParallax(${target(k)}${o ? `, ${o}` : ''})${end}`;
-    return o ? call : `${call} // speed ${PARALLAX_DEFAULTS.speed}, the default`;
-  });
-}
-
-const NOTHING = 'Every layer is at speed 0, so each one moves with the page: there is nothing to call.';
-
-function jsCode(s: LayerSettings): string {
-  if (!KEYS.some((k) => s[k].speed !== 0)) return `// ${NOTHING}`;
-  return `import { scrollParallax } from 'svg-scroll-draw';
-
-// One call per layer; the markup and CSS are in the HTML tab.
-// Negative speeds lag behind the page (far), positive ones run ahead (near).
-${calls(s, (k) => `'#${k}'`, '', ';').join('\n')}`;
-}
-
-function reactCode(s: LayerSettings): string {
-  const live = KEYS.filter((k) => s[k].speed !== 0);
-  const markup = KEYS.map((k) =>
-    live.includes(k)
-      ? `      <div ref={${k}} className="layer">{/* ${WHAT[k]} */}</div>`
-      : `      <div className="layer">{/* ${WHAT[k]}: speed 0, moves with the page */}</div>`,
-  ).join('\n');
-  if (!live.length) {
-    return `// The CSS for .scene and .layer is in the HTML tab.
-export function ParallaxScene() {
-  // ${NOTHING}
-  return (
-    <div className="scene">
-${markup}
-    </div>
-  );
-}`;
-  }
-  const refs = live.map((k) => `  const ${k} = useRef<HTMLDivElement>(null);`).join('\n');
-  const made = calls(s, (k) => `${k}.current!`, '      ', ',').filter((l) => !l.trimStart().startsWith('//')).join('\n');
-  return `'use client';
-
-import { useEffect, useRef } from 'react';
-import { scrollParallax } from 'svg-scroll-draw';
-
-// svg-scroll-draw/react has no parallax component: call scrollParallax
-// in an effect, and destroy every layer when the component unmounts.
-// The CSS for .scene and .layer is in the HTML tab.
-export function ParallaxScene() {
-${refs}
-
-  useEffect(() => {
-    const layers = [
-${made}
-    ];
-    return () => layers.forEach((layer) => layer.destroy());
-  }, []);
-
-  return (
-    <div className="scene">
-${markup}
-    </div>
-  );
-}`;
-}
-
-function htmlCode(s: LayerSettings, version: string): string {
-  const any = KEYS.some((k) => s[k].speed !== 0);
-  const script = any
-    ? `
-
-<script src="https://unpkg.com/svg-scroll-draw@${version}/dist/cdn/svg-scroll-draw.global.js"></script>
-<script>
-  const { scrollParallax } = SvgScrollDraw;
-${calls(s, (k) => `'#${k}'`, '  ', ';').join('\n')}
-</script>`
-    : '';
-  return `<!doctype html>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-  .scene {
-    position: relative;
-    height: 70vh;
-    overflow: hidden;      /* the layers travel past its edges */
-  }
-  .layer {
-    position: absolute;
-    inset: 0;              /* as big as the scene: speed is a share of it */
-    will-change: transform;
-  }
-  /* Speed is a share of the layer's own size: draw its art past
-     its edges, so the layer that moves furthest never shows a gap. */
-</style>
-
-<!-- The layers move while the scene crosses the window,
-     so put it in a page with room to scroll above and below. -->
-<div class="scene">
-${KEYS.map((k) => `  <div id="${k}" class="layer"><!-- ${WHAT[k]} --></div>`).join('\n')}
-</div>${script}`;
 }

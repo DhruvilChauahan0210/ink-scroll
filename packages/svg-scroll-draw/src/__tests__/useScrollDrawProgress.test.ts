@@ -111,3 +111,79 @@ describe('useScrollDrawProgress — once', () => {
     expect(seen.at(-1)).toBeCloseTo(0.6, 6);
   });
 });
+
+/*
+ * With a scrollContainer the hook added the element's viewport top to the
+ * container's scrollTop, leaving out where the container itself sits. Measured
+ * in Chromium: a panel 400px down the page read 0, 0, 0.192, 0.442, 0.692 where
+ * scrollProgress read 0, 0.25, 0.5, 0.75, 1. It measures as the engines do now
+ * (core/trigger-frame), and follows the layout as they do (core/layout-watch).
+ *
+ * The container is 400px tall, 400px down the page; the panel, 200px tall, is
+ * 600px into its content. Window: [600 − 400, 600 + 200] = [200, 800].
+ */
+describe('useScrollDrawProgress — scrollContainer', () => {
+  let scrollTop = 0;
+  let panelAt = 600;
+
+  function container(border = 0): HTMLDivElement {
+    const box = document.createElement('div');
+    document.body.appendChild(box);
+    Object.defineProperty(box, 'scrollTop', { get: () => scrollTop, configurable: true });
+    Object.defineProperty(box, 'clientHeight', { value: 400, configurable: true });
+    Object.defineProperty(box, 'clientTop', { value: border, configurable: true });
+    vi.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(function (this: Element) {
+      const top = this === box ? 400 : 400 + border + panelAt - scrollTop;
+      // The page grows with what arrives above the panel.
+      const height = this === box ? 400 + 2 * border : this === document.body ? 1000 + panelAt : 200;
+      return { top, height, left: 0, width: 300, right: 300, bottom: top + height, x: 0, y: top, toJSON: () => ({}) } as DOMRect;
+    });
+    return box;
+  }
+
+  function scrollBox(y: number): void {
+    scrollTop = y;
+    raf.tick();
+  }
+
+  beforeEach(() => { scrollTop = 0; panelAt = 600; });
+
+  it('reads the same progress as the engines, from 0 to 1', () => {
+    const seen = mount({ scrollContainer: container() });
+    const read: number[] = [];
+    for (const y of [200, 350, 500, 650, 800]) {
+      scrollBox(y);
+      read.push(seen.at(-1)!);
+    }
+    read.forEach((p, i) => expect(p, `at ${[200, 350, 500, 650, 800][i]}: ${read.join(', ')}`).toBeCloseTo(i / 4, 6));
+  });
+
+  it('measures from inside the container’s border', () => {
+    const seen = mount({ scrollContainer: container(20) });
+    scrollBox(500);
+    expect(seen.at(-1)).toBeCloseTo(0.5, 6);
+  });
+
+  it('follows a layout change that is not a window resize', () => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    const observed: Array<() => void> = [];
+    vi.stubGlobal('ResizeObserver', class {
+      constructor(cb: ResizeObserverCallback) {
+        observed.push(() => cb([{ target: document.body } as unknown as ResizeObserverEntry], this as unknown as ResizeObserver));
+      }
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    });
+    try {
+      const seen = mount({ scrollContainer: container() });
+      panelAt = 800; // content arrived above the panel: window [400, 1000]
+      observed.forEach((fire) => fire());
+      vi.advanceTimersByTime(150);
+      scrollBox(700);
+      expect(seen.at(-1)).toBeCloseTo(0.5, 6);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+});

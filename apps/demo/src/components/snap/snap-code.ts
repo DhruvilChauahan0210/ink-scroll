@@ -6,9 +6,18 @@
  * selector, so what the visitor swipes is the stylesheet they copy.
  *
  * SNAP_DEFAULTS copies scrollSnap's defaults from
- * packages/svg-scroll-draw/src/snap/index.ts (the destructuring at lines
- * 72–80): the generated scrollSnap() call leaves out every option equal to one.
+ * packages/svg-scroll-draw/src/snap/index.ts (the destructuring of options at
+ * the top of scrollSnap()): the generated scrollSnap() call leaves out every
+ * option equal to one.
+ *
+ * Every listing the generator shows starts with the source line
+ * (withSource, in the generator), and runnable() builds the export row's
+ * complete page from these same functions.
  */
+
+import { cdnModule, htmlFile } from '@/lib/tool-export';
+
+export const TOOL_SLUG = 'css-scroll-snap-generator';
 
 export type Axis = 'x' | 'y' | 'both';
 export type Strictness = 'mandatory' | 'proximity';
@@ -35,7 +44,7 @@ export type Settings = {
   threshold: number;
 };
 
-/** scrollSnap's own defaults: snap/index.ts:72–80. */
+/** scrollSnap's own defaults: the destructuring of options in snap/index.ts. */
 export const SNAP_DEFAULTS = {
   direction: 'vertical',
   duration: 600,
@@ -47,7 +56,7 @@ export const SNAP_DEFAULTS = {
 /** The named easings scrollSnap accepts (EasingName in core/types.ts). */
 export const SNAP_EASINGS: readonly SnapEasing[] = ['linear', 'ease-in', 'ease-out', 'ease-in-out', 'spring', 'bounce', 'elastic'];
 
-/** How long scrollSnap waits after the last scroll event before it snaps: snap/index.ts:214. */
+/** How long scrollSnap waits after the last scroll event before it snaps: the debounce in snap/index.ts's onScroll. */
 export const SNAP_DEBOUNCE_MS = 100;
 
 export const AXES: readonly Axis[] = ['x', 'y', 'both'];
@@ -138,7 +147,7 @@ export function css(s: Settings, engine: Engine = 'css', sel = '.snap'): string 
   if (s.axis !== 'x') box.push(`height: ${size === 100 ? '100dvh' : '480px'}; /* the scroll port needs a height */`);
   box.push(`overflow${s.axis === 'x' ? '-x' : s.axis === 'y' ? '-y' : ''}: auto;`);
   if (lib) {
-    box.push('scroll-behavior: auto; /* scrollSnap moves it frame by frame */');
+    box.push('scroll-behavior: auto; /* scrollSnap 2.23.3 and earlier need it */');
   } else {
     box.push(`scroll-snap-type: ${s.axis} ${s.strictness};`);
     if (s.padding > 0) {
@@ -270,8 +279,12 @@ function edge(align: Align, axis: 'x' | 'y'): string {
   return `${start} + ${size} / 2`;
 }
 
-/** scrollSnap() for the same markup, with the box as its scroll container. */
-export function libJs(s: Settings): string {
+/**
+ * scrollSnap() for the same markup, with the box as its scroll container.
+ * `from` is where it is imported from: the package, or jsDelivr in the page
+ * the export row runs.
+ */
+export function libJs(s: Settings, from = 'svg-scroll-draw/snap'): string {
   const opts: string[] = [];
   if (s.axis === 'x') opts.push(`direction: 'horizontal',`);
   if (s.duration !== SNAP_DEFAULTS.duration) opts.push(`duration: ${s.duration},`);
@@ -279,7 +292,7 @@ export function libJs(s: Settings): string {
   if (s.threshold !== SNAP_DEFAULTS.threshold) opts.push(`threshold: ${Math.round(s.threshold * 100) / 100},`);
   opts.push(`scrollContainer: '.snap', // leave it out to snap sections of the page itself`);
   opts.push(`onSnap: (index) => console.log('snapped to', index),`);
-  return `import { scrollSnap } from 'svg-scroll-draw/snap';
+  return `import { scrollSnap } from '${from}';
 
 const snap = scrollSnap('.snap > *', {
 ${opts.map((o) => `  ${o}`).join('\n')}
@@ -289,6 +302,62 @@ ${opts.map((o) => `  ${o}`).join('\n')}
 document.querySelector('[data-snap="prev"]').addEventListener('click', () => snap.snapTo(snap.getCurrentIndex() - 1));
 document.querySelector('[data-snap="next"]').addEventListener('click', () => snap.snapTo(snap.getCurrentIndex() + 1));
 `;
+}
+
+/**
+ * The run-it page's own look: the items drawn and the box outlined. None of it
+ * snaps or sizes the box; that is all css(), which follows it unchanged.
+ */
+function pageCss(s: Settings, engine: Engine): string {
+  const outline = engine === 'js'
+    ? '/* A shadow, not a border: before 2.23.4 a border on the scroll container\n   moved every scrollSnap landing by its width. */\n'
+    : '';
+  return `body {
+  margin: 0;
+  padding: 24px;
+  font: 16px/1.5 system-ui, sans-serif;
+  color: #1d1d1b;
+  background: #fbfbf8;
+}
+p { max-width: 40rem; margin: 0 0 16px; color: #6b6b66; }
+${outline}.snap { box-shadow: 0 0 0 1px #c9c9c2; }
+.snap:focus-visible { outline: 2px solid #1d1d1b; outline-offset: 3px; }
+.snap > * {
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;${s.axis === 'x' ? '\n  height: 240px;' : ''}
+  border: 1px solid #c9c9c2;
+  background: #ecebe5;
+  font: 600 32px/1 ui-monospace, Menlo, monospace;
+  color: #6b6b66;
+}
+button { margin: 16px 8px 0 0; padding: 8px 16px; font: inherit; cursor: pointer; }`;
+}
+
+/**
+ * What the export row under the code runs: one complete page with the markup,
+ * the stylesheet and the script the listings show, for these settings. The
+ * CSS page loads nothing; the scrollSnap() page loads svg-scroll-draw/snap
+ * from jsDelivr as an ES module, pinned to `version`.
+ */
+export function runnable(s: Settings, engine: Engine, version: string): { title: string; filename: string; html: string } {
+  const lib = engine === 'js';
+  const kind = LABEL[s.axis];
+  const title = `${kind} with ${lib ? 'scrollSnap()' : 'CSS scroll snap'}`;
+  const hint = lib
+    ? `Scroll the box and stop: ${SNAP_DEBOUNCE_MS} ms later scrollSnap glides on to the next section if you passed ${Math.round(s.threshold * 100)}% of this one, or back to it. Previous and Next call snapTo().`
+    : 'Swipe or scroll the box, or focus it and use the arrow keys. Previous and Next scroll to the next snap position.';
+  return {
+    title,
+    filename: `${kind.toLowerCase()}-${lib ? 'scrollsnap' : 'css-scroll-snap'}.html`,
+    html: htmlFile({
+      slug: TOOL_SLUG,
+      title,
+      css: `${pageCss(s, engine)}\n\n${css(s, engine)}`,
+      body: `<p>${hint}</p>\n\n${html(s)}`,
+      script: lib ? libJs(s, cdnModule(version, 'snap')) : js(s),
+    }),
+  };
 }
 
 /**

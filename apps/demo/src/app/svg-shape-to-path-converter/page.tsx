@@ -13,6 +13,8 @@ import {
   SHAPE_TAGS, circlePath, ellipsePath, fmt, linePath, polyPath, rectPath, type Get, type ShapeResult,
 } from '@/components/shape2path/convert';
 import { C, Note, Sec, Toc } from '@/components/stack/parts';
+import { ToolNextStep } from '@/components/tool-kit/ToolNextStep';
+import { withSource } from '@/lib/tool-export';
 
 // Searches this page is for: "svg shape to path", "convert circle to path",
 // "svg rect to path", "ellipse to path". Every path quoted below is written by
@@ -20,6 +22,8 @@ import { C, Note, Sec, Toc } from '@/components/stack/parts';
 const TITLE = 'SVG Shape to Path Converter: Circle, Rect & Ellipse to Path';
 const DESCRIPTION =
   'Convert SVG rect, circle, ellipse, line, polyline and polygon to <path> with exact arcs. Paste an SVG, watch it draw, copy the result.';
+
+const SLUG = 'svg-shape-to-path-converter';
 
 const at = (o: Record<string, number | string>): Get => (n) => (n in o ? String(o[n]) : null);
 const d = (r: ShapeResult) => (r.ok ? r.d : '');
@@ -95,14 +99,14 @@ const CASES: { k: string; browser: string; here: string }[] = [
   },
 ];
 
-const SELECTOR_JS = `import { scrollDraw } from 'svg-scroll-draw';
+const SELECTOR_JS = withSource(`import { scrollDraw } from 'svg-scroll-draw';
 
 // Or keep the <ellipse>: the default selector, plus ellipse.
 scrollDraw('#drawing', {
   selector: 'path, polyline, line, polygon, rect, circle, ellipse',
-});`;
+});`, SLUG, 'js');
 
-const MORPH_JS = `// <div id="badge"><svg viewBox="0 0 200 100"><path d="${EX.morphFrom}" fill="none" stroke="currentColor"/></svg></div>
+const MORPH_JS = withSource(`// <div id="badge"><svg viewBox="0 0 200 100"><path d="${EX.morphFrom}" fill="none" stroke="currentColor"/></svg></div>
 
 import { scrollDraw } from 'svg-scroll-draw';
 
@@ -110,7 +114,7 @@ import { scrollDraw } from 'svg-scroll-draw';
 // commands (M A A Z), so one can morph into the other as it draws.
 scrollDraw('#badge', {
   morphTo: '${EX.morphTo}',
-});`;
+});`, SLUG, 'js');
 
 const FAQ: { q: string; a: string }[] = [
   {
@@ -139,7 +143,7 @@ const FAQ: { q: string; a: string }[] = [
   },
   {
     q: 'Is it safe to paste my SVG here?',
-    a: 'Yes. Nothing is uploaded: the SVG is read in your browser as data and never run. The previews are rebuilt from drawing elements only, so a script, an event handler or an outside link in it is left out of them, and the converted SVG you copy keeps everything else as you pasted it.',
+    a: 'Yes. The SVG is read in your browser as data and never run, and nothing leaves your browser unless you open the result in StackBlitz. The previews are rebuilt from drawing elements only, so a script, an event handler or an outside link in it is left out of them, and out of the page you download or open in StackBlitz, which is built from the After preview. The converted SVG you copy keeps everything else as you pasted it.',
   },
 ];
 
@@ -148,6 +152,7 @@ const TOC = [
   { id: 'shapes', label: `What each shape becomes · ${SHAPE_TAGS.length}` },
   { id: 'cases', label: 'rx, ry and edge cases' },
   { id: 'why', label: 'Why paths' },
+  { id: 'use', label: 'Use it in your project' },
   { id: 'faq', label: `Questions · ${FAQ.length}` },
 ];
 
@@ -227,9 +232,10 @@ export default function SvgShapeToPathPage() {
               <p className="stk-p">
                 The sample is a camera drawn from all six shapes and one path. On the left it is drawn as pasted, on the
                 right converted, both by scrollDraw with its default selector: watch the shutter button, an{' '}
-                <C>{'<ellipse>'}</C>, and the rounded body.
+                <C>{'<ellipse>'}</C>, and the rounded body. Under the code, the JavaScript tab runs outside this page
+                too: download it as a page of its own, or open it in StackBlitz.
               </p>
-              <ShapeToPath />
+              <ShapeToPath version={SELF.version} />
             </Sec>
 
             <Sec n={2} k={`${SHAPE_TAGS.length} shapes`} id="shapes" title="What each shape becomes">
@@ -313,7 +319,16 @@ export default function SvgShapeToPathPage() {
               <CodeBox file="selector.js">{SELECTOR_JS}</CodeBox>
             </Sec>
 
-            <Sec n={5} k={`${FAQ.length} questions`} id="faq" title="Shape to path questions">
+            <Sec n={5} k="Next" id="use" title="Use it in your project">
+              <ToolNextStep
+                slug={SLUG}
+                api="scrollDraw"
+                docs="/docs#core-options"
+                related={['svg-morph-generator', 'svg-path-viewer']}
+              />
+            </Sec>
+
+            <Sec n={6} k={`${FAQ.length} questions`} id="faq" title="Shape to path questions">
               <div className="stk-faq">
                 {FAQ.map((f, i) => (
                   <div key={f.q} className="stk-q">
@@ -325,10 +340,6 @@ export default function SvgShapeToPathPage() {
                   </div>
                 ))}
               </div>
-              <p className="stk-p stk-more">
-                Drawing the paths on scroll with svg-scroll-draw {SELF.version}: <Link href="/docs">the docs</Link>, or
-                the <Link href="/svg-path-viewer">SVG path viewer</Link> to measure and check them.
-              </p>
             </Sec>
           </div>
         </div>

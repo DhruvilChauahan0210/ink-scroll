@@ -33,10 +33,10 @@ Agent skill (Claude Code and other coding agents): https://github.com/DhruvilCha
 Every API is a separate entry point, so you only pay for what you import:
 
 - \`scrollDraw\` — animate an SVG path's \`stroke-dashoffset\` on scroll (the core case)
-- \`scrollReveal\` (5.8 KB) — fade/slide elements in as they enter the viewport
+- \`scrollReveal\` (5.7 KB) — fade/slide elements in as they enter the viewport
 - \`scrollAnimate\` — animate any CSS property: opacity, transform, color, any unit value
 - \`scrollPin\` (1.6 KB) — pin an element while the page scrolls past it
-- \`scrollSnap\` (1.9 KB) — snap between sections
+- \`scrollSnap\` (2.0 KB) — snap between sections
 - \`npx svg-scroll-draw migrate\` (add --dry-run to preview) rewrites a project's aos / scrollreveal / vivus imports, CDN script tags, aos.css and package.json to the drop-ins below.
 - React / Next.js hooks for the drop-ins (\"use client\" entries): \`import { AOSInit, useAOS } from 'svg-scroll-draw/aos/react'\` (put \`<AOSInit />\` in app/layout.tsx), \`useScrollReveal({ selector, interval })\` from 'svg-scroll-draw/scrollreveal/react' (returns a ref), \`const [ref, vivus] = useVivus(options)\` from 'svg-scroll-draw/vivus/react'. Each cleans up on unmount.
 - \`svg-scroll-draw/vivus\` (4.0 KB) — drop-in replacement for vivus 0.4: \`import Vivus from 'svg-scroll-draw/vivus'; new Vivus('svg-id', { type: 'oneByOne' })\`. Script tag: https://unpkg.com/svg-scroll-draw/dist/cdn/vivus.global.js (defines window.Vivus)
@@ -45,7 +45,7 @@ Every API is a separate entry point, so you only pay for what you import:
 - \`scrollParallax\` — move an element at a multiple of scroll distance
 - \`scrollCounter\` — animate a number from → to
 - \`scrollVideo\` — bind \`video.currentTime\` to scroll position
-- \`scrollText\` (3.4 KB) — split text into chars/words/lines and stagger them
+- \`scrollText\` (3.5 KB) — split text into chars/words/lines and stagger them
 - \`scrollHorizontal\` — horizontal scroll sections
 - Group / Sequence / Timeline APIs for orchestrating several at once
 

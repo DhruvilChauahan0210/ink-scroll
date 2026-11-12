@@ -274,6 +274,45 @@ describe('scrollVideo', () => {
     expect(video.currentTime).toBeCloseTo(5, 6);
   });
 
+  // seek() before the metadata loaded set the progress and nothing else:
+  // applyAlpha() waits for the metadata, and the metadata handler did not look
+  // back. Measured in Chromium: getProgress() 0.5, currentTime 0.
+  it('a seek() before the metadata loads is written when it arrives', () => {
+    const video = makeVideo();
+    (video as unknown as { readyState: number }).readyState = 0;
+    (video as unknown as { duration: number }).duration = NaN;
+    const inst = scrollVideo(video);
+    inst.seek(0.5);
+    expect(video.currentTime).toBe(0);
+
+    (video as unknown as { readyState: number }).readyState = 1;
+    (video as unknown as { duration: number }).duration = 4;
+    video.dispatchEvent(new Event('loadedmetadata'));
+    expect(inst.getProgress()).toBe(0.5);
+    expect(video.currentTime).toBeCloseTo(2, 6);
+    expect(video.style.getPropertyValue('--scroll-draw-progress')).toBe('0.5');
+  });
+
+  // replay() set `paused` to false and requested no frame, so after pause() or
+  // seek() the film stopped following the scroll. Window [0, 600].
+  describe('replay() restarts the frame loop', () => {
+    for (const stop of ['pause', 'seek'] as const) {
+      it(`after ${stop}()`, () => {
+        const video = makeVideo();
+        const inst = scrollVideo(video, { from: 0, to: 5 });
+        FakeIO.instances[0].trigger(true);
+        raf.tick();
+        if (stop === 'pause') inst.pause(); else inst.seek(0.2);
+        raf.tick(); // a frame the stop could not cancel in this fake sees `paused` and stops
+        inst.replay();
+        vi.stubGlobal('scrollY', 300);
+        raf.tick();
+        expect(inst.getProgress()).toBeCloseTo(0.5, 6);
+        expect(video.currentTime).toBeCloseTo(2.5, 6);
+      });
+    }
+  });
+
   it('sets preload if not present', () => {
     const video = makeVideo();
     video.removeAttribute('preload');

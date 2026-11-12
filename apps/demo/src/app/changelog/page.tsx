@@ -55,6 +55,18 @@ const KINDS: { k: Kind; label: string }[] = [
  */
 const RELEASES: Release[] = [
   {
+    version: '2.23.4',
+    title: 'Parallax and reveals keep up with their own motion; replay() resumes',
+    date: '2026-11-12',
+    items: [
+      { type: 'fix', text: 'scrollAnimate (and scrollParallax, scrollReveal, scrollHorizontal on it) runs its frames from the trigger window, not an IntersectionObserver that saw the element’s own transform: a parallax layer that left its clip no longer freezes, a fade-up from below the fold no longer starts late, and a jump across the whole window paints the end and fires onComplete.' },
+      { type: 'fix', text: 'replay() after pause() or seek() follows the scroll again in scrollAnimate, scrollCounter, scrollText and scrollVideo; scrollCounter’s destroy() removes --scroll-draw-progress; useScrollDrawProgress measures a scrollContainer as the engines do.' },
+      { type: 'fix', text: 'scrollSnap starts from the section the page is on, measures a container inside its border, is not fought by scroll-behavior: smooth, and clamps offsets to the scroll range.' },
+      { type: 'fix', text: 'morphTo to a longer outline ends drawn whole; a path with pathLength draws in step with the scroll; scrollText chars keeps emoji whole, words on one line, and long lines visible to the end; a seek() before a video loads is applied; <ScrollVideo> takes preload and poster.' },
+      { type: 'test', text: '44 unit tests and 29 browser tests per engine, each failing on 2.23.3 or guarding a case; 21 mutations, each caught. An independent review found two regressions in the fixes before release, fixed with tests.' },
+    ],
+  },
+  {
     version: '2.23.3',
     title: 'once plays an overshooting easing out, and autoplay keeps its clock',
     date: '2026-11-11',

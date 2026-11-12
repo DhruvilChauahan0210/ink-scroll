@@ -25,7 +25,15 @@ class FakeIO {
   }
 }
 
+/**
+ * How many animate engines the track has had: each listens for scroll on the
+ * window once, and a rebuild makes a new one.
+ */
+let built: () => number;
+
 beforeEach(() => {
+  const listen = vi.spyOn(window, 'addEventListener');
+  built = () => listen.mock.calls.filter(([type]) => type === 'scroll').length;
   FakeIO.instances = [];
   vi.stubGlobal('IntersectionObserver', FakeIO);
   vi.stubGlobal('requestAnimationFrame', vi.fn((cb: FrameRequestCallback) => { cb(performance.now()); return 1; }));
@@ -38,6 +46,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  vi.restoreAllMocks();
   vi.unstubAllGlobals();
   vi.useRealTimers();
   document.body.innerHTML = '';
@@ -71,10 +80,10 @@ class FakeRO {
 }
 
 describe('scrollHorizontal', () => {
-  it('creates an IntersectionObserver for the track element', () => {
+  it('drives the track with an animate engine', () => {
     const el   = makeTrack();
     const inst = scrollHorizontal(el);
-    expect(FakeIO.instances.length).toBeGreaterThan(0);
+    expect(built()).toBe(1);
     inst.destroy();
   });
 
@@ -82,7 +91,7 @@ describe('scrollHorizontal', () => {
     const el   = makeTrack();
     const inst = scrollHorizontal(el, { distance: 2400 });
     // Should not throw and should create an engine
-    expect(FakeIO.instances.length).toBeGreaterThan(0);
+    expect(built()).toBe(1);
     inst.destroy();
   });
 
@@ -159,12 +168,12 @@ describe('scrollHorizontal', () => {
     vi.useFakeTimers();
     const el   = makeTrack();
     const inst = scrollHorizontal(el, { distance: 2400 });
-    const engines = FakeIO.instances.length;
+    const engines = built();
 
     trackWidth = 4800;
     window.dispatchEvent(new Event('resize'));
     vi.advanceTimersByTime(150);
-    expect(FakeIO.instances.length, 'rebuilt with nothing to change').toBe(engines);
+    expect(built(), 'rebuilt with nothing to change').toBe(engines);
     inst.seek(1);
     expect(el.style.transform).toContain('translateX(-2400px)');
     inst.destroy();
@@ -204,12 +213,12 @@ describe('scrollHorizontal', () => {
     const el   = makeTrack();
     const inst = scrollHorizontal(el);
     inst.destroy();
-    const engines = FakeIO.instances.length;
+    const engines = built();
 
     trackWidth = 4800;
     window.dispatchEvent(new Event('resize'));
     vi.advanceTimersByTime(150);
-    expect(FakeIO.instances.length).toBe(engines);
+    expect(built()).toBe(engines);
     expect(el.style.transform).toBe('');
   });
 });

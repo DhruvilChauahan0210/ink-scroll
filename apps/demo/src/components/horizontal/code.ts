@@ -1,5 +1,5 @@
 import { EXACT_CSS, NAMED, linearCss, linearText, type EasingName } from '@/data/easing';
-import { SELF } from '@/data/competitors';
+import { cdnModule, htmlFile, withSource } from '@/lib/tool-export';
 
 /**
  * Everything the horizontal scroll generator writes, from one settings object:
@@ -9,11 +9,18 @@ import { SELF } from '@/data/competitors';
  * stylesheet is this same CSS with its units mapped onto the box (vw → cqw of
  * the box, 100svh → the box's height).
  *
+ * What a visitor copies or downloads starts with the source line (withSource);
+ * the preview's copy of the CSS does not. The library's version comes in as an
+ * argument from the server page, so this file never pulls data/competitors.ts
+ * into the client bundle.
+ *
  * scrollHorizontal's defaults, which the code leaves out when they match, are
  * in packages/svg-scroll-draw/src/horizontal/index.ts (the destructuring in
  * scrollHorizontal): easing 'linear', trigger 'top top' → 'bottom bottom',
  * respectReducedMotion false, distance measured.
  */
+
+export const SLUG = 'horizontal-scroll-generator';
 
 export type Unit = 'vw' | 'px';
 /** 'match': the scroll is as long as the travel (1:1). A number: that many vh of scroll. */
@@ -57,8 +64,6 @@ export const TABS: { k: Tab; label: string; file: string }[] = [
   { k: 'react', label: 'React', file: 'HorizontalScroll.tsx' },
   { k: 'only', label: 'CSS only', file: 'horizontal-scroll.css' },
 ];
-
-export const CDN_URL = `https://cdn.jsdelivr.net/npm/svg-scroll-draw@${SELF.version}/dist/horizontal/index.mjs`;
 
 // ── Geometry ────────────────────────────────────────────────────────────────
 
@@ -329,9 +334,14 @@ export function cssOnlyCss(s: Settings, d: Dialect = PAGE, keys: Keys = PAGE_KEY
   ].join('\n\n');
 }
 
+/** The two CSS tabs, as copied: with the source line. */
+export const cssCode = (s: Settings) => withSource(scriptCss(s), SLUG, 'css');
+export const cssOnlyCode = (s: Settings) => withSource(cssOnlyCss(s), SLUG, 'css');
+
 // ── HTML ────────────────────────────────────────────────────────────────────
 
-export function htmlCode(s: Settings): string {
+/** The section itself, the same in every file. */
+function markup(s: Settings): string {
   const panels = Array.from({ length: s.panels }, (_, i) => [
     '      <li class="hs-panel">',
     `        <h3>Panel ${i + 1}</h3>`,
@@ -348,10 +358,16 @@ export function htmlCode(s: Settings): string {
     ...(s.bar ? ['    <div class="hs-bar" aria-hidden="true"><span></span></div>'] : []),
     '  </div>',
     '</section>',
+  ].join('\n');
+}
+
+export function htmlCode(s: Settings): string {
+  return withSource([
+    markup(s),
     '',
     '<!-- The script version. The CSS-only version needs no script. -->',
     '<script type="module" src="main.js"></script>',
-  ].join('\n');
+  ].join('\n'), SLUG, 'html');
 }
 
 // ── JavaScript ──────────────────────────────────────────────────────────────
@@ -403,16 +419,16 @@ function undoEasing(easing: EasingName, pad: string, ts: boolean): string[] {
   }
 }
 
-export function jsCode(s: Settings): string {
+/** main.js, importing scrollHorizontal from `from`; `cdn`, when given, is named in a comment for pages without a bundler. */
+function jsBody(s: Settings, from: string, cdn?: string): string {
   const opts = optionLines(s, 'bar');
   const call = opts.length
     ? [`scrollHorizontal(track, {`, ...opts.map(([k, v]) => `  ${k}: ${v},`), '});']
     : ['scrollHorizontal(track);'];
   const undo = undoEasing(s.easing, '  ', false);
   return [
-    "import { scrollHorizontal } from 'svg-scroll-draw/horizontal';",
-    '// No bundler? Import it from',
-    `// ${CDN_URL}`,
+    `import { scrollHorizontal } from '${from}';`,
+    ...(cdn ? ['// No bundler? Import it from', `// ${cdn}`] : []),
     '',
     "const outer = document.querySelector('.hs-outer');",
     "const track = outer.querySelector('.hs-track');",
@@ -441,31 +457,39 @@ export function jsCode(s: Settings): string {
   ].join('\n');
 }
 
+export const jsCode = (s: Settings, version: string) =>
+  withSource(jsBody(s, 'svg-scroll-draw/horizontal', cdnModule(version, 'horizontal')), SLUG, 'js');
+
 // ── React ───────────────────────────────────────────────────────────────────
 
-export function reactCode(s: Settings): string {
+/**
+ * The React component. `ts`: the TSX file the React tab shows, a client
+ * component importing its CSS; otherwise plain JSX for the StackBlitz project,
+ * whose stylesheet main.jsx imports.
+ */
+function reactComponent(s: Settings, ts: boolean): string {
   const opts = optionLines(s, 'bar.current').map(([k, v]) =>
     k === 'onProgress'
       ? ['      onProgress: (p) => {', '        if (bar.current) bar.current.style.transform = `scaleX(${p})`;', '      },']
       : [`      ${k}: ${v},`],
   ).flat();
   const call = opts.length ? ['    const strip = scrollHorizontal(row, {', ...opts, '    });'] : ['    const strip = scrollHorizontal(row);'];
-  const undo = undoEasing(s.easing, '      ', true);
+  const undo = undoEasing(s.easing, '      ', ts);
+  const ref = (type: string) => (ts ? `useRef<${type}>(null)` : 'useRef(null)');
   return [
-    "'use client';",
-    '',
+    ...(ts ? ["'use client';", ''] : []),
     "import { useEffect, useRef } from 'react';",
     "import { scrollHorizontal } from 'svg-scroll-draw/horizontal';",
-    "import './horizontal-scroll.css';",
+    ...(ts ? ["import './horizontal-scroll.css';"] : []),
     '',
     'const PANELS = [',
     ...Array.from({ length: s.panels }, (_, i) => `  { title: 'Panel ${i + 1}', href: '/panel-${i + 1}' },`),
     '];',
     '',
     'export function HorizontalScroll() {',
-    '  const outer = useRef<HTMLElement>(null);',
-    '  const track = useRef<HTMLUListElement>(null);',
-    ...(s.bar ? ['  const bar = useRef<HTMLSpanElement>(null);'] : []),
+    `  const outer = ${ref('HTMLElement')};`,
+    `  const track = ${ref('HTMLUListElement')};`,
+    ...(s.bar ? [`  const bar = ${ref('HTMLSpanElement')};`] : []),
     '',
     '  useEffect(() => {',
     '    const section = outer.current;',
@@ -477,8 +501,8 @@ export function reactCode(s: Settings): string {
     ...call,
     '',
     '    // overflow: clip keeps Tab from scrolling the stage: scroll the page to the panel.',
-    '    const onFocus = (e: FocusEvent) => {',
-    "      const panel = (e.target as Element).closest('.hs-panel');",
+    `    const onFocus = (${ts ? 'e: FocusEvent' : 'e'}) => {`,
+    `      const panel = ${ts ? '(e.target as Element)' : 'e.target'}.closest('.hs-panel');`,
     '      const first = row.firstElementChild;',
     '      if (!panel || !first) return;',
     '      const travel = row.scrollWidth - (row.parentElement?.clientWidth ?? 0);',
@@ -515,4 +539,56 @@ export function reactCode(s: Settings): string {
     '  );',
     '}',
   ].join('\n');
+}
+
+export const reactCode = (s: Settings) => withSource(reactComponent(s, true), SLUG, 'tsx');
+
+// ── Files that run on their own ─────────────────────────────────────────────
+
+/** The page around the section in the downloadable files: a screen before it and one after, to scroll through. */
+const PAGE_CSS = `body { margin: 0; font: 16px/1.6 system-ui, sans-serif; color: #1b1a18; background: #f6f4ef; }
+.spacer { display: grid; place-items: center; height: 100vh; color: #6b675f; }`;
+
+function pageBody(s: Settings): string {
+  return ['<div class="spacer">Scroll down</div>', '', markup(s), '', '<div class="spacer">The page goes on</div>'].join('\n');
+}
+
+/** A complete page running the script version: the CSS tab, and main.js with the library from jsDelivr. */
+export function jsFile(s: Settings, version: string): string {
+  return htmlFile({
+    slug: SLUG,
+    title: 'Horizontal scroll section',
+    css: `${PAGE_CSS}\n\n${scriptCss(s)}`,
+    body: pageBody(s),
+    script: jsBody(s, cdnModule(version, 'horizontal')),
+  });
+}
+
+/** A complete page running the CSS-only version: no script at all. */
+export function cssOnlyFile(s: Settings): string {
+  return htmlFile({
+    slug: SLUG,
+    title: 'Horizontal scroll section, CSS only',
+    css: `${PAGE_CSS}\n\n${cssOnlyCss(s)}`,
+    body: pageBody(s),
+  });
+}
+
+/** The React project for StackBlitz: the component in plain JSX, and a page to scroll it in. */
+export function reactApp(s: Settings): { app: string; css: string } {
+  return {
+    app: `${reactComponent(s, false)}
+
+export default function App() {
+  return (
+    <>
+      <div className="spacer">Scroll down</div>
+      <HorizontalScroll />
+      <div className="spacer">The page goes on</div>
+    </>
+  );
+}
+`,
+    css: `${PAGE_CSS}\n\n${scriptCss(s)}\n`,
+  };
 }

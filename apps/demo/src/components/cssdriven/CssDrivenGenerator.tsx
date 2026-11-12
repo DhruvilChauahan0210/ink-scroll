@@ -2,13 +2,14 @@
 
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { CodeBox } from '@/components/site/CodeBox';
+import { ToolExport } from '@/components/tool-kit/ToolExport';
 import {
   CLIP_FROMS, EASE_FN, EASING_KEYS, PRESETS, RANGE_NAMES, RANGE_PICKS, presetOf,
   type ClipFrom, type EasingKey, type PresetKey, type RangeEdge, type RangeName,
 } from '@/data/cssdriven';
 import {
   cssCode, easingOf, fallbackCode, jsCode, kindOf, libOptions, nativeVerdict, previewCss,
-  rangeScroll, rangeText, reactCode, type Settings,
+  rangeScroll, rangeText, reactCode, runnable, type Settings,
 } from './code';
 
 /**
@@ -28,6 +29,11 @@ import {
  *
  * The preview's elements are made here by hand, never rendered by React, so
  * nothing the engines write to them survives a rebuild.
+ *
+ * Under the code, the export row runs the tab on show outside the site: the
+ * CSS as a page, or the library's call with svg-scroll-draw from jsDelivr at
+ * `version` (SELF.version, passed down by the page), and the React component
+ * as a project.
  */
 
 type Engine = 'css' | 'js';
@@ -80,7 +86,7 @@ function make(tag: string, cls: string, text?: string): HTMLElement {
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 const easeInOut = EASE_FN['ease-in-out'];
 
-export function CssDrivenGenerator() {
+export function CssDrivenGenerator({ version }: { version: string }) {
   const [s, setS] = useState<Settings>(INITIAL);
   const [tab, setTab] = useState<'css' | 'js' | 'react'>('css');
   const [choice, setChoice] = useState<Engine | null>(null);
@@ -159,8 +165,9 @@ export function CssDrivenGenerator() {
     let insts: Instance[] = [];
     let geo: Geom = { max: 1, rows: [] };
     let frame = 0;
-    // A few frames of reading after each scroll: the JS engine starts an element
-    // from its IntersectionObserver, which reports after the frame that moved it.
+    // A few frames of reading after each scroll: the JS engine paints on a frame
+    // of its own after the scroll moves (scrollDraw and scrollProgress wake from
+    // an IntersectionObserver, which reports after the frame that moved it).
     let settle = 0;
     const ease = EASE_FN[easingOf(s)];
 
@@ -297,6 +304,7 @@ export function CssDrivenGenerator() {
     js: jsCode(s),
     react: reactCode(s),
   }), [s]);
+  const out = useMemo(() => runnable(s, tab, version), [s, tab, version]);
   const backwards = geom !== null && kind !== 'scroll' && geom.rows.some((r) => r.s1 <= r.s0);
   const lanes = geom?.rows ?? [];
 
@@ -453,6 +461,7 @@ export function CssDrivenGenerator() {
           {tab === 'js' && <CodeBox file="main.js">{code.js}</CodeBox>}
           {tab === 'react' && <CodeBox file={kind === 'scroll' ? 'ReadingProgress.tsx' : 'Reveal.tsx'}>{code.react}</CodeBox>}
         </div>
+        <ToolExport title={out.title} filename={out.filename} html={out.html} react={out.react} />
       </div>
 
       <div className={`cssd-verdict${verdict.native ? ' is-native' : ''}`}>

@@ -14,6 +14,10 @@
   /* Narrow enough that the sentence below wraps onto several real lines, which
      is the only way `split: 'lines'` has more than one line to group. */
   #lines { width: 320px; font-size: 20px; }
+  /* split: 'chars' in a box that wraps: words must break only at spaces. */
+  #wrap { width: 200px; font: 32px/1.2 serif; }
+  /* The same box, with Chinese: no spaces, so it breaks between characters. */
+  #cjk { width: 200px; font: 32px/1.2 serif; }
 </style>
 </head>
 <body>
@@ -24,6 +28,10 @@
 <p id="words">Ship <strong>real</strong> browser tests</p>
 <p id="chars">Phase two</p>
 <p id="lines">Every word here has to keep the space that follows it</p>
+<p id="wrap">Typewriters type writers ever after</p>
+<p id="emoji">Hi 👋 there</p>
+<p id="many">abcdefghijklmnopqrstuvwxyzABCDEFGHIJ</p>
+<p id="cjk">这是一个很长的中文句子用来测试换行</p>
 <div class="tail"></div>
 
 <script type="module">
@@ -49,6 +57,16 @@ const original = {
 const wordsInst = scrollText('#words', { split: 'words', stagger: 0.06 });
 const charsInst = scrollText('#chars', { split: 'chars', stagger: 0.06 });
 const linesInst = scrollText('#lines', { split: 'lines', stagger: 0.1 });
+// Measured before splitting, as the reader saw it.
+const wrap = document.querySelector('#wrap');
+const wrapHeight = wrap.offsetHeight;
+scrollText('#wrap', { split: 'chars' });
+scrollText('#emoji', { split: 'chars' });
+// 36 characters: more than the default stagger (0.04) fits in one window.
+const manyInst = scrollText('#many', { split: 'chars', easing: 'linear' });
+const cjk = document.querySelector('#cjk');
+const cjkHeight = cjk.offsetHeight;
+scrollText('#cjk', { split: 'chars' });
 
 /** Every span the splitter created, animated or not. */
 /**
@@ -128,6 +146,36 @@ publish({
     return { text: lines.textContent, html: lines.innerHTML };
   },
   geometry: () => ({ wordsTop: docTop(words), viewport: window.innerHeight }),
+  /**
+   * split: 'chars' against real line breaking: the paragraph's height before and
+   * after, and the words whose letters landed on more than one line.
+   */
+  charsWrap: () => {
+    const letters = [...wrap.querySelectorAll('span')].filter((s) => s !== srOf(wrap) && !s.children.length);
+    const words = [[]];
+    for (const s of letters) {
+      if (s.textContent === ' ') words.push([]);
+      else words.at(-1).push(s);
+    }
+    return {
+      before: wrapHeight,
+      after: wrap.offsetHeight,
+      // offsetTop: the line a letter sits on, leaving out its own transform.
+      broken: words.filter((w) => new Set(w.map((s) => s.offsetTop)).size > 1)
+        .map((w) => w.map((s) => s.textContent).join('')),
+    };
+  },
+  /** #cjk's height before and after the split, and whether it ran out of its box. */
+  cjkWrap: () => ({ before: cjkHeight, after: cjk.offsetHeight, overflow: cjk.scrollWidth > cjk.clientWidth }),
+  /** Every #many character's opacity at seek(p). */
+  manyAt: (p) => {
+    manyInst.seek(p);
+    return unitsOf(document.querySelector('#many')).map(opacityOf);
+  },
+  /** The code points of #emoji's animated pieces. */
+  emojiUnits: () => unitsOf(document.querySelector('#emoji')).map((s) => [...s.textContent].map((c) => c.codePointAt(0).toString(16)).join('+')),
+  /** pause(), seek(p), replay() and friends on the #words instance. */
+  words: (method, ...args) => wordsInst[method](...args),
 
   /** Span count and height across N frames — a re-split loop would drift. */
   stability: async (frames) => {

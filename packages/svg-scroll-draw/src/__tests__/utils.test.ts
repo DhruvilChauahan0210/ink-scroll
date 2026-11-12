@@ -338,6 +338,30 @@ describe('getElementLength', () => {
     (el as unknown as { getTotalLength: () => number }).getTotalLength = () => 42;
     expect(getElementLength(el as unknown as SVGElement)).toBe(42);
   });
+
+  // The browser reads dash values in pathLength units when the attribute is
+  // set. The user-unit length made a pathLength="1" line draw whole at once.
+  it('is the pathLength when one is set, on any shape', () => {
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path') as SVGPathElement;
+    (path as unknown as { getTotalLength: () => number }).getTotalLength = () => 280;
+    path.setAttribute('pathLength', '1');
+    expect(getElementLength(path as unknown as SVGElement)).toBe(1);
+
+    const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    rect.setAttribute('width', '100');
+    rect.setAttribute('height', '50');
+    rect.setAttribute('pathLength', '100');
+    expect(getElementLength(rect as unknown as SVGElement)).toBe(100);
+  });
+
+  it('ignores a pathLength that is not a positive number', () => {
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path') as SVGPathElement;
+    (path as unknown as { getTotalLength: () => number }).getTotalLength = () => 42;
+    for (const v of ['0', '-5', 'none', '']) {
+      path.setAttribute('pathLength', v);
+      expect(getElementLength(path as unknown as SVGElement)).toBe(42);
+    }
+  });
 });
 
 describe('clamp', () => {

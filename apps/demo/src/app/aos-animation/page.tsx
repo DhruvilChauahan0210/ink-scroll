@@ -12,6 +12,7 @@ import { jsonLd, SITE_URL } from '@/lib/json-ld';
 import { CodeBox } from '@/components/site/CodeBox';
 import { AosGallery } from '@/components/aos/AosGallery';
 import { AosFamilies } from '@/components/aos/AosFamilies';
+import { ToolNextStep } from '@/components/tool-kit/ToolNextStep';
 import { C, Note, Sec, Toc } from '@/components/stack/parts';
 
 // Searchers type "aos animation" and want to see the effects; small demo
@@ -28,9 +29,7 @@ const AOS_CDN = `<link rel="stylesheet" href="https://unpkg.com/aos@${AOS.versio
 
 <script>AOS.init();</script>`;
 
-const DROPIN_NPM = `npm i svg-scroll-draw
-
-// The same markup and the same API. No aos.css: the styles ship inside.
+const DROPIN_JS = `// The same markup and the same API. No aos.css: the styles ship inside.
 import AOS from 'svg-scroll-draw/aos';
 
 AOS.init({ duration: 800, easing: 'ease-out-cubic', once: true });`;
@@ -80,8 +79,8 @@ const TOC = [
   { id: 'effects', label: `Every effect · ${AOS_EFFECT_COUNT}` },
   { id: 'attributes', label: `Attributes · ${AOS_ATTRIBUTES.length}` },
   { id: 'easings', label: `Easings · ${AOS_EASINGS.length}` },
+  { id: 'use', label: 'Use it in your project' },
   { id: 'faq', label: `Questions · ${FAQ.length}` },
-  { id: 'drop-in', label: 'The drop-in' },
 ];
 
 export const metadata: Metadata = {
@@ -166,9 +165,10 @@ export default function AosAnimationPage() {
                   <span key={f.key}>{i > 0 && (i === AOS_FAMILIES.length - 1 ? ' and ' : ', ')}{f.effects.length} {f.title.toLowerCase()}</span>
                 ))}{' '}
                 effects. Each specimen below is a <C>data-aos</C> element, so what you see is exactly what the
-                attribute does on your page.
+                attribute does on your page. Copy takes its markup with the duration and easing you set; Run it
+                downloads a page of every effect at that timing, or opens it in StackBlitz.
               </p>
-              <AosGallery />
+              <AosGallery version={SELF.version} />
             </Sec>
 
             <Sec n={3} k={`${AOS_ATTRIBUTES.length} attributes`} id="attributes" title="Every data-aos attribute">
@@ -189,8 +189,10 @@ export default function AosAnimationPage() {
               <CodeBox file="AOS.init() — the defaults">{INIT_OPTIONS}</CodeBox>
               <Note k="Anchor placement">
                 <C>data-aos-anchor-placement</C> names which edge of the element meets which edge of the window:{' '}
-                <C>top-bottom</C>, the default, starts the animation when the element’s top reaches the bottom of
-                the window. All {AOS_ANCHOR_PLACEMENTS.length}: {AOS_ANCHOR_PLACEMENTS.join(', ')}.
+                <C>top-bottom</C>, the default, starts the animation when the element’s top is the offset (120px
+                unless you set one) above the bottom of the window. All {AOS_ANCHOR_PLACEMENTS.length}:{' '}
+                {AOS_ANCHOR_PLACEMENTS.join(', ')}. As in AOS, an element with its own{' '}
+                <C>data-aos-anchor-placement</C> and no <C>data-aos-offset</C> uses an offset of 0.
               </Note>
             </Sec>
 
@@ -204,7 +206,32 @@ export default function AosAnimationPage() {
               </ul>
             </Sec>
 
-            <Sec n={5} k={`${FAQ.length} questions`} id="faq" title="AOS questions">
+            <Sec n={5} k="Next step" id="use" title="Use it in your project">
+              <p className="stk-p">
+                Every specimen above runs on <C>svg-scroll-draw/aos</C>, not on AOS, which has not had a release since{' '}
+                {AOS.version}. The drop-in speaks the same API and the same markup, with the styles inside the module
+                ({SELF_ENTRIES.aos} KB against AOS’s {AOS.gzipKb} KB with its stylesheet) and reduced motion respected.
+                Switching is an import change. The page the gallery downloads loads the same entry from jsDelivr as
+                an ES module, pinned to {SELF.version}.
+              </p>
+              <CodeBox file="main.js">{DROPIN_JS}</CodeBox>
+              <CodeBox file="index.html (no build step)">{DROPIN_CDN}</CodeBox>
+              <p className="stk-p stk-more">
+                Step by step for <Link href="/guides/aos-react">React</Link> and{' '}
+                <Link href="/guides/aos-nextjs">Next.js</Link>; the full comparison with AOS and ScrollReveal is on{' '}
+                <Link href="/vs-aos">AOS compared</Link>.
+              </p>
+              <ToolNextStep
+                slug="aos-animation"
+                api="AOS"
+                importLine="import AOS from 'svg-scroll-draw/aos'"
+                entry="aos"
+                docs="/vs-aos#drop-in"
+                related={['scroll-reveal-generator', 'cubic-bezier-generator']}
+              />
+            </Sec>
+
+            <Sec n={6} k={`${FAQ.length} questions`} id="faq" title="AOS questions">
               <div className="stk-faq">
                 {FAQ.map((f, i) => (
                   <div key={f.q} className="stk-q">
@@ -216,21 +243,6 @@ export default function AosAnimationPage() {
                   </div>
                 ))}
               </div>
-            </Sec>
-
-            <Sec n={6} k="Drop it in" id="drop-in" title="The drop-in this page runs on">
-              <p className="stk-p">
-                AOS has not had a release since {AOS.version}. <C>svg-scroll-draw/aos</C> speaks the same API and the
-                same markup, with the styles inside the module ({SELF_ENTRIES.aos} KB against AOS’s {AOS.gzipKb} KB
-                with its stylesheet) and reduced motion respected. Switching is an import change.
-              </p>
-              <CodeBox file="npm">{DROPIN_NPM}</CodeBox>
-              <CodeBox file="index.html (no build step)">{DROPIN_CDN}</CodeBox>
-              <p className="stk-p stk-more">
-                Step by step for <Link href="/guides/aos-react">React</Link> and{' '}
-                <Link href="/guides/aos-nextjs">Next.js</Link>; the full comparison with AOS and ScrollReveal is on{' '}
-                <Link href="/vs-aos">AOS compared</Link>.
-              </p>
             </Sec>
           </div>
         </div>

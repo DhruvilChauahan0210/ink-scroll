@@ -8,6 +8,7 @@ import { seoTitle } from '../_lib/seo';
 import { SiteShell } from '@/components/site/SiteShell';
 import { jsonLd, SITE_URL } from '@/lib/json-ld';
 import { CodeBox } from '@/components/site/CodeBox';
+import { ToolNextStep } from '@/components/tool-kit/ToolNextStep';
 import { CssDrivenGenerator } from '@/components/cssdriven/CssDrivenGenerator';
 import { RangeFigure } from '@/components/cssdriven/RangeFigure';
 import { C, Note, Sec, Toc } from '@/components/stack/parts';
@@ -131,6 +132,7 @@ const TOC = [
   { id: 'timelines', label: 'view() and scroll()' },
   { id: 'support', label: 'Support and the fallback' },
   { id: 'library', label: 'The same CSS, from the library' },
+  { id: 'use', label: 'Use it in your project' },
   { id: 'faq', label: `Questions · ${FAQ.length}` },
 ];
 
@@ -208,7 +210,7 @@ export default function CssScrollDrivenAnimationGeneratorPage() {
           <div className="stk-main">
 
             <Sec n={1} k="The tool" id="generator" title={<>Make a <span className="cssd-nowrap">scroll-driven</span> animation</>}>
-              <CssDrivenGenerator />
+              <CssDrivenGenerator version={SELF.version} />
             </Sec>
 
             <Sec n={2} k={`${RANGES.length + CROSSING_RANGES.length} named ranges`} id="ranges" title={<>How <span className="cssd-nowrap">animation-range</span> works</>}>
@@ -313,8 +315,7 @@ export default function CssScrollDrivenAnimationGeneratorPage() {
                 ones CSS can express, they write a <C>{'<style>'}</C> with <C>@keyframes</C> and a view timeline
                 (<C>view()</C> for scrollAnimate, one named on the container for scrollDraw), add a class, and leave
                 the scroll to the browser, with no JavaScript per frame. Otherwise they run their own engine, a frame loop
-                that reads the scroll while the element is on screen, with the same curve over the same stretch of
-                scroll.
+                that follows the scroll, with the same curve over the same stretch of scroll.
               </p>
               <CodeBox file="main.js">{NATIVE_JS}</CodeBox>
               <CodeBox file="what it writes">{NATIVE_CSS}</CodeBox>
@@ -330,9 +331,9 @@ export default function CssScrollDrivenAnimationGeneratorPage() {
               <Note k="The preview">
                 In svg-scroll-draw mode the generator passes its box as <C>scrollContainer</C>, which keeps the
                 library on its engine: you are watching the fallback, the code a browser without scroll timelines
-                runs. One difference shows on entry: the engine wakes an element when its box comes into view, and a
-                y offset or a small scale holds that box back, so it starts later than the CSS and catches up in one
-                step.
+                runs. In 2.23.3 and earlier one difference showed on entry: scrollAnimate woke an element when its box
+                came into view, and a y offset or a small scale held that box back, so it started later than the CSS
+                and caught up in one step. Fixed in 2.23.4, which follows the scroll through the whole window.
               </Note>
               <Note k="Which to use">
                 When the CSS alone does the job, use the CSS. The library is for what it cannot do: older browsers,
@@ -340,7 +341,25 @@ export default function CssScrollDrivenAnimationGeneratorPage() {
               </Note>
             </Sec>
 
-            <Sec n={6} k={`${FAQ.length} questions`} id="faq" title="Scroll-driven animation questions">
+            <Sec n={6} k="Next step" id="use" title="Use it in your project">
+              <p className="stk-p">
+                The CSS needs nothing installed. The JavaScript and React tabs, and fallback.js, call svg-scroll-draw:
+                scrollAnimate for fade up, scale in, slide in, rotate in and blur in, scrollDraw for the clip-path
+                reveal, and scrollProgress, from <C>svg-scroll-draw/progress</C>, for the bar. The row under the code
+                saves the tab on show as a page that runs on its own; where it uses the library, it loads it from
+                jsDelivr as an ES module, pinned to {SELF.version}. When the library writes the CSS itself:{' '}
+                <Link href="/docs#native-css">native CSS rendering in the docs</Link>, and the post{' '}
+                <Link href="/blog/native-css-svg-scroll-animations">zero-JS SVG scroll animations with native CSS</Link>.
+              </p>
+              <ToolNextStep
+                slug="css-scroll-driven-animation-generator"
+                api="scrollAnimate"
+                docs="/docs#scroll-animate"
+                related={['scroll-trigger-visualizer', 'scroll-reveal-generator']}
+              />
+            </Sec>
+
+            <Sec n={7} k={`${FAQ.length} questions`} id="faq" title="Scroll-driven animation questions">
               <div className="stk-faq">
                 {FAQ.map((f, i) => (
                   <div key={f.q} className="stk-q">
@@ -352,11 +371,6 @@ export default function CssScrollDrivenAnimationGeneratorPage() {
                   </div>
                 ))}
               </div>
-              <p className="stk-p stk-more">
-                The native path in depth: <Link href="/blog/native-css-svg-scroll-animations">zero-JS SVG scroll
-                animations with native CSS</Link>. All of svg-scroll-draw {SELF.version}: <Link href="/docs">the docs</Link>, or the{' '}
-                <Link href="/text-animation-generator">text animation generator</Link> for words and letters.
-              </p>
             </Sec>
           </div>
         </div>

@@ -2,10 +2,12 @@
 
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { CodeBox } from '@/components/site/CodeBox';
+import { ToolExport } from '@/components/tool-kit/ToolExport';
 import {
   EDGES, LINES, defaultsOf, edgeOffset, lineOffset, pairWords, progressAt, readTrigger, triggerAt,
   type Edge, type Reading,
 } from '@/data/trigger';
+import { DRAWING, TARGETS, fileOf, jsCode, reactCode, reactProject, triggerHtml, type Target } from './code';
 
 /**
  * The scroll trigger visualizer.
@@ -16,20 +18,21 @@ import {
  * - The two lines, the scroll track and the worked numbers come from
  *   data/trigger.ts, which repeats core/trigger.ts's arithmetic: they keep
  *   counting while the element is out of view, where the library rests.
- * - The code is written from the same state, leaving out any part of the
- *   trigger that matches the chosen function's default window.
+ * - The code is written from the same state by code.ts, leaving out any part
+ *   of the trigger that matches the chosen function's default window. Its Run
+ *   it row downloads (or opens in StackBlitz) a page running that code on an
+ *   element of the chosen height, with the lines, edges and progress drawn,
+ *   the library from jsDelivr at `version` (SELF.version, passed down by the
+ *   page).
  */
 
-type Target = 'scrollDraw' | 'scrollText' | 'scrollReveal' | 'scrollProgress';
 type Which = 'start' | 'end';
 
-const TARGETS: Target[] = ['scrollDraw', 'scrollText', 'scrollReveal', 'scrollProgress'];
 /** The preview box's height in trigger.css, until it is measured. */
 const VP = 300;
 const HEIGHTS = [0.4, 0.8, 1.6] as const;
 const PLAY_MS = 2400;
 const LINE_KINDS = [...LINES, 'percent'] as const;
-const DRAWING = 'M8 40 C 40 8, 72 8, 104 32 S 168 60, 200 28 S 228 12, 232 20';
 
 const INITIAL = { start: 'top 85%', end: 'top 40%', ratio: 0.4 as number };
 
@@ -61,7 +64,7 @@ const getReduced = () => window.matchMedia(RM).matches;
 const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n));
 const fmt = (n: number) => (Math.abs(n - Math.round(n)) < 0.05 ? String(Math.round(n)) : n.toFixed(1));
 
-export function TriggerVisualizer() {
+export function TriggerVisualizer({ version }: { version: string }) {
   const [start, setStart] = useState(INITIAL.start);
   const [end, setEnd] = useState(INITIAL.end);
   const [ratio, setRatio] = useState<number>(INITIAL.ratio);
@@ -196,6 +199,8 @@ export function TriggerVisualizer() {
   const raw = same ? 0 : (scroll - tStart) / (tEnd - tStart);
 
   const code = useMemo(() => (tab === 'js' ? jsCode(target, rs, re) : reactCode(target, rs, re)), [tab, target, rs, re]);
+  const html = useMemo(() => triggerHtml({ target, rs, re, ratio }, version), [target, rs, re, ratio, version]);
+  const react = useMemo(() => reactProject({ target, rs, re, ratio }, version), [target, rs, re, ratio, version]);
   const def = defaultsOf(target);
   // A place on the scroll track, as a percentage of it; off either end, the end.
   const pos = (n: number) => clamp((n / g.max) * 100, 0, 100);
@@ -371,7 +376,10 @@ export function TriggerVisualizer() {
         <CodeBox file={fileOf(target, tab)}>{code}</CodeBox>
         <p className="trg-hint">
           Anything that matches {target}’s own default window ({def.start} → {def.end}) is left out of the code.
+          Run it makes a page of its own from this code: the element {Math.round(ratio * 100)}% of the window’s
+          height, with the two lines, its edges and the progress drawn as here.
         </p>
+        <ToolExport title="Scroll trigger" filename="scroll-trigger.html" html={html} react={react} />
       </div>
     </div>
   );
@@ -487,119 +495,4 @@ function Row({ k, r, top, height, vp, t }: { k: string; r: Reading; top: number;
       </dd>
     </div>
   );
-}
-
-// ── The generated code ───────────────────────────────────────────────────────
-
-/** The trigger option, with only the parts that differ from the function's default. */
-function triggerLiteral(target: Target, rs: Reading, re: Reading): string | null {
-  const d = defaultsOf(target);
-  const parts: string[] = [];
-  if (rs.canonical !== readTrigger(d.start).canonical) parts.push(`start: '${rs.canonical}'`);
-  if (re.canonical !== readTrigger(d.end).canonical) parts.push(`end: '${re.canonical}'`);
-  return parts.length ? `{ ${parts.join(', ')} }` : null;
-}
-
-function comment(target: Target, rs: Reading, re: Reading): string {
-  const lines: string[] = [];
-  if (!triggerLiteral(target, rs, re)) lines.push(`// ${target}’s default window, so no trigger option:`);
-  lines.push(`// starts when ${pairWords(rs)},`, `// done when ${pairWords(re)}.`);
-  // With one edge for both, the order is the lines' order whatever the element's
-  // height; with two edges it depends on the height, so nothing is claimed.
-  if (rs.edge === re.edge && re.at === rs.at) lines.push('// Start and end are the same position, so progress stays 0.');
-  else if (rs.edge === re.edge && re.at > rs.at) {
-    // scrollText and scrollReveal default to once: true, which keeps the highest progress seen.
-    lines.push(target === 'scrollText' || target === 'scrollReveal'
-      ? '// End comes before start: progress is 1 from the outset, and once (on by default) keeps it there.'
-      : '// End comes before start, so it plays backwards as you scroll down.');
-  }
-  return lines.join('\n');
-}
-
-const SELECTOR: Record<Target, string> = {
-  scrollDraw: '#drawing', scrollText: '#headline', scrollReveal: '.card', scrollProgress: '#hero',
-};
-
-function fileOf(target: Target, tab: 'js' | 'react'): string {
-  if (tab === 'js') return 'main.js';
-  return { scrollDraw: 'Drawing.tsx', scrollText: 'Headline.tsx', scrollReveal: 'Cards.tsx', scrollProgress: 'Hero.tsx' }[target];
-}
-
-function jsCode(target: Target, rs: Reading, re: Reading): string {
-  const { entry } = defaultsOf(target);
-  const trig = triggerLiteral(target, rs, re);
-  const sel = SELECTOR[target];
-  const call = trig ? `${target}('${sel}', {\n  trigger: ${trig},\n});` : `${target}('${sel}');`;
-  const head = target === 'scrollText' ? '// <h2 id="headline">Your heading</h2>\n\n' : '';
-  const tail = target === 'scrollProgress'
-    ? '\n\n/* The progress is on the element as --scroll-progress, 0 to 1:\n   #hero { opacity: var(--scroll-progress); } */'
-    : '';
-  return `${head}import { ${target} } from '${entry}';\n\n${comment(target, rs, re)}\n${call}${tail}`;
-}
-
-function reactCode(target: Target, rs: Reading, re: Reading): string {
-  const trig = triggerLiteral(target, rs, re);
-  const note = comment(target, rs, re);
-  if (target === 'scrollDraw') {
-    return `import { ScrollDraw } from 'svg-scroll-draw/react';
-
-${note}
-export function Drawing() {
-  return (
-    <ScrollDraw${trig ? ` trigger={${trig}}` : ''}>
-      <svg viewBox="0 0 240 64">
-        <path d="${DRAWING}" fill="none" stroke="currentColor" />
-      </svg>
-    </ScrollDraw>
-  );
-}`;
-  }
-  if (target === 'scrollText') {
-    return `import { ScrollText } from 'svg-scroll-draw/react';
-
-${note}
-export function Headline() {
-  return (
-    <ScrollText as="h2"${trig ? ` trigger={${trig}}` : ''}>
-      Your heading
-    </ScrollText>
-  );
-}`;
-  }
-  if (target === 'scrollReveal') {
-    const opts = trig ? `, {\n      trigger: ${trig},\n    }` : '';
-    return `'use client';
-
-import { useEffect, useRef } from 'react';
-import { scrollReveal } from 'svg-scroll-draw/reveal';
-
-${note}
-export function Cards() {
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const cards = ref.current?.querySelectorAll('.card');
-    if (!cards?.length) return;
-    const reveal = scrollReveal(cards${opts});
-    return () => reveal.destroy();
-  }, []);
-  return (
-    <div ref={ref}>
-      <div className="card">One</div>
-      <div className="card">Two</div>
-    </div>
-  );
-}`;
-  }
-  const opts = trig ? `, {\n    trigger: ${trig},\n  }` : '';
-  return `'use client';
-
-import { useRef } from 'react';
-import { useScrollDrawProgress } from 'svg-scroll-draw/react';
-
-${note}
-export function Hero() {
-  const ref = useRef<HTMLDivElement>(null);
-  const progress = useScrollDrawProgress(ref${opts});
-  return <div ref={ref} style={{ opacity: progress }}>Your content</div>;
-}`;
 }

@@ -13,6 +13,7 @@ import { CodeBox } from '@/components/site/CodeBox';
 import { CopyCommand } from '@/components/home/CopyCommand';
 import { RevealGenerator } from '@/components/reveal/RevealGenerator';
 import { RevealFigure } from '@/components/reveal/RevealFigure';
+import { ToolNextStep } from '@/components/tool-kit/ToolNextStep';
 import { C, Note, Sec, Toc } from '@/components/stack/parts';
 
 // Searches this page answers: "scroll reveal animation", "reveal on scroll",
@@ -107,6 +108,7 @@ const TOC = [
   { id: 'presets', label: `Presets · ${REVEAL_PRESETS.length}` },
   { id: 'stagger', label: 'Stagger, once, reduced motion' },
   { id: 'aos', label: 'scrollReveal or AOS' },
+  { id: 'use', label: 'Use it in your project' },
   { id: 'faq', label: `Questions · ${FAQ.length}` },
 ];
 
@@ -162,7 +164,8 @@ export default function ScrollRevealGeneratorPage() {
             <h1 className="pg-title stk-title">Scroll reveal generator</h1>
             <p className="pg-lede">
               Pick a preset, set the stagger, the easing and the trigger window, and watch cards reveal as a box
-              scrolls. Then copy the code: one <C>scrollReveal</C> call in JavaScript, or a React component.
+              scrolls. Then copy the code: one <C>scrollReveal</C> call in JavaScript, or a React component. Or run it
+              outside this page: download it as a page of its own, or open it in StackBlitz.
             </p>
             <div className="pg-actions">
               <a href="#generator" className="btn btn-solid" data-magnetic>Open the generator ↓</a>
@@ -183,7 +186,7 @@ export default function ScrollRevealGeneratorPage() {
           <div className="stk-main">
 
             <Sec n={1} k="The tool" id="generator" title="Make your scroll reveal">
-              <RevealGenerator />
+              <RevealGenerator version={SELF.version} />
             </Sec>
 
             <Sec n={2} k="The model" id="how" title="How a reveal follows the scroll">
@@ -334,7 +337,22 @@ export default function ScrollRevealGeneratorPage() {
               </p>
             </Sec>
 
-            <Sec n={6} k={`${FAQ.length} questions`} id="faq" title="Scroll reveal questions">
+            <Sec n={6} k="Next step" id="use" title="Use it in your project">
+              <p className="stk-p">
+                scrollReveal has an entry of its own, <C>svg-scroll-draw/reveal</C>, and the code above imports it from
+                there. It is not in the script-tag build, so the page the generator downloads loads that entry from
+                jsDelivr as an ES module, pinned to {SELF.version}.
+              </p>
+              <ToolNextStep
+                slug="scroll-reveal-generator"
+                api="scrollReveal"
+                entry="reveal"
+                docs="/docs#scroll-reveal"
+                related={['scroll-trigger-visualizer', 'text-animation-generator']}
+              />
+            </Sec>
+
+            <Sec n={7} k={`${FAQ.length} questions`} id="faq" title="Scroll reveal questions">
               <div className="stk-faq">
                 {FAQ.map((f, i) => (
                   <div key={f.q} className="stk-q">
@@ -346,11 +364,6 @@ export default function ScrollRevealGeneratorPage() {
                   </div>
                 ))}
               </div>
-              <p className="stk-p stk-more">
-                The generator is free, and the code it writes uses svg-scroll-draw {SELF.version}, MIT-licensed. Words
-                instead of cards: the <Link href="/text-animation-generator">text animation generator</Link>. All of
-                it: <Link href="/docs">the docs</Link>.
-              </p>
             </Sec>
           </div>
         </div>

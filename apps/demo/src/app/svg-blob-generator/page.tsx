@@ -13,8 +13,10 @@ import { MORPH_FIG, MorphFigure } from '@/components/blob/MorphFigure';
 import {
   GALLERY, HANDLE, MAX_POINTS, MAX_RANDOMNESS, MIN_POINTS, blobGeometry, fmt, nextSeed,
 } from '@/components/blob/blob';
-import { OUTPUT_COUNT } from '@/components/blob/code';
+import { OUTPUT_COUNT, SLUG } from '@/components/blob/code';
 import { C, Note, Sec, Toc } from '@/components/stack/parts';
+import { ToolNextStep } from '@/components/tool-kit/ToolNextStep';
+import { withSource } from '@/lib/tool-export';
 
 // Searches this page is for: "svg blob generator", "blob shape generator",
 // "organic shape svg", "random blob svg". Every path, length and limit quoted
@@ -25,7 +27,11 @@ const DESCRIPTION =
 
 const SIXTH = Math.round(1 / HANDLE);
 
-/** The morph example starts from the longer outline: scrollDraw sizes its dash to the shape it starts with. */
+/**
+ * The morph example starts from the longer outline: in 2.23.3 and earlier
+ * scrollDraw sized its dash to the shape it starts with (fixed in 2.23.4), so
+ * this order closes the line on any version.
+ */
 const MORPH = (() => {
   const base = { ...MORPH_FIG, size: 400, line: 4 };
   const a = { seed: MORPH_FIG.seed, g: blobGeometry(base) };
@@ -34,7 +40,7 @@ const MORPH = (() => {
   return { from, to, points: MORPH_FIG.points };
 })();
 
-const PATH_JS = `// Spokes at equal angles from the top, clockwise; a radius on each (px);
+const PATH_JS = withSource(`// Spokes at equal angles from the top, clockwise; a radius on each (px);
 // a closed Catmull-Rom curve through their ends: one C per point, then Z.
 function blobPath(radii, cx, cy) {
   const n = radii.length;
@@ -55,9 +61,9 @@ function blobPath(radii, cx, cy) {
   return d + ' Z';
 }
 
-blobPath([150, 120, 165, 110, 140], 200, 200); // five points around 200, 200`;
+blobPath([150, 120, 165, 110, 140], 200, 200); // five points around 200, 200`, SLUG, 'js');
 
-const SEED_JS = `// mulberry32: a 32-bit seed in, the same stream of numbers in [0, 1) out.
+const SEED_JS = withSource(`// mulberry32: a 32-bit seed in, the same stream of numbers in [0, 1) out.
 function mulberry32(seed) {
   let a = seed | 0;
   return () => {
@@ -71,9 +77,9 @@ function mulberry32(seed) {
 // Seed ${GALLERY[0].seed}, ${GALLERY[0].points} points, randomness ${GALLERY[0].randomness}:
 // each radius between ${fmt(1 - GALLERY[0].randomness, 2)} and 1 of the longest.
 const rand = mulberry32(${GALLERY[0].seed});
-const radii = Array.from({ length: ${GALLERY[0].points} }, () => 1 - ${GALLERY[0].randomness} * rand());`;
+const radii = Array.from({ length: ${GALLERY[0].points} }, () => 1 - ${GALLERY[0].randomness} * rand());`, SLUG, 'js');
 
-const MORPH_JS = `// <div id="blob"><svg viewBox="0 0 400 400" width="400" height="400">
+const MORPH_JS = withSource(`// <div id="blob"><svg viewBox="0 0 400 400" width="400" height="400">
 //   <path d="${MORPH.from.g.d}"
 //     fill="none" stroke="currentColor" stroke-width="4"/>
 // </svg></div>
@@ -84,7 +90,7 @@ import { scrollDraw } from 'svg-scroll-draw';
 // the window. ${MORPH.points} points each, so both are M, ${MORPH.points} × C, Z.
 scrollDraw('#blob', {
   morphTo: '${MORPH.to.g.d}',
-});`;
+});`, SLUG, 'js');
 
 const FAQ: { q: string; a: string }[] = [
   {
@@ -118,6 +124,7 @@ const TOC = [
   { id: 'how', label: 'How a blob is built' },
   { id: 'seeds', label: 'Seeds' },
   { id: 'morph', label: 'Morphing blobs' },
+  { id: 'use', label: 'Use it in your project' },
   { id: 'faq', label: `Questions · ${FAQ.length}` },
 ];
 
@@ -195,7 +202,7 @@ export default function SvgBlobGeneratorPage() {
                 next seed and back, and the Path d tab then gives both paths. The gallery loads {GALLERY.length} seeds
                 to start from.
               </p>
-              <BlobGenerator />
+              <BlobGenerator version={SELF.version} />
             </Sec>
 
             <Sec n={2} k="The construction" id="how" title="How a blob is built">
@@ -255,15 +262,31 @@ export default function SvgBlobGeneratorPage() {
               </p>
               <CodeBox file="morph.js">{MORPH_JS}</CodeBox>
               <Note k="The dash">
-                scrollDraw measures the line once, on the path it starts with (and again on a resize or{' '}
-                <C>refresh()</C>), and the dash keeps that length while the shape changes. If the blob it becomes is
-                longer, the end of its outline is still open when the scroll is done. Seed {MORPH.from.seed} is the
-                longer of these two, {fmt(MORPH.from.g.length, 1)} px against {fmt(MORPH.to.g.length, 1)}, so it is the
-                one the path starts from. The generator’s readout gives each blob’s length.
+                scrollDraw draws the line as one dash, measured at the start (and again on a resize or{' '}
+                <C>refresh()</C>). In 2.23.3 and earlier it measured only the path it starts with, so a morph into a
+                longer blob ended with the end of the outline still open; fixed in 2.23.4, which measures the longer of
+                the two. Seed {MORPH.from.seed} is the longer of these two, {fmt(MORPH.from.g.length, 1)} px against{' '}
+                {fmt(MORPH.to.g.length, 1)}, so the example starts from it and closes on any version. The generator’s
+                readout gives each blob’s length.
               </Note>
             </Sec>
 
-            <Sec n={5} k={`${FAQ.length} questions`} id="faq" title="SVG blob questions">
+            <Sec n={5} k="Next" id="use" title="Use it in your project">
+              <ToolNextStep
+                slug={SLUG}
+                api="scrollDraw"
+                docs="/docs#quick-start"
+                related={['svg-wave-generator', 'svg-morph-generator']}
+              />
+              <p className="stk-p">
+                Of the generator’s outputs, only Draw it uses the package: the SVG, Path d, React and CSS clip-path
+                tabs need nothing from it. Its React tab wraps the outline in <C>ScrollDraw</C> from{' '}
+                <C>svg-scroll-draw/react</C>, which takes scrollDraw’s options as props:{' '}
+                <Link href="/docs#react">ScrollDraw in the docs</Link>.
+              </p>
+            </Sec>
+
+            <Sec n={6} k={`${FAQ.length} questions`} id="faq" title="SVG blob questions">
               <div className="stk-faq">
                 {FAQ.map((f, i) => (
                   <div key={f.q} className="stk-q">
@@ -275,10 +298,6 @@ export default function SvgBlobGeneratorPage() {
                   </div>
                 ))}
               </div>
-              <p className="stk-p stk-more">
-                Drawing on scroll with svg-scroll-draw {SELF.version}: <Link href="/docs">the docs</Link>, or the{' '}
-                <Link href="/svg-path-viewer">SVG path viewer</Link> to measure and check any path.
-              </p>
             </Sec>
           </div>
         </div>
