@@ -47,6 +47,15 @@ jobs:
     # About 3x a normal run (9.5 minutes). A hang fails here instead of holding
     # the tag's release for GitHub's default 6 hours.
     timeout-minutes: 30
+    # The same image as CI's browser job (see ci.yml): the browsers and their
+    # libraries come with it, so nothing is installed from Ubuntu's mirrors.
+    # On 2026-11-11 the runners could not resolve *.ubuntu.com and three
+    # attempts at 2.23.2 sat in `playwright install --with-deps` until this
+    # job's limit. It has git, which verify's sitemap date check needs. The
+    # tag must match the lockfile's playwright version.
+    container:
+      image: mcr.microsoft.com/playwright:v1.65.0-noble
+      options: --user 1001
 
     permissions:
       # write: the last step creates the GitHub release. With `read`, 2.10.1
@@ -70,10 +79,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium firefox webkit
-        working-directory: packages/svg-scroll-draw
 
       # Everything CI runs, plus the browser tests. A release should not be able
       # to skip a gate that a pull request cannot.
