@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { seoTitle } from '../../_lib/seo';
 import { COMPETITORS, MEASURED_ON, SELF, provenance, ratioVsSelf } from '@/data/competitors';
 import {
@@ -328,6 +329,10 @@ scrollDraw('#chart', {
 
       <Section id="migration" k="migration guide" title="Switch in under 5 minutes">
         <p>For SVG path drawing specifically, the migration is almost mechanical. The concepts map directly.</p>
+        <p>
+          Before you switch, paste the SVG into the <Link href="/svg-path-viewer">SVG path viewer</Link>: it lists
+          each path’s length and anything that would stop it drawing, such as a fill or a missing stroke.
+        </p>
         <Steps>
           <Step n={1} title="Install">
             <Code file="terminal">{`npm i svg-scroll-draw

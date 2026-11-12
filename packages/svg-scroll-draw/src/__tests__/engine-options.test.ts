@@ -28,11 +28,16 @@ function makeContainer(paths: SVGPathElement[] = [makePath()]): HTMLDivElement {
 }
 
 class RafQueue {
-  private queue: FrameRequestCallback[] = [];
+  private queue: { id: number; cb: FrameRequestCallback }[] = [];
   private id = 0;
-  schedule = vi.fn((cb: FrameRequestCallback): number => { this.queue.push(cb); return ++this.id; });
-  cancel   = vi.fn();
-  tick()   { const cb = this.queue.shift(); cb?.(performance.now()); }
+  schedule = vi.fn((cb: FrameRequestCallback): number => { this.queue.push({ id: ++this.id, cb }); return this.id; });
+  cancel   = vi.fn((id: number) => { this.queue = this.queue.filter((f) => f.id !== id); });
+  /**
+   * One frame: every callback queued before it, as a browser runs them. The
+   * engines' frames follow the trigger window and wake on scroll events, so an
+   * engine an earlier test left can share the queue.
+   */
+  tick() { const frame = this.queue; this.queue = []; for (const f of frame) f.cb(performance.now()); }
 }
 
 class FakeIO {
@@ -44,6 +49,16 @@ class FakeIO {
   trigger(isIntersecting: boolean) {
     this.cb([{ isIntersecting } as IntersectionObserverEntry], this as unknown as IntersectionObserver);
   }
+}
+
+/**
+ * Scroll the page: set the offset and fire a scroll event, as a browser does.
+ * The frames follow the trigger window and wake on scroll (core/frame-gate),
+ * so moving `scrollY` alone is not a scroll.
+ */
+function scroll(y?: number): void {
+  if (y !== undefined) vi.stubGlobal('scrollY', y);
+  window.dispatchEvent(new Event('scroll'));
 }
 
 let raf: RafQueue;
@@ -87,8 +102,7 @@ describe('createEngine — strokeColor', () => {
     const container = makeContainer([path]);
     createEngine(container, { strokeColor: '#ff0000' });
 
-    vi.stubGlobal('scrollY', 300);
-    FakeIO.instances[0].trigger(true);
+    scroll(300);
     raf.tick();
 
     expect(path.style.stroke).toBeTruthy();
@@ -127,8 +141,7 @@ describe('createEngine — strokeWidth', () => {
     const container = makeContainer([path]);
     createEngine(container, { strokeWidth: 4 });
 
-    vi.stubGlobal('scrollY', 300);
-    FakeIO.instances[0].trigger(true);
+    scroll(300);
     raf.tick();
 
     expect(parseFloat(path.style.strokeWidth)).toBeCloseTo(4, 1);
@@ -165,8 +178,7 @@ describe('createEngine — fillOpacity', () => {
     const container = makeContainer([path]);
     createEngine(container, { fillOpacity: 0.5 });
 
-    vi.stubGlobal('scrollY', 300);
-    FakeIO.instances[0].trigger(true);
+    scroll(300);
     raf.tick();
 
     expect(parseFloat(path.style.fillOpacity)).toBeCloseTo(0.5, 1);
@@ -358,8 +370,7 @@ describe('createEngine — clip mode', () => {
     const container = makeContainer();
     createEngine(container, { clip: 'left' });
 
-    vi.stubGlobal('scrollY', 300);
-    FakeIO.instances[0].trigger(true);
+    scroll(300);
     raf.tick();
 
     // Should be somewhere between fully hidden and fully revealed
@@ -372,8 +383,7 @@ describe('createEngine — clip mode', () => {
     const container  = makeContainer();
     createEngine(container, { clip: 'left', onComplete });
 
-    vi.stubGlobal('scrollY', 500);
-    FakeIO.instances[0].trigger(true);
+    scroll(500);
     raf.tick();
 
     expect(onComplete).toHaveBeenCalledOnce();
@@ -387,8 +397,7 @@ describe('createEngine — clip mode', () => {
     const instance = createEngine(container, { clip: 'left', direction: 'reverse' });
     expect(container.style.clipPath).toBe('inset(0 0% 0 0)');
 
-    vi.stubGlobal('scrollY', 500);
-    FakeIO.instances[0].trigger(true);
+    scroll(500);
     raf.tick();
     expect(container.style.clipPath).toBe('inset(0 100% 0 0)');
 
@@ -406,8 +415,7 @@ describe('createEngine — clip mode', () => {
     const container = makeContainer();
     createEngine(container, { clip: 'left' });
 
-    vi.stubGlobal('scrollY', 300);
-    FakeIO.instances[0].trigger(true);
+    scroll(300);
     raf.tick();
 
     expect(parseFloat(container.style.getPropertyValue('--scroll-draw-progress'))).toBeGreaterThan(0);
@@ -424,8 +432,7 @@ describe('createEngine — a blank trigger is the default one', () => {
     it(`${JSON.stringify(trigger)} draws as {} does`, () => {
       const path = makePath();
       const instance = createEngine(makeContainer([path]), { native: false, trigger });
-      vi.stubGlobal('scrollY', 0); // 800 into the default [−800, 500]
-      FakeIO.instances[0].trigger(true);
+      scroll(0); // 800 into the default [−800, 500]
       raf.tick();
       expect(instance.getProgress()).toBeCloseTo(800 / 1300, 6);
     });
@@ -500,8 +507,7 @@ describe('createEngine — onStart', () => {
     const container = makeContainer();
     createEngine(container, { onStart });
 
-    vi.stubGlobal('scrollY', 300);
-    FakeIO.instances[0].trigger(true);
+    scroll(300);
     raf.tick();
 
     expect(onStart).toHaveBeenCalledOnce();
@@ -512,8 +518,7 @@ describe('createEngine — onStart', () => {
     const container = makeContainer();
     createEngine(container, { onStart });
 
-    vi.stubGlobal('scrollY', 300);
-    FakeIO.instances[0].trigger(true);
+    scroll(300);
     raf.tick();
     raf.tick();
 
@@ -530,8 +535,7 @@ describe('createEngine — waypoints', () => {
     createEngine(container, { waypoints: { 0.5: half } });
 
     // scrollY=500 → alpha=1, which passes 0.5
-    vi.stubGlobal('scrollY', 500);
-    FakeIO.instances[0].trigger(true);
+    scroll(500);
     raf.tick();
 
     expect(half).toHaveBeenCalledOnce();
@@ -543,8 +547,7 @@ describe('createEngine — waypoints', () => {
     createEngine(container, { waypoints: { 0.99: nearEnd } });
 
     // scrollY=300 → progress ~0.8, which does not reach 0.99
-    vi.stubGlobal('scrollY', 300);
-    FakeIO.instances[0].trigger(true);
+    scroll(300);
     raf.tick();
 
     expect(nearEnd).not.toHaveBeenCalled();
@@ -555,8 +558,7 @@ describe('createEngine — waypoints', () => {
     const container = makeContainer();
     createEngine(container, { waypoints: { 0.5: half } });
 
-    vi.stubGlobal('scrollY', 500);
-    FakeIO.instances[0].trigger(true);
+    scroll(500);
     raf.tick();
     raf.tick(); // second frame — waypoint must not fire again
 
@@ -568,8 +570,7 @@ describe('createEngine — waypoints', () => {
     const container = makeContainer();
     const instance  = createEngine(container, { waypoints: { 0.5: half } });
 
-    vi.stubGlobal('scrollY', 500);
-    FakeIO.instances[0].trigger(true);
+    scroll(500);
     raf.tick();
 
     instance.replay();
@@ -586,8 +587,7 @@ describe('createEngine — autoReverse', () => {
     const container = makeContainer([path]);
     createEngine(container, { autoReverse: true });
 
-    vi.stubGlobal('scrollY', 300);
-    FakeIO.instances[0].trigger(true);
+    scroll(300);
     raf.tick(); // prevScroll set to 300
 
     const offsetAfterForward = parseFloat(path.style.strokeDashoffset);
@@ -600,13 +600,12 @@ describe('createEngine — autoReverse', () => {
     createEngine(container, { autoReverse: true });
 
     // First frame scrolling forward
-    vi.stubGlobal('scrollY', 300);
-    FakeIO.instances[0].trigger(true);
+    scroll(300);
     raf.tick();
     const offsetForward = parseFloat(path.style.strokeDashoffset);
 
     // Second frame scrolling backward
-    vi.stubGlobal('scrollY', 100);
+    scroll(100);
     raf.tick();
     const offsetReversed = parseFloat(path.style.strokeDashoffset);
 
@@ -622,8 +621,7 @@ describe('createEngine — velocityScale', () => {
     const container = makeContainer();
     const instance  = createEngine(container, { velocityScale: true });
 
-    vi.stubGlobal('scrollY', 300);
-    FakeIO.instances[0].trigger(true);
+    scroll(300);
     expect(() => raf.tick()).not.toThrow();
     instance.destroy();
   });
@@ -632,8 +630,7 @@ describe('createEngine — velocityScale', () => {
     const container = makeContainer();
     const instance  = createEngine(container, { velocityScale: 2 });
 
-    vi.stubGlobal('scrollY', 300);
-    FakeIO.instances[0].trigger(true);
+    scroll(300);
     expect(() => raf.tick()).not.toThrow();
     instance.destroy();
   });
@@ -648,13 +645,12 @@ describe('createEngine — once', () => {
     const instance = createEngine(container, { once: true });
 
     // Reach near-complete
-    vi.stubGlobal('scrollY', 400);
-    FakeIO.instances[0].trigger(true);
+    scroll(400);
     raf.tick();
     const frozenOffset = parseFloat(path.style.strokeDashoffset);
 
     // Scroll back — offset must not increase (frozen)
-    vi.stubGlobal('scrollY', 0);
+    scroll(0);
     raf.tick();
     expect(parseFloat(path.style.strokeDashoffset)).toBeLessThanOrEqual(frozenOffset + 0.1);
 
@@ -670,8 +666,7 @@ describe('createEngine — once', () => {
     createEngine(makeContainer([first, second]), { once: true, stagger: 0.2 });
 
     // tStart -800, tEnd 500, range 1300; the second window starts 260 later.
-    vi.stubGlobal('scrollY', 0);
-    FakeIO.instances[0].trigger(true);
+    scroll(0);
     raf.tick();
 
     expect(parseFloat(first.style.strokeDashoffset)).toBeCloseTo(100 * (1 - 800 / 1300), 1);
@@ -687,10 +682,10 @@ describe('createEngine — once', () => {
       const reported: number[] = [];
       const container = makeContainer([makePath(), makePath(), makePath()]);
       const instance = createEngine(container, { stagger: 0.2, once, easing: 'linear', onProgress: (p) => reported.push(p) });
-      FakeIO.instances[0].trigger(true);
+      scroll();
 
       for (const y of [-500, -100, 200, 500]) {
-        vi.stubGlobal('scrollY', y);
+        scroll(y);
         raf.tick();
         const last = reported[reported.length - 1];
         expect(instance.getProgress(), `y=${y}`).toBeCloseTo(last, 6);
@@ -704,12 +699,11 @@ describe('createEngine — once', () => {
     const onComplete = vi.fn();
     createEngine(makeContainer([makePath(), makePath()]), { once: true, stagger: 0.2, onComplete });
 
-    vi.stubGlobal('scrollY', 500); // the first path is done, the second at 0.8
-    FakeIO.instances[0].trigger(true);
+    scroll(500); // the first path is done, the second at 0.8
     raf.tick();
     expect(onComplete).not.toHaveBeenCalled();
 
-    vi.stubGlobal('scrollY', 800); // both done
+    scroll(800); // both done
     raf.tick();
     expect(onComplete).toHaveBeenCalledTimes(1);
   });
@@ -723,20 +717,20 @@ describe('createEngine — once', () => {
     it('elastic still overshoots mid-scroll, then ends drawn exactly to 1', () => {
       const path = makePath();
       const instance = createEngine(makeContainer([path]), { once: true, easing: 'elastic' });
-      FakeIO.instances[0].trigger(true);
+      scroll();
 
-      vi.stubGlobal('scrollY', -540);
+      scroll(-540);
       raf.tick();
       expect(instance.getProgress()).toBeCloseTo(1.25, 6);
       expect(parseFloat(path.style.strokeDashoffset)).toBeCloseTo(-25, 3);
 
-      vi.stubGlobal('scrollY', 600);
+      scroll(600);
       raf.tick();
       expect(instance.getProgress()).toBe(1);
       expect(parseFloat(path.style.strokeDashoffset)).toBe(0);
 
       // Scrolling back holds the end, as once always has.
-      vi.stubGlobal('scrollY', -540);
+      scroll(-540);
       raf.tick();
       expect(instance.getProgress()).toBe(1);
       expect(parseFloat(path.style.strokeDashoffset)).toBe(0);
@@ -746,11 +740,11 @@ describe('createEngine — once', () => {
       const path = makePath();
       const overshoot = (t: number) => (t < 1 ? Math.min(1.4, t * 2) : 1);
       createEngine(makeContainer([path]), { once: true, easing: overshoot });
-      FakeIO.instances[0].trigger(true);
-      vi.stubGlobal('scrollY', 240); // raw 0.8 → 1.4
+      scroll();
+      scroll(240); // raw 0.8 → 1.4
       raf.tick();
       expect(parseFloat(path.style.strokeDashoffset)).toBeCloseTo(-40, 3);
-      vi.stubGlobal('scrollY', 500);
+      scroll(500);
       raf.tick();
       expect(parseFloat(path.style.strokeDashoffset)).toBe(0);
     });
@@ -758,9 +752,9 @@ describe('createEngine — once', () => {
     it('bounce keeps its dips while scrolling forward', () => {
       const seen: number[] = [];
       createEngine(makeContainer([makePath()]), { once: true, easing: 'bounce', onProgress: (p) => seen.push(p) });
-      FakeIO.instances[0].trigger(true);
+      scroll();
       for (let y = -800; y <= 500; y += 26) {
-        vi.stubGlobal('scrollY', y);
+        scroll(y);
         raf.tick();
       }
       const dips = seen.filter((p, i) => i > 0 && p < seen[i - 1] - 1e-9).length;
@@ -771,9 +765,9 @@ describe('createEngine — once', () => {
     it('each staggered path settles on 1', () => {
       const paths = [makePath(), makePath(), makePath()];
       createEngine(makeContainer(paths), { once: true, easing: 'elastic', stagger: 0.1 });
-      FakeIO.instances[0].trigger(true);
+      scroll();
       for (let y = -800; y <= 900; y += 13) {
-        vi.stubGlobal('scrollY', y);
+        scroll(y);
         raf.tick();
       }
       paths.forEach((p) => expect(parseFloat(p.style.strokeDashoffset)).toBe(0));
@@ -782,11 +776,11 @@ describe('createEngine — once', () => {
     it('clip mode ends fully revealed, not on the overshoot', () => {
       const container = makeContainer();
       createEngine(container, { clip: 'left', once: true, easing: 'elastic' });
-      FakeIO.instances[0].trigger(true);
-      vi.stubGlobal('scrollY', -540);
+      scroll();
+      scroll(-540);
       raf.tick();
       expect(container.style.clipPath).toBe('inset(0 -25% 0 0)');
-      vi.stubGlobal('scrollY', 600);
+      scroll(600);
       raf.tick();
       expect(container.style.clipPath).toBe('inset(0 0% 0 0)');
     });
@@ -797,17 +791,17 @@ describe('createEngine — once', () => {
       it(`after seek(), once still holds the sought frame as its floor (${easing})`, () => {
         const ease = easing === 'linear' ? (t: number) => t : (t: number) => t * t;
         const instance = createEngine(makeContainer([makePath()]), { once: true, easing });
-        FakeIO.instances[0].trigger(true);
-        vi.stubGlobal('scrollY', 240); // raw 0.8
+        scroll();
+        scroll(240); // raw 0.8
         raf.tick();
 
         instance.seek(0.5);
         expect(instance.getProgress()).toBe(0.5);
         instance.resume();
-        vi.stubGlobal('scrollY', -410); // raw 0.3: under the floor
+        scroll(-410); // raw 0.3: under the floor
         raf.tick();
         expect(instance.getProgress()).toBeCloseTo(Math.max(0.5, ease(0.3)), 6);
-        vi.stubGlobal('scrollY', 240); // raw 0.8
+        scroll(240); // raw 0.8
         raf.tick();
         expect(instance.getProgress()).toBeCloseTo(Math.max(0.5, ease(0.8)), 6);
       });
@@ -816,11 +810,11 @@ describe('createEngine — once', () => {
     it('replay() lets an overshooting once run again from 0', () => {
       const path = makePath();
       const instance = createEngine(makeContainer([path]), { once: true, easing: 'elastic' });
-      FakeIO.instances[0].trigger(true);
-      vi.stubGlobal('scrollY', 600);
+      scroll();
+      scroll(600);
       raf.tick();
       instance.replay();
-      vi.stubGlobal('scrollY', -540);
+      scroll(-540);
       raf.tick();
       expect(instance.getProgress()).toBeCloseTo(1.25, 6);
     });
@@ -844,13 +838,13 @@ describe('createEngine — once', () => {
       const second = makePath();
       const onComplete = vi.fn();
       createEngine(makeContainer([makePath(), second]), { stagger: 0.2, easing: 'linear', onComplete });
-      FakeIO.instances[0].trigger(true);
+      scroll();
 
-      vi.stubGlobal('scrollY', 300);
+      scroll(300);
       raf.tick();
       expect(parseFloat(second.style.strokeDashoffset)).toBeCloseTo(100 * (1 - 1001 / 1300), 1);
 
-      vi.stubGlobal('scrollY', 600);
+      scroll(600);
       raf.tick();
       expect(parseFloat(second.style.strokeDashoffset)).toBeCloseTo(0, 3);
       expect(onComplete).toHaveBeenCalledTimes(1);
@@ -860,8 +854,8 @@ describe('createEngine — once', () => {
       pageScrollsTo(2000);
       const second = makePath();
       createEngine(makeContainer([makePath(), second]), { stagger: 0.2, easing: 'linear' });
-      FakeIO.instances[0].trigger(true);
-      vi.stubGlobal('scrollY', 300);
+      scroll();
+      scroll(300);
       raf.tick();
       expect(parseFloat(second.style.strokeDashoffset)).toBeCloseTo(100 * (1 - 840 / 1300), 1);
     });
@@ -872,29 +866,27 @@ describe('createEngine — once', () => {
       pageScrollsTo(0);
       const second = makePath();
       createEngine(makeContainer([makePath(), second]), { stagger: 0.2, speed: 2, easing: 'linear' });
-      FakeIO.instances[0].trigger(true);
+      scroll();
       raf.tick();
       expect(parseFloat(second.style.strokeDashoffset)).toBeCloseTo(0, 3);
     });
 
     // trigger.end defaults to 'bottom top', the moment the drawing leaves the
     // screen, and every later staggered window ends after it. The loop stopped at
-    // that exit, so those paths froze short of 1 and onComplete never fired.
+    // that exit, so those paths froze short of 1 and onComplete never fired. The
+    // frames run until the last path is done now (core/frame-gate).
     it('keeps following the scroll off screen until the last staggered window ends', () => {
       pageScrollsTo(4200);
       const second = makePath();
       const onComplete = vi.fn();
       createEngine(makeContainer([makePath(), second]), { stagger: 0.2, easing: 'linear', onComplete });
-      const io = FakeIO.instances[0];
-      io.trigger(true);
-      vi.stubGlobal('scrollY', 550); // past trigger.end (500): the drawing has left
+      scroll(550); // past trigger.end (500): the drawing has left
       raf.tick();
-      io.trigger(false);
 
-      vi.stubGlobal('scrollY', 700);
+      scroll(700);
       raf.tick();
       expect(parseFloat(second.style.strokeDashoffset)).toBeCloseTo(100 * (1 - 1240 / 1300), 1);
-      vi.stubGlobal('scrollY', 800);
+      scroll(800);
       raf.tick();
       expect(parseFloat(second.style.strokeDashoffset)).toBeCloseTo(0, 3);
       expect(onComplete).toHaveBeenCalledTimes(1);
@@ -905,14 +897,16 @@ describe('createEngine — once', () => {
       expect(raf.schedule.mock.calls.length).toBe(scheduled);
     });
 
-    it('without stagger, still stops when the drawing leaves the screen', () => {
-      createEngine(makeContainer([makePath()]), { easing: 'linear' });
-      const io = FakeIO.instances[0];
-      io.trigger(true);
-      vi.stubGlobal('scrollY', 550);
+    it('without stagger, still stops when the drawing leaves its window', () => {
+      const onProgress = vi.fn(); // once a frame
+      createEngine(makeContainer([makePath()]), { easing: 'linear', onProgress });
+      scroll(550);
       raf.tick();
-      io.trigger(false);
-      expect(raf.cancel).toHaveBeenCalled();
+      const frames = onProgress.mock.calls.length;
+      raf.tick();
+      scroll(600);
+      raf.tick();
+      expect(onProgress.mock.calls.length).toBe(frames);
     });
   });
 });
@@ -920,61 +914,167 @@ describe('createEngine — once', () => {
 // ── repeat ───────────────────────────────────────────────────────────────────
 
 describe('createEngine — repeat', () => {
-  it('repeat:1 resets paths after onComplete and repeatDelay', () => {
+  // speed 2 completes the draw halfway through the window (scrollY -150), so a
+  // scroll of 200 rests inside it, drawn whole: where a repeat restarts.
+  it('repeat:1 resets paths after onComplete and repeatDelay, inside the window', () => {
     vi.useFakeTimers();
     const path = makePath();
     const container = makeContainer([path]);
-    createEngine(container, { repeat: 1, repeatDelay: 100 });
+    const onComplete = vi.fn();
+    createEngine(container, { repeat: 1, repeatDelay: 100, speed: 2, once: true, onComplete });
 
-    vi.stubGlobal('scrollY', 500);
-    FakeIO.instances[0].trigger(true);
-    raf.tick(); // completes → setTimeout(reset, 100) scheduled
-
-    // Before delay: still complete
-    const offsetBeforeReset = parseFloat(path.style.strokeDashoffset);
+    scroll(200);
+    raf.tick(); // completes → the repeat waits 100ms
+    expect(onComplete).toHaveBeenCalledTimes(1);
+    expect(parseFloat(path.style.strokeDashoffset)).toBe(0);
 
     vi.advanceTimersByTime(100);
-
-    // After delay: dashoffset should have reset to full length
-    expect(parseFloat(path.style.strokeDashoffset)).toBeGreaterThan(offsetBeforeReset);
+    raf.tick(); // the restart: at an unchanged scroll it is drawn whole again
+    expect(onComplete).toHaveBeenCalledTimes(2);
+    vi.advanceTimersByTime(100);
+    raf.tick(); // repeat: 1 is spent
+    expect(onComplete).toHaveBeenCalledTimes(2);
   });
 
-  it('repeat:"infinite" keeps looping on each completion', () => {
+  it('repeat:"infinite" keeps looping on each completion while the scroll is in the window', () => {
     vi.useFakeTimers();
     const onComplete = vi.fn();
     const container  = makeContainer();
-    createEngine(container, { repeat: 'infinite', repeatDelay: 0, onComplete });
+    createEngine(container, { repeat: 'infinite', repeatDelay: 0, speed: 2, onComplete });
 
-    vi.stubGlobal('scrollY', 500);
-    FakeIO.instances[0].trigger(true);
+    scroll(200);
     raf.tick();                  // first complete
-    vi.advanceTimersByTime(0);   // reset fires immediately
+    vi.advanceTimersByTime(0);   // the repeat restarts on the next frame
     raf.tick();                  // second complete
     vi.advanceTimersByTime(0);
+    raf.tick();                  // third
 
-    expect(onComplete).toHaveBeenCalledTimes(2);
+    expect(onComplete).toHaveBeenCalledTimes(3);
+  });
+});
+
+/**
+ * A repeat restarts only while the scroll is inside the trigger window. 2.23.5's
+ * frame gate made every repeat timer repaint: past the window that repaint is
+ * drawn whole at once, completes, and starts the next timer, so a page resting
+ * below a `repeat: 'infinite'` drawing ran 60 frames and 60 onComplete calls a
+ * second, forever (2.23.4: none), and `repeat: 2` spent both repeats in a frame.
+ */
+describe('createEngine — repeat past the window', () => {
+  /** Frames requested since the last call. */
+  let seen = 0;
+  const framesSince = (): number => { const n = raf.schedule.mock.calls.length - seen; seen += n; return n; };
+  /** A second of timers and frames, as a browser at rest would run them. */
+  const rest = (): void => {
+    for (let i = 0; i < 60; i++) { vi.advanceTimersByTime(17); raf.tick(); }
+  };
+  beforeEach(() => { seen = 0; });
+
+  for (const [name, options] of [
+    ['repeat: "infinite", repeatDelay 0', { repeat: 'infinite', repeatDelay: 0 }],
+    ['repeat: "infinite", repeatDelay 500', { repeat: 'infinite', repeatDelay: 500 }],
+    ['repeat: 2', { repeat: 2 }],
+    ['clip, repeat: "infinite"', { clip: 'left', repeat: 'infinite' }],
+    ['once, repeat: "infinite"', { once: true, repeat: 'infinite' }],
+    ['stagger, repeat: "infinite"', { stagger: 0.3, repeat: 'infinite' }],
+  ] as const) {
+    it(`${name}: a jump past the window completes once, then rests`, () => {
+      vi.useFakeTimers();
+      const path = makePath();
+      const container = makeContainer([path, makePath()]);
+      const onComplete = vi.fn();
+      createEngine(container, { ...options, onComplete } as Parameters<typeof createEngine>[1]);
+      raf.tick();
+
+      scroll(5000);
+      raf.tick();
+      expect(onComplete).toHaveBeenCalledTimes(1);
+      framesSince();
+
+      rest();
+      expect(onComplete, 'a repeat restarted past the window').toHaveBeenCalledTimes(1);
+      expect(framesSince(), 'frames ran at rest past the window').toBe(0);
+      if (!('clip' in options)) expect(parseFloat(path.style.strokeDashoffset)).toBe(0);
+      else expect(container.style.clipPath).toBe('inset(0 0% 0 0)');
+    });
+  }
+
+  it('a jump back before the window leaves the draw where the scroll puts it', () => {
+    vi.useFakeTimers();
+    const path = makePath();
+    const onComplete = vi.fn();
+    createEngine(makeContainer([path]), { repeat: 'infinite', repeatDelay: 300, onComplete });
+    scroll(5000);
+    raf.tick();
+    scroll(-5000); // back before the window while the repeat waits
+    raf.tick();
+    framesSince();
+    rest();
+    expect(onComplete).toHaveBeenCalledTimes(1);
+    expect(framesSince()).toBe(0);
+    expect(parseFloat(path.style.strokeDashoffset)).toBe(100);
+  });
+
+  it('repeats again once the scroll comes back into the window', () => {
+    vi.useFakeTimers();
+    const path = makePath();
+    const onComplete = vi.fn();
+    createEngine(makeContainer([path]), { once: true, repeat: 'infinite', repeatDelay: 0, speed: 2, onComplete });
+    scroll(5000);
+    raf.tick();
+    rest();
+    expect(onComplete).toHaveBeenCalledTimes(1);
+
+    // Into the window, where speed 2 has it drawn whole: the waiting repeat
+    // restarts, and the next completion repeats again.
+    scroll(200);
+    raf.tick();
+    rest();
+    expect(onComplete.mock.calls.length).toBeGreaterThan(10);
+
+    // And `once` lets go on the restart: back near the start, the draw follows.
+    scroll(-700);
+    rest();
+    expect(parseFloat(path.style.strokeDashoffset)).toBeGreaterThan(50);
   });
 });
 
 // ── delay ────────────────────────────────────────────────────────────────────
 
 describe('createEngine — delay', () => {
-  it('does not observe the container immediately when delay > 0', () => {
+  it('runs no frame before the delay, even when scrolled', () => {
     vi.useFakeTimers();
-    const container = makeContainer();
-    createEngine(container, { delay: 200 });
+    const path = makePath();
+    createEngine(makeContainer([path]), { delay: 200 });
+    scroll(300);
+    raf.tick();
 
-    expect(FakeIO.instances[0].observe).not.toHaveBeenCalled();
+    expect(path.style.strokeDashoffset).toBe('100');
   });
 
-  it('observes the container after the delay has elapsed', () => {
+  it('draws from the scroll once the delay has elapsed', () => {
     vi.useFakeTimers();
-    const container = makeContainer();
-    createEngine(container, { delay: 200 });
+    const path = makePath();
+    createEngine(makeContainer([path]), { delay: 200, easing: 'linear' });
+    scroll(300);
 
     vi.advanceTimersByTime(200);
+    raf.tick();
 
-    expect(FakeIO.instances[0].observe).toHaveBeenCalledWith(container);
+    expect(parseFloat(path.style.strokeDashoffset)).toBeCloseTo(100 * (1 - 1100 / 1300), 1);
+  });
+
+  it('a pause() during the delay holds when the delay ends, and destroy() cancels it', () => {
+    vi.useFakeTimers();
+    const [a, b] = [makePath(), makePath()];
+    createEngine(makeContainer([a]), { delay: 200 }).pause();
+    createEngine(makeContainer([b]), { delay: 200 }).destroy();
+    scroll(300);
+    vi.advanceTimersByTime(200);
+    raf.tick();
+
+    expect(a.style.strokeDashoffset).toBe('100');
+    expect(b.style.strokeDashoffset).toBe('100');
   });
 });
 
@@ -986,8 +1086,7 @@ describe('createEngine — custom easing function', () => {
     const container    = makeContainer();
     createEngine(container, { easing: customEasing });
 
-    vi.stubGlobal('scrollY', 300);
-    FakeIO.instances[0].trigger(true);
+    scroll(300);
     raf.tick();
 
     expect(customEasing).toHaveBeenCalled();
@@ -1075,18 +1174,19 @@ describe('createEngine — clip mode repeat', () => {
   it('resets clipPath after repeatDelay when repeat:1 with clip mode', () => {
     vi.useFakeTimers();
     const container = makeContainer();
-    createEngine(container, { clip: 'left', repeat: 1, repeatDelay: 50 });
+    const onComplete = vi.fn();
+    createEngine(container, { clip: 'left', repeat: 1, repeatDelay: 50, speed: 2, onComplete });
 
-    vi.stubGlobal('scrollY', 500);
-    FakeIO.instances[0].trigger(true);
-    raf.tick(); // completes → clip fully revealed → setTimeout(reset, 50)
+    scroll(200); // inside the window, drawn whole at speed 2
+    raf.tick(); // completes → clip fully revealed → the repeat waits 50ms
+    expect(container.style.clipPath).toBe('inset(0 0% 0 0)');
 
-    const clipAfterComplete = container.style.clipPath;
-
-    vi.advanceTimersByTime(50); // reset fires
-
-    // After reset, clip should be back to hidden
-    expect(container.style.clipPath).not.toBe(clipAfterComplete);
+    vi.advanceTimersByTime(50);
+    raf.tick(); // the restart, and at an unchanged scroll the frame completes again
+    expect(onComplete).toHaveBeenCalledTimes(2);
+    vi.advanceTimersByTime(50);
+    raf.tick(); // repeat: 1 is spent
+    expect(onComplete).toHaveBeenCalledTimes(2);
   });
 });
 
@@ -1413,10 +1513,10 @@ describe('preset option', () => {
 
   it('spring preset uses spring easing (no error)', () => {
     const container = makeContainer();
-    vi.stubGlobal('scrollY', 500);
+    scroll(500);
     FakeIO.instances = [];
     const instance = createEngine(container, { preset: 'spring' });
-    FakeIO.instances[0].trigger(true);
+    scroll();
     raf.tick();
     expect(instance.getProgress()).toBeGreaterThanOrEqual(0);
     instance.destroy();

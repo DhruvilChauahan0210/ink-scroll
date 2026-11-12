@@ -17,14 +17,18 @@ export type RelatedLinks = {
   examples?: string[];
   /** Absolute paths to landing/comparison pages, with a hand-written label. */
   pages?: { href: string; label: string; blurb: string }[];
+  /** Tool slugs (data/tools.ts) that build what the post describes — at most two. */
+  tools?: string[];
 };
 
 export const RELATED_BY_POST: Record<string, RelatedLinks> = {
   'complete-guide-scroll-animations-2026': {
     examples: ['scroll-reveal', 'scroll-pin', 'scroll-snap', 'scroll-text', 'scroll-video'],
+    tools: ['scroll-reveal-generator', 'scroll-trigger-visualizer'],
   },
   'scroll-animation-performance': {
     examples: ['presets', 'logo-reveal'],
+    tools: ['css-scroll-driven-animation-generator'],
     pages: [
       { href: '/vs-gsap', label: 'svg-scroll-draw vs GSAP', blurb: 'Measured sizes and where GSAP is still the better call.' },
     ],
@@ -45,6 +49,7 @@ export const RELATED_BY_POST: Record<string, RelatedLinks> = {
   },
   'accessible-split-text-animation': {
     examples: ['scroll-text', 'scroll-text-lines'],
+    tools: ['text-animation-generator', 'typewriter-effect-generator'],
     pages: [
       { href: '/react-scroll-animation', label: 'React scroll animation', blurb: 'scrollText and the rest as React components and hooks.' },
       { href: '/blog/unslop-ai-looking-ui', label: 'Unslopping a site', blurb: 'The design audit that came after the accessibility one.' },
@@ -52,24 +57,28 @@ export const RELATED_BY_POST: Record<string, RelatedLinks> = {
   },
   'horizontal-scroll-sections': {
     examples: ['scroll-snap', 'scroll-pin'],
+    tools: ['horizontal-scroll-generator', 'css-scroll-snap-generator'],
     pages: [
       { href: '/vs-locomotive-scroll', label: 'vs Locomotive Scroll', blurb: 'Locomotive also does horizontal sections — and is smaller. What differs is scope.' },
     ],
   },
   'replace-aos-scrollreveal': {
     examples: ['scroll-reveal', 'scroll-animate-group'],
+    tools: ['aos-animation', 'scroll-reveal-generator'],
     pages: [
       { href: '/vs-aos', label: 'vs AOS and ScrollReveal', blurb: 'Both are smaller than us. The honest comparison, with measured figures.' },
     ],
   },
   'scroll-pin-without-gsap': {
     examples: ['scroll-pin', 'scroll-video'],
+    tools: ['scroll-pin-generator', 'scroll-video-scrub-generator'],
     pages: [
       { href: '/vs-scrollmagic', label: 'vs ScrollMagic', blurb: 'ScrollMagic pins too — but needs GSAP to animate anything.' },
     ],
   },
   'scroll-animation-groups': {
     examples: ['group-api', 'scroll-animate-group', 'sequence-api'],
+    tools: ['scroll-reveal-generator'],
   },
   'vue-svelte-solid-v2': {
     examples: ['vue', 'svelte', 'solid', 'astro'],
@@ -84,24 +93,29 @@ export const RELATED_BY_POST: Record<string, RelatedLinks> = {
   },
   'replace-gsap-scrolltrigger': {
     examples: ['scroll-animate', 'timeline-api', 'scroll-pin'],
+    tools: ['scroll-trigger-visualizer', 'scroll-pin-generator'],
     pages: [
       { href: '/vs-gsap', label: 'The full GSAP comparison', blurb: '10.7 KB vs 47.5 KB measured — and GSAP has been free since 2025.' },
     ],
   },
   '5-patterns-under-10-lines': {
     examples: ['scroll-reveal', 'scroll-counter', 'scroll-text', 'scroll-text-lines', 'presets'],
+    tools: ['counter-animation-generator', 'text-animation-generator'],
   },
   'scroll-path-morphing': {
     examples: ['logo-reveal', 'signature'],
+    tools: ['svg-morph-generator', 'svg-path-editor'],
   },
   'native-css-svg-scroll-animations': {
     examples: ['logo-reveal', 'presets'],
+    tools: ['css-scroll-driven-animation-generator', 'svg-line-drawing-generator'],
     pages: [
       { href: '/lenis-scroll-animation', label: 'Using Lenis alongside this', blurb: 'Smooth scrolling bypasses the native CSS path — here is why.' },
     ],
   },
   'gsap-drawsvg-alternative': {
     examples: ['logo-reveal', 'signature', 'line-chart', 'flowchart', 'network', 'map-route'],
+    tools: ['svg-path-viewer', 'svg-line-drawing-generator'],
     pages: [
       { href: '/vs-gsap', label: 'The full GSAP comparison', blurb: 'Beyond DrawSVG — the whole feature matrix, measured.' },
     ],

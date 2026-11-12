@@ -10,20 +10,16 @@ function makeSpan(): HTMLSpanElement {
 }
 
 class RafQueue {
-  private queue: FrameRequestCallback[] = [];
+  private queue: { id: number; cb: FrameRequestCallback }[] = [];
   private id = 0;
-
-  schedule = vi.fn((cb: FrameRequestCallback): number => {
-    this.queue.push(cb);
-    return ++this.id;
-  });
-
-  cancel = vi.fn();
-
-  tick() {
-    const cb = this.queue.shift();
-    cb?.(performance.now());
-  }
+  schedule = vi.fn((cb: FrameRequestCallback): number => { this.queue.push({ id: ++this.id, cb }); return this.id; });
+  cancel   = vi.fn((id: number) => { this.queue = this.queue.filter((f) => f.id !== id); });
+  /**
+   * One frame: every callback queued before it, as a browser runs them. The
+   * engines' frames follow the trigger window and wake on scroll events, so an
+   * engine an earlier test left can share the queue.
+   */
+  tick() { const frame = this.queue; this.queue = []; for (const f of frame) f.cb(performance.now()); }
 }
 
 class FakeIO {
@@ -47,6 +43,16 @@ class FakeIO {
 }
 
 // ── setup / teardown ──────────────────────────────────────────────────────────
+
+/**
+ * Scroll the page: set the offset and fire a scroll event, as a browser does.
+ * The frames follow the trigger window and wake on scroll (core/frame-gate),
+ * so moving `scrollY` alone is not a scroll.
+ */
+function scroll(y?: number): void {
+  if (y !== undefined) vi.stubGlobal('scrollY', y);
+  window.dispatchEvent(new Event('scroll'));
+}
 
 let raf: RafQueue;
 
@@ -105,9 +111,9 @@ describe('scrollCounter', () => {
 
   it('updates textContent on scroll frame', () => {
     const el = makeSpan();
-    vi.stubGlobal('scrollY', 400); // within trigger range
+    scroll(400); // within trigger range
     scrollCounter(el, { to: 1000 });
-    FakeIO.instances[0].trigger(true);
+    scroll();
     raf.tick();
     const val = parseInt(el.textContent ?? '0');
     expect(val).toBeGreaterThan(0);
@@ -160,19 +166,19 @@ describe('scrollCounter', () => {
       toJSON: () => ({}),
     });
     scrollCounter(el, { to: 500, onComplete });
-    FakeIO.instances[0].trigger(true);
+    scroll();
     raf.tick();
     expect(onComplete).toHaveBeenCalled();
   });
 
   it('freeze at max with once: true', () => {
     const el = makeSpan();
-    vi.stubGlobal('scrollY', 500);
+    scroll(500);
     const inst = scrollCounter(el, { to: 100, once: true });
-    FakeIO.instances[0].trigger(true);
+    scroll();
     raf.tick();
     const progressAtPeak = inst.getProgress();
-    vi.stubGlobal('scrollY', 0);
+    scroll(0);
     raf.tick();
     expect(inst.getProgress()).toBeGreaterThanOrEqual(progressAtPeak);
   });
@@ -196,7 +202,7 @@ describe('scrollCounter', () => {
   it('pause stops rAF scheduling', () => {
     const el = makeSpan();
     const inst = scrollCounter(el, { to: 100 });
-    FakeIO.instances[0].trigger(true);
+    scroll();
     raf.tick();
     const countBefore = raf.schedule.mock.calls.length;
     inst.pause();
@@ -207,7 +213,7 @@ describe('scrollCounter', () => {
   it('resume restarts after pause', () => {
     const el = makeSpan();
     const inst = scrollCounter(el, { to: 100 });
-    FakeIO.instances[0].trigger(true);
+    scroll();
     raf.tick();
     inst.pause();
     const countBefore = raf.schedule.mock.calls.length;
@@ -215,11 +221,12 @@ describe('scrollCounter', () => {
     expect(raf.schedule.mock.calls.length).toBeGreaterThan(countBefore);
   });
 
-  it('destroy disconnects observer', () => {
+  it('destroy stops listening for scroll', () => {
     const el = makeSpan();
+    const unlisten = vi.spyOn(window, 'removeEventListener');
     const inst = scrollCounter(el, { to: 100 });
     inst.destroy();
-    expect(FakeIO.instances[0].disconnect).toHaveBeenCalled();
+    expect(unlisten).toHaveBeenCalledWith('scroll', expect.any(Function), expect.anything());
   });
 
   it('sets --scroll-draw-progress CSS variable', () => {
@@ -273,15 +280,15 @@ describe('scrollCounter', () => {
       const el = belowTheFold();
       const inst = scrollCounter(el, { to: 1000, easing: 'elastic' });
       expect(el.textContent).toBe('0');
-      FakeIO.instances[0].trigger(true);
-      vi.stubGlobal('scrollY', 456);
+      scroll();
+      scroll(456);
       raf.tick();
       expect(el.textContent).toBe('1250');
-      vi.stubGlobal('scrollY', 900);
+      scroll(900);
       raf.tick();
       expect(el.textContent).toBe('1000');
       expect(inst.getProgress()).toBe(1);
-      vi.stubGlobal('scrollY', 0); // back: held
+      scroll(0); // back: held
       raf.tick();
       expect(el.textContent).toBe('1000');
     });
@@ -289,10 +296,10 @@ describe('scrollCounter', () => {
     it('bounce keeps its dips while scrolling forward', () => {
       const el = belowTheFold();
       scrollCounter(el, { to: 1000, easing: 'bounce' });
-      FakeIO.instances[0].trigger(true);
+      scroll();
       const seen: number[] = [];
       for (let y = 360; y <= 840; y += 8) {
-        vi.stubGlobal('scrollY', y);
+        scroll(y);
         raf.tick();
         seen.push(Number(el.textContent));
       }
@@ -303,14 +310,14 @@ describe('scrollCounter', () => {
     it('after seek(), once still holds the sought value as its floor', () => {
       const el = belowTheFold();
       const inst = scrollCounter(el, { to: 1000, easing: 'ease-in' });
-      FakeIO.instances[0].trigger(true);
+      scroll();
       inst.seek(0.5);
       expect(el.textContent).toBe('500');
       inst.resume();
-      vi.stubGlobal('scrollY', 504); // raw 0.3, eased 0.09: under the floor
+      scroll(504); // raw 0.3, eased 0.09: under the floor
       raf.tick();
       expect(el.textContent).toBe('500');
-      vi.stubGlobal('scrollY', 744); // raw 0.8, eased 0.64
+      scroll(744); // raw 0.8, eased 0.64
       raf.tick();
       expect(el.textContent).toBe('640');
     });
@@ -324,13 +331,13 @@ describe('scrollCounter', () => {
     it('after pause()', () => {
       const el = makeSpan();
       const inst = scrollCounter(el, { to: 100, easing: 'linear', once: false });
-      FakeIO.instances[0].trigger(true);
+      scroll();
       raf.tick();
       inst.pause();
       raf.tick(); // a frame pause() could not cancel in this fake sees `paused` and stops
       inst.replay();
       expect(el.textContent).toBe('0');
-      vi.stubGlobal('scrollY', 20);
+      scroll(20);
       raf.tick();
       expect(inst.getProgress()).toBeCloseTo(0.75, 6);
       expect(el.textContent).toBe('75');
@@ -339,12 +346,12 @@ describe('scrollCounter', () => {
     it('after seek()', () => {
       const el = makeSpan();
       const inst = scrollCounter(el, { to: 100, easing: 'linear' });
-      FakeIO.instances[0].trigger(true);
+      scroll();
       raf.tick();
       inst.seek(0.3);
       raf.tick();
       inst.replay();
-      vi.stubGlobal('scrollY', 20);
+      scroll(20);
       raf.tick();
       expect(el.textContent).toBe('75');
     });
@@ -352,10 +359,12 @@ describe('scrollCounter', () => {
     it('does not start a second loop when it was running', () => {
       const el = makeSpan();
       const inst = scrollCounter(el, { to: 100 });
-      FakeIO.instances[0].trigger(true);
-      const frames = raf.schedule.mock.calls.length;
+      scroll();
       inst.replay();
-      expect(raf.schedule.mock.calls.length).toBe(frames);
+      // One loop: each frame requests the next, once.
+      const frames = raf.schedule.mock.calls.length;
+      raf.tick();
+      expect(raf.schedule.mock.calls.length - frames).toBe(1);
     });
   });
 
@@ -381,7 +390,7 @@ describe('scrollCounter', () => {
   it('a blank trigger is the default one', () => {
     const el = makeSpan();
     const inst = scrollCounter(el, { to: 100, easing: 'linear', once: false, trigger: { start: '', end: '' } });
-    FakeIO.instances[0].trigger(true);
+    scroll();
     raf.tick();
     // rect top 300 at y 0: [300 − 640, 300 − 160] = [−340, 140], so 340 / 480 in.
     expect(inst.getProgress()).toBeCloseTo(340 / 480, 6);

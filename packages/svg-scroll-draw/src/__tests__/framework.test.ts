@@ -15,6 +15,7 @@ vi.mock('solid-js', () => ({
 }));
 
 import { ScrollDrawRef } from '../angular/index';
+import { _getRegistry } from '../core/registry';
 import { initScrollDraw } from '../astro/index';
 import { scrollDraw as svelteAction, createScrollDraw as svelteCreate } from '../svelte/index';
 import { useScrollDraw as solidUse, createScrollDraw as solidCreate } from '../solid/index';
@@ -42,7 +43,8 @@ class RafQueue {
   private id = 0;
   schedule = vi.fn((cb: FrameRequestCallback): number => { this.queue.push(cb); return ++this.id; });
   cancel   = vi.fn();
-  tick()   { const cb = this.queue.shift(); cb?.(performance.now()); }
+  /** One frame: every callback queued before it, as a browser runs them. */
+  tick()   { const frame = this.queue; this.queue = []; for (const cb of frame) cb(performance.now()); }
 }
 
 class FakeIO {
@@ -57,6 +59,18 @@ class FakeIO {
 }
 
 let raf: RafQueue;
+let listens: ReturnType<typeof vi.spyOn>;
+let unlistens: ReturnType<typeof vi.spyOn>;
+
+/**
+ * Every engine made, in order, by the scroll listener its frames wake on
+ * (core/frame-gate), and whether destroy() took that listener off again.
+ */
+function engines(): { gone: boolean }[] {
+  const scrolls = (spy: ReturnType<typeof vi.spyOn>) => spy.mock.calls.filter((c) => c[0] === 'scroll').map((c) => c[1]);
+  const removed = scrolls(unlistens);
+  return scrolls(listens).map((fn) => ({ gone: removed.includes(fn) }));
+}
 
 beforeEach(() => {
   raf = new RafQueue();
@@ -78,6 +92,8 @@ beforeEach(() => {
     top: 0, height: 500, left: 0, width: 500, right: 500, bottom: 500, x: 0, y: 0,
     toJSON: () => {},
   } as DOMRect);
+  listens = vi.spyOn(window, 'addEventListener');
+  unlistens = vi.spyOn(window, 'removeEventListener');
 });
 
 afterEach(() => {
@@ -89,11 +105,11 @@ afterEach(() => {
 // ── Angular — ScrollDrawRef ───────────────────────────────────────────────────
 
 describe('ScrollDrawRef (Angular)', () => {
-  it('init() starts observing the element', () => {
+  it('init() starts an engine on the element', () => {
     const ref = new ScrollDrawRef();
     const container = makeContainer();
     ref.init(container);
-    expect(FakeIO.instances[0].observe).toHaveBeenCalledWith(container);
+    expect(_getRegistry().has(container)).toBe(true);
   });
 
   it('init() returns the instance for chaining', () => {
@@ -101,11 +117,11 @@ describe('ScrollDrawRef (Angular)', () => {
     expect(ref.init(makeContainer())).toBe(ref);
   });
 
-  it('destroy() disconnects the observer', () => {
+  it('destroy() destroys the engine', () => {
     const ref = new ScrollDrawRef();
     ref.init(makeContainer());
     ref.destroy();
-    expect(FakeIO.instances[0].disconnect).toHaveBeenCalled();
+    expect(engines()[0].gone).toBe(true);
   });
 
   it('destroy() is a no-op before init()', () => {
@@ -123,11 +139,10 @@ describe('ScrollDrawRef (Angular)', () => {
     const ref       = new ScrollDrawRef();
     const container = makeContainer();
     ref.init(container);
-    const firstIO = FakeIO.instances[0];
     ref.init(container);
-    // First engine must have been disconnected before the second was created
-    expect(firstIO.disconnect).toHaveBeenCalled();
-    expect(FakeIO.instances).toHaveLength(2);
+    // First engine must have been destroyed before the second was created
+    expect(engines()[0].gone).toBe(true);
+    expect(engines()).toHaveLength(2);
   });
 
   it('replay() resets dashoffset to full length', () => {
@@ -136,7 +151,7 @@ describe('ScrollDrawRef (Angular)', () => {
     ref.init(container);
 
     vi.stubGlobal('scrollY', 500);
-    FakeIO.instances[0].trigger(true);
+    window.dispatchEvent(new Event('scroll'));
     raf.tick();
 
     ref.replay();
@@ -163,15 +178,15 @@ describe('ScrollDrawRef.update() (Angular ngOnChanges)', () => {
   it('is a no-op before init()', () => {
     const ref = new ScrollDrawRef();
     expect(() => ref.update({ speed: 2 })).not.toThrow();
-    expect(FakeIO.instances).toHaveLength(0);
+    expect(engines()).toHaveLength(0);
   });
 
   it('keeps the running engine when the options are equal', () => {
     const ref = new ScrollDrawRef();
     ref.init(makeContainer(), { speed: 1, trigger: { start: 'top 80%' } });
     ref.update({ speed: 1, trigger: { start: 'top 80%' } });
-    expect(FakeIO.instances).toHaveLength(1);
-    expect(FakeIO.instances[0].disconnect).not.toHaveBeenCalled();
+    expect(engines()).toHaveLength(1);
+    expect(engines()[0].gone).toBe(false);
   });
 
   it('rebuilds the engine on the same element when an option changes', () => {
@@ -179,9 +194,9 @@ describe('ScrollDrawRef.update() (Angular ngOnChanges)', () => {
     const container = makeContainer();
     ref.init(container, { speed: 1 });
     ref.update({ speed: 2 });
-    expect(FakeIO.instances).toHaveLength(2);
-    expect(FakeIO.instances[0].disconnect).toHaveBeenCalled();
-    expect(FakeIO.instances[1].observe).toHaveBeenCalledWith(container);
+    expect(engines()).toHaveLength(2);
+    expect(engines()[0].gone).toBe(true);
+    expect(_getRegistry().has(container)).toBe(true);
   });
 
   it('does nothing after destroy()', () => {
@@ -189,7 +204,7 @@ describe('ScrollDrawRef.update() (Angular ngOnChanges)', () => {
     ref.init(makeContainer(), { speed: 1 });
     ref.destroy();
     ref.update({ speed: 2 });
-    expect(FakeIO.instances).toHaveLength(1);
+    expect(engines()).toHaveLength(1);
   });
 });
 
@@ -252,7 +267,7 @@ describe('initScrollDraw (Astro)', () => {
     expect(instances).toHaveLength(1);
   });
 
-  it('each instance observes its own element', () => {
+  it('each instance runs on its own element', () => {
     const a = makeContainer();
     const b = makeContainer();
     a.setAttribute('data-scroll-draw', '');
@@ -260,8 +275,8 @@ describe('initScrollDraw (Astro)', () => {
 
     initScrollDraw();
 
-    expect(FakeIO.instances[0].observe).toHaveBeenCalledWith(a);
-    expect(FakeIO.instances[1].observe).toHaveBeenCalledWith(b);
+    expect(_getRegistry().has(a)).toBe(true);
+    expect(_getRegistry().has(b)).toBe(true);
   });
 });
 
@@ -275,17 +290,17 @@ describe('svelte scrollDraw action', () => {
     expect(typeof action.destroy).toBe('function');
   });
 
-  it('starts observing the node immediately on mount', () => {
+  it('starts an engine on the node immediately on mount', () => {
     const node = makeContainer();
     svelteAction(node);
-    expect(FakeIO.instances[0].observe).toHaveBeenCalledWith(node);
+    expect(_getRegistry().has(node)).toBe(true);
   });
 
-  it('destroy() disconnects the observer', () => {
+  it('destroy() destroys the engine', () => {
     const node   = makeContainer();
     const action = svelteAction(node);
     action.destroy();
-    expect(FakeIO.instances[0].disconnect).toHaveBeenCalled();
+    expect(engines()[0].gone).toBe(true);
   });
 
   it('update() replaces the engine with new options', () => {
@@ -294,8 +309,8 @@ describe('svelte scrollDraw action', () => {
     action.update({ fade: true });
 
     // Old engine is destroyed (disconnect called) and new one created
-    expect(FakeIO.instances[0].disconnect).toHaveBeenCalled();
-    expect(FakeIO.instances).toHaveLength(2);
+    expect(engines()[0].gone).toBe(true);
+    expect(engines()).toHaveLength(2);
 
     const path = node.querySelector('path') as SVGPathElement;
     expect(path.style.opacity).toBe('0'); // fade:true → hidden initially
@@ -306,8 +321,8 @@ describe('svelte scrollDraw action', () => {
     // the expression; tearing the draw down for each would restart it.
     const action = svelteAction(makeContainer(), { speed: 1, trigger: { start: 'top 80%' } });
     action.update({ speed: 1, trigger: { start: 'top 80%' } });
-    expect(FakeIO.instances).toHaveLength(1);
-    expect(FakeIO.instances[0].disconnect).not.toHaveBeenCalled();
+    expect(engines()).toHaveLength(1);
+    expect(engines()[0].gone).toBe(false);
   });
 
   it('passes options to the engine', () => {
@@ -359,13 +374,13 @@ describe('solid useScrollDraw', () => {
     ref(container);           // set the node
     mountCbs[0]();            // simulate Solid onMount
 
-    expect(FakeIO.instances[0].observe).toHaveBeenCalledWith(container);
+    expect(_getRegistry().has(container)).toBe(true);
   });
 
   it('does not create an engine if mount fires before the ref is set', () => {
     solidUse({ easing: 'ease-out' });
     mountCbs[0](); // mount before ref is set → el is undefined → no engine
-    expect(FakeIO.instances).toHaveLength(0);
+    expect(engines()).toHaveLength(0);
   });
 
   it('destroys the engine when cleanup fires', () => {
@@ -374,7 +389,7 @@ describe('solid useScrollDraw', () => {
     ref(container);
     mountCbs[0]();
     cleanupCbs[0](); // simulate Solid onCleanup
-    expect(FakeIO.instances[0].disconnect).toHaveBeenCalled();
+    expect(engines()[0].gone).toBe(true);
   });
 });
 
@@ -420,8 +435,8 @@ describe('solid option changes', () => {
     speed = 2;
     mountCbs[0](); // Solid re-runs the effect when the signal it read changes
 
-    expect(FakeIO.instances).toHaveLength(2);
-    expect(FakeIO.instances[0].disconnect).toHaveBeenCalled();
+    expect(engines()).toHaveLength(2);
+    expect(engines()[0].gone).toBe(true);
   });
 
   it('keeps the engine when the effect re-runs with equal options', () => {
@@ -430,8 +445,8 @@ describe('solid option changes', () => {
     mountCbs[0]();
     mountCbs[0]();
 
-    expect(FakeIO.instances).toHaveLength(1);
-    expect(FakeIO.instances[0].disconnect).not.toHaveBeenCalled();
+    expect(engines()).toHaveLength(1);
+    expect(engines()[0].gone).toBe(false);
   });
 
   it('getInstance() follows the rebuilt engine', () => {

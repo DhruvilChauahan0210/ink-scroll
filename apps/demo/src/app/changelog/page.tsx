@@ -55,6 +55,16 @@ const KINDS: { k: Kind; label: string }[] = [
  */
 const RELEASES: Release[] = [
   {
+    version: '2.23.5',
+    title: 'Every engine paints the frame a jump calls for',
+    date: '2026-11-13',
+    items: [
+      { type: 'fix', text: 'scrollDraw (JS path), scrollCounter, scrollText, scrollVideo, scrollProgress, scrollDrawTimeline and useScrollDrawProgress run their frames from the trigger window, as scrollAnimate does since 2.23.4: a jump across a whole window (End, an anchor link, a restored scroll) paints the end frame and fires onComplete. Outside every window a scroll requests no frame and reads no layout.' },
+      { type: 'fix', text: 'scrollDrawTimeline replay() restarts the frames after pause() or seek(); threshold and rootMargin apply to autoplay only.' },
+      { type: 'test', text: 'A browser spec of every engine after a jump, an idle test with 280 engines below the fold, and nine mutations, each caught.' },
+    ],
+  },
+  {
     version: '2.23.4',
     title: 'Parallax and reveals keep up with their own motion; replay() resumes',
     date: '2026-11-12',

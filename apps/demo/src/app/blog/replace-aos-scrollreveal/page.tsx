@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { seoTitle } from '../../_lib/seo';
 import { COMPETITORS, MEASURED_ON, SELF, SELF_ENTRIES } from '@/data/competitors';
 import { BlogArticle, Section, Code, Compare, Callout, Table, Figure } from '@/components/blog/BlogArticle';
@@ -265,6 +266,12 @@ export function FeaturesSection() {
           head={['AOS / ScrollReveal.js', 'scrollReveal']}
           rows={MIGRATION.map(([before, after]) => [before, <code key="a">{after}</code>])}
         />
+        <p>
+          Need to see what an attribute did before you replace it? The{' '}
+          <Link href="/aos-animation">AOS animation examples</Link> run every <code>data-aos</code> effect live, and the{' '}
+          <Link href="/scroll-reveal-generator">scroll reveal generator</Link> builds the <code>scrollReveal</code> call
+          that replaces it.
+        </p>
       </Section>
 
       <Section id="api" k="reference" title="Full API">

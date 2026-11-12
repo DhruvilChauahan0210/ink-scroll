@@ -2,8 +2,8 @@ import { useState, useEffect, useRef, type RefObject } from 'react';
 import { EASINGS } from '../core/easing';
 import { parseTrigger, computeProgress, computeTriggers } from '../core/trigger';
 import { measureTriggerFrame } from '../core/trigger-frame';
-import { watchLayout } from '../core/layout-watch';
 import { watchReducedMotion } from '../core/motion-watch';
+import { frameGate } from '../core/frame-gate';
 import type { EasingName, TriggerConfig } from '../core/types';
 
 export interface UseScrollDrawProgressOptions {
@@ -77,8 +77,6 @@ export function useScrollDrawProgress(
 
     let tStart   = 0;
     let tEnd     = 0;
-    let isVisible = false;
-    let rafId    = 0;
 
     function scrollPos(): number {
       if (scrollEl) return axis === 'x' ? scrollEl.scrollLeft : scrollEl.scrollTop;
@@ -100,8 +98,6 @@ export function useScrollDrawProgress(
     }
 
     function tick(): void {
-      if (!isVisible) return;
-
       const { speed = 1, easing = 'linear', once = false } = optsRef.current;
       const easeFn = typeof easing === 'function' ? easing : (EASINGS[easing] ?? EASINGS.linear);
 
@@ -109,51 +105,34 @@ export function useScrollDrawProgress(
       const p = easeFn(once ? (frozenRef.current = Math.max(frozenRef.current, raw)) : raw);
 
       setProgress(p);
-      rafId = requestAnimationFrame(tick);
     }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          isVisible = entry.isIntersecting;
-          if (isVisible) rafId = requestAnimationFrame(tick);
-          else cancelAnimationFrame(rafId);
-        });
-      },
-      { root: scrollEl ?? null, threshold: 0 },
-    );
 
     cacheTriggers();
-    observer.observe(el);
 
-    let resizeTimer: ReturnType<typeof setTimeout>;
-    function onResize(): void {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(cacheTriggers, 150);
-    }
-    window.addEventListener('resize', onResize);
-    window.addEventListener('orientationchange', onResize);
-    // Layout changes that are not window resizes: images, fonts, late content.
-    const unwatch = watchLayout([el], onResize);
+    // The frames follow the trigger window, as the engines' do (core/frame-gate):
+    // an IntersectionObserver on the element missed a jump across the whole
+    // window, and the hook kept returning the value from before it. It also
+    // re-measures on a resize or a layout change: images, fonts, late content.
+    const gate = frameGate(
+      scrollEl ?? window,
+      [el],
+      () => computeProgress(scrollPos(), tStart, tEnd, Math.min(optsRef.current.speed ?? 1, 1)),
+      tick,
+      cacheTriggers,
+    );
 
     // Reduced motion turned on mid-visit: complete, and no more ticks, as at
     // mount under it. One way, as in every engine (core/motion-live).
     const unwatchMotion = watchReducedMotion((reduced) => {
       if (!reduced) return;
       unwatchMotion();
-      cancelAnimationFrame(rafId);
-      observer.disconnect();
+      gate.off();
       setProgress(1);
     });
 
     return () => {
       unwatchMotion();
-      unwatch();
-      cancelAnimationFrame(rafId);
-      clearTimeout(resizeTimer);
-      observer.disconnect();
-      window.removeEventListener('resize', onResize);
-      window.removeEventListener('orientationchange', onResize);
+      gate.off();
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

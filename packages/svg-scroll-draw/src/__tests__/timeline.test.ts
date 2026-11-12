@@ -21,11 +21,16 @@ function makeContainer(pathSpecs: { cls: string }[]): HTMLDivElement {
 }
 
 class RafQueue {
-  private queue: FrameRequestCallback[] = [];
+  private queue: { id: number; cb: FrameRequestCallback }[] = [];
   private id = 0;
-  schedule = vi.fn((cb: FrameRequestCallback): number => { this.queue.push(cb); return ++this.id; });
-  cancel   = vi.fn();
-  tick()   { const cb = this.queue.shift(); cb?.(performance.now()); }
+  schedule = vi.fn((cb: FrameRequestCallback): number => { this.queue.push({ id: ++this.id, cb }); return this.id; });
+  cancel   = vi.fn((id: number) => { this.queue = this.queue.filter((f) => f.id !== id); });
+  /**
+   * One frame: every callback queued before it, as a browser runs them. The
+   * engines' frames follow the trigger window and wake on scroll events, so an
+   * engine an earlier test left can share the queue.
+   */
+  tick() { const frame = this.queue; this.queue = []; for (const f of frame) f.cb(performance.now()); }
 }
 
 class FakeIO {
@@ -40,6 +45,16 @@ class FakeIO {
 }
 
 // ── Setup ─────────────────────────────────────────────────────────────────────
+
+/**
+ * Scroll the page: set the offset and fire a scroll event, as a browser does.
+ * The frames follow the trigger window and wake on scroll (core/frame-gate),
+ * so moving `scrollY` alone is not a scroll.
+ */
+function scroll(y?: number): void {
+  if (y !== undefined) vi.stubGlobal('scrollY', y);
+  window.dispatchEvent(new Event('scroll'));
+}
 
 let raf: RafQueue;
 
@@ -116,12 +131,14 @@ describe('scrollDrawTimeline — initialisation', () => {
     expect(path.style.strokeDashoffset).toBe('100');
   });
 
-  it('observes the container via IntersectionObserver', () => {
+  it('listens for scroll on the window, and keeps no IntersectionObserver', () => {
     const container = makeContainer([{ cls: 'a' }]);
+    const listen = vi.spyOn(window, 'addEventListener');
     scrollDrawTimeline(container, {
       tracks: [{ selector: '.a', from: 0, to: 1 }],
     });
-    expect(FakeIO.instances[0].observe).toHaveBeenCalledWith(container);
+    expect(listen).toHaveBeenCalledWith('scroll', expect.any(Function), { passive: true });
+    expect(FakeIO.instances).toHaveLength(0);
   });
 });
 
@@ -172,8 +189,7 @@ describe('scrollDrawTimeline — CSS custom property', () => {
       tracks: [{ selector: '.p', from: 0, to: 1 }],
     });
 
-    vi.stubGlobal('scrollY', 300);
-    FakeIO.instances[0].trigger(true);
+    scroll(300);
     raf.tick();
 
     const val = container.style.getPropertyValue('--scroll-draw-progress');
@@ -183,13 +199,14 @@ describe('scrollDrawTimeline — CSS custom property', () => {
 });
 
 describe('scrollDrawTimeline — instance methods', () => {
-  it('destroy disconnects the IntersectionObserver', () => {
+  it('destroy stops listening for scroll', () => {
     const container = makeContainer([{ cls: 'p' }]);
+    const unlisten = vi.spyOn(window, 'removeEventListener');
     const instance = scrollDrawTimeline(container, {
       tracks: [{ selector: '.p', from: 0, to: 1 }],
     });
     instance.destroy();
-    expect(FakeIO.instances[0].disconnect).toHaveBeenCalled();
+    expect(unlisten).toHaveBeenCalledWith('scroll', expect.any(Function), expect.anything());
   });
 
   it('seek() moves to specified progress and pauses', () => {
@@ -236,8 +253,7 @@ describe('scrollDrawTimeline — instance methods', () => {
       onComplete,
     });
 
-    vi.stubGlobal('scrollY', 10000);
-    FakeIO.instances[0].trigger(true);
+    scroll(10000);
     raf.tick();
 
     expect(onComplete).toHaveBeenCalledOnce();
@@ -248,7 +264,7 @@ describe('scrollDrawTimeline — instance methods', () => {
     const instance  = scrollDrawTimeline(container, {
       tracks: [{ selector: '.p', from: 0, to: 1 }],
     });
-    FakeIO.instances[0].trigger(true);
+    scroll();
     instance.pause();
     expect(raf.cancel).toHaveBeenCalled();
   });
@@ -270,8 +286,7 @@ describe('scrollDrawTimeline — fade option', () => {
       tracks: [{ selector: '.p', from: 0, to: 1, fade: true }],
     });
 
-    vi.stubGlobal('scrollY', 300);
-    FakeIO.instances[0].trigger(true);
+    scroll(300);
     raf.tick();
 
     const path = container.querySelector('.p') as SVGPathElement;
@@ -289,32 +304,36 @@ describe('scrollDrawTimeline — completed flag reset (once:false)', () => {
     });
 
     // Complete it
-    vi.stubGlobal('scrollY', 10000);
-    FakeIO.instances[0].trigger(true);
+    scroll(10000);
     raf.tick();
     expect(onComplete).toHaveBeenCalledOnce();
 
     // Scroll back to before the trigger zone (scrollY < tStart = -800)
     // so alpha=0 < 1 → completed flag resets
-    vi.stubGlobal('scrollY', -1000);
+    scroll(-1000);
     raf.tick();
 
     // Complete again — onComplete fires a second time
-    vi.stubGlobal('scrollY', 10000);
+    scroll(10000);
     raf.tick();
     expect(onComplete).toHaveBeenCalledTimes(2);
   });
 });
 
-describe('scrollDrawTimeline — observer leaves viewport', () => {
-  it('cancels rAF when intersection observer fires as not-intersecting', () => {
+describe('scrollDrawTimeline — the scroll leaves the window', () => {
+  it('paints the frame that leaves it, then requests no more', () => {
     const container = makeContainer([{ cls: 'p' }]);
+    const path = container.querySelector<SVGPathElement>('.p')!;
     scrollDrawTimeline(container, { tracks: [{ selector: '.p', from: 0, to: 1 }] });
 
-    FakeIO.instances[0].trigger(true);  // becomes visible → rAF scheduled
-    FakeIO.instances[0].trigger(false); // leaves viewport → rAF cancelled
-
-    expect(raf.cancel).toHaveBeenCalled();
+    raf.tick();
+    scroll(5000); // past the end
+    raf.tick();
+    expect(path.style.strokeDashoffset).toBe('0');
+    const frames = raf.schedule.mock.calls.length;
+    raf.tick();
+    scroll(6000);
+    expect(raf.schedule.mock.calls.length).toBe(frames);
   });
 });
 
@@ -335,27 +354,31 @@ describe('scrollDrawTimeline — repeat option', () => {
   beforeEach(() => { vi.useFakeTimers(); });
   afterEach(()  => { vi.useRealTimers(); });
 
-  it('resets paths after completion when repeat:1 and once:true', () => {
+  // The window runs -800 → 0. speed 2 draws it whole halfway, so a scroll of
+  // -200 rests inside the window, drawn whole: where a repeat restarts.
+  it('resets paths after completion when repeat:1 and once:true, inside the window', () => {
+    const onComplete = vi.fn();
     const container = makeContainer([{ cls: 'p' }]);
     scrollDrawTimeline(container, {
       tracks:      [{ selector: '.p', from: 0, to: 1 }],
       once:        true,
+      speed:       2,
       repeat:      1,
       repeatDelay: 100,
+      onComplete,
     });
 
-    // Complete the timeline
-    vi.stubGlobal('scrollY', 10000);
-    FakeIO.instances[0].trigger(true);
+    scroll(-200);
     raf.tick();
-
     const path = container.querySelector('.p') as SVGPathElement;
-    // After completion, path is fully drawn
     expect(parseFloat(path.style.strokeDashoffset)).toBeCloseTo(0, 0);
 
-    // Advance past repeatDelay — paths should reset
+    // The restart lets `once` go: back near the start, the draw follows.
     vi.advanceTimersByTime(150);
-    expect(parseFloat(path.style.strokeDashoffset)).toBe(100);
+    scroll(-700);
+    raf.tick();
+    expect(parseFloat(path.style.strokeDashoffset)).toBeGreaterThan(50);
+    expect(onComplete).toHaveBeenCalledTimes(1);
   });
 
   it('fires onComplete on each repeat cycle', () => {
@@ -364,22 +387,52 @@ describe('scrollDrawTimeline — repeat option', () => {
     scrollDrawTimeline(container, {
       tracks:      [{ selector: '.p', from: 0, to: 1 }],
       once:        true,
+      speed:       2,
       repeat:      2,
       repeatDelay: 0,
       onComplete,
     });
 
     // First completion
-    vi.stubGlobal('scrollY', 10000);
-    FakeIO.instances[0].trigger(true);
+    scroll(-200);
     raf.tick();
     expect(onComplete).toHaveBeenCalledTimes(1);
 
-    // After reset, scroll is still past trigger → completes again
-    vi.advanceTimersByTime(0);
-    raf.tick();
-    expect(onComplete).toHaveBeenCalledTimes(2);
+    // After reset, scroll is still drawn whole → completes again, twice
+    for (let i = 0; i < 5; i++) { vi.advanceTimersByTime(0); raf.tick(); }
+    expect(onComplete).toHaveBeenCalledTimes(3);
   });
+
+  /**
+   * 2.23.5's frame gate made the repeat timer repaint wherever the scroll was:
+   * past the window that is drawn whole at once, completes, and starts the
+   * next timer — 60 frames and 60 onComplete calls a second, forever.
+   */
+  for (const repeatDelay of [0, 500]) {
+    it(`once + repeat: 'infinite', repeatDelay ${repeatDelay}: past the window, one onComplete and no frames`, () => {
+      const onComplete = vi.fn();
+      const container  = makeContainer([{ cls: 'p' }]);
+      scrollDrawTimeline(container, {
+        tracks: [{ selector: '.p', from: 0, to: 1 }],
+        once: true, repeat: 'infinite', repeatDelay, onComplete,
+      });
+      raf.tick();
+      scroll(10000);
+      raf.tick();
+      expect(onComplete).toHaveBeenCalledTimes(1);
+      const frames = raf.schedule.mock.calls.length;
+      for (let i = 0; i < 60; i++) { vi.advanceTimersByTime(17); raf.tick(); }
+      expect(onComplete, 'a repeat restarted past the window').toHaveBeenCalledTimes(1);
+      expect(raf.schedule.mock.calls.length - frames, 'frames ran at rest past the window').toBe(0);
+      const path = container.querySelector('.p') as SVGPathElement;
+      expect(parseFloat(path.style.strokeDashoffset)).toBeCloseTo(0, 5);
+
+      // Back inside the window the waiting repeat restarts: `once` lets go.
+      scroll(-700);
+      raf.tick();
+      expect(parseFloat(path.style.strokeDashoffset)).toBeGreaterThan(50);
+    });
+  }
 
   it('does not reset when repeat is not set', () => {
     const container = makeContainer([{ cls: 'p' }]);
@@ -388,8 +441,7 @@ describe('scrollDrawTimeline — repeat option', () => {
       once:   true,
     });
 
-    vi.stubGlobal('scrollY', 10000);
-    FakeIO.instances[0].trigger(true);
+    scroll(10000);
     raf.tick();
 
     const path = container.querySelector('.p') as SVGPathElement;
@@ -407,8 +459,7 @@ describe('scrollDrawTimeline — repeat option', () => {
       repeatDelay: 500,
     });
 
-    vi.stubGlobal('scrollY', 10000);
-    FakeIO.instances[0].trigger(true);
+    scroll(10000);
     raf.tick();
 
     const path = container.querySelector('.p') as SVGPathElement;
@@ -438,21 +489,20 @@ describe('scrollDrawTimeline — repeat option', () => {
     const instance   = scrollDrawTimeline(container, {
       tracks:      [{ selector: '.p', from: 0, to: 1 }],
       once:        true,
+      speed:       2,
       repeat:      1,
       repeatDelay: 0,
       onComplete,
     });
 
-    // Complete once (uses up the 1 repeat)
-    vi.stubGlobal('scrollY', 10000);
-    FakeIO.instances[0].trigger(true);
+    // Complete once (uses up the 1 repeat), inside the window at speed 2
+    scroll(-200);
     raf.tick();
     vi.advanceTimersByTime(0);
     raf.tick(); // second completion uses up the repeat slot
 
     // Manually replay — repeat counter should be restored
     instance.replay();
-    vi.stubGlobal('scrollY', 10000);
     raf.tick();
     expect(onComplete).toHaveBeenCalledTimes(3); // original + repeat + after replay
   });
@@ -472,8 +522,7 @@ describe('scrollDrawTimeline — loop option', () => {
     });
 
     // Complete the scroll-driven phase
-    vi.stubGlobal('scrollY', 10000);
-    FakeIO.instances[0].trigger(true);
+    scroll(10000);
     raf.tick();
 
     // Advance past repeatDelay — loop should start
@@ -496,8 +545,7 @@ describe('scrollDrawTimeline — loop option', () => {
     });
 
     // First completion (scroll-driven)
-    vi.stubGlobal('scrollY', 10000);
-    FakeIO.instances[0].trigger(true);
+    scroll(10000);
     raf.tick();
     expect(onComplete).toHaveBeenCalledTimes(1);
 
@@ -516,8 +564,7 @@ describe('scrollDrawTimeline — loop option', () => {
       loop:   false,
     });
 
-    vi.stubGlobal('scrollY', 10000);
-    FakeIO.instances[0].trigger(true);
+    scroll(10000);
     raf.tick();
 
     const path = container.querySelector('.p') as SVGPathElement;
@@ -538,8 +585,7 @@ describe('scrollDrawTimeline — loop option', () => {
     });
 
     // Complete scroll-driven phase (uses the 1 loop slot)
-    vi.stubGlobal('scrollY', 10000);
-    FakeIO.instances[0].trigger(true);
+    scroll(10000);
     raf.tick();
     vi.advanceTimersByTime(0);
 
@@ -557,8 +603,7 @@ describe('scrollDrawTimeline — loop option', () => {
       repeatDelay:  500,
     });
 
-    vi.stubGlobal('scrollY', 10000);
-    FakeIO.instances[0].trigger(true);
+    scroll(10000);
     raf.tick();
 
     instance.destroy();

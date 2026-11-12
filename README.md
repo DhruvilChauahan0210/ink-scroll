@@ -26,7 +26,7 @@ Works in **React · Next.js · Vue 3 · Svelte · Solid · Angular · Nuxt · As
 
 ## Features at a glance
 
-- **11.6 KB gzipped** for the whole main entry — and you rarely need all of it. Every API is a separate entry point: `scrollReveal` is 5.7 KB, `scrollPin` 1.6 KB, `scrollSnap` 2.0 KB. [Full size table below](#bundle-sizes), measured by `npm run size` and enforced in CI.
+- **11.4 KB gzipped** for the whole main entry — and you rarely need all of it. Every API is a separate entry point: `scrollReveal` is 5.7 KB, `scrollPin` 1.6 KB, `scrollSnap` 2.0 KB. [Full size table below](#bundle-sizes), measured by `npm run size` and enforced in CI.
 - **Native CSS fast path** — where the browser supports scroll-driven animations the draw runs on a CSS `view-timeline` with zero per-frame JavaScript, and falls back to the JS engine automatically everywhere else. Both engines are [verified to produce the same output](#native-css-rendering) by a cross-browser test suite rather than assumed to.
 - **Zero dependencies** — no GSAP, no ScrollTrigger, no heavyweight runtime
 - **Reduced motion, followed live** — under `prefers-reduced-motion: reduce` every effect shows its finished state instead of animating, and a reader who turns the setting on while the page is open sees everything still moving finish at once. Scrubbing that moves only with the reader's own scroll (the horizontal strip, a timeline's scroll pass) keeps working, because holding it would hide content
@@ -39,8 +39,8 @@ Works in **React · Next.js · Vue 3 · Svelte · Solid · Angular · Nuxt · As
 - **30+ options** — easing, stagger, fade, stroke color/width lerp, fill opacity, clip reveal, morphTo, velocityScale, waypoints, callbacks, repeat, autoReverse, and more
 - **Group / Sequence / Timeline APIs** — animate multiple containers simultaneously, one-after-another, or on independent scroll windows with `loop` for auto-looping after scroll completion
 - **CSS custom property** — `--scroll-draw-progress` is set on every frame so you can drive any CSS animation without a callback
-- **795 tests across 39 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
-- **284 browser tests on top of those**, run against Chromium, Firefox and WebKit in CI. The unit suite runs in jsdom, where `getTotalLength` is stubbed and `IntersectionObserver` is faked — it can check the engine's arithmetic but nothing about real browser behaviour. Both counts are derived from the suites themselves and enforced in CI, so neither can quietly drift out of date
+- **833 tests across 39 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
+- **295 browser tests on top of those**, run against Chromium, Firefox and WebKit in CI. The unit suite runs in jsdom, where `getTotalLength` is stubbed and `IntersectionObserver` is faked — it can check the engine's arithmetic but nothing about real browser behaviour. Both counts are derived from the suites themselves and enforced in CI, so neither can quietly drift out of date
 
 ---
 
@@ -103,7 +103,7 @@ options are all decent — they just make different trade-offs:
 
 Sizes measured 2026-08-14 at gzip level 9 — see `CLAIMS-AUDIT.md` for the commands.
 
-`svg-scroll-draw` is 11.6 KB for every API at once, and each API is a separate entry point
+`svg-scroll-draw` is 11.4 KB for every API at once, and each API is a separate entry point
 (`scrollReveal` alone is 5.7 KB). If you need one effect, the small libraries above are a
 fair choice. If you need several, one dependency beats four.
 
@@ -390,8 +390,8 @@ The library falls back to the JS engine automatically when:
 | `onComplete` | `() => void` | — | Fires once when all paths reach full draw progress |
 | `native` | `boolean` | `true` | Use the native CSS fast path when supported. Set `false` to always use the JS engine |
 | `debug` | `boolean` | `false` | Render a visual overlay showing trigger zones (dev only) |
-| `threshold` | `number` | `0` | IntersectionObserver threshold |
-| `rootMargin` | `string` | `"0px"` | IntersectionObserver rootMargin |
+| `threshold` | `number` | `0` | IntersectionObserver threshold for `autoplay` (scroll-linked drawing has no observer since 2.23.5) |
+| `rootMargin` | `string` | `"0px"` | IntersectionObserver rootMargin for `autoplay` |
 
 ### Trigger anchors
 
@@ -806,39 +806,39 @@ outgrows its budget.
 <!-- size-table:start -->
 | Entry point                          | Raw | Gzipped |
 |--------------------------------------|----:|--------:|
-| `svg-scroll-draw/nuxt`               | 39.6 KB | **13.3 KB** |
-| `svg-scroll-draw/react`              | 39.2 KB | **13.2 KB** |
-| `svg-scroll-draw/vue`                | 39.4 KB | **13.2 KB** |
-| `svg-scroll-draw/angular`            | 37.3 KB | **12.6 KB** |
-| `svg-scroll-draw/svelte`             | 37.4 KB | **12.6 KB** |
-| `svg-scroll-draw/solid`              | 37.1 KB | **12.6 KB** |
-| `svg-scroll-draw/astro`              | 35.4 KB | **12.2 KB** |
-| `svg-scroll-draw`                    | 33.6 KB | **11.6 KB** |
-| `dist/cdn/svg-scroll-draw.global.js` | 32.5 KB | **11.5 KB** |
-| `svg-scroll-draw/group`              | 29.9 KB | **10.2 KB** |
-| `svg-scroll-draw/web-component`      | 21.0 KB | **7.8 KB** |
-| `svg-scroll-draw/reveal`             | 13.9 KB | **5.7 KB** |
-| `svg-scroll-draw/horizontal`         | 14.1 KB | **5.6 KB** |
+| `svg-scroll-draw/nuxt`               | 37.2 KB | **12.9 KB** |
+| `svg-scroll-draw/vue`                | 36.9 KB | **12.9 KB** |
+| `svg-scroll-draw/react`              | 36.3 KB | **12.8 KB** |
+| `svg-scroll-draw/angular`            | 34.8 KB | **12.3 KB** |
+| `svg-scroll-draw/solid`              | 34.6 KB | **12.2 KB** |
+| `svg-scroll-draw/svelte`             | 35.0 KB | **12.2 KB** |
+| `svg-scroll-draw/astro`              | 33.5 KB | **11.9 KB** |
+| `svg-scroll-draw`                    | 32.3 KB | **11.4 KB** |
+| `dist/cdn/svg-scroll-draw.global.js` | 31.2 KB | **11.4 KB** |
+| `svg-scroll-draw/group`              | 29.1 KB | **10.1 KB** |
+| `svg-scroll-draw/web-component`      | 20.6 KB | **7.8 KB** |
+| `svg-scroll-draw/reveal`             | 13.7 KB | **5.7 KB** |
+| `svg-scroll-draw/horizontal`         | 14.0 KB | **5.6 KB** |
 | `svg-scroll-draw/scrollreveal/react` | 12.3 KB | **4.8 KB** |
 | `svg-scroll-draw/scrollreveal`       | 12.1 KB | **4.7 KB** |
 | `dist/cdn/scrollreveal.global.js`    | 11.7 KB | **4.6 KB** |
 | `svg-scroll-draw/vivus/react`        | 12.0 KB | **4.3 KB** |
+| `svg-scroll-draw/timeline`           | 9.8 KB | **4.2 KB** |
 | `svg-scroll-draw/vivus`              | 11.7 KB | **4.2 KB** |
-| `svg-scroll-draw/timeline`           | 9.9 KB | **4.1 KB** |
 | `dist/cdn/vivus.global.js`           | 11.1 KB | **3.9 KB** |
-| `svg-scroll-draw/text`               | 8.1 KB | **3.5 KB** |
+| `svg-scroll-draw/text`               | 7.9 KB | **3.5 KB** |
 | `svg-scroll-draw/aos/react`          | 9.2 KB | **3.4 KB** |
 | `svg-scroll-draw/aos`                | 8.9 KB | **3.2 KB** |
 | `dist/cdn/aos.global.js`             | 8.7 KB | **3.2 KB** |
-| `svg-scroll-draw/video`              | 6.3 KB | **2.8 KB** |
-| `svg-scroll-draw/progress`           | 5.5 KB | **2.4 KB** |
-| `svg-scroll-draw/cinematic`          | 5.2 KB | **2.3 KB** |
+| `svg-scroll-draw/video`              | 6.1 KB | **2.9 KB** |
+| `svg-scroll-draw/progress`           | 5.3 KB | **2.4 KB** |
+| `svg-scroll-draw/cinematic`          | 5.1 KB | **2.3 KB** |
 | `svg-scroll-draw/snap`               | 4.2 KB | **2.0 KB** |
 | `svg-scroll-draw/devtools`           | 4.0 KB | **1.8 KB** |
 | `svg-scroll-draw/pin`                | 3.7 KB | **1.6 KB** |
 | `svg-scroll-draw/lenis`              | 0.4 KB | **0.2 KB** |
 
-Entries share code through chunks instead of each carrying its own copy, so `svg-scroll-draw` + `svg-scroll-draw/react` together is **14.8 KB**, not 11.6 KB + 13.2 KB.
+Entries share code through chunks instead of each carrying its own copy, so `svg-scroll-draw` + `svg-scroll-draw/react` together is **14.3 KB**, not 11.4 KB + 12.8 KB.
 <!-- size-table:end -->
 
 The framework entries are larger because each re-exports the full API surface for that

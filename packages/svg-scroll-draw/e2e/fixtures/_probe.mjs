@@ -57,8 +57,10 @@ export function docTop(el) {
 }
 
 /**
- * Wrap `requestAnimationFrame` and `IntersectionObserver` so a fixture can ask
- * whether anything is still running after it tore its components down.
+ * Wrap `requestAnimationFrame`, `IntersectionObserver` and the window's scroll
+ * listeners so a fixture can ask whether anything is still running after it
+ * tore its components down. The scroll-linked engines run their frames from a
+ * scroll listener since 2.23.5 (core/frame-gate); autoplay still observes.
  *
  * This is what "unmount cleanly" means for the framework wrappers: not just that
  * the element left the DOM, but that the engine behind it stopped. A leaked rAF
@@ -86,10 +88,24 @@ export function installLeakCounters() {
     disconnect() { live -= this.#observed; this.#observed = 0; return super.disconnect(); }
   };
 
+  const scrolls = new Set();
+  let scrollAdds = 0;
+  const add = window.addEventListener.bind(window);
+  const remove = window.removeEventListener.bind(window);
+  window.addEventListener = (type, fn, opts) => {
+    if (type === 'scroll' && !scrolls.has(fn)) { scrolls.add(fn); scrollAdds++; }
+    return add(type, fn, opts);
+  };
+  window.removeEventListener = (type, fn, opts) => {
+    if (type === 'scroll') scrolls.delete(fn);
+    return remove(type, fn, opts);
+  };
+
   return {
-    liveObservers: () => live,
-    /** Every observe() ever made: it goes up each time an engine starts. */
-    observeCalls: () => observeCalls,
+    /** Observers still observing, and scroll listeners still listening. */
+    liveWatchers: () => live + scrolls.size,
+    /** Every observe() and scroll listener ever added: it goes up each time an engine starts. */
+    starts: () => observeCalls + scrollAdds,
     /** Frames of animation work observed across `n` real frames. */
     async ticksOver(n) {
       const before = ticks;

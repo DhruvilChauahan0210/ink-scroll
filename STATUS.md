@@ -1,10 +1,10 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **2.23.4** staged on `feat/tools-kit-and-fixes` (not tagged); npm `latest` is **2.23.3** (`v2.23.3` on `f4ee078`, published 2026-11-12 through trusted publishing; 2.23.2 was tagged but never published)
-> Tests: **795 unit** across 39 suites · **284 browser tests** per engine (852 runs
-> across Chromium/Firefox/WebKit) · **123 mutations**, each caught by the one test
+> Current version: **2.23.5** staged on `feat/tools-tests-gates-links` (not tagged); npm `latest` is **2.23.4** (`v2.23.4` on `06cfc6c`, published 2026-11-12)
+> Tests: **833 unit** across 40 suites · **295 browser tests** per engine (885 runs
+> across Chromium/Firefox/WebKit) · **133 mutations**, each caught by the one test
 > named for it · **91.5% line coverage** (gate 90/90/82/82)
-> Bundle: **11.6 KB gzipped** (main entry as shipped files, chunks included; per-API entries from 0.2 KB) · zero runtime dependencies
+> Bundle: **11.4 KB gzipped** (main entry as shipped files, chunks included; per-API entries from 0.2 KB) · zero runtime dependencies
 > Last updated: 2026-11-11
 
 ---
@@ -49,11 +49,11 @@
 - [x] `scrollAnimateGroup` + `scrollAnimateSequence` + `scrollParallaxGroup` in `svg-scroll-draw/group`
 
 ### Testing
-- [x] 795 tests across 39 suites — `motionLive` (reduced motion turned on mid-visit, every engine and the React hook), `reactive` (the wrappers' option fingerprint and live callbacks), `directives` (the built files' "use client"), `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollText` (23)
+- [x] 833 tests across 40 suites — `motionLive` (reduced motion turned on mid-visit, every engine and the React hook), `reactive` (the wrappers' option fingerprint and live callbacks), `directives` (the built files' "use client"), `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollText` (23)
 - [x] Initial state fix — `createAnimateEngine` and `scrollCounter` now apply correct alpha immediately on init (no flash before IO fires)
 
 ### Browser tests (Phase 2, `packages/svg-scroll-draw/e2e`)
-284 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
+295 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
 `helpers.ts` (deterministic sweep — scroll to a fixed offset, wait two frames,
 read) and `fixtures/_probe.mjs` (parsing stays in the page, so specs assert on
 numbers).
@@ -76,7 +76,7 @@ numbers).
 - [x] `motion-live` — reduced motion turned on after load (`emulateMedia`): a part-drawn drawing, a drawing, reveal cards, split text, a counter and parallax all finish without a scroll, each `onComplete` once, the screen-reader copy once; nothing moves afterwards; a `replay()` taken off the instance is ignored; turning it off leaves everything finished. Video and cinematic suites turn it on mid-scrub
 - [x] `frameworks` — all eight wrappers (React, Vue, Solid, Svelte, Angular, Astro, Nuxt, the web component) mounted for real and held to one contract: the engine runs, unmounting leaks no observer and no frame loop, re-mounting works, and option changes reach the engine only where the wrapper claims they do. React/Vue/Solid/Nuxt are bundled from `dist/` by `e2e/build-fixtures.mjs`
 - [x] `cdn` — both CDN builds loaded from a plain `<script src>`: the production one exposes the API, registers `<scroll-draw>` and says nothing; the dev one reports the same mistakes the production build hides, and does not mistake a stroke set from CSS for a missing one
-- [x] `scripts/mutation-check.mjs` — 123 one-line source mutations, each required to fail the single test named for it; `--anchors` checks in a second that every one still applies (verify and CI)
+- [x] `scripts/mutation-check.mjs` — 133 one-line source mutations, each required to fail the single test named for it; `--anchors` checks in a second that every one still applies (verify and CI)
 - [x] `scripts/make-fixture-video.mjs` — reproducible 4s scrub clip, no system tooling needed
 
 ### Browser tests still missing
@@ -135,6 +135,13 @@ at all.
 - [x] MobileMenu version badge updated to v2.7.0
 
 ## Remaining / Next
+
+### Tools test, window gate everywhere, links (2026-11-13; branch `feat/tools-tests-gates-links`)
+
+- [x] `npm run test:tools` (CI, e2e job): every tool's Run it page built from its code module and run in Chromium against dist — 25 tools, 36 pages, ~15 s; found the path editor's short page
+- [x] 2.23.5: scrollDraw JS path, counter, text, video, progress, timeline and useScrollDrawProgress gated on the trigger window (shared core/frame-gate), so a jump across a window paints the end and fires onComplete; 0 frames and 0 layout reads outside every window with 280 engines; main entry 11.4 KB
+- [x] In-content links from docs, 17 examples, 12 posts, guides, vs-aos and the React page to the tools
+- [ ] cinematic is still IntersectionObserver-gated
 
 ### Tool kit everywhere, three tools and 2.23.4 (2026-11-12; branch `feat/tools-kit-and-fixes`)
 

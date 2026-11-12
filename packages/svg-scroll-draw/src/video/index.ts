@@ -2,9 +2,9 @@ import type { EasingName, ScrollDrawInstance, TriggerConfig } from '../core/type
 import { EASINGS } from '../core/easing';
 import { parseTrigger, computeProgress, computeTriggers } from '../core/trigger';
 import { _register, _unregister } from '../core/registry';
-import { watchLayout } from '../core/layout-watch';
 import { warn } from '../core/env';
 import { watchReducedMotion } from '../core/motion-watch';
+import { frameGate } from '../core/frame-gate';
 
 // ── Public types ──────────────────────────────────────────────────────────────
 
@@ -85,8 +85,6 @@ export function scrollVideo(
   // ── State ──────────────────────────────────────────────────────────────────
   let tStart       = 0;
   let tEnd         = 0;
-  let rafId        = 0;
-  let isVisible    = false;
   let paused       = false;
   /** With `once`, the floor seek() set: -1 when there is none. */
   let frozenAlpha  = -1;
@@ -134,11 +132,14 @@ export function scrollVideo(
     onProgress?.(alpha);
   }
 
+  /** Where the scroll is through the window: what runs the frames (core/frame-gate). */
+  const at = (): number => computeProgress(scrollPos(), tStart, tEnd, 1);
+
   function update(): void {
     // Reduced motion shows the last frame once, at metadata. The triggers are
     // never measured then, so a scroll-driven update would seek back to frame 0.
-    if (!isVisible || paused || !ready || prefersReduced) return;
-    const progress = computeProgress(scrollPos(), tStart, tEnd, 1);
+    if (!ready || prefersReduced) return;
+    const progress = at();
     const alpha = once
       ? Math.max(frozenAlpha, easeFn(frozenRaw = Math.max(frozenRaw, progress)))
       : easeFn(progress);
@@ -150,8 +151,16 @@ export function scrollVideo(
     } else if (alpha < 1 && !once) {
       completed = false;
     }
-    rafId = requestAnimationFrame(update);
   }
+
+  // The frames follow the trigger window, not an observer of the video: a jump
+  // across the whole window never had it on screen, so it stayed on its first
+  // frame and onComplete never fired. It also re-measures on a resize or a
+  // layout change: images, fonts, late content.
+  const gate = frameGate(window, [measured], at, update, cacheTriggers);
+  /** Frames only once there is a video to seek, and while nothing stopped them. */
+  const go = (): void => gate.hold(paused || !ready || prefersReduced);
+  go();
 
   function onMetadataLoaded(): void {
     ready = true;
@@ -166,7 +175,7 @@ export function scrollVideo(
     // A seek() made before the metadata had nothing to write to yet: write it
     // now. It used to be lost, the video on frame 0 and getProgress() at 0.5.
     if (paused) applyAlpha(currentAlpha);
-    else if (isVisible) rafId = requestAnimationFrame(update);
+    else go();
   }
 
   // video may already have metadata
@@ -184,30 +193,10 @@ export function scrollVideo(
     if (!reduced) return;
     unwatchMotion();
     prefersReduced = true;
-    cancelAnimationFrame(rafId);
+    gate.hold(true);
     applyAlpha(1);
   });
 
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((e) => {
-        isVisible = e.isIntersecting;
-        if (isVisible && !paused && ready) rafId = requestAnimationFrame(update);
-        else cancelAnimationFrame(rafId);
-      });
-    },
-  );
-
-  let resizeTimer: ReturnType<typeof setTimeout>;
-  function onResize(): void {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(cacheTriggers, 150);
-  }
-  window.addEventListener('resize', onResize);
-  window.addEventListener('orientationchange', onResize);
-  // Layout changes that are not window resizes: images, fonts, late content.
-  const unwatch = watchLayout([measured], onResize);
-  observer.observe(video);
 
   _register(video, {
     type: 'video',
@@ -218,19 +207,14 @@ export function scrollVideo(
   function resume(): void {
     if (!paused) return;
     paused = false;
-    if (isVisible && ready) rafId = requestAnimationFrame(update);
+    go();
   }
 
   return {
     destroy() {
-      cancelAnimationFrame(rafId);
-      observer.disconnect();
+      gate.off();
       video.removeEventListener('loadedmetadata', onMetadataLoaded);
-      window.removeEventListener('resize', onResize);
-      window.removeEventListener('orientationchange', onResize);
-      unwatch();
       unwatchMotion();
-      clearTimeout(resizeTimer);
       _unregister(video);
     },
     replay() {
@@ -246,7 +230,7 @@ export function scrollVideo(
     },
     pause() {
       paused = true;
-      cancelAnimationFrame(rafId);
+      gate.hold(true);
     },
     resume,
     seek(p: number) {
@@ -255,7 +239,7 @@ export function scrollVideo(
       frozenAlpha   = clamped;
       frozenRaw     = 0;
       paused        = true;
-      cancelAnimationFrame(rafId);
+      gate.hold(true);
       lastTime      = NaN;  // an explicit seek always seeks
       applyAlpha(clamped);
     },

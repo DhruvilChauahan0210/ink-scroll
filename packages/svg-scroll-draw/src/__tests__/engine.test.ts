@@ -23,21 +23,16 @@ function makeContainer(paths: SVGPathElement[] = []): HTMLDivElement {
 // Queue-based rAF: stores callbacks without calling them, letting tests drain
 // exactly one frame at a time — avoids the update→rAF→update infinite loop.
 class RafQueue {
-  private queue: FrameRequestCallback[] = [];
+  private queue: { id: number; cb: FrameRequestCallback }[] = [];
   private id = 0;
-
-  schedule = vi.fn((cb: FrameRequestCallback): number => {
-    this.queue.push(cb);
-    return ++this.id;
-  });
-
-  cancel = vi.fn();
-
-  /** Run the next pending callback once. */
-  tick() {
-    const cb = this.queue.shift();
-    cb?.(performance.now());
-  }
+  schedule = vi.fn((cb: FrameRequestCallback): number => { this.queue.push({ id: ++this.id, cb }); return this.id; });
+  cancel   = vi.fn((id: number) => { this.queue = this.queue.filter((f) => f.id !== id); });
+  /**
+   * One frame: every callback queued before it, as a browser runs them. The
+   * engines' frames follow the trigger window and wake on scroll events, so an
+   * engine an earlier test left can share the queue.
+   */
+  tick() { const frame = this.queue; this.queue = []; for (const f of frame) f.cb(performance.now()); }
 }
 
 class FakeIO {
@@ -61,6 +56,16 @@ class FakeIO {
 }
 
 // ── setup / teardown ─────────────────────────────────────────────────────────
+
+/**
+ * Scroll the page: set the offset and fire a scroll event, as a browser does.
+ * The frames follow the trigger window and wake on scroll (core/frame-gate),
+ * so moving `scrollY` alone is not a scroll.
+ */
+function scroll(y?: number): void {
+  if (y !== undefined) vi.stubGlobal('scrollY', y);
+  window.dispatchEvent(new Event('scroll'));
+}
 
 let raf: RafQueue;
 
@@ -126,10 +131,12 @@ describe('createEngine — initialization', () => {
     expect(path.style.opacity).toBe('');
   });
 
-  it('observes the container element', () => {
+  it('listens for scroll on the window, and keeps no IntersectionObserver', () => {
     const container = makeContainer([makeSvgPath()]);
+    const listen = vi.spyOn(window, 'addEventListener');
     createEngine(container);
-    expect(FakeIO.instances[0].observe).toHaveBeenCalledWith(container);
+    expect(listen).toHaveBeenCalledWith('scroll', expect.any(Function), { passive: true });
+    expect(FakeIO.instances).toHaveLength(0);
   });
 });
 
@@ -216,8 +223,7 @@ describe('createEngine — scroll update', () => {
     const container = makeContainer([path]);
     createEngine(container);
 
-    vi.stubGlobal('scrollY', 300);
-    FakeIO.instances[0].trigger(true);
+    scroll(300);
     raf.tick();
 
     const offset = parseFloat(path.style.strokeDashoffset);
@@ -231,8 +237,7 @@ describe('createEngine — scroll update', () => {
     const container = makeContainer([makeSvgPath()]);
     const instance = createEngine(container, { onComplete });
 
-    vi.stubGlobal('scrollY', 500);
-    FakeIO.instances[0].trigger(true);
+    scroll(500);
     raf.tick();
 
     expect(onComplete).toHaveBeenCalledTimes(1);
@@ -245,7 +250,7 @@ describe('createEngine — scroll update', () => {
     const container = makeContainer([makeSvgPath()]);
     const instance = createEngine(container, { onComplete });
 
-    FakeIO.instances[0].trigger(true);
+    scroll();
     raf.tick();
 
     expect(onComplete).not.toHaveBeenCalled();
@@ -254,11 +259,12 @@ describe('createEngine — scroll update', () => {
 });
 
 describe('createEngine — destroy', () => {
-  it('disconnects IntersectionObserver', () => {
+  it('stops listening for scroll', () => {
     const container = makeContainer([makeSvgPath()]);
+    const unlisten = vi.spyOn(window, 'removeEventListener');
     const instance = createEngine(container);
     instance.destroy();
-    expect(FakeIO.instances[0].disconnect).toHaveBeenCalled();
+    expect(unlisten).toHaveBeenCalledWith('scroll', expect.any(Function), expect.anything());
   });
 
   it('removes resize and orientationchange listeners', () => {
@@ -273,7 +279,7 @@ describe('createEngine — destroy', () => {
   it('cancels the pending animation frame', () => {
     const container = makeContainer([makeSvgPath()]);
     const instance = createEngine(container);
-    FakeIO.instances[0].trigger(true); // schedules a frame
+    scroll(); // schedules a frame
     instance.destroy();
     expect(raf.cancel).toHaveBeenCalled();
   });
@@ -292,8 +298,7 @@ describe('createEngine — direction reverse', () => {
     const container = makeContainer([path]);
     createEngine(container, { direction: 'reverse' });
 
-    vi.stubGlobal('scrollY', 300);
-    FakeIO.instances[0].trigger(true);
+    scroll(300);
     raf.tick();
 
     const offset = parseFloat(path.style.strokeDashoffset);
@@ -307,8 +312,7 @@ describe('createEngine — onProgress', () => {
     const container = makeContainer([makeSvgPath()]);
     createEngine(container, { onProgress });
 
-    vi.stubGlobal('scrollY', 300);
-    FakeIO.instances[0].trigger(true);
+    scroll(300);
     raf.tick();
 
     expect(onProgress).toHaveBeenCalledOnce();
@@ -326,8 +330,7 @@ describe('createEngine — stagger', () => {
     createEngine(container, { stagger: 0.3 });
 
     // At scrollY=0 with stagger, path1 starts earlier than path2
-    vi.stubGlobal('scrollY', 0);
-    FakeIO.instances[0].trigger(true);
+    scroll(0);
     raf.tick();
 
     const offset1 = parseFloat(path1.style.strokeDashoffset);
@@ -343,8 +346,7 @@ describe('createEngine — --scroll-draw-progress CSS custom property', () => {
     const container = makeContainer([path]);
 
     createEngine(container);
-    vi.stubGlobal('scrollY', 300);
-    FakeIO.instances[0].trigger(true);
+    scroll(300);
     raf.tick();
 
     const val = container.style.getPropertyValue('--scroll-draw-progress');
@@ -358,8 +360,7 @@ describe('createEngine — --scroll-draw-progress CSS custom property', () => {
     const container = makeContainer([makeSvgPath()]);
     const instance = createEngine(container);
 
-    vi.stubGlobal('scrollY', 500);
-    FakeIO.instances[0].trigger(true);
+    scroll(500);
     raf.tick();
 
     instance.replay();

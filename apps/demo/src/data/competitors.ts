@@ -51,9 +51,9 @@ export const MEASURED_ON = '2026-08-14';
 export const SELF: Competitor = {
   name: 'svg-scroll-draw',
   label: 'svg-scroll-draw (all APIs)',
-  version: '2.23.4',
+  version: '2.23.5',
   license: 'MIT',
-  gzipKb: 11.6,
+  gzipKb: 11.4,
   lastPublish: '2026-08-14',
   command: 'npm run size',
   measured: true,
@@ -77,16 +77,16 @@ export const SELF_ENTRIES: Record<string, number> = {
   // quote its own size.
   progress: 2.4,
   horizontal: 5.6,
-  video: 2.8,
+  video: 2.9,
   // `svg-scroll-draw/react`: every component, engines included.
-  react: 13.2,
+  react: 12.8,
   // Each framework landing quotes its own entry, wrapper and engines included.
-  vue: 13.2,
-  nuxt: 13.3,
-  svelte: 12.6,
-  solid: 12.6,
-  angular: 12.6,
-  astro: 12.2,
+  vue: 12.9,
+  nuxt: 12.9,
+  svelte: 12.2,
+  solid: 12.2,
+  angular: 12.3,
+  astro: 11.9,
 };
 
 export const COMPETITORS: Record<string, Competitor> = {

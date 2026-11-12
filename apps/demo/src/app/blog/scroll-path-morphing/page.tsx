@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Fragment } from 'react';
+import Link from 'next/link';
 import { seoTitle } from '../../_lib/seo';
 import { BlogArticle, Section, Code, Callout, Table, Notes, Cols, Mark, Figure, Closing } from '@/components/blog/BlogArticle';
 import { MorphFigure } from './MorphFigure';
@@ -196,6 +197,11 @@ morphTo: "M50 5 L61 35 L95 35 L68 57 ..."`}</Code>
           the <code>d</code> strings have the same number of path commands. Most shape transformations (square →
           diamond, circle → blob) work when you constrain yourself to the same command structure.
         </Callout>
+        <p>
+          Or skip the counting: the <Link href="/svg-morph-generator">SVG morph generator</Link> matches two shapes
+          point for point and writes the <code>morphTo</code> call, and the{' '}
+          <Link href="/svg-path-editor">SVG path editor</Link> shows each command of a path so you can line them up by hand.
+        </p>
       </Section>
 
       <Section id="use-cases" k="use cases" toc="When to reach for morphTo" title={<>When to reach for <code className="mp-code">morphTo</code></>}>

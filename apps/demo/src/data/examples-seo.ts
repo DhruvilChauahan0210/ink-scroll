@@ -35,6 +35,8 @@ export type ExampleSeo = {
   keywords: string[];
   /** Related slugs for internal linking. Cross-linking is why a cluster outranks a page. */
   related: string[];
+  /** Tool slugs (data/tools.ts) that build this effect, linked as “make your own”. One or two, only where a tool fits. */
+  tools?: string[];
 };
 
 export const EXAMPLE_SEO: Record<string, ExampleSeo> = {
@@ -57,6 +59,7 @@ export const EXAMPLE_SEO: Record<string, ExampleSeo> = {
       'svg logo animation without gsap',
     ],
     related: ['signature', 'line-chart'],
+    tools: ['svg-line-drawing-generator', 'svg-path-viewer'],
   },
   'line-chart': {
     slug: 'line-chart',
@@ -77,6 +80,7 @@ export const EXAMPLE_SEO: Record<string, ExampleSeo> = {
       'animate line graph javascript',
     ],
     related: ['logo-reveal', 'scroll-counter'],
+    tools: ['svg-path-viewer'],
   },
   signature: {
     slug: 'signature',
@@ -97,6 +101,7 @@ export const EXAMPLE_SEO: Record<string, ExampleSeo> = {
       'animated signature website',
     ],
     related: ['logo-reveal', 'scroll-text'],
+    tools: ['svg-path-editor'],
   },
 
   // ── Batch 2 · diagrams ────────────────────────────────────────────────────
@@ -119,6 +124,7 @@ export const EXAMPLE_SEO: Record<string, ExampleSeo> = {
       'scroll triggered diagram',
     ],
     related: ['network', 'map-route'],
+    tools: ['svg-shape-to-path-converter'],
   },
   'map-route': {
     slug: 'map-route',
@@ -139,6 +145,7 @@ export const EXAMPLE_SEO: Record<string, ExampleSeo> = {
       'geographic path tracing svg',
     ],
     related: ['flowchart', 'signature'],
+    tools: ['svg-path-editor'],
   },
   network: {
     slug: 'network',
@@ -159,6 +166,7 @@ export const EXAMPLE_SEO: Record<string, ExampleSeo> = {
       'infographic line reveal',
     ],
     related: ['flowchart', 'map-route'],
+    tools: ['svg-shape-to-path-converter'],
   },
 
   // ── Batch 3 · framework integrations ──────────────────────────────────────
@@ -283,6 +291,7 @@ export const EXAMPLE_SEO: Record<string, ExampleSeo> = {
       'multi track scroll animation',
     ],
     related: ['sequence-api', 'group-api'],
+    tools: ['easing-visualizer'],
   },
 
   // ── Batch 5 · v2 element APIs ─────────────────────────────────────────────
@@ -305,6 +314,7 @@ export const EXAMPLE_SEO: Record<string, ExampleSeo> = {
       'stagger fade in scroll',
     ],
     related: ['scroll-animate', 'scroll-animate-group'],
+    tools: ['scroll-reveal-generator'],
   },
   'scroll-animate': {
     slug: 'scroll-animate',
@@ -325,6 +335,7 @@ export const EXAMPLE_SEO: Record<string, ExampleSeo> = {
       'card reveal animation',
     ],
     related: ['scroll-reveal', 'scroll-animate-group'],
+    tools: ['css-scroll-driven-animation-generator'],
   },
   'scroll-animate-group': {
     slug: 'scroll-animate-group',
@@ -345,6 +356,7 @@ export const EXAMPLE_SEO: Record<string, ExampleSeo> = {
       'batch scroll animation',
     ],
     related: ['scroll-animate', 'scroll-reveal'],
+    tools: ['scroll-reveal-generator'],
   },
   'scroll-counter': {
     slug: 'scroll-counter',
@@ -365,6 +377,7 @@ export const EXAMPLE_SEO: Record<string, ExampleSeo> = {
       'social proof counter',
     ],
     related: ['line-chart', 'scroll-animate'],
+    tools: ['counter-animation-generator'],
   },
   'scroll-text': {
     slug: 'scroll-text',
@@ -385,6 +398,7 @@ export const EXAMPLE_SEO: Record<string, ExampleSeo> = {
       'staggered text animation',
     ],
     related: ['scroll-text-lines', 'signature'],
+    tools: ['text-animation-generator', 'typewriter-effect-generator'],
   },
   'scroll-text-lines': {
     slug: 'scroll-text-lines',
@@ -405,6 +419,7 @@ export const EXAMPLE_SEO: Record<string, ExampleSeo> = {
       'staggered reveal css',
     ],
     related: ['scroll-text', 'scroll-animate-group'],
+    tools: ['text-fill-scroll-generator'],
   },
   'scroll-video': {
     slug: 'scroll-video',
@@ -425,6 +440,7 @@ export const EXAMPLE_SEO: Record<string, ExampleSeo> = {
       'frame by frame scroll video',
     ],
     related: ['scroll-pin', 'scroll-animate'],
+    tools: ['scroll-video-scrub-generator'],
   },
 
   // ── Batch 6 · layout APIs & setup ─────────────────────────────────────────
@@ -447,6 +463,7 @@ export const EXAMPLE_SEO: Record<string, ExampleSeo> = {
       'scroll pin javascript',
     ],
     related: ['scroll-snap', 'scroll-video'],
+    tools: ['scroll-pin-generator'],
   },
   'scroll-snap': {
     slug: 'scroll-snap',
@@ -467,6 +484,7 @@ export const EXAMPLE_SEO: Record<string, ExampleSeo> = {
       'section snapping scroll',
     ],
     related: ['scroll-pin', 'scroll-video'],
+    tools: ['css-scroll-snap-generator'],
   },
   presets: {
     slug: 'presets',
@@ -487,6 +505,7 @@ export const EXAMPLE_SEO: Record<string, ExampleSeo> = {
       'quick scroll animation setup',
     ],
     related: ['scroll-reveal', 'scroll-animate'],
+    tools: ['easing-visualizer'],
   },
   astro: {
     slug: 'astro',

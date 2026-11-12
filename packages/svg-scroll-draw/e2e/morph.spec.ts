@@ -21,8 +21,8 @@ test.describe('scrollDraw morphTo', () => {
     await openFixture(page, 'morph.html');
     expect(errors).toEqual([]);
 
-    // Through the window, not across it in one step: the draw engine's frames
-    // still start when its IntersectionObserver sees the drawing.
+    // Through the window, as a reader scrolls. (Across it in one step works too
+    // since 2.23.5: engine-gate.spec.ts.)
     await scrollToY(page, 1000);
     await scrollToY(page, 1600);
     const end = await read<Row>(page);

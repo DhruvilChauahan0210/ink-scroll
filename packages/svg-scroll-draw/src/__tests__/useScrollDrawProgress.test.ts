@@ -15,11 +15,16 @@ import { useScrollDrawProgress, type UseScrollDrawProgressOptions } from '../rea
  */
 
 class RafQueue {
-  private queue: FrameRequestCallback[] = [];
+  private queue: { id: number; cb: FrameRequestCallback }[] = [];
   private id = 0;
-  schedule = vi.fn((cb: FrameRequestCallback): number => { this.queue.push(cb); return ++this.id; });
-  cancel   = vi.fn();
-  tick()   { const cb = this.queue.shift(); act(() => cb?.(performance.now())); }
+  schedule = vi.fn((cb: FrameRequestCallback): number => { this.queue.push({ id: ++this.id, cb }); return this.id; });
+  cancel   = vi.fn((id: number) => { this.queue = this.queue.filter((f) => f.id !== id); });
+  /**
+   * One frame: every callback queued before it, as a browser runs them. The
+   * engines' frames follow the trigger window and wake on scroll events, so an
+   * engine an earlier test left can share the queue.
+   */
+  tick() { const frame = this.queue; this.queue = []; act(() => { for (const f of frame) f.cb(performance.now()); }); }
 }
 
 class FakeIO {
@@ -30,6 +35,16 @@ class FakeIO {
   trigger(isIntersecting: boolean) {
     act(() => this.cb([{ isIntersecting } as IntersectionObserverEntry], this as unknown as IntersectionObserver));
   }
+}
+
+/**
+ * Scroll the page: set the offset and fire a scroll event, as a browser does.
+ * The frames follow the trigger window and wake on scroll (core/frame-gate),
+ * so moving `scrollY` alone is not a scroll.
+ */
+function scroll(y?: number): void {
+  if (y !== undefined) vi.stubGlobal('scrollY', y);
+  act(() => { window.dispatchEvent(new Event('scroll')); });
 }
 
 let raf: RafQueue;
@@ -72,12 +87,12 @@ function mount(options: UseScrollDrawProgressOptions): number[] {
   document.body.appendChild(host);
   root = createRoot(host);
   act(() => root!.render(createElement(Probe)));
-  FakeIO.instances[0].trigger(true);
+  scroll();
   return seen;
 }
 
 function scrollTo(y: number): void {
-  vi.stubGlobal('scrollY', y);
+  scroll(y);
   raf.tick();
 }
 
@@ -125,9 +140,10 @@ describe('useScrollDrawProgress — once', () => {
 describe('useScrollDrawProgress — scrollContainer', () => {
   let scrollTop = 0;
   let panelAt = 600;
+  let box: HTMLDivElement;
 
   function container(border = 0): HTMLDivElement {
-    const box = document.createElement('div');
+    box = document.createElement('div');
     document.body.appendChild(box);
     Object.defineProperty(box, 'scrollTop', { get: () => scrollTop, configurable: true });
     Object.defineProperty(box, 'clientHeight', { value: 400, configurable: true });
@@ -143,6 +159,7 @@ describe('useScrollDrawProgress — scrollContainer', () => {
 
   function scrollBox(y: number): void {
     scrollTop = y;
+    act(() => { box.dispatchEvent(new Event('scroll')); });
     raf.tick();
   }
 

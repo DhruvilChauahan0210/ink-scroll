@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Every engine — a jump across its whole window</title>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+  .lead { height: 1600px; }
+  .gap  { height: 200px; }
+  .tail { height: 1600px; }
+  .item { height: 200px; display: block; }
+  svg.item { width: 300px; }
+  #video { width: 320px; background: #000; }
+</style>
+</head>
+<body>
+
+<!--
+  Viewport 900x800. Each item is 200px tall, 200px after the one before, from
+  1600 down. Every window is below the fold at y = 0, and every one ends by
+  4600, above the fold at the end of the page (5400).
+-->
+<div class="lead"></div>
+<svg class="item" id="draw" viewBox="0 0 300 200"><path d="M10 100 H290" stroke="#222" stroke-width="4" fill="none"/></svg>
+<div class="gap"></div>
+<svg class="item" id="stagger" viewBox="0 0 300 200">
+  <path d="M10 40 H290" stroke="#222" stroke-width="4" fill="none"/>
+  <path d="M10 100 H290" stroke="#222" stroke-width="4" fill="none"/>
+  <path d="M10 160 H290" stroke="#222" stroke-width="4" fill="none"/>
+</svg>
+<div class="gap"></div>
+<div class="item" id="counter">0</div>
+<div class="gap"></div>
+<p class="item" id="text">every word arrives</p>
+<div class="gap"></div>
+<video class="item" id="video" src="./clip.webm" muted playsinline preload="auto"></video>
+<div class="gap"></div>
+<div class="item" id="progress"></div>
+<div class="gap"></div>
+<svg class="item" id="timeline" viewBox="0 0 300 200"><path class="t" d="M10 100 H290" stroke="#222" stroke-width="4" fill="none"/></svg>
+<div class="gap"></div>
+<div id="hookslot"></div>
+<div class="tail"></div>
+<div id="end"></div>
+
+<script type="module">
+import { scrollDraw } from '/dist/index.mjs';
+import { scrollCounter } from '/dist/index.mjs';
+import { scrollText } from '/dist/text/index.mjs';
+import { scrollVideo } from '/dist/video/index.mjs';
+import { scrollProgress } from '/dist/progress/index.mjs';
+import { scrollDrawTimeline } from '/dist/timeline/index.mjs';
+import { mountJump } from './build/react-extras.mjs';
+import { drawnFraction, publish } from './_probe.mjs';
+
+const $ = (sel) => document.querySelector(sel);
+const completed = { draw: 0, stagger: 0, counter: 0, text: 0, video: 0, timeline: 0 };
+const done = (name) => () => { completed[name]++; };
+
+// Callbacks keep scrollDraw on the JS engine in every browser.
+const instances = {
+  draw: scrollDraw('#draw', { onComplete: done('draw') }),
+  stagger: scrollDraw('#stagger', { stagger: 0.2, onComplete: done('stagger') }),
+  counter: scrollCounter('#counter', { to: 100, onComplete: done('counter') }),
+  text: scrollText('#text', { onComplete: done('text') }),
+  video: scrollVideo('#video', { trigger: { start: 'top bottom', end: 'bottom top' }, onComplete: done('video') }),
+  progress: scrollProgress('#progress'),
+  timeline: scrollDrawTimeline('#timeline', { tracks: [{ selector: '.t', from: 0, to: 1 }], onComplete: done('timeline') }),
+};
+mountJump($('#hookslot'));
+
+const video = $('#video');
+const words = () => Array.from($('#text').querySelectorAll('span[aria-hidden] '))
+  .filter((s) => s.style.opacity !== '');
+
+publish({
+  read: () => ({
+    scrollY: window.scrollY,
+    draw: drawnFraction($('#draw path')),
+    stagger: Array.from($('#stagger').querySelectorAll('path')).map(drawnFraction),
+    counter: Number($('#counter').textContent),
+    text: words().map((s) => Number(getComputedStyle(s).opacity)),
+    video: Number.isFinite(video.duration) && video.duration > 0 ? video.currentTime / video.duration : null,
+    progress: Number($('#progress').style.getPropertyValue('--scroll-progress')),
+    timeline: drawnFraction($('#timeline path')),
+    hook: Number($('#hook').dataset.progress),
+    completed: { ...completed },
+    progresses: Object.fromEntries(Object.entries(instances).map(([k, i]) => [k, i.getProgress()])),
+  }),
+  maxScroll: () => document.documentElement.scrollHeight - innerHeight,
+  ready: () => video.readyState >= 1,
+});
+</script>
+</body>
+</html>

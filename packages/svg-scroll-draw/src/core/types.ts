@@ -61,9 +61,13 @@ export interface ScrollDrawOptions {
   waypoints?: Record<number, () => void>;
   /** Scale animation speed by scroll velocity — faster scrolling = faster draw. Pass a number to control sensitivity (default 1). */
   velocityScale?: boolean | number;
-  /** IntersectionObserver threshold (0–1). Default 0. */
+  /**
+   * With `autoplay`, the IntersectionObserver threshold (0–1) at which the run
+   * starts. Default 0. A scroll-linked draw follows its trigger window instead,
+   * and has no observer since 2.23.5.
+   */
   threshold?: number;
-  /** IntersectionObserver rootMargin. Default "0px". */
+  /** With `autoplay`, the IntersectionObserver rootMargin. Default "0px". */
   rootMargin?: string;
   /** Repeat the animation N times after completion. Use 'infinite' to loop forever. */
   repeat?: number | 'infinite';

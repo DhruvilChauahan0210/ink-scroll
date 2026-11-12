@@ -136,8 +136,8 @@ test.describe('native CSS fast path vs JS engine', () => {
     expect(start.native).toBeLessThanOrEqual(0.01);
     expect(start.js).toBeLessThanOrEqual(0.01);
 
-    // Scroll through the range the way a user does. A single jump straight to the
-    // bottom is deliberately NOT used here — see the asymmetry test below.
+    // Scroll through the range the way a user does. A single jump straight to
+    // the bottom has a test of its own below.
     let maxNative = 0;
     let maxJs = 0;
     for (let y = 900; y <= 1900; y += 100) {
@@ -153,20 +153,16 @@ test.describe('native CSS fast path vs JS engine', () => {
   });
 
   /**
-   * Documents a real, known difference rather than asserting it away.
+   * A jump straight past the container — a deep link, a restored scroll
+   * position, scrollTo(bottom) — never has it on screen.
    *
-   * The JS engine only writes while the container is intersecting the viewport.
-   * Jump straight past it — a deep link, restored scroll position, or
-   * scrollTo(bottom) — and IntersectionObserver never reports it visible, so the
-   * paths keep their initial undrawn state. The native CSS path uses
-   * `animation-fill-mode: both`, so it holds the end state regardless.
-   *
-   * This is not user-visible: in every case the element is off-screen while the
-   * values differ, and scrolling it back into view makes the JS engine catch up
-   * on its first frame. The test pins the behaviour so a future change to it is
-   * a deliberate decision rather than an accident.
+   * Up to 2.23.4 this was a known asymmetry, pinned here: the JS engine wrote
+   * only while an IntersectionObserver saw the container, so its paths kept
+   * their undrawn first frame, while the native path's `animation-fill-mode:
+   * both` held the end state. The JS engine's frames follow its trigger window
+   * now (core/frame-gate), so both engines end drawn.
    */
-  test('known asymmetry: jump-scrolling past the element without ever seeing it', async ({
+  test('jump-scrolling past the element without ever seeing it draws it on both engines', async ({
     page,
   }) => {
     await open(page);
@@ -180,12 +176,11 @@ test.describe('native CSS fast path vs JS engine', () => {
     if (supportsNative) {
       // CSS holds the filled end state even though the element was never seen.
       expect(jumped.native).toBeGreaterThanOrEqual(0.99);
-      // The JS engine never ran, so it is still undrawn.
-      expect(jumped.js).toBeLessThanOrEqual(0.01);
     }
+    // So does the JS engine: its last frame was painted on the jump.
+    expect(jumped.js, 'the JS engine kept its first frame').toBeGreaterThanOrEqual(0.99);
 
-    // Scrolling it back into view must make the JS engine catch up immediately,
-    // which is what keeps the difference invisible to a real visitor.
+    // And scrolled back into view, the two agree.
     await page.evaluate(() => window.scrollTo(0, 1890));
     await settle(page);
     const recovered = await page.evaluate(() => window.__probe.read());

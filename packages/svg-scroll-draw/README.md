@@ -634,12 +634,12 @@ devtools.highlight('#my-element'); // outline for 2 seconds
 <!-- size-table:start -->
 | Entry | Gzipped |
 |---|---|
-| `svg-scroll-draw` (main, every core API) | 11.6 KB |
-| `svg-scroll-draw/react` (includes the engine) | 13.2 KB |
-| `svg-scroll-draw` + `svg-scroll-draw/react` (together; the engine ships once) | 14.8 KB |
+| `svg-scroll-draw` (main, every core API) | 11.4 KB |
+| `svg-scroll-draw/react` (includes the engine) | 12.8 KB |
+| `svg-scroll-draw` + `svg-scroll-draw/react` (together; the engine ships once) | 14.3 KB |
 | `svg-scroll-draw/reveal` | 5.7 KB |
 | `svg-scroll-draw/text` | 3.5 KB |
-| `svg-scroll-draw/video` | 2.8 KB |
+| `svg-scroll-draw/video` | 2.9 KB |
 | `svg-scroll-draw/scrollreveal` | 4.7 KB |
 | `svg-scroll-draw/vivus` | 4.2 KB |
 | `svg-scroll-draw/aos` (styles included) | 3.2 KB |

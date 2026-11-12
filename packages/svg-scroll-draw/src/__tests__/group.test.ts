@@ -3,6 +3,7 @@ import {
   scrollDrawGroup, scrollDrawSequence,
   scrollAnimateGroup, scrollAnimateSequence, scrollParallaxGroup,
 } from '../group/index';
+import { _getRegistry } from '../core/registry';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -23,11 +24,16 @@ function makeContainer(): HTMLDivElement {
 }
 
 class RafQueue {
-  private queue: FrameRequestCallback[] = [];
+  private queue: { id: number; cb: FrameRequestCallback }[] = [];
   private id = 0;
-  schedule = vi.fn((cb: FrameRequestCallback): number => { this.queue.push(cb); return ++this.id; });
-  cancel   = vi.fn();
-  tick()   { const cb = this.queue.shift(); cb?.(performance.now()); }
+  schedule = vi.fn((cb: FrameRequestCallback): number => { this.queue.push({ id: ++this.id, cb }); return this.id; });
+  cancel   = vi.fn((id: number) => { this.queue = this.queue.filter((f) => f.id !== id); });
+  /**
+   * One frame: every callback queued before it, as a browser runs them. The
+   * engines' frames follow the trigger window and wake on scroll events, so an
+   * engine an earlier test left can share the queue.
+   */
+  tick() { const frame = this.queue; this.queue = []; for (const f of frame) f.cb(performance.now()); }
 }
 
 class FakeIO {
@@ -44,6 +50,18 @@ class FakeIO {
 // ── Setup ─────────────────────────────────────────────────────────────────────
 
 let raf: RafQueue;
+let listens: ReturnType<typeof vi.spyOn>;
+let unlistens: ReturnType<typeof vi.spyOn>;
+
+/**
+ * Every engine made, in order, by the scroll listener its frames wake on
+ * (core/frame-gate), and whether destroy() took that listener off again.
+ */
+function engines(): { gone: boolean }[] {
+  const scrolls = (spy: ReturnType<typeof vi.spyOn>) => spy.mock.calls.filter((c) => c[0] === 'scroll').map((c) => c[1]);
+  const removed = scrolls(unlistens);
+  return scrolls(listens).map((fn) => ({ gone: removed.includes(fn) }));
+}
 /**
  * How many animate engines were built (scrollAnimate and scrollParallax
  * members): each listens for scroll on the window once. The draw engines below
@@ -59,6 +77,8 @@ function scroll(y?: number): void {
 beforeEach(() => {
   const listen = vi.spyOn(window, 'addEventListener');
   built = () => listen.mock.calls.filter(([type]) => type === 'scroll').length;
+  listens = listen;
+  unlistens = vi.spyOn(window, 'removeEventListener');
   raf = new RafQueue();
   FakeIO.instances = [];
   vi.stubGlobal('requestAnimationFrame', raf.schedule);
@@ -126,13 +146,13 @@ describe('scrollDrawGroup — initialisation', () => {
     expect(() => instance.destroy()).not.toThrow();
   });
 
-  it('creates one IntersectionObserver per matched container', () => {
+  it('creates one engine per matched container', () => {
     const a = makeContainer();
     const b = makeContainer();
     scrollDrawGroup([a, b]);
-    expect(FakeIO.instances).toHaveLength(2);
-    expect(FakeIO.instances[0].observe).toHaveBeenCalledWith(a);
-    expect(FakeIO.instances[1].observe).toHaveBeenCalledWith(b);
+    expect(engines()).toHaveLength(2);
+    expect(_getRegistry().has(a)).toBe(true);
+    expect(_getRegistry().has(b)).toBe(true);
   });
 
   it('passes options to every engine', () => {
@@ -148,11 +168,11 @@ describe('scrollDrawGroup — initialisation', () => {
 });
 
 describe('scrollDrawGroup — instance methods', () => {
-  it('destroy() disconnects all observers', () => {
+  it('destroy() destroys every engine', () => {
     const instance = scrollDrawGroup([makeContainer(), makeContainer()]);
     instance.destroy();
-    expect(FakeIO.instances[0].disconnect).toHaveBeenCalled();
-    expect(FakeIO.instances[1].disconnect).toHaveBeenCalled();
+    expect(engines()[0].gone).toBe(true);
+    expect(engines()[1].gone).toBe(true);
   });
 
   it('replay() resets all containers', () => {
@@ -161,9 +181,7 @@ describe('scrollDrawGroup — instance methods', () => {
     const instance = scrollDrawGroup([a, b]);
 
     // Advance both to near-complete
-    vi.stubGlobal('scrollY', 500);
-    FakeIO.instances[0].trigger(true);
-    FakeIO.instances[1].trigger(true);
+    scroll(500);
     raf.tick();
     raf.tick();
 
@@ -178,8 +196,7 @@ describe('scrollDrawGroup — instance methods', () => {
 
   it('pause() cancels the rAF for all engines', () => {
     const instance = scrollDrawGroup([makeContainer(), makeContainer()]);
-    FakeIO.instances[0].trigger(true);
-    FakeIO.instances[1].trigger(true);
+    scroll();
     instance.pause();
     // cancel should have been called at least once per engine
     expect(raf.cancel).toHaveBeenCalled();
@@ -190,8 +207,7 @@ describe('scrollDrawGroup — instance methods', () => {
     const b = makeContainer();
     scrollDrawGroup([a, b]);
 
-    vi.stubGlobal('scrollY', 300);
-    FakeIO.instances[0].trigger(true);
+    scroll(300);
     raf.tick();
 
     const pathA = a.querySelector('path') as SVGPathElement;
@@ -208,21 +224,21 @@ describe('scrollDrawSequence — initialisation', () => {
     expect(instance.getProgress()).toBe(0);
   });
 
-  it('creates all engines upfront (one observer per container)', () => {
+  it('creates all engines upfront (one per container)', () => {
     const a = makeContainer();
     const b = makeContainer();
     const c = makeContainer();
     scrollDrawSequence([a, b, c]);
     // All three engines are created immediately — not lazily
-    expect(FakeIO.instances).toHaveLength(3);
+    expect(engines()).toHaveLength(3);
   });
 
-  it('observes every container from the start', () => {
+  it('runs an engine on every container from the start', () => {
     const a = makeContainer();
     const b = makeContainer();
     scrollDrawSequence([a, b]);
-    expect(FakeIO.instances[0].observe).toHaveBeenCalledWith(a);
-    expect(FakeIO.instances[1].observe).toHaveBeenCalledWith(b);
+    expect(_getRegistry().has(a)).toBe(true);
+    expect(_getRegistry().has(b)).toBe(true);
   });
 
   it('getProgress() returns 0 initially', () => {
@@ -232,12 +248,12 @@ describe('scrollDrawSequence — initialisation', () => {
 });
 
 describe('scrollDrawSequence — pausing of later engines', () => {
-  it('engine[1] does NOT schedule a rAF when its observer fires before engine[0] completes', () => {
+  it('engine[1] does NOT schedule a rAF when the page scrolls before engine[0] completes', () => {
     scrollDrawSequence([makeContainer(), makeContainer()]);
 
     const callsBefore = raf.schedule.mock.calls.length;
-    // Trigger engine[1]'s observer — it is paused, so no rAF should be scheduled
-    FakeIO.instances[1].trigger(true);
+    // A scroll wakes every engine but engine[1], which is paused, so no rAF should be scheduled
+    scroll();
     const callsAfter = raf.schedule.mock.calls.length;
 
     expect(callsAfter).toBe(callsBefore);
@@ -246,8 +262,7 @@ describe('scrollDrawSequence — pausing of later engines', () => {
   it('engine[0] animates immediately when visible', () => {
     scrollDrawSequence([makeContainer(), makeContainer()]);
 
-    vi.stubGlobal('scrollY', 300);
-    FakeIO.instances[0].trigger(true);
+    scroll(300);
     raf.tick();
 
     expect(raf.schedule).toHaveBeenCalled();
@@ -259,7 +274,7 @@ describe('scrollDrawSequence — pausing of later engines', () => {
     scrollDrawSequence([a, b]);
 
     // Make engine[1] "visible" — it should stay paused and not draw
-    FakeIO.instances[1].trigger(true);
+    scroll();
 
     const pathB = b.querySelector('path') as SVGPathElement;
     expect(parseFloat(pathB.style.strokeDashoffset)).toBe(100);
@@ -271,13 +286,12 @@ describe('scrollDrawSequence — chain behaviour', () => {
     scrollDrawSequence([makeContainer(), makeContainer()]);
 
     // Make engine[1] visible first so resume() can schedule a rAF
-    FakeIO.instances[1].trigger(true);
+    scroll();
 
     const callsBefore = raf.schedule.mock.calls.length;
 
     // Complete engine[0]: scrollY=500 → alpha=1 → onComplete fires
-    vi.stubGlobal('scrollY', 500);
-    FakeIO.instances[0].trigger(true);
+    scroll(500);
     raf.tick();
 
     // resume() on engine[1] should have scheduled a new rAF
@@ -288,14 +302,12 @@ describe('scrollDrawSequence — chain behaviour', () => {
     scrollDrawSequence([makeContainer(), makeContainer(), makeContainer()]);
 
     // Make engines[1] and [2] visible (both paused)
-    FakeIO.instances[1].trigger(true);
-    FakeIO.instances[2].trigger(true);
+    scroll();
 
     const callsAfterInit = raf.schedule.mock.calls.length;
 
     // Complete engine[0] → engine[1] resumes
-    vi.stubGlobal('scrollY', 500);
-    FakeIO.instances[0].trigger(true);
+    scroll(500);
     raf.tick();
 
     const callsAfterStep0 = raf.schedule.mock.calls.length;
@@ -312,9 +324,8 @@ describe('scrollDrawSequence — chain behaviour', () => {
     const onComplete = vi.fn();
     scrollDrawSequence([makeContainer(), makeContainer()], { onComplete });
 
-    FakeIO.instances[1].trigger(true);
-    vi.stubGlobal('scrollY', 500);
-    FakeIO.instances[0].trigger(true);
+    scroll();
+    scroll(500);
     raf.tick(); // engine[0] completes → onComplete called once
 
     expect(onComplete).toHaveBeenCalledTimes(1);
@@ -328,9 +339,8 @@ describe('scrollDrawSequence — activeIdx tracking', () => {
   it('getProgress() reflects engine[1] after engine[0] completes', () => {
     const instance = scrollDrawSequence([makeContainer(), makeContainer()]);
 
-    FakeIO.instances[1].trigger(true);
-    vi.stubGlobal('scrollY', 500);
-    FakeIO.instances[0].trigger(true);
+    scroll();
+    scroll(500);
     raf.tick(); // engine[0] completes → activeIdx becomes 1
 
     // seek() always targets instances[activeIdx]; if activeIdx is now 1 this
@@ -351,11 +361,11 @@ describe('scrollDrawSequence — activeIdx tracking', () => {
     scrollDrawSequence([makeContainer(), makeContainer()]);
 
     // Engine[0] is active; make it visible and pause the sequence
-    FakeIO.instances[0].trigger(true);
+    scroll();
     const cancelsBefore = raf.cancel.mock.calls.length;
 
     const instance = scrollDrawSequence([makeContainer(), makeContainer()]);
-    FakeIO.instances[2].trigger(true); // engine for new sequence
+    scroll(); // engine for new sequence
     instance.pause();
 
     expect(raf.cancel.mock.calls.length).toBeGreaterThan(cancelsBefore);
@@ -363,12 +373,12 @@ describe('scrollDrawSequence — activeIdx tracking', () => {
 });
 
 describe('scrollDrawSequence — destroy', () => {
-  it('disconnects all observers', () => {
+  it('destroys every engine', () => {
     const instance = scrollDrawSequence([makeContainer(), makeContainer(), makeContainer()]);
     instance.destroy();
-    expect(FakeIO.instances[0].disconnect).toHaveBeenCalled();
-    expect(FakeIO.instances[1].disconnect).toHaveBeenCalled();
-    expect(FakeIO.instances[2].disconnect).toHaveBeenCalled();
+    expect(engines()[0].gone).toBe(true);
+    expect(engines()[1].gone).toBe(true);
+    expect(engines()[2].gone).toBe(true);
   });
 
   it('does not throw when called twice', () => {
@@ -383,9 +393,8 @@ describe('scrollDrawSequence — replay', () => {
     const instance = scrollDrawSequence([makeContainer(), makeContainer()]);
 
     // Advance through the chain
-    FakeIO.instances[1].trigger(true);
-    vi.stubGlobal('scrollY', 500);
-    FakeIO.instances[0].trigger(true);
+    scroll();
+    scroll(500);
     raf.tick(); // engine[0] completes
 
     // After replay, activeIdx should be 0 again
@@ -401,7 +410,7 @@ describe('scrollDrawSequence — replay', () => {
 
     const callsBefore = raf.schedule.mock.calls.length;
     // engine[1] observer fires — should still be paused after replay
-    FakeIO.instances[1].trigger(true);
+    scroll();
     expect(raf.schedule.mock.calls.length).toBe(callsBefore);
   });
 });

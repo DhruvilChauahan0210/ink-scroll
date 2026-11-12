@@ -113,6 +113,48 @@ export type Measured = {
   pieces: number;
 };
 
+/**
+ * Measure a sanitised drawing, which must be in the document (getTotalLength,
+ * getBBox and getComputedStyle need it laid out): each shape's length and look,
+ * a viewBox when it has none, and the stroke width a bare path is given.
+ */
+export function measure(svg: SVGSVGElement, bare: boolean): { shapes: Measured[]; viewBox: string | null; bare: string | null; size: number } {
+  if (bare) {
+    svg.setAttribute('fill', 'none');
+    svg.setAttribute('stroke', 'currentColor');
+  }
+  const els = Array.from(svg.querySelectorAll<SVGGeometryElement>(DRAWABLE_SELECTOR));
+  const shapes: Measured[] = els.map((el) => {
+    const cs = getComputedStyle(el);
+    let length = 0;
+    try { length = el.getTotalLength(); } catch { length = 0; }
+    return {
+      length,
+      stroked: cs.stroke !== 'none' && parseFloat(cs.strokeWidth) > 0 && cs.strokeOpacity !== '0',
+      // A <line> computes a fill (black, by default) but has no inside to paint.
+      filled: el.localName !== 'line' && cs.fill !== 'none' && cs.fillOpacity !== '0',
+      fillOpacity: parseFloat(cs.fillOpacity) || 1,
+      nonScaling: (el.getAttribute('vector-effect') ?? '').includes('non-scaling-stroke'),
+      pieces: el.localName === 'path' ? ((el.getAttribute('d') ?? '').match(/[Mm]/g) ?? []).length : 1,
+    };
+  });
+  let viewBox: string | null = null;
+  let size = 0;
+  const vb = svg.getAttribute('viewBox');
+  if (vb) {
+    const [, , w, h] = vb.split(/[\s,]+/).map(Number);
+    size = Math.max(w || 0, h || 0);
+  } else {
+    try {
+      const b = svg.getBBox();
+      const pad = Math.max(b.width, b.height) * 0.06 + 2;
+      viewBox = [b.x - pad, b.y - pad, b.width + pad * 2, b.height + pad * 2].map((n) => fmt(n, 2)).join(' ');
+      size = Math.max(b.width, b.height) + pad * 2;
+    } catch { /* nothing drawable */ }
+  }
+  return { shapes, viewBox, size, bare: bare ? fmt(Math.max(size, 1) / 120, 2) : null };
+}
+
 export type Tree = { tag: string; attrs: [string, string][]; children: Tree[]; text?: string };
 
 export const round = (n: number, places = 3) => {

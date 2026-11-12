@@ -1,7 +1,8 @@
 import './guides.css';
 import Link from 'next/link';
 import { COMPETITORS, SELF, SELF_ENTRIES } from '@/data/competitors';
-import { GUIDES } from '@/data/guides';
+import { GUIDES, type Guide } from '@/data/guides';
+import { TOOLS } from '@/data/tools';
 import { jsonLd as serialiseJsonLd } from '@/lib/json-ld';
 import { CodeBox } from './site/CodeBox';
 import { StepRail } from './site/StepRail';
@@ -27,6 +28,14 @@ function swapRows(key: string): SwapRow[] {
     { k: 'in React', before: 'Your own effect', after: HOOK[key] ?? 'hook' },
   ];
 }
+
+/** The free tools a reader switching from each library reaches for next. */
+const TOOLS_FOR: Record<Guide['from'], string[]> = {
+  AOS: ['aos-animation', 'scroll-reveal-generator'],
+  ScrollReveal: ['scroll-reveal-generator'],
+  vivus: ['svg-line-drawing-generator', 'svg-path-viewer'],
+  'GSAP ScrollTrigger': ['scroll-trigger-visualizer', 'scroll-pin-generator'],
+};
 
 /** A section head: its number and name in a title strip, then the heading. */
 function Head({ n, k, children, id }: { n: number; k: string; children: React.ReactNode; id: string }) {
@@ -61,6 +70,9 @@ export function GuidePage({ slug }: { slug: string }) {
   ];
   const others = GUIDES.filter((x) => x.slug !== g.slug);
   const key = g.from.toLowerCase();
+  const tools = TOOLS_FOR[g.from]
+    .map((id) => TOOLS.find((t) => t.slug === id))
+    .filter((t) => t !== undefined);
 
   return (
     <>
@@ -140,6 +152,18 @@ export function GuidePage({ slug }: { slug: string }) {
                 </li>
               ))}
             </ul>
+            {tools.length > 0 && (
+              <p className="gd-p" style={{ marginTop: 16 }}>
+                Free tools for the switch:{' '}
+                {tools.map((t, i) => (
+                  <span key={t.slug}>
+                    {i > 0 && ' · '}
+                    <Link href={`/${t.slug}`} className="underline underline-offset-2">{t.name}</Link>
+                  </span>
+                ))}
+                .
+              </p>
+            )}
           </section>
 
           {/* ── 04 Questions ───────────────────────────────── */}

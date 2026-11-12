@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { seoTitle } from '../../_lib/seo';
 import {
   BlogArticle, Section, Code, Callout, Table, Mark, Checks, Cols, Figure, Closing,
@@ -246,6 +247,13 @@ path {
           illustration drawing — use the default options. No callbacks, no stagger, default speed, named easing. These all
           hit the native path automatically in Chrome, Edge, Safari 26+ and Firefox 159+.
         </Callout>
+        <p>
+          To write the CSS yourself, the{' '}
+          <Link href="/css-scroll-driven-animation-generator">CSS scroll-driven animation generator</Link> builds{' '}
+          <code>animation-timeline</code> rules with a fallback, and the{' '}
+          <Link href="/svg-line-drawing-generator">SVG line drawing generator</Link> turns any SVG into a file that draws
+          itself with no JavaScript.
+        </p>
       </Section>
 
       <Section id="in-practice" k="in practice" title="Native vs JS — the code is identical">

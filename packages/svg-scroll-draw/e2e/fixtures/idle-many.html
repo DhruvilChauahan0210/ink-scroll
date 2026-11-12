@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>idle cost — many engines below the fold</title>
+<style>
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+  .lead { height: 3000px; }
+  .item { height: 40px; display: block; width: 300px; }
+  path { fill: none; stroke: #000; stroke-width: 3; }
+</style>
+</head>
+<body>
+
+<script>
+/**
+ * Count, from before the library loads, every frame requested and every layout
+ * read an engine can make: rects, computed style, path lengths, offsets and
+ * scroll sizes. The spec waits on the original requestAnimationFrame, so it
+ * does not count itself.
+ */
+window.__count = { frames: 0, reads: 0 };
+window.__raf = window.requestAnimationFrame.bind(window);
+window.requestAnimationFrame = (cb) => { window.__count.frames++; return window.__raf(cb); };
+const counted = (proto, name) => {
+  const d = Object.getOwnPropertyDescriptor(proto, name)
+    ?? Object.getOwnPropertyDescriptor(Object.getPrototypeOf(proto), name);
+  if (d.value) {
+    const fn = d.value;
+    proto[name] = function (...a) { window.__count.reads++; return fn.apply(this, a); };
+  } else {
+    Object.defineProperty(proto, name, { ...d, get() { window.__count.reads++; return d.get.call(this); } });
+  }
+};
+counted(Element.prototype, 'getBoundingClientRect');
+counted(SVGGeometryElement.prototype, 'getTotalLength');
+counted(window, 'getComputedStyle');
+for (const p of ['offsetTop', 'offsetHeight', 'offsetWidth']) counted(HTMLElement.prototype, p);
+for (const p of ['scrollHeight', 'clientHeight', 'clientWidth']) counted(Element.prototype, p);
+</script>
+
+<div class="lead"></div>
+<div id="items"></div>
+<div style="height: 1200px"></div>
+
+<script type="module">
+import { scrollDraw, scrollCounter } from '/dist/index.mjs';
+import { scrollText } from '/dist/text/index.mjs';
+import { scrollProgress } from '/dist/progress/index.mjs';
+import { scrollDrawTimeline } from '/dist/timeline/index.mjs';
+import { publish } from './_probe.mjs';
+
+const items = document.getElementById('items');
+const add = (html) => {
+  items.insertAdjacentHTML('beforeend', html);
+  return items.lastElementChild;
+};
+const svg = '<svg class="item" viewBox="0 0 300 40"><path class="p" d="M0 20 H300"/></svg>';
+
+// Every window starts at 3000 - 800 = 2200 or later: the spec scrolls above it.
+const counts = { draw: 200, counter: 20, text: 20, progress: 20, timeline: 20 };
+// A callback keeps scrollDraw on the JS engine in every browser.
+for (let i = 0; i < counts.draw; i++) scrollDraw(add(svg), { onProgress: () => {} });
+for (let i = 0; i < counts.counter; i++) scrollCounter(add('<div class="item">0</div>'), { to: 10 });
+for (let i = 0; i < counts.text; i++) scrollText(add('<p class="item">a few words</p>'));
+for (let i = 0; i < counts.progress; i++) scrollProgress(add('<div class="item"></div>'));
+for (let i = 0; i < counts.timeline; i++) scrollDrawTimeline(add(svg), { tracks: [{ selector: '.p', from: 0, to: 1 }] });
+
+publish({
+  counts: () => counts,
+  reset: () => { window.__count.frames = 0; window.__count.reads = 0; },
+  read: () => ({ ...window.__count }),
+});
+</script>
+</body>
+</html>

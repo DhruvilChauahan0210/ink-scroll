@@ -254,9 +254,9 @@ test.describe('scrollDrawSequence', () => {
   test('a completed step stays completed when you scroll back up', async ({ page }) => {
     await openFixture(page, 'group.html');
 
-    // Scrolled through, not jumped past. The JS engine only writes while the
-    // element is intersecting, so a single jump to 2600 would leave step 0
-    // undrawn — the documented asymmetry in parity.spec.ts, not this behaviour.
+    // Scrolled through, as a reader does. (A single jump to 2600 draws step 0
+    // too since 2.23.5, when the frames began to follow the trigger window:
+    // engine-gate.spec.ts.)
     await scrollToY(page, 2200);
     await scrollToY(page, 2600);
     expect((await read<DrawRow>(page)).steps[0]).toBeCloseTo(1, 2);

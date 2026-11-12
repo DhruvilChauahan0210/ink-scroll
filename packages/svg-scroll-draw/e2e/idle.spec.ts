@@ -110,7 +110,7 @@ test.describe('idle cost of the JS engine', () => {
     await page.waitForTimeout(600);
     const gone = await page.evaluate(() => window.__probe.read());
 
-    // IntersectionObserver reported not-intersecting, so the loop must be idle.
+    // Past every trigger window: the frame that left it was the last (core/frame-gate).
     expect(gone.frames).toBe(0);
     expect(gone.cbMs).toBe(0);
   });
@@ -161,4 +161,46 @@ test.describe('idle cost of the JS engine', () => {
 
     expect(await drawnFraction()).toBeCloseTo(mid, 1);
   });
+});
+
+/**
+ * The other half of idle: a page full of engines below the fold, scrolled
+ * above every window. Each engine listens for scroll and compares where the
+ * scroll is with the frame on screen (core/frame-gate), from the window it
+ * cached: nothing to paint, so no frame is requested and no layout is read.
+ * Measured as the 2.23.4 review of scrollAnimate was: 200 scrollDraw instances,
+ * here with 20 each of scrollCounter, scrollText, scrollProgress and
+ * scrollDrawTimeline beside them.
+ */
+test('scrolling above every window requests no frame and reads no layout', async ({ page }) => {
+  await page.goto('/e2e/fixtures/idle-many.html');
+  await page.waitForFunction(() => window.__ready === true);
+  type Count = { frames: number; reads: number };
+  const probe = () => page.evaluate(() => (window as unknown as { __probe: { read: () => Count } }).__probe.read());
+  const frames = (n: number) => page.evaluate((k) => new Promise<void>((done) => {
+    const raf = (window as unknown as { __raf: typeof requestAnimationFrame }).__raf;
+    let i = 0;
+    const step = () => (++i >= k ? done() : raf(step));
+    raf(step);
+  }), n);
+
+  // Let the first frames and the layout watcher's first reports settle.
+  await frames(10);
+  await page.waitForTimeout(300);
+  await page.evaluate(() => (window as unknown as { __probe: { reset: () => void } }).__probe.reset());
+
+  // Scroll about above the windows, a step a frame, as a reader does.
+  for (const y of [100, 400, 900, 1400, 1800, 2100, 1500, 700, 0]) {
+    await page.evaluate((to) => window.scrollTo(0, to), y);
+    await frames(2);
+  }
+  const idle = await probe();
+  expect(idle, 'frames requested or layout read outside every window').toEqual({ frames: 0, reads: 0 });
+
+  // The positive control: the same counters see the scroll that enters the
+  // first windows (the items are 40px apart, so a few dozen are in at 2600).
+  await page.evaluate(() => window.scrollTo(0, 2600));
+  await frames(3);
+  const entered = await probe();
+  expect(entered.frames, 'the counters saw nothing, so the zero above proves nothing').toBeGreaterThan(10);
 });

@@ -1,6 +1,6 @@
 # Next Session Plan — svg-scroll-draw
 
-> Updated: 2026-11-12 — **Branch `feat/tools-kit-and-fixes`**: the tool kit in all 25 tools, three new tools (SVG path editor, typewriter, scroll video scrub), the release job in Playwright's image, and **2.23.4 staged** (not tagged). **npm `latest` is 2.23.3** (`v2.23.3` on `f4ee078`). Earlier history below.
+> Updated: 2026-11-13 — **Branch `feat/tools-tests-gates-links`**: CI tests every tool page, 2.23.5 (window gate in every engine), tool links from docs/examples/blog. After it reaches `main`: `git tag v2.23.5 <sha> && git push origin v2.23.5`. Next: cinematic window gate; Google indexing queue (`reports/indexing-queue.md`, ~2 a day); measure tools in Search Console. Earlier history below.
 
 ---
 

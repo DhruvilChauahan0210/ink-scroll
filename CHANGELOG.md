@@ -8,6 +8,15 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### Site
 
+- **The docs, examples, guides and blog link to the tools.** Each docs
+  section ends with the tool that builds its code (`#scroll-reveal` → the
+  scroll reveal generator, easing → the easing visualizer and cubic-bezier
+  generator, and so on), 17 example pages and 12 posts name the tool to make
+  your own, and the migration guides list the tools for the switch.
+- **The SVG path editor's downloaded page draws the whole path.** Its intro
+  and outro were 80vh, too short for scrollDraw's default window: the line
+  started 14% drawn and stopped at 86%. The new tools check found it.
+
 - **New tool: SVG path editor** (`/svg-path-editor`). Edit a path's `d` on a
   canvas or as text: drag points and control handles (mouse, touch or arrow
   keys), type into any command, undo and redo. It reads `d` strings as Chromium
@@ -262,6 +271,22 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### CI
 
+- **Every tool's Run it page runs in a browser.** `npm run test:tools -w demo`
+  (`apps/demo/scripts/test-tools.mjs`, in CI's browser job) builds each of the
+  25 tools' downloadable HTML page from its own code module with the settings
+  the tool opens on, plus 11 other outputs a reader can switch to (CSS-only
+  files, the JS engines, the line wave, the wrapped component), and loads all
+  36 in Chromium with jsDelivr served from `dist/`. It scrolls each page top to
+  bottom and checks the effect itself: a line undrawn, part-drawn and then
+  drawn; a counter from 0 to its number; a film scrubbed to its last frame; a
+  strip translated its full travel; a CSS animation present and running; no
+  page or console errors; no request beyond the library and the demo film. A
+  slug in `data/tools.ts` without a case fails it. It found one bug, listed as
+  known in the script: the path editor's page is too short for the default
+  trigger, so its line starts part-drawn and never finishes. The SVG path
+  viewer, shape to path and SVG to JSX converters' page builders moved out of
+  their components into `code.ts` / `run.ts`, and the line drawing
+  generator's `measure()` into `generate.ts`, so the check loads no React.
 - **The release job runs in Playwright's image too.** It installed its
   browsers through apt, and on 2026-11-11 three attempts at 2.23.2 waited
   there until the job's limit while the runners could not resolve
@@ -940,6 +965,49 @@ All notable changes to `svg-scroll-draw` are documented here.
   allowed, followed by `check-jsx-text` and `check-nav`.
 
 ---
+
+## [2.23.5] — 2026-11-13
+
+### Fixed
+
+- **Every engine paints the frame a jump calls for.** `scrollDraw` (on the JS
+  path), `scrollCounter`, `scrollText`, `scrollVideo`, `scrollProgress`,
+  `scrollDrawTimeline` and `useScrollDrawProgress` ran their frames while an
+  IntersectionObserver saw the element, as `scrollAnimate` did up to 2.23.4. A
+  jump across the whole trigger window (the End key, an anchor link, the
+  scroll a reload restores) never has the element on screen. Measured in
+  Chromium, Firefox and WebKit: each one kept its first frame (paths undrawn,
+  the count on 0, the text hidden, the video on frame 0, the hook and the
+  variables on the value from before the jump), and no `onComplete` fired.
+  They share `scrollAnimate`'s design now: every scroll compares where it is in
+  the cached window with the frame on screen; the frames run while it is
+  inside the window and paint the clamped one on the way out. Outside every
+  window a scroll requests no frame and reads no layout (measured with 280
+  engines below the fold). A staggered drawing runs until its last path is
+  done, with no off-screen tail of its own. The timeline's time-driven `loop`
+  still plays while the container is on screen. `onProgress` fires once at
+  creation, for the first frame, and `onEnter` fires the first time an
+  element below the fold is scrolled into its window.
+- **`threshold` and `rootMargin` apply to `autoplay` only.** A scroll-linked
+  draw has no observer left for them to set.
+- **`scrollDrawTimeline`'s `replay()` restarts the frames after `pause()` or
+  `seek()`.** Its frames stayed stopped until the element left the screen
+  and came back.
+- **`repeat` restarts only while the scroll is inside the trigger window**, as
+  it did while the drawing was on screen in 2.23.4. Past or before the window
+  a finished cycle stays at the frame the scroll calls for (drawn whole past
+  the end, `onComplete` once, no frames running) and picks up again when the
+  scroll comes back. Without this, a page resting below a `repeat: 'infinite'`
+  drawing or timeline ran 60 frames and 60 `onComplete` calls a second.
+- **Callbacks fire in the order their edges are crossed.** A backward jump
+  across a whole window fired `onLeaveBack` before `onEnterBack`, in
+  `scrollDraw` and `scrollAnimate`; a reversed window (`start: 'bottom top'`,
+  `end: 'top top'`) with a stagger now completes; and a clip-mode repeat inside
+  the window repaints instead of staying clipped shut.
+
+The engines share one helper for this and for their resize and layout
+listeners (core/frame-gate). The main entry is 11.4 KB (was 11.6) and react
+12.8 (13.2). video is 2.9 (2.8) and timeline 4.2 (4.1), both within budget.
 
 ## [2.23.4] — 2026-11-12
 

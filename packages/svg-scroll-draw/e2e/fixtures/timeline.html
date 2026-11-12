@@ -88,9 +88,15 @@ const paths = (sel) => [...document.querySelectorAll(sel)];
 
 /*
  * The loop is time-driven, so sampling it from the spec is a race: the replay
- * can start and finish between two `read()` calls. Instead the page watches it
- * every frame and counts the movement that can only come from a timer — a change
- * in drawn fraction across a frame in which the page did not scroll at all.
+ * can start and finish between two `read()` calls. Instead the page watches
+ * every value the engine writes and counts the movement that can only come
+ * from a timer — a change in drawn fraction with the page not scrolled since
+ * the write before.
+ *
+ * Every write, not a sample a frame: the engine's frames follow its trigger
+ * window since 2.23.5 (core/frame-gate), so the frame that completes the pass
+ * is the first one after the scroll, and a sampling rAF that ran before it in
+ * that frame missed the 1, saw the reset's 0 and counted no dip.
  *
  * A wind-back in particular is unambiguous: with `loop` set the engine latches
  * progress monotonically, so the only thing that can lower it is the loop's own
@@ -100,7 +106,7 @@ const lpPath = document.querySelector('.lp');
 const motion = { dipsWithoutScroll: 0, risesWithoutScroll: 0 };
 let prevDrawn = drawnFraction(lpPath);
 let prevScroll = window.scrollY;
-(function watchLoop() {
+new MutationObserver(() => {
   const v = drawnFraction(lpPath);
   const y = window.scrollY;
   if (y === prevScroll) {
@@ -109,8 +115,7 @@ let prevScroll = window.scrollY;
   }
   prevDrawn = v;
   prevScroll = y;
-  requestAnimationFrame(watchLoop);
-})();
+}).observe(lpPath, { attributes: true, attributeFilter: ['style'] });
 
 const geometry = {
   viewportHeight: window.innerHeight,

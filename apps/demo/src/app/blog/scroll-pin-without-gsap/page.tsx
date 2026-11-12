@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { seoTitle } from '../../_lib/seo';
 import { SELF, SELF_ENTRIES } from '@/data/competitors';
 import { BlogArticle, Section, Code, Callout, Defs, Table, Figure } from '@/components/blog/BlogArticle';
@@ -120,6 +121,10 @@ const instance = scrollPin('#panel', {
         <p>
           That&apos;s it. <code>scrollPin</code> wraps the target in a spacer div (so the page layout doesn’t jump),
           applies <code>position: fixed</code> when the element hits the viewport top, and releases it when the pin zone ends.
+        </p>
+        <p>
+          To feel a pin distance before you choose one, the <Link href="/scroll-pin-generator">scroll pin generator</Link>{' '}
+          pins a feature tour in a box you scroll and copies the HTML, CSS and JS.
         </p>
       </Section>
 

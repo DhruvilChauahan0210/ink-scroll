@@ -6,8 +6,8 @@ import { lerpColor } from '../core/color';
 import { cssTimingFor } from '../core/css-easing';
 import { _register, _unregister } from '../core/registry';
 import { warn } from '../core/env';
-import { watchLayout } from '../core/layout-watch';
 import { finishWhenReduced } from '../core/motion-live';
+import { frameGate } from '../core/frame-gate';
 
 // ── Public types ──────────────────────────────────────────────────────────────
 
@@ -379,10 +379,6 @@ function buildAnimateEngine(
 
   let tStart           = 0;
   let tEnd             = 0;
-  /** The pending frame, 0 when the loop is stopped: one loop at a time. */
-  let rafId            = 0;
-  /** Where in its window the frame on screen was painted (gate()): NaN for none. */
-  let painted          = NaN;
   let paused           = false;
   /** With `once`, the floor seek() set, eased: -1 when there is none. */
   let frozenAlpha      = -1;
@@ -443,34 +439,13 @@ function buildAnimateEngine(
 
   function fireScrollCallbacks(raw: number): void {
     if (isNaN(prevRawProgress)) { prevRawProgress = raw; return; }
+    // In the order the scroll crosses the edges: a jump back from past the end
+    // to before the start enters back, then leaves back.
     if (prevRawProgress <= 0 && raw > 0) onEnter?.();
-    else if (prevRawProgress > 0 && raw <= 0) onLeaveBack?.();
     if (prevRawProgress < 1 && raw >= 1) onLeave?.();
-    else if (prevRawProgress >= 1 && raw < 1) onEnterBack?.();
+    if (prevRawProgress >= 1 && raw < 1) onEnterBack?.();
+    if (prevRawProgress > 0 && raw <= 0) onLeaveBack?.();
     prevRawProgress = raw;
-  }
-
-  /**
-   * How far `scroll` is through the window, clamped: in (0, 1) the frame moves
-   * with the scroll, at 0 or 1 it is fixed. Never faster than the raw window,
-   * so a fast `speed` still sees the end for onLeave, and a slow one runs on
-   * until its progress reaches 1.
-   */
-  const gate = (scroll: number): number => computeProgress(scroll, tStart, tEnd, Math.min(speed, 1));
-
-  /**
-   * Start the frame loop if the frame on screen is no longer the one the scroll
-   * calls for. The loop used to run while an IntersectionObserver saw the
-   * element, but the element's box includes its own transform and is cut by
-   * any overflow-hidden parent: a parallax layer whose travel carried it out of
-   * its clip stopped updating and stayed there for good, a fade-up started
-   * only once its offset box crossed the fold, then jumped, and a jump across
-   * the whole window never painted its last frame or fired onComplete. The
-   * window comes from layout with the engine's own props left out
-   * (cacheTriggers), so it is what decides now, checked on every scroll.
-   */
-  function wake(): void {
-    if (!rafId && !paused && gate(scrollPos()) !== painted) rafId = requestAnimationFrame(update);
   }
 
   function update(): void {
@@ -502,13 +477,31 @@ function buildAnimateEngine(
     } else if (alpha < 1 && !once) {
       completed = false;
     }
-    // A callback paused, sought or destroyed it: no next frame.
-    if (paused) return;
-    // Out of the window this frame is the clamped one, and the next scroll
-    // that changes it wakes the loop again.
-    painted = gate(currentScroll);
-    rafId = painted > 0 && painted < 1 ? requestAnimationFrame(update) : 0;
   }
+
+  /**
+   * The frames follow the trigger window (core/frame-gate). They used to run
+   * while an IntersectionObserver saw the element, but the element's box
+   * includes its own transform and is cut by any overflow-hidden parent: a
+   * parallax layer whose travel carried it out of its clip stopped updating and
+   * stayed there for good, a fade-up started only once its offset box crossed
+   * the fold, then jumped, and a jump across the whole window never painted its
+   * last frame or fired onComplete. The window comes from layout with the
+   * engine's own props left out (cacheTriggers). Never faster than the raw
+   * window, so a fast `speed` still sees the end for onLeave, and a slow one
+   * runs on until its progress reaches 1.
+   *
+   * The gate re-measures on a resize and on a layout change that is not one:
+   * an image loading above the element, a font swapping in, content arriving
+   * late.
+   */
+  const gate = frameGate(
+    scrollEl ?? window,
+    [triggerEl],
+    () => computeProgress(scrollPos(), tStart, tEnd, Math.min(speed, 1)),
+    update,
+    cacheTriggers,
+  );
 
   cacheTriggers();
 
@@ -531,48 +524,23 @@ function buildAnimateEngine(
     applyAlpha(currentAlpha);
   }
 
-  function remeasure(): void {
-    cacheTriggers();
-    wake();
-  }
-
-  let resizeTimer: ReturnType<typeof setTimeout>;
-  function onResize(): void {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(remeasure, 150);
-  }
-  const scroller = scrollEl ?? window;
-  scroller.addEventListener('scroll', wake, { passive: true });
-  window.addEventListener('resize', onResize);
-  window.addEventListener('orientationchange', onResize);
-  // Most layout changes are not window resizes: an image loading above the
-  // element, a font swapping in, content arriving late.
-  const unwatch = watchLayout([triggerEl], onResize);
-  wake();
-
   _register(el, {
     type: 'animate',
     getProgress: () => currentAlpha,
     getTrigger: () => ({ tStart, tEnd }),
   });
 
+  // seek() paints a frame of its own, and a paused loop may have stopped
+  // mid-window: resume() repaints from the scroll either way (hold).
   function halt(): void {
-    paused  = true;
-    cancelAnimationFrame(rafId);
-    rafId   = 0;
-    // seek() paints a frame of its own, and a paused loop may have stopped
-    // mid-window: resume() repaints from the scroll either way.
-    painted = NaN;
+    paused = true;
+    gate.hold(true);
   }
 
   return {
     destroy() {
-      halt();
-      scroller.removeEventListener('scroll', wake);
-      window.removeEventListener('resize', onResize);
-      window.removeEventListener('orientationchange', onResize);
-      unwatch();
-      clearTimeout(resizeTimer);
+      paused = true;
+      gate.off();
       restoreInline();
       _unregister(el);
     },
@@ -583,17 +551,16 @@ function buildAnimateEngine(
       currentAlpha = 0;
       paused       = false;
       applyAlpha(0);
-      // The frame on screen is the one before the window. replay() used to
-      // leave the loop as it found it, so after pause() or seek() it never
-      // ran again until the element left the screen and came back.
-      painted      = 0;
-      wake();
+      // replay() used to leave the loop as it found it, so after pause() or
+      // seek() it never ran again until the element left the screen and came
+      // back. The next frame repaints from the scroll.
+      gate.hold(false);
     },
     pause: halt,
     resume() {
       if (!paused) return;
       paused = false;
-      wake();
+      gate.hold(false);
     },
     seek(p: number) {
       const clamped = Math.min(1, Math.max(0, p));
@@ -604,6 +571,6 @@ function buildAnimateEngine(
       applyAlpha(clamped);
     },
     getProgress() { return currentAlpha; },
-    refresh: remeasure,
+    refresh: gate.remeasure,
   };
 }

@@ -44,6 +44,17 @@ function nativeClass(el: Element): string | undefined {
   return Array.from(el.classList).find((c) => /^svg-scroll-draw-\d+$/.test(c));
 }
 
+let listens: ReturnType<typeof vi.spyOn>;
+
+/**
+ * What the JS engine sets up and the native path does not: a scroll listener
+ * that runs the frames from the trigger window (core/frame-gate), or with
+ * autoplay a viewport observer.
+ */
+function jsLoops(): number {
+  return FakeIO.instances.length + listens.mock.calls.filter((c) => c[0] === 'scroll').length;
+}
+
 function setSupport(supported: boolean): void {
   vi.stubGlobal('CSS', { supports: vi.fn(() => supported) });
 }
@@ -63,6 +74,7 @@ beforeEach(() => {
     toJSON: () => {},
   } as DOMRect);
   setSupport(true);
+  listens = vi.spyOn(window, 'addEventListener');
 });
 
 afterEach(() => {
@@ -82,8 +94,8 @@ describe('native fast path — activation', () => {
     expect(nativeClass(path)).toBeTruthy();
     expect(path.style.getPropertyValue('--ssd-len')).toBe('100');
     expect(path.style.strokeDasharray).toBe('100');
-    // No IntersectionObserver / rAF loop is set up on the native path.
-    expect(FakeIO.instances.length).toBe(0);
+    // No scroll listener, observer or rAF loop is set up on the native path.
+    expect(jsLoops()).toBe(0);
   });
 
   it('injects a forward keyframe (dashoffset var → 0)', () => {
@@ -165,8 +177,8 @@ describe('native fast path — activation', () => {
 
     expect(nativeStyle()).toBeNull();
     expect(nativeClass(path)).toBeUndefined();
-    // Fell back to the JS engine, which does set up an IntersectionObserver.
-    expect(FakeIO.instances.length).toBe(1);
+    // Fell back to the JS engine, which runs frames of its own.
+    expect(jsLoops()).toBeGreaterThan(0);
   });
 
   it('reverse direction flips the keyframe offsets', () => {
@@ -212,7 +224,7 @@ describe('native fast path — activation', () => {
     createEngine(makeContainer(), { easing: 'ease-in-out' });
 
     expect(nativeStyle()).toBeNull();
-    expect(FakeIO.instances.length).toBe(1);
+    expect(jsLoops()).toBeGreaterThan(0);
   });
 });
 
@@ -247,8 +259,8 @@ describe('native fast path — fallback to JS engine', () => {
     createEngine(makeContainer([path]), opts);
     expect(nativeStyle()).toBeNull();
     expect(nativeClass(path)).toBeUndefined();
-    // JS engine sets up an IntersectionObserver.
-    expect(FakeIO.instances.length).toBe(1);
+    // The JS engine runs frames of its own.
+    expect(jsLoops()).toBeGreaterThan(0);
   });
 
   it('autoplay with no callbacks plays on its clock: no scroll timeline, a viewport observer', () => {
@@ -297,7 +309,7 @@ describe('native fast path — fallback to JS engine', () => {
     const path = makePath();
     createEngine(makeContainer([path]));
     expect(nativeStyle()).toBeNull();
-    expect(FakeIO.instances.length).toBe(1);
+    expect(jsLoops()).toBeGreaterThan(0);
   });
 });
 

@@ -2,9 +2,10 @@ import type { EasingName, ScrollDrawInstance, TriggerConfig } from '../core/type
 import { EASINGS } from '../core/easing';
 import { parseTrigger, computeProgress, computeTriggers } from '../core/trigger';
 import { _register, _unregister } from '../core/registry';
-import { watchLayout } from '../core/layout-watch';
 import { warn } from '../core/env';
 import { finishWhenReduced } from '../core/motion-live';
+import { frameGate } from '../core/frame-gate';
+import { clamp } from '../core/math';
 
 // ── Public types ──────────────────────────────────────────────────────────────
 
@@ -159,7 +160,7 @@ function unitAlpha(masterAlpha: number, index: number, total: number, stagger: n
   const start = index * stagger;
   const end   = start + (1 - totalDelay);
   if (end <= start) return masterAlpha >= start ? 1 : 0;
-  return Math.min(1, Math.max(0, (masterAlpha - start) / (end - start)));
+  return clamp((masterAlpha - start) / (end - start), 0, 1);
 }
 
 function buildTransform(
@@ -258,33 +259,23 @@ function buildText(el: HTMLElement, options: ScrollTextOptions, prefersReduced: 
 
   let tStart       = 0;
   let tEnd         = 0;
-  let rafId        = 0;
-  let isVisible    = false;
-  let paused       = false;
   let frozenAlpha  = -1;
   let currentAlpha = 0;
   let completed    = false;
 
-  const scrollPos = (): number => window.scrollY;
-  const vpSize    = (): number => window.innerHeight;
-
   function cacheTriggers(): void {
-    const rect = el.getBoundingClientRect();
-    const result = computeTriggers(
-      { top: rect.top, height: rect.height },
-      scrollPos(), vpSize(), startConfig, endConfig,
-    );
-    tStart = result.tStart;
-    tEnd   = result.tEnd;
+    ({ tStart, tEnd } = computeTriggers(
+      el.getBoundingClientRect(),
+      window.scrollY, window.innerHeight, startConfig, endConfig,
+    ));
   }
 
+  /** Where the scroll is through the window: what runs the frames (core/frame-gate). */
+  const at = (): number => computeProgress(window.scrollY, tStart, tEnd, 1);
+
   function update(): void {
-    if (!isVisible || paused) return;
-    let alpha = computeProgress(scrollPos(), tStart, tEnd, 1);
-    if (once) {
-      frozenAlpha = Math.max(frozenAlpha, alpha);
-      alpha = frozenAlpha;
-    }
+    // With `once`, held at the furthest point.
+    const alpha = once ? (frozenAlpha = Math.max(frozenAlpha, at())) : at();
     currentAlpha = alpha;
     applyAll(alpha);
     if (alpha >= 1 && !completed) {
@@ -293,41 +284,24 @@ function buildText(el: HTMLElement, options: ScrollTextOptions, prefersReduced: 
     } else if (alpha < 1 && !once) {
       completed = false;
     }
-    rafId = requestAnimationFrame(update);
   }
 
   cacheTriggers();
 
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((e) => {
-        isVisible = e.isIntersecting;
-        if (isVisible && !paused) rafId = requestAnimationFrame(update);
-        else cancelAnimationFrame(rafId);
-      });
-    },
-  );
-
-  let resizeTimer: ReturnType<typeof setTimeout>;
-  function onResize(): void {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => {
-      if (split === 'lines') {
-        // Re-measure lines on resize
-        const savedAlpha = currentAlpha;
-        el.innerHTML = originalHTML;
-        spans = splitIntoLines(el);
-        readable(el, text);
-        applyAll(savedAlpha);
-      }
-      cacheTriggers();
-    }, 150);
-  }
-  window.addEventListener('resize', onResize);
-  window.addEventListener('orientationchange', onResize);
-  // Layout changes that are not window resizes: images, fonts, late content.
-  const unwatch = watchLayout([el], onResize);
-  observer.observe(el);
+  // The frames follow the trigger window, not an observer of the element: a
+  // jump across the whole window never had it on screen, so the text stayed
+  // hidden and onComplete never fired.
+  // It also re-measures on a resize or a layout change: images, fonts, late
+  // content. Lines are split again then, since they wrap where the width says.
+  const gate = frameGate(window, [el], at, update, () => {
+    if (split === 'lines') {
+      el.innerHTML = originalHTML;
+      spans = splitIntoLines(el);
+      readable(el, text);
+      applyAll(currentAlpha);
+    }
+    cacheTriggers();
+  });
 
   _register(el, {
     type: 'text',
@@ -335,20 +309,11 @@ function buildText(el: HTMLElement, options: ScrollTextOptions, prefersReduced: 
     getTrigger: () => ({ tStart, tEnd }),
   });
 
-  function resume(): void {
-    if (!paused) return;
-    paused = false;
-    if (isVisible) rafId = requestAnimationFrame(update);
-  }
+  const resume = (): void => gate.hold(false);
 
   return {
     destroy() {
-      cancelAnimationFrame(rafId);
-      observer.disconnect();
-      window.removeEventListener('resize', onResize);
-      window.removeEventListener('orientationchange', onResize);
-      unwatch();
-      clearTimeout(resizeTimer);
+      gate.off();
       el.innerHTML = originalHTML;
       _unregister(el);
     },
@@ -361,18 +326,11 @@ function buildText(el: HTMLElement, options: ScrollTextOptions, prefersReduced: 
       // `paused` and leave it so, and resume() then had nothing to restart.
       resume();
     },
-    pause() {
-      paused = true;
-      cancelAnimationFrame(rafId);
-    },
+    pause: () => gate.hold(true),
     resume,
     seek(p: number) {
-      const clamped = Math.min(1, Math.max(0, p));
-      currentAlpha  = clamped;
-      frozenAlpha   = clamped;
-      paused        = true;
-      cancelAnimationFrame(rafId);
-      applyAll(clamped);
+      gate.hold(true);
+      applyAll(currentAlpha = frozenAlpha = clamp(p, 0, 1));
     },
     getProgress() { return currentAlpha; },
   };

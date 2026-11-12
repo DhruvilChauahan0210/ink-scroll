@@ -264,7 +264,7 @@ describe('the engines, when reduced motion is turned on mid-visit', () => {
     Object.defineProperty(video, 'currentTime', { value: 0, writable: true });
     vi.spyOn(video, 'pause').mockImplementation(() => {});
     const inst = scrollVideo(video);
-    FakeIO.instances.at(-1)!.trigger(true);
+    window.dispatchEvent(new Event('scroll'));
 
     setReducedMotion(true);
 

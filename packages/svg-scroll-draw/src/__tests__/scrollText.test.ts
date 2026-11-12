@@ -13,11 +13,16 @@ function makeParagraph(text = 'Hello world foo bar'): HTMLParagraphElement {
 }
 
 class RafQueue {
-  private queue: FrameRequestCallback[] = [];
+  private queue: { id: number; cb: FrameRequestCallback }[] = [];
   private id = 0;
-  schedule = vi.fn((cb: FrameRequestCallback): number => { this.queue.push(cb); return ++this.id; });
-  cancel = vi.fn();
-  tick() { const cb = this.queue.shift(); cb?.(performance.now()); }
+  schedule = vi.fn((cb: FrameRequestCallback): number => { this.queue.push({ id: ++this.id, cb }); return this.id; });
+  cancel   = vi.fn((id: number) => { this.queue = this.queue.filter((f) => f.id !== id); });
+  /**
+   * One frame: every callback queued before it, as a browser runs them. The
+   * engines' frames follow the trigger window and wake on scroll events, so an
+   * engine an earlier test left can share the queue.
+   */
+  tick() { const frame = this.queue; this.queue = []; for (const f of frame) f.cb(performance.now()); }
 }
 
 class FakeIO {
@@ -29,6 +34,16 @@ class FakeIO {
   trigger(v: boolean) {
     this.cb([{ isIntersecting: v } as IntersectionObserverEntry], this as unknown as IntersectionObserver);
   }
+}
+
+/**
+ * Scroll the page: set the offset and fire a scroll event, as a browser does.
+ * The frames follow the trigger window and wake on scroll (core/frame-gate),
+ * so moving `scrollY` alone is not a scroll.
+ */
+function scroll(y?: number): void {
+  if (y !== undefined) vi.stubGlobal('scrollY', y);
+  window.dispatchEvent(new Event('scroll'));
 }
 
 let raf: RafQueue;
@@ -147,7 +162,7 @@ describe('scrollText', () => {
   it('pause stops rAF scheduling', () => {
     const el = makeParagraph('Hello world');
     const inst = scrollText(el);
-    FakeIO.instances[0].trigger(true);
+    scroll();
     raf.tick();
     const before = raf.schedule.mock.calls.length;
     inst.pause();
@@ -158,7 +173,7 @@ describe('scrollText', () => {
   it('resume restarts after pause', () => {
     const el = makeParagraph('Hello');
     const inst = scrollText(el);
-    FakeIO.instances[0].trigger(true);
+    scroll();
     raf.tick();
     inst.pause();
     const before = raf.schedule.mock.calls.length;
@@ -166,11 +181,12 @@ describe('scrollText', () => {
     expect(raf.schedule.mock.calls.length).toBeGreaterThan(before);
   });
 
-  it('destroy disconnects observer', () => {
+  it('destroy stops listening for scroll', () => {
     const el = makeParagraph('Hello');
+    const unlisten = vi.spyOn(window, 'removeEventListener');
     const inst = scrollText(el);
     inst.destroy();
-    expect(FakeIO.instances[0].disconnect).toHaveBeenCalled();
+    expect(unlisten).toHaveBeenCalledWith('scroll', expect.any(Function), expect.anything());
   });
 
   it('calls onComplete when fully revealed', () => {
@@ -180,7 +196,7 @@ describe('scrollText', () => {
       top: -200, height: 100, left: 0, width: 400, right: 400, bottom: -100, x: 0, y: 0, toJSON: () => ({}),
     });
     scrollText(el, { onComplete });
-    FakeIO.instances[0].trigger(true);
+    scroll();
     raf.tick();
     expect(onComplete).toHaveBeenCalled();
   });
@@ -236,13 +252,13 @@ describe('scrollText replay() restarts the frame loop', () => {
   it('after pause()', () => {
     const el = makeParagraph();
     const inst = scrollText(el, { once: false });
-    FakeIO.instances[0].trigger(true);
+    scroll();
     raf.tick();
     inst.pause();
     raf.tick(); // a frame pause() could not cancel in this fake sees `paused` and stops
     inst.replay();
     expect(inst.getProgress()).toBe(0);
-    vi.stubGlobal('scrollY', -300);
+    scroll(-300);
     raf.tick();
     expect(inst.getProgress()).toBeCloseTo(0.5, 6);
   });
@@ -250,12 +266,12 @@ describe('scrollText replay() restarts the frame loop', () => {
   it('after seek()', () => {
     const el = makeParagraph();
     const inst = scrollText(el);
-    FakeIO.instances[0].trigger(true);
+    scroll();
     raf.tick();
     inst.seek(0.2);
     raf.tick();
     inst.replay();
-    vi.stubGlobal('scrollY', -300);
+    scroll(-300);
     raf.tick();
     expect(inst.getProgress()).toBeCloseTo(0.5, 6);
   });
@@ -263,10 +279,13 @@ describe('scrollText replay() restarts the frame loop', () => {
   it('does not start a second loop when it was running', () => {
     const el = makeParagraph();
     const inst = scrollText(el);
-    FakeIO.instances[0].trigger(true);
-    const frames = raf.schedule.mock.calls.length;
+    scroll(-300); // in the window: the loop runs
+    raf.tick();
     inst.replay();
-    expect(raf.schedule.mock.calls.length).toBe(frames);
+    // One loop: each frame requests the next, once.
+    const frames = raf.schedule.mock.calls.length;
+    raf.tick();
+    expect(raf.schedule.mock.calls.length - frames).toBe(1);
   });
 });
 

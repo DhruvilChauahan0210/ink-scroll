@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { seoTitle } from '../../_lib/seo';
 import { SELF_ENTRIES } from '@/data/competitors';
 import { BlogArticle, Section, Code, Callout, Compare } from '@/components/blog/BlogArticle';
@@ -209,6 +210,10 @@ export default function Page() {
           scrolls. Since 2.21.0 it adds the visually hidden copy itself and sets no <code>aria-label</code>;{' '}
           <code>destroy()</code> puts the original markup back. Under reduced motion it shows the final text
           straight away.
+        </p>
+        <p>
+          The <Link href="/text-animation-generator">text animation generator</Link> sets the split, stagger and
+          entrance for you and copies the <code>scrollText</code> call or a React component.
         </p>
         <Code file="headline.js">{LIBRARY}</Code>
         <Code file="Headline.tsx">{REACT}</Code>

@@ -9,23 +9,20 @@ export function parseTrigger(str = 'top bottom'): { element: string; viewport: s
   return { element, viewport };
 }
 
+/**
+ * How far down its box a named anchor sits, as a fraction: `top` 0, `center`
+ * 0.5, `bottom` 1, anything else `other`. A size times 0.5 is exactly the size
+ * over 2, so these are the values the switch statements here used to return.
+ */
+const anchorAt = (anchor: string, other: number): number =>
+  anchor === 'top' ? 0 : anchor === 'center' ? 0.5 : anchor === 'bottom' ? 1 : other;
+
 export function elementAnchorY(top: number, height: number, scrollY: number, anchor: string): number {
-  switch (anchor) {
-    case 'top':    return top + scrollY;
-    case 'center': return top + scrollY + height / 2;
-    case 'bottom': return top + scrollY + height;
-    default:       return top + scrollY;
-  }
+  return top + scrollY + height * anchorAt(anchor, 0);
 }
 
 export function viewportAnchorY(anchor: string, vpHeight: number): number {
-  if (/^\d+(\.\d+)?%$/.test(anchor)) return vpHeight * (parseFloat(anchor) / 100);
-  switch (anchor) {
-    case 'top':    return 0;
-    case 'center': return vpHeight / 2;
-    case 'bottom': return vpHeight;
-    default:       return vpHeight;
-  }
+  return vpHeight * (/^\d+(\.\d+)?%$/.test(anchor) ? parseFloat(anchor) / 100 : anchorAt(anchor, 1));
 }
 
 export function computeProgress(

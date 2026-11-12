@@ -105,7 +105,8 @@ export const EASINGS: Record<string, (t: number) => number> = {
   'ease-in':     (t) => t * t,
   'ease-out':    (t) => t * (2 - t),
   'ease-in-out': (t) => (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t),
-  spring:        (t) => 1 - Math.cos(t * Math.PI * 2.5) * Math.pow(1 - t, 2.2),
+  // createSpring's defaults, the same arithmetic in the same order.
+  spring:        createSpring(),
   bounce:        createBounce(),
   elastic:       createElastic(),
 };

@@ -12,11 +12,16 @@ function makeEl(top = 0): HTMLElement {
 }
 
 class RafQueue {
-  queue: FrameRequestCallback[] = [];
-  id = 0;
-  schedule = vi.fn((cb: FrameRequestCallback) => { this.queue.push(cb); return ++this.id; });
-  cancel   = vi.fn();
-  tick()   { const cb = this.queue.shift(); cb?.(performance.now()); }
+  private queue: { id: number; cb: FrameRequestCallback }[] = [];
+  private id = 0;
+  schedule = vi.fn((cb: FrameRequestCallback): number => { this.queue.push({ id: ++this.id, cb }); return this.id; });
+  cancel   = vi.fn((id: number) => { this.queue = this.queue.filter((f) => f.id !== id); });
+  /**
+   * One frame: every callback queued before it, as a browser runs them. The
+   * engines' frames follow the trigger window and wake on scroll events, so an
+   * engine an earlier test left can share the queue.
+   */
+  tick() { const frame = this.queue; this.queue = []; for (const f of frame) f.cb(performance.now()); }
 }
 
 class FakeIO {
@@ -28,6 +33,16 @@ class FakeIO {
   trigger(isIntersecting: boolean) {
     this.cb([{ isIntersecting } as IntersectionObserverEntry], this as unknown as IntersectionObserver);
   }
+}
+
+/**
+ * Scroll the page: set the offset and fire a scroll event, as a browser does.
+ * The frames follow the trigger window and wake on scroll (core/frame-gate),
+ * so moving `scrollY` alone is not a scroll.
+ */
+function scroll(y?: number): void {
+  if (y !== undefined) vi.stubGlobal('scrollY', y);
+  window.dispatchEvent(new Event('scroll'));
 }
 
 let raf: RafQueue;
@@ -74,7 +89,7 @@ describe('scrollProgress', () => {
   it('skips eased variable when easedVariable is null', () => {
     const el   = makeEl();
     const inst = scrollProgress(el, { easedVariable: null });
-    FakeIO.instances[0].trigger(true);
+    scroll();
     raf.tick();
     expect(el.style.getPropertyValue('--scroll-progress-eased')).toBe('');
     inst.destroy();
@@ -84,7 +99,7 @@ describe('scrollProgress', () => {
     const onProgress = vi.fn();
     const el   = makeEl();
     const inst = scrollProgress(el, { onProgress });
-    FakeIO.instances[0].trigger(true);
+    scroll();
     raf.tick();
     expect(onProgress).toHaveBeenCalled();
     const [raw, eased] = onProgress.mock.calls[0];

@@ -5,7 +5,7 @@ import { prefersReducedMotion } from '../core/motion';
 import { watchReducedMotion } from '../core/motion-watch';
 import { warn } from '../core/env';
 import { _register, _unregister } from '../core/registry';
-import { watchLayout } from '../core/layout-watch';
+import { frameGate } from '../core/frame-gate';
 import type { ScrollDrawInstance, EasingName } from '../core/types';
 
 export interface TimelineTrack {
@@ -134,6 +134,12 @@ export function scrollDrawTimeline(
 
   let repeatCount: number = repeat === 'infinite' ? Infinity : (repeat ?? 0);
   let repeatTimer: ReturnType<typeof setTimeout> | undefined;
+  /**
+   * A repeat whose delay is up, waiting for a frame inside the window. Reset
+   * wherever the scroll was, past the window it repainted drawn whole at once:
+   * complete, the next timer, again, 60 times a second with repeatDelay 0.
+   */
+  let parked = false;
 
   // ── Loop state ────────────────────────────────────────────────────────────
   const maxLoops: number = loop === true ? Infinity : (typeof loop === 'number' ? loop : 0);
@@ -195,7 +201,9 @@ export function scrollDrawTimeline(
   }
 
   let tStart = 0, tEnd = 0;
-  let isVisible = false, paused = false, rafId = 0;
+  /** Where the timeline is on screen, `top bottom` → `bottom top`: what runs a loop's frames. */
+  let vStart = 0, vEnd = 0;
+  let paused = false;
   let completed = false, frozenAlpha = -1, currentAlpha = 0;
 
   // ── Debug overlay ─────────────────────────────────────────────────────────
@@ -270,6 +278,8 @@ export function scrollDrawTimeline(
     const result = computeTriggers({ top: pos, height: size }, scroll, vpSize(), startConfig, endConfig);
     tStart = result.tStart;
     tEnd   = result.tEnd;
+    vStart = pos + scroll - vpSize();
+    vEnd   = pos + scroll + size;
   }
 
   function applyGlobalAlpha(globalAlpha: number) {
@@ -287,6 +297,7 @@ export function scrollDrawTimeline(
   }
 
   function doReset() {
+    parked       = false;
     frozenAlpha  = -1;
     currentAlpha = 0;
     completed    = false;
@@ -299,9 +310,18 @@ export function scrollDrawTimeline(
     (container as HTMLElement).style.setProperty('--scroll-draw-progress', '0');
   }
 
-  function update() {
-    if (!isVisible || paused) return;
+  /** What runs the frames: the trigger window, or the screen while a loop runs. */
+  function at(): number {
+    return looping
+      ? computeProgress(scrollPos(), vStart, vEnd, 1)
+      : computeProgress(scrollPos(), tStart, tEnd, Math.min(speed, 1));
+  }
 
+  function update() {
+    // A parked repeat starts on the first frame inside the window (at() is in
+    // [0, 1], so `% 1` is 0 at either end); outside it the drawing stays where
+    // the scroll put it.
+    if (parked && at() % 1) doReset();
     let alpha: number;
     if (looping) {
       alpha = Math.min(1, (performance.now() - loopStart) / loopDuration);
@@ -325,13 +345,14 @@ export function scrollDrawTimeline(
           doReset();
           looping    = true;
           loopStart  = performance.now();
+          go();
         }, repeatDelay);
       } else if (repeatCount > 0 && once && !looping && !repeatTimer) {
-        // repeat (scroll-re-entry mode)
+        // repeat (scroll-re-entry mode): it parks, and restarts inside the window
         repeatTimer = setTimeout(() => {
           repeatTimer = undefined;
           if (repeatCount !== Infinity) repeatCount--;
-          doReset();
+          parked = true;
         }, repeatDelay);
       }
     } else if (!looping && alpha < 1 && !once) {
@@ -347,49 +368,40 @@ export function scrollDrawTimeline(
           if (loopsLeft !== Infinity) loopsLeft--;
           doReset();
           loopStart = performance.now();
+          go();
         }, repeatDelay);
       } else {
         looping = false; // exhausted all loop iterations — stop
       }
     }
-
-    rafId = requestAnimationFrame(update);
   }
 
   cacheTriggers();
 
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((e) => {
-        isVisible = e.isIntersecting;
-        if (isVisible && !paused) rafId = requestAnimationFrame(update);
-        else cancelAnimationFrame(rafId);
+  // The frames follow the trigger window (core/frame-gate). They used to run
+  // while an IntersectionObserver saw the container, so a jump across the whole
+  // window never had it on screen: the tracks stayed undrawn and onComplete
+  // never fired. A time-driven loop runs while the container is on screen, as
+  // it did. It also re-measures, path lengths and the window, on a resize or a
+  // layout change (images, fonts, late content) and on refresh().
+  const gate = frameGate(
+    window,
+    [container],
+    at,
+    update,
+    () => {
+      trackData.forEach(({ elements, lengths }) => {
+        elements.forEach((el, i) => {
+          lengths[i] = getElementLength(el);
+          el.style.strokeDasharray = `${lengths[i]}`;
+        });
       });
+      cacheTriggers();
     },
-    { threshold: 0 },
   );
-  observer.observe(container);
-
-  /** Everything layout-dependent, re-read. Shared by resize and refresh(). */
-  function remeasure() {
-    trackData.forEach(({ elements, lengths }) => {
-      elements.forEach((el, i) => {
-        lengths[i] = getElementLength(el);
-        el.style.strokeDasharray = `${lengths[i]}`;
-      });
-    });
-    cacheTriggers();
-  }
-
-  let resizeTimer: ReturnType<typeof setTimeout>;
-  function onResize() {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(remeasure, 150);
-  }
-  window.addEventListener('resize', onResize);
-  window.addEventListener('orientationchange', onResize);
-  // Layout changes that are not window resizes: images, fonts, late content.
-  const unwatch = watchLayout([container], onResize);
+  /** Run the frames unless paused; the next one repaints. */
+  const go = (): void => gate.hold(paused);
+  go();
 
   // A timeline is a multi-track draw, so devtools lists it as one.
   _register(container, {
@@ -400,14 +412,9 @@ export function scrollDrawTimeline(
 
   return {
     destroy() {
-      cancelAnimationFrame(rafId);
-      clearTimeout(resizeTimer);
+      gate.off();
       clearTimeout(repeatTimer);
-      observer.disconnect();
       _unregister(container);
-      window.removeEventListener('resize', onResize);
-      window.removeEventListener('orientationchange', onResize);
-      unwatch();
       stopWatchingMotion();
       if (debugEl) { debugEl.remove(); debugEl = null; }
       // Put the paths back the way they were found, rather than leaving them
@@ -416,10 +423,7 @@ export function scrollDrawTimeline(
       (container as HTMLElement).style.removeProperty('--scroll-draw-progress');
     },
     /** Re-measure path lengths and the trigger window after a layout change. */
-    refresh() {
-      clearTimeout(resizeTimer);
-      remeasure();
-    },
+    refresh: gate.remeasure,
     replay() {
       repeatCount = repeat === 'infinite' ? Infinity : (repeat ?? 0);
       loopsLeft   = maxLoops;
@@ -428,14 +432,15 @@ export function scrollDrawTimeline(
       repeatTimer = undefined;
       doReset();
       paused = false;
+      go();
     },
-    pause()  { paused = true;  cancelAnimationFrame(rafId); },
-    resume() { if (!paused) return; paused = false; if (isVisible) rafId = requestAnimationFrame(update); },
+    pause()  { paused = true; go(); },
+    resume() { if (!paused) return; paused = false; go(); },
     seek(p: number) {
       currentAlpha = Math.min(1, Math.max(0, p));
       frozenAlpha  = currentAlpha;
       paused       = true;
-      cancelAnimationFrame(rafId);
+      go();
       applyGlobalAlpha(currentAlpha);
     },
     getProgress() { return currentAlpha; },

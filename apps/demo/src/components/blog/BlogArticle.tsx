@@ -4,6 +4,7 @@ import { Children, cloneElement, isValidElement, type ReactElement, type ReactNo
 import { POSTS } from '@/data/blog-posts';
 import { EXAMPLE_SEO } from '@/data/examples-seo';
 import { RELATED_BY_POST } from '@/data/related-links';
+import { TOOLS } from '@/data/tools';
 import { jsonLd as serialiseJsonLd } from '@/lib/json-ld';
 import { SiteShell } from '../site/SiteShell';
 import { CodeBox } from '../site/CodeBox';
@@ -176,6 +177,10 @@ function BlogEnd({ slug, further = [] }: { slug: string; further?: LinkItem[] })
     .filter(Boolean)
     .map((seo) => ({ href: `/examples/${seo.slug}`, label: seo.heading, blurb: seo.description }));
   const pages: LinkItem[] = related?.pages ?? [];
+  const tools: LinkItem[] = (related?.tools ?? [])
+    .map((id) => TOOLS.find((t) => t.slug === id))
+    .filter((t) => t !== undefined)
+    .map((t) => ({ href: `/${t.slug}`, label: t.name, blurb: t.blurb }));
 
   const at = POSTS.findIndex((p) => p.slug === slug);
   const others = [1, 2, 3].map((d) => POSTS[(at + d + POSTS.length) % POSTS.length]).filter((p) => p.slug !== slug);
@@ -191,6 +196,7 @@ function BlogEnd({ slug, further = [] }: { slug: string; further?: LinkItem[] })
   };
   add(further, 'next');
   add(examples, 'example');
+  add(tools, 'tool');
   add(pages, 'page');
 
   return (

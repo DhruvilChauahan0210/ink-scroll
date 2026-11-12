@@ -375,6 +375,12 @@ export default function ReactScrollAnimationPage() {
                   </li>
                 ))}
               </ol>
+              <p className="stk-p stk-more">
+                Have an SVG to draw? The <Link href="/svg-to-jsx-converter">SVG to JSX converter</Link> turns it into
+                a typed React component, wrapped in <C>ScrollDraw</C> if you want, and the{' '}
+                <Link href="/scroll-reveal-generator">scroll reveal generator</Link> copies a ready React component
+                for card reveals.
+              </p>
             </Sec>
 
             {/* ── 04 Next.js App Router ─────────────────────── */}

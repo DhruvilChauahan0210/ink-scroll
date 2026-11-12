@@ -8,8 +8,8 @@ import { ToolExport } from '@/components/tool-kit/ToolExport';
 import { sanitizeSvg, type Sanitized } from '@/lib/svg-sanitize';
 import { downloadText } from '@/lib/tool-export';
 import {
-  DEFAULTS, DRAWABLE_SELECTOR, EASINGS, FILL_FADES, LOOPS, ORDERS, OUTPUTS, SCROLL_END, SCROLL_START, STROKES, buildOutput,
-  fmt, htmlPage, round, toDom, toTree, type Easing, type Loop, type Measured, type Order, type Output, type OutputKey,
+  DEFAULTS, EASINGS, FILL_FADES, LOOPS, ORDERS, OUTPUTS, SCROLL_END, SCROLL_START, STROKES, buildOutput,
+  fmt, htmlPage, measure, round, toDom, toTree, type Easing, type Loop, type Measured, type Order, type Output, type OutputKey,
   type Settings, type StrokeMode, type Tree,
 } from './generate';
 import { SAMPLE } from './sample';
@@ -445,43 +445,6 @@ function Seg({ value, options, onChange, label }: {
 }
 
 // ── Measuring and checking the paste ────────────────────────────────────────
-
-function measure(svg: SVGSVGElement, bare: boolean): Omit<Measurement, 'of'> {
-  if (bare) {
-    svg.setAttribute('fill', 'none');
-    svg.setAttribute('stroke', 'currentColor');
-  }
-  const els = Array.from(svg.querySelectorAll<SVGGeometryElement>(DRAWABLE_SELECTOR));
-  const shapes: Measured[] = els.map((el) => {
-    const cs = getComputedStyle(el);
-    let length = 0;
-    try { length = el.getTotalLength(); } catch { length = 0; }
-    return {
-      length,
-      stroked: cs.stroke !== 'none' && parseFloat(cs.strokeWidth) > 0 && cs.strokeOpacity !== '0',
-      // A <line> computes a fill (black, by default) but has no inside to paint.
-      filled: el.localName !== 'line' && cs.fill !== 'none' && cs.fillOpacity !== '0',
-      fillOpacity: parseFloat(cs.fillOpacity) || 1,
-      nonScaling: (el.getAttribute('vector-effect') ?? '').includes('non-scaling-stroke'),
-      pieces: el.localName === 'path' ? ((el.getAttribute('d') ?? '').match(/[Mm]/g) ?? []).length : 1,
-    };
-  });
-  let viewBox: string | null = null;
-  let size = 0;
-  const vb = svg.getAttribute('viewBox');
-  if (vb) {
-    const [, , w, h] = vb.split(/[\s,]+/).map(Number);
-    size = Math.max(w || 0, h || 0);
-  } else {
-    try {
-      const b = svg.getBBox();
-      const pad = Math.max(b.width, b.height) * 0.06 + 2;
-      viewBox = [b.x - pad, b.y - pad, b.width + pad * 2, b.height + pad * 2].map((n) => fmt(n, 2)).join(' ');
-      size = Math.max(b.width, b.height) + pad * 2;
-    } catch { /* nothing drawable */ }
-  }
-  return { shapes, viewBox, size, bare: bare ? fmt(Math.max(size, 1) / 120, 2) : null };
-}
 
 function checks(m: Measurement, parsed: Extract<Sanitized, { ok: true }>, s: Settings): string[] {
   const out: string[] = [];

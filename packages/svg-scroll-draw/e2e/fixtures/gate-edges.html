@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Trigger windows — a negative range, and a jump back across one</title>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+  .lead { height: 1600px; }
+  .gap  { height: 200px; }
+  .tail { height: 1600px; }
+  .item { height: 200px; width: 300px; display: block; }
+</style>
+</head>
+<body>
+
+<!--
+  Viewport 900x800.
+  #neg (top 1600): 'bottom top' → 'top top' runs backwards, 1800 → 1600, and
+    stagger 0.5 starts each later path 100px further up: path 2 runs 1600 → 1400.
+    Drawn above 1400, undrawn below 1800: a scroll up through it draws it.
+  #draw (top 2400) and #animate (top 2800): default windows, 1600 → 2600 and
+    2000 → 3000. Every window ends by 3000; the page scrolls to 3400.
+-->
+<div class="lead"></div>
+<svg class="item" id="neg" viewBox="0 0 300 200">
+  <path d="M10 40 H290" stroke="#222" stroke-width="4" fill="none"/>
+  <path d="M10 100 H290" stroke="#222" stroke-width="4" fill="none"/>
+  <path d="M10 160 H290" stroke="#222" stroke-width="4" fill="none"/>
+</svg>
+<div class="gap"></div>
+<svg class="item" id="draw" viewBox="0 0 300 200"><path d="M10 100 H290" stroke="#222" stroke-width="4" fill="none"/></svg>
+<div class="gap"></div>
+<div class="item" id="animate" style="background:#ddd"></div>
+<div class="tail"></div>
+
+<script type="module">
+import { scrollDraw, scrollAnimate } from '/dist/index.mjs';
+import { drawnFraction, publish } from './_probe.mjs';
+
+const $ = (sel) => document.querySelector(sel);
+let negCompleted = 0;
+const log = { draw: [], animate: [] };
+const callbacks = (name) => ({
+  onEnter: () => log[name].push('enter'),
+  onLeave: () => log[name].push('leave'),
+  onEnterBack: () => log[name].push('enterBack'),
+  onLeaveBack: () => log[name].push('leaveBack'),
+});
+
+scrollDraw('#neg', {
+  trigger: { start: 'bottom top', end: 'top top' },
+  stagger: 0.5,
+  onComplete: () => { negCompleted++; },
+});
+scrollDraw('#draw', callbacks('draw'));
+scrollAnimate('#animate', { props: { opacity: [0.2, 1] }, ...callbacks('animate') });
+
+publish({
+  read: () => ({
+    neg: Array.from($('#neg').querySelectorAll('path')).map(drawnFraction),
+    negCompleted,
+    log: { draw: [...log.draw], animate: [...log.animate] },
+  }),
+  maxScroll: () => document.documentElement.scrollHeight - innerHeight,
+});
+</script>
+</body>
+</html>

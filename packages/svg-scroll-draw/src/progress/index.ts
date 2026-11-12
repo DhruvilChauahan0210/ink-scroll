@@ -3,8 +3,8 @@ import { EASINGS } from '../core/easing';
 import { parseTrigger, computeProgress, computeTriggers } from '../core/trigger';
 import { measureTriggerFrame } from '../core/trigger-frame';
 import { _register, _unregister } from '../core/registry';
-import { watchLayout } from '../core/layout-watch';
 import { warn } from '../core/env';
+import { frameGate } from '../core/frame-gate';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -88,9 +88,6 @@ export function scrollProgress(
 
   let tStart       = 0;
   let tEnd         = 0;
-  let rafId        = 0;
-  let isVisible    = false;
-  let paused       = false;
   let currentRaw   = 0;
 
   const scrollPos = (): number => {
@@ -117,12 +114,10 @@ export function scrollProgress(
   }
 
   function update(): void {
-    if (!isVisible || paused) return;
     const raw   = computeProgress(scrollPos(), tStart, tEnd, speed);
     const eased = easeFn(raw);
     currentRaw  = raw;
     applyProgress(raw, eased);
-    rafId = requestAnimationFrame(update);
   }
 
   cacheTriggers();
@@ -135,27 +130,18 @@ export function scrollProgress(
     applyProgress(initRaw, initEased);
   }
 
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((e) => {
-        isVisible = e.isIntersecting;
-        if (isVisible && !paused) rafId = requestAnimationFrame(update);
-        else cancelAnimationFrame(rafId);
-      });
-    },
-    { root: scrollEl ?? null },
+  // The frames follow the trigger window, not an observer of the element: a
+  // jump across the whole window never had it on screen, so the variables kept
+  // the value from before the jump. Never faster than the raw window, so a slow
+  // `speed` runs on until its progress reaches 1. It also re-measures on a
+  // resize or a layout change: images, fonts, late content.
+  const gate = frameGate(
+    scrollEl ?? window,
+    [htmlEl],
+    () => computeProgress(scrollPos(), tStart, tEnd, Math.min(speed, 1)),
+    update,
+    cacheTriggers,
   );
-
-  let resizeTimer: ReturnType<typeof setTimeout>;
-  function onResize(): void {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(cacheTriggers, 150);
-  }
-  window.addEventListener('resize', onResize);
-  window.addEventListener('orientationchange', onResize);
-  // Layout changes that are not window resizes: images, fonts, late content.
-  const unwatch = watchLayout([htmlEl], onResize);
-  observer.observe(el!);
 
   _register(el, {
     type: 'animate',
@@ -165,34 +151,19 @@ export function scrollProgress(
 
   return {
     destroy() {
-      cancelAnimationFrame(rafId);
-      observer.disconnect();
-      window.removeEventListener('resize', onResize);
-      window.removeEventListener('orientationchange', onResize);
-      unwatch();
-      clearTimeout(resizeTimer);
+      gate.off();
       htmlEl.style.removeProperty(variable);
       if (easedVariable != null) htmlEl.style.removeProperty(easedVariable);
       _unregister(el);
     },
-    replay() {
-      cacheTriggers();
-    },
-    pause() {
-      paused = true;
-      cancelAnimationFrame(rafId);
-    },
-    resume() {
-      if (!paused) return;
-      paused = false;
-      if (isVisible) rafId = requestAnimationFrame(update);
-    },
+    replay: gate.remeasure,
+    pause: () => gate.hold(true),
+    resume: () => gate.hold(false),
     seek(p: number) {
       const raw   = Math.min(1, Math.max(0, p));
       const eased = easeFn(raw);
       currentRaw  = raw;
-      paused      = true;
-      cancelAnimationFrame(rafId);
+      gate.hold(true);
       applyProgress(raw, eased);
     },
     getProgress() { return currentRaw; },

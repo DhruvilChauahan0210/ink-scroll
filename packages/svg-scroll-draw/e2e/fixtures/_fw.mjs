@@ -72,7 +72,7 @@ export function setupFramework(api) {
         mounted: !!path && (api.hasAnim === false || !!anim),
         drawn: path ? drawnFraction(path) : null,
         opacity: anim ? opacityOf(anim) : null,
-        liveObservers: counters.liveObservers(),
+        liveWatchers: counters.liveWatchers(),
       };
     },
 
@@ -97,7 +97,7 @@ export function setupFramework(api) {
     unmount: () => api.unmount(),
     setSpeed: (v) => api.setSpeed?.(v),
     rerender: () => api.rerender?.(),
-    observeCalls: () => counters.observeCalls(),
+    starts: () => counters.starts(),
 
     /** Frames of animation work over `n` frames — 0 once everything is torn down. */
     ticksOver: (n) => counters.ticksOver(n),

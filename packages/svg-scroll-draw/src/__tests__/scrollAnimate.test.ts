@@ -325,7 +325,7 @@ describe('scrollAnimate', () => {
     const unlisten = vi.spyOn(window, 'removeEventListener');
     const inst = scrollAnimate(el, { props: { opacity: [0, 1] }, native: false });
     inst.destroy();
-    expect(unlisten).toHaveBeenCalledWith('scroll', expect.any(Function));
+    expect(unlisten).toHaveBeenCalledWith('scroll', expect.any(Function), expect.anything());
   });
 
   it('replay resets progress to 0', () => {
@@ -560,6 +560,6 @@ describe('scrollParallax', () => {
     const unlisten = vi.spyOn(window, 'removeEventListener');
     const inst = scrollParallax(el);
     inst.destroy();
-    expect(unlisten).toHaveBeenCalledWith('scroll', expect.any(Function));
+    expect(unlisten).toHaveBeenCalledWith('scroll', expect.any(Function), expect.anything());
   });
 });

@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>repeat — restarts inside the trigger window only</title>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+  .lead { height: 1600px; }
+  .gap  { height: 200px; }
+  .tail { height: 1600px; }
+  svg.item { height: 200px; width: 300px; display: block; }
+</style>
+<script>
+  // Every frame the page requests, counted before the library loads.
+  window.__raf = requestAnimationFrame.bind(window);
+  window.__frames = 0;
+  window.requestAnimationFrame = (cb) => { window.__frames++; return window.__raf(cb); };
+</script>
+</head>
+<body>
+
+<!--
+  Viewport 900x800. Each item is 200px tall, 200px after the one before, from
+  1600 down: item n (from 0) runs its default window 800 + 400n → 1800 + 400n.
+  Every window ends by 4200; the page scrolls to 5000.
+-->
+<div class="lead"></div>
+<svg class="item" id="inf0" viewBox="0 0 300 200"><path d="M10 100 H290" stroke="#222" stroke-width="4" fill="none"/></svg>
+<div class="gap"></div>
+<svg class="item" id="inf500" viewBox="0 0 300 200"><path d="M10 100 H290" stroke="#222" stroke-width="4" fill="none"/></svg>
+<div class="gap"></div>
+<svg class="item" id="two" viewBox="0 0 300 200"><path d="M10 100 H290" stroke="#222" stroke-width="4" fill="none"/></svg>
+<div class="gap"></div>
+<svg class="item" id="clip" viewBox="0 0 300 200"><path d="M10 100 H290" stroke="#222" stroke-width="4" fill="none"/></svg>
+<div class="gap"></div>
+<svg class="item" id="once" viewBox="0 0 300 200"><path d="M10 100 H290" stroke="#222" stroke-width="4" fill="none"/></svg>
+<div class="gap"></div>
+<svg class="item" id="timeline" viewBox="0 0 300 200"><path class="t" d="M10 100 H290" stroke="#222" stroke-width="4" fill="none"/></svg>
+<div class="gap"></div>
+<!-- speed 2: drawn whole halfway through its window (3700), so 3900 rests inside it, drawn. -->
+<svg class="item" id="fast" viewBox="0 0 300 200"><path d="M10 100 H290" stroke="#222" stroke-width="4" fill="none"/></svg>
+<div class="tail"></div>
+
+<script type="module">
+import { scrollDraw } from '/dist/index.mjs';
+import { scrollDrawTimeline } from '/dist/timeline/index.mjs';
+import { drawnFraction, publish } from './_probe.mjs';
+
+const $ = (sel) => document.querySelector(sel);
+const completed = { inf0: 0, inf500: 0, two: 0, clip: 0, once: 0, timeline: 0, fast: 0 };
+const done = (name) => () => { completed[name]++; };
+
+scrollDraw('#inf0', { repeat: 'infinite', repeatDelay: 0, onComplete: done('inf0') });
+scrollDraw('#inf500', { repeat: 'infinite', repeatDelay: 500, onComplete: done('inf500') });
+scrollDraw('#two', { repeat: 2, onComplete: done('two') });
+scrollDraw('#clip', { clip: 'left', repeat: 'infinite', onComplete: done('clip') });
+scrollDraw('#once', { once: true, repeat: 'infinite', onComplete: done('once') });
+scrollDrawTimeline('#timeline', {
+  tracks: [{ selector: '.t', from: 0, to: 1 }],
+  once: true, repeat: 'infinite', repeatDelay: 0, onComplete: done('timeline'),
+});
+scrollDraw('#fast', { speed: 2, repeat: 'infinite', repeatDelay: 100, onComplete: done('fast') });
+
+const drawn = (id) => drawnFraction($(`#${id} path`));
+
+publish({
+  read: () => ({
+    frames: window.__frames,
+    completed: { ...completed },
+    drawn: Object.fromEntries(['inf0', 'inf500', 'two', 'once', 'timeline', 'fast'].map((id) => [id, drawn(id)])),
+    clip: $('#clip').style.clipPath,
+  }),
+  maxScroll: () => document.documentElement.scrollHeight - innerHeight,
+});
+</script>
+</body>
+</html>

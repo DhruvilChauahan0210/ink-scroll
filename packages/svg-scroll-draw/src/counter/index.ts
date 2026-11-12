@@ -2,9 +2,9 @@ import type { EasingName, ScrollDrawInstance, TriggerConfig } from '../core/type
 import { EASINGS } from '../core/easing';
 import { parseTrigger, computeProgress, computeTriggers } from '../core/trigger';
 import { _register, _unregister } from '../core/registry';
-import { watchLayout } from '../core/layout-watch';
 import { warn } from '../core/env';
 import { finishWhenReduced } from '../core/motion-live';
+import { frameGate } from '../core/frame-gate';
 
 // ── Public types ──────────────────────────────────────────────────────────────
 
@@ -79,9 +79,6 @@ function buildCounter(el: HTMLElement, options: ScrollCounterOptions, prefersRed
   let tStart       = 0;
   let tEnd         = 0;
   let measured     = false;
-  let rafId        = 0;
-  let isVisible    = false;
-  let paused       = false;
   /** With `once`, the floor seek() set: -1 when there is none. */
   let frozenAlpha  = -1;
   /**
@@ -118,9 +115,11 @@ function buildCounter(el: HTMLElement, options: ScrollCounterOptions, prefersRed
     el.style.setProperty('--scroll-draw-progress', String(alpha));
   }
 
+  /** Where the scroll is through the window: what runs the frames (core/frame-gate). */
+  const at = (): number => computeProgress(scrollPos(), tStart, tEnd, 1);
+
   function update(): void {
-    if (!isVisible || paused) return;
-    const progress = computeProgress(scrollPos(), tStart, tEnd, 1);
+    const progress = at();
     const alpha = once
       ? Math.max(frozenAlpha, easeFn(frozenRaw = Math.max(frozenRaw, progress)))
       : easeFn(progress);
@@ -132,12 +131,11 @@ function buildCounter(el: HTMLElement, options: ScrollCounterOptions, prefersRed
     } else if (alpha < 1 && !once) {
       completed = false;
     }
-    rafId = requestAnimationFrame(update);
   }
 
   cacheTriggers();
 
-  // Apply correct initial state — prevents flash before first IO tick.
+  // Apply correct initial state — prevents a flash before the first frame.
   {
     frozenRaw = computeProgress(scrollPos(), tStart, tEnd, 1);
     const initAlpha = easeFn(frozenRaw);
@@ -145,26 +143,11 @@ function buildCounter(el: HTMLElement, options: ScrollCounterOptions, prefersRed
     applyAlpha(initAlpha);
   }
 
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((e) => {
-        isVisible = e.isIntersecting;
-        if (isVisible && !paused) rafId = requestAnimationFrame(update);
-        else cancelAnimationFrame(rafId);
-      });
-    },
-  );
-
-  let resizeTimer: ReturnType<typeof setTimeout>;
-  function onResize(): void {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(cacheTriggers, 150);
-  }
-  window.addEventListener('resize', onResize);
-  window.addEventListener('orientationchange', onResize);
-  // Layout changes that are not window resizes: images, fonts, late content.
-  const unwatch = watchLayout([el], onResize);
-  observer.observe(el);
+  // The frames follow the trigger window, not an observer of the element: a
+  // jump across the whole window never had it on screen, so the count stayed on
+  // its first number and onComplete never fired. The gate also re-measures on
+  // a resize or a layout change: images, fonts, late content.
+  const gate = frameGate(window, [el], at, update, cacheTriggers);
 
   _register(el, {
     type: 'counter',
@@ -172,20 +155,11 @@ function buildCounter(el: HTMLElement, options: ScrollCounterOptions, prefersRed
     getTrigger: () => ({ tStart, tEnd }),
   });
 
-  function resume(): void {
-    if (!paused) return;
-    paused = false;
-    if (isVisible) rafId = requestAnimationFrame(update);
-  }
+  const resume = (): void => gate.hold(false);
 
   return {
     destroy() {
-      cancelAnimationFrame(rafId);
-      observer.disconnect();
-      window.removeEventListener('resize', onResize);
-      window.removeEventListener('orientationchange', onResize);
-      unwatch();
-      clearTimeout(resizeTimer);
+      gate.off();
       // The number stays as it was last drawn; the progress variable goes, as
       // every other engine's does (core/motion-live: destroy puts it back).
       el.style.setProperty('--scroll-draw-progress', savedVar);
@@ -201,18 +175,14 @@ function buildCounter(el: HTMLElement, options: ScrollCounterOptions, prefersRed
       // `paused` and leave it so, and resume() then had nothing to restart.
       resume();
     },
-    pause() {
-      paused = true;
-      cancelAnimationFrame(rafId);
-    },
+    pause: () => gate.hold(true),
     resume,
     seek(p: number) {
       const clamped = Math.min(1, Math.max(0, p));
       currentAlpha  = clamped;
       frozenAlpha   = clamped;
       frozenRaw     = 0;
-      paused        = true;
-      cancelAnimationFrame(rafId);
+      gate.hold(true);
       applyAlpha(clamped);
     },
     getProgress() { return currentAlpha; },

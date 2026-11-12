@@ -130,6 +130,12 @@ jobs:
       - name: Recipe files work in a browser
         run: node apps/demo/scripts/test-recipes.mjs
 
+      # Every tool's Run it page (the HTML file it downloads or opens in
+      # StackBlitz), built with the tool's starting settings and scrolled
+      # through against the same dist/: a tool with no case fails it.
+      - name: Tool pages work in a browser
+        run: npm run test:tools -w demo
+
       # The site renders the React blocks; nothing else would notice a Vue
       # version that does not compile or never starts its engine.
       - name: Vue blocks compile and run

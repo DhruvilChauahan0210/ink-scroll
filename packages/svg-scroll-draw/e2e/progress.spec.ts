@@ -130,16 +130,13 @@ test.describe('scrollProgress', () => {
     await scrollToY(page, T_END);
     expect(Number((await read<Row>(page)).raw)).toBe(1);
 
-    // Past the end of the window the value must never exceed 1. It also stops
-    // updating once the element is fully off screen, which is the same asymmetry
-    // parity.spec.ts documents for scrollDraw: the JS engine only writes while
-    // the IntersectionObserver reports the element visible. Not user-visible —
-    // the element is off screen whenever it applies — so this asserts the bound
-    // rather than pinning a particular resting value.
+    // Past the end of the window it rests on exactly 1. Up to 2.23.4 it stopped
+    // updating once the element was fully off screen (an IntersectionObserver
+    // ran its frames), so it rested wherever the last on-screen frame left it;
+    // the frames follow the trigger window now and paint the one that leaves it.
     await scrollToY(page, 2400);
     const past = await read<Row>(page);
-    expect(Number(past.raw)).toBeLessThanOrEqual(1);
-    expect(Number(past.raw)).toBeGreaterThanOrEqual(0);
+    expect(Number(past.raw)).toBe(1);
   });
 
   test('destroy() removes the variables and stops writing', async ({ page }) => {

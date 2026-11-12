@@ -8,8 +8,8 @@ import { PRESETS } from './presets';
 import { IS_DEV, warn as warnDev } from './env';
 import { cssTimingFor } from './css-easing';
 import { _register, _unregister } from './registry';
-import { watchLayout } from './layout-watch';
 import { finishWhenReduced } from './motion-live';
+import { frameGate } from './frame-gate';
 
 // ── Native CSS scroll-driven animation (animation-timeline: view()) ───────────
 // Which easings the fast path can express, and as what, lives in core/css-easing.
@@ -259,12 +259,15 @@ function buildEngine(
   let tEnd          = 0;
   /** `stagger` as used: smaller only when the page ends first (fitStagger). */
   let staggerFit    = stagger;
-  /** Where the last path's window ends. */
-  let tLast         = 0;
+  /**
+   * The scroll range in which some path is mid-draw, stagger and speed
+   * included: what runs the JS path's frames (core/frame-gate).
+   */
+  let gStart        = 0;
+  let gEnd          = 0;
   let completed     = false;
   let started       = false;
   let rafId         = 0;
-  let isVisible     = false;
   let frozenAlpha   = -1;
   /**
    * With `once`, how far the scroll has got through each path's window, raw:
@@ -279,6 +282,12 @@ function buildEngine(
   let currentAlpha  = 0;
   let repeatCount   = 0;
   let repeatTimer: ReturnType<typeof setTimeout> | undefined;
+  /**
+   * A repeat whose delay is up, waiting for the scroll to be inside the window
+   * (restart()). Restarting wherever the scroll was repainted past the window
+   * drawn whole at once: complete, the next timer, again, forever.
+   */
+  let parked        = false;
   let debugOverlay: { el: HTMLElement; destroy: () => void } | null = null;
   /** Tears down the overlay and its scroll listener, if one is mounted. */
   function destroyDebugOverlay(): void {
@@ -291,7 +300,7 @@ function buildEngine(
   // currently-rendered frame was computed from; NaN means "nothing rendered yet".
   // `dirty` forces one recompute even when the scroll position is unchanged —
   // set by anything that invalidates the rendered frame (replay, repeat, resize,
-  // becoming visible again).
+  // resume).
   let lastAppliedScroll = NaN;
   let dirty             = true;
 
@@ -328,8 +337,9 @@ function buildEngine(
    * as written, and a trigger whose own end is past the page is left alone:
    * stagger is not what stops that one. 1px of slack for a fractional scroll.
    *
-   * tLast also bounds the off-screen run in next(); in clip mode (no paths) or
-   * with a negative stagger it lands at or before tEnd, so there is none.
+   * The frames run from where the first path to start starts until the last
+   * one is done (gStart, gEnd): past trigger.end, off screen, while a later
+   * path is still mid-window.
    */
   function fitStagger(): void {
     const range = tEnd - tStart;
@@ -342,7 +352,16 @@ function buildEngine(
       const room = s[`scroll${d}`] - s[`client${d}`] - 1 - tStart - range / speed;
       if (room >= 0) staggerFit = Math.min(stagger, room / (gaps * range));
     }
-    tLast = tEnd + gaps * staggerFit * range;
+    // Where the last path's window starts, and how long one runs: never faster
+    // than the raw window, so a slow `speed` runs on until its progress reaches 1.
+    const span = Math.max(0, gaps) * staggerFit * range;
+    const len  = range / Math.min(speed, 1);
+    // Every path's window, first start to last end, in scroll order: a
+    // negative stagger starts the later paths first, and a trigger whose end
+    // is above its start (a negative range) runs every window backwards.
+    // Taking only the forward case left a staggered path half drawn there.
+    gStart = tStart + Math.min(0, span, len, span + len);
+    gEnd   = tStart + Math.max(0, span, len, span + len);
   }
 
   function cacheTriggers(): void {
@@ -860,17 +879,55 @@ function buildEngine(
 
   cacheTriggers();
 
+  // ── Repeat ────────────────────────────────────────────────────────────────
+
+  /** Where the scroll is through the window every path's draw runs in. */
+  const at = (): number => computeProgress(scrollPos(), gStart, gEnd, 1);
+
+  /**
+   * onComplete, and the next repeat when one is left. A repeat restarts while
+   * the scroll is inside the window, as `repeat` meant while the drawing was on
+   * screen up to 2.23.4. Past it, or before it, the timer only parks: the
+   * drawing stays at the frame the scroll calls for, no frame runs, and the
+   * first frame back inside the window restarts it. Restarting there instead
+   * repainted the end of the window: drawn whole, complete, the next timer, 60
+   * times a second with repeatDelay 0, and `repeat: 2` spent in one frame.
+   */
+  function complete(): void {
+    completed = true;
+    onComplete?.();
+    if (repeatCount < (repeat === 'infinite' ? Infinity : repeat)) {
+      repeatCount++;
+      repeatTimer = setTimeout(() => { parked = true; }, repeatDelay);
+    }
+  }
+
+  /** Back to the first frame: replay(), and a repeat inside the window. */
+  function restart(): void {
+    frozenAlpha = -1;
+    frozenPath  = [];
+    started     = false;
+    completed   = false;
+    parked      = false;
+    firedWaypoints.clear();
+    resetPaths();
+    // Wound back to zero at an unchanged scroll position, so the frame must
+    // recompute rather than short-circuit.
+    dirty = true;
+  }
+
   // ── rAF update loop ───────────────────────────────────────────────────────
 
   function update(): void {
-    if (paused || !looping) return;
-
     const now           = performance.now();
     const currentScroll = scrollPos();
+    // Inside the window frames run every frame: a parked repeat starts here.
+    // at() is in [0, 1], so `% 1` is 0 at either end of the window.
+    if (parked && at() % 1) restart();
 
     // ── Idle short-circuit ────────────────────────────────────────────────────
-    // While the container is in view this loop runs every frame whether or not
-    // the user is scrolling. Measured in Chromium: 8 instances sitting in a
+    // While the scroll is inside the window this loop runs every frame whether
+    // or not the user is scrolling. Measured in Chromium: 8 instances sitting in a
     // viewport with no scrolling at all cost 488 frames and 6.4 ms of JS per
     // second, recomputing identical values and rewriting identical styles.
     //
@@ -880,10 +937,7 @@ function buildEngine(
     //
     // velocityScale is excluded: its output depends on elapsed time as velocity
     // decays, so it genuinely needs a frame even at a fixed scroll position.
-    if (!dirty && velocityScale === false && currentScroll === lastAppliedScroll) {
-      next(currentScroll);
-      return;
-    }
+    if (!dirty && velocityScale === false && currentScroll === lastAppliedScroll) return;
     dirty = false;
     lastAppliedScroll = currentScroll;
 
@@ -909,10 +963,13 @@ function buildEngine(
     // ── Scroll callbacks (onEnter / onLeave / onEnterBack / onLeaveBack) ───────
     const rawProgress = range === 0 ? 0 : (currentScroll - tStart) / range;
     if (!isNaN(prevRawProgress)) {
+      // In the order the scroll crosses the edges: a jump back from past the
+      // end to before the start enters back, then leaves back, so a callback
+      // pair that shows and hides ends hidden.
       if (prevRawProgress <= 0 && rawProgress > 0) onEnter?.();
-      else if (prevRawProgress > 0 && rawProgress <= 0) onLeaveBack?.();
       if (prevRawProgress < 1 && rawProgress >= 1) onLeave?.();
-      else if (prevRawProgress >= 1 && rawProgress < 1) onEnterBack?.();
+      if (prevRawProgress >= 1 && rawProgress < 1) onEnterBack?.();
+      if (prevRawProgress > 0 && rawProgress <= 0) onLeaveBack?.();
     }
     prevRawProgress = rawProgress;
 
@@ -929,20 +986,10 @@ function buildEngine(
         onStart?.();
       }
       if (alpha >= 1 && !completed) {
-        completed = true;
-        onComplete?.();
-        const maxRepeats = repeat === 'infinite' ? Infinity : (repeat ?? 0);
-        if (repeatCount < maxRepeats) {
-          repeatCount++;
-          repeatTimer = setTimeout(() => {
-            frozenAlpha = -1; frozenPath = []; started = false; completed = false;
-            resetPaths();
-          }, repeatDelay);
-        }
+        complete();
       } else if (alpha < 1 && !once) {
         completed = false;
       }
-      next(currentScroll);
       return;
     }
     // ── End clip mode ─────────────────────────────────────────────────────────
@@ -983,121 +1030,21 @@ function buildEngine(
     }
 
     if (allComplete && !completed) {
-      completed = true;
-      onComplete?.();
-
-      // repeat
-      const maxRepeats = repeat === 'infinite' ? Infinity : (repeat ?? 0);
-      if (repeatCount < maxRepeats) {
-        repeatCount++;
-        repeatTimer = setTimeout(() => {
-          frozenAlpha = -1;
-          frozenPath  = [];
-          started     = false;
-          completed   = false;
-          firedWaypoints.clear();
-          resetPaths();
-          // resetPaths() wound the draw back to zero at an unchanged scroll
-          // position, so the loop must recompute rather than short-circuit.
-          dirty = true;
-        }, repeatDelay);
-      }
+      complete();
     } else if (!allComplete && !once) {
       completed = false;
     }
-
-    next(currentScroll);
   }
 
-  /**
-   * Off screen, a staggered path can still be mid-window: the default
-   * trigger.end ('bottom top') is the moment the drawing leaves the screen, and
-   * every later path's window ends after it. The loop used to stop at that exit,
-   * so those paths froze short of 1 and onComplete never fired, on any page.
-   * It now runs on until the scroll leaves [trigger.end, the last path's end),
-   * writing the frame that leaves it. Nothing on screen changes, and a drawing
-   * without stagger stops where it always did (tLast = tEnd).
-   */
-  function inStaggerTail(scroll: number): boolean {
-    return scroll >= tEnd && scroll < tLast;
-  }
+  // ── Frames ────────────────────────────────────────────────────────────────
 
-  function next(scroll: number): void {
-    if (isVisible || inStaggerTail(scroll)) rafId = requestAnimationFrame(update);
-    else looping = false;
-  }
-
-  /**
-   * Whether the loop has work to do now: the same rule as next(). resume(),
-   * replay() and refresh() restarted it only on screen, so pausing and resuming
-   * a drawing that had left the screen mid-tail froze its later paths short of
-   * 1 (measured 1 / 0.95 / 0.7 / 0.45) and onComplete never fired.
-   */
-  function live(): boolean {
-    return isVisible || inStaggerTail(scrollPos());
-  }
-
-  // ── IntersectionObserver ──────────────────────────────────────────────────
-
-  // A single rafId was previously written from both here and the tail of
-  // update(). If the observer scheduled a frame while one was already pending,
-  // the older handle was overwritten and that loop became unstoppable — immune
-  // to pause() and destroy(). `looping` keeps exactly one loop in flight.
-  let looping = false;
-
-  function startLoop(): void {
-    if (looping) return;
-    looping = true;
-    rafId = requestAnimationFrame(function frame() {
-      update();
-      // update() reschedules itself; this wrapper only guards entry.
-    });
-  }
-
-  function stopLoop(): void {
-    looping = false;
-    cancelAnimationFrame(rafId);
-  }
-
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((e) => {
-        isVisible = e.isIntersecting;
-        if (isVisible && !paused) {
-          // Re-entering the viewport must repaint even if the scroll position
-          // is identical to when it left.
-          dirty = true;
-          startLoop();
-        } else if (!(looping && !paused && inStaggerTail(scrollPos()))) {
-          // Leaving with a staggered path still mid-window keeps the running
-          // loop until next() sees the scroll leave it.
-          stopLoop();
-        }
-      });
-    },
-    { root: scrollEl ?? null, threshold, rootMargin }
-  );
-
-  // ── Resize / layout invalidation ──────────────────────────────────────────
-
-  /** Everything that depends on layout, re-read. Shared by resize and refresh(). */
-  function remeasure(): void {
-    paths.forEach(measure);
-    cacheTriggers();
-    // Trigger points moved — the rendered frame is stale even at the same
-    // scroll offset.
-    dirty = true;
-  }
-
-  let resizeTimer: ReturnType<typeof setTimeout>;
-  function onResize(): void {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(remeasure, 150);
-  }
-
-  window.addEventListener('resize', onResize);
-  window.addEventListener('orientationchange', onResize);
-
+  // The frames follow the trigger window. They used to run while an
+  // IntersectionObserver saw the container, so a jump across the whole window
+  // (the End key, an anchor link, the scroll a reload restores) never had it on
+  // screen: the drawing stayed undrawn and onComplete never fired. A staggered
+  // path still mid-window after trigger.end needed a tail of its own then; the
+  // window here runs until the last path is done (gStart, gEnd).
+  //
   // Trigger points were cached once at init and only recomputed on a window
   // resize. But an element's document position changes for many reasons that are
   // not a window resize: lazy-loaded images above it, web fonts swapping in,
@@ -1105,58 +1052,69 @@ function buildEngine(
   // happened the cached triggers went stale and the whole draw sat at a constant
   // offset for the rest of the page's life — measured at 0.0201 of the draw on
   // the demo's own /verify page, against a native CSS path that stays correct
-  // because its view-timeline is live.
-  //
-  // The shared layout watcher (./layout-watch) reports the page's own height
-  // changing and the container's box changing.
-  const unwatch = watchLayout([container], onResize);
+  // because its view-timeline is live. The gate re-measures on a resize and on
+  // the shared layout watcher (./layout-watch): the page's own height changing
+  // and the container's box changing.
+  const gate = frameGate(
+    scrollEl ?? window,
+    [container],
+    at,
+    update,
+    () => {
+      const before = lengths.join();
+      paths.forEach(measure);
+      cacheTriggers();
+      // Trigger points moved — the rendered frame is stale even at the same
+      // scroll offset.
+      dirty = true;
+      // A new length leaves the dash of the frame on screen wrong, in the
+      // window or out of it: repaint. Otherwise only a scroll now elsewhere in
+      // the window does (the gate wakes after this).
+      if (lengths.join() !== before) go();
+    },
+  );
+  /** `delay` holds the first frame back. */
+  let waiting = delay > 0;
+  /** Run the frames unless something stopped them; the next one repaints. */
+  function go(): void {
+    gate.hold(paused || waiting);
+  }
 
-  if (delay > 0) setTimeout(() => observer.observe(container), delay);
-  else observer.observe(container);
+  let delayTimer: ReturnType<typeof setTimeout> | undefined;
+  if (waiting) delayTimer = setTimeout(() => { waiting = false; go(); }, delay);
+  go();
 
   // ── Instance ──────────────────────────────────────────────────────────────
 
   return tracked({
     destroy() {
-      cancelAnimationFrame(rafId);
       clearTimeout(repeatTimer);
-      stopLoop();
-      observer.disconnect();
-      unwatch();
-      window.removeEventListener('resize', onResize);
-      window.removeEventListener('orientationchange', onResize);
-      clearTimeout(resizeTimer);
+      clearTimeout(delayTimer);
+      gate.off();
       destroyDebugOverlay();
     },
 
     replay() {
-      frozenAlpha  = -1;
-      frozenPath   = [];
-      prevScroll   = -1;
+      restart();
+      prevScroll    = -1;
       prevVelScroll = -1;
-      started      = false;
-      completed    = false;
-      repeatCount  = 0;
-      paused       = false;
-      currentAlpha = 0;
-      firedWaypoints.clear();
+      repeatCount   = 0;
+      paused        = false;
+      currentAlpha  = 0;
       clearTimeout(repeatTimer);
-      resetPaths();
-      // Wound back to zero without the scroll position changing.
-      dirty = true;
-      if (live()) startLoop();
+      go();
     },
 
     pause() {
       paused = true;
-      stopLoop();
+      gate.hold(true);
     },
 
     resume() {
       if (!paused) return;
       paused = false;
       dirty  = true;
-      if (live()) startLoop();
+      go();
     },
 
     seek(progress: number) {
@@ -1165,7 +1123,7 @@ function buildEngine(
       frozenAlpha  = p;
       frozenPath   = [];
       paused       = true;
-      stopLoop();
+      gate.hold(true);
       applyAlpha(p, direction);
       // A later resume() must recompute from the live scroll position.
       dirty = true;
@@ -1182,10 +1140,6 @@ function buildEngine(
      * window — run immediately and marked dirty so the next frame repaints from
      * the new numbers.
      */
-    refresh() {
-      clearTimeout(resizeTimer);
-      remeasure();
-      if (live() && !paused) startLoop();
-    },
+    refresh: gate.remeasure,
   }, () => ({ tStart, tEnd }));
 }

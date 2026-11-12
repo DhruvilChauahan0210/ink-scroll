@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { seoTitle } from '../../_lib/seo';
 import { SELF } from '@/data/competitors';
 import { BlogArticle, Section, Code, Table, Figure } from '@/components/blog/BlogArticle';
@@ -99,7 +100,10 @@ export default function Page() {
           <li><strong>A horizontal track</strong> — slides left (translateX) proportional to how far through the outer the user has scrolled</li>
         </ol>
         <p>
-          You set up the CSS. <code>scrollHorizontal</code> drives the translateX.
+          You set up the CSS. <code>scrollHorizontal</code> drives the translateX. To try panel counts, widths and
+          scroll lengths before you write any of it, the{' '}
+          <Link href="/horizontal-scroll-generator">horizontal scroll generator</Link> runs the same three layers in a
+          box you scroll and copies the code.
         </p>
       </Section>
 

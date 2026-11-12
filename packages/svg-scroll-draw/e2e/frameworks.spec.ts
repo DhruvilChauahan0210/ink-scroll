@@ -29,7 +29,7 @@ type Row = {
   mounted: boolean;
   drawn: number | null;
   opacity: number | null;
-  liveObservers: number;
+  liveWatchers: number;
 };
 
 type Geometry = {
@@ -113,7 +113,7 @@ for (const wrapper of WRAPPERS) {
 
       await scrollToY(page, 750);
       const before = await read<Row>(page);
-      expect(before.liveObservers, 'nothing was observing to begin with').toBeGreaterThan(0);
+      expect(before.liveWatchers, 'nothing was listening or observing to begin with').toBeGreaterThan(0);
 
       /*
        * The positive control, without which the assertion below passes for a
@@ -131,7 +131,7 @@ for (const wrapper of WRAPPERS) {
       const after = await read<Row>(page);
 
       expect(after.mounted, 'the element survived unmount').toBe(false);
-      expect(after.liveObservers, 'an IntersectionObserver outlived the component').toBe(0);
+      expect(after.liveWatchers, 'a scroll listener or an IntersectionObserver outlived the component').toBe(0);
 
       // And no frame loop is still running. Sampled over several frames with the
       // untouched rAF, so the measurement cannot count itself.
@@ -200,7 +200,8 @@ for (const wrapper of WRAPPERS) {
      * The other half of live options. A re-render that passes equal options —
      * a fresh inline object, a new arrow function — must keep the running
      * engine, or every unrelated state change restarts the animation. Counted
-     * by observe() calls, which go up each time an engine starts; the speed
+     * by the scroll listeners and observe() calls that go up each time an
+     * engine starts (`starts`); the speed
      * change at the end is the positive control that the count would move.
      */
     test('a re-render with equal options keeps the running engine', async ({ page }) => {
@@ -212,11 +213,11 @@ for (const wrapper of WRAPPERS) {
       );
 
       await scrollToY(page, 750);
-      const before = await call<number>(page, 'observeCalls');
+      const before = await call<number>(page, 'starts');
 
       await call(page, 'rerender');
       await scrollToY(page, 750);
-      expect(await call<number>(page, 'observeCalls'), 'an equal re-render rebuilt the engine').toBe(
+      expect(await call<number>(page, 'starts'), 'an equal re-render rebuilt the engine').toBe(
         before,
       );
       expect((await read<Row>(page)).drawn).toBeCloseTo(0.5, 1);
@@ -224,7 +225,7 @@ for (const wrapper of WRAPPERS) {
       await call(page, 'setSpeed', 2);
       await scrollToY(page, 750);
       expect(
-        await call<number>(page, 'observeCalls'),
+        await call<number>(page, 'starts'),
         'a real option change did not register as a new engine, so the count proves nothing',
       ).toBeGreaterThan(before);
     });

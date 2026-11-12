@@ -7,6 +7,7 @@ import { CodeBox } from './site/CodeBox';
 import { Plate } from './site/Plate';
 import { CopyCommand } from './home/CopyCommand';
 import { EXAMPLE_SEO } from '@/data/examples-seo';
+import { TOOLS } from '@/data/tools';
 import { SHOWCASE } from '@/showcase';
 import { ShowcaseMedia, LiveButton } from '@/showcase/ShowcaseShot';
 import { Recipe } from './recipes/Recipe';
@@ -27,6 +28,11 @@ export function ExampleDetail({ slug, files = null }: { slug: string; files?: Re
   const related = seo.related
     .map((id) => ({ seo: EXAMPLE_SEO[id], example: EXAMPLES.find((e) => e.id === id) }))
     .filter((r) => r.seo && r.example);
+  const tools = (seo.tools ?? [])
+    .map((t) => TOOLS.find((x) => x.slug === t))
+    .filter((t) => t !== undefined);
+  // Mid-sentence: “the scroll reveal generator”, but “the SVG path viewer”.
+  const mid = (name: string) => (/^[A-Z]{2}/.test(name) ? name : name.charAt(0).toLowerCase() + name.slice(1));
 
   const isDark = 'darkPreview' in example && !!example.darkPreview;
   const site = SHOWCASE[slug];
@@ -101,6 +107,18 @@ export function ExampleDetail({ slug, files = null }: { slug: string; files?: Re
               </Link>
             ))}
           </div>
+        )}
+        {tools.length > 0 && (
+          <p className="ex-rel-note">
+            Make your own in the{' '}
+            {tools.map((t, i) => (
+              <span key={t.slug}>
+                {i > 0 && ' or the '}
+                <Link href={`/${t.slug}`} className="underline underline-offset-2">{mid(t.name)}</Link>
+              </span>
+            ))}
+            : set it up, watch it run, copy the code.
+          </p>
         )}
         <p className="ex-rel-note">
           MIT licensed, zero runtime dependencies. Every API is a separate entry point, so you only

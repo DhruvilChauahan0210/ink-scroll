@@ -195,6 +195,17 @@ function Sub({ children }: { children: React.ReactNode }) {
   );
 }
 
+const TRY_LINK = 'underline underline-offset-2 hover:text-pitch-black transition-colors';
+
+/** A one-line pointer from a section to the free tool that builds the same thing. */
+function Try({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="text-[12px] text-graphite-border mt-3">
+      <strong>Try it:</strong> {children}
+    </p>
+  );
+}
+
 function Note({ children }: { children: React.ReactNode }) {
   return (
     <div className="dc-note">
@@ -501,6 +512,7 @@ instance.destroy();   // cleanup on unmount`}
               <code className="font-mono">{'fill="none"'}</code>.
               In dev mode, a warning is logged if either condition is violated.
             </Note>
+            <Try>Not sure a drawing will animate? The <Link href="/svg-path-viewer" className={TRY_LINK}>SVG path viewer</Link> lists each path’s length and what stops it drawing, and the <Link href="/svg-shape-to-path-converter" className={TRY_LINK}>SVG shape to path converter</Link> turns rects, circles and polygons into the paths they equal.</Try>
           </DocSection>
 
           {/* ── Core Options ─────────────────────────────────── */}
@@ -539,6 +551,7 @@ instance.destroy();   // cleanup on unmount`}
                 exactly drawn. In 2.23.2 and earlier it stayed on the overshoot, drawn past its end; fixed in 2.23.3.
               </Opt>
             </OptGroup>
+            <Try>Watch each named easing draw a line in the <Link href="/easing-visualizer" className={TRY_LINK}>easing visualizer</Link>, or shape your own curve in the <Link href="/cubic-bezier-generator" className={TRY_LINK}>cubic-bezier generator</Link> and copy it as a JS easing function.</Try>
           </DocSection>
 
           {/* ── Trigger ──────────────────────────────────────── */}
@@ -571,6 +584,7 @@ scrollDraw('#svg', { trigger: { start: 'top 60%', end: 'bottom 40%' } });
 // Percentage shorthand
 scrollDraw('#svg', { trigger: { start: '20%', end: '80%' } });`}
             </CodeBlock>
+            <Try>Set a start and end anchor in the <Link href="/scroll-trigger-visualizer" className={TRY_LINK}>scroll trigger visualizer</Link> and watch progress run from 0 to 1 as you scroll.</Try>
           </DocSection>
 
           {/* ── Visual ───────────────────────────────────────── */}
@@ -616,6 +630,7 @@ scrollDraw('#image-wrapper', { clip: 'left', speed: 0.8 });
 // Path morphing
 scrollDraw('#shape', { morphTo: 'M10 80 Q50 10 90 80', easing: 'spring' });`}
             </CodeBlock>
+            <Try>Match two shapes point for point in the <Link href="/svg-morph-generator" className={TRY_LINK}>SVG morph generator</Link>, which writes the <code className="font-mono">morphTo</code> call; the <Link href="/svg-path-editor" className={TRY_LINK}>SVG path editor</Link> lets you edit a path command by command until the two line up.</Try>
           </DocSection>
 
           {/* ── Callbacks ────────────────────────────────────── */}
@@ -793,6 +808,7 @@ export function Hero() {
               <code className="font-mono">data-*</code> go on the rendered element; every other prop is an option. Before
               2.19.0 they all became options, so a test id never reached the page.
             </p>
+            <Try>Paste an SVG into the <Link href="/svg-to-jsx-converter" className={TRY_LINK}>SVG to JSX converter</Link> for a typed React component with an optional <code className="font-mono">ScrollDraw</code> wrapper.</Try>
           </DocSection>
 
           {/* ── Vue ──────────────────────────────────────────── */}
@@ -1396,6 +1412,7 @@ scrollDraw('#svg', { native: false, easing: 'spring' });`}
               <code className="font-mono">replay</code>,{' '}
               <code className="font-mono">destroy</code> — works on both paths.
             </Note>
+            <Try>The <Link href="/css-scroll-driven-animation-generator" className={TRY_LINK}>CSS scroll-driven animation generator</Link> writes <code className="font-mono">animation-timeline</code> CSS for seven effects, and the <Link href="/svg-line-drawing-generator" className={TRY_LINK}>SVG line drawing generator</Link> turns any SVG into a file that draws itself with CSS alone.</Try>
           </DocSection>
 
           {/* ── createSpring ─────────────────────────────────── */}
@@ -2062,6 +2079,7 @@ scrollProgress('#section', {
                 </tbody>
               </table>
             </div>
+            <Try>Build a reading bar on any edge, or a ring, in the <Link href="/scroll-progress-bar-generator" className={TRY_LINK}>scroll progress bar generator</Link>.</Try>
           </DocSection>
 
           {/* ── v2.9.0 — scrollHorizontal ───────────────────── */}
@@ -2124,6 +2142,7 @@ inst.destroy();  // cleanup`}
                 </tbody>
               </table>
             </div>
+            <Try>Set the panels, gap and scroll length in the <Link href="/horizontal-scroll-generator" className={TRY_LINK}>horizontal scroll generator</Link> and copy the sticky CSS with the JS.</Try>
           </DocSection>
 
           {/* ── v2.8.0 — scrollReveal ───────────────────────── */}
@@ -2186,6 +2205,7 @@ instance.destroy();`}
                 </tbody>
               </table>
             </div>
+            <Try>Pick a preset, stagger and trigger in the <Link href="/scroll-reveal-generator" className={TRY_LINK}>scroll reveal generator</Link> and copy one <code className="font-mono">scrollReveal</code> call.</Try>
           </DocSection>
 
           {/* ── v2.8.0 — velocityScale on scrollAnimate ──────── */}
@@ -2287,6 +2307,7 @@ pin.destroy();`}
               </table>
             </div>
             <Note>Instance API: <code className="font-mono text-[0.85em]">destroy()</code> restores the original DOM and removes all listeners. <code className="font-mono text-[0.85em]">refresh()</code> recalculates pin dimensions — call it after layout changes.</Note>
+            <Try>Scroll a pinned feature tour in the <Link href="/scroll-pin-generator" className={TRY_LINK}>scroll pin generator</Link> and copy its HTML, CSS and JS.</Try>
           </DocSection>
 
           {/* ── v2.7.0 — scrollSnap ──────────────────────────── */}
@@ -2352,6 +2373,7 @@ snap.destroy();`}
                 </tbody>
               </table>
             </div>
+            <Try>Prefer plain <code className="font-mono">scroll-snap-type</code>? The <Link href="/css-scroll-snap-generator" className={TRY_LINK}>CSS scroll snap generator</Link> builds a carousel or full-height sections with no JavaScript.</Try>
           </DocSection>
 
           {/* ── v2.7.0 — Scroll Callbacks ────────────────────── */}
@@ -2542,6 +2564,7 @@ scrollCounter('#conversion', {
 import { ScrollCounter } from 'svg-scroll-draw/react';
 <ScrollCounter to={50000} format={n => n.toLocaleString()} once />`}
             </CodeBlock>
+            <Try>Set from, to, decimals and a suffix in the <Link href="/counter-animation-generator" className={TRY_LINK}>counter animation generator</Link> and watch the number count before you copy it.</Try>
           </DocSection>
 
           <DocSection id="scroll-parallax" tag="v2.0.0" heading="scrollParallax">
@@ -2555,6 +2578,7 @@ scrollParallax('#hero-bg-image', { speed: 0.4 });         // ahead of the page
 scrollParallax('#floating-element', { speed: -0.2 });     // lags behind the page
 scrollParallax('#side-badge', { speed: 0.3, axis: 'x' }); // horizontal`}
             </CodeBlock>
+            <Try>Give each layer its own speed in the <Link href="/parallax-scrolling-generator" className={TRY_LINK}>parallax scrolling generator</Link> and scroll the scene to feel the depth.</Try>
           </DocSection>
 
           <DocSection id="scroll-video" tag="v2.1.0" heading="scrollVideo">
@@ -2596,6 +2620,7 @@ import { ScrollVideo } from 'svg-scroll-draw/react';
               The whole pinned-film build is the{' '}
               <Link href="/examples/scroll-video" className="underline underline-offset-2">Scroll-video recipe</Link>.
             </p>
+            <Try>Set the pin, range and easing on your own clip in the <Link href="/scroll-video-scrub-generator" className={TRY_LINK}>scroll video scrub generator</Link>.</Try>
           </DocSection>
 
           <DocSection id="scroll-text" tag="v2.1.0" heading="scrollText">
@@ -2631,6 +2656,7 @@ import { ScrollText } from 'svg-scroll-draw/react';
             <p className="text-[12px] text-graphite-border mt-3">
               Accessibility: the element keeps one visually hidden copy of its whole text, after the split pieces, so a screen reader reads the sentence once. All split spans have <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">aria-hidden=&quot;true&quot;</code>. No <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">aria-label</code> is added: ARIA does not allow one on a paragraph or a span. <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">destroy()</code> restores the original HTML.
             </p>
+            <Try>Split a line by word, letter or line in the <Link href="/text-animation-generator" className={TRY_LINK}>text animation generator</Link>, or type it out letter by letter in the <Link href="/typewriter-effect-generator" className={TRY_LINK}>typewriter effect generator</Link>.</Try>
           </DocSection>
 
           <DocSection id="devtools" tag="v2.2.0" heading="DevTools Overlay">

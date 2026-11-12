@@ -253,6 +253,10 @@ npx svg-scroll-draw migrate` },
                 <Link href="/guides/aos-nextjs">AOS in Next.js</Link>
                 <Link href="/guides/aos-react">AOS in React</Link>
               </p>
+              <p className="h2h-links">
+                <span>or start fresh</span>
+                <Link href="/scroll-reveal-generator">Scroll reveal generator</Link>
+              </p>
             </section>
 
             {/* ── 02 ScrollReveal drop-in ────────────────────── */}

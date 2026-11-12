@@ -14,11 +14,16 @@ function makeVideo(): HTMLVideoElement {
 }
 
 class RafQueue {
-  private queue: FrameRequestCallback[] = [];
+  private queue: { id: number; cb: FrameRequestCallback }[] = [];
   private id = 0;
-  schedule = vi.fn((cb: FrameRequestCallback): number => { this.queue.push(cb); return ++this.id; });
-  cancel = vi.fn();
-  tick() { const cb = this.queue.shift(); cb?.(performance.now()); }
+  schedule = vi.fn((cb: FrameRequestCallback): number => { this.queue.push({ id: ++this.id, cb }); return this.id; });
+  cancel   = vi.fn((id: number) => { this.queue = this.queue.filter((f) => f.id !== id); });
+  /**
+   * One frame: every callback queued before it, as a browser runs them. The
+   * engines' frames follow the trigger window and wake on scroll events, so an
+   * engine an earlier test left can share the queue.
+   */
+  tick() { const frame = this.queue; this.queue = []; for (const f of frame) f.cb(performance.now()); }
 }
 
 class FakeIO {
@@ -30,6 +35,16 @@ class FakeIO {
   trigger(v: boolean) {
     this.cb([{ isIntersecting: v } as IntersectionObserverEntry], this as unknown as IntersectionObserver);
   }
+}
+
+/**
+ * Scroll the page: set the offset and fire a scroll event, as a browser does.
+ * The frames follow the trigger window and wake on scroll (core/frame-gate),
+ * so moving `scrollY` alone is not a scroll.
+ */
+function scroll(y?: number): void {
+  if (y !== undefined) vi.stubGlobal('scrollY', y);
+  window.dispatchEvent(new Event('scroll'));
 }
 
 let raf: RafQueue;
@@ -76,17 +91,19 @@ describe('scrollVideo', () => {
     expect(video.pause).toHaveBeenCalled();
   });
 
-  it('observes the video element', () => {
+  it('listens for scroll on the window, and keeps no IntersectionObserver', () => {
     const video = makeVideo();
+    const listen = vi.spyOn(window, 'addEventListener');
     scrollVideo(video);
-    expect(FakeIO.instances[0].observe).toHaveBeenCalledWith(video);
+    expect(listen).toHaveBeenCalledWith('scroll', expect.any(Function), { passive: true });
+    expect(FakeIO.instances).toHaveLength(0);
   });
 
   it('sets currentTime on scroll frame', () => {
     const video = makeVideo();
-    vi.stubGlobal('scrollY', 100);
+    scroll(100);
     scrollVideo(video, { from: 0, to: 5 });
-    FakeIO.instances[0].trigger(true);
+    scroll();
     raf.tick();
     expect(video.currentTime).toBeGreaterThanOrEqual(0);
   });
@@ -116,9 +133,9 @@ describe('scrollVideo', () => {
   it('calls onProgress callback', () => {
     const video = makeVideo();
     const onProgress = vi.fn();
-    vi.stubGlobal('scrollY', 100);
+    scroll(100);
     scrollVideo(video, { from: 0, to: 5, onProgress });
-    FakeIO.instances[0].trigger(true);
+    scroll();
     raf.tick();
     expect(onProgress).toHaveBeenCalled();
   });
@@ -134,10 +151,9 @@ describe('scrollVideo', () => {
       set: (v: number) => { t = v; writes++; },
       configurable: true,
     });
-    vi.stubGlobal('scrollY', 100);
     const onProgress = vi.fn();
     scrollVideo(video, { from: 0, to: 5, onProgress });
-    FakeIO.instances[0].trigger(true);
+    scroll(100); // in the window [0, 600]: a frame every frame
     raf.tick();
     raf.tick();
     raf.tick();
@@ -146,7 +162,7 @@ describe('scrollVideo', () => {
     // Progress still reports every frame — only the seek is skipped.
     expect(onProgress.mock.calls.length).toBeGreaterThanOrEqual(4);
 
-    vi.stubGlobal('scrollY', 400);
+    scroll(400);
     raf.tick();
     expect(writes).toBe(2);
   });
@@ -184,7 +200,7 @@ describe('scrollVideo', () => {
       top: -800, height: 600, left: 0, width: 800, right: 800, bottom: -200, x: 0, y: 0, toJSON: () => ({}),
     });
     scrollVideo(video, { from: 0, to: 5, onComplete });
-    FakeIO.instances[0].trigger(true);
+    scroll();
     raf.tick();
     expect(onComplete).toHaveBeenCalled();
   });
@@ -201,8 +217,7 @@ describe('scrollVideo', () => {
     });
     scrollVideo(video, { to: 4, triggerElement: track, trigger: { start: 'top top', end: 'bottom bottom' } });
 
-    vi.stubGlobal('scrollY', 400);
-    FakeIO.instances[0].trigger(true);
+    scroll(400);
     raf.tick();
     // 400 of 1600 → a quarter of the film. Measured from the 600px video, the
     // same scroll would be past the end of its window.
@@ -223,7 +238,7 @@ describe('scrollVideo', () => {
   it('pause stops rAF', () => {
     const video = makeVideo();
     const inst = scrollVideo(video, { from: 0, to: 5 });
-    FakeIO.instances[0].trigger(true);
+    scroll();
     raf.tick();
     const before = raf.schedule.mock.calls.length;
     inst.pause();
@@ -231,11 +246,12 @@ describe('scrollVideo', () => {
     expect(raf.schedule.mock.calls.length).toBe(before);
   });
 
-  it('destroy disconnects observer', () => {
+  it('destroy stops listening for scroll', () => {
     const video = makeVideo();
+    const unlisten = vi.spyOn(window, 'removeEventListener');
     const inst = scrollVideo(video);
     inst.destroy();
-    expect(FakeIO.instances[0].disconnect).toHaveBeenCalled();
+    expect(unlisten).toHaveBeenCalledWith('scroll', expect.any(Function), expect.anything());
   });
 
   it('replay resets progress', () => {
@@ -248,12 +264,12 @@ describe('scrollVideo', () => {
 
   it('freezes with once: true', () => {
     const video = makeVideo();
-    vi.stubGlobal('scrollY', 300);
+    scroll(300);
     const inst = scrollVideo(video, { from: 0, to: 5, once: true });
-    FakeIO.instances[0].trigger(true);
+    scroll();
     raf.tick();
     const peak = inst.getProgress();
-    vi.stubGlobal('scrollY', 0);
+    scroll(0);
     raf.tick();
     expect(inst.getProgress()).toBeGreaterThanOrEqual(peak);
   });
@@ -264,11 +280,11 @@ describe('scrollVideo', () => {
   it('once with an overshooting easing ends exactly on `to`', () => {
     const video = makeVideo();
     const inst = scrollVideo(video, { from: 0, to: 5, once: true, easing: 'elastic' });
-    FakeIO.instances[0].trigger(true);
-    vi.stubGlobal('scrollY', 120);
+    scroll();
+    scroll(120);
     raf.tick();
     expect(inst.getProgress()).toBeCloseTo(1.25, 6);
-    vi.stubGlobal('scrollY', 700);
+    scroll(700);
     raf.tick();
     expect(inst.getProgress()).toBe(1);
     expect(video.currentTime).toBeCloseTo(5, 6);
@@ -300,12 +316,12 @@ describe('scrollVideo', () => {
       it(`after ${stop}()`, () => {
         const video = makeVideo();
         const inst = scrollVideo(video, { from: 0, to: 5 });
-        FakeIO.instances[0].trigger(true);
+        scroll();
         raf.tick();
         if (stop === 'pause') inst.pause(); else inst.seek(0.2);
         raf.tick(); // a frame the stop could not cancel in this fake sees `paused` and stops
         inst.replay();
-        vi.stubGlobal('scrollY', 300);
+        scroll(300);
         raf.tick();
         expect(inst.getProgress()).toBeCloseTo(0.5, 6);
         expect(video.currentTime).toBeCloseTo(2.5, 6);

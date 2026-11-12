@@ -110,7 +110,7 @@
 - ~~SVG path tool~~ — `/svg-path-viewer`, 2026-11-11.
 - ~~Autoplay seek/progress with a stagger~~ — fixed in 2.23.2. The no-stagger stop seen in the viewer was autoplay taking the native path, fixed in 2.23.3.
 - ~~More tools~~ — `/tools` and 19 new tools (22 in all), 2026-11-11; the tool kit in every tool and three more (SVG path editor for "svg path editor", 316 Bing searches; typewriter; scroll video scrub), 2026-11-12: 25 in all.
-- The IntersectionObserver gate in scrollDraw, scrollCounter, scrollText, scrollVideo and useScrollDrawProgress: move them to the trigger-window gate 2.23.4 gave the animate engine, so a jump across a whole window paints the end.
+- ~~The IntersectionObserver gate in scrollDraw, scrollCounter, scrollText, scrollVideo and useScrollDrawProgress~~ — 2.23.5 (shared core/frame-gate). Cinematic remains.
 - Measure the tools before building more: `npm run report:numbers` weekly, Search Console per page after 2–3 weeks; improve the ones with impressions and few clicks.
 - GitHub Sponsors: the owner sets up the profile; the footer link and FUNDING.yml are on the branch. Ads: not at this traffic (see the 2026-11-11 discussion: about $1–5 a month, a consent banner, Vercel Hobby is non-commercial); revisit a single developer ad network (Carbon, EthicalAds) past ~10k views a month on a custom domain.
 - ~~Awesome-list PRs~~ — nine opened 2026-11-11 (see STATUS); follow up on review comments.

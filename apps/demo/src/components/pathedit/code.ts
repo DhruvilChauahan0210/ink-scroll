@@ -135,10 +135,13 @@ body {
 .intro, .outro {
   display: grid;
   place-content: center;
-  min-height: 80vh;
   padding: 0 24px;
   text-align: center;
 }
+/* A screen above and one and a half below: scrollDraw's default window runs
+   from the drawing's top at the bottom of the screen to its bottom at the top. */
+.intro { min-height: 100vh; }
+.outro { min-height: 150vh; }
 #drawing {
   padding: 10vh 24px;
 }
