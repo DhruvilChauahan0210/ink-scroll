@@ -1,6 +1,6 @@
 # Next Session Plan — svg-scroll-draw
 
-> Updated: 2026-11-12 — **Branch `feat/tools-kit-and-fixes`**: the tool kit in all 26 tools, three new tools (SVG path editor, typewriter, scroll video scrub), the release job in Playwright's image, and **2.23.4 staged** (not tagged). **npm `latest` is 2.23.3** (`v2.23.3` on `f4ee078`). Earlier history below.
+> Updated: 2026-11-12 — **Branch `feat/tools-kit-and-fixes`**: the tool kit in all 25 tools, three new tools (SVG path editor, typewriter, scroll video scrub), the release job in Playwright's image, and **2.23.4 staged** (not tagged). **npm `latest` is 2.23.3** (`v2.23.3` on `f4ee078`). Earlier history below.
 
 ---
 

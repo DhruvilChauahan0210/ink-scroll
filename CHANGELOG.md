@@ -32,7 +32,7 @@ All notable changes to `svg-scroll-draw` are documented here.
   frame; the encoding section's keyframe advice and ffmpeg commands come from
   encodes timed in Chromium, Firefox and WebKit.
 
-- **Every tool's code leaves the page running.** All 26 tools now carry the
+- **Every tool's code leaves the page running.** All 25 tools now carry the
   tool kit: their generated code starts with a source line, a Run it row saves
   a complete HTML page for the current settings (or opens it, or a Vite +
   React project, in StackBlitz), and a "Use it in your project" block before
@@ -89,8 +89,8 @@ All notable changes to `svg-scroll-draw` are documented here.
   are regenerated). The accessibility check now audits every page in the light
   theme too; it only ever saw the default, dark.
 
-- **The menu names five tools, the footer all of them.** With 23 tools the
-  More menu lists "All 23 tools" and the drawing tools first; the footer index
+- **The menu names five tools, the footer all of them.** With 22 tools the
+  More menu lists "All 22 tools" and the drawing tools first; the footer index
   lists every tool in two columns, its five groups on one row.
 
 - **Sponsor link.** The footer index ends with a link to GitHub Sponsors, and

@@ -139,7 +139,7 @@ at all.
 ### Tool kit everywhere, three tools and 2.23.4 (2026-11-12; branch `feat/tools-kit-and-fixes`)
 
 - [x] Release job in `mcr.microsoft.com/playwright:v1.65.0-noble`, like CI's browser job; `scripts/check-playwright-image.mjs` in `verify` keeps the image on the lockfile's Playwright; a branch dry run passed verify and the browser tests in the container
-- [x] Tool kit in all 26 tools: source line on generated code, Run it (HTML page, StackBlitz HTML and Vite + React), "Use it in your project" (with an `importLine` for default exports); each tool's exported page run in a browser against the built library
+- [x] Tool kit in all 25 tools: source line on generated code, Run it (HTML page, StackBlitz HTML and Vite + React), "Use it in your project" (with an `importLine` for default exports); each tool's exported page run in a browser against the built library
 - [x] New tools: SVG path editor (parser cross-checked on 261 `d` strings in Chromium and WebKit), typewriter effect generator (201 checks in 3 engines), scroll video scrub generator (seek accuracy within 0.02 s in 3 engines; encodes timed)
 - [x] The SVG path viewer's Tibbixel sample is not downloadable or uploaded to StackBlitz (licence)
 - [x] 2.23.4: scrollAnimate frames from the trigger window, not an IntersectionObserver (parallax no longer freezes out of its clip, fade-ups start on time, whole-window jumps paint the end); replay() after pause()/seek() resumes (animate, counter, text, video); counter destroy() removes its variable; useScrollDrawProgress in a scrollContainer; scrollSnap start, border, smooth scroll-behavior and clamping; morphTo dash fits the longer outline; pathLength respected; scrollText chars keeps emoji and words whole and long lines visible; debug keeps the native path in production; scrollVideo seek before metadata; React ScrollVideo preload/poster — unit tests +44, browser tests per engine +29, mutations +21; independently reviewed (two regressions found and fixed: scrollSnap on a page without a doctype, and scrollText chars in scripts without spaces)
@@ -149,14 +149,14 @@ at all.
 
 ### Tools expansion and 2.23.3 (2026-11-11; merged to `main` in `f4ee078`, 2.23.3 published)
 
-- [x] `/tools` hub and 23 tools from one list (`data/tools.ts`), read by the hub, the nav (five named, "All 23 tools"), the footer index (every tool), the sitemap and `llms.txt`; `check-nav` reads the list
-- [x] 20 new tools: easing visualizer, counter, parallax, scroll trigger visualizer, CSS scroll-driven, shape to path, progress bar, scroll reveal; SVG wave, blob, to-JSX, line drawing, morph; CSS keyframes, scroll snap, horizontal scroll, cubic-bezier, text fill on scroll, scroll pin
+- [x] `/tools` hub and 22 tools from one list (`data/tools.ts`), read by the hub, the nav (five named, "All 22 tools"), the footer index (every tool), the sitemap and `llms.txt`; `check-nav` reads the list
+- [x] 19 new tools: easing visualizer, counter, parallax, scroll trigger visualizer, CSS scroll-driven, shape to path, progress bar, scroll reveal; SVG wave, blob, to-JSX, line drawing, morph; CSS keyframes, scroll snap, horizontal scroll, cubic-bezier, text fill on scroll, scroll pin
 - [x] Each round-1 tool QA'd by a second agent: every claim checked against the source, every control and four or more generated outputs run in Chromium, Firefox and WebKit, fixes in the tool's own files
 - [x] Tool kit (`lib/tool-export.ts`, `components/tool-kit/`): source line, HTML download, StackBlitz (HTML and Vite + React), "Use it in your project"; used by morph, text fill and pin
 - [x] 2.23.3 staged (not tagged): `once` latches raw progress (overshooting easings end on target); autoplay and debug never take the native path; blank triggers are the default; scroll containers measured from their scrollport; reversed clip starts shown — 37 unit + 9 browser tests, 6 mutations, independently reviewed (700-sequence differential fuzz: linear unchanged)
 - [x] Site: one `<main>` per page; slider focus ring site-wide; light-theme accent and Copy button pass AA; `test-a11y` audits the light theme
 - [x] CI: browser job in `mcr.microsoft.com/playwright:v1.65.0-noble` (no apt); `npm run report:numbers`; `.github/FUNDING.yml` and a footer sponsor link
-- [x] Tool kit in the 20 tools built before it (2026-11-12, see below)
+- [x] Tool kit in the 19 tools built before it (2026-11-12, see below)
 - [x] Library bugs found by QA (2.23.4, see below)
 - [x] Typewriter, SVG path editor and scroll video scrub tools (2026-11-12)
 
