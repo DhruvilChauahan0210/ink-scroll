@@ -87,6 +87,13 @@ for (const mode of ['container', 'full']) {
 
     await call(page, 'halfway');
     await settle(page);
-    expect(await call<number>(page, 'progress')).toBeCloseTo(0.5, 1);
+    // Polled, not read once: the re-measure waits for the ResizeObserver and a
+    // 150 ms debounce. Linux WebKit in CI delivers the observer's report only
+    // at the next rendering update, and on a page with nothing animating that
+    // is the frame settle() asks for, so a single read came before the
+    // re-measure (2.23.4, whose animate engine stopped running a loop while
+    // the box sat at the edge of the view). A watcher that never fires still
+    // fails here.
+    await expect.poll(() => call<number>(page, 'progress'), { timeout: 2000 }).toBeCloseTo(0.5, 1);
   });
 }
