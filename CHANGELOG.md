@@ -8,6 +8,20 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### Site
 
+- **README hero loops and a star on GitHub where search traffic lands.**
+  Five loops recorded from a production build of the site (in
+  `.github/media/`, repo only, not in the npm package): the homepage pen
+  drawing and assembling, Groundtrack's satellite (`scrollFrames`), Lumen's
+  pinned camera tour (`scrollPin`), Atelier Nord's statement rising word by
+  word (`scrollText`) and the SVG line drawing generator redrawing as its
+  settings change. The root README now opens with the hero loop, a one-line
+  pitch, a three-line quick start, the one-line switch and a 2×2 grid of the
+  others linked to their live pages; the npm README opens with the same hero
+  (absolute URL, live once on `main`) and the quick start. Every tool's next
+  step and every blog post's closing get a compact "Star on GitHub" with the
+  hourly cached count from `/api/stars` (no request to GitHub per view; no
+  count is shown when there is none).
+
 - **Three more how-to posts, each leading into its tool:**
   - `/blog/scroll-video-scrub`: map scroll progress to `currentTime`, seek
     only on a change, encode a keyframe every few frames (the seek timings

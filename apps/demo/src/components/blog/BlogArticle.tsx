@@ -8,6 +8,7 @@ import { TOOLS } from '@/data/tools';
 import { jsonLd as serialiseJsonLd } from '@/lib/json-ld';
 import { SiteShell } from '../site/SiteShell';
 import { CodeBox } from '../site/CodeBox';
+import { GitHubStar } from '../site/GitHubStar';
 import { StepRail } from '../site/StepRail';
 import { CopyButton } from '../CopyButton';
 
@@ -421,7 +422,7 @@ export function Figure({ n, caption, children }: { n: number | string; caption: 
   );
 }
 
-/** The closing call to action: a heading, a line, the install command and buttons. */
+/** The closing call to action: a heading, a line, the install command and buttons, then a quiet star on GitHub. */
 export function Closing({
   title,
   lede,
@@ -444,6 +445,10 @@ export function Closing({
           <Link key={l.href} href={l.href} className={`btn${i === 0 ? ' btn-solid' : ''}`} data-magnetic>{l.label}</Link>
         ))}
       </div>
+      <p className="ba-close-star">
+        <GitHubStar className="btn-sm" />
+        <span>Found this useful? A star helps others find it.</span>
+      </p>
     </div>
   );
 }

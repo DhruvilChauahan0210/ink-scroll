@@ -7,7 +7,18 @@
 [![license](https://img.shields.io/npm/l/svg-scroll-draw)](./LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/DhruvilChauahan0210/ink-scroll?style=flat)](https://github.com/DhruvilChauahan0210/ink-scroll/stargazers)
 
+<a href="https://svg-scroll-draw.vercel.app"><img src="https://raw.githubusercontent.com/DhruvilChauahan0210/ink-scroll/main/.github/media/hero-line-drawing.gif" width="720" alt="The svg-scroll-draw homepage: a fountain pen's parts draw themselves in line by line, then assemble into one pen as the page scrolls"></a>
+
 > SVG line drawing on scroll, done right: correct path lengths, stagger across many paths, and `morphTo`. Where the browser supports `animation-timeline: view()` the draw runs on its own scroll timeline in CSS, with no per-frame JavaScript; in other browsers, and for options CSS can't express, a JavaScript engine draws it, and a parity suite checks in Chromium, Firefox and WebKit that both draw the same frame. **11.4 KB gzipped for every API, from 1.6 KB if you import one**, against 47.5 KB for GSAP + ScrollTrigger + DrawSVG. Zero dependencies, MIT.
+
+```bash
+npm i svg-scroll-draw
+```
+
+```js
+import { scrollDraw } from 'svg-scroll-draw';
+scrollDraw('#logo'); // every path inside #logo draws as you scroll past it
+```
 
 **Switch in one line.** Already on AOS, ScrollReveal or vivus? Change the import and keep your markup and calls:
 
@@ -34,7 +45,7 @@ Each drop-in is tested side by side against the original in real browsers (AOS 2
 
 **Using an AI coding agent?** Give it the [svg-scroll-draw skill](https://github.com/DhruvilChauahan0210/ink-scroll/blob/main/skills/svg-scroll-draw/SKILL.md) or point it at [llms.txt](https://svg-scroll-draw.vercel.app/llms.txt).
 
-![svg-scroll-draw demo: SVG paths drawing as the page scrolls](https://raw.githubusercontent.com/DhruvilChauahan0210/ink-scroll/main/demo.gif)
+If this saves you time, a ⭐ [on GitHub](https://github.com/DhruvilChauahan0210/ink-scroll) helps others find it.
 
 ---
 

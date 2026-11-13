@@ -6,7 +6,18 @@
 [![license](https://img.shields.io/npm/l/svg-scroll-draw)](./LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/DhruvilChauahan0210/ink-scroll?style=flat)](https://github.com/DhruvilChauahan0210/ink-scroll/stargazers)
 
-> SVG line drawing on scroll, done right: correct path lengths, stagger across many paths, and `morphTo`. Where the browser supports `animation-timeline: view()` the draw runs on its own scroll timeline in CSS, with no per-frame JavaScript; in other browsers, and for options CSS can't express, a JavaScript engine draws it, and a parity suite checks in Chromium, Firefox and WebKit that both draw the same frame. **11.5 KB gzipped** for every API, against 47.5 KB for GSAP + ScrollTrigger + DrawSVG. Zero dependencies, MIT.
+<a href="https://svg-scroll-draw.vercel.app"><img src=".github/media/hero-line-drawing.gif" width="720" alt="The svg-scroll-draw homepage: a fountain pen's parts draw themselves in line by line, then assemble into one pen as the page scrolls"></a>
+
+**SVG line drawing on scroll, done right**, plus reveal, pin, snap, parallax, counters, video, image-sequence and text effects. **11.5 KB gzipped** for every API, zero dependencies, MIT.
+
+```bash
+npm i svg-scroll-draw
+```
+
+```js
+import { scrollDraw } from 'svg-scroll-draw';
+scrollDraw('#logo'); // every path inside #logo draws as you scroll past it
+```
 
 **Switch in one line.** Already on AOS, ScrollReveal or vivus? Change the import and keep your markup and calls:
 
@@ -21,21 +32,24 @@
 
 Each drop-in is tested side by side against the original in real browsers (AOS 2.3.4, which has had no release since; ScrollReveal 4.0.9, which is GPL-3.0 where this is MIT; vivus 0.4.6). `npx svg-scroll-draw migrate` makes the change across a project. [Details below](#aos-drop-in--switch-from-aos-in-one-line).
 
-**And the rest of scroll animation.** Reveal, pin, snap, parallax, counters, video and image-sequence scrub and text splitting, each its own entry point, so you load only what you import. Plus [free in-browser tools](https://svg-scroll-draw.vercel.app/tools) — generators, editors and converters — that write the code for you.
+<table>
+<tr>
+<td width="50%"><a href="https://svg-scroll-draw.vercel.app/showcase/groundtrack"><img src=".github/media/groundtrack-scroll-frames.gif" width="100%" alt="Groundtrack demo site: a NASA model of the Landsat 8 satellite turns as the page scrolls"></a><br><b><a href="https://svg-scroll-draw.vercel.app/showcase/groundtrack">scrollFrames</a></b>: a satellite turns with the scroll, one image per frame · <a href="https://svg-scroll-draw.vercel.app/examples/scroll-frames">code</a></td>
+<td width="50%"><a href="https://svg-scroll-draw.vercel.app/showcase/lumen"><img src=".github/media/lumen-scroll-pin.gif" width="100%" alt="Lumen demo site: a line-drawn camera stays pinned while a tour steps through its sensor, lens, stabiliser and battery"></a><br><b><a href="https://svg-scroll-draw.vercel.app/showcase/lumen">scrollPin</a></b>: the camera holds still while the tour walks its parts · <a href="https://svg-scroll-draw.vercel.app/examples/scroll-pin">code</a></td>
+</tr>
+<tr>
+<td width="50%"><a href="https://svg-scroll-draw.vercel.app/showcase/ateliernord"><img src=".github/media/atelier-nord-scroll-text.gif" width="100%" alt="Atelier Nord demo site: the statement 'We design rooms people stay in' rises word by word as it scrolls in"></a><br><b><a href="https://svg-scroll-draw.vercel.app/showcase/ateliernord">scrollText</a></b>: a statement rises word by word · <a href="https://svg-scroll-draw.vercel.app/examples/scroll-text">code</a></td>
+<td width="50%"><a href="https://svg-scroll-draw.vercel.app/svg-line-drawing-generator"><img src=".github/media/line-drawing-generator.gif" width="100%" alt="The SVG line drawing generator: a house drawing replays, then redraws hand-drawn and longest line first as the settings change"></a><br><b><a href="https://svg-scroll-draw.vercel.app/svg-line-drawing-generator">Line drawing generator</a></b>: paste an SVG, get a file that draws itself with CSS · <a href="https://svg-scroll-draw.vercel.app/tools">all tools</a></td>
+</tr>
+</table>
 
-**[Live Demo](https://svg-scroll-draw.vercel.app)** · **[24 Examples](https://svg-scroll-draw.vercel.app/examples)** · **[Blocks](https://svg-scroll-draw.vercel.app/blocks)** · **[Docs](https://svg-scroll-draw.vercel.app/docs)** · **[⚡ Playground](https://svg-scroll-draw.vercel.app/playground)** · [npm](https://www.npmjs.com/package/svg-scroll-draw)
+**[Live Demo](https://svg-scroll-draw.vercel.app)** · **[24 Examples](https://svg-scroll-draw.vercel.app/examples)** · **[Blocks](https://svg-scroll-draw.vercel.app/blocks)** · **[Docs](https://svg-scroll-draw.vercel.app/docs)** · **[⚡ Playground](https://svg-scroll-draw.vercel.app/playground)** · **[Free tools](https://svg-scroll-draw.vercel.app/tools)** · [npm](https://www.npmjs.com/package/svg-scroll-draw)
 
 **Guides by framework:** [React](https://svg-scroll-draw.vercel.app/react-scroll-animation) · [Next.js](https://svg-scroll-draw.vercel.app/nextjs-scroll-animation) · [Vue](https://svg-scroll-draw.vercel.app/vue-scroll-animation) · [Nuxt](https://svg-scroll-draw.vercel.app/nuxt-scroll-animation) · [Svelte](https://svg-scroll-draw.vercel.app/svelte-scroll-animation) · [Solid](https://svg-scroll-draw.vercel.app/solid-scroll-animation) · [Angular](https://svg-scroll-draw.vercel.app/angular-scroll-animation) · [Astro](https://svg-scroll-draw.vercel.app/astro-scroll-animation)
 
 **Compared with:** [GSAP](https://svg-scroll-draw.vercel.app/vs-gsap) · [Framer Motion](https://svg-scroll-draw.vercel.app/vs-framer-motion) · [Motion](https://svg-scroll-draw.vercel.app/vs-motion) · [AOS](https://svg-scroll-draw.vercel.app/vs-aos) · [Locomotive Scroll](https://svg-scroll-draw.vercel.app/vs-locomotive-scroll) · [ScrollMagic](https://svg-scroll-draw.vercel.app/vs-scrollmagic) · [Vivus](https://svg-scroll-draw.vercel.app/vs-vivus)
 
-![svg-scroll-draw demo](https://raw.githubusercontent.com/DhruvilChauahan0210/ink-scroll/main/demo.gif)
-
-**Try it in your browser, no install:** [Vanilla JS on StackBlitz](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/vanilla) · [React on StackBlitz](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/react)
-
-**Using an AI coding agent?** Give it the [svg-scroll-draw skill](skills/svg-scroll-draw/SKILL.md) or point it at [llms.txt](https://svg-scroll-draw.vercel.app/llms.txt).
-
-Works in **React · Next.js · Vue 3 · Svelte · Solid · Angular · Nuxt · Astro · CDN / vanilla JS** — a single tiny package with first-class wrappers for every major framework.
+If this saves you time, a ⭐ [on GitHub](https://github.com/DhruvilChauahan0210/ink-scroll) helps others find it.
 
 ---
 
@@ -101,6 +115,10 @@ to the [drop-ins](#aos-drop-in--switch-from-aos-in-one-line):
 ```bash
 npx svg-scroll-draw migrate --dry-run   # preview, then run without --dry-run
 ```
+
+**Try it in your browser, no install:** [Vanilla JS on StackBlitz](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/vanilla) · [React on StackBlitz](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/react)
+
+**Using an AI coding agent?** Give it the [svg-scroll-draw skill](skills/svg-scroll-draw/SKILL.md) or point it at [llms.txt](https://svg-scroll-draw.vercel.app/llms.txt).
 
 ---
 

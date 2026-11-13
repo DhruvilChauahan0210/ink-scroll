@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { CodeBox } from '@/components/site/CodeBox';
+import { GitHubStar } from '@/components/site/GitHubStar';
 import { SELF, SELF_ENTRIES } from '@/data/competitors';
 import { TOOLS, type Tool } from '@/data/tools';
 import './tool-kit.css';
@@ -9,7 +10,7 @@ const CORE = ['svg-path-viewer', 'svg-line-drawing-generator'];
 
 /**
  * The end of every tool, before its questions: install it, the docs for the
- * API the tool wrote, and where to go next. One block for all of them, so a
+ * API the tool wrote, a star on GitHub, and where to go next. One block for all of them, so a
  * visitor who has just copied code always finds the same next step.
  *
  * Render it inside the tool's own numbered Sec.
@@ -58,8 +59,11 @@ export function ToolNextStep({
         <p className="tk-next-links">
           <Link href={docs}>{api} in the docs →</Link>
           <Link href="/examples">Live examples →</Link>
-          <a href="https://github.com/DhruvilChauahan0210/ink-scroll" rel="noopener">Source on GitHub ↗</a>
         </p>
+        <div className="tk-next-star">
+          <GitHubStar className="btn-sm" />
+          <p>Saved you some time? A star helps others find it.</p>
+        </div>
       </div>
       {next.length ? (
         <div className="tk-next-more">

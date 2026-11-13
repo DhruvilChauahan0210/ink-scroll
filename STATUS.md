@@ -148,6 +148,13 @@ at all.
 - [x] `/blog/scroll-image-sequence-animation`: canvas vs video, extracting frames, a hand-written version and `scrollFrames`, the frame budget, reduced motion; leads into the generator, the example and Groundtrack
 - [ ] Request indexing for `/scroll-image-sequence-generator`, `/examples/scroll-frames` and `/showcase/groundtrack`; Search Console review in 2–3 weeks
 
+### Growth: README loops and star CTAs (2026-11-13; branch `feat/growth`)
+
+- [x] Five README loops in `.github/media/` from a production build (hero pen, Groundtrack `scrollFrames`, Lumen `scrollPin`, Atelier Nord `scrollText`, the line drawing generator), each under 2 MB
+- [x] Root README top: hero loop, one-line pitch, three-line quick start, the one-line switch, a 2×2 grid linked to the live pages, a star line; npm README: the hero (absolute raw URL) and the quick start near the top
+- [x] "Star on GitHub" (`components/site/GitHubStar.tsx`, hourly cached count from `/api/stars`) in every tool's next step and every blog post's closing
+- [ ] After the branch reaches `main`: check the npm README's hero loads (it 404s until `.github/media/` is on `main`; npm shows the new README from the next publish)
+
 ### Lead with the heart, tool page speed (2026-11-13; branch `feat/heart-and-speed`)
 
 - [x] Home hero, meta and JSON-LD, both READMEs, the npm description and llms.txt lead with SVG line drawing on the native scroll timeline, then the one-line switch from AOS, ScrollReveal and vivus

@@ -220,3 +220,12 @@
 .site .ex-rel-d { display: block; margin-top: 4px; font-size: 14px; line-height: 1.55; color: var(--fg-2); }
 .site .ex-rel-go { font: 500 11px/1 var(--mono); letter-spacing: 0; color: var(--fg-3); padding-right: 4px; }
 .site .ex-rel-row:hover .ex-rel-go { color: var(--accent); }
+
+/* "Star on GitHub" at the end of every tool and blog post (GitHubStar): the
+   sign-off's star button, quieter — the star is already inked in the accent and
+   fills on hover; the count sits after a hairline when /api/stars has one. */
+.site .gh-star-svg { width: 15px; height: 15px; flex: none; overflow: visible; }
+.site .gh-star-svg path { fill: none; stroke: var(--accent); stroke-width: 1.6; stroke-linejoin: round; transition: fill 0.25s; }
+.site .gh-star:hover .gh-star-svg path, .site .gh-star:focus-visible .gh-star-svg path { fill: var(--accent); }
+.site .gh-star-n { padding-left: 8px; border-left: 1px solid var(--line-2); color: var(--fg-2); font-variant-numeric: tabular-nums; }
+.site .gh-star-sr { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }

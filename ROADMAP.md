@@ -121,6 +121,7 @@
 - ~~Awesome-list PRs~~ — nine opened 2026-11-11 (see STATUS); follow up on review comments.
 - The JavaScript Weekly / React Status / Frontend Focus submission forms (text in `reports/link-submissions-2026-11-11.md`); Best of JS once the repo has more stars. Only 8 external links today, and 42 pages are never crawled.
 - Request indexing for the 42 "Discovered – not indexed" pages, ~10 a day.
+- ~~README hero media and star calls to action~~ — five loops of the real site in `.github/media/`, both READMEs lead with the hero and a quick start, and a "Star on GitHub" closes every tool and blog post, 2026-11-13. Next: watch stars and installs over 2–3 weeks (`npm run report:numbers`) before adding more.
 - ~~Vercel Web Analytics~~ — component added 2026-11-11; the owner enables it in the Vercel dashboard.
 - Optional: a custom domain instead of `*.vercel.app`.
 

@@ -42,3 +42,7 @@
 .site .tk-next-d { font-size: 13.5px; line-height: 1.5; color: var(--fg-2); }
 .site .tk-next-all { padding: 12px 0; border-top: 1px solid var(--line); font: 500 12px/1.4 var(--mono); color: var(--fg); text-decoration: none; }
 .site .tk-next-all:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+/* The star on GitHub, under the links (GitHubStar; its own styles in site.css). */
+.site .tk-next-star { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding-top: 4px; }
+.site .tk-next-star p { margin: 0; font-size: 13.5px; line-height: 1.5; color: var(--fg-2); }

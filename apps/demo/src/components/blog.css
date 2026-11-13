@@ -439,6 +439,7 @@ html:has(.site .ba), html:has(.site .bl) { scroll-behavior: smooth; }
 .site .ba-close-t { margin: 0; font-size: clamp(26px, 2.6vw, 38px); font-weight: 500; line-height: 1.05; letter-spacing: -0.04em; color: var(--fg); }
 .site .ba-close-l { margin: 12px 0 0; font-size: 15px; line-height: 1.6; color: var(--fg-2); }
 .site .ba-close-row { margin-top: 24px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.site .ba-close-star { margin: 20px 0 0; padding-top: 16px; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; font-size: 13.5px; line-height: 1.5; color: var(--fg-2); }
 .site .ba-cmd {
   display: inline-flex;
   align-items: center;
