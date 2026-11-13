@@ -22,6 +22,27 @@ export type RelatedLinks = {
 };
 
 export const RELATED_BY_POST: Record<string, RelatedLinks> = {
+  'css-scroll-snap': {
+    examples: ['scroll-snap', 'scroll-pin'],
+    tools: ['css-scroll-snap-generator', 'horizontal-scroll-generator'],
+    pages: [
+      { href: '/scroll-pin-generator', label: 'Scroll pin generator', blurb: 'Hold a section in place while steps change, instead of snapping between them.' },
+    ],
+  },
+  'parallax-scrolling-css': {
+    examples: ['scroll-animate', 'scroll-animate-group'],
+    tools: ['parallax-scrolling-generator', 'scroll-trigger-visualizer'],
+    pages: [
+      { href: '/easing-visualizer', label: 'Easing visualizer', blurb: 'See how an easing changes the speed of a layer as it moves.' },
+    ],
+  },
+  'reading-progress-bar-css': {
+    examples: ['scroll-animate', 'scroll-counter'],
+    tools: ['scroll-progress-bar-generator', 'css-scroll-driven-animation-generator'],
+    pages: [
+      { href: '/scroll-trigger-visualizer', label: 'Scroll trigger visualizer', blurb: 'Watch the top-top to bottom-bottom trigger turn into progress from 0 to 1.' },
+    ],
+  },
   'svg-line-drawing-animation-css': {
     examples: ['logo-reveal', 'signature'],
     tools: ['svg-line-drawing-generator', 'svg-path-viewer'],

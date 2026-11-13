@@ -1,0 +1,117 @@
+/* /blog/css-scroll-snap — fig. 1, the snapport and the snap positions. Scoped under .site .ba .ssf. */
+
+.site .ba .ssf { display: grid; gap: 0; }
+
+.site .ba .ssf-port {
+  position: relative;
+  aspect-ratio: 360 / 96;
+  overflow: hidden;
+  border: 1px solid var(--fg-3);
+}
+.site .ba .ssf-pad {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(45deg, var(--line) 0 1px, transparent 1px 6px);
+}
+.site .ba .ssf-slide {
+  position: absolute;
+  top: 16%;
+  bottom: 16%;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--fg-2);
+  font: 600 13px/1 var(--mono);
+  color: var(--fg-2);
+}
+.site .ba .ssf-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  border-left: 2px solid var(--accent);
+  margin-left: -1px;
+}
+
+.site .ba .ssf-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin: 10px 0 14px;
+  font: 400 11px/1.4 var(--mono);
+  color: var(--fg-3);
+}
+.site .ba .ssf-key i { display: inline-block; width: 18px; height: 10px; margin-right: 6px; vertical-align: middle; }
+.site .ba .ssf-key .is-pad { background: repeating-linear-gradient(45deg, var(--fg-3) 0 1px, transparent 1px 4px); }
+.site .ba .ssf-key .is-line { width: 0; border-left: 2px solid var(--accent); margin-left: 8px; margin-right: 14px; }
+
+.site .ba .ssf-row {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--line);
+}
+.site .ba .ssf-l { font: 400 11px/1.3 var(--mono); color: var(--fg-3); }
+.site .ba .ssf-l b { font: 600 13px/1.3 var(--sans, inherit); color: var(--fg); margin-right: 6px; }
+.site .ba .ssf-track {
+  position: relative;
+  display: block;
+  height: 12px;
+  background-image: linear-gradient(to right, var(--line) 1px, transparent 1px);
+  background-size: 25% 100%;
+  box-shadow: 1px 0 0 var(--line);
+}
+.site .ba .ssf-dot {
+  position: absolute;
+  top: 1px;
+  width: 10px;
+  height: 10px;
+  margin-left: -5px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.site .ba .ssf-want {
+  position: absolute;
+  top: 5px;
+  height: 0;
+  border-top: 2px dotted var(--fg-3);
+}
+.site .ba .ssf-row.is-clamped .ssf-want::after {
+  content: '';
+  position: absolute;
+  right: -5px;
+  top: -6px;
+  width: 8px;
+  height: 8px;
+  border: 1px solid var(--fg-3);
+  border-radius: 50%;
+}
+.site .ba .ssf-row.is-max { border-top: 1px solid var(--fg-3); border-bottom: 0; }
+.site .ba .ssf-row.is-max .ssf-l { color: var(--fg); }
+.site .ba .ssf-max {
+  position: absolute;
+  left: 0;
+  top: 5px;
+  height: 0;
+  border-top: 2px solid var(--fg-2);
+}
+
+.site .ba .ssf-axis { border-bottom: 1px solid var(--fg-3); padding: 0 0 8px; }
+.site .ba .ssf-axis .ssf-l { font-size: 10px; }
+.site .ba .ssf-ticks {
+  display: flex;
+  justify-content: space-between;
+  height: auto;
+  background: none;
+  box-shadow: none;
+  font: 500 10.5px/1.3 var(--mono);
+  color: var(--fg-3);
+}
+
+@media (max-width: 559px) {
+  .site .ba .ssf-row { grid-template-columns: 112px minmax(0, 1fr); gap: 10px; }
+  .site .ba .ssf-l b { display: block; }
+  .site .ba .ssf-ticks span:nth-child(even) { visibility: hidden; }
+}

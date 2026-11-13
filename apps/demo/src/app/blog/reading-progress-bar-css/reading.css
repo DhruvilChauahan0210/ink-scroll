@@ -1,0 +1,50 @@
+/* /blog/reading-progress-bar-css — fig. 1, scroll position to bar. Scoped under .site .ba .rf. */
+
+.site .ba .rf { display: grid; gap: 0; }
+.site .ba .rf-row {
+  display: grid;
+  grid-template-columns: 132px minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+.site .ba .rf-l { font: 400 11px/1.4 var(--mono); color: var(--fg-3); }
+.site .ba .rf-l b { font: 600 13px/1.3 var(--sans, inherit); color: var(--fg); margin-left: 4px; }
+.site .ba .rf-p { display: block; color: var(--fg-2); }
+
+.site .ba .rf-head { border-bottom: 1px solid var(--fg-3); padding: 0 0 8px; }
+.site .ba .rf-head .rf-l { font-size: 10px; }
+.site .ba .rf-sum { font: 400 12px/1.4 var(--mono); color: var(--fg-2); }
+.site .ba .rf-sum b { font-weight: 600; color: var(--fg); }
+
+.site .ba .rf-track {
+  position: relative;
+  display: block;
+  background-image: linear-gradient(to right, var(--line) 1px, transparent 1px);
+  background-size: 20% 100%;
+  box-shadow: 1px 0 0 var(--line);
+}
+.site .ba .rf-track svg { display: block; width: 100%; height: 34px; overflow: visible; }
+.site .ba .rf-page { fill: var(--line); stroke: var(--line-2); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.site .ba .rf-win { fill: none; stroke: var(--fg); stroke-width: 2; vector-effect: non-scaling-stroke; }
+.site .ba .rf-base { fill: none; stroke: var(--line-2); stroke-width: 1; stroke-dasharray: 2 3; vector-effect: non-scaling-stroke; }
+.site .ba .rf-bar { fill: none; stroke: var(--accent); stroke-width: 8; }
+
+.site .ba .rf-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin: 10px 0 0;
+  font: 400 11px/1.4 var(--mono);
+  color: var(--fg-3);
+}
+.site .ba .rf-key i { display: inline-block; width: 18px; height: 8px; margin-right: 6px; vertical-align: middle; }
+.site .ba .rf-key .is-page { background: var(--line); border: 1px solid var(--line-2); }
+.site .ba .rf-key .is-win { border: 2px solid var(--fg); }
+.site .ba .rf-key .is-bar { height: 0; border-top: 6px solid var(--accent); }
+
+@media (max-width: 559px) {
+  .site .ba .rf-row { grid-template-columns: 96px minmax(0, 1fr); gap: 10px; }
+  .site .ba .rf-l b { margin-left: 0; display: block; }
+}

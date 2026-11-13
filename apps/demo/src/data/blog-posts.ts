@@ -19,6 +19,39 @@ export type BlogPost = {
 
 export const POSTS: BlogPost[] = [
   {
+    slug: 'css-scroll-snap',
+    title: 'CSS scroll snap: carousels and full-page sections',
+    description:
+      'Build a scroll snap carousel and full-page sections with scroll-snap-type and scroll-snap-align: buttons, the current slide, the keyboard, and phone heights.',
+    tag: 'Guide',
+    tagColor: '#111',
+    readTime: '8 min read',
+    date: 'November 2026',
+    published: '2026-11-13',
+  },
+  {
+    slug: 'parallax-scrolling-css',
+    title: 'Parallax scrolling with CSS and JavaScript',
+    description:
+      'Move the layers of a scene at different speeds as the page scrolls: pure CSS on a scroll timeline, a small script for older browsers, and reduced motion.',
+    tag: 'How-To',
+    tagColor: '#60a5fa',
+    readTime: '8 min read',
+    date: 'November 2026',
+    published: '2026-11-13',
+  },
+  {
+    slug: 'reading-progress-bar-css',
+    title: 'How to make a reading progress bar with CSS',
+    description:
+      'A reading progress bar in pure CSS with animation-timeline, one for a single article, a ring, a small JavaScript fallback, and what screen readers need.',
+    tag: 'How-To',
+    tagColor: '#60a5fa',
+    readTime: '7 min read',
+    date: 'November 2026',
+    published: '2026-11-13',
+  },
+  {
     slug: 'svg-line-drawing-animation-css',
     title: 'How to animate an SVG line drawing with CSS',
     description:

@@ -8,6 +8,28 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### Site
 
+- **Three more how-to posts, each leading into its tool:**
+  - `/blog/parallax-scrolling-css`: layers at different speeds in pure CSS
+    on a `view()` timeline, why not `background-attachment: fixed` or the
+    perspective trick, a small script that only writes transforms while the
+    scene is on screen, `scrollParallax`, and reduced motion; into the
+    parallax scrolling generator.
+  - `/blog/reading-progress-bar-css`: a `scroll(root)` bar, a bar for one
+    article (`contain 0% contain 100%` on a named view timeline), a ring on
+    `pathLength="100"`, a one-write-a-frame JavaScript fallback, why the bar
+    stays `aria-hidden`, and `scrollProgress`; into the scroll progress bar
+    generator.
+  - `/blog/css-scroll-snap`: `scroll-snap-type` and `scroll-snap-align`, a
+    carousel with `scroll-padding` and buttons that `scrollTo` the next index
+    (a smooth `scrollBy` back from the clamped end stops between slides in
+    WebKit), the current slide by `scrollsnapchange` or IntersectionObserver,
+    the keyboard, full-page sections on `svh`, what mandatory really traps
+    (content with no snap position, not tall sections), and `scrollSnap`;
+    into the CSS scroll snap generator.
+  Every listing is run as the page prints it in Chromium, Firefox and WebKit
+  (the CSS fallbacks also in Firefox with scroll timelines off, the library
+  against the built `dist/`), and each figure is drawn from its post's CSS.
+
 - **Three how-to posts, each leading into its tool.** Each one answers a
   search people make and hands the reader to the free tool that builds it:
   - `/blog/svg-line-drawing-animation-css`: `stroke-dasharray`,
