@@ -81,7 +81,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // ── Comparison pages ────────────────────────────────────────────────────
     {
       url: `${SITE_URL}/vs-gsap`,
-      lastModified: new Date("2026-11-11"),
+      lastModified: new Date("2026-11-13"),
       changeFrequency: "monthly",
       priority: 0.9,
     },
@@ -273,7 +273,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${SITE_URL}/vs-framer-motion`,
-      lastModified: new Date("2026-11-07"),
+      lastModified: new Date("2026-11-13"),
       changeFrequency: "monthly",
       priority: 0.9,
     },
