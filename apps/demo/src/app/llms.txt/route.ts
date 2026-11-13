@@ -22,8 +22,8 @@ const BODY = `# svg-scroll-draw
 > Switch in one line: drop-in replacements for AOS, ScrollReveal and vivus keep
 > existing markup and calls; change the import (see below) or run
 > \`npx svg-scroll-draw migrate\`. Also: reveal, pin, snap, parallax, counters,
-> video scrub and text splitting, each its own entry point, and ${TOOLS.length} free
-> in-browser tools (listed under Tools).
+> video and image-sequence scrub and text splitting, each its own entry point, and
+> ${TOOLS.length} free in-browser tools (listed under Tools).
 
 Native CSS support: Chrome and Edge 115+, Safari 26+, and Firefox 159+ (Firefox
 turned scroll-driven animations on by default on 27 Oct 2026). Our CI runs the
@@ -53,6 +53,7 @@ Every API is a separate entry point, so you only pay for what you import:
 - \`scrollParallax\` — move an element at a multiple of scroll distance
 - \`scrollCounter\` — animate a number from → to
 - \`scrollVideo\` — bind \`video.currentTime\` to scroll position
+- \`scrollFrames\` (${SELF_ENTRIES.frames} KB, \`svg-scroll-draw/frames\`) — scrub a numbered image sequence on a \`<canvas>\` with the scroll (the Apple product-page film, one still at a time); only the last frame under reduced motion
 - \`scrollText\` (3.5 KB) — split text into chars/words/lines and stagger them
 - \`scrollHorizontal\` — horizontal scroll sections
 - Group / Sequence / Timeline APIs for orchestrating several at once

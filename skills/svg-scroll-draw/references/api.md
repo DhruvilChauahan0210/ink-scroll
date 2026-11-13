@@ -242,6 +242,31 @@ Keeps the original text in `aria-label`, hides split spans from assistive tech;
 
 Use `<video muted playsinline preload="auto">`.
 
+## `svg-scroll-draw/frames`
+
+### `scrollFrames(target: string | HTMLCanvasElement, options: ScrollFramesOptions): ScrollDrawInstance`
+
+| Option | Type | Default |
+|---|---|---|
+| `frames` | `string[] \| (index: number) => string` | required |
+| `count` | `number` | `frames.length`; required with a function |
+| `trigger` | `TriggerConfig` | `{ start: 'top top', end: 'bottom top' }` |
+| `easing` | `Easing` | `'linear'` |
+| `once` | `boolean` | `false` |
+| `axis` | `'x' \| 'y'` | `'y'` |
+| `triggerElement` | `Element` | the canvas — set it to the track behind a sticky stage |
+| `fit` | `'cover' \| 'contain'` | `'cover'` |
+| `concurrency` | `number` | `6` |
+| `onReady` (first frame drawn), `onLoad` (every frame loaded or failed), `onComplete` | `() => void` | — |
+| `onProgress` | `(alpha, frame) => void` | — |
+
+Draws frame `round(alpha × (count − 1))`, or the nearest loaded one until it
+arrives. Loads frame 0, the last, then midpoints coarse to fine. Size the canvas
+with CSS; the buffer follows the box × devicePixelRatio (capped at 2). Reduced
+motion loads and shows only the last frame. No framework component: in React,
+call it in `useEffect` and return `destroy`. Give the canvas `role="img"` and an
+`aria-label`.
+
 ## `svg-scroll-draw/progress`
 
 ### `scrollProgress(target: string | Element, options?: ScrollProgressOptions): ScrollDrawInstance`

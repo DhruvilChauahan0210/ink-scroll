@@ -207,7 +207,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${SITE_URL}/scroll-video-scrub-generator`,
-      lastModified: new Date("2026-11-12"),
+      lastModified: new Date("2026-11-13"),
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
+      url: `${SITE_URL}/scroll-image-sequence-generator`,
+      lastModified: new Date("2026-11-13"),
       changeFrequency: "monthly",
       priority: 0.9,
     },
@@ -374,7 +380,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${SITE_URL}/blog/complete-guide-scroll-animations-2026`,
-      lastModified: new Date("2026-11-12"),
+      lastModified: new Date("2026-11-13"),
       changeFrequency: "monthly",
       priority: 0.8,
     },

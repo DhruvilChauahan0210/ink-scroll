@@ -101,6 +101,16 @@ const BUDGETS_KB = {
   timeline:          4.2,
   text:              3.5,
   video:             2.9,
+  // scrollFrames: 3.63 KB at its first build. It carries scrollVideo's engine
+  // (the frame gate, triggers, easings, about 2.9 KB) plus the loader (load
+  // order, concurrency, decode with its onload fallback), the canvas sizing
+  // and the cover/contain draw.
+  // 3.63 -> 3.97 before its first release, from an adversarial review: it holds
+  // the box of a canvas sized by its own attributes (which grew without end at
+  // 2x), isolates user callbacks so a throw cannot stall the loader, treats a
+  // frames function that throws as a failed frame, and validates count and
+  // concurrency. Rounded up to the next 0.1 KB with 0.1 KB more.
+  frames:            4.1,
   // 2.4 -> 3.1 in 2.23.7: Cinematic moved off its IntersectionObserver onto the
   // shared frame gate (core/frame-gate + layout-watch, ~0.5 KB, the chunk every
   // other engine already ships), so a story jumped past paints its last frame.
@@ -181,6 +191,7 @@ const NPM_ROWS = [
   { names: ['reveal'] },
   { names: ['text'] },
   { names: ['video'] },
+  { names: ['frames'] },
   { names: ['scrollreveal'] },
   { names: ['vivus'] },
   { names: ['aos'], before: '(styles included)' },

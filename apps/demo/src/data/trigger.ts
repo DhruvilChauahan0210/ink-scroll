@@ -130,7 +130,7 @@ export type TriggerDefault = { fn: string; entry: string; start: string; end: st
  * The window each function uses when no `trigger` is given, read from the
  * library: core/engine.ts, animate/engine.ts, progress/index.ts,
  * react/useScrollDrawProgress.ts, text/index.ts, reveal/index.ts,
- * counter/index.ts and video/index.ts.
+ * counter/index.ts, video/index.ts and frames/index.ts.
  */
 export const TRIGGER_DEFAULTS: TriggerDefault[] = [
   { fn: 'scrollDraw', entry: 'svg-scroll-draw', start: 'top bottom', end: 'bottom top' },
@@ -141,6 +141,7 @@ export const TRIGGER_DEFAULTS: TriggerDefault[] = [
   { fn: 'scrollReveal', entry: 'svg-scroll-draw/reveal', start: 'top 88%', end: 'top 53%' },
   { fn: 'scrollCounter', entry: 'svg-scroll-draw', start: 'top 80%', end: 'top 20%' },
   { fn: 'scrollVideo', entry: 'svg-scroll-draw/video', start: 'top top', end: 'bottom top' },
+  { fn: 'scrollFrames', entry: 'svg-scroll-draw/frames', start: 'top top', end: 'bottom top' },
 ];
 
 export function defaultsOf(fn: string): TriggerDefault {

@@ -21,7 +21,7 @@
 
 Each drop-in is tested side by side against the original in real browsers (AOS 2.3.4, which has had no release since; ScrollReveal 4.0.9, which is GPL-3.0 where this is MIT; vivus 0.4.6). `npx svg-scroll-draw migrate` makes the change across a project. [Details below](#aos-drop-in--switch-from-aos-in-one-line).
 
-**And the rest of scroll animation.** Reveal, pin, snap, parallax, counters, video scrub and text splitting, each its own entry point, so you load only what you import. Plus [free in-browser tools](https://svg-scroll-draw.vercel.app/tools) — generators, editors and converters — that write the code for you.
+**And the rest of scroll animation.** Reveal, pin, snap, parallax, counters, video and image-sequence scrub and text splitting, each its own entry point, so you load only what you import. Plus [free in-browser tools](https://svg-scroll-draw.vercel.app/tools) — generators, editors and converters — that write the code for you.
 
 **[Live Demo](https://svg-scroll-draw.vercel.app)** · **[23 Examples](https://svg-scroll-draw.vercel.app/examples)** · **[Blocks](https://svg-scroll-draw.vercel.app/blocks)** · **[Docs](https://svg-scroll-draw.vercel.app/docs)** · **[⚡ Playground](https://svg-scroll-draw.vercel.app/playground)** · [npm](https://www.npmjs.com/package/svg-scroll-draw)
 
@@ -55,8 +55,8 @@ Works in **React · Next.js · Vue 3 · Svelte · Solid · Angular · Nuxt · As
 - **30+ options** — easing, stagger, fade, stroke color/width lerp, fill opacity, clip reveal, morphTo, velocityScale, waypoints, callbacks, repeat, autoReverse, and more
 - **Group / Sequence / Timeline APIs** — animate multiple containers simultaneously, one-after-another, or on independent scroll windows with `loop` for auto-looping after scroll completion
 - **CSS custom property** — `--scroll-draw-progress` is set on every frame so you can drive any CSS animation without a callback
-- **844 tests across 40 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
-- **297 browser tests on top of those**, run against Chromium, Firefox and WebKit in CI. The unit suite runs in jsdom, where `getTotalLength` is stubbed and `IntersectionObserver` is faked — it can check the engine's arithmetic but nothing about real browser behaviour. Both counts are derived from the suites themselves and enforced in CI, so neither can quietly drift out of date
+- **891 tests across 41 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
+- **316 browser tests on top of those**, run against Chromium, Firefox and WebKit in CI. The unit suite runs in jsdom, where `getTotalLength` is stubbed and `IntersectionObserver` is faked — it can check the engine's arithmetic but nothing about real browser behaviour. Both counts are derived from the suites themselves and enforced in CI, so neither can quietly drift out of date
 
 ---
 
@@ -822,11 +822,11 @@ outgrows its budget.
 <!-- size-table:start -->
 | Entry point                          | Raw | Gzipped |
 |--------------------------------------|----:|--------:|
-| `svg-scroll-draw/nuxt`               | 37.2 KB | **12.9 KB** |
+| `svg-scroll-draw/nuxt`               | 37.2 KB | **13.0 KB** |
 | `svg-scroll-draw/vue`                | 36.9 KB | **12.9 KB** |
 | `svg-scroll-draw/react`              | 36.3 KB | **12.8 KB** |
 | `svg-scroll-draw/angular`            | 34.8 KB | **12.3 KB** |
-| `svg-scroll-draw/solid`              | 34.6 KB | **12.2 KB** |
+| `svg-scroll-draw/solid`              | 34.6 KB | **12.3 KB** |
 | `svg-scroll-draw/svelte`             | 35.0 KB | **12.2 KB** |
 | `svg-scroll-draw/astro`              | 33.5 KB | **11.9 KB** |
 | `svg-scroll-draw`                    | 32.3 KB | **11.5 KB** |
@@ -841,6 +841,7 @@ outgrows its budget.
 | `svg-scroll-draw/vivus/react`        | 12.0 KB | **4.3 KB** |
 | `svg-scroll-draw/timeline`           | 9.8 KB | **4.2 KB** |
 | `svg-scroll-draw/vivus`              | 11.7 KB | **4.2 KB** |
+| `svg-scroll-draw/frames`             | 8.4 KB | **4.0 KB** |
 | `dist/cdn/vivus.global.js`           | 11.1 KB | **3.9 KB** |
 | `svg-scroll-draw/text`               | 7.9 KB | **3.5 KB** |
 | `svg-scroll-draw/aos/react`          | 9.2 KB | **3.4 KB** |

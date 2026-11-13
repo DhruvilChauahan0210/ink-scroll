@@ -54,6 +54,9 @@
     "split-text",
     "text-animation",
     "scroll-video",
+    "image-sequence",
+    "scroll-frames",
+    "canvas-animation",
     "counter",
     "gsap-alternative",
     "scrolltrigger-alternative",
@@ -136,6 +139,9 @@
       ],
       "video": [
         "./dist/video/index.d.ts"
+      ],
+      "frames": [
+        "./dist/frames/index.d.ts"
       ],
       "text": [
         "./dist/text/index.d.ts"
@@ -315,6 +321,16 @@
       "require": {
         "types": "./dist/video/index.d.ts",
         "default": "./dist/video/index.cjs"
+      }
+    },
+    "./frames": {
+      "import": {
+        "types": "./dist/frames/index.d.mts",
+        "default": "./dist/frames/index.mjs"
+      },
+      "require": {
+        "types": "./dist/frames/index.d.ts",
+        "default": "./dist/frames/index.cjs"
       }
     },
     "./text": {

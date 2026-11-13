@@ -260,7 +260,7 @@ if (mainKb !== null) {
  */
 const API_ENTRY = {
   scrollReveal: 'reveal', scrollPin: 'pin', scrollSnap: 'snap', scrollText: 'text',
-  scrollVideo: 'video', scrollHorizontal: 'horizontal', scrollProgress: 'progress',
+  scrollVideo: 'video', scrollFrames: 'frames', scrollHorizontal: 'horizontal', scrollProgress: 'progress',
 };
 
 /** Every file a reader can see: both READMEs, the whole demo source, the launch drafts. */

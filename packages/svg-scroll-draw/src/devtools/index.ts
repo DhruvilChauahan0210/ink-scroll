@@ -11,6 +11,7 @@ const TYPE_COLOR: Record<InstanceType, string> = {
   animate: '#4ade80',  // green
   counter: '#fbbf24',  // yellow
   video:   '#c084fc',  // purple
+  frames:  '#e879f9',  // fuchsia
   text:    '#fb923c',  // orange
   pin:     '#f43f5e',  // rose
   snap:    '#22d3ee',  // cyan

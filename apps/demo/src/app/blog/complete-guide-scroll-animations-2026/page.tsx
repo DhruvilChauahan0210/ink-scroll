@@ -258,6 +258,12 @@ scrollCounter('#bundle',     { to: ${Math.round(SELF.gzipKb)}, format: n => '~' 
 scrollVideo('#hero-video', {
   trigger: { start: 'top top', end: 'bottom top' },
 });`}</Code>
+        <p>
+          The same effect from numbered stills on a <code>&lt;canvas&gt;</code> is <code>scrollFrames</code>, from{' '}
+          <code>svg-scroll-draw/frames</code>: no keyframes to seek between, at the cost of a download per frame. Build
+          either in the <Link href="/scroll-video-scrub-generator">scroll video scrub generator</Link> or the{' '}
+          <Link href="/scroll-image-sequence-generator">scroll image sequence generator</Link>.
+        </p>
       </Section>
 
       <Section id={id(9)} k="scrollHorizontal" title="Horizontal scroll sections">

@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>scrollFrames — an image sequence scrubbed on a canvas</title>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+  .spacer { height: 1200px; }
+  .tail   { height: 2000px; }
+  /* 400px tall, so the default `top top` → `bottom top` window is 400px of scroll. */
+  #film { display: block; width: 320px; height: 400px; }
+  .probe { display: block; width: 320px; height: 400px; }
+</style>
+<!-- Warnings are dev-only; a bundler-less page says so here (as debug.html). -->
+<script>window.__SVG_SCROLL_DRAW_DEV__ = true;</script>
+</head>
+<body>
+<!--
+  Viewport 900x800. #film at document top 1200, 320×400, 25 frames: the window
+  is 1200 → 1600 and frame = round((y − 1200) / 400 × 24).
+
+  The frames come from serve.mjs (/e2e/gen/frame.png): 160×90, black 20px bands
+  left and right, the rest one colour whose red channel is the index × 10, so a
+  pixel off the canvas names the frame on it. Query parameters on this page:
+  `delay` (ms each frame is held), `slow` (an index held 1.5s), `fail` (an
+  index that 404s), `count`.
+-->
+<div class="spacer"></div>
+<canvas id="film" role="img" aria-label="A numbered test film"></canvas>
+<div class="tail" id="tail"></div>
+
+<script type="module">
+import { scrollFrames } from '/dist/frames/index.mjs';
+import { publish } from './_probe.mjs';
+
+const q = new URLSearchParams(location.search);
+const COUNT = Number(q.get('count') ?? 25);
+const delay = q.get('delay');
+const fail = q.get('fail');
+const slow = q.get('slow');
+
+const frameUrl = (i, extra = '') =>
+  `/e2e/gen/frame.png?i=${i}${delay ? `&delay=${delay}` : String(i) === slow ? '&delay=1500' : ''}${String(i) === fail ? '&fail=1' : ''}${extra}`;
+
+const film = document.querySelector('#film');
+const calls = { ready: 0, load: 0, complete: 0, progressCalls: 0, lastFrame: -1 };
+const warnings = [];
+const warn = console.warn.bind(console);
+console.warn = (...a) => { warnings.push(a.map(String).join(' ')); warn(...a); };
+
+const inst = scrollFrames(film, {
+  frames: (i) => frameUrl(i),
+  count: COUNT,
+  onReady: () => { calls.ready++; },
+  onLoad: () => { calls.load++; },
+  onComplete: () => { calls.complete++; },
+  onProgress: (_, f) => { calls.progressCalls++; calls.lastFrame = f; },
+});
+
+/** RGBA at CSS (x, y) of a canvas, from its backing store. */
+function pixel(canvas, x, y) {
+  const sx = canvas.width / canvas.clientWidth;
+  const sy = canvas.height / canvas.clientHeight;
+  const d = canvas.getContext('2d').getImageData(Math.floor(x * sx), Math.floor(y * sy), 1, 1).data;
+  return [d[0], d[1], d[2], d[3]];
+}
+
+/** The frame a pixel shows: -1 for nothing drawn. */
+const frameOf = ([r, , , a]) => (a === 0 ? -1 : Math.round(r / 10));
+
+publish({
+  read: () => ({
+    scrollY: window.scrollY,
+    frame: frameOf(pixel(film, 160, 200)),
+    width: film.width,
+    height: film.height,
+    progress: inst.getProgress(),
+    ...calls,
+    warnings: warnings.length,
+    warned: warnings.join('\n'),
+  }),
+
+  geometry: () => ({
+    top: film.getBoundingClientRect().top + window.scrollY,
+    cssWidth: film.clientWidth,
+    cssHeight: film.clientHeight,
+    viewport: window.innerHeight,
+    dpr: window.devicePixelRatio,
+  }),
+
+  pixel: (x, y) => pixel(film, x, y),
+
+  /** Resize #film's CSS box, and say when the next two frames have run. */
+  setWidth: (w) => new Promise((resolve) => {
+    film.style.width = `${w}px`;
+    requestAnimationFrame(() => requestAnimationFrame(() => resolve({ width: film.width, height: film.height, frame: frameOf(pixel(film, w / 2, 200)) })));
+  }),
+
+  /**
+   * One frame (index 12) on a fresh 320×400 canvas with this `fit`, sampled
+   * once it is drawn: the points that tell cover from contain.
+   */
+  fit: (fit) => new Promise((resolve) => {
+    const c = document.createElement('canvas');
+    c.className = 'probe';
+    document.querySelector('#tail').prepend(c);
+    const one = scrollFrames(c, {
+      frames: [`/e2e/gen/frame.png?i=12`],
+      fit,
+      onReady: () => {
+        const at = (x, y) => pixel(c, x, y);
+        resolve({
+          size: [c.width, c.height],
+          centre: at(160, 200),
+          top: at(160, 50),
+          left: at(10, 200),
+          aboveEdge: at(160, 108),
+          belowEdge: at(160, 112),
+          leftOfBand: at(38, 200),
+          rightOfBand: at(42, 200),
+        });
+        one.destroy();
+        c.remove();
+      },
+    });
+  }),
+
+  destroyFilm: () => inst.destroy(),
+
+  /**
+   * pause(), destroy(), then resume() and replay(): how many onProgress calls
+   * the next 10 frames bring. A destroyed instance must stay stopped.
+   */
+  afterDestroy: async () => {
+    inst.pause();
+    inst.destroy();
+    const before = calls.progressCalls;
+    inst.resume();
+    inst.replay();
+    for (let k = 0; k < 10; k++) await new Promise((r) => requestAnimationFrame(r));
+    return calls.progressCalls - before;
+  },
+
+  /**
+   * A canvas whose box comes from its own width/height attributes:
+   * 'unstyled' (no CSS size at all) or 'portrait' (width: 100% in a 333.3px
+   * box, auto height, attributes 100×300). Its size after 5 and after 40
+   * frames: a backing-store write that moves the box fed the observer, and
+   * the canvas grew without end.
+   */
+  attrSized: (kind) => new Promise((resolve) => {
+    const wrap = document.createElement('div');
+    wrap.style.width = kind === 'portrait' ? '333.3px' : 'auto';
+    const c = document.createElement('canvas');
+    if (kind === 'portrait') { c.width = 100; c.height = 300; c.style.width = '100%'; }
+    wrap.append(c);
+    document.querySelector('#tail').prepend(wrap);
+    const one = scrollFrames(c, { frames: ['/e2e/gen/frame.png?i=3'] });
+    const size = () => ({ width: c.width, height: c.height, cssWidth: c.clientWidth, cssHeight: c.clientHeight });
+    let k = 0;
+    let early;
+    const step = () => {
+      k++;
+      if (k === 5) early = size();
+      if (k < 40) return void requestAnimationFrame(step);
+      const late = size();
+      one.destroy();
+      wrap.remove();
+      resolve({ early, late });
+    };
+    requestAnimationFrame(step);
+  }),
+});
+</script>
+</body>
+</html>

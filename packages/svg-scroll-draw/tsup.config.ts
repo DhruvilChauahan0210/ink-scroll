@@ -19,6 +19,7 @@ const ENTRIES: Record<string, string> = {
   'timeline/index':           'src/timeline/index.ts',
   'web-component/index':      'src/web-component/index.ts',
   'video/index':              'src/video/index.ts',
+  'frames/index':             'src/frames/index.ts',
   'text/index':               'src/text/index.ts',
   'devtools/index':           'src/devtools/index.ts',
   'pin/index':                'src/pin/index.ts',

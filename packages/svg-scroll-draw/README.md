@@ -22,7 +22,7 @@
 
 Each drop-in is tested side by side against the original in real browsers (AOS 2.3.4, which has had no release since; ScrollReveal 4.0.9, which is GPL-3.0 where this is MIT; vivus 0.4.6). `npx svg-scroll-draw migrate` makes the change across a project.
 
-**And the rest of scroll animation.** Reveal, pin, snap, parallax, counters, video scrub and text splitting, each its own entry point, so you load only what you import. Works in React, Next.js, Vue, Svelte, Solid, Angular, Astro, Nuxt and vanilla JS. Plus [free in-browser tools](https://svg-scroll-draw.vercel.app/tools) — generators, editors and converters — that write the code for you.
+**And the rest of scroll animation.** Reveal, pin, snap, parallax, counters, video and image-sequence scrub and text splitting, each its own entry point, so you load only what you import. Works in React, Next.js, Vue, Svelte, Solid, Angular, Astro, Nuxt and vanilla JS. Plus [free in-browser tools](https://svg-scroll-draw.vercel.app/tools) — generators, editors and converters — that write the code for you.
 
 **[Live Demo](https://svg-scroll-draw.vercel.app)** · [npm](https://www.npmjs.com/package/svg-scroll-draw) · [Docs](https://svg-scroll-draw.vercel.app/docs) · [Examples](https://svg-scroll-draw.vercel.app/examples) · [Report a bug](https://github.com/DhruvilChauahan0210/ink-scroll/issues)
 
@@ -47,6 +47,7 @@ Each drop-in is tested side by side against the original in real browsers (AOS 2
 | `scrollParallax` | `svg-scroll-draw` | Move any element at a different rate than scroll. Speed multiplier, reverse direction. |
 | `scrollDraw` | `svg-scroll-draw` | The original — scroll-driven SVG path drawing via `stroke-dashoffset`. |
 | `scrollVideo` | `svg-scroll-draw/video` | Tie `<video>.currentTime` to scroll. The Apple/Stripe product-page pattern. |
+| `scrollFrames` | `svg-scroll-draw/frames` | Scrub an image sequence on a `<canvas>` with the scroll: the frame-by-frame version of the same pattern, for footage a video decoder cannot seek smoothly. |
 | `scrollText` | `svg-scroll-draw/text` | Split text into chars/words/lines and stagger-animate each on scroll. 3.5 KB, nothing else to load. |
 | `devtools` | `svg-scroll-draw/devtools` | Visual overlay showing every active animation's triggers and progress. Dev-only. |
 | `AOS` | `svg-scroll-draw/aos` | Drop-in replacement for AOS: same `AOS.init()`, same `data-aos` markup, no `aos.css`. |
@@ -243,6 +244,84 @@ import { ScrollVideo } from 'svg-scroll-draw/react';
 | `onReady` | `() => void` | — | Fires when video metadata is loaded |
 | `onProgress` | `(n: number) => void` | — | — |
 | `onComplete` | `() => void` | — | — |
+
+---
+
+## scrollFrames — image-sequence scrubbing on a canvas
+
+The product-page film drawn one still at a time: frame `round(progress × (count − 1))` of a numbered image sequence, painted on a `<canvas>` as you scroll. A video seeks to a keyframe and decodes forward, so a fast scrub stutters; a sequence of decoded images shows any frame at once, in every browser.
+
+```js
+import { scrollFrames } from 'svg-scroll-draw/frames';
+
+// 120 frames: /film/0001.jpg … /film/0120.jpg
+scrollFrames('#film', {
+  frames: (i) => `/film/${String(i + 1).padStart(4, '0')}.jpg`,
+  count: 120,
+  trigger: { start: 'top top', end: 'bottom top' },
+});
+
+// Or a list of URLs, and the whole picture inside the box
+scrollFrames('#turntable', { frames: urls, fit: 'contain' });
+```
+
+```html
+<!-- The library adds no ARIA: say what the film shows. -->
+<canvas id="film" role="img" aria-label="The headphones turning to show the hinge" style="width:100%;height:100vh"></canvas>
+```
+
+Size the canvas with CSS. The library sets its drawing buffer to that box × `devicePixelRatio` (capped at 2) and redraws when the box changes size.
+
+Frame 0 loads first, then the last frame, then the midpoints of every gap, coarse to fine, so a reader who scrolls fast has a frame near wherever they land early on; at most `concurrency` images load at once. Until the frame the scroll calls for arrives, the nearest loaded one shows, and the canvas redraws as closer ones come in. A frame that fails to load is skipped the same way, with one console warning naming its URL. The canvas is redrawn only when the frame to show changes, not on every animation frame.
+
+Under `prefers-reduced-motion: reduce` only the last frame is loaded and drawn. Turned on mid-visit, the scrub stops on the last frame and nothing more is loaded. Only that frame exists then, so `seek()` and `replay()` do not change the picture.
+
+Every frame stays decoded in memory for the life of the instance, at its full pixel size, so keep the budget modest: as few frames as the motion needs, each no larger than the canvas shows it (WebP or JPEG at the display size, not camera originals). A hundred 1920×1080 frames hold about 800 MB decoded.
+
+If the canvas has no CSS size of its own (it takes its box from its `width` and `height` attributes), the library holds that box with an inline size or `aspect-ratio` the first time it writes the drawing buffer, so the buffer cannot resize the box it is measured from.
+
+For the pinned-film pattern, put the canvas in a `position: sticky` stage and point `triggerElement` at the tall track around it, as with `scrollVideo`.
+
+#### React
+
+There is no component; call it from an effect and return its `destroy`:
+
+```tsx
+import { useEffect, useRef } from 'react';
+import { scrollFrames } from 'svg-scroll-draw/frames';
+
+export function Film() {
+  const ref = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const film = scrollFrames(ref.current!, {
+      frames: (i) => `/film/${String(i + 1).padStart(4, '0')}.jpg`,
+      count: 120,
+    });
+    return () => film.destroy();
+  }, []);
+  return <canvas ref={ref} role="img" aria-label="The headphones turning" style={{ width: '100%', height: '100vh' }} />;
+}
+```
+
+#### scrollFrames options
+
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `frames` | `string[] \| (index: number) => string` | — | The image URLs in order, or a function from a 0-based index to a URL. Required |
+| `count` | `number` | `frames.length` | How many frames. Required when `frames` is a function |
+| `trigger` | `TriggerConfig` | `{ start: 'top top', end: 'bottom top' }` | — |
+| `easing` | `string \| fn` | `"linear"` | — |
+| `once` | `boolean` | `false` | Hold the furthest frame reached when scrolling back |
+| `axis` | `"x" \| "y"` | `"y"` | — |
+| `triggerElement` | `Element` | the canvas | Measure the trigger window from this element: the tall track behind a `position: sticky` stage |
+| `fit` | `"cover" \| "contain"` | `"cover"` | How each frame fills the canvas: `cover` fills it and crops, `contain` shows the whole frame; both centred |
+| `concurrency` | `number` | `6` | How many images load at once |
+| `onReady` | `() => void` | — | The first frame is drawn |
+| `onLoad` | `() => void` | — | Every frame has loaded or failed |
+| `onProgress` | `(alpha: number, frame: number) => void` | — | Progress, and the index of the frame it calls for |
+| `onComplete` | `() => void` | — | — |
+
+It returns the same instance as every other API: `{ destroy, replay, pause, resume, seek, getProgress }`. `destroy()` stops the loads still in flight.
 
 ---
 
@@ -630,6 +709,7 @@ devtools.highlight('#my-element'); // outline for 2 seconds
 | `svg-scroll-draw/astro` | `initScrollDraw()` · **v2:** `initScrollAnimate()`, `initScrollCounter()`, `initScrollText()`, `initAll()` |
 | `svg-scroll-draw/nuxt` | All Vue v1+v2 composables and components, `createScrollDrawPlugin()` |
 | `svg-scroll-draw/video` | `scrollVideo` |
+| `svg-scroll-draw/frames` | `scrollFrames` |
 | `svg-scroll-draw/text` | `scrollText` |
 | `svg-scroll-draw/group` | `scrollDrawGroup`, `scrollDrawSequence` · **v2:** `scrollAnimateGroup`, `scrollAnimateSequence`, `scrollParallaxGroup` |
 | `svg-scroll-draw/timeline` | `scrollDrawTimeline` |
@@ -655,6 +735,7 @@ devtools.highlight('#my-element'); // outline for 2 seconds
 | `svg-scroll-draw/reveal` | 5.7 KB |
 | `svg-scroll-draw/text` | 3.5 KB |
 | `svg-scroll-draw/video` | 2.9 KB |
+| `svg-scroll-draw/frames` | 4.0 KB |
 | `svg-scroll-draw/scrollreveal` | 4.7 KB |
 | `svg-scroll-draw/vivus` | 4.2 KB |
 | `svg-scroll-draw/aos` (styles included) | 3.2 KB |

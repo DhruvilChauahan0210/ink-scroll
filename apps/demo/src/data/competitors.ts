@@ -78,13 +78,14 @@ export const SELF_ENTRIES: Record<string, number> = {
   progress: 2.4,
   horizontal: 5.6,
   video: 2.9,
+  frames: 4.0,
   // `svg-scroll-draw/react`: every component, engines included.
   react: 12.8,
   // Each framework landing quotes its own entry, wrapper and engines included.
   vue: 12.9,
-  nuxt: 12.9,
+  nuxt: 13.0,
   svelte: 12.2,
-  solid: 12.2,
+  solid: 12.3,
   angular: 12.3,
   astro: 11.9,
 };

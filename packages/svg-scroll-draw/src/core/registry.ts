@@ -9,7 +9,7 @@
 // symbol from every copy — and from every version of the library on the page —
 // so they all land in one Map.
 
-export type InstanceType = 'draw' | 'animate' | 'counter' | 'video' | 'text' | 'pin' | 'snap';
+export type InstanceType = 'draw' | 'animate' | 'counter' | 'video' | 'frames' | 'text' | 'pin' | 'snap';
 
 export interface RegistryEntry {
   type: InstanceType;

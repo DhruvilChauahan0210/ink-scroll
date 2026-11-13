@@ -271,6 +271,11 @@ export default function ScrollVideoScrubGeneratorPage() {
                 scrub drawn in lines instead of footage, <Link href="/examples#scroll-video" className="vsg-a">the
                 blueprint phone</Link> on the examples page.
               </Note>
+              <Note k="Frames">
+                For footage that has to scrub smoothly at any speed, draw it as an image sequence on a canvas instead:
+                the <Link href="/scroll-image-sequence-generator" className="vsg-a">scroll image sequence
+                generator</Link> turns a video into frames in your browser and writes the scrollFrames code.
+              </Note>
             </Sec>
 
             <Sec n={2} k="The arithmetic" id="model" title="From a scroll position to a frame">
@@ -438,7 +443,7 @@ export default function ScrollVideoScrubGeneratorPage() {
                 api="scrollVideo"
                 entry="video"
                 docs="/docs#scroll-video"
-                related={['scroll-pin-generator', 'scroll-trigger-visualizer']}
+                related={['scroll-image-sequence-generator', 'scroll-pin-generator']}
               />
             </Sec>
 

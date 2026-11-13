@@ -58,6 +58,7 @@ import { INITIAL as TEXTFILL_INITIAL, runnableHtml as textFillHtml } from '@/com
 import { triggerHtml } from '@/components/trigger/code';
 import { INITIAL as TYPEWRITER_INITIAL, runnableHtml as typewriterHtml } from '@/components/typewriter/model';
 import { DEFAULTS as SCRUB_DEFAULTS, FILM_SOURCE, scrubFile } from '@/components/videoscrub/scrub-code';
+import { DEFAULTS as FRAMES_DEFAULTS, DEMO_SEQUENCE, framesFile, videoSequence } from '@/components/frames/frames-code';
 import { buildWave, htmlPage as wavePage, type WaveSettings } from '@/components/wave/wave';
 
 export const slugs: string[] = TOOL_GROUPS.flatMap((g) => g.tools.map((t) => t.slug));
@@ -116,6 +117,14 @@ export function build(version: string): Record<string, string> {
   out['scroll-pin-generator'] = pinJs(PIN_DEFAULTS, version);
   out['scroll-pin-generator:css'] = pinCssOnly(PIN_DEFAULTS);
   out['scroll-video-scrub-generator'] = scrubFile(SCRUB_DEFAULTS, FILM_SOURCE, version);
+  // FramesGenerator.tsx: the demo, which draws its own frames in the page.
+  out['scroll-image-sequence-generator'] = framesFile(FRAMES_DEFAULTS, DEMO_SEQUENCE, version);
+  // Frames drawn from a video: the page loads frames/frame_0001.webp … beside it (test-tools serves them).
+  out['scroll-image-sequence-generator:video'] = framesFile(
+    { ...FRAMES_DEFAULTS, pin: false, preset: 'pass', fit: 'contain', easing: 'ease-in-out' },
+    videoSequence(24, '.webp', 320, 240),
+    version,
+  );
 
   // CubicBezierGenerator.tsx: easeOutBack against CSS ease, 1000ms.
   const bezier = presetByKey('named:easeOutBack')?.v ?? [0.34, 1.56, 0.64, 1];

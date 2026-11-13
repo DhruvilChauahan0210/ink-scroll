@@ -70,6 +70,7 @@ describe('SSR — no window, no document', () => {
       '../snap',
       '../text',
       '../video',
+      '../frames',
       '../counter',
       '../progress',
       '../horizontal',
@@ -103,6 +104,7 @@ describe('SSR — no window, no document', () => {
     const { scrollSnap } = await import('../snap');
     const { scrollText } = await import('../text');
     const { scrollVideo } = await import('../video');
+    const { scrollFrames } = await import('../frames');
     const { scrollProgress } = await import('../progress');
     const { scrollHorizontal } = await import('../horizontal');
     const { scrollReveal } = await import('../reveal');
@@ -116,6 +118,7 @@ describe('SSR — no window, no document', () => {
     ]);
     expectInertInstance(scrollText('#headline'), 'scrollText');
     expectInertInstance(scrollVideo('#clip'), 'scrollVideo');
+    expectInertInstance(scrollFrames('#film', { frames: (i) => `/f/${i}.png`, count: 60 }), 'scrollFrames');
     expectInertInstance(scrollProgress('#bar'), 'scrollProgress');
     expectInertInstance(scrollHorizontal('#track'), 'scrollHorizontal', [
       ...FULL_INSTANCE,

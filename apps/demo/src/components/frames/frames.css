@@ -1,0 +1,102 @@
+/* ── The scroll image sequence generator (/scroll-image-sequence-generator) ─
+   Built on the scroll video scrub generator's sheet (videoscrub.css, vsg-):
+   the same panel, controls, preview window, readouts and code tabs. What is
+   new here, prefix isg-: where the frames come from (the demo, a drop zone,
+   a video and its extraction), and the canvas. The header figure is isgf-. */
+
+.site .isg-source {
+  grid-area: source;
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border-bottom: 1px solid var(--line);
+  min-width: 0;
+}
+.site .isg-source b { font: 500 12px/1.5 var(--mono); color: var(--fg); overflow-wrap: anywhere; }
+.site .isg-source > .vsg-field { max-width: 460px; }
+.site .isg-pane { display: grid; gap: 12px; min-width: 0; }
+.site .isg-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; min-width: 0; }
+.site .isg-row > .vsg-seg { flex: 0 1 380px; }
+.site .isg-zip { padding-top: 12px; border-top: 1px solid var(--line); }
+.site .isg-zip .vsg-hint { flex: 1 1 260px; }
+
+/* The drop zone: a label around the file input, so a click or a drop both work. */
+.site .isg-drop {
+  position: relative;
+  display: grid;
+  gap: 4px;
+  justify-items: center;
+  padding: 24px 16px;
+  border: 1px dashed var(--fg-3);
+  background: var(--panel);
+  text-align: center;
+  cursor: pointer;
+}
+.site .isg-drop[data-over] { border-style: solid; border-color: var(--fg); }
+.site .isg-drop input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+.site .isg-drop:focus-within { outline: 1px solid var(--fg); outline-offset: 2px; }
+.site .isg-drop-t { font: 500 13px/1.4 var(--mono); color: var(--fg); }
+
+.site .isg-opts { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+@media (min-width: 640px) { .site .isg-opts { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 24px; } }
+@media (min-width: 1000px) { .site .isg-opts { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.site .isg-select { display: grid; gap: 6px; }
+.site .isg-select select {
+  min-width: 0;
+  padding: 7px 6px;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: var(--bg);
+  font: 500 12px/1.2 var(--mono);
+  color: var(--fg);
+}
+.site .isg-select select:focus-visible { outline: 1px solid var(--fg); outline-offset: 1px; }
+.site .isg .vsg-seg > button:disabled { color: var(--fg-3); cursor: default; }
+.site .isg .vsg-seg > button:disabled[aria-checked='true'] { color: var(--bg); opacity: 0.5; }
+.site .isg .vsg-pick:has(input:disabled) { color: var(--fg-3); cursor: default; }
+
+.site .isg .vsg-btn.is-solid { background: var(--fg); border-color: var(--fg); color: var(--bg); }
+.site .isg .vsg-btn.is-solid:disabled { background: transparent; border-color: var(--line-2); color: var(--fg-3); }
+
+/* Extraction: a bar that fills as frames are drawn. */
+.site .isg-bar { position: relative; flex: 1 1 200px; height: 8px; border: 1px solid var(--line-2); background: var(--bg); }
+.site .isg-bar > span { position: absolute; inset: 0 auto 0 0; background: var(--fg); }
+.site .isg-count { font: 500 12px/1 var(--mono); font-variant-numeric: tabular-nums; color: var(--fg); }
+
+/* The canvas: sized by CSS, its drawing buffer by scrollFrames. */
+.site .isg-canvas { display: block; width: 100%; background: var(--bg); }
+.site .vsg-stage .isg-canvas { position: absolute; inset: 0; height: 100%; }
+.site .vsg-inflow .isg-canvas { outline: 1px dashed var(--fg-3); outline-offset: 3px; }
+.site .isg .vsg-frame { position: relative; }
+.site .isg-wait {
+  position: absolute;
+  inset: auto 0 12px;
+  z-index: 2;
+  margin: 0;
+  text-align: center;
+  font: 500 11px/1.4 var(--mono);
+  color: var(--fg-2);
+}
+.site .isg .vsg-tl-read { min-height: 1.5em; }
+.site .isg .vsg-tl-read code { font: 500 11.5px/1.5 var(--mono); color: var(--fg); }
+
+/* ── Fig. 1: scroll progress mapped onto a strip of frames ───────────── */
+
+.site .isgf svg { width: 100%; height: auto; }
+.site .isgf-axis, .site .isgf-map { color: var(--fg-3); }
+.site .isgf-win { color: var(--fg-2); }
+.site .isgf-now { color: var(--fg); stroke-width: 1.5; }
+.site .isgf-frame { fill: var(--panel); stroke: var(--line-2); }
+.site .isgf-frame.is-loaded { fill: var(--line); stroke: var(--fg-3); }
+.site .isgf-frame.is-target { fill: var(--panel); stroke: var(--fg); stroke-width: 2; }
+.site .isgf-frame.is-shown { fill: var(--fg); stroke: var(--fg); }
+.site .isgf-arrow { color: var(--fg); }
+.site .isgf-code { font: 500 12.5px var(--mono); fill: var(--fg); }
+.site .isgf-l { font: 500 11.5px var(--mono); fill: var(--fg); }
+.site .isgf-k, .site .isgf-s { font: 500 10.5px var(--mono); fill: var(--fg-3); }
+.site .isgf-n { font: 500 10.5px var(--mono); fill: var(--fg-2); }
+@media (max-width: 560px) {
+  .site .isgf-code { font-size: 14px; }
+  .site .isgf-l { font-size: 12.5px; }
+  .site .isgf-k, .site .isgf-s, .site .isgf-n { font-size: 11.5px; }
+}

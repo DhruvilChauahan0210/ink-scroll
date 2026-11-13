@@ -37,6 +37,7 @@ Docs: https://svg-scroll-draw.vercel.app/docs · LLM summary: https://svg-scroll
 | Horizontal scroll section | `svg-scroll-draw/horizontal` | `scrollHorizontal('.track')` |
 | Split + stagger text | `svg-scroll-draw/text` | `scrollText(el, { split })` |
 | Scrub `<video>` with scroll | `svg-scroll-draw/video` | `scrollVideo(video, opts)` |
+| Scrub an image sequence on a `<canvas>` | `svg-scroll-draw/frames` | `scrollFrames(canvas, { frames: (i) => url, count })` — give the canvas `role="img"` and an `aria-label` |
 | Progress as CSS variable | `svg-scroll-draw/progress` | `scrollProgress(el)` → `--scroll-progress` |
 | Several at once / in sequence | `svg-scroll-draw/group` | `scrollDrawGroup`, `scrollDrawSequence`, `scrollAnimateGroup`, `scrollAnimateSequence`, `scrollParallaxGroup` |
 | Independent windows per path group | `svg-scroll-draw/timeline` | `scrollDrawTimeline(el, { tracks })` |

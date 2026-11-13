@@ -26,6 +26,7 @@ export const TOOL_GROUPS: ToolGroup[] = [
       { slug: 'horizontal-scroll-generator', name: 'Horizontal scroll generator', blurb: 'A pinned section that scrolls sideways: panels, width, gap and scroll length, run in a box you scroll; HTML, CSS, JS, React or CSS only.' },
       { slug: 'scroll-pin-generator', name: 'Scroll pin generator', blurb: 'Set a pin distance, top and steps, scroll a feature tour pinned by scrollPin, and copy HTML, CSS, JS, React or a CSS-only version.' },
       { slug: 'scroll-video-scrub-generator', name: 'Scroll video scrub generator', blurb: 'A video that plays forwards and backwards with the scroll: pin it, set the window, range and easing, try your own file, copy the code.' },
+      { slug: 'scroll-image-sequence-generator', name: 'Scroll image sequence generator', blurb: 'Apple-style frames on a canvas, scrubbed by the scroll: use your own images or turn a video into a frames.zip in the browser, copy the code.' },
       { slug: 'cubic-bezier-generator', name: 'Cubic-bezier generator', blurb: 'Drag two control points to make a CSS cubic-bezier(), race it against ease or easeOutBack, and copy the CSS or a JS easing function.' },
     ],
   },

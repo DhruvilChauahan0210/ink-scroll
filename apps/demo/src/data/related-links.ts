@@ -116,6 +116,7 @@ export const RELATED_BY_POST: Record<string, RelatedLinks> = {
     tools: ['scroll-pin-generator', 'scroll-video-scrub-generator'],
     pages: [
       { href: '/vs-scrollmagic', label: 'vs ScrollMagic', blurb: 'ScrollMagic pins too — but needs GSAP to animate anything.' },
+      { href: '/scroll-image-sequence-generator', label: 'Scroll image sequence generator', blurb: 'The pinned film as numbered stills on a canvas: turn a video into frames in the browser.' },
     ],
   },
   'scroll-animation-groups': {

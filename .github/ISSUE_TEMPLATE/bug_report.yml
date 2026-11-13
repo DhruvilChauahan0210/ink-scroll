@@ -29,6 +29,7 @@ body:
         - scrollCounter
         - scrollText
         - scrollVideo
+        - scrollFrames
         - scrollParallax
         - scrollPin
         - scrollSnap

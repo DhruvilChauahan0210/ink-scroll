@@ -8,6 +8,7 @@
  */
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
+import { deflateSync, crc32 } from 'node:zlib';
 import { join, extname, normalize } from 'node:path';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -26,9 +27,60 @@ const TYPES = {
   '.map': 'application/json; charset=utf-8',
 };
 
+/**
+ * A frame for the scrollFrames suite, drawn on request rather than committed:
+ * `/e2e/gen/frame.png?i=3&w=160&h=90`. Solid colour, its red channel the frame
+ * index × 10, so a pixel read off the canvas names the frame on it; the left
+ * and right `band` pixels (default 20) are black, so cover's crop and
+ * contain's letterbox show in the geometry. `delay` holds the reply that many
+ * ms; `fail=1` answers 404, a frame that never arrives.
+ */
+function framePng(params) {
+  const i = Number(params.get('i') ?? 0);
+  const w = Number(params.get('w') ?? 160);
+  const h = Number(params.get('h') ?? 90);
+  const band = Number(params.get('band') ?? 20);
+  const row = Buffer.alloc(1 + w * 3);
+  for (let x = 0; x < w; x++) {
+    const inside = x >= band && x < w - band;
+    row.set(inside ? [i * 10, 255 - i * 10, 64] : [0, 0, 0], 1 + x * 3);
+  }
+  const chunk = (type, data) => {
+    const head = Buffer.alloc(8);
+    head.writeUInt32BE(data.length, 0);
+    head.write(type, 4, 'latin1');
+    const crc = Buffer.alloc(4);
+    crc.writeUInt32BE(crc32(Buffer.concat([head.subarray(4), data])) >>> 0, 0);
+    return Buffer.concat([head, data, crc]);
+  };
+  const ihdr = Buffer.alloc(13);
+  ihdr.writeUInt32BE(w, 0);
+  ihdr.writeUInt32BE(h, 4);
+  ihdr.set([8, 2, 0, 0, 0], 8); // 8-bit RGB, no interlace
+  return Buffer.concat([
+    Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
+    chunk('IHDR', ihdr),
+    chunk('IDAT', deflateSync(Buffer.concat(Array.from({ length: h }, () => row)))),
+    chunk('IEND', Buffer.alloc(0)),
+  ]);
+}
+
 createServer(async (req, res) => {
   try {
     const url = new URL(req.url, `http://localhost:${PORT}`);
+
+    if (url.pathname === '/e2e/gen/frame.png') {
+      const delay = Number(url.searchParams.get('delay') ?? 0);
+      if (delay) await new Promise((r) => setTimeout(r, delay));
+      if (url.searchParams.get('fail')) {
+        res.writeHead(404, { 'Cache-Control': 'no-store' }).end('Not found');
+        return;
+      }
+      const body = framePng(url.searchParams);
+      res.writeHead(200, { 'Content-Type': 'image/png', 'Content-Length': body.length, 'Cache-Control': 'no-store' });
+      res.end(body);
+      return;
+    }
     // normalize() collapses ../ so requests cannot escape the package root.
     const rel = normalize(decodeURIComponent(url.pathname)).replace(/^(\.\.[/\\])+/, '');
     const path = join(ROOT, rel);

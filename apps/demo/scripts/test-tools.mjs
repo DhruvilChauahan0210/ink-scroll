@@ -2,7 +2,7 @@
 /**
  * Runs every tool's "Run it" page in a real browser and checks the effect runs.
  *
- * Why: each of the 25 tools hands out a complete HTML file for its current
+ * Why: each tool hands out a complete HTML file for its current
  * settings (lib/tool-export.ts htmlFile()), downloaded or opened in
  * StackBlitz. Nothing else on the site runs those files, so a tool whose page
  * throws, imports the wrong entry or animates nothing would ship unnoticed.
@@ -18,8 +18,9 @@
  *     fully, a transform or an opacity that moves with the scroll, a CSS
  *     animation that exists and runs, an SVG that renders);
  *   - no page errors and no console errors;
- *   - no request anywhere but the page, the routed library files, and the
- *     site's own demo film (served from apps/demo/public).
+ *   - no request anywhere but the page, the routed library files, the
+ *     site's own demo film (served from apps/demo/public), and the image
+ *     sequence page's frames/ (drawn as WebP in the builder page below).
  *
  * Every slug in data/tools.ts must have a case here, so a new tool cannot be
  * skipped. Run `npm run build:lib` first: the pages load the built dist/.
@@ -60,6 +61,8 @@ const bundle = await build({
 });
 
 const browser = await chromium.launch();
+/** The image sequence page's frames, by URL. */
+const STILLS = new Map();
 let slugs;
 let pages;
 {
@@ -69,6 +72,26 @@ let pages;
   await page.setContent('<!doctype html><html><body></body></html>');
   await page.addScriptTag({ content: bundle.outputFiles[0].text });
   ({ slugs, pages } = await page.evaluate((v) => ({ slugs: window.toolPages.slugs, pages: window.toolPages.build(v) }), version));
+  // The frames the image sequence page's video variant asks for
+  // (frames/frame_0001.webp …): 24 stills, each a different picture.
+  const stills = await page.evaluate(async () => {
+    const c = document.createElement('canvas');
+    c.width = 320;
+    c.height = 240;
+    const ctx = c.getContext('2d');
+    const out = {};
+    for (let i = 0; i < 24; i++) {
+      ctx.fillStyle = `hsl(${i * 15} 70% 45%)`;
+      ctx.fillRect(0, 0, 320, 240);
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(20 + i * 11, 100, 24, 40);
+      const blob = await new Promise((done) => c.toBlob(done, 'image/webp', 0.8));
+      const bytes = new Uint8Array(await blob.arrayBuffer());
+      out[`frame_${String(i + 1).padStart(4, '0')}.webp`] = Array.from(bytes);
+    }
+    return out;
+  });
+  for (const [name, bytes] of Object.entries(stills)) STILLS.set(`${ORIGIN}/frames/${name}`, Buffer.from(bytes));
   await page.close();
   if (errors.length) {
     console.error(`✗ test-tools: building the pages threw:\n  ${errors.join('\n  ')}`);
@@ -102,6 +125,11 @@ async function open(name, html, { reducedMotion = 'no-preference' } = {}) {
       }
       const ext = file.slice(file.lastIndexOf('.'));
       return route.fulfill({ contentType: TYPES[ext] ?? 'application/octet-stream', body: readFileSync(file) });
+    }
+    if (url.origin === ORIGIN && url.pathname.startsWith('/frames/')) {
+      const still = STILLS.get(req.url());
+      if (!still) problems.push(`asked for ${req.url()}, which is not one of the frames`);
+      return still ? route.fulfill({ contentType: 'image/webp', body: still }) : route.fulfill({ status: 404, body: '' });
     }
     if (req.url() === FILM.url) {
       // A browser seeks a <video> only when the server answers Range requests.
@@ -374,6 +402,8 @@ const CASES = {
     const end = await until(t.page, time, (v) => Math.abs(v - 4.98) < 0.1);
     if (!end.ok) t.fail(`the film did not reach 4.98s at the end of the track (${end.v})`);
   },
+  'scroll-image-sequence-generator': async (t) => frameScrub(t),
+  'scroll-image-sequence-generator:video': async (t) => frameScrub(t),
   'cubic-bezier-generator': async (t) => {
     await easingRun(t);
     // The CSS tab's card: Play moves it along its transition.
@@ -438,6 +468,48 @@ const CASES = {
     if (!op.ok) t.fail(`fade-up did not fade in (opacity ${op.v[0]})`);
   },
 };
+
+/** The canvas's picture, as a number: drawn down to 24×16 and hashed ('' before anything is drawn). */
+const canvasHash = `(() => {
+  const c = document.querySelector('#frames');
+  if (!c || !c.width) return '';
+  const s = document.createElement('canvas');
+  s.width = 24;
+  s.height = 16;
+  const x = s.getContext('2d');
+  x.drawImage(c, 0, 0, 24, 16);
+  const d = x.getImageData(0, 0, 24, 16).data;
+  let h = 0;
+  for (let i = 0; i < d.length; i += 4) h = (h * 31 + d[i] + d[i + 1] * 3 + d[i + 2] * 7) >>> 0;
+  return h;
+})()`;
+const framesProgress = `Number(document.querySelector('#frames').style.getPropertyValue('--scroll-draw-progress') || -1)`;
+
+/** scrollFrames: a first frame drawn, the picture changing frame by frame down the page, progress 1 at the end. */
+async function frameScrub(t) {
+  const a11y = await t.page.evaluate(() => {
+    const c = document.querySelector('#frames');
+    return c ? { role: c.getAttribute('role'), label: c.getAttribute('aria-label') } : null;
+  });
+  if (!a11y) return t.fail('no canvas#frames');
+  if (a11y.role !== 'img' || !a11y.label) t.fail(`the canvas has no role="img" and aria-label (${JSON.stringify(a11y)})`);
+  const first = await until(t.page, framesProgress, (v) => v >= 0, 10000);
+  if (!first.ok) return t.fail('scrollFrames never ran (no --scroll-draw-progress on the canvas)');
+  // Every frame in: on a page this short, the last loads within a second.
+  await until(t.page, canvasHash, (v) => v !== '', 5000);
+  const seen = [];
+  for (let i = 0; i <= 16; i++) {
+    await scrollTo(t.page, i / 16);
+    await t.page.waitForTimeout(60);
+    await settle(t.page);
+    seen.push({ p: await t.page.evaluate(framesProgress), h: await t.page.evaluate(canvasHash) });
+  }
+  const pictures = new Set(seen.map((s) => s.h)).size;
+  if (pictures < 6) t.fail(`the canvas showed only ${pictures} different pictures over 17 scroll positions`);
+  if (!seen.some((s) => s.p > 0.2 && s.p < 0.8)) t.fail(`progress never part-way (${f2(seen.map((s) => s.p))})`);
+  const end = await until(t.page, framesProgress, (v) => v > 0.999);
+  if (!end.ok) t.fail(`progress not 1 at the bottom (${end.v})`);
+}
 
 async function progressBar(t) {
   const bar = scaleX('.progress-bar');

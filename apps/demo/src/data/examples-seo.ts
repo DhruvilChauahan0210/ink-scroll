@@ -440,7 +440,7 @@ export const EXAMPLE_SEO: Record<string, ExampleSeo> = {
       'frame by frame scroll video',
     ],
     related: ['scroll-pin', 'scroll-animate'],
-    tools: ['scroll-video-scrub-generator'],
+    tools: ['scroll-video-scrub-generator', 'scroll-image-sequence-generator'],
   },
 
   // ── Batch 6 · layout APIs & setup ─────────────────────────────────────────

@@ -110,6 +110,7 @@ const NAV_GROUPS = [
       { id: 'scroll-counter',           label: 'scrollCounter' },
       { id: 'scroll-parallax',          label: 'scrollParallax' },
       { id: 'scroll-video',             label: 'scrollVideo' },
+      { id: 'scroll-frames',            label: 'scrollFrames' },
       { id: 'scroll-text',              label: 'scrollText' },
     ],
   },
@@ -2621,6 +2622,33 @@ import { ScrollVideo } from 'svg-scroll-draw/react';
               <Link href="/examples/scroll-video" className="underline underline-offset-2">Scroll-video recipe</Link>.
             </p>
             <Try>Set the pin, range and easing on your own clip in the <Link href="/scroll-video-scrub-generator" className={TRY_LINK}>scroll video scrub generator</Link>.</Try>
+          </DocSection>
+
+          <DocSection id="scroll-frames" tag="Scroll APIs" heading="scrollFrames">
+            <p className="text-sm text-graphite-border leading-relaxed mb-2">
+              The same film drawn one still at a time: frame <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">round(progress × (count − 1))</code> of a numbered image sequence, painted on a <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">{'<canvas>'}</code> as you scroll. A video seeks to a keyframe and decodes forward; a decoded image shows at once, in every browser. {SELF_ENTRIES.frames} KB gzipped for its entry.
+            </p>
+            <CodeBlock file="index.js">
+{`import { scrollFrames } from 'svg-scroll-draw/frames';
+
+// 120 frames: /film/0001.jpg … /film/0120.jpg
+scrollFrames('#film', {
+  frames: (i) => \`/film/\${String(i + 1).padStart(4, '0')}.jpg\`,
+  count: 120,
+});
+
+// Pinned: the canvas in a sticky stage, the track measured
+scrollFrames('#film', {
+  frames: urls,                 // or a list of URLs
+  fit: 'contain',               // the whole frame; 'cover' (default) fills and crops
+  triggerElement: document.querySelector('#film-track'),
+  trigger: { start: 'top top', end: 'bottom bottom' },
+});`}
+            </CodeBlock>
+            <p className="text-[12px] text-graphite-border mt-3">
+              Size the canvas with CSS: its drawing buffer follows the box × <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">devicePixelRatio</code> (capped at 2). Frame 0 loads first, then the last, then the middle of every gap, <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">concurrency</code> (6) at a time; until a frame arrives, the nearest loaded one shows. Under reduced motion only the last frame is loaded and drawn. The library adds no ARIA: give the canvas <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">role=&quot;img&quot;</code> and an <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">aria-label</code>. There is no React component: call it in an effect and return its <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">destroy</code>.
+            </p>
+            <Try>Turn a video into frames and scrub them, pinned or in the flow, in the <Link href="/scroll-image-sequence-generator" className={TRY_LINK}>scroll image sequence generator</Link>.</Try>
           </DocSection>
 
           <DocSection id="scroll-text" tag="v2.1.0" heading="scrollText">
