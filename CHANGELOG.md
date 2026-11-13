@@ -1056,6 +1056,67 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ---
 
+## [2.25.0] — 2026-11-13
+
+### Added
+
+- **`<ScrollFrames>` for React and Vue.** `svg-scroll-draw/react` and
+  `svg-scroll-draw/vue` export a `<ScrollFrames>` component, and Nuxt
+  re-exports it (with `createScrollDrawPlugin()` registering it globally). It
+  renders the `<canvas>` and takes every `scrollFrames` option as a prop;
+  `className`, `style` and the other attributes go on the canvas, and
+  unmounting stops the film and the loads still in flight. Vue also has the
+  `useScrollFrames(opts)` composable, returning a ref to bind to a canvas.
+- **`role="img"` by default, with a dev warning without a name.** The canvas
+  takes its own `role` if you pass one. In development the component warns
+  when it has no `aria-label` (or `aria-labelledby`), unless it is marked
+  `aria-hidden="true"` or `role="presentation"`/`"none"` as decoration.
+- **Re-created only when the URLs or the options change.** A `frames` function
+  is compared by the URLs it gives for `count`, not by identity, so an inline
+  `frames={(i) => …}` keeps the film (and the images already loaded) through
+  a re-render, and a new URL pattern with the same count starts a new one.
+  Changing `count`, `fit`, `trigger` or another option starts a new film.
+- **Live callbacks.** `onReady`, `onLoad`, `onProgress` and `onComplete` are
+  read when they fire, so a re-render with fresh callbacks keeps the film and
+  the latest one is called.
+- **`triggerElement` as a ref.** In React it takes an element or a ref; a ref
+  is read when the film starts, after React has attached it, so the tall track
+  can be an ancestor the same component renders. In Vue it takes an element or
+  a selector (`trigger-element="#track"`), found when the film starts, with a
+  warning when it matches nothing.
+- The scroll image sequence generator's React tab writes `<ScrollFrames>`
+  instead of an effect calling `scrollFrames`.
+
+### Fixed
+
+- **A `frames` function replaced by a list of the same URLs keeps a working
+  film**, in both components. Found in review before release: the key saw the
+  same URLs and kept the film, but the live options handed the engine the new
+  list, which it then called as a function and threw. `frames` now goes in as
+  the render passed it; the key starts a new film when the URLs change.
+
+### Size
+
+- `svg-scroll-draw/react` is 14.9 KB gzipped (was 12.8), `/vue` 15.1 (12.9)
+  and `/nuxt` 15.2 (13.0): each now carries the `scrollFrames` engine (its
+  loader, canvas sizing and draw; the frame gate, triggers and easings were
+  already there for `ScrollVideo`) and the wrapper's URL fingerprint and label
+  check, about 2.1 KB. Their budgets are 15.0, 15.2 and 15.3, with the reason
+  in `scripts/size.mjs`; an app's bundler drops it when `ScrollFrames` is not
+  imported. The main entry and `react` together are 16.6 KB (budget 16.7). The
+  main entry is unchanged at 11.5 KB, `frames` at 4.0.
+
+### Tests
+
+- `scrollFramesWrappers.test.ts` (26) and the no-DOM `ssr` suite (one more:
+  `<ScrollFrames>` renders to a string in React and Vue): 27 unit tests, 918 in
+  all across 42 suites. `e2e/frames-wrappers.spec.ts`, 4 browser tests for each
+  component (8 per engine, 324 in all), on the built files in Chromium, Firefox
+  and WebKit: the pinned pattern painting the frame the scroll calls for, an
+  equal re-render keeping the film and calling the latest callback, other URLs
+  starting a new film, and unmounting stopping it. Five mutations, each caught
+  by the test named for it (149 in all).
+
 ## [2.24.0] — 2026-11-13
 
 ### Added

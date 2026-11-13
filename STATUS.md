@@ -1,8 +1,8 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **2.24.0** staged on `feat/scroll-frames` (not tagged); npm `latest` is **2.23.7** (`v2.23.7` on `751cf7d`)
-> Tests: **916 unit** across 41 suites · **324 browser tests** per engine (948 runs
-> across Chromium/Firefox/WebKit) · **144 mutations**, each caught by the one test
+> Current version: **2.25.0** staged on `feat/frames-wrappers-bench` (not tagged); npm `latest` is **2.24.0** (`v2.24.0` on `b43237b`)
+> Tests: **918 unit** across 42 suites · **324 browser tests** per engine (972 runs
+> across Chromium/Firefox/WebKit) · **149 mutations**, each caught by the one test
 > named for it · **91.5% line coverage** (gate 90/90/82/82)
 > Bundle: **11.5 KB gzipped** (main entry as shipped files, chunks included; per-API entries from 0.2 KB) · zero runtime dependencies
 > Last updated: 2026-11-13
@@ -16,7 +16,7 @@
 - [x] `src/animate/` — `scrollAnimate`, `scrollParallax`, value interpolation
 - [x] `src/counter/` — `scrollCounter`
 - [x] `src/video/` — `scrollVideo`
-- [x] `src/frames/` — `scrollFrames` (2.24.0)
+- [x] `src/frames/` — `scrollFrames` (2.24.0); `<ScrollFrames>` in React and Vue, `useScrollFrames` in Vue (2.25.0)
 - [x] `src/text/` — `scrollText`
 - [x] `src/devtools/` — visual overlay (dev-only)
 - [x] `src/react/` `src/vue/` `src/svelte/` `src/solid/` `src/angular/` `src/astro/` `src/nuxt/` `src/web-component/`
@@ -50,7 +50,7 @@
 - [x] `scrollAnimateGroup` + `scrollAnimateSequence` + `scrollParallaxGroup` in `svg-scroll-draw/group`
 
 ### Testing
-- [x] 916 tests across 41 suites — `motionLive` (reduced motion turned on mid-visit, every engine and the React hook), `reactive` (the wrappers' option fingerprint and live callbacks), `directives` (the built files' "use client"), `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollFrames` (47), `scrollText` (23)
+- [x] 918 tests across 42 suites — `motionLive` (reduced motion turned on mid-visit, every engine and the React hook), `reactive` (the wrappers' option fingerprint and live callbacks), `directives` (the built files' "use client"), `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollFrames` (47), `scrollFramesWrappers` (26), `scrollText` (23)
 - [x] Initial state fix — `createAnimateEngine` and `scrollCounter` now apply correct alpha immediately on init (no flash before IO fires)
 
 ### Browser tests (Phase 2, `packages/svg-scroll-draw/e2e`)
@@ -76,8 +76,9 @@ numbers).
 - [x] `cinematic` — the whole structure built from a story (400vh mount, sticky stage, canvas viewBox, stroke widths, pre-measured vs self-measured path lengths), per-animation scene windows, fade curve, first paint mid-story, a story shorter than the viewport, reduced motion, destroy leaves the built DOM
 - [x] `motion-live` — reduced motion turned on after load (`emulateMedia`): a part-drawn drawing, a drawing, reveal cards, split text, a counter and parallax all finish without a scroll, each `onComplete` once, the screen-reader copy once; nothing moves afterwards; a `replay()` taken off the instance is ignored; turning it off leaves everything finished. Video and cinematic suites turn it on mid-scrub
 - [x] `frameworks` — all eight wrappers (React, Vue, Solid, Svelte, Angular, Astro, Nuxt, the web component) mounted for real and held to one contract: the engine runs, unmounting leaks no observer and no frame loop, re-mounting works, and option changes reach the engine only where the wrapper claims they do. React/Vue/Solid/Nuxt are bundled from `dist/` by `e2e/build-fixtures.mjs`
+- [x] `frames-wrappers` — React and Vue `<ScrollFrames>` from `dist/`: the pinned pattern (sticky stage, the track as `triggerElement`) painting the frame the scroll calls for, an equal re-render keeping the film and calling the latest callback, other URLs starting a new film, unmounting stopping it
 - [x] `cdn` — both CDN builds loaded from a plain `<script src>`: the production one exposes the API, registers `<scroll-draw>` and says nothing; the dev one reports the same mistakes the production build hides, and does not mistake a stroke set from CSS for a missing one
-- [x] `scripts/mutation-check.mjs` — 135 one-line source mutations, each required to fail the single test named for it; `--anchors` checks in a second that every one still applies (verify and CI)
+- [x] `scripts/mutation-check.mjs` — 149 one-line source mutations, each required to fail the single test named for it; `--anchors` checks in a second that every one still applies (verify and CI)
 - [x] `scripts/make-fixture-video.mjs` — reproducible 4s scrub clip, no system tooling needed
 
 ### Browser tests still missing
@@ -137,12 +138,13 @@ at all.
 
 ## Remaining / Next
 
-### scrollFrames, its generator and the Groundtrack site (2026-11-13; branch `feat/scroll-frames`)
+### scrollFrames, its generator and the Groundtrack site (2026-11-13; branches `feat/scroll-frames`, `feat/frames-wrappers-bench`)
 
 - [x] 2.24.0: `svg-scroll-draw/frames` — `scrollFrames` scrubs an image sequence on a canvas: coarse-to-fine loading (first, last, then midpoints, 6 at a time), the nearest loaded frame until the right one arrives, a redraw only when the frame changes, DPR-sized buffer (capped at 2), cover/contain, `triggerElement` for a pinned stage, reduced motion loads and shows only the last frame; independently reviewed (attribute-sized canvas held, inert after destroy, throwing callbacks and frames function isolated); 4.0 KB gzipped, budget 4.1 — unit tests +47, browser tests per engine +19, mutations +9
 - [x] `/scroll-image-sequence-generator` (26 tools): demo sequence, your own frames, or frames extracted from a video and downloaded as a zip; preview and code; its Run it page in `test:tools`
 - [x] `/examples/scroll-frames` recipe (24 examples, run in `test-recipes`) and the Groundtrack showcase (`/showcase/groundtrack`) on NASA's public-domain Landsat 8 frames (71 WebP, credit on every page and in `public/frames/landsat/README.md`)
-- [ ] Framework wrappers for scrollFrames (React `<ScrollFrames>` / Vue / Svelte), if anyone asks; today the docs show an effect returning `destroy`
+- [x] 2.25.0: `<ScrollFrames>` in `svg-scroll-draw/react` and `/vue` (Nuxt re-exports it; Vue also `useScrollFrames`): `role="img"` by default, a dev warning without an `aria-label`, re-created only when the URLs or options change (a `frames` function compared by the URLs it gives), live callbacks, `triggerElement` as a ref (React) or selector (Vue) read when the film starts; reviewed (a frames function replaced by a list of the same URLs keeps a working film); the generator's React tab writes it; react/vue/nuxt 14.9/15.1/15.2 KB gzipped (+2.1, budgets raised in `scripts/size.mjs`) — unit tests +27, browser tests per engine +8, mutations +5
+- [ ] scrollFrames wrappers for Svelte, Solid and Angular, if anyone asks
 - [x] `/blog/scroll-image-sequence-animation`: canvas vs video, extracting frames, a hand-written version and `scrollFrames`, the frame budget, reduced motion; leads into the generator, the example and Groundtrack
 - [ ] Request indexing for `/scroll-image-sequence-generator`, `/examples/scroll-frames` and `/showcase/groundtrack`; Search Console review in 2–3 weeks
 

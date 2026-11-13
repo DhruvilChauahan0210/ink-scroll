@@ -55,6 +55,16 @@ const KINDS: { k: Kind; label: string }[] = [
  */
 const RELEASES: Release[] = [
   {
+    version: '2.25.0',
+    title: '<ScrollFrames> for React and Vue',
+    date: '2026-11-13',
+    items: [
+      { type: 'new', text: '<ScrollFrames> in svg-scroll-draw/react and svg-scroll-draw/vue (Nuxt re-exports it, and Vue has useScrollFrames): it renders the canvas with role="img", takes every scrollFrames option as a prop, and stops the film when it unmounts. In development it warns when the canvas has no aria-label. A frames function is compared by the URLs it gives, so an inline one keeps the film through a re-render; it is re-created only when the URLs or the options change, and its callbacks are always the latest. triggerElement takes a ref in React (read when the film starts) and a selector in Vue. The scroll image sequence generator’s React tab writes the component.' },
+      { type: 'fix', text: 'Before release, from review: a frames function replaced by a list of the same URLs keeps a working film instead of throwing.' },
+      { type: 'test', text: '27 unit tests, 8 browser tests per engine and five mutations, each caught.' },
+    ],
+  },
+  {
     version: '2.24.0',
     title: 'scrollFrames: an image sequence scrubbed on a canvas',
     date: '2026-11-13',

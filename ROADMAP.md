@@ -1,6 +1,6 @@
 # svg-scroll-draw — Roadmap
 
-> Last updated: 2026-11-13 — 2.24.0 prepared (scrollFrames, the image sequence generator and the Groundtrack example)
+> Last updated: 2026-11-13 — 2.25.0 prepared (`<ScrollFrames>` for React and Vue)
 >
 > Items marked ✓ are shipped. Remaining items are ordered by value/effort ratio.
 
@@ -60,6 +60,7 @@
 - [x] `scrollFrames` — an image sequence scrubbed on a `<canvas>` (coarse-to-fine loading, nearest frame, cover/contain, DPR buffer), ships as `svg-scroll-draw/frames` (2.24.0)
 - [x] `scrollText` — text split + reveal animation on scroll, ships as `svg-scroll-draw/text`
 - [x] `ScrollVideo` + `ScrollText` React wrappers
+- [x] `<ScrollFrames>` for React and Vue (Nuxt re-exports it; Vue `useScrollFrames`) (2.25.0)
 
 ### v2 APIs (Phase 3 — v2.2.0)
 - [x] Visual DevTools overlay — `svg-scroll-draw/devtools`, progress panel + trigger lines, dev-only
@@ -113,7 +114,8 @@
 - ~~More tools~~ — `/tools` and 19 new tools (22 in all), 2026-11-11; the tool kit in every tool and three more (SVG path editor for "svg path editor", 316 Bing searches; typewriter; scroll video scrub), 2026-11-12: 25 in all.
 - ~~The IntersectionObserver gate in scrollDraw, scrollCounter, scrollText, scrollVideo and useScrollDrawProgress~~ — 2.23.5 (shared core/frame-gate); Cinematic in 2.23.7.
 - ~~Scroll image sequence (Apple-style frames on a canvas)~~ — `scrollFrames` in 2.24.0, with `/scroll-image-sequence-generator` (26 tools), the `/examples/scroll-frames` recipe and the Groundtrack showcase on NASA's public-domain Landsat 8 frames, and the post `/blog/scroll-image-sequence-animation`, 2026-11-13.
-- scrollFrames next: framework wrappers (React `<ScrollFrames>`, Vue, Svelte) once someone asks; request indexing for the generator, the recipe and the showcase, and review them in Search Console after 2–3 weeks.
+- ~~scrollFrames framework wrappers for React and Vue~~ — `<ScrollFrames>` in 2.25.0 (Nuxt re-exports it), and the generator's React tab writes it, 2026-11-13.
+- scrollFrames next: wrappers for Svelte, Solid and Angular once someone asks; request indexing for the generator, the recipe and the showcase, and review them in Search Console after 2–3 weeks.
 - Measure the tools before building more: `npm run report:numbers` weekly, Search Console per page after 2–3 weeks; improve the ones with impressions and few clicks.
 - GitHub Sponsors: the owner sets up the profile; the footer link and FUNDING.yml are on the branch. Ads: not at this traffic (see the 2026-11-11 discussion: about $1–5 a month, a consent banner, Vercel Hobby is non-commercial); revisit a single developer ad network (Carbon, EthicalAds) past ~10k views a month on a custom domain.
 - ~~Awesome-list PRs~~ — nine opened 2026-11-11 (see STATUS); follow up on review comments.
