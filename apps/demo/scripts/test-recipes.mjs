@@ -70,8 +70,14 @@ async function open(browser, html, { reducedMotion = 'no-preference', width = 12
  * file would make a scrubbing recipe look broken when it is not.
  */
 const MEDIA = { 'film.webm': resolve(here, '../public/showcase/aural-fdc4222c.webm') };
+/** The image-sequence recipe's stills, served as `frames/` beside its file. */
+const FRAMES = resolve(here, '../public/frames/landsat');
 const server = http.createServer((req, res) => {
-  const [, slug, file] = new URL(req.url, 'http://x').pathname.split('/');
+  const [, slug, file, still] = new URL(req.url, 'http://x').pathname.split('/');
+  if (file === 'frames' && /^frame_\d{4}\.webp$/.test(still ?? '') && existsSync(resolve(FRAMES, still))) {
+    res.writeHead(200, { 'content-type': 'image/webp' });
+    return res.end(readFileSync(resolve(FRAMES, still)));
+  }
   if (file in MEDIA) {
     const buf = readFileSync(MEDIA[file]);
     const m = /bytes=(\d+)-(\d*)/.exec(req.headers.range || '');
@@ -345,6 +351,103 @@ const browser = await chromium.launch();
   await phone.page.close();
 }
 
+// ── scroll-frames (the pinned image sequence) ────────────────────────────────
+{
+  const name = 'scroll-frames/index.html';
+  const url = `${origin}/scroll-frames/index.html`;
+
+  /** The counter, the current chapter, the stage's top, and a coarse fingerprint of the canvas. */
+  const read = (page) =>
+    page.evaluate(() => {
+      const c = document.getElementById('turn');
+      const g = c.getContext('2d');
+      const d = g.getImageData(0, 0, c.width, c.height).data;
+      let lit = 0, sum = 0;
+      for (let i = 0; i < d.length; i += 4 * 97) {
+        const v = d[i] + d[i + 1] + d[i + 2];
+        if (v > 30) lit++;
+        sum = (sum * 31 + v) % 1000000007;
+      }
+      const items = [...document.querySelectorAll('.turn-copy li')];
+      return {
+        n: document.getElementById('n').textContent,
+        lit,
+        sum,
+        top: Math.round(c.getBoundingClientRect().top),
+        current: items.findIndex((li) => li.getAttribute('aria-current') === 'step'),
+        shown: items.filter((li) => getComputedStyle(li).display !== 'none').length,
+      };
+    });
+  const toProgress = async (page, p) => {
+    await page.evaluate((p) => {
+      const t = document.getElementById('track');
+      const top = t.getBoundingClientRect().top + scrollY;
+      scrollTo(0, top + p * (t.offsetHeight - innerHeight));
+    }, p);
+    await page.waitForTimeout(250);
+  };
+  /** Every frame in, so the canvas shows the one the scroll calls for and not a neighbour. */
+  const loaded = (page, n) => page.waitForFunction((n) => performance.getEntriesByType('resource').filter((e) => e.name.includes('/frames/frame_')).length >= n, n, { timeout: 10000 });
+  const stills = (page) => page.evaluate(() => performance.getEntriesByType('resource').filter((e) => e.name.includes('/frames/frame_')).map((e) => e.name.split('/').pop()));
+
+  const { page, errors } = await open(browser, null, { url });
+  await loaded(page, 71);
+  const seen = new Set();
+  let s;
+  await toProgress(page, 0);
+  s = await read(page);
+  check(s.n === '01 / 71' && s.current === 0 && s.lit > 0, `${name}: not on frame 1 at the start (${JSON.stringify(s)})`);
+  seen.add(s.sum);
+  const top0 = s.top;
+  for (const p of [0.2, 0.45, 0.6, 0.8]) {
+    await toProgress(page, p);
+    s = await read(page);
+    seen.add(s.sum);
+    const want = String(Math.round(p * 70) + 1).padStart(2, '0');
+    check(s.n === `${want} / 71`, `${name}: at ${p} the counter reads ${s.n}, not ${want} / 71`);
+    check(Math.abs(s.top - top0) <= 1, `${name}: the stage is not stuck at ${p} (${top0}px → ${s.top}px)`);
+  }
+  check(s.current === 2, `${name}: chapter 3 not shown at 0.8 (${s.current})`);
+  await toProgress(page, 0.5);
+  check((await read(page)).current === 1, `${name}: chapter 2 not shown at 0.5`);
+
+  // A resize mid-pin must re-measure the track, not the stuck canvas.
+  await page.setViewportSize({ width: 1240, height: 800 });
+  await page.waitForTimeout(300);
+  await toProgress(page, 1);
+  s = await read(page);
+  seen.add(s.sum);
+  check(s.n === '71 / 71' && s.current === 2, `${name}: not on the last frame at the end of the track (${s.n}, chapter ${s.current})`);
+  check(seen.size >= 5, `${name}: the canvas showed ${seen.size} different pictures over 6 scroll positions`);
+  check((await stills(page)).length === 71, `${name}: ${(await stills(page)).length} stills requested, not 71`);
+  check(errors.length === 0, `${name}: page errors: ${errors.join(' | ')}`);
+  await page.close();
+
+  // Reduced motion: the last frame only, one request, and every chapter readable.
+  const rm = await open(browser, null, { url, reducedMotion: 'reduce' });
+  await loaded(rm.page, 1);
+  await toProgress(rm.page, 0.2);
+  await rm.page.waitForTimeout(300);
+  s = await read(rm.page);
+  const asked = await stills(rm.page);
+  check(asked.length === 1 && asked[0] === 'frame_0071.webp', `${name}: reduced motion requested ${asked.join(', ')}`);
+  check(s.n === '71 / 71' && s.lit > 0, `${name}: reduced motion did not show the last frame (${s.n})`);
+  check(s.shown === 3, `${name}: under reduced motion ${s.shown} of 3 chapters are readable`);
+  await rm.page.close();
+
+  // A phone: one screen, one chapter, nothing wider than the screen.
+  const phone = await open(browser, null, { url, width: 375, height: 812 });
+  await toProgress(phone.page, 0.5);
+  const fit = await phone.page.evaluate(() => {
+    const stage = document.querySelector('.turn-stage').getBoundingClientRect();
+    const shown = [...document.querySelectorAll('.turn-copy li')].filter((li) => getComputedStyle(li).display !== 'none').length;
+    const last = document.querySelector('.turn-copy li[aria-current]').getBoundingClientRect().bottom;
+    return { h: stage.height, vh: innerHeight, shown, fits: last <= innerHeight, over: document.documentElement.scrollWidth - innerWidth };
+  });
+  check(fit.h <= fit.vh + 1 && fit.shown === 1 && fit.fits && fit.over === 0, `${name}: phone layout off (${JSON.stringify(fit)})`);
+  await phone.page.close();
+}
+
 // ── horizontal-scroll-sections (the case-study strip) ────────────────────────
 {
   const name = 'horizontal-scroll-sections/index.html';
@@ -472,4 +575,4 @@ if (failures.length) {
   console.error(`✗ ${failures.length} recipe check(s) failed:\n` + failures.map((f) => `  ${f}`).join('\n'));
   process.exit(1);
 }
-console.log('✓ every recipe file works in a browser (logo-reveal, scroll-pin, scroll-counter, scroll-video, horizontal-scroll-sections)');
+console.log('✓ every recipe file works in a browser (logo-reveal, scroll-pin, scroll-counter, scroll-video, scroll-frames, horizontal-scroll-sections)');

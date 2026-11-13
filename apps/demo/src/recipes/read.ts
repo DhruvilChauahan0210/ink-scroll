@@ -18,6 +18,7 @@ const FILES: Record<RecipeSlug | PostRecipeSlug, { react: string[]; html: string
   'scroll-pin': { react: ['FeatureTour.tsx', 'feature-tour.css'], html: 'index.html' },
   'scroll-counter': { react: ['StatRow.tsx', 'stat-row.css'], html: 'index.html' },
   'scroll-video': { react: ['FilmScrub.tsx', 'film-scrub.css'], html: 'index.html' },
+  'scroll-frames': { react: ['SatelliteTurn.tsx', 'satellite-turn.css'], html: 'index.html' },
   'horizontal-scroll-sections': { react: ['CaseStrip.tsx', 'case-strip.css'], html: 'index.html' },
 };
 

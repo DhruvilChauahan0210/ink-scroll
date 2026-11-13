@@ -1,0 +1,163 @@
+/* Groundtrack — black as the frames' own background, so the canvas has no
+   edge; gold-foil accent, cool greys. */
+
+html:has(.gt) body { background: #000; }
+.gt {
+  --bg: #000; --bg-2: #0b0c0e; --fg: #eef0f2; --mut: #8f959c; --line: #1c1e22; --card: #0b0c0e;
+  --accent: #e0b65a; --accent-fg: #1a1406; --radius: 16px;
+}
+.gt .sk-brand { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; }
+.gt-mark {
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 1.5px solid var(--accent);
+  background: radial-gradient(circle at 50% 50%, var(--accent) 0 3px, transparent 3.5px);
+}
+.gt .sk-btn { border-radius: 999px; }
+.gt .sk-btn-ghost { border-color: #2c2f34; }
+.gt .sk-kick { font-weight: 500; letter-spacing: 0; }
+.gt .sk-h1 { font-weight: 500; letter-spacing: -0.035em; }
+.gt .sk-h2 { font-weight: 500; letter-spacing: -0.03em; }
+
+
+/* ── The exhibit: hero and turntable on one sticky stage ──────────────────
+   The wrapper starts under the sticky nav (pulled up by its height), so its
+   top is the top of the page and the turn starts at the first pixel of
+   scroll. The stage is one screen; the wrapper's other 400svh are the scroll
+   it stays stuck for.
+
+   The canvas's own box is its final one: the whole screen (fit 'cover'), or
+   on a portrait screen a 16:9 band across the top, under the nav. In the hero
+   a transform shrinks it into .gt-slot, beside the headline; over the first
+   screen of scroll the transform runs out and the satellite grows to fill the
+   screen. --t (the travel), --b (the parts) and --q (the exhibit) come from
+   onProgress; --dx, --dy and --s from a measure on resize. */
+.gt { --nav: 69px; }
+.gt .sk-nav { background: rgba(0, 0, 0, 0.55); border-bottom-color: rgba(255, 255, 255, 0.08); -webkit-backdrop-filter: blur(14px) saturate(1.2); backdrop-filter: blur(14px) saturate(1.2); }
+.gt-show { position: relative; height: 500vh; height: 500svh; margin-top: calc(-1 * var(--nav)); }
+.gt-stage {
+  --t: 0; --b: 0; --q: 0; --dx: 0px; --dy: 0px; --s: 1;
+  position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden;
+  padding: var(--nav) var(--pad) 0;
+}
+
+.gt-hero {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr); align-items: center;
+  gap: clamp(32px, 5vw, 80px); height: calc(100% - 120px); max-width: 1600px; margin: 0 auto;
+}
+.gt-copy { position: relative; z-index: 2; min-width: 0; opacity: calc(1 - var(--t) * 2.2); transform: translateY(calc(var(--t) * -96px)); }
+.is-away .gt-copy { pointer-events: none; }
+/* Where the satellite sits in the hero: an empty 16:9 box, measured. */
+.gt-slot { min-width: 0; aspect-ratio: 16 / 9; }
+
+/* The canvas, in its final box: the whole stage. Positioned against the
+   stage (the hero grid is not positioned), so it takes no grid cell. */
+.gt-sat {
+  position: absolute; inset: 0; z-index: 1; margin: 0;
+  transform-origin: 50% 50%; will-change: transform;
+  transform: translate(calc(var(--dx) * (1 - var(--t))), calc(var(--dy) * (1 - var(--t)))) scale(calc(var(--s) + (1 - var(--s)) * var(--t)));
+  /* The frames' black is the page's black: blended, the box has no edge to
+     cut across the headline while the two overlap. */
+  mix-blend-mode: lighten;
+}
+/* Size the canvas with CSS: scrollFrames sets its drawing buffer to this box. */
+.gt-sat canvas { display: block; width: 100%; height: 100%; opacity: 0; transition: opacity 0.6s; }
+.is-ready .gt-sat canvas { opacity: 1; }
+
+/* The parts and the credit, over the foot of the picture on a dark fade. */
+.gt-band {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 3;
+  padding: 96px max(var(--pad), calc((100% - 1600px) / 2)) 72px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.92) 0, rgba(0, 0, 0, 0.78) 55%, transparent);
+}
+.gt-parts-wrap { opacity: var(--b); transform: translateY(calc((1 - var(--b)) * 16px)); }
+.gt-parts-wrap .sk-kick { margin: 0 0 12px; }
+.gt-parts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; margin: 0; padding: 0; list-style: none; }
+.gt-parts li { display: grid; grid-template-columns: 24px minmax(0, 1fr); column-gap: 12px; align-content: start; }
+.gt-parts i {
+  grid-row: span 2; display: grid; place-items: center; width: 22px; height: 22px; margin-top: 1px; border-radius: 50%;
+  border: 1px solid #3a3d42; color: var(--mut); font: 600 11.5px/1 var(--body); font-style: normal; font-variant-numeric: tabular-nums;
+  transition: background-color 0.35s, color 0.35s, border-color 0.35s;
+}
+.gt-parts li.is-on i { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
+.gt-parts b { font-size: 14.5px; font-weight: 600; color: var(--mut); transition: color 0.35s; }
+.gt-parts li.is-on b { color: var(--fg); }
+.gt-parts span { font-size: 13px; line-height: 1.45; color: var(--mut); }
+
+.gt-rail { position: relative; height: 1px; margin: 16px 0 12px; background: rgba(255, 255, 255, 0.12); }
+.gt-rail-fill { position: absolute; inset: 0; background: var(--accent); transform-origin: left; transform: scaleX(var(--q)); }
+
+.gt-cap { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+.gt-credit, .gt-foot-credit { margin: 0; font-size: 12px; line-height: 1.5; color: var(--mut); }
+.gt .gt-credit a, .gt .gt-foot-credit a { text-decoration: underline; text-underline-offset: 2px; }
+.gt .gt-credit a:hover, .gt .gt-foot-credit a:hover { color: var(--fg); }
+.gt-count { flex: none; font: 500 12px/1.5 var(--font-geist-mono), ui-monospace, monospace; color: var(--accent); font-variant-numeric: tabular-nums; }
+
+/* A portrait screen: 'cover' on the whole screen would cut off both ends of
+   the satellite, so its final box is a 16:9 band across the top, under the
+   nav, with the parts below it. Some of NASA's frames (24–37) crop the solar
+   array at the top edge of the picture, and here that edge is not the
+   screen's: fade it into the black so it ends softly, not in a hard line. */
+@media (max-aspect-ratio: 5 / 4) {
+  .gt-sat { inset: var(--nav) 0 auto; aspect-ratio: 16 / 9; }
+  .gt-sat canvas {
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, rgba(0, 0, 0, 0.6) 5%, #000 12%);
+    mask-image: linear-gradient(to bottom, transparent 0, rgba(0, 0, 0, 0.6) 5%, #000 12%);
+  }
+  .gt-band { top: calc(var(--nav) + 56.25vw + 8px); bottom: auto; padding-top: 16px; padding-bottom: 24px; background: none; }
+}
+
+/* ── The mission, in numbers ─────────────────────────────────────────────── */
+.gt-specs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: var(--line); }
+.gt-spec { display: grid; align-content: start; gap: 8px; padding: clamp(22px, 2.6vw, 36px); background: var(--bg); }
+.gt-spec span { font-size: 12.5px; font-weight: 500; color: var(--mut); }
+.gt-spec b { font: 400 clamp(36px, 3.6vw, 52px)/1 var(--head); letter-spacing: -0.03em; color: var(--accent); }
+.gt-spec p { margin: 4px 0 0; max-width: 34ch; font-size: 15px; line-height: 1.6; color: var(--mut); }
+
+/* ── Visit ───────────────────────────────────────────────────────────────── */
+.gt-visit { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 32px; align-items: end; }
+.gt-visit dl { display: grid; gap: 0; margin: 0; }
+.gt-visit dl > div { display: grid; grid-template-columns: minmax(120px, 200px) minmax(0, 1fr); gap: 16px; padding: 16px 0; border-top: 1px solid var(--line); }
+.gt-visit dt { font-size: 13px; font-weight: 500; color: var(--mut); }
+.gt-visit dd { margin: 0; font-size: 16px; }
+
+.gt .sk-foot { align-items: flex-start; }
+.gt-foot-credit { flex: 1 1 320px; max-width: 72ch; }
+
+@media (max-width: 900px) {
+  /* one column: the headline, then the satellite under it, a little smaller
+     than the screen is wide so it has room to grow on the way to the middle */
+  .gt-hero { grid-template-columns: minmax(0, 1fr); align-content: start; gap: 20px; padding-top: 28px; }
+  .gt-slot { width: 78%; justify-self: center; }
+  .gt .sk-h1 { font-size: clamp(36px, 10vw, 56px); }
+  .gt .sk-lede { margin-top: 14px; font-size: 15.5px; }
+  .gt .sk-ctas { margin-top: 20px; }
+  .gt-parts { grid-template-columns: minmax(0, 1fr); min-height: 60px; }
+  .gt-parts li { grid-area: 1 / 1; opacity: 0; transform: translateY(6px); transition: opacity 0.3s, transform 0.3s; }
+  .gt-parts li.is-new { opacity: 1; transform: none; }
+  .gt-specs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .gt-visit { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 560px) {
+  .gt-specs { grid-template-columns: minmax(0, 1fr); }
+  .gt-visit dl > div { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+  .gt-cap { flex-direction: column-reverse; gap: 2px; }
+  .gt-credit { font-size: 11px; }
+}
+
+/* Reduced motion: scrollFrames loads and shows the last frame only, so there
+   is no turn and no travel: the hero as laid out, every part listed under it. */
+@media (prefers-reduced-motion: reduce) {
+  .gt-show { height: auto; }
+  .gt-stage { position: relative; height: auto; overflow: visible; padding-bottom: 48px; }
+  .gt-hero { height: auto; padding-block: 48px; }
+  .gt-copy { opacity: 1; transform: none; }
+  .gt-slot { display: none; }
+  .gt-sat { position: static; inset: auto; transform: none; aspect-ratio: 16 / 9; mix-blend-mode: normal; }
+  .gt-sat canvas { transition: none; -webkit-mask-image: none; mask-image: none; }
+  .gt-band { position: static; padding: 0; background: none; }
+  .gt-parts-wrap { opacity: 1; transform: none; margin-bottom: 24px; }
+  .gt-parts li, .gt-parts li.is-new { grid-area: auto; opacity: 1; transform: none; transition: none; }
+  .gt-parts li i { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
+  .gt-parts b { color: var(--fg); }
+  .gt-rail { display: none; }
+}

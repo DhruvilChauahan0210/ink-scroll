@@ -33,7 +33,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${SITE_URL}/examples`,
-      lastModified: new Date("2026-11-07"),
+      lastModified: new Date("2026-11-13"),
       changeFrequency: "monthly",
       priority: 0.8,
     },

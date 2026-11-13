@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Scroll image sequence: a satellite turning</title>
+  <style>
+    body { margin: 0; background: #000; }
+    .spacer { height: 100vh; }
+
+    /* The track holds the scroll room: the stage stays stuck for its height minus
+       one screen, and the turn runs exactly that long. The frames are on black, so
+       the stage is too, and `fit: 'contain'` letterboxes into it without a seam. */
+    .turn-track {
+      --ink: #ece8e1;
+      --paper: #000;
+      --accent: #d0a15c;
+      --dim: #8a8782;
+      position: relative;
+      height: 400vh;
+      background: var(--paper);
+      color: var(--ink);
+    }
+
+    .turn-stage {
+      position: sticky;
+      top: 0;
+      box-sizing: border-box;
+      display: grid;
+      grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+      align-items: center;
+      gap: 48px;
+      height: 100vh;
+      height: 100svh;
+      padding: 0 6vw;
+    }
+
+    .turn-film { min-width: 0; margin: 0; }
+    /* Size the canvas with CSS: scrollFrames sets its drawing buffer to this box. */
+    .turn-film canvas { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; }
+    /* Some of NASA's frames (24–37) crop the solar array at the top edge of the
+       picture: fade the canvas's top edge into the black so it ends softly, not
+       in a hard line. Frames that stop short of the edge lose next to nothing. */
+    .turn-film canvas {
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0, rgba(0, 0, 0, 0.6) 5%, #000 12%);
+      mask-image: linear-gradient(to bottom, transparent 0, rgba(0, 0, 0, 0.6) 5%, #000 12%);
+    }
+
+    .turn-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-top: 12px;
+      font: 400 11px/1.5 ui-monospace, monospace;
+      color: var(--dim);
+    }
+    .turn-meta a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+    .turn-meta a:hover { color: var(--ink); }
+    .turn-n { flex: none; color: var(--accent); font-variant-numeric: tabular-nums; }
+
+    .turn-copy { display: grid; gap: 28px; margin: 0; padding: 0; list-style: none; }
+    /* Not the current chapter: greyed by colour, not opacity, so it keeps WCAG AA
+       (#8a8782 is 5.9:1 on black, the dimmed gold 5.2:1). */
+    .turn-copy li { color: var(--dim); transition: color 0.3s ease; }
+    .turn-copy li[aria-current] { color: var(--ink); }
+    .turn-copy li:not([aria-current]) .turn-k { color: #9b7947; }
+    .turn-k { font: 600 12px/1 ui-monospace, monospace; color: var(--accent); }
+    .turn-copy h3 { margin: 8px 0 8px; font: 600 24px/1.2 system-ui, sans-serif; }
+    .turn-copy p { max-width: 34ch; margin: 0; font: 400 16px/1.6 system-ui, sans-serif; }
+
+    /* On a phone the stage still has to fit one screen: one chapter at a time. */
+    @media (max-width: 720px) {
+      .turn-stage { grid-template-columns: minmax(0, 1fr); align-content: center; gap: 20px; padding: 0 16px; }
+      .turn-copy li:not([aria-current]) { display: none; }
+      .turn-copy h3 { font-size: 20px; }
+    }
+
+    /* Reduced motion shows the last frame only, so the chapters cannot be
+       scrolled through: show them all. */
+    @media (prefers-reduced-motion: reduce) {
+      .turn-copy li { color: var(--ink); transition: none; }
+      .turn-copy li:not([aria-current]) .turn-k { color: var(--accent); }
+      .turn-copy li:not([aria-current]) { display: block; }
+    }
+  </style>
+</head>
+<body>
+  <div class="spacer"></div>
+
+  <section class="turn-track" id="track">
+    <div class="turn-stage">
+      <figure class="turn-film">
+        <canvas id="turn" role="img" aria-label="NASA's Landsat 8 satellite turning a full circle on a turntable as you scroll"></canvas>
+        <figcaption class="turn-meta">
+          <span>
+            Landsat 8 (LDCM) model animation: NASA/Goddard Space Flight Center Conceptual Image Lab. Public domain
+            (created by NASA). <a href="https://svs.gsfc.nasa.gov/10812">NASA SVS</a> ·
+            <a href="https://commons.wikimedia.org/wiki/File:LDCM_spacecraft_rotating.webm">Wikimedia Commons</a>
+          </span>
+          <span class="turn-n" id="n" aria-hidden="true">01 / 71</span>
+        </figcaption>
+      </figure>
+      <ol class="turn-copy">
+        <li aria-current="step" data-from="0">
+          <span class="turn-k">01</span>
+          <h3>Landsat 8</h3>
+          <p>Launched in February 2013 to photograph the land, from 705 km up.</p>
+        </li>
+        <li data-from="0.4">
+          <span class="turn-k">02</span>
+          <h3>One wing</h3>
+          <p>A single solar array powers it through each 99-minute orbit.</p>
+        </li>
+        <li data-from="0.72">
+          <span class="turn-k">03</span>
+          <h3>Two instruments</h3>
+          <p>An imager and a thermal sensor look straight down, back over the same ground every 16 days.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <div class="spacer"></div>
+
+  <script type="module">
+    import { scrollFrames } from 'https://cdn.jsdelivr.net/npm/svg-scroll-draw@2.23.7/dist/frames/index.mjs';
+
+    const COUNT = 71;
+    const chapters = [...document.querySelectorAll('.turn-copy li')];
+    const n = document.getElementById('n');
+    let shown = 0;
+
+    // frames/frame_0001.webp … frames/frame_0071.webp, beside this file
+    scrollFrames(document.getElementById('turn'), {
+      frames: (i) => `frames/frame_${String(i + 1).padStart(4, '0')}.webp`,
+      count: COUNT,
+      fit: 'contain',
+      // The stage is sticky, so the canvas's own box moves with the scroll.
+      // Measure the track that holds the scroll room instead.
+      triggerElement: document.getElementById('track'),
+      trigger: { start: 'top top', end: 'bottom bottom' },
+      onProgress: (p, frame) => {
+        n.textContent = `${String(frame + 1).padStart(2, '0')} / ${COUNT}`;
+        const i = chapters.reduce((at, li, j) => (p >= Number(li.dataset.from) ? j : at), 0);
+        if (i === shown) return;
+        chapters[shown].removeAttribute('aria-current');
+        chapters[i].setAttribute('aria-current', 'step');
+        shown = i;
+      },
+    });
+  </script>
+</body>
+</html>

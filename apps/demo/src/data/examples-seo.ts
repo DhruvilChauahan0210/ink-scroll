@@ -1,7 +1,7 @@
 /**
  * Per-example SEO copy for the standalone /examples/<slug> pages.
  *
- * Why this file gates the routes: /examples is one page holding 23 demos, so it
+ * Why this file gates the routes: /examples is one page holding 24 demos, so it
  * can only ever rank for one cluster of queries. Split into individual URLs,
  * each demo targets its own long-tail intent ("animate a logo on scroll react",
  * "svg line chart animation") — which is the single biggest impressions win
@@ -439,8 +439,29 @@ export const EXAMPLE_SEO: Record<string, ExampleSeo> = {
       'scroll driven video playback',
       'frame by frame scroll video',
     ],
-    related: ['scroll-pin', 'scroll-animate'],
+    related: ['scroll-frames', 'scroll-pin', 'scroll-animate'],
     tools: ['scroll-video-scrub-generator', 'scroll-image-sequence-generator'],
+  },
+  'scroll-frames': {
+    slug: 'scroll-frames',
+    title: 'Scroll Image Sequence — Apple-Style Product Turn',
+    description:
+      'Turn a product with the scroll, Apple-style: scrollFrames draws a numbered image sequence on a canvas in a pinned stage. Recipe with 71 real NASA frames.',
+    heading: 'Scroll image sequence (Apple-style product turn)',
+    intro:
+      'The product that turns as you scroll is often not a video at all: it is a folder of numbered stills, painted on a canvas one at a time. A still shows the instant it is picked, in every browser, where a video has to seek and decode. Here 71 frames of NASA’s Landsat 8 model turn a full circle while the stage is pinned, and the captions follow the frame.',
+    keywords: [
+      'scroll image sequence',
+      'apple scroll animation',
+      'image sequence scroll animation',
+      'canvas image sequence scroll',
+      'product turn on scroll',
+      'scrollFrames',
+      'scroll frame animation',
+      '360 product rotation on scroll',
+    ],
+    related: ['scroll-video', 'scroll-pin'],
+    tools: ['scroll-image-sequence-generator', 'scroll-video-scrub-generator'],
   },
 
   // ── Batch 6 · layout APIs & setup ─────────────────────────────────────────

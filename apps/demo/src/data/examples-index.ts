@@ -27,6 +27,7 @@ export const EXAMPLE_IDS = [
   'scroll-animate',
   'scroll-counter',
   'scroll-video',
+  'scroll-frames',
   'scroll-text-lines',
   'scroll-animate-group',
   'scroll-text',

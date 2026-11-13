@@ -1,0 +1,36 @@
+/* The image-sequence card. The frames are on black, so the canvas is too, in
+   both themes, like a screen set into the plate; the labels around it use the
+   site's tokens. */
+
+.site .xf-turn { width: 100%; min-width: 0; margin: 0; display: grid; gap: 10px; }
+.site .xf-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 16px;
+  font: 500 10.5px/1.4 var(--mono);
+  letter-spacing: 0;
+  color: var(--fg-3);
+}
+.site .xf-n { color: var(--fg); font-variant-numeric: tabular-nums; }
+.site .xf-screen { position: relative; background: #000; border: 1px solid var(--line-2); }
+.site .xf-canvas { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; }
+/* Some of NASA's frames (24–37) crop the solar array at the top edge of the
+   picture: a black fade over the top edge lets it end softly, not in a hard
+   line (a mask would fade the black screen into the plate too). Frames that
+   stop short of the edge lose next to nothing. */
+.site .xf-screen::after {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 12%;
+  background: linear-gradient(to bottom, #000, rgba(0, 0, 0, 0.4) 42%, transparent);
+  pointer-events: none;
+}
+.site .xf-credit {
+  font: 400 10.5px/1.5 var(--mono);
+  letter-spacing: 0;
+  color: var(--fg-3);
+}
+.site .xf-credit a { color: var(--fg-2); text-decoration: underline; text-underline-offset: 2px; }
+.site .xf-credit a:hover { color: var(--fg); }

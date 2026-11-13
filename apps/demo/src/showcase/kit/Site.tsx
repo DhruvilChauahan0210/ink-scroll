@@ -17,7 +17,7 @@ export function Site({ className, brand, links, cta, example, apis, footnote, ch
   cta: string;
   example: string;
   apis: string;
-  footnote: string;
+  footnote: ReactNode;
   children: ReactNode;
 }) {
   return (

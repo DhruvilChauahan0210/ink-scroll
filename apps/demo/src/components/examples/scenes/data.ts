@@ -529,4 +529,28 @@ const film = scrollVideo(video, {
 });
 // later: film.destroy();`,
   },
+  'scroll-frames': {
+    label: 'Groundtrack',
+    tag: 'scrollFrames · triggerElement · onProgress',
+    description:
+      "The exhibit page of a satellite exhibition, on one canvas and one scrollFrames instance. 71 stills of the Landsat 8 model start turning beside the headline, travel to the middle of the screen as it scrolls away, and keep turning while the stage is pinned; the same onProgress moves the satellite and lights each part, from the solar array to the X-band antenna.",
+    code: `import { scrollFrames } from 'svg-scroll-draw/frames';
+
+// One instance from the top of the page to the end of the exhibit:
+// the wrapper holds the hero and the pinned stage, 500svh tall.
+const turn = scrollFrames(canvas, {
+  frames: (i) => \`/frames/landsat/frame_\${String(i + 1).padStart(4, '0')}.webp\`,
+  count: 71,
+  fit: 'contain',
+  triggerElement: wrapper,
+  trigger: { start: 'top top', end: 'bottom bottom' },
+  onProgress: (p, frame) => {
+    const t = Math.min(1, p / 0.25);        // the first screen: the travel
+    stage.style.setProperty('--t', t);       // CSS: translate + scale by --t
+    counter.textContent = \`\${frame + 1} / 71\`;
+    PARTS.forEach((part, i) => rows[i].classList.toggle('is-on', inside(part, p)));
+  },
+});
+// later: turn.destroy();`,
+  },
 };

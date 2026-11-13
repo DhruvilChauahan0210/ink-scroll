@@ -36,3 +36,19 @@ export function LiveButton({ site }: { site: Showcase }) {
     </Link>
   );
 }
+
+/** The credit for material on a showcase site that is not this repository's. */
+export function ShowcaseCredit({ site }: { site: Showcase }) {
+  if (!site.credit) return null;
+  return (
+    <p className="sx-credit">
+      {site.credit.text}{' '}
+      {site.credit.links.map((l, i) => (
+        <span key={l.href}>
+          {i > 0 && ' · '}
+          <a href={l.href}>{l.label}</a>
+        </span>
+      ))}
+    </p>
+  );
+}

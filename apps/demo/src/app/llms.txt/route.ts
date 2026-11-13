@@ -53,7 +53,7 @@ Every API is a separate entry point, so you only pay for what you import:
 - \`scrollParallax\` — move an element at a multiple of scroll distance
 - \`scrollCounter\` — animate a number from → to
 - \`scrollVideo\` — bind \`video.currentTime\` to scroll position
-- \`scrollFrames\` (${SELF_ENTRIES.frames} KB, \`svg-scroll-draw/frames\`) — scrub a numbered image sequence on a \`<canvas>\` with the scroll (the Apple product-page film, one still at a time); only the last frame under reduced motion
+- \`scrollFrames\` (${SELF_ENTRIES.frames} KB, \`svg-scroll-draw/frames\`) — scrub a numbered image sequence on a \`<canvas>\` with the scroll (the Apple product-page film, one still at a time); only the last frame under reduced motion. Pinned recipe on real frames: https://svg-scroll-draw.vercel.app/examples/scroll-frames
 - \`scrollText\` (3.5 KB) — split text into chars/words/lines and stagger them
 - \`scrollHorizontal\` — horizontal scroll sections
 - Group / Sequence / Timeline APIs for orchestrating several at once

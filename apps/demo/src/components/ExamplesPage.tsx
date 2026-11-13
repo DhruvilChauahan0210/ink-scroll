@@ -16,9 +16,10 @@ import { ScrollRevealDemo as RevealInk } from './examples/ink/ScrollRevealDemo';
 import { StickyFeaturePanel as PinInk } from './examples/ink/StickyFeaturePanel';
 import { HorizontalSnapCarousel as SnapInk } from './examples/ink/HorizontalSnapCarousel';
 import { VideoScrubDemo as VideoInk } from './examples/ink/VideoScrubDemo';
+import { FramesTurnDemo as FramesInk } from './examples/ink/FramesTurnDemo';
 import { SCENES } from './examples/scenes/data';
 import { SHOWCASE } from '@/showcase';
-import { ShowcaseMedia, LiveButton } from '@/showcase/ShowcaseShot';
+import { ShowcaseMedia, LiveButton, ShowcaseCredit } from '@/showcase/ShowcaseShot';
 import { ChartScene } from './examples/scenes/ChartScene';
 import { LogoRevealScene } from './examples/scenes/LogoRevealScene';
 import { SELF } from '@/data/competitors';
@@ -177,6 +178,15 @@ export const EXAMPLES = [
   },
 
   {
+    id: 'scroll-frames',
+    label: SCENES['scroll-frames'].label,
+    tag: SCENES['scroll-frames'].tag,
+    description: SCENES['scroll-frames'].description,
+    preview: <FramesInk />,
+    code: SCENES['scroll-frames'].code,
+  },
+
+  {
     id: 'scroll-text-lines',
     label: SCENES['scroll-text-lines'].label,
     tag: SCENES['scroll-text-lines'].tag,
@@ -245,6 +255,7 @@ const EXAMPLE_FRAMEWORKS: Record<string, string[]> = {
   'scroll-animate':        ['react', 'vanilla'],
   'scroll-counter':        ['vanilla', 'react'],
   'scroll-video':          ['vanilla', 'react'],
+  'scroll-frames':         ['vanilla', 'react'],
   'scroll-text-lines':     ['vanilla', 'react'],
   'scroll-animate-group':  ['api', 'vanilla'],
   'scroll-text':           ['react', 'vanilla'],
@@ -289,7 +300,7 @@ export function ExamplesPage() {
         </div>
         <div className="ex-head-r">
           <p className="pg-lede">
-            {EXAMPLES.length} production-ready patterns — logo reveals, charts, signatures, video scrub,
+            {EXAMPLES.length} production-ready patterns — logo reveals, charts, signatures, video scrub, image sequences,
             pinned panels, snapping carousels, and the Timeline, Group and Sequence APIs — each with the
             code to paste, in React, Vue 3, Svelte, Solid or vanilla JS. Scroll and they draw.
           </p>
@@ -363,6 +374,7 @@ export function ExamplesPage() {
                   <h2 className="ex-card-t">{ex.label}</h2>
                 )}
                 <p className="ex-card-d">{ex.description}</p>
+                {site && <ShowcaseCredit site={site} />}
                 <details className="ex-code">
                   <summary>
                     <span>code</span>

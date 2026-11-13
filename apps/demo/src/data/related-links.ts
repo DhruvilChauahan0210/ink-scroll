@@ -112,7 +112,7 @@ export const RELATED_BY_POST: Record<string, RelatedLinks> = {
     ],
   },
   'scroll-pin-without-gsap': {
-    examples: ['scroll-pin', 'scroll-video'],
+    examples: ['scroll-pin', 'scroll-video', 'scroll-frames'],
     tools: ['scroll-pin-generator', 'scroll-video-scrub-generator'],
     pages: [
       { href: '/vs-scrollmagic', label: 'vs ScrollMagic', blurb: 'ScrollMagic pins too — but needs GSAP to animate anything.' },

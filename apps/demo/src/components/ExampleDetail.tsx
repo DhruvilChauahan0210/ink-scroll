@@ -9,7 +9,7 @@ import { CopyCommand } from './home/CopyCommand';
 import { EXAMPLE_SEO } from '@/data/examples-seo';
 import { TOOLS } from '@/data/tools';
 import { SHOWCASE } from '@/showcase';
-import { ShowcaseMedia, LiveButton } from '@/showcase/ShowcaseShot';
+import { ShowcaseMedia, LiveButton, ShowcaseCredit } from '@/showcase/ShowcaseShot';
 import { Recipe } from './recipes/Recipe';
 import { RECIPES } from './recipes/recipes';
 import type { RecipeFiles } from '@/recipes/read';
@@ -86,6 +86,7 @@ export function ExampleDetail({ slug, files = null }: { slug: string; files?: Re
                   </div>
                   <LiveButton site={site} />
                 </div>
+                <ShowcaseCredit site={site} />
               </div>
             ) : <Plate n={n} dark={isDark}>{example.preview}</Plate>}
           </div>

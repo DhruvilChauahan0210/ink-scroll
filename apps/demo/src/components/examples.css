@@ -199,6 +199,10 @@
 }
 .site .sx-live:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
 .site .ex-card.is-site .ex-card-foot { padding-top: 20px; }
+/* Credit for material a site shows that is not ours (the Landsat 8 frames). */
+.site .sx-credit { margin: 0; max-width: 72ch; font: 400 10.5px/1.55 var(--mono); letter-spacing: 0; color: var(--fg-3); }
+.site .sx-credit a { color: var(--fg-2); text-decoration: underline; text-underline-offset: 2px; }
+.site .sx-credit a:hover { color: var(--fg); }
 
 /* On an example's own page. */
 .site .sx-detail { display: grid; gap: 16px; }

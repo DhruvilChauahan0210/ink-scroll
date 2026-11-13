@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import Link from 'next/link';
 import type { RecipeSlug } from '@/recipes/slugs';
 import { LogoReveal } from '@/recipes/logo-reveal/LogoReveal';
 import { FeatureTour } from '@/recipes/scroll-pin/FeatureTour';
@@ -8,6 +9,8 @@ import { StatRow } from '@/recipes/scroll-counter/StatRow';
 import { FigFormat, FigReach, FigThreeCopies, FigWidth } from './counter-figures';
 import { FilmScrub } from '@/recipes/scroll-video/FilmScrub';
 import { FigChapters, FigKeyframes, FigMeasure, FigTrack } from './video-figures';
+import { SatelliteTurn } from '@/recipes/scroll-frames/SatelliteTurn';
+import { FigLoadOrder, FigMeasureCanvas, FigTurnChapters, FigTurnTrack } from './frames-figures';
 
 /*
  * A recipe turns an example page into a build: numbered steps with a figure
@@ -670,6 +673,187 @@ const chapterAt = (p) =>
         body: (
           <>
             An ancestor has <C>overflow: hidden</C>, <C>auto</C> or <C>Scroll</C>, and a sticky element sticks
+            inside the nearest one of those, not the page. Remove it, or use <C>overflow: clip</C>, which does
+            not create one.
+          </>
+        ),
+      },
+    ],
+  },
+  'scroll-frames': {
+    updated: '2026-11-13',
+    steps: [
+      {
+        title: 'Export the stills, numbered',
+        file: 'terminal',
+        body: (
+          <>
+            scrollFrames draws one image per frame, so the film becomes a folder of stills with a fixed-width
+            number in each name, and a function builds each URL from its index. The frames start at 1 and the
+            index at 0, hence <C>i + 1</C>. The ones running below are 71 WebP stills, 960×540, 749 KB together.
+            They need not all arrive before the scrub starts: the first frame loads first, then the last, then
+            the middle of every gap, and until the frame the scroll calls for arrives, the nearest loaded one shows.
+          </>
+        ),
+        code: `mkdir frames
+
+# 12 stills for each second of video, 960px wide, numbered from 1:
+# frames/frame_0001.webp, frames/frame_0002.webp …
+ffmpeg -i turntable.mp4 -an -vf "fps=12,scale=960:-2" \\
+  -c:v libwebp -quality 80 frames/frame_%04d.webp`,
+        note: (
+          <>
+            No ffmpeg? The <Link href="/scroll-image-sequence-generator" className="underline underline-offset-2">scroll
+            image sequence generator</Link> turns a video into the same numbered frames in your browser and hands
+            them over as a zip.
+          </>
+        ),
+        caption: 'Which frame loads when',
+        figure: <FigLoadOrder />,
+      },
+      {
+        title: 'Give the scroll room to a track',
+        file: 'satellite-turn.css',
+        body: (
+          <>
+            The stage is <C>position: sticky</C> inside a track four screens tall, so it stays stuck for three
+            screens of scroll, and that stretch is the turn: 71 frames over 300vh, about 4.3vh of scroll each.
+            Size the canvas with CSS; scrollFrames sets its drawing buffer to that box ×{' '}
+            <C>devicePixelRatio</C>, capped at 2.
+          </>
+        ),
+        code: `.turn-track { position: relative; height: 400vh; }
+
+.turn-stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+}
+
+.turn-film canvas { width: 100%; height: auto; aspect-ratio: 16 / 9; }`,
+        caption: 'Track and stage',
+        figure: <FigTurnTrack />,
+      },
+      {
+        title: 'Draw on a canvas, measuring the track',
+        file: 'SatelliteTurn.tsx',
+        body: (
+          <>
+            A canvas in a sticky stage moves with the scroll while it is stuck, so measured on the canvas the
+            window comes out wrong. <C>triggerElement</C> measures the track instead: <C>top top</C> to{' '}
+            <C>bottom bottom</C> is exactly the stretch the stage is stuck. <C>{"fit: 'contain'"}</C> shows
+            the whole frame, letterboxed into the black stage; the default, <C>cover</C>, fills the box and crops.
+            Every option is in <Link href="/docs#scroll-frames" className="underline underline-offset-2">the docs</Link>.
+          </>
+        ),
+        code: `const turn = scrollFrames(canvas.current, {
+  frames: (i) => \`\${base}/frame_\${String(i + 1).padStart(4, '0')}.webp\`,
+  count: 71,
+  fit: 'contain',
+  triggerElement: track.current,
+  trigger: { start: 'top top', end: 'bottom bottom' },
+});
+
+// also stops the frames still loading
+return () => turn.destroy();`,
+        caption: 'Which box sets the window',
+        figure: <FigMeasureCanvas />,
+      },
+      {
+        title: 'Let the frame pick the words',
+        file: 'SatelliteTurn.tsx',
+        body: (
+          <>
+            <C>onProgress</C> reports how far through the turn the reader is, 0 to 1, and the index of the frame
+            that calls for. Give each chapter the point it takes over from and show the last one that has
+            started; the counter under the canvas reads the frame.
+          </>
+        ),
+        code: `const CHAPTERS = [
+  { from: 0,    title: 'Landsat 8', … },
+  { from: 0.4,  title: 'One wing', … },
+  { from: 0.72, title: 'Two instruments', … },
+];
+
+onProgress: (p, i) => {
+  setChapter(chapterAt(p));
+  setFrame(i);
+},`,
+        note: (
+          <>
+            Under reduced motion scrollFrames loads only the last frame and shows it, so the chapters cannot be
+            scrolled through; the CSS shows all of them instead.
+          </>
+        ),
+        caption: 'Chapters on the turn',
+        figure: <FigTurnChapters />,
+      },
+    ],
+    live: <SatelliteTurn />,
+    liveLayout: 'full',
+    filesIntro: (
+      <>
+        Two files, ready to paste into a React or Next.js project with <C>svg-scroll-draw</C> installed and the
+        frames in <C>public/frames/landsat</C>. The turn below them is this exact component, on 71 frames of
+        NASA’s Landsat 8 (LDCM) model animation: NASA/Goddard Space Flight Center Conceptual Image Lab. Public
+        domain (created by NASA). Source:{' '}
+        <a href="https://svs.gsfc.nasa.gov/10812" className="underline underline-offset-2">NASA SVS</a>,{' '}
+        <a href="https://commons.wikimedia.org/wiki/File:LDCM_spacecraft_rotating.webm" className="underline underline-offset-2">Wikimedia Commons</a>.
+      </>
+    ),
+    htmlIntro: (
+      <>
+        The same turn as one HTML file. <C>scrollFrames</C> is not in the script-tag build, so this imports the
+        ES module from a CDN. Serve it with the stills in a <C>frames</C> folder beside it; unlike a video,
+        images need no Range requests.
+      </>
+    ),
+    pitfalls: [
+      {
+        problem: 'The canvas stays empty',
+        body: (
+          <>
+            None of the URLs load. The usual cause is an off-by-one: files numbered from 1 asked for from 0, or
+            four digits asked for three. A console warning names each frame that failed; open one of those URLs
+            and check it is there.
+          </>
+        ),
+      },
+      {
+        problem: 'The turn runs in the wrong stretch, or jumps after a resize',
+        body: (
+          <>
+            It is measuring the canvas, which moves while the stage is stuck, and a phone’s address bar showing
+            or hiding is a resize. Measure the track with <C>triggerElement</C>.
+          </>
+        ),
+      },
+      {
+        problem: 'The tab takes a lot of memory',
+        body: (
+          <>
+            Every frame stays decoded for the life of the instance, at width × height × 4 bytes: these 71 at
+            960×540 hold about 140 MB, from 749 KB of files. Make the frames no larger than the canvas shows
+            them, and use as few as the motion needs.
+          </>
+        ),
+      },
+      {
+        problem: 'The frames look soft, or their edges are cut off',
+        body: (
+          <>
+            Soft: the canvas is wider than the frames, so they are scaled up; its buffer is the box ×{' '}
+            <C>devicePixelRatio</C>, capped at 2. Cut off: the default <C>fit</C> is <C>cover</C>, which crops
+            to fill the box; <C>contain</C> shows the whole frame.
+          </>
+        ),
+      },
+      {
+        problem: 'The stage scrolls away instead of sticking',
+        body: (
+          <>
+            An ancestor has <C>overflow: hidden</C>, <C>auto</C> or <C>scroll</C>, and a sticky element sticks
             inside the nearest one of those, not the page. Remove it, or use <C>overflow: clip</C>, which does
             not create one.
           </>

@@ -184,6 +184,7 @@ export default function ScrollImageSequenceGeneratorPage() {
             <div className="pg-actions">
               <a href="#generator" className="btn btn-solid" data-magnetic>Open the generator ↓</a>
               <a href="#video" className="btn" data-magnetic>Video to frames ↓</a>
+              <Link href="/examples/scroll-frames" className="btn" data-magnetic>The pinned recipe →</Link>
             </div>
             <dl className="pg-facts">
               <div><dt>Options</dt><dd>{OPTIONS.length}</dd></div>
@@ -364,8 +365,9 @@ export default function ScrollImageSequenceGeneratorPage() {
                 ))}
               </div>
               <p className="stk-p stk-more">
-                More with svg-scroll-draw {SELF.version}: <Link href="/docs#scroll-frames">scrollFrames in the
-                docs</Link>, the <Link href="/scroll-video-scrub-generator">scroll video scrub generator</Link> for the
+                More with svg-scroll-draw {SELF.version}: <Link href="/examples/scroll-frames">the pinned image
+                sequence recipe</Link>, on 71 frames of NASA’s Landsat 8, <Link href="/docs#scroll-frames">scrollFrames
+                in the docs</Link>, the <Link href="/scroll-video-scrub-generator">scroll video scrub generator</Link> for the
                 same effect from one video file, and the <Link href="/scroll-pin-generator">scroll pin
                 generator</Link>.
               </p>

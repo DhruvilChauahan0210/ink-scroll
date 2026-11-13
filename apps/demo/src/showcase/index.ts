@@ -12,6 +12,19 @@ export type Showcase = {
   image: string;
   width: number;
   height: number;
+  /** Who made material the site shows that is not this repository's, shown with its card. */
+  credit?: Credit;
+};
+
+export type Credit = { text: string; links: { label: string; href: string }[] };
+
+/** The Landsat 8 turntable frames in public/frames/landsat (see the README there). */
+export const LANDSAT_CREDIT: Credit = {
+  text: 'Landsat 8 (LDCM) model animation: NASA/Goddard Space Flight Center Conceptual Image Lab. Public domain.',
+  links: [
+    { label: 'NASA SVS', href: 'https://svs.gsfc.nasa.gov/10812' },
+    { label: 'Wikimedia Commons', href: 'https://commons.wikimedia.org/wiki/File:LDCM_spacecraft_rotating.webm' },
+  ],
 };
 
 export const SHOWCASE: Record<string, Showcase> = {
@@ -198,5 +211,14 @@ export const SHOWCASE: Record<string, Showcase> = {
     image: '/showcase/aural-fb25d22f.webp',
     width: 1920,
     height: 1200,
+  },
+  'scroll-frames': {
+    slug: 'groundtrack',
+    brand: 'Groundtrack',
+    what: 'An exhibition of Earth-observing satellites',
+    image: '/showcase/groundtrack-7d834c64.webp',
+    width: 1920,
+    height: 1200,
+    credit: LANDSAT_CREDIT,
   },
 };

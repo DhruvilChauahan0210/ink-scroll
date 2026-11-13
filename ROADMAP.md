@@ -85,7 +85,7 @@
 
 ### Demo Site
 - [x] Home page — hero, 15+ demos, API table, framework tabs, bundle comparison, live stats
-- [x] `/examples` — 23 examples with framework filter (All / React / Vue / Svelte / Solid / Vanilla / API)
+- [x] `/examples` — 24 examples with framework filter (All / React / Vue / Svelte / Solid / Vanilla / API)
 - [x] `/docs` — full API reference
 - [x] `/playground` — interactive SVG editor
 - [x] `/changelog` — version history
@@ -125,7 +125,7 @@
 `/blog/page.tsx` exists with post card listing. "Blog" added to all nav instances.
 
 #### ~~More demo examples~~ — ✓ shipped
-23 examples including logo reveal, line chart, signature, flowchart, map route, network diagram, group, sequence, timeline, Vue, Svelte, Solid.
+24 examples including logo reveal, line chart, signature, flowchart, map route, network diagram, group, sequence, timeline, Vue, Svelte, Solid and a scroll image sequence.
 
 #### More blog posts — ongoing
 - [x] "Zero-JS SVG scroll animations with native CSS" — `/blog/native-css-svg-scroll-animations`
@@ -215,7 +215,7 @@ of examining a single API in a real browser.
 - [x] ~~Dev warning for unsupported trigger strings~~ — decided against (2026-11-04). In the parser it moved the main entry 10.7 → 10.8 KB; noted for `/devtools` it still moved scrollReveal 5.0 → 5.1 KB. The docs list the supported forms (`top`/`center`/`bottom` + percentages) instead
 - [ ] Request indexing for the 35 unindexed pages, ~10 a day (sitemap resubmitted 2026-11-04: 64 discovered); re-check Page indexing in ~2 weeks
 - [x] Homepage redesign — every chapter a blueprint-grade drawing of a real use case (fountain-pen hero, gallery, watch, proof sheet, balance, API plates, gauges, circuit board, before/after windows, live GitHub + npm stats, drawing-sheet footer), scoped under `.home`
-- [x] Showcase sites — one real demo site per example (all 23), linked from the examples pages; 19 rebuilt to industry level, Aural (scroll-video) sets the bar with a rendered product film
+- [x] Showcase sites — one real demo site per example (all 24), linked from the examples pages; 19 rebuilt to industry level, Aural (scroll-video) sets the bar with a rendered product film
 - [x] Carry the homepage's look to every page through `SiteShell` — /docs, /examples (+ detail pages), /guides (+ each guide), /blog (+ all 12 posts on one article frame), /blocks, /changelog, /playground, /verify, all seven vs-* pages, the six framework landings and the React / Next.js / Lenis landings; the old ink-bottle mascot is off every page
 - [x] Dead code deleted: the ink-preview `*.codes.ts`, `PlaygroundV2Tab.tsx`, every pre-redesign demo component nothing imported, the old `MobileMenu` / `ThemeToggle`, and the mascot with its CSS — 32 files; the 404 page moved into `SiteShell`
 - [x] StackBlitz "already migrated" starters for each drop-in, linked from the comparison pages and READMEs
