@@ -85,7 +85,7 @@ const FEATURES: MatrixRow[] = [
   { f: 'Works outside React', cells: [true, false], note: 'Framer Motion is React-only' },
   { f: 'Vue / Svelte / Solid wrappers', cells: [true, false] },
   { f: 'Velocity-scaled animation', cells: [true, false] },
-  { f: 'Lenis smooth scroll adapter', cells: [true, 'partial'] },
+  { f: 'Works with Lenis smooth scroll', cells: [true, true] },
   { f: 'MIT license', cells: [true, true] },
   { f: 'Bundle size (gzipped)', cells: [`${SELF.gzipKb} KB`, `${FM.gzipKb} KB`], note: `framer-motion ${FM.version} CJS entry, measured ${MEASURED_ON}. Its single bundle is ${FM.bundleKb} KB; a tree-shaken ESM import can be well under both — Framer Motion’s real cost depends heavily on how much of it you use.` },
 ];

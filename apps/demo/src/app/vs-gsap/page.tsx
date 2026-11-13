@@ -148,7 +148,7 @@ const FEATURES: MatrixRow[] = [
   { f: 'Zero runtime dependencies', cells: [true, true], note: 'GSAP also declares no runtime dependencies — verified from its package.json. The difference is total weight, not dependency count.' },
   { f: 'MIT license (fork / redistribute freely)', cells: [true, 'partial'], note: 'GSAP is free to use, but its standard license restricts redistribution inside a competing product or SDK' },
   { f: 'Visual DevTools overlay', cells: [true, true], note: 'GSAP ships GSDevTools.js in the public tarball (free since 2025). Ours is scroll-specific and dev-only; theirs is a timeline scrubber.' },
-  { f: 'Lenis smooth-scroll adapter', cells: [true, 'partial'], note: 'GSAP works with Lenis but no dedicated adapter' },
+  { f: 'Works with Lenis smooth scroll', cells: [true, true], note: 'Lenis 1.x moves the real scroll position, so both read it with no adapter' },
   { f: 'Bundle size (minified + gzipped)', cells: [`${SELF.gzipKb} KB`, `${COMPETITORS.gsapStack.gzipKb} KB`], note: `gsap ${COMPETITORS.gsapStack.version}: core ${CORE_KB} + ScrollTrigger ${SCROLLTRIGGER_KB} + DrawSVG ${DRAWSVG_KB} — the equivalent stack, measured ${MEASURED_ON}` },
 ];
 
