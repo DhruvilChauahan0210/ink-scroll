@@ -1,0 +1,234 @@
+/**
+ * Two Hershey single-stroke fonts, ASCII 32–126, for the handwriting
+ * animation generator.
+ *
+ * Source: the hershey-fonts package by Kamal Mostafa,
+ * https://github.com/kamalmostafa/hershey-fonts (master tarball, fetched once
+ * on 2026-11-13), files hershey-fonts/cursive.jhf (`script` here: Hershey's
+ * script simplex letters, with single-stroke digits and punctuation) and
+ * hershey-fonts/rowmans.jhf (`roman`: roman simplex). Nothing is fetched by
+ * the site: this file is the data.
+ *
+ * Licence. The Hershey fonts are in the public domain. The file that came with
+ * their Usenet distribution (hershey-fonts/hershey.txt) says they "are in the
+ * public domain, with a few caveats": the NTIS's own format of the data is not
+ * (this is not that format), and this distribution may be used by anyone for
+ * any purpose, commercial or otherwise, provided these acknowledgements go
+ * with the font data:
+ *
+ *   - The Hershey Fonts were originally created by Dr. A. V. Hershey while
+ *     working at the U. S. National Bureau of Standards.
+ *   - The format of the Font data in this distribution was originally created
+ *     by James Hurt, Cognition, Inc., 900 Technology Park Drive, Billerica,
+ *     MA 01821 (mit-eddie!ci-dandelion!hurt).
+ *
+ * Format: each font is 95 strings, one per character from space (32) to
+ * tilde (126). A string is James Hurt's .jhf glyph without its number and
+ * vertex count: two characters for the left and right edges, then the pen's
+ * points as pairs of characters, each coordinate its char code minus 82 ('R'),
+ * x to the right and y down, the baseline at y = 9. " R" lifts the pen, so
+ * each run between lifts is one stroke, in the order the font draws it.
+ *
+ * Changed from the source: the DEL glyph (127) is left out, and in
+ * @ [ ] { } ~ (and roman's ^, an arrow) the strokes that only thicken another
+ * one, a unit beside it, are taken out, so every glyph draws each line once.
+ * The converter is not in the repository; the change is that list.
+ */
+export type HersheyFont = 'script' | 'roman';
+
+export const HERSHEY: Record<HersheyFont, readonly string[]> = {
+  script: [
+    "JZ", // space
+    "MWRFRT RRYQZR[SZRY", // !
+    "JZNFNM RVFVM", // "
+    "H]SBLb RYBRb RLOZO RKUYU", // #
+    "H\\PBP_ RTBT_ RYIWGTFPFMGKIKKLMMNOOUQWRXSYUYXWZT[P[MZKX", // $
+    "F^[FI[ RNFPHPJOLMMKMIKIIJGLFNFPGSHVHYG[F RWTUUTWTYV[X[ZZ[X[VYTWT", // %
+    "E_\\O\\N[MZMYNXPVUTXRZP[L[JZIYHWHUISJRQNRMSKSIRGPFNGMIMKNNPQUXWZY[[[\\Z\\Y", // &
+    "PTRMRQ", // '
+    "KYVBTDRGPKOPOTPYR]T`Vb", // (
+    "KYNBPDRGTKUPUTTYR]P`Nb", // )
+    "JZRLRX RMOWU RWOMU", // *
+    "E_RIR[ RIR[R", // +
+    "NVSWRXQWRVSWSYQ[", // ,
+    "E_IR[R", // -
+    "NVRVQWRXSWRV", // .
+    "G][BIb", // /
+    "H\\QFNGLJKOKRLWNZQ[S[VZXWYRYOXJVGSFQF", // 0
+    "H\\NJPISFS[", // 1
+    "H\\LKLJMHNGPFTFVGWHXJXLWNUQK[Y[", // 2
+    "H\\MFXFRNUNWOXPYSYUXXVZS[P[MZLYKW", // 3
+    "H\\UFKTZT RUFU[", // 4
+    "H\\WFMFLOMNPMSMVNXPYSYUXXVZS[P[MZLYKW", // 5
+    "H\\XIWGTFRFOGMJLOLTMXOZR[S[VZXXYUYTXQVOSNRNOOMQLT", // 6
+    "H\\YFO[ RKFYF", // 7
+    "H\\PFMGLILKMMONSOVPXRYTYWXYWZT[P[MZLYKWKTLRNPQOUNWMXKXIWGTFPF", // 8
+    "H\\XMWPURRSQSNRLPKMKLLINGQFRFUGWIXMXRWWUZR[P[MZLX", // 9
+    "NVROQPRQSPRO RRVQWRXSWRV", // :
+    "NVROQPRQSPRO RSWRXQWRVSWSYQ[", // ;
+    "F^ZIJRZ[", // <
+    "E_IO[O RIU[U", // =
+    "F^JIZRJ[", // >
+    "I[LKLJMHNGPFTFVGWHXJXLWNVORQRT RRYQZR[SZRY", // ?
+    "E`WNVLTKQKOLNMMPMSNUPVSVUUVS RWKVSVUXVZV\\T]Q]O\\L[JYHWGTFQFNGLHJJILHOHRIUJWLYNZQ[T[WZYYZX", // @
+    "G[G[IZLWOSSLVFV[UXSUQSNQLQKRKTLVNXQZT[Y[", // A
+    "F]SHTITLSPRSQUOXMZK[J[IZIWJRKOLMNJPHRGUFXFZG[I[KZMYNWOTP RSPTPWQXRYTYWXYWZU[R[PZOX", // B
+    "H\\TLTMUNWNYMZKZIYGWFTFQGOIMLLNKRKVLYMZO[Q[TZVXWV", // C
+    "G^TFRGQIPMOSNVMXKZI[G[FZFXGWIWKXMZP[S[VZXXZT[O[KZHYGWFTFRHRJSMUPWRZT\\U", // D
+    "H\\VJVKWLYLZKZIYGVFRFOGNINLONPOSPPPMQLRKTKWLYMZP[S[VZXXYV", // E
+    "H\\RLPLNKMINGQFTFXG[G]F RXGVNTTRXPZN[L[JZIXIVJULUNV RQPZP", // F
+    "G^G[IZMVPQQNRJRGQFPFOGNINLONQOUOXNYMZKZQYVXXVZS[O[LZJXIVIT", // G
+    "F^MMKLJJJIKGMFNFPGQIQKPONULYJ[H[GZGX RMRVOXN[L]J^H^G]F\\FZHXLVRUWUZV[W[YZZY\\V", // H
+    "IZWVUTSQROQLQIRGSFUFVGWIWLVQTVSXQZO[M[KZJXJVKUMUOV", // I
+    "JYT^R[PVOPOJPGRFTFUGVJVMURR[PaOdNfLgKfKdLaN^P\\SZWX", // J
+    "F^MMKLJJJIKGMFNFPGQIQKPONULYJ[H[GZGX R^I^G]F\\FZGXIVLTNROPO RROSQSXTZU[V[XZYY[V", // K
+    "I\\MRORSQVOXMYKYHXFVFUGTISNRSQVPXNZL[J[IZIXJWLWNXQZT[V[YZ[X", // L
+    "@aEMCLBJBICGEFFFHGIIIKHPGTE[ RGTJLLHMGOFPFRGSISKRPQTO[ RQTTLVHWGYFZF\\G]I]K\\PZWZZ[[\\[^Z_YaV", // M
+    "E]JMHLGJGIHGJFKFMGNINKMPLTJ[ RLTOLQHRGTFVFXGYIYKXPVWVZW[X[ZZ[Y]V", // N
+    "H]TFQGOIMLLNKRKVLYMZO[Q[TZVXXUYSZOZKYHXGVFTFRHRKSNUQWSZU\\V", // O
+    "F_SHTITLSPRSQUOXMZK[J[IZIWJRKOLMNJPHRGUFZF\\G]H^J^M]O\\PZQWQUPTO", // P
+    "H^ULTNSOQPOPNNNLOIQGTFWFYGZIZMYPWSSWPYNZK[I[HZHXIWKWMXPZS[V[YZ[X", // Q
+    "F_SHTITLSPRSQUOXMZK[J[IZIWJRKOLMNJPHRGUFYF[G\\H]J]M\\O[PYQVQSPTQUSUXVZX[ZZ[Y]V", // R
+    "H\\H[JZLXOTQQSMTJTGSFRFQGPIPKQMSOVQXSYUYWXYWZT[P[MZKXJVJT", // S
+    "H[RLPLNKMINGQFTFXG[G]F RXGVNTTRXPZN[L[JZIXIVJULUNV", // T
+    "E]JMHLGJGIHGJFKFMGNINKMOLRKVKXLZN[P[RZSYUUXMZF RXMWQVWVZW[X[ZZ[Y]V", // U
+    "F]KMILHJHIIGKFLFNGOIOKNOMRLVLYM[O[QZTWVTXPYMZIZGYFXFWGVIVKWNYP[Q", // V
+    "C_HMFLEJEIFGHFIFKGLILLK[ RUFK[ RUFS[ RaF_G\\JYNVTS[", // W
+    "F^NLLLKKKILGNFPFRGSISLQUQXRZT[V[XZYXYVXUVU R]I]G\\FZFXGVITLPUNXLZJ[H[GZGX", // X
+    "F]KMILHJHIIGKFLFNGOIOKNOMRLVLXMZN[P[RZTXVUWSYM R[FYMVWT]RbPfNgMfMdNaP^S[VY[V", // Y
+    "H]ULTNSOQPOPNNNLOIQGTFWFYGZIZMYPWTTWPZN[K[JZJXKWNWPXQYR[R^QaPcNfLgKfKdLaN^Q[TYZV", // Z
+    "KYPBPb ROBVB RObVb", // [
+    "KYKFY^", // \
+    "KYUBUb RNBUB RNbUb", // ]
+    "JZRDJR RRDZR", // ^
+    "G[Gb[b", // _
+    "NVSKQMQORPSORNQO", // `
+    "L\\UUTSRRPRNSMTLVLXMZO[Q[SZTXVRUWUZV[W[YZZY\\V", // a
+    "M[MVOSRNSLTITGSFQGPIOMNTNZO[P[RZTXUUURVVWWYW[V", // b
+    "MXTTTSSRQROSNTMVMXNZP[S[VYXV", // c
+    "L\\UUTSRRPRNSMTLVLXMZO[Q[SZTXZF RVRUWUZV[W[YZZY\\V", // d
+    "NXOYQXRWSUSSRRQROSNUNXOZQ[S[UZVYXV", // e
+    "OWOVSQUNVLWIWGVFTGSIQQNZKaJdJfKgMfNcOZP[R[TZUYWV", // f
+    "L[UUTSRRPRNSMTLVLXMZO[Q[SZTY RVRTYPdOfMgLfLdMaP^S\\U[XY[V", // g
+    "M\\MVOSRNSLTITGSFQGPIOMNSM[ RM[NXOVQSSRURVSVUUXUZV[W[YZZY\\V", // h
+    "PWSMSNTNTMSM RPVRRPXPZQ[R[TZUYWV", // i
+    "PWSMSNTNTMSM RPVRRLdKfIgHfHdIaL^O\\Q[TYWV", // j
+    "M[MVOSRNSLTITGSFQGPIOMNSM[ RM[NXOVQSSRURVSVUTVQV RQVSWTZU[V[XZYY[V", // k
+    "OWOVQSTNULVIVGUFSGRIQMPTPZQ[R[TZUYWV", // l
+    "E^EVGSIRJSJTIXH[ RIXJVLSNRPRQSQTPXO[ RPXQVSSURWRXSXUWXWZX[Y[[Z\\Y^V", // m
+    "J\\JVLSNROSOTNXM[ RNXOVQSSRURVSVUUXUZV[W[YZZY\\V", // n
+    "LZRRPRNSMTLVLXMZO[Q[SZTYUWUUTSRRQSQURWTXWXYWZV", // o
+    "KZKVMSNQMUGg RMUNSPRRRTSUUUWTYSZQ[ RMZO[R[UZWYZV", // p
+    "L[UUTSRRPRNSMTLVLXMZO[Q[SZ RVRUUSZPaOdOfPgRfScS\\U[XY[V", // q
+    "MZMVOSPQPSSSTTTVSYSZT[U[WZXYZV", // r
+    "NYNVPSQQQSSVTXTZR[ RNZP[T[VZWYYV", // s
+    "OXOVQSSO RVFPXPZQ[S[UZVYXV RPNWN", // t
+    "L[LVNRLXLZM[O[QZSXUU RVRTXTZU[V[XZYY[V", // u
+    "L[LVNRMWMZN[O[RZTXUUUR RURVVWWYW[V", // v
+    "I^LRJTIWIYJ[L[NZPX RRRPXPZQ[S[UZWXXUXR RXRYVZW\\W^V", // w
+    "JZJVLSNRPRQSQZR[U[XYZV RWSVRTRSSOZN[L[KZ", // x
+    "L[LVNRLXLZM[O[QZSXUU RVRPdOfMgLfLdMaP^S\\U[XY[V", // y
+    "LZLVNSPRRRTTTVSXQZN[P\\Q^QaPdOfMgLfLdMaP^S\\WYZV", // z
+    "KYRCQEQGRISJTLTNSPORSTTVTXSZR[Q]Q_Ra", // {
+    "NVRBRb", // |
+    "KYRCSESGRIQJPLPNQPURQTPVPXQZR[S]S_Ra", // }
+    "F^ISJQLPNPPQTTVUXUZT[Q[O", // ~
+  ],
+  roman: [
+    "JZ", // space
+    "MWRFRT RRYQZR[SZRY", // !
+    "JZNFNM RVFVM", // "
+    "H]SBLb RYBRb RLOZO RKUYU", // #
+    "H\\PBP_ RTBT_ RYIWGTFPFMGKIKKLMMNOOUQWRXSYUYXWZT[P[MZKX", // $
+    "F^[FI[ RNFPHPJOLMMKMIKIIJGLFNFPGSHVHYG[F RWTUUTWTYV[X[ZZ[X[VYTWT", // %
+    "E_\\O\\N[MZMYNXPVUTXRZP[L[JZIYHWHUISJRQNRMSKSIRGPFNGMIMKNNPQUXWZY[[[\\Z\\Y", // &
+    "MWRHQGRFSGSIRKQL", // '
+    "KYVBTDRGPKOPOTPYR]T`Vb", // (
+    "KYNBPDRGTKUPUTTYR]P`Nb", // )
+    "JZRFRR RMIWO RWIMO", // *
+    "E_RIR[ RIR[R", // +
+    "MWSZR[QZRYSZS\\R^Q_", // ,
+    "E_IR[R", // -
+    "MWRYQZR[SZRY", // .
+    "G][BIb", // /
+    "H\\QFNGLJKOKRLWNZQ[S[VZXWYRYOXJVGSFQF", // 0
+    "H\\NJPISFS[", // 1
+    "H\\LKLJMHNGPFTFVGWHXJXLWNUQK[Y[", // 2
+    "H\\MFXFRNUNWOXPYSYUXXVZS[P[MZLYKW", // 3
+    "H\\UFKTZT RUFU[", // 4
+    "H\\WFMFLOMNPMSMVNXPYSYUXXVZS[P[MZLYKW", // 5
+    "H\\XIWGTFRFOGMJLOLTMXOZR[S[VZXXYUYTXQVOSNRNOOMQLT", // 6
+    "H\\YFO[ RKFYF", // 7
+    "H\\PFMGLILKMMONSOVPXRYTYWXYWZT[P[MZLYKWKTLRNPQOUNWMXKXIWGTFPF", // 8
+    "H\\XMWPURRSQSNRLPKMKLLINGQFRFUGWIXMXRWWUZR[P[MZLX", // 9
+    "MWRMQNROSNRM RRYQZR[SZRY", // :
+    "MWRMQNROSNRM RSZR[QZRYSZS\\R^Q_", // ;
+    "F^ZIJRZ[", // <
+    "E_IO[O RIU[U", // =
+    "F^JIZRJ[", // >
+    "I[LKLJMHNGPFTFVGWHXJXLWNVORQRT RRYQZR[SZRY", // ?
+    "E`WNVLTKQKOLNMMPMSNUPVSVUUVS RWKVSVUXVZV\\T]Q]O\\L[JYHWGTFQFNGLHJJILHOHRIUJWLYNZQ[T[WZYYZX", // @
+    "I[RFJ[ RRFZ[ RMTWT", // A
+    "G\\KFK[ RKFTFWGXHYJYLXNWOTP RKPTPWQXRYTYWXYWZT[K[", // B
+    "H]ZKYIWGUFQFOGMILKKNKSLVMXOZQ[U[WZYXZV", // C
+    "G\\KFK[ RKFRFUGWIXKYNYSXVWXUZR[K[", // D
+    "H[LFL[ RLFYF RLPTP RL[Y[", // E
+    "HZLFL[ RLFYF RLPTP", // F
+    "H]ZKYIWGUFQFOGMILKKNKSLVMXOZQ[U[WZYXZVZS RUSZS", // G
+    "G]KFK[ RYFY[ RKPYP", // H
+    "NVRFR[", // I
+    "JZVFVVUYTZR[P[NZMYLVLT", // J
+    "G\\KFK[ RYFKT RPOY[", // K
+    "HYLFL[ RL[X[", // L
+    "F^JFJ[ RJFR[ RZFR[ RZFZ[", // M
+    "G]KFK[ RKFY[ RYFY[", // N
+    "G]PFNGLIKKJNJSKVLXNZP[T[VZXXYVZSZNYKXIVGTFPF", // O
+    "G\\KFK[ RKFTFWGXHYJYMXOWPTQKQ", // P
+    "G]PFNGLIKKJNJSKVLXNZP[T[VZXXYVZSZNYKXIVGTFPF RSWY]", // Q
+    "G\\KFK[ RKFTFWGXHYJYLXNWOTPKP RRPY[", // R
+    "H\\YIWGTFPFMGKIKKLMMNOOUQWRXSYUYXWZT[P[MZKX", // S
+    "JZRFR[ RKFYF", // T
+    "G]KFKULXNZQ[S[VZXXYUYF", // U
+    "I[JFR[ RZFR[", // V
+    "F^HFM[ RRFM[ RRFW[ R\\FW[", // W
+    "H\\KFY[ RYFK[", // X
+    "I[JFRPR[ RZFRP", // Y
+    "H\\YFK[ RKFYF RK[Y[", // Z
+    "KYPBPb ROBVB RObVb", // [
+    "KYKFY^", // \
+    "KYUBUb RNBUB RNbUb", // ]
+    "JZMORJWO RRJR[", // ^
+    "JZJ]Z]", // _
+    "MWSFRGQIQKRLSKRJ", // `
+    "I\\XMX[ RXPVNTMQMONMPLSLUMXOZQ[T[VZXX", // a
+    "H[LFL[ RLPNNPMSMUNWPXSXUWXUZS[P[NZLX", // b
+    "I[XPVNTMQMONMPLSLUMXOZQ[T[VZXX", // c
+    "I\\XFX[ RXPVNTMQMONMPLSLUMXOZQ[T[VZXX", // d
+    "I[LSXSXQWOVNTMQMONMPLSLUMXOZQ[T[VZXX", // e
+    "MYWFUFSGRJR[ ROMVM", // f
+    "I\\XMX]W`VaTbQbOa RXPVNTMQMONMPLSLUMXOZQ[T[VZXX", // g
+    "I\\MFM[ RMQPNRMUMWNXQX[", // h
+    "NVQFRGSFREQF RRMR[", // i
+    "MWRFSGTFSERF RSMS^RaPbNb", // j
+    "IZMFM[ RWMMW RQSX[", // k
+    "NVRFR[", // l
+    "CaGMG[ RGQJNLMOMQNRQR[ RRQUNWMZM\\N]Q][", // m
+    "I\\MMM[ RMQPNRMUMWNXQX[", // n
+    "I\\QMONMPLSLUMXOZQ[T[VZXXYUYSXPVNTMQM", // o
+    "H[LMLb RLPNNPMSMUNWPXSXUWXUZS[P[NZLX", // p
+    "I\\XMXb RXPVNTMQMONMPLSLUMXOZQ[T[VZXX", // q
+    "KXOMO[ ROSPPRNTMWM", // r
+    "J[XPWNTMQMNNMPNRPSUTWUXWXXWZT[Q[NZMX", // s
+    "MYRFRWSZU[W[ ROMVM", // t
+    "I\\MMMWNZP[S[UZXW RXMX[", // u
+    "JZLMR[ RXMR[", // v
+    "G]JMN[ RRMN[ RRMV[ RZMV[", // w
+    "J[MMX[ RXMM[", // x
+    "JZLMR[ RXMR[P_NaLbKb", // y
+    "J[XMM[ RMMXM RM[X[", // z
+    "KYRCQEQGRISJTLTNSPORSTTVTXSZR[Q]Q_Ra", // {
+    "NVRBRb", // |
+    "KYRCSESGRIQJPLPNQPURQTPVPXQZR[S]S_Ra", // }
+    "F^ISJQLPNPPQTTVUXUZT[Q[O", // ~
+  ],
+};

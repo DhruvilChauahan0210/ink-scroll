@@ -1,0 +1,197 @@
+/* ── The handwriting animation generator (/handwriting-animation-generator) ─
+   The line drawing generator's look (linedraw.css): one hairline panel with
+   the text, the controls, the line and the transport; then the notes and the
+   output. Prefix hwg- (the figure hwgf-). */
+
+.site .hwg { display: grid; gap: 32px; }
+.site .hwg [hidden] { display: none !important; }
+.site .hwg-panel { position: relative; border: 1px solid var(--line-2); min-width: 0; }
+
+.site .hwg-input { display: grid; gap: 6px; padding: 16px; border-bottom: 1px solid var(--line); }
+.site .hwg-input span,
+.site .hwg-field-k { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .hwg-input input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  font: 400 16px/1.4 var(--sans);
+  color: var(--fg);
+}
+.site .hwg-input input:focus-visible { border-color: var(--fg); outline: 0; }
+
+.site .hwg-controls {
+  container-type: inline-size;
+}
+.site .hwg-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 16px 20px;
+  padding: 16px;
+  border-bottom: 1px solid var(--line);
+}
+.site .hwg-field { display: grid; gap: 6px; align-content: start; min-width: 0; }
+/* Two columns' worth wherever there are two columns: the three-way switches need it. */
+@container (min-width: 440px) { .site .hwg-field.is-wide { grid-column: span 2; } }
+
+/* Each choice at least as wide as its word, sharing what is left. */
+.site .hwg-seg { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(max-content, 1fr); min-width: 0; border: 1px solid var(--line-2); }
+.site .hwg-seg button {
+  padding: 7px 6px;
+  white-space: nowrap;
+  border: 0;
+  border-left: 1px solid var(--line-2);
+  background: transparent;
+  font: 500 11.5px/1.2 var(--mono);
+  color: var(--fg-2);
+  cursor: pointer;
+}
+.site .hwg-seg button:first-child { border-left: 0; }
+.site .hwg-seg button[aria-checked='true'] { background: var(--fg); color: var(--bg); }
+.site .hwg-seg button:focus-visible { outline: 1px solid var(--fg); outline-offset: -3px; }
+
+.site .hwg-controls select {
+  width: 100%;
+  min-width: 0;
+  padding: 6px 8px;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: var(--bg);
+  font: 500 12px/1.2 var(--mono);
+  color: var(--fg);
+}
+.site .hwg-controls select:focus-visible { border-color: var(--fg); outline: 0; }
+.site .hwg-controls input[type='color'] {
+  width: 44px;
+  height: 31px;
+  padding: 2px;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.site .hwg-controls input[type='color']:focus-visible { border-color: var(--fg); outline: 0; }
+.site .hwg-pair { display: flex; gap: 8px; align-items: center; min-width: 0; }
+.site .hwg-pair > .hwg-seg { flex: 1 1 auto; }
+.site .hwg-pair > input[type='range'] { flex: 1 1 120px; min-width: 0; }
+.site .hwg-pair > .hwg-btn { flex: 1 1 auto; }
+
+.site .hwg-btn {
+  padding: 8px 14px;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  font: 500 12px/1 var(--mono);
+  color: var(--fg);
+  cursor: pointer;
+}
+.site .hwg-btn:hover, .site .hwg-btn:focus-visible { border-color: var(--fg); outline: 0; }
+.site .hwg-btn:disabled, .site .hwg input:disabled { opacity: 0.45; cursor: default; }
+.site .hwg-btn:disabled:hover { border-color: var(--line-2); }
+
+.site .hwg input[type='range'] { width: 100%; accent-color: var(--fg); }
+/* The site's range style sets outline: none, which left the slider with no focus ring. */
+.site .hwg input[type='range']:focus-visible { outline: 1px solid var(--fg); outline-offset: 6px; }
+
+.site .hwg-error { margin: 0; padding: 16px; border-left: 2px solid var(--accent); font-size: 13.5px; line-height: 1.6; color: var(--fg-2); }
+
+/* The line: the generated SVG, its own <style> and all. */
+.site .hwg-stage {
+  display: grid;
+  place-items: center;
+  min-height: clamp(200px, 30vw, 340px);
+  padding: clamp(16px, 3vw, 32px);
+  background: var(--panel);
+}
+.site .hwg-host { width: 100%; display: grid; place-items: center; color: var(--fg); }
+.site .hwg-svg { display: block; max-width: 100%; height: auto; overflow: visible; }
+
+.site .hwg-transport {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--line);
+}
+.site .hwg-scrub { display: grid; gap: 4px; flex: 1 1 220px; min-width: 0; }
+.site .hwg-scrub span { font: 500 10px/1.4 var(--mono); color: var(--fg-3); font-variant-numeric: tabular-nums; }
+.site .hwg-count { margin: 0; font: 500 11px/1.4 var(--mono); color: var(--fg-3); }
+
+/* What was left out of the text. */
+.site .hwg-notes { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.site .hwg-notes li { padding: 10px 14px; border-left: 2px solid var(--accent); background: var(--panel); font-size: 13.5px; line-height: 1.6; color: var(--fg-2); overflow-wrap: anywhere; }
+
+/* The output. */
+.site .hwg-code { display: grid; min-width: 0; }
+.site .hwg-out { display: grid; gap: 12px; min-width: 0; }
+.site .hwg-code-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 8px; }
+.site .hwg-tabs { display: flex; flex-wrap: wrap; }
+.site .hwg-tab {
+  padding: 8px 14px;
+  border: 1px solid var(--line-2);
+  border-bottom: 0;
+  border-left-width: 0;
+  background: transparent;
+  font: 500 11.5px/1 var(--mono);
+  color: var(--fg-2);
+  cursor: pointer;
+}
+.site .hwg-tab:first-child { border-left-width: 1px; }
+.site .hwg-tab[aria-selected='true'] { color: var(--fg); background: var(--panel); }
+.site .hwg-tab:focus-visible { outline: 1px solid var(--fg); outline-offset: -3px; }
+.site .hwg .code-box { margin: 0; }
+.site .hwg-legend { margin: 0; max-width: 80ch; font-size: 13.5px; line-height: 1.6; color: var(--fg-2); }
+.site .hwg-legend a { color: var(--fg); text-decoration: underline; text-decoration-color: var(--line-2); text-underline-offset: 3px; }
+
+/* The scroll version, in a box of its own. */
+.site .hwg-scroll { border: 1px solid var(--line-2); min-width: 0; }
+.site .hwg-scroll-k {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 12px;
+  margin: 0;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--line);
+  font: 500 10px/1.4 var(--mono);
+  color: var(--fg-3);
+}
+.site .hwg-scroll-k span:first-child { color: var(--fg-2); }
+.site .hwg-sbox { height: 300px; overflow-y: auto; overscroll-behavior: contain; background: var(--panel); }
+.site .hwg-sbox:focus-visible { outline: 1px solid var(--fg); outline-offset: -2px; }
+.site .hwg-spacer { display: grid; place-items: center; height: 300px; }
+.site .hwg-shint { margin: 0; font: 500 10.5px/1.7 var(--mono); color: var(--fg-3); text-align: center; }
+.site .hwg-shost { display: grid; place-items: center; padding: 0 16px; color: var(--fg); }
+.site .hwg-shost .hwg-svg { max-width: min(100%, 420px); }
+
+/* Fig. 1 — an outline font traced against a single-stroke one, from layout.ts. */
+.site .hwgf { display: grid; gap: 10px; margin: 0; }
+.site .hwgf svg { width: 100%; height: auto; overflow: visible; }
+.site .hwgf-ink { color: var(--fg); }
+.site .hwgf-hole { color: var(--bg); }
+.site .hwgf-dot { fill: var(--accent); }
+.site .hwgf-k { font: 500 11px var(--mono); fill: var(--fg-2); }
+.site .hwgf figcaption { font: 500 10.5px/1.6 var(--mono); color: var(--fg-3); }
+@media (max-width: 559px) {
+  .site .hwgf-k { font-size: 14px; }
+}
+
+/* The page's sections: a paragraph after a listing, and reference tables, stacked on a phone. */
+.site .hwg-after { margin-top: 16px; }
+.site .hwg-ref-scroll { overflow-x: auto; }
+.site .hwg-ref-scroll:focus-visible { outline: 1px solid var(--fg); outline-offset: 2px; }
+.site .hwg-ref { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.site .hwg-ref th, .site .hwg-ref td { padding: 10px 14px 10px 0; border-top: 1px solid var(--line); text-align: left; vertical-align: top; }
+.site .hwg-ref th { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .hwg-ref td { color: var(--fg-2); line-height: 1.6; }
+.site .hwg-ref td:first-child { width: 28%; font: 400 12.5px/1.6 var(--mono); color: var(--fg); overflow-wrap: anywhere; }
+@media (max-width: 639px) {
+  .site .hwg-ref thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .site .hwg-ref, .site .hwg-ref tbody, .site .hwg-ref tr { display: block; }
+  .site .hwg-ref tr { padding: 10px 0; border-top: 1px solid var(--line); }
+  .site .hwg-ref td { display: block; width: auto; padding: 3px 0; border-top: 0; }
+  .site .hwg-ref td:first-child { width: auto; }
+  .site .hwg-ref td[data-k]::before { content: attr(data-k); margin-right: 8px; font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+}
