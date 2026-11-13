@@ -5,21 +5,23 @@ import { ScrollDraw } from 'svg-scroll-draw/react';
 
 /**
  * The Lenis page's opening drawing: where the scroll position travels, from
- * the wheel to the drawn path, on Lenis v2 and on Lenis v1 side by side. On v1
- * the native value goes stale and the adapter is the extra link. The arrows
- * between links are inked by the library on load.
+ * the wheel to the drawn path, on Lenis 1.x and on a scroller that keeps a
+ * virtual value side by side. Lenis moves the real scroll, so window.scrollY
+ * is right with nothing added; on a virtual scroller the native value goes
+ * stale and the adapter is the extra link. The arrows between links are inked
+ * by the library on load.
  */
 
 type Cell = { v: string; note?: string; kind?: 'same' | 'stale' | 'fix' | 'none' };
-type Row = { k: string; v2: Cell; v1: Cell };
+type Row = { k: string; lenis: Cell; virt: Cell };
 
 const ROWS: Row[] = [
-  { k: 'input', v2: { v: 'wheel · touch' }, v1: { v: 'wheel · touch' } },
-  { k: 'smooth', v2: { v: 'lenis.raf(time)', note: 'Eases the scroll' }, v1: { v: 'lenis.raf(time)', note: 'Eases a virtual value' } },
-  { k: 'native', v2: { v: 'window.scrollY', note: 'patched by Lenis' }, v1: { v: 'window.scrollY', note: 'never updated — stale', kind: 'stale' } },
-  { k: 'adapter', v2: { v: 'none', note: 'Nothing to add', kind: 'none' }, v1: { v: 'createLenisAdapter(lenis)', note: 'patches scrollY, restores on destroy', kind: 'fix' } },
-  { k: 'engine', v2: { v: 'scrollDraw()', note: 'Reads the right value' }, v1: { v: 'scrollDraw()', note: 'Reads the patched value' } },
-  { k: 'result', v2: { v: 'the path draws', note: 'In step with the eased scroll' }, v1: { v: 'the path draws', note: 'In step, once the adapter is in' } },
+  { k: 'input', lenis: { v: 'wheel · touch' }, virt: { v: 'wheel · touch' } },
+  { k: 'smooth', lenis: { v: 'lenis.raf(time)', note: 'Eases the real scroll' }, virt: { v: 'scroller tick', note: 'Eases a virtual value' } },
+  { k: 'native', lenis: { v: 'window.scrollY', note: 'moved by Lenis’s scrollTo()' }, virt: { v: 'window.scrollY', note: 'never updated — stale', kind: 'stale' } },
+  { k: 'adapter', lenis: { v: 'none', note: 'Nothing to add', kind: 'none' }, virt: { v: 'createLenisAdapter(scroller)', note: 'patches scrollY, restores on destroy', kind: 'fix' } },
+  { k: 'engine', lenis: { v: 'scrollDraw()', note: 'Reads the real value' }, virt: { v: 'scrollDraw()', note: 'Reads the patched value' } },
+  { k: 'result', lenis: { v: 'the path draws', note: 'In step with the eased scroll' }, virt: { v: 'the path draws', note: 'In step, once the adapter is in' } },
 ];
 
 function Arrow() {
@@ -50,8 +52,8 @@ export function ScrollChain() {
     <figure className="stk-fig sc">
       <ScrollDraw className="sc-grid" selector=".sc-ink" autoplay duration={420} delay={300} stagger={0.12} easing="ease-out" once>
         <span className="sc-hd" />
-        <span className="sc-hd">lenis v2+</span>
-        <span className="sc-hd is-acc">lenis v1</span>
+        <span className="sc-hd">lenis 1.x</span>
+        <span className="sc-hd is-acc">virtual scroller</span>
         {ROWS.map((r, i) => (
           <Fragment key={r.k}>
             {i > 0 && (
@@ -62,8 +64,8 @@ export function ScrollChain() {
               </>
             )}
             <span className="sc-k">{r.k}</span>
-            <Box c={r.v2} />
-            <Box c={r.v1} />
+            <Box c={r.lenis} />
+            <Box c={r.virt} />
           </Fragment>
         ))}
       </ScrollDraw>

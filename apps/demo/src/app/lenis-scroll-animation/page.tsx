@@ -17,7 +17,7 @@ const lenis = COMPETITORS.lenis;
 export const metadata: Metadata = {
   title: seoTitle('Lenis Scroll Animation — Add Animations to Smooth Scroll'),
   description:
-    'Add scroll animations to Lenis smooth scrolling. Lenis v2 needs no adapter; v1 uses svg-scroll-draw/lenis. Working setup for both, plus the one trade-off.',
+    'Scroll animations on Lenis smooth scrolling. Lenis 1.x scrolls the real page, so it needs no adapter: the setup, a custom wrapper, and what the adapter is for.',
   keywords: [
     'lenis scroll animation',
     'lenis smooth scroll animation',
@@ -32,32 +32,36 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'article',
     title: 'Lenis Scroll Animation — Add Animations to Smooth Scroll',
-    description: 'Add scroll animations to Lenis smooth scrolling. Lenis v2 needs no adapter; v1 uses svg-scroll-draw/lenis. Working setup for both, plus the one trade-off.',
+    description: 'Scroll animations on Lenis smooth scrolling. Lenis 1.x scrolls the real page, so it needs no adapter: the setup, a custom wrapper, and what the adapter is for.',
     url: `${SITE_URL}/lenis-scroll-animation`,
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Lenis Scroll Animation — Add Animations to Smooth Scroll',
-    description: 'Add scroll animations to Lenis smooth scrolling. Lenis v2 needs no adapter; v1 uses svg-scroll-draw/lenis. Working setup for both, plus the one trade-off.',
+    description: 'Scroll animations on Lenis smooth scrolling. Lenis 1.x scrolls the real page, so it needs no adapter: the setup, a custom wrapper, and what the adapter is for.',
   },
 };
 
 const faq = [
   {
     q: 'Does svg-scroll-draw work with Lenis?',
-    a: 'Yes. On Lenis v2 and later no adapter is needed at all — Lenis patches window.scrollY natively, so the animation engines read the correct value. On Lenis v1, which keeps scroll in a virtual value, import createLenisAdapter from svg-scroll-draw/lenis and pass it your Lenis instance.',
+    a: 'Yes, with no adapter. Every Lenis release so far is 1.x, and on every frame Lenis moves the real scroll position: its setScroll() calls scrollTo() on the window with behavior "instant". So window.scrollY follows the eased scroll and every engine here reads the right value. Run Lenis’s rAF loop and call scrollDraw as usual.',
   },
   {
     q: 'Is Lenis an alternative to svg-scroll-draw?',
     a: 'No — they do different jobs and are designed to be used together. Lenis eases the scroll itself; svg-scroll-draw animates elements against scroll position. Neither replaces the other, which is why there is no versus page for Lenis on this site.',
   },
   {
-    q: 'Why does Lenis v1 need an adapter?',
-    a: 'Lenis v1 hijacks scrolling and stores the position in its own virtual value without updating window.scrollY, so anything reading native scroll position sees a stale number. The adapter patches window.scrollY and window.pageYOffset to report Lenis’s value, then restores them on destroy.',
+    q: 'Then what is svg-scroll-draw/lenis for?',
+    a: 'A scroller that keeps its position in a virtual value and never moves the page, so window.scrollY goes stale. createLenisAdapter takes anything with Lenis’s on("scroll") / off("scroll") shape, patches window.scrollY and window.pageYOffset to report its value, and puts the browser’s own properties back on destroy. Lenis 1.x does not need it.',
+  },
+  {
+    q: 'What about Lenis v2?',
+    a: 'There is no Lenis v2 release yet: 2.0 exists only as development prereleases, and lenis on npm is 1.x. Advice that splits Lenis into a v1 that needs an adapter and a v2 that patches scrollY matches no release: the 1.x line already scrolls the real page.',
   },
   {
     q: 'Does smooth scrolling hurt scroll animation performance?',
-    a: 'It changes how it runs. With Lenis driving the frame loop, animation updates happen inside Lenis’s rAF tick. The native CSS fast path is bypassed for elements affected by a virtual scroll value, since a CSS view-timeline reads real scroll position — so expect the JS engine to handle those.',
+    a: 'Not with Lenis. Because it moves the real scroll position, a CSS view-timeline follows it, so where the browser supports animation-timeline the draw still runs as a native CSS scroll animation with no per-frame JavaScript. The exception is a virtual scroller patched by the adapter: CSS reads the real position, which does not move, so pass native: false there and let the JS engine draw.',
   },
 ];
 
@@ -68,10 +72,10 @@ const jsonLdData = {
       '@type': 'TechArticle',
       headline: 'Lenis + svg-scroll-draw — smooth scroll and scroll-driven animation together',
       description:
-        'How to combine Lenis smooth scrolling with scroll-driven SVG animation, for both Lenis v1 and v2.',
+        'How to combine Lenis smooth scrolling with scroll-driven SVG animation: Lenis 1.x needs no adapter.',
       url: `${SITE_URL}/lenis-scroll-animation`,
       datePublished: '2026-08-15',
-      dateModified: '2026-08-15',
+      dateModified: '2026-11-13',
       author: { '@type': 'Person', name: 'Dhruvil Chauhan', url: 'https://github.com/DhruvilChauahan0210' },
       publisher: { '@type': 'Organization', name: 'svg-scroll-draw', url: SITE_URL },
       mainEntityOfPage: { '@type': 'WebPage', '@id': `${SITE_URL}/lenis-scroll-animation` },
@@ -87,7 +91,7 @@ const jsonLdData = {
   ],
 };
 
-const V2_SETUP = `import Lenis from 'lenis';
+const LENIS_SETUP = `import Lenis from 'lenis';
 import { scrollDraw } from 'svg-scroll-draw';
 
 const lenis = new Lenis();
@@ -98,25 +102,30 @@ function raf(time) {
 }
 requestAnimationFrame(raf);
 
-// No adapter — window.scrollY is already correct.
+// No adapter: Lenis scrolls the real page, so window.scrollY is already right.
 scrollDraw('#hero-svg', { easing: 'ease-out', speed: 1.2 });`;
 
-const V1_SETUP = `import Lenis from '@studio-freight/lenis';
-import { createLenisAdapter } from 'svg-scroll-draw/lenis';
+const WRAPPER_SETUP = `import Lenis from 'lenis';
 import { scrollDraw } from 'svg-scroll-draw';
 
-const lenis = new Lenis();
-const adapter = createLenisAdapter(lenis);
+const wrapper = document.querySelector('#scroller');
+const lenis = new Lenis({ wrapper, content: wrapper.firstElementChild });
+// …the same rAF loop as above
 
-function raf(time) {
-  lenis.raf(time);
-  requestAnimationFrame(raf);
-}
-requestAnimationFrame(raf);
+// Lenis scrolls #scroller, not the window: point the draw at it.
+scrollDraw('#hero-svg', { scrollContainer: wrapper });`;
 
-scrollDraw('#hero-svg', { easing: 'ease-out', speed: 1.2 });
+const ADAPTER_SETUP = `import { createLenisAdapter } from 'svg-scroll-draw/lenis';
+import { scrollDraw } from 'svg-scroll-draw';
 
-// On teardown — restores native window.scrollY:
+// \`scroller\` keeps a virtual position and emits
+// 'scroll' with { scroll, velocity, direction, progress }.
+const adapter = createLenisAdapter(scroller);
+
+// CSS reads the real scroll position, which never moves here.
+scrollDraw('#hero-svg', { native: false });
+
+// On teardown: puts the browser's own window.scrollY back.
 // adapter.destroy();`;
 
 const COMPARISONS = [
@@ -132,9 +141,10 @@ const COMPARISONS = [
 const TOGETHER_KB = Math.round((lenis.gzipKb + SELF.gzipKb) * 10) / 10;
 
 const TOC = [
-  { id: 'lenis-v2', label: 'Lenis v2 and later' },
-  { id: 'lenis-v1', label: 'Lenis v1' },
-  { id: 'trade-off', label: 'The one trade-off' },
+  { id: 'lenis-setup', label: 'Lenis 1.x: no adapter' },
+  { id: 'custom-wrapper', label: 'A custom wrapper' },
+  { id: 'adapter', label: 'What the adapter is for' },
+  { id: 'cost', label: 'What the pair costs' },
   { id: 'questions', label: `Questions · ${faq.length}` },
   { id: 'comparisons', label: 'Comparisons' },
 ];
@@ -159,18 +169,18 @@ export default function Page() {
               <p className="pg-lede">
                 Lenis is the smooth-scroll library everyone reaches for, and it comes up constantly as an
                 &ldquo;alternative&rdquo; to scroll animation libraries. It is not one. Lenis eases the scroll itself;
-                this library animates things against scroll position. They are complementary, we ship an adapter for it,
-                and that is why there is no <C>/vs-lenis</C> page here.
+                this library animates things against scroll position. They are complementary, they need nothing to
+                join them, and that is why there is no <C>/vs-lenis</C> page here.
               </p>
               <p className="stk-short">
                 <span className="stk-short-k">Short version</span>
-                <span><b>On Lenis v2+ it just works, no adapter.</b> On Lenis v1 you need three extra lines.</span>
+                <span><b>On Lenis it just works, no adapter.</b> Lenis 1.x scrolls the real page, so <C>window.scrollY</C> is always right.</span>
               </p>
               <dl className="pg-facts">
                 <div><dt>Lenis {lenis.version}</dt><dd>{lenis.gzipKb} KB</dd></div>
                 <div><dt>svg-scroll-draw</dt><dd>{SELF.gzipKb} KB</dd></div>
-                <div><dt>Adapter on v2</dt><dd>None</dd></div>
-                <div><dt>Adapter on v1</dt><dd>3 lines</dd></div>
+                <div><dt>Adapter for Lenis</dt><dd>None</dd></div>
+                <div><dt>Native CSS path</dt><dd>Kept</dd></div>
               </dl>
             </div>
             <ScrollChain />
@@ -180,32 +190,46 @@ export default function Page() {
             <Toc label="On this page" items={TOC} />
             <div className="stk-main">
 
-              {/* ── 01 Lenis v2 ───────────────────────────────── */}
-              <Sec n={1} k="lenis v2+" id="lenis-v2" title="Lenis v2 and later">
+              {/* ── 01 Lenis 1.x ──────────────────────────────── */}
+              <Sec n={1} k="lenis 1.x" id="lenis-setup" title="Lenis 1.x: no adapter">
                 <p className="stk-p">
-                  Nothing special required. Lenis v2 patches <C>window.scrollY</C> itself, so every engine here reads
-                  the correct position with no adapter and no configuration.
+                  Nothing special required. Every Lenis release so far is 1.x (2.0 exists only as development
+                  prereleases), and on every frame Lenis moves the real scroll position: its <C>setScroll()</C> calls{' '}
+                  <C>scrollTo()</C> with <C>{"behavior: 'instant'"}</C>. So <C>window.scrollY</C> follows the eased
+                  scroll, and every engine here reads it with no adapter and no configuration.
                 </p>
-                <CodeBox file="main.js">{V2_SETUP}</CodeBox>
+                <CodeBox file="main.js">{LENIS_SETUP}</CodeBox>
               </Sec>
 
-              {/* ── 02 Lenis v1 ───────────────────────────────── */}
-              <Sec n={2} k="lenis v1 · adapter" id="lenis-v1" title="Lenis v1">
+              {/* ── 02 A custom wrapper ───────────────────────── */}
+              <Sec n={2} k="custom wrapper" id="custom-wrapper" title="A custom wrapper">
                 <p className="stk-p">
-                  v1 keeps scroll position in a virtual value and never updates <C>window.scrollY</C>, so anything
-                  reading native scroll sees a stale number and your animations appear frozen. The adapter patches it
-                  and restores it on destroy.
+                  Give Lenis a <C>wrapper</C> element and it scrolls that element instead of the window. Point the
+                  animation at the same element with <C>scrollContainer</C>. A custom scroll container is one of the
+                  options the CSS path cannot express, so those animations run on the JavaScript engine.
                 </p>
-                <CodeBox file="main.js">{V1_SETUP}</CodeBox>
+                <CodeBox file="main.js">{WRAPPER_SETUP}</CodeBox>
               </Sec>
 
-              {/* ── 03 The trade-off ──────────────────────────── */}
-              <Sec n={3} k="The trade-off" id="trade-off" title="The one trade-off">
+              {/* ── 03 The adapter ────────────────────────────── */}
+              <Sec n={3} k="adapter" id="adapter" title="What the adapter is for">
                 <p className="stk-p">
-                  Worth knowing before you commit: the native CSS fast path does not survive a virtual scroll value.
-                  A CSS <C>view-timeline</C> reads real scroll position, so when Lenis v1 is driving, affected animations
-                  fall back to the JavaScript engine. That is still the path most browsers take today, and the fallback
-                  is automatic — but you do lose the zero-per-frame-JS optimisation on those elements.
+                  <C>svg-scroll-draw/lenis</C> is for a scroller that keeps its position in a virtual value and never
+                  moves the page, so <C>window.scrollY</C> goes stale and animations look frozen. It takes anything with
+                  Lenis’s <C>{"on('scroll')"}</C> shape, patches <C>window.scrollY</C> and{' '}
+                  <C>window.pageYOffset</C> to report that value, and puts the browser’s own properties back on
+                  destroy. CSS still reads the real position, which does not move, so pass <C>native: false</C>.
+                </p>
+                <CodeBox file="main.js">{ADAPTER_SETUP}</CodeBox>
+              </Sec>
+
+              {/* ── 04 The cost ───────────────────────────────── */}
+              <Sec n={4} k="the cost" id="cost" title="What the pair costs">
+                <p className="stk-p">
+                  Nothing in speed: because Lenis moves the real scroll position, a CSS <C>view-timeline</C> follows it,
+                  and where the browser supports <C>animation-timeline</C> the draw still runs as a native CSS scroll
+                  animation with no per-frame JavaScript. Elsewhere the JavaScript engine reads <C>window.scrollY</C> on
+                  each frame, as it would without Lenis. What you pay is bytes:
                 </p>
                 <SizeBars
                   caption="fig. 2 — what the pair costs, minified + gzipped, to one scale"
@@ -221,8 +245,8 @@ export default function Page() {
                 </p>
               </Sec>
 
-              {/* ── 04 Questions ──────────────────────────────── */}
-              <Sec n={4} k="questions" id="questions" title="Questions">
+              {/* ── 05 Questions ──────────────────────────────── */}
+              <Sec n={5} k="questions" id="questions" title="Questions">
                 <div className="stk-faq">
                   {faq.map((item, i) => (
                     <div key={item.q} className="stk-q">
@@ -236,8 +260,8 @@ export default function Page() {
                 </div>
               </Sec>
 
-              {/* ── 05 Comparisons ────────────────────────────── */}
-              <Sec n={5} k="comparisons" id="comparisons" title="Comparisons">
+              {/* ── 06 Comparisons ────────────────────────────── */}
+              <Sec n={6} k="comparisons" id="comparisons" title="Comparisons">
                 <div className="ex-rel-list">
                   {COMPARISONS.map((l, i) => (
                     <Link key={l.href} href={l.href} className="ex-rel-row">

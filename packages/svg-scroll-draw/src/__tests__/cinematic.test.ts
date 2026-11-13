@@ -101,7 +101,7 @@ describe('Cinematic', () => {
 
     // dasharray initialised to the measured length (undrawn until scrolled)
     const a = svg.querySelector('#path-a') as SVGPathElement;
-    expect(a.style.strokeDasharray).toBe('100');
+    expect(a.style.strokeDasharray).toBe('100 200');
   });
 
   it('scrubs draw + fade to the right frame at 50% scroll', () => {

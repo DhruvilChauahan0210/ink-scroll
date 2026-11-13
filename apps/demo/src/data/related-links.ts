@@ -217,7 +217,7 @@ export const RELATED_BY_POST: Record<string, RelatedLinks> = {
     examples: ['logo-reveal', 'presets'],
     tools: ['css-scroll-driven-animation-generator', 'svg-line-drawing-generator'],
     pages: [
-      { href: '/lenis-scroll-animation', label: 'Using Lenis alongside this', blurb: 'Smooth scrolling bypasses the native CSS path — here is why.' },
+      { href: '/lenis-scroll-animation', label: 'Using Lenis alongside this', blurb: 'Lenis scrolls the real page, so it needs no adapter and keeps the native CSS path.' },
     ],
   },
   'gsap-drawsvg-alternative': {

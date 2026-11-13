@@ -1163,6 +1163,96 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ---
 
+## [2.26.0] — 2026-11-13
+
+### Added
+
+- **`scrollFrames` for Svelte, Solid and Angular.** `svg-scroll-draw/svelte`
+  exports the `scrollFramesAction` action and `createScrollFrames(options)`
+  (`{ action, getInstance }`); `svg-scroll-draw/solid` exports
+  `useScrollFrames(options | accessor)` and `createScrollFrames(options)`
+  (`{ ref, getInstance }`); `svg-scroll-draw/angular` exports
+  `ScrollFramesRef` (`init`, `update`, `destroy`). Each binds to a `<canvas>`
+  you write, so its `role="img"` and `aria-label` are yours, and warns in
+  development when the canvas has no name (unless it is `aria-hidden="true"`
+  or `role="presentation"`). The rules are React's and Vue's from 2.25.0: a
+  `frames` function is compared by the URLs it gives, so an equal one keeps
+  the film and its loaded images; new URLs or another option start a new one;
+  callbacks are read live; `triggerElement` takes an element or a selector,
+  found when the film starts. SSR-safe, and destroyed with the component.
+
+### Fixed
+
+- **A CSS `cubic-bezier()` string as `easing` is the curve you wrote, in every
+  engine.** Every engine resolved `easing` by name only, so
+  `easing: 'cubic-bezier(.2, .8, .2, 1)'` silently ran as `linear` (or that
+  engine's default), and so did a typo like `'easeOut'`. One shared resolver
+  now takes a function, a library name, the keyword `ease` or a
+  `cubic-bezier(x1, y1, x2, y2)` string (x1 and x2 in [0, 1]), in
+  `scrollDraw`, `scrollAnimate`, `scrollReveal`, `scrollCounter`,
+  `scrollText`, `scrollVideo`, `scrollFrames`, `scrollProgress`,
+  `scrollSnap`, timelines, Cinematic stories and the hooks. The native CSS
+  path gets the same curve: a `cubic-bezier()` string no longer sends a draw
+  to the JS engine, and CSS is handed the same four numbers the JS engine
+  solves. The library's `ease-in`, `ease-out` and `ease-in-out` are still its
+  own quadratics, not the CSS keywords.
+- **Unknown easing names warn in development**, once, naming the value and the
+  valid forms, and run as the default. `steps()` is not parsed (it would cost
+  every entry its parser): pass a function, e.g. `(t) => Math.floor(t * 4) / 4`.
+- **`createLenisAdapter(…).destroy()` no longer deletes `window.scrollY`.**
+  `scrollY` and `pageYOffset` are the browser's own properties on the window
+  object, so `delete window.scrollY` removed the browser's accessor along with
+  the override, and `window.scrollY` was `undefined` for the rest of the page
+  in Chromium, Firefox and WebKit. The adapter now keeps the original property
+  descriptors and puts them back on destroy (and deletes only a property that
+  was not there before).
+- **An undrawn path paints nothing in WebKit.** Every drawing engine
+  (`scrollDraw` on both the JS and the native CSS path, timelines, Cinematic)
+  wrote `stroke-dasharray` as the path length with an equal gap. At the
+  undrawn offset the next dash then began on the path's end, and WebKit,
+  whose own measure of a diagonal line or a closed outline runs a hair past
+  that length, painted it: a round or square cap showed as a dot on paths not
+  drawn yet (Chromium and Firefox painted none). The gap is now twice the length (`L 2L`), as the site's CSS
+  tools already write; every offset stays in [0, L], so drawn and part-drawn
+  frames are unchanged.
+- **The Lenis docs are true to Lenis.** Every Lenis release so far is 1.x (2.0
+  exists only as development prereleases), and 1.x moves the real scroll
+  position on every frame (`setScroll()` calls `scrollTo()`), so it needs no
+  adapter and keeps the native CSS path. The docs, `/lenis-scroll-animation`,
+  the Locomotive Scroll comparison and the module's own comment said the
+  reverse ("v2 patches scrollY; v1 needs the adapter"). The adapter is for a
+  scroller that keeps a virtual position without moving the page. The
+  Locomotive comparison also labels `data-scroll-sticky` as v4 only.
+
+### Size
+
+- Every entry that carries an easing moved up about 0.4 KB gzipped for the
+  `cubic-bezier()` parser, its solver (eight Newton steps with a bisection
+  fallback) and the one-line warning: the main entry is 11.9 KB (was 11.5),
+  the CDN build 11.8, `react` 15.3, `vue` 15.5, `nuxt` 15.6, `reveal` 6.2,
+  `frames` 4.4, `snap` 2.4. `svelte`, `solid` and `angular` are 14.8 KB
+  each, about 2.1 KB of that for the `scrollFrames` engine and the
+  wrapper logic, which an app's bundler drops where they are not imported.
+  The main entry and `react` together are 17.0 KB. `cinematic` is 3.7 (its
+  dash now comes from the shared module the other engines use) and `lenis`
+  0.3 (was 0.2). Budgets are raised with the reasons in `scripts/size.mjs`.
+
+### Tests
+
+- 1013 unit tests across 43 suites (95 more): the Svelte, Solid and Angular
+  wrappers in `scrollFramesWrappers` (48) and the no-DOM `ssr` suite; the new
+  `resolveEasing` suite, checked against a reference solver, and a
+  `cubic-bezier()` string run through every engine's own suite; three for the
+  Lenis adapter's restore; one for the dash's gap. 339 browser tests per
+  engine (15 more), on the built files in Chromium, Firefox and WebKit: the
+  three new frames wrappers held to the React and Vue contract, a
+  `cubic-bezier()` string drawing the same frame on the native and JS
+  engines, `window.scrollY` following the real scroll after the Lenis adapter
+  is destroyed, and undrawn round-cap strokes painting no pixels (screenshots
+  against the same stage with the strokes hidden). 163 mutations (14 more),
+  each caught by the test named for it; the dash's runs in WebKit, the one
+  engine that showed the dot.
+
 ## [2.25.0] — 2026-11-13
 
 ### Added

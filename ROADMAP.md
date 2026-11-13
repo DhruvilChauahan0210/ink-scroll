@@ -1,6 +1,6 @@
 # svg-scroll-draw — Roadmap
 
-> Last updated: 2026-11-13 — 2.25.0 prepared (`<ScrollFrames>` for React and Vue)
+> Last updated: 2026-11-13 — 2.26.0 prepared (scrollFrames for Svelte, Solid and Angular; CSS `cubic-bezier()` easing strings; the Lenis adapter's restore)
 >
 > Items marked ✓ are shipped. Remaining items are ordered by value/effort ratio.
 
@@ -14,7 +14,7 @@
 - [x] `direction: 'reverse'` — erase/undraw animation
 - [x] `onProgress` callback — fires every frame with 0–1 alpha
 - [x] `onStart` / `onComplete` lifecycle hooks
-- [x] `easing` — linear, ease-in/out, spring, bounce, elastic, custom function
+- [x] `easing` — linear, ease-in/out, spring, bounce, elastic, custom function; a CSS `cubic-bezier()` string or `ease` in every engine, unknown strings warn in development (2.26.0)
 - [x] `fade`, `speed`, `once`, `debug`, `delay`, `axis`, `scrollContainer`, `threshold`, `rootMargin`
 - [x] `trigger.start` / `trigger.end` — anchor strings + percentage format
 - [x] `autoReverse` — follows scroll direction
@@ -61,6 +61,7 @@
 - [x] `scrollText` — text split + reveal animation on scroll, ships as `svg-scroll-draw/text`
 - [x] `ScrollVideo` + `ScrollText` React wrappers
 - [x] `<ScrollFrames>` for React and Vue (Nuxt re-exports it; Vue `useScrollFrames`) (2.25.0)
+- [x] scrollFrames for Svelte (`scrollFramesAction`), Solid (`useScrollFrames`) and Angular (`ScrollFramesRef`) (2.26.0)
 
 ### v2 APIs (Phase 3 — v2.2.0)
 - [x] Visual DevTools overlay — `svg-scroll-draw/devtools`, progress panel + trigger lines, dev-only
@@ -115,7 +116,11 @@
 - ~~The IntersectionObserver gate in scrollDraw, scrollCounter, scrollText, scrollVideo and useScrollDrawProgress~~ — 2.23.5 (shared core/frame-gate); Cinematic in 2.23.7.
 - ~~Scroll image sequence (Apple-style frames on a canvas)~~ — `scrollFrames` in 2.24.0, with `/scroll-image-sequence-generator` (26 tools), the `/examples/scroll-frames` recipe and the Groundtrack showcase on NASA's public-domain Landsat 8 frames, and the post `/blog/scroll-image-sequence-animation`, 2026-11-13.
 - ~~scrollFrames framework wrappers for React and Vue~~ — `<ScrollFrames>` in 2.25.0 (Nuxt re-exports it), and the generator's React tab writes it, 2026-11-13.
-- scrollFrames next: wrappers for Svelte, Solid and Angular once someone asks; request indexing for the generator, the recipe and the showcase, and review them in Search Console after 2–3 weeks.
+- ~~scrollFrames wrappers for Svelte, Solid and Angular~~ — 2.26.0, 2026-11-13.
+- ~~CSS `cubic-bezier()` strings as `easing`~~ — they silently ran as the default; every engine and the native path take them in 2.26.0, 2026-11-13.
+- ~~The Lenis story~~ — Lenis 1.x scrolls the real page and needs no adapter; the docs, the Lenis page and the Locomotive comparison said otherwise, corrected with the adapter's `destroy()` fix in 2.26.0, 2026-11-13.
+- ~~WebKit cap dot on undrawn paths~~ — the draw dash is `L 2L` in every engine, 2.26.0, 2026-11-13.
+- Next: the GSAP benchmark's full ~1 h run on `feat/gsap-bench` (idle machine); request indexing for the new pages (the generators, the recipe, the showcase, the new posts) and review them in Search Console after 2–3 weeks; a shadcn directory listing (needs an SVG logo and signed commits by the owner); the awesome-list PR drafts in `reports/awesome-list-prs-2026-11-13.md`, for the owner to submit.
 - ~~Stacking cards and scroll marquee generators~~ — `/stacking-cards-scroll-generator` and `/scroll-marquee-generator` (28 tools), 2026-11-13.
 - ~~Handwriting animation generator~~ — `/handwriting-animation-generator` (29 tools), Hershey single-stroke fonts, 2026-11-13.
 - scrollDraw on round-capped paths in WebKit: a dot at the end of each path not yet drawn (the dash's gap equals the length, so the next, empty dash starts at the end). Write the gap as twice the length, with a browser test that counts pixels before the draw; then the handwriting generator's scroll version can go back to round caps.
@@ -150,7 +155,7 @@
 - [x] **Scroll callbacks** — `onEnter`, `onLeave`, `onEnterBack`, `onLeaveBack` on `ScrollDrawOptions` + `ScrollAnimateOptions`
 - [x] **`scrollPin`** (`svg-scroll-draw/pin`) — pin elements at a viewport position with wrapper-based layout, `pinDistance`, `top`, full lifecycle callbacks, `refresh()`
 - [x] **`scrollSnap`** (`svg-scroll-draw/snap`) — JS section snapping with custom easing, threshold, `snapTo()`, `getCurrentIndex()`, `onSnap`
-- [x] **`createLenisAdapter`** (`svg-scroll-draw/lenis`) — Lenis v1 adapter that patches `window.scrollY`
+- [x] **`createLenisAdapter`** (`svg-scroll-draw/lenis`) — patches `window.scrollY` for a scroller that keeps a virtual position (Lenis 1.x scrolls the real page and needs none); `destroy()` restores the browser's property (2.26.0)
 
 ---
 

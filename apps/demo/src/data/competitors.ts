@@ -51,7 +51,7 @@ export const MEASURED_ON = '2026-08-14';
 export const SELF: Competitor = {
   name: 'svg-scroll-draw',
   label: 'svg-scroll-draw (all APIs)',
-  version: '2.25.0',
+  version: '2.26.0',
   license: 'MIT',
   gzipKb: 11.9,
   lastPublish: '2026-08-14',
@@ -84,10 +84,10 @@ export const SELF_ENTRIES: Record<string, number> = {
   // Each framework landing quotes its own entry, wrapper and engines included.
   vue: 15.5,
   nuxt: 15.6,
-  svelte: 14.7,
-  solid: 14.7,
+  svelte: 14.8,
+  solid: 14.8,
   angular: 14.8,
-  astro: 12.3,
+  astro: 12.4,
 };
 
 export const COMPETITORS: Record<string, Competitor> = {
@@ -234,7 +234,7 @@ export const COMPETITORS: Record<string, Competitor> = {
     command: 'npm pack lenis@1.3.26 && gzip -9 package/dist/lenis.min.js',
     measured: true,
     caveat:
-      'Not a competitor. Lenis does smooth scrolling; this library does scroll-driven animation. They are designed to be used together, and svg-scroll-draw ships an adapter at svg-scroll-draw/lenis for Lenis v1.',
+      'Not a competitor. Lenis does smooth scrolling; this library does scroll-driven animation. They are designed to be used together, with no adapter: Lenis 1.x moves the real scroll position, so window.scrollY is always right.',
   },
   scrollSvg: {
     name: 'scroll-svg',

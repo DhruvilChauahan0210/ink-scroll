@@ -259,18 +259,18 @@ describe('createEngine — morphTo', () => {
     it('a longer target: drawn whole at 1, hidden at 0', () => {
       const path = measured(SHORT);
       const instance = createEngine(makeContainer([path]), { morphTo: LONG });
-      expect(path.style.strokeDasharray).toBe('300');
+      expect(path.style.strokeDasharray).toBe('300 600');
       expect(path.style.strokeDashoffset).toBe('300'); // ≥ the 100 the path is now
       instance.seek(1);
       expect(path.getAttribute('d')).toBe('M0 0 L300 0');
       expect(path.style.strokeDashoffset).toBe('0');
-      expect(path.style.strokeDasharray).toBe('300');
+      expect(path.style.strokeDasharray).toBe('300 600');
     });
 
     it('a shorter target keeps the starting length', () => {
       const path = measured(LONG);
       createEngine(makeContainer([path]), { morphTo: SHORT });
-      expect(path.style.strokeDasharray).toBe('300');
+      expect(path.style.strokeDasharray).toBe('300 600');
     });
 
     it('a re-measure mid-morph reads both ends, and leaves the path where it was', () => {
@@ -279,7 +279,7 @@ describe('createEngine — morphTo', () => {
       instance.seek(0.5);
       const mid = path.getAttribute('d');
       instance.refresh!();
-      expect(path.style.strokeDasharray).toBe('300');
+      expect(path.style.strokeDasharray).toBe('300 600');
       expect(path.getAttribute('d')).toBe(mid);
     });
 
@@ -290,7 +290,7 @@ describe('createEngine — morphTo', () => {
       const path = measured(SHORT);
       createEngine(makeContainer([path]), { morphTo: LONG });
       expect(path.getAttribute('d')).toBe(LONG);
-      expect(path.style.strokeDasharray).toBe('300');
+      expect(path.style.strokeDasharray).toBe('300 600');
       expect(path.style.strokeDashoffset).toBe('0');
     });
   });
@@ -306,7 +306,7 @@ describe('createEngine — pathLength', () => {
     const path = makePath({ d: 'M10 50 L290 50', pathLength: '1' });
     (path as unknown as { getTotalLength: () => number }).getTotalLength = () => 280;
     const instance = createEngine(makeContainer([path]), {});
-    expect(path.style.strokeDasharray).toBe('1');
+    expect(path.style.strokeDasharray).toBe('1 2');
     expect(path.style.strokeDashoffset).toBe('1');
     instance.seek(0.5);
     expect(path.style.strokeDashoffset).toBe('0.5');
@@ -1203,12 +1203,12 @@ describe('createEngine — resize handler', () => {
     window.dispatchEvent(new Event('resize'));
 
     // Before debounce fires: dasharray is still the original
-    expect(path.style.strokeDasharray).toBe('100');
+    expect(path.style.strokeDasharray).toBe('100 200');
 
     // After debounce delay: recalculation runs
     vi.advanceTimersByTime(150);
 
-    expect(path.style.strokeDasharray).toBe('100');
+    expect(path.style.strokeDasharray).toBe('100 200');
   });
 });
 

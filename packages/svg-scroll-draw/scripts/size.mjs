@@ -90,7 +90,12 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
  * ran such a string as its default without a word. Kept to 0.4 KB on purpose:
  * steps() is not parsed, there is no parse cache, and the warning is one short
  * sentence. Each budget is the build rounded up to the next 0.1 KB, plus 0.1.
- * The drop-ins, pin, devtools and lenis carry no easing and did not move.
+ * The drop-ins, pin, devtools and lenis carry no easing and did not move for it;
+ * lenis went 0.2 -> 0.3 in the same release for its own fix (destroy() puts
+ * the browser's window.scrollY back instead of deleting it), inside its budget.
+ * The dash fix in the same release (core/dash.ts, `L 2L` so WebKit paints no
+ * cap dot on an undrawn path) is a shared module: main + react 16.87 -> about
+ * 16.95 and cinematic 3.6 -> 3.7, both inside their budgets.
  */
 const BUDGETS_KB = {
   '.':              12.0,

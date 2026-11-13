@@ -115,8 +115,26 @@ describe('createEngine — initialization', () => {
     const path = makeSvgPath();
     const container = makeContainer([path]);
     createEngine(container);
-    expect(path.style.strokeDasharray).toBe('100');
+    expect(path.style.strokeDasharray).toBe('100 200');
     expect(path.style.strokeDashoffset).toBe('100');
+  });
+
+  // 2.26.0: the dash was `len len`. At offset len the next dash then starts
+  // exactly on the path's end, and WebKit paints that zero-length dash, so a
+  // round cap showed as a dot at the end of every undrawn path.
+  it('leaves a gap at least twice the line, so every offset from 0 to len ends inside it', () => {
+    const path = makeSvgPath();
+    const instance = createEngine(makeContainer([path]));
+    const check = () => {
+      const [dash, gap] = path.style.strokeDasharray.split(' ').map(Number);
+      expect(dash).toBe(100);
+      expect(gap).toBeGreaterThanOrEqual(2 * dash);
+    };
+    check();
+    instance.seek(0.5);
+    check();
+    instance.refresh!();
+    check();
   });
 
   it('sets opacity to 0 when fade=true', () => {

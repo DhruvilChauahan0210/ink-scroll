@@ -3,6 +3,7 @@ import { resolveEasing } from './easing';
 import { parseTrigger, computeProgress, computeTriggers } from './trigger';
 import { measureTriggerFrame } from './trigger-frame';
 import { getElementLength } from './geometry';
+import { dashFor } from './dash';
 import { lerpColor } from './color';
 import { PRESETS } from './presets';
 import { IS_DEV, warn as warnDev } from './env';
@@ -449,7 +450,7 @@ function buildEngine(
       return;
     }
     paths.forEach((el, i) => {
-      el.style.strokeDasharray  = `${lengths[i]}`;
+      el.style.strokeDasharray  = dashFor(lengths[i]);
       el.style.strokeDashoffset = direction === 'reverse' ? '0' : `${lengths[i]}`;
       if (fade) el.style.opacity = direction === 'reverse' ? '1' : '0';
       else el.style.opacity = '';
@@ -479,7 +480,7 @@ function buildEngine(
       el.setAttribute('d', d!);
     }
     lengths[i] = len;
-    el.style.strokeDasharray = `${len}`;
+    el.style.strokeDasharray = dashFor(len);
   }
 
   // ── Init paths ────────────────────────────────────────────────────────────
@@ -612,7 +613,7 @@ function buildEngine(
 
     function attach(el: SVGElement, i: number): void {
       el.style.setProperty('--ssd-len', String(lengths[i]));
-      el.style.strokeDasharray  = `${lengths[i]}`;
+      el.style.strokeDasharray  = dashFor(lengths[i]);
       el.style.strokeDashoffset = '';
       el.style.opacity          = '';
       el.style.animationPlayState = '';

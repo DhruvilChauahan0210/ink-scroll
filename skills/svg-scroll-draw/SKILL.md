@@ -42,7 +42,7 @@ Docs: https://svg-scroll-draw.vercel.app/docs · LLM summary: https://svg-scroll
 | Several at once / in sequence | `svg-scroll-draw/group` | `scrollDrawGroup`, `scrollDrawSequence`, `scrollAnimateGroup`, `scrollAnimateSequence`, `scrollParallaxGroup` |
 | Independent windows per path group | `svg-scroll-draw/timeline` | `scrollDrawTimeline(el, { tracks })` |
 | Debug overlay (dev only) | `svg-scroll-draw/devtools` | `devtools.enable()` |
-| Lenis **v1** smooth scroll | `svg-scroll-draw/lenis` | `createLenisAdapter(lenis)` (Lenis v2+ needs nothing) |
+| A smooth scroller that keeps a **virtual** position (not Lenis) | `svg-scroll-draw/lenis` | `createLenisAdapter(scroller)` (Lenis 1.x scrolls the real page and needs nothing) |
 
 Framework wrappers: `/react`, `/vue`, `/nuxt`, `/svelte`, `/solid`, `/angular`,
 `/astro`, `/web-component`. Full signatures and options: `references/api.md`.
@@ -138,12 +138,12 @@ const svgWrap = useScrollDraw({ easing: 'ease-out', fade: true });
 **CDN, no build** — the global build exposes the main entry as `SvgScrollDraw` and registers `<scroll-draw>`:
 
 ```html
-<script src="https://unpkg.com/svg-scroll-draw@2.25.0/dist/cdn/svg-scroll-draw.global.js"></script>
+<script src="https://unpkg.com/svg-scroll-draw@2.26.0/dist/cdn/svg-scroll-draw.global.js"></script>
 <script>SvgScrollDraw.scrollDraw('#logo', { easing: 'ease-out' });</script>
 ```
 
 For other entries without a bundler, import the self-contained ESM file:
-`import { scrollReveal } from 'https://cdn.jsdelivr.net/npm/svg-scroll-draw@2.25.0/dist/reveal/index.mjs'`.
+`import { scrollReveal } from 'https://cdn.jsdelivr.net/npm/svg-scroll-draw@2.26.0/dist/reveal/index.mjs'`.
 
 ## SSR safety
 
@@ -175,7 +175,7 @@ own media-query guard on top.
 - GSAP-style trigger offsets like `'top+=100 center'`, `'+=500'` or `'50% 50%'` (element percentages): not supported. Use anchors and viewport percentages; for pin length use `pinDistance` (pixels, or `'200vh'` for a share of the viewport height).
 - Inventing options. If it is not in `references/api.md`, it does not exist.
 - Expecting native CSS on configs that use `once`, `stagger`, callbacks, a custom trigger, `speed ≠ 1`, `spring`/`bounce`/`elastic`/function easing or a custom `scrollContainer`: those correctly fall back to JS. That is fine; do not "fix" it.
-- Adding Lenis adapter for Lenis v2+: not needed.
+- Adding the Lenis adapter for Lenis: not needed. Every Lenis release so far is 1.x and moves the real scroll position, so `window.scrollY` is already right.
 
 ## Migrating from GSAP ScrollTrigger
 

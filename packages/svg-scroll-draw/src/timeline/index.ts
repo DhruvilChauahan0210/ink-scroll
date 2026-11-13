@@ -1,6 +1,7 @@
 import { resolveEasing } from '../core/easing';
 import { parseTrigger, computeProgress, computeTriggers } from '../core/trigger';
 import { getElementLength } from '../core/geometry';
+import { dashFor } from '../core/dash';
 import { prefersReducedMotion } from '../core/motion';
 import { watchReducedMotion } from '../core/motion-watch';
 import { warn } from '../core/env';
@@ -184,7 +185,7 @@ export function scrollDrawTimeline(
     const lengths  = elements.map((el) => getElementLength(el));
     elements.forEach((el, i) => {
       if (!savedInline.has(el)) savedInline.set(el, el.getAttribute('style') ?? '');
-      el.style.strokeDasharray  = `${lengths[i]}`;
+      el.style.strokeDasharray  = dashFor(lengths[i]);
       el.style.strokeDashoffset = `${lengths[i]}`;
       if (track.fade) el.style.opacity = '0';
     });
@@ -391,7 +392,7 @@ export function scrollDrawTimeline(
       trackData.forEach(({ elements, lengths }) => {
         elements.forEach((el, i) => {
           lengths[i] = getElementLength(el);
-          el.style.strokeDasharray = `${lengths[i]}`;
+          el.style.strokeDasharray = dashFor(lengths[i]);
         });
       });
       cacheTriggers();

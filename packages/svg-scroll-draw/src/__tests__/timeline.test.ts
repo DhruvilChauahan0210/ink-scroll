@@ -121,7 +121,7 @@ describe('scrollDrawTimeline — initialisation', () => {
       tracks: [{ selector: '.line', from: 0, to: 1 }],
     });
     const path = container.querySelector('.line') as SVGPathElement;
-    expect(path.style.strokeDasharray).toBe('100');
+    expect(path.style.strokeDasharray).toBe('100 200');
   });
 
   it('initialises strokeDashoffset to full length (hidden)', () => {

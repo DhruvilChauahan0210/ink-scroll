@@ -55,6 +55,19 @@ const KINDS: { k: Kind; label: string }[] = [
  */
 const RELEASES: Release[] = [
   {
+    version: '2.26.0',
+    title: 'scrollFrames for Svelte, Solid and Angular; CSS easing strings',
+    date: '2026-11-13',
+    items: [
+      { type: 'new', text: 'scrollFrames in svg-scroll-draw/svelte (scrollFramesAction, createScrollFrames), svg-scroll-draw/solid (useScrollFrames, createScrollFrames) and svg-scroll-draw/angular (ScrollFramesRef). Each binds to a canvas you write, warns in development when it has no name, keeps the film while its URLs are the same, reads callbacks live and takes triggerElement as an element or a selector.' },
+      { type: 'fix', text: 'easing: \'cubic-bezier(…)\' is the curve you wrote, in every engine; it used to run as linear (or the engine’s default) without a word. The keyword ease works too, and the native CSS path gets the same curve. Any other string, such as a typo, warns in development; steps() is not parsed, so pass a function for a stepped curve.' },
+      { type: 'fix', text: 'In WebKit, a path not drawn yet no longer shows a dot where a round or square cap was: the dash’s gap is now twice the path length, in scrollDraw (both engines), timelines and Cinematic.' },
+      { type: 'fix', text: 'createLenisAdapter’s destroy() puts the browser’s own window.scrollY and pageYOffset back instead of deleting them, which had left window.scrollY undefined.' },
+      { type: 'site', text: 'The Lenis docs, /lenis-scroll-animation and the Locomotive Scroll comparison now say what Lenis does: every release so far is 1.x, which scrolls the real page, so it needs no adapter. data-scroll-sticky is labelled as Locomotive v4.' },
+      { type: 'test', text: '95 unit tests, 15 browser tests per engine and 14 mutations, each caught.' },
+    ],
+  },
+  {
     version: '2.25.0',
     title: '<ScrollFrames> for React and Vue',
     date: '2026-11-13',

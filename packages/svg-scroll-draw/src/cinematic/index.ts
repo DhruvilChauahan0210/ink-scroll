@@ -1,4 +1,5 @@
 import { resolveEasing } from '../core/easing';
+import { dashFor } from '../core/dash';
 import { warn } from '../core/env';
 import { _register, _unregister } from '../core/registry';
 import { watchReducedMotion } from '../core/motion-watch';
@@ -118,7 +119,7 @@ export class Cinematic {
           path.setAttribute('stroke-linecap', 'round');
           path.setAttribute('stroke-linejoin', 'round');
           const len = a.length || path.getTotalLength?.() || 0;
-          path.style.strokeDasharray = String(len);
+          path.style.strokeDasharray = dashFor(len);
           path.style.strokeDashoffset = String(len);
           svg.appendChild(path);
           records.push({

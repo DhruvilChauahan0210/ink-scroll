@@ -243,7 +243,7 @@ export const VERSUS: Versus[] = [
     verdict:
       'Pick Locomotive for smooth scrolling with simple in-view triggers. Pick this for the animation itself — and note you can run both, since v5 is Lenis-based.',
     rows: [
-      { feature: 'Smooth / eased scrolling', us: false, them: true, note: 'Not something we do or plan to — it is Lenis’s job, and we ship an adapter for it' },
+      { feature: 'Smooth / eased scrolling', us: false, them: true, note: 'Not something we do or plan to — it is Lenis’s job, and Lenis needs no adapter to work with us' },
       { feature: 'In-view detection', us: true, them: true },
       { feature: 'Scroll progress value', us: true, them: true, note: 'Ours is exposed as a CSS custom property so you can drive CSS without a callback' },
       { feature: 'SVG path draw', us: true, them: false },
@@ -251,7 +251,7 @@ export const VERSUS: Versus[] = [
       { feature: 'Text split + stagger', us: true, them: false },
       { feature: 'Number counters', us: true, them: false },
       { feature: 'Video scrub', us: true, them: false },
-      { feature: 'Pin / sticky sections', us: true, them: 'partial', note: 'Data-scroll-sticky covers the basic case' },
+      { feature: 'Pin / sticky sections', us: true, them: 'partial', note: 'data-scroll-sticky (v4) covers the basic case' },
       { feature: 'Parallax', us: true, them: true },
       { feature: 'Horizontal scroll sections', us: true, them: true },
       { feature: 'Config in HTML attributes', us: false, them: true, note: 'A genuine preference difference, not a defect either way' },
@@ -270,7 +270,7 @@ export const VERSUS: Versus[] = [
       },
       {
         q: 'Can I use Locomotive Scroll with svg-scroll-draw?',
-        a: 'Yes. Locomotive v5 is built on Lenis, and Lenis v2 and later patch window.scrollY natively, so our engines read the correct value with no adapter. For Lenis v1 there is an adapter at svg-scroll-draw/lenis.',
+        a: 'Yes, with no adapter. Locomotive v5 is built on Lenis 1.x, which moves the real scroll position on every frame (its setScroll() calls scrollTo()), so window.scrollY follows the smooth scroll and our engines, the native CSS path included, read the correct value.',
       },
       {
         q: 'Which is smaller?',

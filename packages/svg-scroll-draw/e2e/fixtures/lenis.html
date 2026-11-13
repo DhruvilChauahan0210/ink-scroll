@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>createLenisAdapter — override and restore window.scrollY</title>
+<style>
+  html { scroll-behavior: auto; }
+  body { margin: 0; }
+  #tall { height: 4000px; background: linear-gradient(#eee, #ccc); }
+</style>
+</head>
+<body>
+
+<div id="tall"></div>
+
+<script type="module">
+import { createLenisAdapter } from '/dist/lenis/index.mjs';
+import { publish } from './_probe.mjs';
+
+// A stand-in for a scroller that reports a virtual position without moving the
+// page, which is the case the adapter exists for.
+const listeners = new Set();
+const scroller = {
+  on: (_e, cb) => listeners.add(cb),
+  off: (_e, cb) => listeners.delete(cb),
+  emit: (scroll) => listeners.forEach((cb) => cb({ scroll, velocity: 0, direction: 1, progress: 0 })),
+};
+
+let adapter = null;
+
+const frames = (n) => new Promise((r) => {
+  const step = () => (n-- <= 0 ? r() : requestAnimationFrame(step));
+  step();
+});
+
+publish({
+  /** What the page reads for its scroll position, and what really scrolled. */
+  read: () => ({
+    scrollY: window.scrollY,
+    pageYOffset: window.pageYOffset,
+    scrollYType: typeof window.scrollY,
+    real: document.scrollingElement.scrollTop,
+    ownScrollY: Object.prototype.hasOwnProperty.call(window, 'scrollY'),
+  }),
+  create: () => { adapter = createLenisAdapter(scroller); },
+  emit: (y) => scroller.emit(y),
+  destroy: () => { adapter.destroy(); adapter = null; },
+  scrollTo: async (y) => { window.scrollTo(0, y); await frames(2); },
+});
+</script>
+</body>
+</html>

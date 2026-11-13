@@ -308,7 +308,10 @@ scrollAnimate('#badge', {
   easing: createSpring({ tension: 3, friction: 1.8 }),
 });
 
-// Any function of t, like cubicBezier() above.
+// A CSS curve, written as you would in a stylesheet (2.26.0+).
+scrollDraw('#logo', { easing: '${cssOf(OUT_BACK.v)}' });
+
+// Any function of t, like cubicBezier() above: the same curve.
 scrollDraw('#logo', { easing: cubicBezier(${join(OUT_BACK.v)}) });`;
 
 export default function Page() {
@@ -565,7 +568,8 @@ export default function Page() {
 
       <Section id="library" k="svg-scroll-draw" title="Easing in svg-scroll-draw">
         <p>
-          svg-scroll-draw’s <code>easing</code> option takes one of {EASING_NAMES.length} names or any function of t.
+          svg-scroll-draw’s <code>easing</code> option takes one of {EASING_NAMES.length} names, a CSS{' '}
+          <code>cubic-bezier()</code> string, or any function of t.
           The time is how far the scroll is through the trigger window, so the easing decides how much of the motion
           each stretch of scroll gets. {list(DEFAULT_LINEAR)} default to <code>linear</code>; {list(DEFAULT_OUT)}{' '}
           default to <code>ease-out</code>.
@@ -578,19 +582,23 @@ export default function Page() {
             NAMED_INFO[n].formula,
             EXACT_CSS[n] ? <code key="c">{EXACT_CSS[n]}</code> : <code key="c">linear()</code>,
           ])}
-          caption={<>The names and their maths, from svg-scroll-draw’s core/easing.ts. With {list(NATIVE_EASINGS.map((n) => `'${n}'`))}, scrollDraw and scrollAnimate can hand the animation to the browser’s own scroll timeline.</>}
+          caption={<>The names and their maths, from svg-scroll-draw’s core/easing.ts. With {list(NATIVE_EASINGS.map((n) => `'${n}'`))} or a <code>cubic-bezier()</code> string, scrollDraw and scrollAnimate can hand the animation to the browser’s own scroll timeline.</>}
         />
         <p>
           The names are the library’s own curves, not the CSS keywords. Its <code>ease-out</code> is t(2 − t), up
           to {v3(OUT_GAP)} away from CSS’s <code>ease-out</code>, and is exactly the cubic-bezier in the table, so
-          when the library hands an animation to the browser it writes that and not the keyword. For a CSS curve, pass
-          the <code>cubicBezier()</code> function above.
+          when the library hands an animation to the browser it writes that and not the keyword. For a CSS curve, write
+          the <code>cubic-bezier()</code> itself, as in a stylesheet: since 2.26.0 the library solves it the way{' '}
+          <code>cubicBezier()</code> above does, and hands the browser’s scroll timeline the same four numbers. The
+          keyword <code>ease</code> works too.
         </p>
-        <Callout k="a string is a name">
-          Only the names in the table work as strings. In plain JavaScript, <code>{"easing: 'cubic-bezier(…)'"}</code> or a
-          misspelt name falls back to the function’s default easing without an error; TypeScript rejects both. Pass
-          a function instead, and use <code>createSpring</code>, <code>createBounce</code> or{' '}
-          <code>createElastic</code> for the swinging curves with your own numbers.
+        <Callout k="before 2.26.0">
+          Only the names in the table worked as strings: in plain JavaScript, <code>{"easing: 'cubic-bezier(…)'"}</code>{' '}
+          ran as the function’s default easing without an error. Since 2.26.0 it is the curve you wrote, and anything
+          else, a misspelt name or a <code>steps()</code>, logs a warning in development before falling back;
+          TypeScript rejects both. <code>steps()</code> is not parsed, so pass a function for a stepped curve, and
+          use <code>createSpring</code>, <code>createBounce</code> or <code>createElastic</code> for the swinging
+          curves with your own numbers.
         </Callout>
       </Section>
 

@@ -2431,45 +2431,41 @@ scrollAnimate('#hero-img', {
           {/* ── v2.7.0 — Lenis Adapter ───────────────────────── */}
           <DocSection id="lenis-adapter" tag="v2.7.0" heading="Lenis Adapter">
             <p className="text-sm text-graphite-border leading-relaxed mb-2">
-              Lenis v2+ patches <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">window.scrollY</code> natively — no adapter needed, svg-scroll-draw works out of the box.
-              For Lenis v1 (which uses a virtual scroll value), use <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">createLenisAdapter</code> to keep all engines in sync.
+              Lenis needs no adapter. Every Lenis release so far is 1.x (2.0 exists only as development prereleases), and on every frame
+              it moves the real scroll position: its <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">setScroll()</code> calls <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">scrollTo()</code>, so{' '}
+              <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">window.scrollY</code> follows the eased scroll and every engine, the native CSS path included, works out of the box.
+            </p>
+            <p className="text-sm text-graphite-border leading-relaxed mb-2">
+              <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">createLenisAdapter</code> is for a scroller that keeps a virtual position and never moves the page: anything with
+              Lenis’s <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">{"on('scroll')"}</code> / <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">{"off('scroll')"}</code> shape. It patches{' '}
+              <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">window.scrollY</code> and <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">window.pageYOffset</code> to that value; pass{' '}
+              <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">native: false</code> there, since CSS reads the real position. <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">destroy()</code> puts the
+              browser’s own properties back (2.26.0+; before that it deleted them and left <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">window.scrollY</code> undefined).
             </p>
             <CodeBlock file="index.js">
-{`import Lenis from '@studio-freight/lenis'; // Lenis v1
-import { createLenisAdapter } from 'svg-scroll-draw/lenis';
+{`// ── Lenis (no adapter needed) ─────────────────────────────────────
+import Lenis from 'lenis';
 import { scrollAnimate } from 'svg-scroll-draw';
 
-// 1. Create Lenis
-const lenis = new Lenis({ duration: 1.2, easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)) });
-
-// 2. Patch window.scrollY so all svg-scroll-draw engines read the virtual scroll
-const adapter = createLenisAdapter(lenis);
-
-// 3. Use svg-scroll-draw as normal
-scrollAnimate('#hero', {
-  props: { opacity: [0, 1], transform: ['translateY(40px)', 'translateY(0)'] },
-  once: true,
-});
-
-// 4. Drive Lenis with rAF
+const lenis = new Lenis();
 function raf(time) {
   lenis.raf(time);
   requestAnimationFrame(raf);
 }
 requestAnimationFrame(raf);
 
-// 5. Cleanup
-adapter.destroy();
-lenis.destroy();
+// Lenis scrolls the real page, so svg-scroll-draw just works
+scrollAnimate('#hero', { props: { opacity: [0, 1] }, once: true });
 
-// ── Lenis v2 (no adapter needed) ──────────────────────────────────
-import Lenis from 'lenis'; // v2 patches window.scrollY natively
+// ── A scroller that keeps a virtual position ──────────────────────
+import { createLenisAdapter } from 'svg-scroll-draw/lenis';
 
-const lenis = new Lenis();
-lenis.on('scroll', ScrollTrigger.update); // optional if mixing with other libs
+// emits 'scroll' with { scroll, velocity, direction, progress }
+const adapter = createLenisAdapter(scroller);
+scrollAnimate('#hero', { props: { opacity: [0, 1] }, native: false });
 
-// svg-scroll-draw just works
-scrollAnimate('#hero', { props: { opacity: [0, 1] }, once: true });`}
+// Cleanup: restores the browser's own window.scrollY
+adapter.destroy();`}
             </CodeBlock>
           </DocSection>
 

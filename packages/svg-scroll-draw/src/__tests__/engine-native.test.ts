@@ -93,7 +93,7 @@ describe('native fast path — activation', () => {
     expect(nativeStyle()).not.toBeNull();
     expect(nativeClass(path)).toBeTruthy();
     expect(path.style.getPropertyValue('--ssd-len')).toBe('100');
-    expect(path.style.strokeDasharray).toBe('100');
+    expect(path.style.strokeDasharray).toBe('100 200');
     // No scroll listener, observer or rAF loop is set up on the native path.
     expect(jsLoops()).toBe(0);
   });

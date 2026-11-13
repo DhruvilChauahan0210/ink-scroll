@@ -87,6 +87,51 @@ describe('createLenisAdapter', () => {
     expect(adapter.getScrollY()).toBe(100);
   });
 
+  // 2.26.0: destroy() used to `delete window.scrollY`, and in a browser that
+  // deletes the browser's own accessor (Window is a [Global] interface, so it
+  // lives on the window object itself), leaving window.scrollY undefined.
+  it('destroy() puts back the original scrollY and pageYOffset descriptors', () => {
+    const before = {
+      scrollY: Object.getOwnPropertyDescriptor(window, 'scrollY'),
+      pageYOffset: Object.getOwnPropertyDescriptor(window, 'pageYOffset'),
+    };
+    expect(before.scrollY).toBeDefined();
+
+    const lenis   = makeFakeLenis();
+    const adapter = createLenisAdapter(lenis as never);
+    lenis.emit('scroll', { scroll: 250, velocity: 0, direction: 1, progress: 0.2 });
+    expect(window.scrollY).toBe(250);
+
+    adapter.destroy();
+    expect(Object.getOwnPropertyDescriptor(window, 'scrollY')).toEqual(before.scrollY);
+    expect(Object.getOwnPropertyDescriptor(window, 'pageYOffset')).toEqual(before.pageYOffset);
+    expect(typeof window.scrollY).toBe('number');
+    expect(window.scrollY).toBe(0);
+  });
+
+  it('destroy() restores a browser-style accessor, so scrollY follows the real scroll again', () => {
+    let real = 40;
+    const getter = () => real;
+    Object.defineProperty(window, 'scrollY', { get: getter, configurable: true, enumerable: true });
+
+    const lenis   = makeFakeLenis();
+    const adapter = createLenisAdapter(lenis as never);
+    lenis.emit('scroll', { scroll: 900, velocity: 0, direction: 1, progress: 0.9 });
+    expect(window.scrollY).toBe(900);
+
+    adapter.destroy();
+    expect(Object.getOwnPropertyDescriptor(window, 'scrollY')?.get).toBe(getter);
+    real = 75;
+    expect(window.scrollY).toBe(75);
+  });
+
+  it('destroy() before any scroll event leaves scrollY untouched', () => {
+    const before = Object.getOwnPropertyDescriptor(window, 'scrollY');
+    const adapter = createLenisAdapter(makeFakeLenis() as never);
+    adapter.destroy();
+    expect(Object.getOwnPropertyDescriptor(window, 'scrollY')).toEqual(before);
+  });
+
   it('returns NOOP in SSR environment', () => {
     // Temporarily remove window
     const origWindow = global.window;

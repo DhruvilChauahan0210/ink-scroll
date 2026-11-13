@@ -12,7 +12,7 @@ const SITE_URL = "https://svg-scroll-draw.vercel.app";
 // template, its component or its data file. `npm run sitemap:dates` rewrites
 // these alongside the literal entries below — never type them by hand.
 const FRAMEWORK_PAGES_DATE = "2026-11-13";
-const VERSUS_PAGES_DATE = "2026-11-07";
+const VERSUS_PAGES_DATE = "2026-11-13";
 const EXAMPLE_PAGES_DATE = "2026-11-13";
 const GUIDE_PAGES_DATE = "2026-11-13";
 
@@ -310,7 +310,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })),
     {
       url: `${SITE_URL}/lenis-scroll-animation`,
-      lastModified: new Date("2026-11-07"),
+      lastModified: new Date("2026-11-13"),
       changeFrequency: "monthly" as const,
       priority: 0.8,
     },

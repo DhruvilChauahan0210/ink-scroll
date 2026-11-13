@@ -30,7 +30,9 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
  * Each entry breaks exactly one behaviour, and names the single test that exists
  * to catch it. `from` must appear exactly once in the file — an ambiguous or
  * missing anchor is reported as a broken mutation rather than silently skipped,
- * which is what would otherwise happen after an innocent refactor.
+ * which is what would otherwise happen after an innocent refactor. `project`
+ * names the browser the test runs in, Chromium unless a behaviour is one only
+ * another engine shows.
  */
 const MUTATIONS = [
   {
@@ -1555,6 +1557,30 @@ const MUTATIONS = [
     spec: 'e2e/parity.spec.ts',
     grep: 'a CSS cubic-bezier\\(\\) string renders the same curve on both engines',
   },
+  // 2.26.0: destroy() deleted the override, and with it the browser's own
+  // scrollY accessor, so window.scrollY was undefined afterwards.
+  {
+    id: 'lenis/destroy-deletes-scrolly',
+    what: 'destroy() deletes window.scrollY instead of restoring the browser\'s own property',
+    file: 'src/lenis/index.ts',
+    from: '          if (desc) Object.defineProperty(window, key, desc);',
+    to: '          if (desc && (false as boolean)) Object.defineProperty(window, key, desc);',
+    spec: 'e2e/lenis.spec.ts',
+    grep: 'destroy\\(\\) gives back a window.scrollY that follows the real scroll',
+  },
+  // 2.26.0: the dash had an equal gap, so at the undrawn offset the next dash
+  // began on the path's end and WebKit painted its round cap as a dot. Only
+  // WebKit paints it, so this one runs there.
+  {
+    id: 'dash/equal-gap',
+    what: 'the dash gets an equal gap again, so WebKit paints a cap dot at the end of every undrawn path',
+    file: 'src/core/dash.ts',
+    from: '  return `${len} ${len * 2}`;',
+    to: '  return `${len}`;',
+    spec: 'e2e/round-cap.spec.ts',
+    grep: 'an undrawn round-cap path paints no pixels',
+    project: 'webkit',
+  },
 ];
 
 const args = process.argv.slice(2);
@@ -1598,14 +1624,14 @@ function build() {
 }
 
 /** Returns true when the targeted test FAILED, which is the outcome we want. */
-function testFails(spec, grep) {
+function testFails(spec, grep, project = 'chromium') {
   try {
     run('npx', [
       'playwright',
       'test',
       '--config',
       'e2e/playwright.config.ts',
-      '--project=chromium',
+      `--project=${project}`,
       '--reporter=line',
       spec,
       '-g',
@@ -1649,7 +1675,7 @@ for (const m of selected) {
   try {
     writeFileSync(path, original.replace(m.from, m.to));
     build();
-    const caught = testFails(m.spec, m.grep);
+    const caught = testFails(m.spec, m.grep, m.project);
     results.push({ id: m.id, status: caught ? 'caught' : 'MISSED', detail: m.what });
     console.log(`  ${caught ? 'caught  ' : 'MISSED  '} ${m.id} — ${m.what}`);
   } catch (err) {

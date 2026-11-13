@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Undrawn round-cap strokes paint nothing</title>
+<style>
+  html { scroll-behavior: auto; background: #fff; }
+  body { margin: 0; background: #fff; }
+  .stage { display: inline-block; width: 280px; height: 280px; margin: 8px; background: #fff; }
+  .stage > * { fill: none; stroke: #000; stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
+  .hide > * { visibility: hidden; }
+  #after { height: 1600px; }
+</style>
+</head>
+<body>
+
+<!-- Thirteen round-cap strokes in each stage: diagonal lines and closed
+     outlines among them, the shapes WebKit's dash left a dot on. -->
+<template id="art">
+  <line x1="10" y1="10" x2="130" y2="130" />
+  <path d="M20 20 L120 20 L120 120 Z" />
+  <line x1="10" y1="130" x2="60" y2="80" />
+  <path d="M75 125 L130 70" />
+  <polyline points="10,40 30,70 50,40" />
+  <path d="M80 10 Q105 50 130 10" />
+  <path d="M10 95 C25 70 40 120 55 95" />
+  <path d="M90 90 L130 90 L110 125 Z" />
+  <polygon points="20,60 40,60 30,78" />
+  <line x1="65" y1="35" x2="95" y2="60" />
+  <path d="M15 135 L45 120" />
+  <circle cx="100" cy="40" r="9" />
+  <path d="M60 100 L75 110 L62 120" />
+</template>
+
+<svg id="native" class="stage" viewBox="0 0 140 140"></svg>
+<svg id="js" class="stage" viewBox="0 0 140 140"></svg>
+<svg id="timeline" class="stage" viewBox="0 0 140 140"></svg>
+<div id="after"></div>
+
+<script type="module">
+import { scrollDraw } from '/dist/index.mjs';
+import { scrollDrawTimeline } from '/dist/timeline/index.mjs';
+import { publish } from './_probe.mjs';
+
+const art = document.querySelector('#art').innerHTML;
+for (const id of ['native', 'js', 'timeline']) document.getElementById(id).innerHTML = art;
+
+const instances = {
+  // Default options: the native CSS path wherever the browser has one.
+  native: scrollDraw('#native'),
+  js: scrollDraw('#js', { native: false }),
+  timeline: scrollDrawTimeline('#timeline', { tracks: [{ selector: 'path, polyline, line, polygon, circle', from: 0.5, to: 1 }] }),
+};
+
+const frames = (n) => new Promise((r) => {
+  const step = () => (n-- <= 0 ? r() : requestAnimationFrame(step));
+  step();
+});
+
+publish({
+  read: () => ({
+    dash: Object.fromEntries(Object.keys(instances).map((id) =>
+      [id, document.querySelector(`#${id} > *`).style.strokeDasharray])),
+  }),
+  /** Pin every stage at one progress: 0 is undrawn, 1 drawn whole. */
+  seek: async (p) => { Object.values(instances).forEach((i) => i.seek(p)); await frames(2); },
+  /** Hide (or show) the strokes, for a screenshot of the stage without them. */
+  hide: async (on) => {
+    document.querySelectorAll('.stage').forEach((s) => s.classList.toggle('hide', on));
+    await frames(2);
+  },
+});
+</script>
+</body>
+</html>

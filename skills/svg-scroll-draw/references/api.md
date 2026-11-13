@@ -325,8 +325,12 @@ that fans out to every target.
 
 ## `svg-scroll-draw/lenis`
 
-`createLenisAdapter(lenis): { destroy(); getScrollY(): number }` — only for
-Lenis v1, which does not update `window.scrollY`. Lenis v2+ needs no adapter.
+`createLenisAdapter(scroller): { destroy(); getScrollY(): number }` — only for a
+scroller that keeps a virtual position and never moves the page (anything with
+Lenis's `on('scroll')` / `off('scroll')` shape). Lenis itself (1.x, every release
+so far) moves the real scroll position and needs no adapter. Pass `native: false`
+to animations under a virtual scroller. `destroy()` restores the browser's own
+`window.scrollY` / `pageYOffset` (2.26.0+).
 
 ---
 
