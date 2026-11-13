@@ -1,0 +1,274 @@
+/* ── The stacking cards generator (/stacking-cards-scroll-generator) ───────
+   One hairline panel: the controls across the top, then the preview window
+   and its transport beside the readouts; then the code. The preview's layout
+   rules are not here: they are the generated CSS itself, injected next to the
+   box (stack-code.ts), so only the look of the panel lives in this file. Mono
+   labels, square corners. Prefix scg-, the header figure scgf-.
+
+   Wide: controls, then preview | readouts. Phone: the preview first, so a
+   change is seen next to the control that made it. */
+
+.site .scg { display: grid; grid-template-columns: minmax(0, 1fr); gap: 32px; }
+.site .scg-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: 'view' 'transport' 'controls' 'read' 'notes';
+  border: 1px solid var(--line-2);
+  min-width: 0;
+}
+.site .scg-controls { grid-area: controls; }
+.site .scg-view { grid-area: view; }
+.site .scg-transport { grid-area: transport; }
+.site .scg-read { grid-area: read; }
+.site .scg-panel > p { grid-column: 1 / -1; }
+@media (min-width: 760px) {
+  .site .scg-panel {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    grid-template-rows: auto auto 1fr;
+    grid-template-areas:
+      'controls controls'
+      'view read'
+      'transport read';
+  }
+}
+.site .scg-k { margin: 0; font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+
+/* ── Controls ────────────────────────────────────────────────────────── */
+
+.site .scg-controls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 20px;
+  padding: 16px;
+  border-bottom: 1px solid var(--line);
+}
+@media (min-width: 760px) { .site .scg-controls { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (max-width: 759px) { .site .scg-controls { border-top: 1px solid var(--line); } }
+.site .scg-field { display: grid; gap: 8px; align-content: start; min-width: 0; }
+@media (max-width: 759px) { .site .scg-field.is-wide { grid-column: 1 / -1; } }
+.site .scg-field-k { font: 500 10px/1.4 var(--mono); color: var(--fg-3); overflow-wrap: anywhere; }
+.site .scg-seg { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); border: 1px solid var(--line-2); min-width: 0; }
+.site .scg-seg button {
+  min-width: 0;
+  padding: 8px 4px;
+  border: 0;
+  border-left: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  font: 500 11.5px/1.2 var(--mono);
+  color: var(--fg-2);
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.site .scg-seg button:first-child { border-left: 0; }
+.site .scg-seg button:hover { color: var(--fg); }
+.site .scg-seg button[aria-checked='true'] { background: var(--fg); color: var(--bg); }
+.site .scg-seg button:focus-visible { outline: 1px solid var(--fg); outline-offset: -3px; }
+.site .scg-range { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 10px; }
+.site .scg-val { min-width: 44px; font: 500 12px/1 var(--mono); font-variant-numeric: tabular-nums; color: var(--fg); text-align: right; }
+.site .scg input[type='range'] { width: 100%; min-width: 0; margin: 0; accent-color: var(--fg); }
+/* globals.css gives every range `outline: none`, which outranks :focus-visible. */
+.site .scg input[type='range']:focus-visible { outline: 1px solid var(--fg); outline-offset: 4px; }
+
+/* ── The preview window ─────────────────────────────────────────────── */
+
+.site .scg-view,
+.site .scg-transport,
+.site .scg-read { min-width: 0; background: var(--panel); }
+.site .scg-view { display: grid; gap: 8px; align-content: start; padding: 16px 16px 12px; }
+@media (min-width: 760px) {
+  .site .scg-view { padding-right: 12px; }
+  .site .scg-read { padding-left: 12px; }
+}
+.site .scg-frame { position: relative; }
+/* The box's frame is an inset shadow and it has no padding: its scrollport is
+   the window the cards stick in, edge to edge. position: relative makes it the
+   list's offsetParent, which the readout measures from. */
+.site .scg-box {
+  position: relative;
+  height: 460px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  box-shadow: inset 0 0 0 1px var(--line-2);
+  background: var(--bg);
+}
+@media (max-width: 759px) { .site .scg-box { height: 400px; } }
+.site .scg-box:focus-visible { outline: 1px solid var(--fg); outline-offset: 2px; }
+/* Above the generated rule, which sets margin: 0 on the list. */
+.site .scg-frame .scg-box .stack { margin: 0 12px; }
+
+.site .scg-flow {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 4px;
+  padding: 0 16px 16px;
+  font: 500 10.5px/1.4 var(--mono);
+  color: var(--fg-3);
+}
+.site .scg-flow.is-after { justify-content: flex-start; padding: 16px; border-top: 1px dashed var(--line-2); }
+
+/* The header stays put while the content scrolls under it. */
+.site .scg-overlay { position: absolute; inset: 1px; z-index: 1; overflow: hidden; pointer-events: none; }
+.site .scg-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--line-2);
+  background: repeating-linear-gradient(135deg, var(--line) 0 1px, transparent 1px 6px) var(--bg);
+  font: 500 10px/1 var(--mono);
+  color: var(--fg-3);
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.site .scg-transport {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: start;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 16px 16px;
+}
+@media (min-width: 760px) { .site .scg-transport { padding-right: 12px; } }
+.site .scg-btn {
+  padding: 8px 12px;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  font: 500 11.5px/1.2 var(--mono);
+  color: var(--fg);
+  cursor: pointer;
+}
+.site .scg-btn:hover, .site .scg-btn:focus-visible { border-color: var(--fg); outline: 0; }
+.site .scg-scrub { display: grid; gap: 4px; flex: 1 1 180px; min-width: 0; }
+.site .scg-scrub span { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+
+/* ── Readouts ────────────────────────────────────────────────────────── */
+
+.site .scg-read { display: grid; gap: 16px; align-content: start; padding: 16px; }
+@media (max-width: 759px) { .site .scg-read { border-top: 1px solid var(--line); } }
+.site .scg-big { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.site .scg-big > div { display: grid; gap: 6px; }
+.site .scg-num {
+  font-size: clamp(34px, 4.5vw, 48px);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  color: var(--fg);
+}
+.site .scg-num small { font-size: 0.42em; letter-spacing: 0; color: var(--fg-3); }
+
+.site .scg-cards { display: grid; border-top: 1px solid var(--line-2); }
+.site .scg-row {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) minmax(0, 0.9fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--line);
+  font: 400 11.5px/1.5 var(--mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--fg-2);
+}
+.site .scg-row > span { min-width: 0; overflow-wrap: anywhere; }
+.site .scg-row.is-head { font-size: 10px; color: var(--fg-3); }
+.site .scg-row[data-stuck] > span:first-child { color: var(--fg); }
+.site .scg-meter { display: block; height: 6px; border: 1px solid var(--line-2); background: var(--bg); overflow: hidden; }
+.site .scg-meter i { display: block; height: 100%; background: var(--fg); transform-origin: 0 50%; }
+.site .scg-meter em { display: block; margin-top: -5px; font: 400 10px/1.4 var(--mono); font-style: normal; color: var(--fg-3); white-space: nowrap; }
+.site .scg-row .scg-meter:has(em) { height: auto; border: 0; background: none; overflow: visible; }
+.site .scg-row .scg-meter:has(em) em { margin: 0; }
+
+.site .scg-math { margin: 0; border-top: 1px solid var(--line-2); }
+.site .scg-math > div {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+}
+.site .scg-math dt { font: 500 10px/1.9 var(--mono); color: var(--fg-3); }
+.site .scg-math dd {
+  margin: 0;
+  font: 400 12px/1.6 var(--mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--fg);
+  overflow-wrap: anywhere;
+}
+
+.site .scg-warn, .site .scg-note {
+  margin: 0;
+  padding: 10px 16px;
+  border-top: 1px solid var(--line);
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--fg-2);
+}
+.site .scg-warn { color: var(--fg); }
+
+/* ── The code ─────────────────────────────────────────────────────────── */
+
+.site .scg-code { display: grid; grid-template-columns: minmax(0, 1fr); min-width: 0; }
+.site .scg-tabs { display: flex; flex-wrap: wrap; }
+.site .scg-tab {
+  padding: 8px 14px;
+  border: 1px solid var(--line-2);
+  border-bottom: 0;
+  border-left-width: 0;
+  border-radius: 0;
+  background: transparent;
+  font: 500 11.5px/1 var(--mono);
+  color: var(--fg-2);
+  cursor: pointer;
+}
+.site .scg-tab:first-child { border-left-width: 1px; }
+.site .scg-tab[aria-selected='true'] { color: var(--fg); background: var(--panel); }
+.site .scg-tab:focus-visible { outline: 1px solid var(--fg); outline-offset: -3px; }
+@media (max-width: 479px) { .site .scg-tab { padding: 8px 10px; } }
+.site .scg-code .code-box { margin-top: 0; }
+.site .scg-hint { margin: 8px 0 0; max-width: 68ch; font-size: 13px; line-height: 1.6; color: var(--fg-2); }
+
+/* ── Reference tables and links on the page ──────────────────────────── */
+
+.site .scg-a { color: var(--fg); text-decoration: underline; text-decoration-color: var(--line-2); text-underline-offset: 3px; }
+.site .scg-a:hover { text-decoration-color: var(--fg); }
+.site .scg-scroll { overflow-x: auto; }
+.site .scg-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.site .scg-table th,
+.site .scg-table td { padding: 10px 12px 10px 0; border-top: 1px solid var(--line); text-align: left; vertical-align: top; }
+.site .scg-table th { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+.site .scg-table td { line-height: 1.6; color: var(--fg-2); }
+.site .scg-table td.is-code { font: 400 12.5px/1.6 var(--mono); color: var(--fg); }
+.site .scg-table th.is-key { min-width: 110px; font: 400 12.5px/1.6 var(--mono); color: var(--fg); }
+
+/* ── Fig. 1: the window, the stepped offsets and each card's stretch ─── */
+
+.site .scgf svg { display: block; width: 100%; height: auto; }
+.site .scgf-win { fill: none; stroke: var(--fg-2); stroke-width: 1; }
+.site .scgf-head { fill: var(--line); stroke: none; }
+.site .scgf-card { fill: var(--panel); stroke: var(--fg); stroke-width: 1.25; }
+.site .scgf-card.is-under { fill: var(--line); stroke: var(--fg-3); }
+.site .scgf-card.is-coming { fill: var(--panel); stroke: var(--fg); stroke-dasharray: 4 4; }
+.site .scgf-dim { fill: none; stroke: var(--fg-3); stroke-width: 1; }
+.site .scgf-guide { fill: none; stroke: var(--fg-3); stroke-width: 1; stroke-dasharray: 2 4; }
+.site .scgf-axis { fill: none; stroke: var(--fg-3); stroke-width: 1; }
+.site .scgf-win-on { fill: none; stroke: var(--fg); stroke-width: 3; }
+.site .scgf-win-off { fill: none; stroke: var(--line-2); stroke-width: 3; }
+.site .scgf-now { fill: none; stroke: var(--accent); stroke-width: 2; }
+.site .scgf-code { font: 500 12.5px var(--mono); fill: var(--fg); }
+.site .scgf-l { font: 500 11.5px var(--mono); fill: var(--fg); }
+.site .scgf-s { font: 500 10.5px var(--mono); fill: var(--fg-3); }
+.site .scgf-n { font: 500 10.5px var(--mono); fill: var(--fg-2); }
+@media (max-width: 560px) {
+  .site .scgf-code { font-size: 14px; }
+  .site .scgf-l { font-size: 12.5px; }
+  .site .scgf-s, .site .scgf-n { font-size: 11.5px; }
+}

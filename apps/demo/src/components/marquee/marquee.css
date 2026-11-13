@@ -1,0 +1,191 @@
+/* ── The scroll marquee generator (/scroll-marquee-generator) ──
+   One hairline frame: the controls, the row editors, the preview box, the
+   transport and the readout; then the code. The preview marquee's layout and
+   motion are not here: they are the generated CSS itself, injected next to the
+   box (code.ts). Only its look lives in this file. Mono labels, square
+   corners; the accent is used once, for the pause control when it is on. */
+
+.site .mqg { display: grid; gap: 32px; }
+.site .mqg-frame { border: 1px solid var(--line-2); min-width: 0; }
+
+.site .mqg-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px 20px;
+  padding: 16px;
+  border-bottom: 1px solid var(--line);
+}
+@media (max-width: 559px) {
+  .site .mqg-controls { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  .site .mqg-field.is-pair { grid-column: 1 / -1; }
+}
+.site .mqg-field { display: grid; gap: 8px; align-content: start; min-width: 0; }
+.site .mqg-field.is-wide { grid-column: 1 / -1; }
+.site .mqg-label { font: 500 10px/1.4 var(--mono); color: var(--fg-3); overflow-wrap: anywhere; }
+.site .mqg-pair { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 10px; }
+.site .mqg-pair.is-idle input[type='range'] { opacity: 0.45; }
+.site .mqg input[type='range'] { width: 100%; min-width: 0; margin: 0; accent-color: var(--fg); }
+/* globals.css takes the outline off every range input; give the keyboard one back. */
+.site .mqg input[type='range']:focus-visible { outline: 1px solid var(--fg); outline-offset: 4px; }
+
+.site .mqg-seg { display: inline-grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); border: 1px solid var(--line-2); min-width: 0; }
+.site .mqg-field.is-wide .mqg-seg { justify-self: start; }
+.site .mqg-seg button {
+  padding: 6px 10px;
+  border: 0;
+  border-left: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  font: 500 11.5px/1.2 var(--mono);
+  color: var(--fg-2);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.site .mqg-seg button:first-child { border-left: 0; }
+.site .mqg-seg button:hover { color: var(--fg); }
+.site .mqg-seg button[aria-checked='true'] { background: var(--fg); color: var(--bg); }
+.site .mqg-seg button:focus-visible { outline: 1px solid var(--fg); outline-offset: 2px; }
+
+/* One editor per row: its items, and which way it runs. */
+.site .mqg-rows { display: grid; gap: 12px; padding: 16px; border-bottom: 1px solid var(--line); }
+.site .mqg-rowedit { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 12px; }
+@media (max-width: 559px) { .site .mqg-rowedit { grid-template-columns: minmax(0, 1fr); } .site .mqg-rowedit .mqg-seg { justify-self: start; } }
+.site .mqg-rowlabel { display: grid; gap: 6px; min-width: 0; }
+.site .mqg-rowlabel input {
+  width: 100%;
+  min-width: 0;
+  padding: 7px 10px;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  font: 400 13px/1.3 var(--mono);
+  color: var(--fg);
+}
+.site .mqg-rowlabel input:hover { border-color: var(--fg); }
+.site .mqg-rowlabel input:focus-visible { border-color: var(--fg); outline: 1px solid var(--fg); outline-offset: 2px; }
+
+/* The preview: a scroll container standing in for the window. Framed by an
+   inset shadow, not a border, and without padding, so a row is exactly as
+   wide as the box and 100cqw means the same in both. The spacers above and
+   below are one box tall, so each row can run its whole window. */
+.site .mqg-stagewrap { padding: 16px; background: var(--panel); }
+.site .mqg-box {
+  --mqg-h: 360px;
+  position: relative;
+  height: var(--mqg-h);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  box-shadow: inset 0 0 0 1px var(--line-2);
+  background: var(--bg);
+}
+@media (max-width: 559px) { .site .mqg-box { --mqg-h: 300px; } }
+.site .mqg-box:focus-visible { outline: 1px solid var(--fg); outline-offset: 2px; }
+.site .mqg-before, .site .mqg-after {
+  display: grid;
+  place-items: center;
+  height: var(--mqg-h);
+  font: 500 10.5px/1.4 var(--mono);
+  color: var(--fg-3);
+}
+.site .mqg-before { border-bottom: 1px dashed var(--line-2); }
+.site .mqg-after { border-top: 1px dashed var(--line-2); }
+
+/* The preview marquee's look; its layout is the generated CSS. */
+.site .mqz { display: grid; gap: 4px; padding-block: 16px; color: var(--fg); }
+.site .mqz-item { font-family: var(--sans); font-weight: 600; letter-spacing: -0.03em; }
+.site .mqz-row.is-right .mqz-item { color: transparent; -webkit-text-stroke: 1px var(--fg); }
+.site .mqz-item::after { color: var(--fg-3); -webkit-text-stroke: 0; }
+.site .mqz-pause {
+  justify-self: end;
+  margin: 0 12px 4px;
+  padding: 5px 10px;
+  border: 1px solid var(--line-2);
+  font: 500 11px/1.2 var(--mono);
+  color: var(--fg-2);
+}
+.site .mqz-pause:hover { border-color: var(--fg); color: var(--fg); }
+.site .mqz-pause:has(input:checked) { border-color: var(--accent); color: var(--fg); }
+.site .mqz-pause input { margin: 0; accent-color: var(--accent); }
+.site .mqz-pause:has(input:focus-visible) { outline: 1px solid var(--fg); outline-offset: 2px; }
+
+.site .mqg-transport {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--line);
+}
+.site .mqg-btn {
+  padding: 8px 12px;
+  border: 1px solid var(--line-2);
+  border-radius: 0;
+  background: transparent;
+  font: 500 12px/1 var(--mono);
+  color: var(--fg);
+  cursor: pointer;
+}
+.site .mqg-btn:hover { border-color: var(--fg); }
+.site .mqg-btn:focus-visible { border-color: var(--fg); outline: 1px solid var(--fg); outline-offset: 2px; }
+.site .mqg-scrub { display: grid; gap: 4px; flex: 1 1 200px; min-width: 0; margin-left: 8px; }
+.site .mqg-scrub span { font: 500 10px/1.4 var(--mono); color: var(--fg-3); }
+
+.site .mqg-read { display: grid; gap: 4px; padding: 12px 16px; border-top: 1px solid var(--line); }
+.site .mqg-read p { margin: 0; font: 400 11.5px/1.6 var(--mono); color: var(--fg-2); overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+.site .mqg-read p:first-child { color: var(--fg); white-space: pre-wrap; }
+.site .mqg-ends { display: flex; flex-wrap: wrap; gap: 4px 16px; }
+
+.site .mqg-warn, .site .mqg-note, .site .mqg-rm {
+  margin: 0;
+  padding: 10px 16px;
+  border-top: 1px solid var(--line);
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--fg-2);
+}
+.site .mqg-warn { color: var(--fg); }
+.site .mqg-rm { display: none; }
+@media (prefers-reduced-motion: reduce) { .site .mqg-rm { display: block; } }
+
+/* The code. */
+.site .mqg-code { display: grid; min-width: 0; }
+.site .mqg-tabs { display: flex; flex-wrap: wrap; }
+.site .mqg-tab {
+  padding: 8px 12px;
+  border: 1px solid var(--line-2);
+  border-bottom: 0;
+  border-left-width: 0;
+  border-radius: 0;
+  background: transparent;
+  font: 500 11.5px/1 var(--mono);
+  color: var(--fg-2);
+  cursor: pointer;
+}
+.site .mqg-tab:first-child { border-left-width: 1px; }
+.site .mqg-tab[aria-selected='true'] { color: var(--fg); background: var(--panel); }
+.site .mqg-tab:focus-visible { outline: 1px solid var(--fg); outline-offset: -3px; }
+.site .mqg-code .code-box { margin-top: 0; }
+.site .mqg-code-note { margin: 12px 0 0; max-width: 68ch; font-size: 13px; line-height: 1.6; color: var(--fg-2); }
+
+/* Reference: the cost table. */
+.site .mqg-scroll { overflow-x: auto; margin: 20px 0 8px; }
+.site .mqg-table { width: 100%; min-width: 640px; border-collapse: collapse; font-size: 13.5px; }
+.site .mqg-table th, .site .mqg-table td { padding: 10px 12px 10px 0; border-top: 1px solid var(--line); text-align: left; vertical-align: top; }
+.site .mqg-table thead th { font: 500 10px/1.4 var(--mono); color: var(--fg-3); white-space: nowrap; }
+.site .mqg-table tbody th { font: 500 11.5px/1.6 var(--mono); color: var(--fg); white-space: nowrap; }
+.site .mqg-table td { color: var(--fg-2); line-height: 1.6; }
+
+/* Fig. 1 — two rows through the window, before and after a screen of scroll. */
+.site .mqf svg { display: block; width: 100%; height: auto; max-width: 560px; }
+.site .mqf rect { fill: none; vector-effect: non-scaling-stroke; }
+.site .mqf-row rect { stroke: var(--fg); stroke-width: 1.25; }
+.site .mqf-row text { font: 500 11px var(--mono); fill: var(--fg); }
+.site .mqf-ghost rect { stroke: var(--fg-3); stroke-width: 1; stroke-dasharray: 3 3; }
+.site .mqf-ghost text { font: 500 11px var(--mono); fill: var(--fg-3); }
+.site .mqf-win { stroke: var(--fg); stroke-width: 1.75; }
+.site .mqf-arrow, .site .mqf-dim { fill: none; stroke: currentColor; stroke-width: 1.25; color: var(--fg); }
+.site .mqf-dim { color: var(--fg-3); }
+.site .mqf marker path { stroke: currentColor; }
+.site .mqf-h { font: 500 11px var(--mono); fill: var(--fg-3); }
+.site .mqf-k { font: 500 11.5px var(--mono); fill: var(--fg); }
+.site .mqf-m { font: 500 10.5px var(--mono); fill: var(--fg-3); }
