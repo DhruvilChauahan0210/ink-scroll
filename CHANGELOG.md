@@ -8,6 +8,28 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### Site
 
+- **Three how-to posts, each leading into its tool.** Each one answers a
+  search people make and hands the reader to the free tool that builds it:
+  - `/blog/svg-line-drawing-animation-css`: `stroke-dasharray`,
+    `stroke-dashoffset` and `pathLength="1"` for one path, several in order,
+    a loop that clears together, reduced motion and a scroll version, into
+    the SVG line drawing generator, path viewer and path editor.
+  - `/blog/css-scroll-driven-animations`: `animation-timeline` and
+    `animation-range`, `view()` against `scroll()`, every range name (the
+    table is read from `data/cssdriven.ts`, with the library trigger for
+    each), support, an `@supports` and IntersectionObserver fallback, four
+    reasons it does nothing, and when JavaScript is still needed, into the
+    CSS scroll-driven animation generator, the scroll trigger visualizer and
+    the progress bar generator.
+  - `/blog/text-animation-on-scroll`: split a heading into words or letters
+    (by grapheme, words kept whole), stagger them with `--i`, start it with
+    an IntersectionObserver, scrub it in pure CSS, and keep one copy for
+    screen readers, into the text animation, text fill and AOS pages.
+  Every listing is run, as the page prints it, in Chromium, Firefox and
+  WebKit, the fallbacks also in Firefox with scroll timelines switched off,
+  and the library listings against the built `dist/`. Each post has its own
+  figure, drawn from the values in its CSS.
+
 - **The home hero fits a short phone.** At 375 x 667 the pinned screen ran
   the "Get started" button over the frameworks strip, and the stroke counter
   sat under the nav's buttons; the strip (its frameworks are in chapter 07)

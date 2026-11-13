@@ -1,0 +1,61 @@
+/* /blog/css-scroll-driven-animations — fig. 1, the timelines over one page's scroll. Scoped under .site .ba .tf. */
+
+.site .ba .tf { display: grid; gap: 0; }
+.site .ba .tf-row {
+  display: grid;
+  grid-template-columns: 132px minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+.site .ba .tf-l { font: 500 11.5px/1.35 var(--mono); color: var(--fg); }
+.site .ba .tf-l code { padding: 0; border: 0; background: none; font: inherit; color: var(--accent); }
+.site .ba .tf-row.is-range .tf-l { color: var(--fg-3); padding-left: 12px; }
+.site .ba .tf-track {
+  position: relative;
+  display: block;
+  /* quarter marks of the page's scroll */
+  background-image: linear-gradient(to right, var(--line) 1px, transparent 1px);
+  background-size: 25% 100%;
+  box-shadow: 1px 0 0 var(--line);
+}
+.site .ba .tf-track svg { display: block; width: 100%; height: 14px; overflow: visible; }
+.site .ba .tf-track path { fill: none; stroke-width: 10; stroke-linecap: butt; }
+.site .ba .tf-base { stroke: var(--line-2); stroke-width: 1 !important; stroke-dasharray: 2 3; }
+.site .ba .tf-scroll { stroke: var(--fg-2); }
+.site .ba .tf-entry { stroke: var(--accent); }
+.site .ba .tf-contain { stroke: var(--fg-2); }
+.site .ba .tf-exit { stroke: var(--fg-3); }
+.site .ba .tf-range { stroke: var(--accent); stroke-width: 4 !important; }
+.site .ba .tf-lab { display: block; margin-top: 4px; font: 400 10.5px/1.3 var(--mono); color: var(--fg-3); }
+
+.site .ba .tf-axis { border-bottom: 1px solid var(--fg-3); padding: 0 0 8px; }
+.site .ba .tf-axis .tf-l { font-size: 10px; color: var(--fg-3); }
+.site .ba .tf-ticks {
+  display: flex;
+  justify-content: space-between;
+  background: none;
+  box-shadow: none;
+  font: 500 10.5px/1.3 var(--mono);
+  color: var(--fg-3);
+}
+
+.site .ba .tf-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin: 10px 0 0;
+  font: 400 11px/1.4 var(--mono);
+  color: var(--fg-3);
+}
+.site .ba .tf-key i { display: inline-block; width: 18px; height: 0; margin-right: 6px; vertical-align: middle; border-top: 6px solid; }
+.site .ba .tf-key i.tf-entry { border-color: var(--accent); }
+.site .ba .tf-key i.tf-contain { border-color: var(--fg-2); }
+.site .ba .tf-key i.tf-exit { border-color: var(--fg-3); }
+
+@media (max-width: 559px) {
+  .site .ba .tf-row { grid-template-columns: 1fr; gap: 6px; }
+  .site .ba .tf-axis .tf-l { display: none; }
+  .site .ba .tf-row.is-range .tf-l { padding-left: 0; }
+}

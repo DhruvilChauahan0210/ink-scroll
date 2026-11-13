@@ -1,0 +1,45 @@
+/* /blog/svg-line-drawing-animation-css — fig. 1, the dash at three offsets. Scoped under .site .ba .df. */
+
+.site .ba .df { display: grid; gap: 0; }
+.site .ba .df-row {
+  display: grid;
+  grid-template-columns: 72px 96px minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+.site .ba .df-hd {
+  padding: 0 0 8px;
+  border-bottom: 1px solid var(--fg-3);
+  font: 500 10.5px/1.3 var(--mono);
+  color: var(--fg-3);
+}
+.site .ba .df-k { font: 500 13px/1 var(--mono); color: var(--fg); background: none; border: 0; padding: 0; }
+.site .ba .df-shape { display: block; width: 96px; height: 64px; overflow: visible; }
+.site .ba .df-ghost { fill: none; stroke: var(--line-2); stroke-width: 1.5; stroke-dasharray: 2 3; }
+.site .ba .df-ink { fill: none; stroke: var(--accent); stroke-width: 4; stroke-linejoin: round; stroke-linecap: butt; }
+.site .ba .df-tape { display: block; width: 100%; max-width: 300px; height: auto; overflow: visible; }
+.site .ba .df-win { fill: none; stroke: var(--fg-2); stroke-width: 1; }
+.site .ba .df-dash { stroke: var(--accent); stroke-width: 6; }
+.site .ba .df-gap { stroke: var(--fg-3); stroke-width: 1.5; stroke-dasharray: 3 3; }
+.site .ba .df-tick { font: 500 10px var(--mono); fill: var(--fg-3); }
+
+.site .ba .df-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin: 10px 0 0;
+  font: 400 11px/1.4 var(--mono);
+  color: var(--fg-3);
+}
+.site .ba .df-key i { display: inline-block; width: 18px; height: 0; margin-right: 6px; vertical-align: middle; }
+.site .ba .df-key .is-dash { border-top: 4px solid var(--accent); }
+.site .ba .df-key .is-gap { border-top: 1.5px dashed var(--fg-3); }
+.site .ba .df-key .is-win { height: 8px; border: 1px solid var(--fg-2); }
+
+@media (max-width: 559px) {
+  .site .ba .df-row { grid-template-columns: 40px 72px minmax(0, 1fr); gap: 10px; }
+  .site .ba .df-shape { width: 72px; height: 48px; }
+  .site .ba .df-hd span:first-child { visibility: hidden; }
+}

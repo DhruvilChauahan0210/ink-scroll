@@ -301,6 +301,24 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
     // ── Blog posts ──────────────────────────────────────────────────────────
     {
+      url: `${SITE_URL}/blog/svg-line-drawing-animation-css`,
+      lastModified: new Date("2026-11-13"),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${SITE_URL}/blog/css-scroll-driven-animations`,
+      lastModified: new Date("2026-11-13"),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${SITE_URL}/blog/text-animation-on-scroll`,
+      lastModified: new Date("2026-11-13"),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
       url: `${SITE_URL}/blog/replace-gsap-scrolltrigger`,
       lastModified: new Date("2026-11-07"),
       changeFrequency: "monthly",

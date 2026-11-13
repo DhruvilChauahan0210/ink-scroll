@@ -1,0 +1,58 @@
+/* /blog/text-animation-on-scroll — fig. 1, the word stagger. Scoped under .site .ba .sf. */
+
+.site .ba .sf { display: grid; gap: 0; }
+.site .ba .sf-row {
+  display: grid;
+  grid-template-columns: 132px minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+}
+.site .ba .sf-l { font: 400 11px/1.3 var(--mono); color: var(--fg-3); }
+.site .ba .sf-l b { font: 600 13px/1.3 var(--sans, inherit); color: var(--fg); margin-right: 6px; }
+.site .ba .sf-track {
+  position: relative;
+  display: block;
+  background-image: linear-gradient(to right, var(--line) 1px, transparent 1px);
+  background-size: 25% 100%;
+  box-shadow: 1px 0 0 var(--line);
+}
+.site .ba .sf-track svg { display: block; width: 100%; height: 12px; overflow: visible; }
+.site .ba .sf-track path { fill: none; stroke-linecap: butt; }
+.site .ba .sf-base { stroke: var(--line-2); stroke-width: 1; stroke-dasharray: 2 3; }
+.site .ba .sf-wait { stroke: var(--fg-3); stroke-width: 2; stroke-dasharray: 1 3; }
+.site .ba .sf-bar { stroke: var(--accent); stroke-width: 10; }
+
+.site .ba .sf-row.is-sr { border-top: 1px solid var(--fg-3); }
+.site .ba .sf-row.is-sr .sf-l { color: var(--fg); }
+.site .ba .sf-copy { display: block; padding: 2px 0; font: 400 12px/1.4 var(--mono); color: var(--fg-2); background: none; }
+
+.site .ba .sf-axis { border-bottom: 1px solid var(--fg-3); padding: 0 0 8px; }
+.site .ba .sf-axis .sf-l { font-size: 10px; }
+.site .ba .sf-ticks {
+  display: flex;
+  justify-content: space-between;
+  background: none;
+  box-shadow: none;
+  font: 500 10.5px/1.3 var(--mono);
+  color: var(--fg-3);
+}
+
+.site .ba .sf-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin: 10px 0 0;
+  font: 400 11px/1.4 var(--mono);
+  color: var(--fg-3);
+}
+.site .ba .sf-key i { display: inline-block; width: 18px; height: 0; margin-right: 6px; vertical-align: middle; }
+.site .ba .sf-key .is-wait { border-top: 2px dotted var(--fg-3); }
+.site .ba .sf-key .is-bar { border-top: 6px solid var(--accent); }
+
+@media (max-width: 559px) {
+  .site .ba .sf-row { grid-template-columns: 96px minmax(0, 1fr); gap: 10px; }
+  .site .ba .sf-i { display: none; }
+  .site .ba .sf-ticks span:nth-child(even) { visibility: hidden; }
+}

@@ -22,6 +22,27 @@ export type RelatedLinks = {
 };
 
 export const RELATED_BY_POST: Record<string, RelatedLinks> = {
+  'svg-line-drawing-animation-css': {
+    examples: ['logo-reveal', 'signature'],
+    tools: ['svg-line-drawing-generator', 'svg-path-viewer'],
+    pages: [
+      { href: '/svg-path-editor', label: 'SVG path editor', blurb: 'Reverse a path to change where it starts drawing, or move its points.' },
+    ],
+  },
+  'css-scroll-driven-animations': {
+    examples: ['scroll-reveal', 'scroll-animate'],
+    tools: ['css-scroll-driven-animation-generator', 'scroll-trigger-visualizer'],
+    pages: [
+      { href: '/scroll-progress-bar-generator', label: 'Scroll progress bar generator', blurb: 'The scroll(root) bar from this post, on any edge or as a ring.' },
+    ],
+  },
+  'text-animation-on-scroll': {
+    examples: ['scroll-text', 'scroll-text-lines'],
+    tools: ['text-animation-generator', 'text-fill-scroll-generator'],
+    pages: [
+      { href: '/aos-animation', label: 'AOS animation examples', blurb: 'Every data-aos effect running live, for revealing whole blocks.' },
+    ],
+  },
   'complete-guide-scroll-animations-2026': {
     examples: ['scroll-reveal', 'scroll-pin', 'scroll-snap', 'scroll-text', 'scroll-video'],
     tools: ['scroll-reveal-generator', 'scroll-trigger-visualizer'],

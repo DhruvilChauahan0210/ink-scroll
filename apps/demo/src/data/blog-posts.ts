@@ -19,6 +19,39 @@ export type BlogPost = {
 
 export const POSTS: BlogPost[] = [
   {
+    slug: 'svg-line-drawing-animation-css',
+    title: 'How to animate an SVG line drawing with CSS',
+    description:
+      'Draw an SVG line by line with stroke-dasharray, stroke-dashoffset and pathLength="1": one path, several in order, a loop, reduced motion, and on scroll.',
+    tag: 'How-To',
+    tagColor: '#60a5fa',
+    readTime: '7 min read',
+    date: 'November 2026',
+    published: '2026-11-13',
+  },
+  {
+    slug: 'css-scroll-driven-animations',
+    title: 'CSS scroll-driven animations: animation-timeline and animation-range explained',
+    description:
+      'How animation-timeline and animation-range work: view() and scroll(), entry, exit, cover and contain, browser support, a fallback, and when you still need JS.',
+    tag: 'Guide',
+    tagColor: '#111',
+    readTime: '8 min read',
+    date: 'November 2026',
+    published: '2026-11-13',
+  },
+  {
+    slug: 'text-animation-on-scroll',
+    title: 'How to animate text on scroll with CSS and JavaScript',
+    description:
+      'Split a heading into words or letters, reveal them one by one as it scrolls in, scrub them with pure CSS, and keep the text whole for screen readers.',
+    tag: 'How-To',
+    tagColor: '#60a5fa',
+    readTime: '7 min read',
+    date: 'November 2026',
+    published: '2026-11-13',
+  },
+  {
     slug: 'unslop-ai-looking-ui',
     title: 'Unslopping a site: 13 signs of AI-looking UI, fixed',
     description:
