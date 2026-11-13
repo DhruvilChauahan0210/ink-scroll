@@ -22,6 +22,23 @@ export type RelatedLinks = {
 };
 
 export const RELATED_BY_POST: Record<string, RelatedLinks> = {
+  'react-scroll-animations': {
+    examples: ['scroll-animate', 'scroll-reveal'],
+    tools: ['scroll-reveal-generator', 'text-animation-generator'],
+    pages: [
+      { href: '/react-scroll-animation', label: 'React scroll animation', blurb: 'Every React component and hook, with a quick start.' },
+      { href: '/vs-framer-motion', label: 'svg-scroll-draw vs Framer Motion', blurb: 'Size, features and side-by-side code for scroll effects.' },
+      { href: '/nextjs-scroll-animation', label: 'Next.js scroll animation', blurb: "Server and client boundaries, 'use client' and hydration." },
+    ],
+  },
+  'locomotive-scroll-alternatives': {
+    examples: ['scroll-reveal', 'scroll-pin'],
+    tools: ['scroll-trigger-visualizer', 'parallax-scrolling-generator'],
+    pages: [
+      { href: '/vs-locomotive-scroll', label: 'svg-scroll-draw vs Locomotive Scroll', blurb: 'Feature by feature, measured sizes, and when Locomotive is the better pick.' },
+      { href: '/lenis-scroll-animation', label: 'Lenis scroll animation', blurb: 'Lenis and svg-scroll-draw on one page.' },
+    ],
+  },
   'scroll-video-scrub': {
     examples: ['scroll-video', 'scroll-frames'],
     tools: ['scroll-video-scrub-generator', 'scroll-image-sequence-generator'],

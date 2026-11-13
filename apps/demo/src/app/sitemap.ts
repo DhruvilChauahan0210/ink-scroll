@@ -319,6 +319,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
     // ── Blog posts ──────────────────────────────────────────────────────────
     {
+      url: `${SITE_URL}/blog/react-scroll-animations`,
+      lastModified: new Date("2026-11-13"),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${SITE_URL}/blog/locomotive-scroll-alternatives`,
+      lastModified: new Date("2026-11-13"),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
       url: `${SITE_URL}/blog/scroll-video-scrub`,
       lastModified: new Date("2026-11-13"),
       changeFrequency: "monthly",

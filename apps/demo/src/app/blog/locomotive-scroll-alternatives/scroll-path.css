@@ -1,0 +1,71 @@
+/* /blog/locomotive-scroll-alternatives — fig. 1, where Lenis sits. Scoped under .site .ba .lsf. */
+
+.site .ba .lsf { display: grid; gap: 0; }
+.site .ba .lsf ul { list-style: none; margin: 0; padding: 0; }
+.site .ba .lsf-row {
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+}
+.site .ba .lsf-head { border-bottom: 1px solid var(--fg-3); padding: 0 0 8px; }
+.site .ba .lsf-l { font: 500 10.5px/1.3 var(--mono); color: var(--fg-3); }
+.site .ba .lsf-in { font: 600 13px/1.3 var(--sans, inherit); color: var(--fg); }
+.site .ba .lsf-route { display: grid; gap: 4px; min-width: 0; }
+.site .ba .lsf-route svg { display: block; width: 100%; height: 12px; overflow: visible; }
+.site .ba .lsf-route path { fill: none; stroke-linecap: butt; vector-effect: non-scaling-stroke; }
+.site .ba .lsf-ease { stroke: var(--accent); stroke-width: 8; }
+.site .ba .lsf-native { stroke: var(--fg-3); stroke-width: 2; stroke-dasharray: 1 3; }
+.site .ba .lsf-note { font: 400 11px/1.4 var(--mono); color: var(--fg-2); overflow-wrap: anywhere; }
+.site .ba .lsf-row.is-eased .lsf-note { color: var(--fg); }
+
+.site .ba .lsf-down { margin: 10px 0 6px; font: 400 11px/1.4 var(--mono); color: var(--fg-3); }
+.site .ba .lsf-pos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--fg-3);
+}
+.site .ba .lsf-pos code {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: 600 14px/1.3 var(--mono);
+  color: var(--accent);
+}
+.site .ba .lsf-pos span { font: 400 11px/1.4 var(--mono); color: var(--fg-2); }
+
+.site .ba .lsf-readers {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+.site .ba .lsf-readers li {
+  padding: 8px 10px;
+  border: 1px solid var(--line-2);
+  font: 400 11px/1.4 var(--mono);
+  color: var(--fg);
+  overflow-wrap: anywhere;
+}
+
+.site .ba .lsf-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin: 12px 0 0;
+  font: 400 11px/1.4 var(--mono);
+  color: var(--fg-3);
+}
+.site .ba .lsf-key i { display: inline-block; width: 18px; height: 0; margin-right: 6px; vertical-align: middle; }
+.site .ba .lsf-key .is-eased { border-top: 6px solid var(--accent); }
+.site .ba .lsf-key .is-native { border-top: 2px dotted var(--fg-3); }
+
+@media (max-width: 559px) {
+  .site .ba .lsf-row { grid-template-columns: 76px minmax(0, 1fr); gap: 10px; }
+  .site .ba .lsf-readers { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+}

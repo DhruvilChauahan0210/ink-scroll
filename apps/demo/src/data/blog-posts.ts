@@ -19,6 +19,28 @@ export type BlogPost = {
 
 export const POSTS: BlogPost[] = [
   {
+    slug: 'react-scroll-animations',
+    title: 'React scroll animations: CSS, Framer Motion or a hook?',
+    description:
+      'Four ways to animate on scroll in React: CSS view(), a useInView hook, Motion’s whileInView and useScroll, or components. The trade-offs, and which to pick.',
+    tag: 'Comparison',
+    tagColor: '#ff90e8',
+    readTime: '10 min read',
+    date: 'November 2026',
+    published: '2026-11-13',
+  },
+  {
+    slug: 'locomotive-scroll-alternatives',
+    title: 'Locomotive Scroll alternatives in 2026: Lenis, native CSS and more',
+    description:
+      'What Locomotive Scroll v5 does, and what replaces each job in 2026: Lenis or native scrolling, CSS view() timelines, sticky, and data-scroll mapped to each.',
+    tag: 'Migration',
+    tagColor: '#ef4444',
+    readTime: '9 min read',
+    date: 'November 2026',
+    published: '2026-11-13',
+  },
+  {
     slug: 'scroll-video-scrub',
     title: 'How to scrub a video on scroll (play video with scroll)',
     description:

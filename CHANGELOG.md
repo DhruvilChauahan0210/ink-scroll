@@ -8,6 +8,17 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### Site
 
+- **Two posts for people choosing or leaving a scroll library:**
+  - `/blog/react-scroll-animations`: four ways in React (CSS `view()`, a
+    `useInView` hook that observes a wrapper that never moves, Motion's
+    `whileInView` and `useScroll`, or the library's components), with
+    Next.js notes, reduced motion and a decision table.
+  - `/blog/locomotive-scroll-alternatives`: what Locomotive Scroll v5 does
+    and what replaces each job (Lenis or native scrolling, `view()`
+    timelines, sticky), its `data-scroll` attributes mapped to each, and
+    Lenis with svg-scroll-draw.
+  Every listing runs as printed in Chromium, Firefox and WebKit.
+
 - **Two new tools, the 27th and 28th:**
   - **Stacking cards on scroll generator**
     (`/stacking-cards-scroll-generator`). 2 to 6 cards, each `position:
@@ -39,6 +50,7 @@ All notable changes to `svg-scroll-draw` are documented here.
   step and every blog post's closing get a compact "Star on GitHub" with the
   hourly cached count from `/api/stars` (no request to GitHub per view; no
   count is shown when there is none).
+
 
 - **Three more how-to posts, each leading into its tool:**
   - `/blog/scroll-video-scrub`: map scroll progress to `currentTime`, seek
