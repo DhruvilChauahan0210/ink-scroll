@@ -25,7 +25,7 @@
   color: var(--fg-3);
 }
 .site .ba .if-tag b { font: 600 12px/1.35 var(--mono); color: var(--fg); }
-.site .ba .if-box.is-client > .if-tag span { color: var(--accent); }
+.site .ba .if-box.is-client > .if-tag span { color: var(--fg); font-weight: 600; }
 
 .site .ba .if-leaf {
   display: flex;
