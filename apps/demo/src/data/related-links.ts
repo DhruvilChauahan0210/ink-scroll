@@ -22,6 +22,27 @@ export type RelatedLinks = {
 };
 
 export const RELATED_BY_POST: Record<string, RelatedLinks> = {
+  'scroll-video-scrub': {
+    examples: ['scroll-video', 'scroll-frames'],
+    tools: ['scroll-video-scrub-generator', 'scroll-image-sequence-generator'],
+    pages: [
+      { href: '/showcase/aural', label: 'Aural showcase', blurb: 'A whole product page built around one scroll-scrubbed film.' },
+    ],
+  },
+  'number-counter-animation': {
+    examples: ['scroll-counter'],
+    tools: ['counter-animation-generator', 'easing-visualizer'],
+    pages: [
+      { href: '/docs#scroll-counter', label: 'scrollCounter docs', blurb: 'Every option, the React component and the instance methods.' },
+    ],
+  },
+  'css-cubic-bezier-easing': {
+    examples: ['scroll-animate', 'scroll-reveal'],
+    tools: ['cubic-bezier-generator', 'easing-visualizer'],
+    pages: [
+      { href: '/css-keyframes-animation-generator', label: 'CSS keyframes animation generator', blurb: 'Put a curve to work: entrances, exits and attention effects with your easing, as @keyframes or on scroll.' },
+    ],
+  },
   'scroll-image-sequence-animation': {
     examples: ['scroll-frames', 'scroll-video'],
     tools: ['scroll-image-sequence-generator', 'scroll-video-scrub-generator'],

@@ -1,0 +1,87 @@
+/* /blog/number-counter-animation — fig. 1, the count over time. Scoped under .site .ba .nc. */
+
+.site .ba .nc { display: grid; gap: 0; }
+.site .ba .nc-chart {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  gap: 10px;
+}
+.site .ba .nc-y {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin: -6px 0;
+  font: 500 10.5px/1.1 var(--mono);
+  color: var(--fg-3);
+}
+.site .ba .nc-plot {
+  position: relative;
+  height: 200px;
+  border-left: 1px solid var(--fg-3);
+  border-bottom: 1px solid var(--fg-3);
+}
+.site .ba .nc-plot svg { position: absolute; inset: 0; display: block; width: 100%; height: 100%; overflow: visible; }
+.site .ba .nc-plot path,
+.site .ba .nc-plot polyline { fill: none; vector-effect: non-scaling-stroke; }
+.site .ba .nc-grid { stroke: var(--line); stroke-width: 1; }
+.site .ba .nc-lin { stroke: var(--fg-3); stroke-width: 1.5; stroke-dasharray: 4 4; }
+.site .ba .nc-ease { stroke: var(--accent); stroke-width: 2.5; stroke-linejoin: round; }
+
+.site .ba .nc-dot {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  margin: 0 0 -4px -4px;
+  border-radius: 50%;
+}
+.site .ba .nc-dot.is-ease { background: var(--accent); }
+.site .ba .nc-dot.is-lin { background: var(--fg-3); }
+.site .ba .nc-note {
+  position: absolute;
+  margin: 0 0 4px -10px;
+  translate: -100% 0;
+  font: 600 11px/1.2 var(--mono);
+  color: var(--fg);
+  white-space: nowrap;
+}
+
+.site .ba .nc-x {
+  position: relative;
+  height: 14px;
+  margin: 6px 0 0 66px;
+  font: 500 10.5px/1.3 var(--mono);
+  color: var(--fg-3);
+}
+.site .ba .nc-x span { position: absolute; top: 0; translate: -50% 0; white-space: nowrap; }
+.site .ba .nc-x span:first-child { translate: 0 0; }
+.site .ba .nc-x span:last-child { translate: -100% 0; }
+
+.site .ba .nc-table {
+  width: 100%;
+  margin: 16px 0 0;
+  border-collapse: collapse;
+  font: 400 12px/1.4 var(--mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--fg-2);
+}
+.site .ba .nc-table th,
+.site .ba .nc-table td {
+  padding: 6px 0 6px 8px;
+  border-bottom: 1px solid var(--line);
+  text-align: right;
+  font-weight: 400;
+}
+.site .ba .nc-table th:first-child { padding-left: 0; text-align: left; color: var(--fg); white-space: nowrap; }
+.site .ba .nc-table thead th { color: var(--fg-3); border-bottom-color: var(--fg-3); }
+.site .ba .nc-key { display: inline-block; width: 16px; height: 0; margin-right: 6px; vertical-align: middle; }
+.site .ba .nc-key.is-ease { border-top: 3px solid var(--accent); }
+.site .ba .nc-key.is-lin { border-top: 2px dashed var(--fg-3); }
+
+@media (max-width: 559px) {
+  .site .ba .nc-chart { grid-template-columns: 44px minmax(0, 1fr); gap: 8px; }
+  .site .ba .nc-x { margin-left: 52px; }
+  .site .ba .nc-plot { height: 168px; }
+  .site .ba .nc-table { font-size: 11px; }
+  .site .ba .nc-table th, .site .ba .nc-table td { padding-left: 4px; }
+}

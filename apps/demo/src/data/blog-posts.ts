@@ -19,6 +19,39 @@ export type BlogPost = {
 
 export const POSTS: BlogPost[] = [
   {
+    slug: 'scroll-video-scrub',
+    title: 'How to scrub a video on scroll (play video with scroll)',
+    description:
+      'Play a video with the scroll: map progress to currentTime, seek only on change, encode a keyframe every few frames, and handle iPhone and reduced motion.',
+    tag: 'How-To',
+    tagColor: '#60a5fa',
+    readTime: '9 min read',
+    date: 'November 2026',
+    published: '2026-11-13',
+  },
+  {
+    slug: 'number-counter-animation',
+    title: 'How to animate a number counter on scroll (CSS and JavaScript)',
+    description:
+      'Count a number up as it scrolls into view: a pure-CSS @property counter, a requestAnimationFrame count-up with easing, Intl formatting, and no layout jitter.',
+    tag: 'How-To',
+    tagColor: '#60a5fa',
+    readTime: '8 min read',
+    date: 'November 2026',
+    published: '2026-11-13',
+  },
+  {
+    slug: 'css-cubic-bezier-easing',
+    title: 'CSS cubic-bezier() easing explained, with curves to copy',
+    description:
+      'What the four numbers in CSS cubic-bezier() mean, the exact values behind ease and ease-in-out, curves to copy, springs in linear(), and the same curve in JS.',
+    tag: 'Guide',
+    tagColor: '#111',
+    readTime: '9 min read',
+    date: 'November 2026',
+    published: '2026-11-13',
+  },
+  {
     slug: 'scroll-image-sequence-animation',
     title: 'How to build an Apple-style scroll image sequence animation',
     description:

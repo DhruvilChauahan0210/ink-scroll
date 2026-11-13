@@ -8,6 +8,27 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### Site
 
+- **Three more how-to posts, each leading into its tool:**
+  - `/blog/scroll-video-scrub`: map scroll progress to `currentTime`, seek
+    only on a change, encode a keyframe every few frames (the seek timings
+    are the video scrub tool's own measurements), `+faststart` and Range
+    requests, iPhone, reduced motion and `scrollVideo`; into the video scrub
+    generator and, when frames beat video, the image sequence tools.
+  - `/blog/number-counter-animation`: a pure-CSS `@property` counter that
+    works in WebKit and Firefox too (`calc(var(--n))`, a `from`-only
+    keyframe), a scroll-scrubbed CSS version, a requestAnimationFrame
+    count-up, `Intl.NumberFormat`, a width that never jitters, screen
+    readers and `scrollCounter`; into the counter animation generator.
+  - `/blog/css-cubic-bezier-easing`: the four numbers, the keywords' exact
+    values, slope as speed, curves to copy, overshoot, springs in
+    `linear()`, `steps()`, easing on scroll timelines and a JS solver
+    checked against all three engines' own; into the cubic-bezier generator
+    and the easing visualizer.
+  Every listing runs as printed in Chromium, Firefox and WebKit.
+- **The video scrub generator's notes are current.** Its loop follows the
+  trigger window (since 2.23.5), and the React `<ScrollVideo>` takes a
+  `poster` and follows `preload` (since 2.23.4).
+
 - **`/blog/scroll-image-sequence-animation`: an Apple-style scroll image
   sequence, step by step.** Why stills on a canvas rather than a scrubbed
   video (it depends on the encode, from the video scrub tool's own

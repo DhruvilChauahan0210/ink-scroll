@@ -307,6 +307,24 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
     // ── Blog posts ──────────────────────────────────────────────────────────
     {
+      url: `${SITE_URL}/blog/scroll-video-scrub`,
+      lastModified: new Date("2026-11-13"),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${SITE_URL}/blog/number-counter-animation`,
+      lastModified: new Date("2026-11-13"),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${SITE_URL}/blog/css-cubic-bezier-easing`,
+      lastModified: new Date("2026-11-13"),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
       url: `${SITE_URL}/blog/scroll-image-sequence-animation`,
       lastModified: new Date("2026-11-13"),
       changeFrequency: "monthly",

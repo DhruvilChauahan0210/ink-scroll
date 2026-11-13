@@ -1,0 +1,66 @@
+/* /blog/scroll-video-scrub — fig. 1, seek time by keyframe interval. Scoped under .site .ba .ksf. */
+
+.site .ba .ksf { display: grid; gap: 0; }
+.site .ba .ksf-row {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+}
+.site .ba .ksf-row.is-new { border-top: 1px solid var(--fg-3); }
+.site .ba .ksf-l { display: grid; gap: 2px; font: 400 11px/1.3 var(--mono); color: var(--fg-3); }
+.site .ba .ksf-l b { font: 600 13px/1.3 var(--mono); color: var(--fg); }
+.site .ba .ksf-track {
+  position: relative;
+  display: block;
+  background-image: linear-gradient(to right, var(--line) 1px, transparent 1px);
+  background-size: 25% 100%;
+  box-shadow: 1px 0 0 var(--line);
+}
+.site .ba .ksf-track svg { display: block; width: 100%; height: 30px; overflow: visible; }
+.site .ba .ksf-track path { fill: none; vector-effect: non-scaling-stroke; }
+.site .ba .ksf-frame { stroke: var(--fg-2); stroke-width: 1; stroke-dasharray: 3 3; }
+.site .ba .ksf-bar { stroke: var(--accent); stroke-width: 3; stroke-linecap: butt; }
+.site .ba .ksf-dot { stroke: var(--fg); stroke-width: 7; stroke-linecap: round; }
+
+.site .ba .ksf-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.site .ba .ksf-axis { border-bottom: 1px solid var(--fg-3); padding: 0 0 8px; }
+.site .ba .ksf-axis .ksf-l { font-size: 10px; }
+.site .ba .ksf-ticks {
+  display: flex;
+  justify-content: space-between;
+  background: none;
+  box-shadow: none;
+  font: 500 10.5px/1.3 var(--mono);
+  color: var(--fg-3);
+  white-space: nowrap;
+}
+
+.site .ba .ksf-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin: 10px 0 0;
+  font: 400 11px/1.4 var(--mono);
+  color: var(--fg-3);
+}
+.site .ba .ksf-key i { display: inline-block; width: 18px; height: 0; margin-right: 6px; vertical-align: middle; }
+.site .ba .ksf-key .is-bar { border-top: 3px solid var(--accent); }
+.site .ba .ksf-key .is-frame { border-top: 1px dashed var(--fg-2); }
+
+@media (max-width: 559px) {
+  .site .ba .ksf-row { grid-template-columns: 104px minmax(0, 1fr); gap: 10px; }
+  .site .ba .ksf-l b { font-size: 12px; }
+  .site .ba .ksf-k { font-size: 10px; }
+  .site .ba .ksf-ticks span:nth-child(even) { visibility: hidden; }
+}

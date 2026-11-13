@@ -287,9 +287,12 @@ export default function ScrollVideoScrubGeneratorPage() {
               </p>
               <CodeBox file="what-it-does.js">{ARITHMETIC_JS}</CodeBox>
               <Note k="When">
-                The loop runs on animation frames while the video is on screen, watched by an IntersectionObserver,
-                and stops when it is not. The two positions are measured when it is made, 150ms after a resize, and
-                when the measured element’s layout changes.
+                Each scroll compares where it is in the window with the frame on screen. The loop runs on animation
+                frames while the scroll is inside the window, and stops on the frame that leaves it, so a jump past the
+                whole window (the End key, an anchor link) still lands on the end frame; outside the window a scroll
+                costs one comparison. Up to 2.23.4 the loop ran while an IntersectionObserver saw the video. The two
+                positions are measured when it is made, when the metadata loads, 150ms after a resize, and when the
+                measured element’s layout changes.
               </Note>
               <Note k="Pinned">
                 In a sticky stage the video’s own box moves with the scroll for as long as it is stuck, so measured on
@@ -358,9 +361,11 @@ export default function ScrollVideoScrubGeneratorPage() {
               </div>
               <Note k="React">
                 The generated React code calls scrollVideo in an effect rather than rendering the library’s{' '}
-                <C>{'<ScrollVideo>'}</C>: that component has no <C>poster</C> prop, always renders{' '}
-                <C>{'preload="auto"'}</C> (so its <C>preload</C> option never applies), and a{' '}
-                <C>triggerElement</C> needs a ref to the track anyway.
+                <C>{'<ScrollVideo>'}</C>, because a <C>triggerElement</C> needs the track’s element, which a ref
+                holds only after the first render. For a video in the flow, <C>{'<ScrollVideo>'}</C> does the same
+                job: it takes a <C>poster</C>, sets <C>muted</C> and <C>playsInline</C> by default, and its{' '}
+                <C>preload</C> follows the option, <C>auto</C> when left out. Up to 2.23.3 it dropped the poster and
+                always rendered <C>{'preload="auto"'}</C>; fixed in 2.23.4.
               </Note>
             </Sec>
 
