@@ -44,7 +44,7 @@ for (const p of ['scrollHeight', 'clientHeight', 'clientWidth']) counted(Element
 <div style="height: 1200px"></div>
 
 <script type="module">
-import { scrollDraw, scrollCounter } from '/dist/index.mjs';
+import { scrollDraw, scrollCounter, Cinematic } from '/dist/index.mjs';
 import { scrollText } from '/dist/text/index.mjs';
 import { scrollProgress } from '/dist/progress/index.mjs';
 import { scrollDrawTimeline } from '/dist/timeline/index.mjs';
@@ -58,13 +58,21 @@ const add = (html) => {
 const svg = '<svg class="item" viewBox="0 0 300 40"><path class="p" d="M0 20 H300"/></svg>';
 
 // Every window starts at 3000 - 800 = 2200 or later: the spec scrolls above it.
-const counts = { draw: 200, counter: 20, text: 20, progress: 20, timeline: 20 };
+const counts = { draw: 200, counter: 20, text: 20, progress: 20, timeline: 20, cinematic: 5 };
 // A callback keeps scrollDraw on the JS engine in every browser.
 for (let i = 0; i < counts.draw; i++) scrollDraw(add(svg), { onProgress: () => {} });
 for (let i = 0; i < counts.counter; i++) scrollCounter(add('<div class="item">0</div>'), { to: 10 });
 for (let i = 0; i < counts.text; i++) scrollText(add('<p class="item">a few words</p>'));
 for (let i = 0; i < counts.progress; i++) scrollProgress(add('<div class="item"></div>'));
 for (let i = 0; i < counts.timeline; i++) scrollDrawTimeline(add(svg), { tracks: [{ selector: '.p', from: 0, to: 1 }] });
+// Each story scrubs from its mount's top reaching the viewport's top: far below.
+for (let i = 0; i < counts.cinematic; i++) {
+  new Cinematic({ wrapper: add('<div></div>') }).loadStory({
+    version: 1, totalHeight: '1200px', canvas: { width: 300, height: 40 },
+    scenes: [{ id: 's', animations: [{ type: 'draw', target: '#cine' + i, d: 'M0 20 H300', length: 300,
+      start: '0%', end: '100%', stroke: '#000', strokeWidth: 3, easing: 'linear' }] }],
+  });
+}
 
 publish({
   counts: () => counts,

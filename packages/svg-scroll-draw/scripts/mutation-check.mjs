@@ -868,8 +868,9 @@ const MUTATIONS = [
     id: 'reduced-live/cinematic',
     what: 'Cinematic ignores reduced motion turned on mid-story and keeps scrubbing',
     file: 'src/cinematic/index.ts',
-    from: '      if (!reduced) return;\n      unwatchMotion();\n      stop();',
-    to: '      if (reduced) return;\n      unwatchMotion();\n      stop();',
+    // Re-anchored in 2.23.7, when Cinematic moved onto core/frame-gate.
+    from: '      if (!reduced) return;\n      unwatchMotion();\n      gate.off();',
+    to: '      if (reduced) return;\n      unwatchMotion();\n      gate.off();',
     spec: 'cinematic',
     grep: 'reduced motion turned on mid-story',
   },
@@ -1252,6 +1253,28 @@ const MUTATIONS = [
     to: '      () => { const r = el.getBoundingClientRect(); return r.bottom > 0 && r.top < innerHeight ? 0.5 : 0; },',
     spec: 'engine-gate',
     grep: 'a jump to the end paints every last frame and completes',
+  },
+  {
+    // 2.23.7: Cinematic was the last engine on an IntersectionObserver, on its
+    // sticky stage. The mutant runs the frames while the stage is on screen.
+    id: 'gate/cinematic',
+    what: 'Cinematic scrubs only while its stage is on screen, so a jump past the story leaves it on its first frame',
+    file: 'src/cinematic/index.ts',
+    from: '    const gate = frameGate(sc || window, [mount], at, frame, measure);',
+    to: '    const gate = frameGate(sc || window, [mount], () => { const r = stage.getBoundingClientRect(); return r.bottom > 0 && r.top < innerHeight ? 0.5 : 0; }, frame, measure);',
+    spec: 'engine-gate',
+    grep: 'a jump to the end paints every last frame and completes',
+  },
+  {
+    // 2.23.7: on the frame gate the window was the only scroller, so a story in
+    // a scrolling div or on a body-scroller page stayed on its first frame.
+    id: 'cinematic/scroller',
+    what: 'Cinematic assumes the window scrolls it, so a story in a scrolling div or a scrolling body never leaves its first frame',
+    file: 'src/cinematic/index.ts',
+    from: '        sc = n;\n        break;',
+    to: '        sc = null as HTMLElement | null;\n        break;',
+    spec: 'cinematic',
+    grep: 'scrubs with its scroller',
   },
   {
     id: 'gate/leave-frame',

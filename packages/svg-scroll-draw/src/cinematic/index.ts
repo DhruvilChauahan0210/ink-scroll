@@ -2,6 +2,8 @@ import { EASINGS } from '../core/easing';
 import { warn } from '../core/env';
 import { _register, _unregister } from '../core/registry';
 import { watchReducedMotion } from '../core/motion-watch';
+import { frameGate } from '../core/frame-gate';
+import { computeProgress } from '../core/trigger';
 import type { Story, StoryEasing, StoryAnimation } from './story';
 
 export type { Story } from './story';
@@ -22,7 +24,7 @@ export interface CinematicOptions {
 }
 
 export interface CinematicInstance {
-  /** Stop the scroll loop and detach observers (built DOM is left in place). */
+  /** Stop the scroll loop and detach its listeners (built DOM is left in place). */
   destroy: () => void;
   /** Current global scroll progress through the story (0–1). */
   getProgress: () => number;
@@ -43,7 +45,8 @@ function easeOf(name: StoryEasing): (t: number) => number {
   return EASINGS[name] ?? EASINGS.linear;
 }
 
-const noop: CinematicInstance = { destroy: () => {}, getProgress: () => 0 };
+/** An instance with nothing running: no mount (progress 0) or reduced motion (1). */
+const still = (progress: number): CinematicInstance => ({ destroy() {}, getProgress: () => progress });
 
 /**
  * The viral loader. Reads a Cinematic Story (authored in the Studio) and wires
@@ -71,7 +74,7 @@ export class Cinematic {
 
   loadStory(story: Story): CinematicInstance {
     const mount = this.mount;
-    if (typeof window === 'undefined' || !mount) return noop;
+    if (typeof window === 'undefined' || !mount) return still(0);
 
     // ── Build the scroll structure ───────────────────────────────────────────
     mount.style.position = 'relative';
@@ -140,7 +143,7 @@ export class Cinematic {
           el,
           start: parsePercent(a.start),
           end: parsePercent(a.end),
-          ease: EASINGS['ease-in-out'] ?? EASINGS.linear,
+          ease: easeOf('ease-in-out'),
           from: a.from,
           to: a.to,
         });
@@ -150,10 +153,44 @@ export class Cinematic {
     // ── Progress + apply ──────────────────────────────────────────────────────
     let progress = 0;
 
-    const computeProgress = (): number => {
-      const scrollable = mount.offsetHeight - window.innerHeight;
-      if (scrollable <= 0) return mount.getBoundingClientRect().top <= 0 ? 1 : 0;
-      return clamp01(-mount.getBoundingClientRect().top / scrollable);
+    // What scrolls the story: the nearest ancestor that is a scroll container
+    // and overflows (a scrolling div, or the body under html { overflow: hidden }),
+    // else the window. Up to 2.23.6 progress came from the mount's live rect,
+    // which followed any scroller; the window alone left those stories on their
+    // first frame. The body's own overflow is the viewport's while html's is
+    // visible: then the window scrolls and body.scrollTop stays 0.
+    // /[ao]/ is auto, scroll or overlay: not visible, hidden or clip.
+    let sc: HTMLElement | null = null;
+    // Up to <html>, which has no parent: its scroll is the window's.
+    for (let n = mount.parentElement; n?.parentElement; n = n.parentElement) {
+      if (
+        /[ao]/.test(getComputedStyle(n).overflowY) &&
+        n.scrollHeight > n.clientHeight &&
+        (n !== document.body || /[aoh]/.test(getComputedStyle(n.parentElement).overflowY))
+      ) {
+        sc = n;
+        break;
+      }
+    }
+
+    // The scroll window is the mount's own scrollable span: progress runs 0 → 1
+    // from its top reaching the scrollport top until its bottom reaches the
+    // bottom. Measured once and kept (core/frame-gate re-measures it on a resize
+    // or a layout change): reading the mount's rect every frame forces layout.
+    // In a container, the offset inside its content, from inside its border
+    // (core/trigger-frame), already includes its scroll position.
+    let tStart = 0;
+    let tEnd = 0;
+    const measure = (): void => {
+      const top = mount.getBoundingClientRect().top;
+      tStart = sc ? top - sc.getBoundingClientRect().top - sc.clientTop + sc.scrollTop : top + window.scrollY;
+      tEnd = tStart + Math.max(0, mount.offsetHeight - (sc ? sc.clientHeight : window.innerHeight));
+    };
+    /** Where the scroll is through the window, from the cache: no layout read. */
+    const at = (): number => {
+      const y = sc ? sc.scrollTop : window.scrollY;
+      // No scroll room: done once its top passes the scrollport top.
+      return tEnd <= tStart ? (y >= tStart ? 1 : 0) : computeProgress(y, tStart, tEnd, 1);
     };
 
     const apply = (global: number): void => {
@@ -172,54 +209,27 @@ export class Cinematic {
     // ── Reduced motion: jump to the finished frame, no scrubbing ──────────────
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       apply(1);
-      return { destroy: () => {}, getProgress: () => 1 };
+      return still(1);
     }
 
-    // ── rAF loop, gated by visibility ─────────────────────────────────────────
-    let rafId = 0;
-    let running = false;
-    let visible = false;
-
-    const tick = (): void => {
-      progress = computeProgress();
+    // ── Frames from the scroll window ─────────────────────────────────────────
+    // Up to 2.23.6 the frames ran while an IntersectionObserver saw the sticky
+    // stage. A jump past the mount (the End key, an anchor link, the scroll a
+    // reload restores) never had the stage on screen, so the story kept its
+    // first frame. The window decides now, as for every other engine.
+    const frame = (): void => {
+      progress = at();
       apply(progress);
-      if (running) rafId = requestAnimationFrame(tick);
     };
-    const start = (): void => {
-      if (running) return;
-      running = true;
-      rafId = requestAnimationFrame(tick);
-    };
-    const stop = (): void => {
-      running = false;
-      cancelAnimationFrame(rafId);
-    };
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const e of entries) {
-          visible = e.isIntersecting;
-          if (visible) start();
-          else stop();
-        }
-      },
-      { threshold: 0 }
-    );
-    observer.observe(stage);
-
+    measure();
     // Paint the correct frame immediately (in case we load mid-scroll).
-    progress = computeProgress();
-    apply(progress);
+    frame();
+    const gate = frameGate(sc || window, [mount], at, frame, measure);
 
-    // The scroll window is the mount's own scrollable span: progress runs 0 → 1
-    // from its top reaching the viewport top until its bottom reaches the bottom.
     _register(mount, {
       type: 'draw',
       getProgress: () => progress,
-      getTrigger: () => {
-        const tStart = mount.getBoundingClientRect().top + window.scrollY;
-        return { tStart, tEnd: tStart + Math.max(0, mount.offsetHeight - window.innerHeight) };
-      },
+      getTrigger: () => ({ tStart, tEnd }),
     });
 
     // Reduced motion turned on mid-visit: the finished frame, no more scrubbing,
@@ -227,8 +237,7 @@ export class Cinematic {
     const unwatchMotion = watchReducedMotion((reduced) => {
       if (!reduced) return;
       unwatchMotion();
-      stop();
-      observer.disconnect();
+      gate.off();
       _unregister(mount);
       progress = 1;
       apply(1);
@@ -237,8 +246,7 @@ export class Cinematic {
     return {
       destroy() {
         unwatchMotion();
-        stop();
-        observer.disconnect();
+        gate.off();
         _unregister(mount);
       },
       getProgress: () => progress,

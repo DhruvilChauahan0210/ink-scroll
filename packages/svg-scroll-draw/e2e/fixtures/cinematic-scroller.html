@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Cinematic — a story that something other than the window scrolls</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  /* ?mode=body: the body is the scroller (an app shell). The window never moves. */
+  html.body-mode { height: 100%; overflow: hidden; }
+  html.body-mode body { height: 100%; overflow: auto; }
+  /* ?mode=div: the story sits inside a scrolling div, 100px down the page, with a
+     10px border: its scroll window is measured from the div's scrollport. */
+  #box { height: 600px; overflow: auto; margin-top: 100px; border: 10px solid #ccc; }
+</style>
+</head>
+<body>
+<script>
+  const mode = new URLSearchParams(location.search).get('mode') || 'body';
+  document.documentElement.classList.add(mode + '-mode');
+</script>
+<div id="box">
+  <div style="height:200px"></div>
+  <div id="app"></div>
+  <div style="height:600px"></div>
+</div>
+
+<script type="module">
+import { Cinematic } from '/dist/index.mjs';
+import { drawnFraction, publish } from './_probe.mjs';
+
+const mode = new URLSearchParams(location.search).get('mode') || 'body';
+const box = document.getElementById('box');
+// In body mode the div does not scroll: it is as tall as its content.
+if (mode === 'body') box.style.cssText = 'height:auto;overflow:visible;margin:0;border:0';
+/** What scrolls the story. */
+const scroller = mode === 'body' ? document.body : box;
+
+/** 0-100% draw, linear: drawn fraction = global progress. */
+const story = {
+  version: 1,
+  totalHeight: '2000px',
+  canvas: { width: 200, height: 100 },
+  scenes: [
+    {
+      id: 'only',
+      animations: [
+        {
+          type: 'draw', target: '#p-all', d: 'M10 50 L190 50', length: 180,
+          start: '0%', end: '100%', stroke: '#000', strokeWidth: 3, easing: 'linear',
+        },
+      ],
+    },
+  ],
+};
+
+const instance = new Cinematic({ wrapper: '#app' }).loadStory(story);
+
+publish({
+  read: () => ({
+    scrollTop: scroller.scrollTop,
+    windowY: window.scrollY,
+    viewport: scroller.clientHeight,
+    drawn: drawnFraction(document.getElementById('p-all')),
+    progress: instance.getProgress(),
+  }),
+  scrollTo: (y) => { scroller.scrollTop = y; },
+});
+</script>
+</body>
+</html>

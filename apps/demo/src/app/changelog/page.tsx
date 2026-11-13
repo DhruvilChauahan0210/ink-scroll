@@ -55,6 +55,15 @@ const KINDS: { k: Kind; label: string }[] = [
  */
 const RELEASES: Release[] = [
   {
+    version: '2.23.7',
+    title: 'Cinematic paints the frame a jump calls for',
+    date: '2026-11-13',
+    items: [
+      { type: 'fix', text: 'A Cinematic story jumped past (the End key, an anchor link, a restored scroll) kept its first frame: its frames ran only while an IntersectionObserver saw the sticky stage. It follows its scroll window through the same frame gate as every other engine, measured once and again on a layout change instead of every frame.' },
+      { type: 'test', text: 'Seven unit tests and a Cinematic story in the jump spec in three engines; one mutation, caught.' },
+    ],
+  },
+  {
     version: '2.23.6',
     title: 'The npm page leads with line drawing',
     date: '2026-11-13',

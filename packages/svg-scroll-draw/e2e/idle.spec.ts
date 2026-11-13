@@ -170,7 +170,7 @@ test.describe('idle cost of the JS engine', () => {
  * cached: nothing to paint, so no frame is requested and no layout is read.
  * Measured as the 2.23.4 review of scrollAnimate was: 200 scrollDraw instances,
  * here with 20 each of scrollCounter, scrollText, scrollProgress and
- * scrollDrawTimeline beside them.
+ * scrollDrawTimeline beside them, and 5 Cinematic stories (2.23.7).
  */
 test('scrolling above every window requests no frame and reads no layout', async ({ page }) => {
   await page.goto('/e2e/fixtures/idle-many.html');

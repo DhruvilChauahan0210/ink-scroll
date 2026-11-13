@@ -101,7 +101,12 @@ const BUDGETS_KB = {
   timeline:          4.2,
   text:              3.5,
   video:             2.9,
-  cinematic:         2.4,
+  // 2.4 -> 3.1 in 2.23.7: Cinematic moved off its IntersectionObserver onto the
+  // shared frame gate (core/frame-gate + layout-watch, ~0.5 KB, the chunk every
+  // other engine already ships), so a story jumped past paints its last frame.
+  // A page that imports Cinematic with any other API pays it once.
+  // 3.1 -> 3.2: it finds the element that scrolls the story (a scrolling div, a body-scroller) instead of assuming the window.
+  cinematic:         3.2,
   progress:          2.5,
   devtools:          1.9,
   snap:              2.0,

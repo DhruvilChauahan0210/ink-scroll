@@ -6,7 +6,8 @@ import { openFixture, collectErrors, scrollToY, read, call, table, settle } from
  *
  * Up to 2.23.4 scrollDraw's JS path, scrollCounter, scrollText, scrollVideo,
  * scrollProgress, scrollDrawTimeline and useScrollDrawProgress ran their frame
- * loop while an IntersectionObserver saw the element. A jump across the whole
+ * loop while an IntersectionObserver saw the element, and Cinematic until
+ * 2.23.7 while one saw its sticky stage. A jump across the whole
  * trigger window never has it on screen: the End key, an anchor link, the
  * scroll a reload restores. The element kept its first frame and onComplete
  * never fired. The trigger window decides now (core/frame-gate).
@@ -25,6 +26,7 @@ type Row = {
   progress: number;
   timeline: number;
   hook: number;
+  cinematic: number;
   completed: Record<string, number>;
   progresses: Record<string, number>;
 };
@@ -38,7 +40,7 @@ async function expectFinished(page: Page, how: string): Promise<void> {
   // likes: wait for the finished frame rather than sample once.
   await page.waitForFunction(() => {
     const r = (window as unknown as { __probe: { read: () => Row } }).__probe.read();
-    return r.video === 1 && r.counter === 100 && r.hook === 1 && r.draw > 0.999 && r.timeline > 0.999;
+    return r.video === 1 && r.counter === 100 && r.hook === 1 && r.draw > 0.999 && r.timeline > 0.999 && r.cinematic > 0.999;
   }, undefined, { timeout: 5000 }).catch(() => {});
   const r = await read<Row>(page);
   const shown = table([{ how, ...r, stagger: r.stagger.join(' '), text: r.text.join(' '), completed: JSON.stringify(r.completed), progresses: JSON.stringify(r.progresses) }]);
@@ -51,6 +53,7 @@ async function expectFinished(page: Page, how: string): Promise<void> {
   expect.soft(r.progress, `scrollProgress\n${shown}`).toBe(1);
   expect.soft(r.timeline, `scrollDrawTimeline\n${shown}`).toBeCloseTo(1, 3);
   expect.soft(r.hook, `useScrollDrawProgress\n${shown}`).toBe(1);
+  expect.soft(r.cinematic, `Cinematic\n${shown}`).toBeCloseTo(1, 3);
   for (const [name, p] of Object.entries(r.progresses)) expect.soft(p, `${name}.getProgress()\n${shown}`).toBe(1);
   for (const [name, n] of Object.entries(r.completed)) expect.soft(n, `${name} onComplete\n${shown}`).toBe(1);
 }
@@ -67,6 +70,7 @@ test.describe('every engine follows its trigger window, not the screen', () => {
     expect(r.progress).toBe(0);
     expect(r.timeline).toBeCloseTo(0, 3);
     expect(r.hook).toBe(0);
+    expect(r.cinematic).toBeCloseTo(0, 3);
     expect(Object.values(r.completed).every((n) => n === 0)).toBe(true);
   });
 
@@ -88,6 +92,7 @@ test.describe('every engine follows its trigger window, not the screen', () => {
     expect(back.video).toBeCloseTo(0, 3);
     expect(back.progress).toBe(0);
     expect(back.timeline).toBeCloseTo(0, 3);
+    expect(back.cinematic).toBeCloseTo(0, 3);
     // scrollCounter and scrollText default to once: they hold.
     expect(back.counter).toBe(100);
     expect(back.text.every((o) => o === 1)).toBe(true);

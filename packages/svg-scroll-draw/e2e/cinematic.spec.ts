@@ -202,8 +202,8 @@ test.describe('Cinematic', () => {
   });
 
   /**
-   * Documented behaviour: destroy() stops the scroll loop and detaches the
-   * observer, but deliberately leaves the built DOM in place.
+   * Documented behaviour: destroy() stops the scroll loop and detaches its
+   * listeners, but deliberately leaves the built DOM in place.
    */
   test('destroy() stops the loop but leaves the built stage in the page', async ({ page }) => {
     await openFixture(page, 'cinematic.html');
@@ -222,4 +222,36 @@ test.describe('Cinematic', () => {
     ).toBeCloseTo(before.measured, 2);
     expect(await call<boolean>(page, 'stageStillThere')).toBe(true);
   });
+
+  /**
+   * A story the window does not scroll. Up to 2.23.6 progress came from the
+   * mount's live rect, so any scroller worked; 2.23.7 moved Cinematic onto the
+   * frame gate with the window as the scroller, and on these pages the window
+   * never moves: the story stayed on its first frame. Fixture: the mount sits
+   * 200px into the scroll content and is 2000px tall, so its window is
+   * [200, 200 + 2000 - clientHeight] of the scroller's scrollTop.
+   */
+  for (const mode of ['body', 'div'] as const) {
+    test(`a story scrolled by ${mode === 'body' ? 'the body (html overflow hidden)' : 'a scrolling div'} scrubs with its scroller`, async ({ page }) => {
+      const errors = collectErrors(page);
+      await openFixture(page, `cinematic-scroller.html?mode=${mode}`);
+      type R = { scrollTop: number; windowY: number; viewport: number; drawn: number; progress: number };
+      const rows: R[] = [];
+      // In order, then a jump back to the middle from the end.
+      for (const y of [0, 200, 500, 800, 1100, 5000, 700]) {
+        await call(page, 'scrollTo', y);
+        await settle(page);
+        rows.push(await read<R>(page));
+      }
+      const shown = table(rows);
+      for (const r of rows) {
+        expect(r.windowY, `the window scrolled, so this is not the case under test\n${shown}`).toBe(0);
+        const g = clamp01((r.scrollTop - 200) / (2000 - r.viewport));
+        expect(r.progress, `progress at scrollTop ${r.scrollTop}\n${shown}`).toBeCloseTo(g, 2);
+        expect(r.drawn, `frame at scrollTop ${r.scrollTop}\n${shown}`).toBeCloseTo(g, 1);
+      }
+      expect(rows[5].drawn, `a jump to the end left it short\n${shown}`).toBeCloseTo(1, 2);
+      expect(errors).toEqual([]);
+    });
+  }
 });

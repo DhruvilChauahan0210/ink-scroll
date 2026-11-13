@@ -1003,6 +1003,38 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ---
 
+## [2.23.7] — 2026-11-13
+
+### Fixed
+
+- **A Cinematic story jumped past keeps no stale frame.** With the End key, an
+  anchor link or the scroll a reload restores, a story kept its first frame:
+  its frames ran only while an IntersectionObserver saw the sticky stage, and
+  a jump past the story never has the stage on screen. Cinematic was the last
+  engine on an observer; it follows the story's scroll window through the same
+  frame gate as every other engine. The window is measured once and again
+  after a resize or a layout change, where each frame used to read the mount's
+  rect and height. Outside the window a scroll costs one comparison, with no
+  frame and no layout read. Cinematic follows the element that actually
+  scrolls the story: a scrolling `div`, or the body in an app shell with
+  `html { overflow: hidden }`, as well as the window.
+
+### Changed
+
+- `svg-scroll-draw/cinematic` is 3.2 KB gzipped (was 2.3): the shared frame
+  gate and layout watcher, the chunk every other engine already ships, and
+  finding the story's scroller. A page
+  that imports Cinematic with any other API pays it once. Its budget moves to
+  3.2 KB, with the reason in `scripts/size.mjs`.
+
+### Tests
+
+- Seven unit tests and a Cinematic story in `e2e/engine-gate.spec.ts`
+  (jump, anchor, load on `#end`, reload) in three engines; `gate/cinematic`
+  is caught; the review's body-scroller and scrolling-div cases are in
+  `e2e/cinematic.spec.ts` (failing on the first fix in three engines), with
+  `cinematic/scroller` caught.
+
 ## [2.23.6] — 2026-11-13
 
 ### Docs

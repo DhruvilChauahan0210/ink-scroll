@@ -8,6 +8,7 @@ import { scrollVideo } from '../video';
 import { scrollProgress } from '../progress';
 import { scrollDrawTimeline } from '../timeline';
 import { useScrollDrawProgress } from '../react/useScrollDrawProgress';
+import { Cinematic, type CinematicInstance } from '../cinematic';
 import type { ScrollDrawInstance } from '../core/types';
 
 /*
@@ -273,5 +274,139 @@ describe.each(CASES)('$name frames follow the trigger window', ({ make, want, co
     raf.tick();
     expect(final()).toEqual(want);
     if (completes) expect(done).toHaveBeenCalledTimes(1);
+  });
+});
+
+/*
+ * Cinematic ran its frames while an IntersectionObserver saw its sticky stage,
+ * the last engine to, until 2.23.7: a jump past the mount never had the stage
+ * on screen, so the story kept its first frame. And each of those frames read
+ * the mount's rect and height: layout, every frame.
+ *
+ * The mount here is 1200 tall from 1000 in a viewport of 800, so the story
+ * scrubs from 1000 (its top at the viewport's top) to 1400 (its bottom at the
+ * viewport's bottom). One path, 100 long, drawn over the whole of it.
+ */
+describe('Cinematic frames follow its window', () => {
+  const cines: CinematicInstance[] = [];
+  afterEach(() => { cines.splice(0).forEach((c) => c.destroy()); });
+
+  function cinematic(height = 1200) {
+    const mount = document.createElement('div');
+    document.body.appendChild(mount);
+    Object.defineProperty(mount, 'offsetHeight', { value: height, configurable: true });
+    const inst = new Cinematic({ wrapper: mount }).loadStory({
+      version: 1,
+      totalHeight: height + 'px',
+      canvas: { width: 100, height: 100 },
+      scenes: [{ id: 's', animations: [{
+        type: 'draw', target: '#cine', d: 'M0 0 L100 0', length: 100,
+        start: '0%', end: '100%', stroke: '#000', strokeWidth: 1, easing: 'linear',
+      }] }],
+    });
+    cines.push(inst);
+    const path = mount.querySelector<SVGPathElement>('#cine')!;
+    return { mount, inst, offset: () => path.style.strokeDashoffset };
+  }
+
+  it('a jump past the whole story paints its last frame', () => {
+    const { inst, offset } = cinematic();
+    raf.tick();
+    expect(offset()).toBe('100');
+    scroll(3000); // the stage never on screen in between
+    raf.tick();
+    raf.tick();
+    expect(offset()).toBe('0');
+    expect(inst.getProgress()).toBe(1);
+    // And back before it: the first frame.
+    scroll(0);
+    raf.tick();
+    expect(offset()).toBe('100');
+    expect(inst.getProgress()).toBe(0);
+  });
+
+  it('runs no frames and reads no layout while the scroll stays outside its window', () => {
+    const { offset } = cinematic();
+    raf.tick();
+    raf.tick();
+    const frames = raf.schedule.mock.calls.length;
+    const reads = rects.mock.calls.length;
+    for (const y of [20, 400, 900, 60, 0]) scroll(y); // the window starts at 1000
+    expect(raf.schedule.mock.calls.length - frames).toBe(0);
+    expect(rects.mock.calls.length - reads).toBe(0);
+    expect(offset()).toBe('100');
+    // The scroll that enters it wakes the frames.
+    scroll(1100);
+    expect(raf.schedule.mock.calls.length - frames).toBe(1);
+  });
+
+  it('inside its window a frame reads no layout: the window is measured once', () => {
+    const { inst, offset } = cinematic();
+    raf.tick();
+    const reads = rects.mock.calls.length;
+    for (const y of [1100, 1200, 1300]) {
+      scroll(y);
+      raf.tick();
+      expect(inst.getProgress()).toBeCloseTo((y - 1000) / 400, 9);
+    }
+    expect(offset()).toBe('25');
+    expect(rects.mock.calls.length - reads).toBe(0);
+    // Resting inside it: one frame more finds nothing moved and stops.
+    raf.tick();
+    raf.tick();
+    expect(raf.queue.length).toBe(1); // the loop runs while inside, as every engine's does
+  });
+
+  it('loaded already past its story, it paints the last frame', () => {
+    vi.stubGlobal('scrollY', 3000);
+    const { inst, offset } = cinematic();
+    raf.tick();
+    expect(offset()).toBe('0');
+    expect(inst.getProgress()).toBe(1);
+  });
+
+  it('a story with no scroll room is done once its top passes the viewport top', () => {
+    const { inst, offset } = cinematic(400);
+    raf.tick();
+    expect(inst.getProgress()).toBe(0);
+    scroll(999);
+    raf.tick();
+    expect(offset()).toBe('100');
+    scroll(1000);
+    raf.tick();
+    expect(offset()).toBe('0');
+    expect(inst.getProgress()).toBe(1);
+  });
+
+  it('re-measures its window after a resize, not on a scroll', () => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    try {
+      const { mount, inst } = cinematic();
+      raf.tick();
+      // Content above it grew by 200: the story now scrubs 1200 to 1600.
+      rects.mockImplementation(function (this: Element) {
+        const top = 1200 - window.scrollY;
+        return { top, height: 400, left: 0, width: 300, right: 300, bottom: top + 400, x: 0, y: top, toJSON: () => ({}) } as DOMRect;
+      });
+      void mount;
+      window.dispatchEvent(new Event('resize'));
+      vi.advanceTimersByTime(150);
+      scroll(1300);
+      raf.tick();
+      expect(inst.getProgress()).toBeCloseTo(0.25, 9);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('destroy() stops the frames and the listeners', () => {
+    const { inst, offset } = cinematic();
+    raf.tick();
+    inst.destroy();
+    const frames = raf.schedule.mock.calls.length;
+    scroll(1200);
+    raf.tick();
+    expect(raf.schedule.mock.calls.length - frames).toBe(0);
+    expect(offset()).toBe('100');
   });
 });

@@ -8,7 +8,8 @@ import { watchLayout } from './layout-watch';
  * the element. A jump across the whole window (the End key, an anchor link,
  * the scroll a reload restores) never has the element on screen, so the
  * observer never fired: the element kept its first frame and onComplete never
- * came. scrollAnimate moved to the window in 2.23.4; every engine since 2.23.5.
+ * came. scrollAnimate moved to the window in 2.23.4, the other engines in
+ * 2.23.5, and Cinematic, whose observer watched its sticky stage, in 2.23.7.
  *
  * `at()` is where the scroll is through the window, clamped to [0, 1], from
  * the cached window and the scroll offset only: no layout is read. Every

@@ -6,7 +6,7 @@
 [![license](https://img.shields.io/npm/l/svg-scroll-draw)](./LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/DhruvilChauahan0210/ink-scroll?style=flat)](https://github.com/DhruvilChauahan0210/ink-scroll/stargazers)
 
-> SVG line drawing on scroll, done right: correct path lengths, stagger across many paths, and `morphTo`. Where the browser supports `animation-timeline: view()` the draw runs on its own scroll timeline in CSS, with no per-frame JavaScript; in other browsers, and for options CSS can't express, a JavaScript engine draws it, and a parity suite checks in Chromium, Firefox and WebKit that both draw the same frame. **11.4 KB gzipped** for every API, against 47.5 KB for GSAP + ScrollTrigger + DrawSVG. Zero dependencies, MIT.
+> SVG line drawing on scroll, done right: correct path lengths, stagger across many paths, and `morphTo`. Where the browser supports `animation-timeline: view()` the draw runs on its own scroll timeline in CSS, with no per-frame JavaScript; in other browsers, and for options CSS can't express, a JavaScript engine draws it, and a parity suite checks in Chromium, Firefox and WebKit that both draw the same frame. **11.5 KB gzipped** for every API, against 47.5 KB for GSAP + ScrollTrigger + DrawSVG. Zero dependencies, MIT.
 
 **Switch in one line.** Already on AOS, ScrollReveal or vivus? Change the import and keep your markup and calls:
 
@@ -46,7 +46,7 @@ Works in **React · Next.js · Vue 3 · Svelte · Solid · Angular · Nuxt · As
 - **AOS drop-in** — `import AOS from 'svg-scroll-draw/aos'` runs your existing `data-aos` markup with no `aos.css`; tested side by side against AOS 2.3.4. [Details](#aos-drop-in--switch-from-aos-in-one-line)
 - **ScrollReveal drop-in** — `import ScrollReveal from 'svg-scroll-draw/scrollreveal'`: the same API under MIT instead of GPL-3.0, inline styles matched byte for byte against ScrollReveal 4.0.9. [Details](#scrollreveal-drop-in--mit-instead-of-gpl)
 - **vivus drop-in** — `import Vivus from 'svg-scroll-draw/vivus'` keeps your `new Vivus()` code; SVG output matched exactly against vivus 0.4.6. [Details](#vivus-drop-in--keep-your-new-vivus-code)
-- **11.4 KB gzipped** for the whole main entry — and you rarely need all of it. Every API is a separate entry point: `scrollReveal` is 5.7 KB, `scrollPin` 1.6 KB, `scrollSnap` 2.0 KB. [Full size table below](#bundle-sizes), measured by `npm run size` and enforced in CI.
+- **11.5 KB gzipped** for the whole main entry — and you rarely need all of it. Every API is a separate entry point: `scrollReveal` is 5.7 KB, `scrollPin` 1.6 KB, `scrollSnap` 2.0 KB. [Full size table below](#bundle-sizes), measured by `npm run size` and enforced in CI.
 - **Zero dependencies** — no GSAP, no ScrollTrigger, no heavyweight runtime
 - **Reduced motion, followed live** — under `prefers-reduced-motion: reduce` every effect shows its finished state instead of animating, and a reader who turns the setting on while the page is open sees everything still moving finish at once. Scrubbing that moves only with the reader's own scroll (the horizontal strip, a timeline's scroll pass) keeps working, because holding it would hide content
 - **Full playback API** — `pause`, `resume`, `seek`, `replay`, `getProgress`, `destroy`
@@ -55,8 +55,8 @@ Works in **React · Next.js · Vue 3 · Svelte · Solid · Angular · Nuxt · As
 - **30+ options** — easing, stagger, fade, stroke color/width lerp, fill opacity, clip reveal, morphTo, velocityScale, waypoints, callbacks, repeat, autoReverse, and more
 - **Group / Sequence / Timeline APIs** — animate multiple containers simultaneously, one-after-another, or on independent scroll windows with `loop` for auto-looping after scroll completion
 - **CSS custom property** — `--scroll-draw-progress` is set on every frame so you can drive any CSS animation without a callback
-- **833 tests across 39 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
-- **295 browser tests on top of those**, run against Chromium, Firefox and WebKit in CI. The unit suite runs in jsdom, where `getTotalLength` is stubbed and `IntersectionObserver` is faked — it can check the engine's arithmetic but nothing about real browser behaviour. Both counts are derived from the suites themselves and enforced in CI, so neither can quietly drift out of date
+- **844 tests across 40 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
+- **297 browser tests on top of those**, run against Chromium, Firefox and WebKit in CI. The unit suite runs in jsdom, where `getTotalLength` is stubbed and `IntersectionObserver` is faked — it can check the engine's arithmetic but nothing about real browser behaviour. Both counts are derived from the suites themselves and enforced in CI, so neither can quietly drift out of date
 
 ---
 
@@ -119,7 +119,7 @@ options are all decent — they just make different trade-offs:
 
 Sizes measured 2026-08-14 at gzip level 9 — see `CLAIMS-AUDIT.md` for the commands.
 
-`svg-scroll-draw` is 11.4 KB for every API at once, and each API is a separate entry point
+`svg-scroll-draw` is 11.5 KB for every API at once, and each API is a separate entry point
 (`scrollReveal` alone is 5.7 KB). If you need one effect, the small libraries above are a
 fair choice. If you need several, one dependency beats four.
 
@@ -829,7 +829,7 @@ outgrows its budget.
 | `svg-scroll-draw/solid`              | 34.6 KB | **12.2 KB** |
 | `svg-scroll-draw/svelte`             | 35.0 KB | **12.2 KB** |
 | `svg-scroll-draw/astro`              | 33.5 KB | **11.9 KB** |
-| `svg-scroll-draw`                    | 32.3 KB | **11.4 KB** |
+| `svg-scroll-draw`                    | 32.3 KB | **11.5 KB** |
 | `dist/cdn/svg-scroll-draw.global.js` | 31.2 KB | **11.4 KB** |
 | `svg-scroll-draw/group`              | 29.1 KB | **10.1 KB** |
 | `svg-scroll-draw/web-component`      | 20.6 KB | **7.8 KB** |
@@ -846,15 +846,15 @@ outgrows its budget.
 | `svg-scroll-draw/aos/react`          | 9.2 KB | **3.4 KB** |
 | `svg-scroll-draw/aos`                | 8.9 KB | **3.2 KB** |
 | `dist/cdn/aos.global.js`             | 8.7 KB | **3.2 KB** |
+| `svg-scroll-draw/cinematic`          | 7.2 KB | **3.2 KB** |
 | `svg-scroll-draw/video`              | 6.1 KB | **2.9 KB** |
 | `svg-scroll-draw/progress`           | 5.3 KB | **2.4 KB** |
-| `svg-scroll-draw/cinematic`          | 5.1 KB | **2.3 KB** |
 | `svg-scroll-draw/snap`               | 4.2 KB | **2.0 KB** |
 | `svg-scroll-draw/devtools`           | 4.0 KB | **1.8 KB** |
 | `svg-scroll-draw/pin`                | 3.7 KB | **1.6 KB** |
 | `svg-scroll-draw/lenis`              | 0.4 KB | **0.2 KB** |
 
-Entries share code through chunks instead of each carrying its own copy, so `svg-scroll-draw` + `svg-scroll-draw/react` together is **14.3 KB**, not 11.4 KB + 12.8 KB.
+Entries share code through chunks instead of each carrying its own copy, so `svg-scroll-draw` + `svg-scroll-draw/react` together is **14.4 KB**, not 11.5 KB + 12.8 KB.
 <!-- size-table:end -->
 
 The framework entries are larger because each re-exports the full API surface for that

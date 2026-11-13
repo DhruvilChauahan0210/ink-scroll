@@ -139,20 +139,139 @@ describe('Cinematic', () => {
     expect(requestAnimationFrame).not.toHaveBeenCalled();
   });
 
-  it('observes the stage and disconnects on destroy', () => {
+  it('watches no stage: the scroll window runs the frames, and destroy() stops them', () => {
     const mount = document.createElement('div');
     document.body.appendChild(mount);
     stubScroll(mount, 0);
+    const add = vi.spyOn(window, 'addEventListener');
+    const remove = vi.spyOn(window, 'removeEventListener');
 
     const inst = new Cinematic({ wrapper: mount }).loadStory(makeStory());
-    const io = FakeIO.instances.at(-1)!;
-    expect(io.observe).toHaveBeenCalledOnce();
-
-    // becoming visible starts the loop
-    io.trigger(true);
-    expect(requestAnimationFrame).toHaveBeenCalled();
+    // Up to 2.23.6 an IntersectionObserver on the stage ran them: a jump past
+    // the mount never saw it, and the story kept its first frame.
+    expect(FakeIO.instances).toHaveLength(0);
+    expect(add).toHaveBeenCalledWith('scroll', expect.any(Function), { passive: true });
 
     inst.destroy();
-    expect(io.disconnect).toHaveBeenCalledOnce();
+    const scroll = add.mock.calls.find(([type]) => type === 'scroll')![1];
+    expect(remove).toHaveBeenCalledWith('scroll', scroll, { passive: true });
+    for (const type of ['resize', 'orientationchange']) {
+      const fn = add.mock.calls.find(([t]) => t === type)![1];
+      expect(remove).toHaveBeenCalledWith(type, fn);
+    }
+  });
+
+  it('reduced motion turned on mid-story: the finished frame, and the frames stop', () => {
+    let change: ((e: { matches: boolean }) => void) | undefined;
+    vi.stubGlobal('matchMedia', (query: string) => ({
+      matches: false, media: query,
+      addEventListener: (_: string, fn: typeof change) => { change = fn; },
+      removeEventListener: vi.fn(),
+    }));
+    const mount = document.createElement('div');
+    document.body.appendChild(mount);
+    stubScroll(mount, -100);
+    const remove = vi.spyOn(window, 'removeEventListener');
+
+    const inst = new Cinematic({ wrapper: mount }).loadStory(makeStory());
+    expect(inst.getProgress()).toBeCloseTo(0.1, 5);
+    change!({ matches: true });
+
+    expect(inst.getProgress()).toBe(1);
+    const a = mount.querySelector('#path-a') as SVGPathElement;
+    const photo = mount.querySelector('#cinematic-photo') as HTMLElement;
+    expect(Number(a.style.strokeDashoffset)).toBeCloseTo(0, 5);
+    expect(Number(photo.style.opacity)).toBeCloseTo(1, 5);
+    expect(remove).toHaveBeenCalledWith('scroll', expect.any(Function), { passive: true });
+    inst.destroy(); // twice over is safe
+  });
+
+  // ── a scroller other than the window ──────────────────────────────────────────
+  // Up to 2.23.6 progress came from the mount's live rect, so it followed any
+  // scroller. On the frame gate the window was the scroller, and a story in a
+  // scrolling div, or on a page whose body scrolls, stayed on its first frame.
+
+  /** Make `el` a scroll container 500px tall over 3000px of content, scrolled to `top`. */
+  function scrollable(el: HTMLElement, rectTop: number, scrollTop: number) {
+    Object.defineProperty(el, 'scrollHeight', { value: 3000, configurable: true });
+    Object.defineProperty(el, 'clientHeight', { value: 500, configurable: true });
+    Object.defineProperty(el, 'scrollTop', { value: scrollTop, writable: true, configurable: true });
+    vi.spyOn(el, 'getBoundingClientRect').mockReturnValue({ top: rectTop } as DOMRect);
+  }
+
+  /** Run the frame the last scroll asked for. */
+  function runFrame() {
+    const raf = requestAnimationFrame as unknown as ReturnType<typeof vi.fn>;
+    const tick = raf.mock.calls.at(-1)![0] as FrameRequestCallback;
+    raf.mockClear();
+    tick(0);
+  }
+
+  it('scrubs with the scrolling div it sits in, measured from its scrollport', () => {
+    const box = document.createElement('div');
+    box.style.overflowY = 'auto';
+    const mount = document.createElement('div');
+    box.appendChild(mount);
+    document.body.appendChild(box);
+    // The box is 50px down the viewport, scrolled 600px; the mount is 100px into
+    // its content, so its rect top is 50 + 100 - 600 = -450. Window: [100, 100 + 1768 - 500].
+    scrollable(box, 50, 600);
+    Object.defineProperty(mount, 'offsetHeight', { value: 1768, configurable: true });
+    vi.spyOn(mount, 'getBoundingClientRect').mockReturnValue({ top: -450 } as DOMRect);
+    const boxAdd = vi.spyOn(box, 'addEventListener');
+    const winAdd = vi.spyOn(window, 'addEventListener');
+
+    const inst = new Cinematic({ wrapper: mount }).loadStory(makeStory());
+    expect(inst.getProgress()).toBeCloseTo(500 / 1268, 5);
+    expect(boxAdd).toHaveBeenCalledWith('scroll', expect.any(Function), { passive: true });
+    expect(winAdd.mock.calls.some(([t]) => t === 'scroll')).toBe(false);
+
+    // Scroll the box to the end of the window: the frame follows, from scrollTop.
+    box.scrollTop = 100 + 1268;
+    box.dispatchEvent(new Event('scroll'));
+    runFrame();
+    expect(inst.getProgress()).toBe(1);
+    expect(Number((mount.querySelector('#path-b') as SVGPathElement).style.strokeDashoffset)).toBeCloseTo(0, 5);
+    inst.destroy();
+  });
+
+  it('scrubs with the body when the body is the scroller (html overflow hidden)', () => {
+    document.documentElement.style.overflowY = 'hidden';
+    document.body.style.overflowY = 'auto';
+    const mount = document.createElement('div');
+    document.body.appendChild(mount);
+    scrollable(document.body, 0, 300);
+    Object.defineProperty(mount, 'offsetHeight', { value: 1768, configurable: true });
+    // 100px into the body's content, scrolled 300: rect top -200. Window: [100, 1368].
+    vi.spyOn(mount, 'getBoundingClientRect').mockReturnValue({ top: -200 } as DOMRect);
+    try {
+      const inst = new Cinematic({ wrapper: mount }).loadStory(makeStory());
+      expect(inst.getProgress()).toBeCloseTo(200 / 1268, 5);
+      inst.destroy();
+    } finally {
+      document.documentElement.style.overflowY = '';
+      document.body.style.overflowY = '';
+      for (const k of ['scrollHeight', 'clientHeight', 'scrollTop']) delete (document.body as unknown as Record<string, unknown>)[k];
+    }
+  });
+
+  it('keeps the window when the body\'s overflow is the viewport\'s (html overflow visible)', () => {
+    // body { overflow: auto } with html left visible propagates to the viewport:
+    // the window scrolls, and body.scrollTop stays 0.
+    document.body.style.overflowY = 'auto';
+    const mount = document.createElement('div');
+    document.body.appendChild(mount);
+    scrollable(document.body, 0, 0);
+    stubScroll(mount, -500);
+    const winAdd = vi.spyOn(window, 'addEventListener');
+    try {
+      const inst = new Cinematic({ wrapper: mount }).loadStory(makeStory());
+      expect(inst.getProgress()).toBeCloseTo(0.5, 5);
+      expect(winAdd).toHaveBeenCalledWith('scroll', expect.any(Function), { passive: true });
+      inst.destroy();
+    } finally {
+      document.body.style.overflowY = '';
+      for (const k of ['scrollHeight', 'clientHeight', 'scrollTop']) delete (document.body as unknown as Record<string, unknown>)[k];
+    }
   });
 });

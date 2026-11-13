@@ -20,7 +20,9 @@
 <!--
   Viewport 900x800. Each item is 200px tall, 200px after the one before, from
   1600 down. Every window is below the fold at y = 0, and every one ends by
-  4600, above the fold at the end of the page (5400).
+  4600, above the fold at the end of the page (6600). The Cinematic mount
+  (1200px from 4400) scrubs from its top reaching the viewport's top until its
+  bottom reaches the viewport's bottom: 4400 to 4800.
 -->
 <div class="lead"></div>
 <svg class="item" id="draw" viewBox="0 0 300 200"><path d="M10 100 H290" stroke="#222" stroke-width="4" fill="none"/></svg>
@@ -42,6 +44,7 @@
 <svg class="item" id="timeline" viewBox="0 0 300 200"><path class="t" d="M10 100 H290" stroke="#222" stroke-width="4" fill="none"/></svg>
 <div class="gap"></div>
 <div id="hookslot"></div>
+<div id="cinematic"></div>
 <div class="tail"></div>
 <div id="end"></div>
 
@@ -52,6 +55,7 @@ import { scrollText } from '/dist/text/index.mjs';
 import { scrollVideo } from '/dist/video/index.mjs';
 import { scrollProgress } from '/dist/progress/index.mjs';
 import { scrollDrawTimeline } from '/dist/timeline/index.mjs';
+import { Cinematic } from '/dist/index.mjs';
 import { mountJump } from './build/react-extras.mjs';
 import { drawnFraction, publish } from './_probe.mjs';
 
@@ -70,6 +74,15 @@ const instances = {
   timeline: scrollDrawTimeline('#timeline', { tracks: [{ selector: '.t', from: 0, to: 1 }], onComplete: done('timeline') }),
 };
 mountJump($('#hookslot'));
+instances.cinematic = new Cinematic({ wrapper: '#cinematic' }).loadStory({
+  version: 1,
+  totalHeight: '1200px',
+  canvas: { width: 300, height: 200 },
+  scenes: [{ id: 'one', animations: [{
+    type: 'draw', target: '#cine', d: 'M10 100 H290', length: 280,
+    start: '0%', end: '100%', stroke: '#222', strokeWidth: 4, easing: 'linear',
+  }] }],
+});
 
 const video = $('#video');
 const words = () => Array.from($('#text').querySelectorAll('span[aria-hidden] '))
@@ -86,6 +99,7 @@ publish({
     progress: Number($('#progress').style.getPropertyValue('--scroll-progress')),
     timeline: drawnFraction($('#timeline path')),
     hook: Number($('#hook').dataset.progress),
+    cinematic: drawnFraction($('#cine')),
     completed: { ...completed },
     progresses: Object.fromEntries(Object.entries(instances).map(([k, i]) => [k, i.getProgress()])),
   }),

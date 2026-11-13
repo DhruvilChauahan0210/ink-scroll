@@ -291,8 +291,8 @@ describe('the engines, when reduced motion is turned on mid-visit', () => {
     document.body.appendChild(mount);
     Object.defineProperty(mount, 'offsetHeight', { value: 1768 });
     vi.spyOn(mount, 'getBoundingClientRect').mockReturnValue({ top: 0, height: 768 } as DOMRect);
+    const remove = vi.spyOn(window, 'removeEventListener');
     const inst = new Cinematic({ wrapper: mount }).loadStory(story);
-    const io = FakeIO.instances.at(-1)!;
     expect(inst.getProgress()).toBeCloseTo(0, 5);
 
     setReducedMotion(true);
@@ -300,7 +300,8 @@ describe('the engines, when reduced motion is turned on mid-visit', () => {
     expect(inst.getProgress()).toBe(1);
     expect(Number((mount.querySelector('#a') as SVGPathElement).style.strokeDashoffset)).toBeCloseTo(0, 5);
     expect(Number((mount.querySelector('#cinematic-photo') as HTMLElement).style.opacity)).toBeCloseTo(1, 5);
-    expect(io.disconnect).toHaveBeenCalled();
+    // Its frames stop: the scroll listener goes (core/frame-gate, since 2.23.7).
+    expect(remove).toHaveBeenCalledWith('scroll', expect.any(Function), { passive: true });
     expect(mount.querySelectorAll('svg')).toHaveLength(1);
     inst.destroy();
   });
