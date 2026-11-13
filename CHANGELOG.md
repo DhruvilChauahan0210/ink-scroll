@@ -8,6 +8,26 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### Site
 
+- **A new tool, the 29th: Handwriting animation generator**
+  (`/handwriting-animation-generator`). Type a name or a short line and get an
+  SVG that writes itself stroke by stroke in pen order, from a single-stroke
+  font, so every line is drawn once (an outline font traces both edges of
+  every letter). Three fonts (Script, Roman, Roman italic) from the public
+  domain Hershey fonts, converted once into `components/handwriting/hershey-data.ts`
+  (95 characters each, the thickening strokes of `@ [ ] { } ~` taken out);
+  gentle turns drawn as curves so large sizes show no facets. Set the size,
+  stroke width, colour, the seconds of ink (one pen speed, so each stroke
+  takes time by its length), a stagger between letters, a pause between words
+  and a loop (write, hold, fade, again). Copies a CSS-only SVG file
+  (`pathLength="1"` and per-stroke `--at`/`--for`; reduced motion shows it
+  written), a scroll version on `scrollDraw` with `stagger: 1`, or React on
+  `<ScrollDraw>`; a scroll preview in a box. Its Run it page is in
+  `test:tools` (open strokes, none doubled, writing order, finished drawn,
+  reduced motion, scroll order). The signature example and the line drawing
+  post link to it. The scroll version uses butt caps: under scrollDraw's dash
+  (the length with an equal gap) WebKit paints a round cap at the end of each
+  stroke not yet drawn.
+
 - **Two posts for people choosing or leaving a scroll library:**
   - `/blog/react-scroll-animations`: four ways in React (CSS `view()`, a
     `useInView` hook that observes a wrapper that never moves, Motion's
@@ -18,6 +38,7 @@ All notable changes to `svg-scroll-draw` are documented here.
     timelines, sticky), its `data-scroll` attributes mapped to each, and
     Lenis with svg-scroll-draw.
   Every listing runs as printed in Chromium, Firefox and WebKit.
+
 
 - **Two new tools, the 27th and 28th:**
   - **Stacking cards on scroll generator**

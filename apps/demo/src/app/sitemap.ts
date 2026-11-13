@@ -176,6 +176,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
     },
     {
+      url: `${SITE_URL}/handwriting-animation-generator`,
+      lastModified: new Date("2026-11-13"),
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
       url: `${SITE_URL}/svg-to-jsx-converter`,
       lastModified: new Date("2026-11-12"),
       changeFrequency: "monthly",

@@ -93,6 +93,7 @@ export const RELATED_BY_POST: Record<string, RelatedLinks> = {
     tools: ['svg-line-drawing-generator', 'svg-path-viewer'],
     pages: [
       { href: '/svg-path-editor', label: 'SVG path editor', blurb: 'Reverse a path to change where it starts drawing, or move its points.' },
+      { href: '/handwriting-animation-generator', label: 'Handwriting animation generator', blurb: 'The same technique on text: a name in a single-stroke font that writes itself in pen order.' },
     ],
   },
   'css-scroll-driven-animations': {

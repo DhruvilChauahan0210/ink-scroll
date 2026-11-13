@@ -40,6 +40,7 @@ export const TOOL_GROUPS: ToolGroup[] = [
       { slug: 'svg-path-viewer', name: 'SVG path viewer', blurb: 'Paste an SVG: every path’s length and commands, what stops it drawing, and the draw code.' },
       { slug: 'svg-path-editor', name: 'SVG path editor', blurb: 'Drag a path’s points and handles or type into each command; make it absolute or relative, round, scale or reverse it, then draw it on scroll.' },
       { slug: 'svg-line-drawing-generator', name: 'SVG line drawing generator', blurb: 'Paste any SVG and get one self-contained file that draws itself line by line with CSS and no JavaScript, or the scroll version.' },
+      { slug: 'handwriting-animation-generator', name: 'Handwriting animation generator', blurb: 'Type a name and get an SVG that writes itself stroke by stroke in a single-stroke font: CSS only, on scroll with scrollDraw, or React.' },
       { slug: 'svg-morph-generator', name: 'SVG morph generator', blurb: 'Pick or paste two shapes, match their points so nothing twists, watch scrollDraw morph them as you scroll, and copy the morphTo code.' },
       { slug: 'svg-shape-to-path-converter', name: 'SVG shape to path converter', blurb: 'Turn every rect, circle, ellipse, line, polyline and polygon into the exact path it equals, watch both draw, and copy the SVG.' },
       { slug: 'svg-to-jsx-converter', name: 'SVG to JSX converter', blurb: 'Paste an SVG and get a React component in TSX or JSX: React’s prop names, style objects, typed props and an optional ScrollDraw wrapper.' },

@@ -138,6 +138,13 @@ at all.
 
 ## Remaining / Next
 
+### Handwriting animation generator (2026-11-13; branch `feat/tool-handwriting`)
+
+- [x] `/handwriting-animation-generator` (29th tool): text in a Hershey single-stroke font (Script, Roman, Roman italic; public domain, `components/handwriting/hershey-data.ts`), strokes timed in pen order; CSS-only SVG file, `scrollDraw` with `stagger: 1`, React `<ScrollDraw>`; Run it page in `test:tools` (29 tools, 43 pages); checked in Chromium, Firefox and WebKit (file, `<img>`, loop, Run it page at 375 px in both themes, reduced motion)
+- [x] Linked from `/examples/signature` and `/blog/svg-line-drawing-animation-css`
+- [ ] Request indexing; Search Console review in 2–3 weeks
+- [ ] Library: scrollDraw's dash (`stroke-dasharray: <length>`, an equal gap) lets WebKit paint a dot at the end of every round-capped path not yet drawn; a gap of twice the length (as the CSS tools write) would fix it. The handwriting scroll version uses butt caps until then.
+
 ### Stacking cards and scroll marquee generators (2026-11-13; branch `feat/tools-stack-marquee`)
 
 - [x] `/stacking-cards-scroll-generator` (27th tool): 2–6 sticky cards a step apart, the covered one shrinking and dimming; CSS only (view timeline), HTML/CSS/JS on `scrollProgress`, React; both Run it pages in `test:tools`

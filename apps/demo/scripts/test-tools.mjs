@@ -246,6 +246,78 @@ async function stackingCards(t) {
   if (seen.some((s) => s[s.length - 1].scale !== 1)) t.fail('the last card shrank, with nothing landing on it');
 }
 
+/**
+ * The handwriting generator's page: the CSS file on top and the scroll
+ * version below it.
+ *
+ * - Every stroke is an open path with no fill (a single-stroke font: no
+ *   closed outline, so no double line), and no stroke runs along another.
+ * - The CSS strokes start in writing order, each after the one before has
+ *   ended; stopped mid-way the earlier ones are drawn and the later not; all
+ *   finish drawn; with reduced motion asked for they are drawn at once.
+ * - The scroll version draws on scroll, each stroke never ahead of the one
+ *   before it.
+ */
+async function handwriting(t) {
+  const css = '.handwriting path';
+  const shape = await t.page.evaluate((sel) => {
+    const paths = [...document.querySelectorAll(sel)];
+    // Points along each stroke, to find one that lies along another.
+    const pts = paths.map((p) => {
+      const n = p.getTotalLength();
+      return Array.from({ length: 24 }, (_, i) => p.getPointAtLength((n * i) / 23));
+    });
+    const near = (a, b) => a.filter((q) => b.some((r) => Math.hypot(q.x - r.x, q.y - r.y) < 2)).length / a.length;
+    let doubled = 0;
+    pts.forEach((a, i) => pts.forEach((b, j) => { if (i !== j && near(a, b) > 0.9) doubled += 1; }));
+    return {
+      n: paths.length,
+      closed: paths.filter((p) => /z/i.test(p.getAttribute('d'))).length,
+      filled: paths.filter((p) => getComputedStyle(p).fill !== 'none').length,
+      doubled,
+      timing: paths.map((p) => { const cs = getComputedStyle(p); return [parseFloat(cs.animationDelay), parseFloat(cs.animationDuration)]; }),
+      named: paths.every((p) => p.getAnimations().some((a) => a.animationName === 'handwriting-draw')),
+    };
+  }, css);
+  if (shape.n < 8) return t.fail(`expected the strokes, found ${shape.n}`);
+  if (shape.closed || shape.filled) t.fail(`${shape.closed} closed and ${shape.filled} filled strokes: an outline, not a pen line`);
+  if (shape.doubled) t.fail(`${shape.doubled} strokes run along another one: a double line`);
+  if (!shape.named) t.fail('a stroke does not carry the handwriting-draw animation');
+  const order = shape.timing.every(([at], i) => i === 0 || at >= shape.timing[i - 1][0] + shape.timing[i - 1][1] - 0.0015);
+  if (!order) t.fail(`the strokes do not start one after another (${shape.timing.map(([a, d]) => `${a}+${d}`).join(' ')})`);
+  // Stopped half way through the run.
+  const half = await t.page.evaluate(() => {
+    const anims = document.querySelector('.handwriting').getAnimations({ subtree: true });
+    const end = Math.max(...anims.map((a) => a.effect.getComputedTiming().endTime));
+    for (const a of anims) { a.pause(); a.currentTime = end / 2; }
+    return end;
+  });
+  const mid = await t.page.evaluate(drawn(css));
+  const firstUndrawn = mid.findIndex((f) => f < 0.99);
+  if (firstUndrawn <= 0 || !mid.slice(firstUndrawn + 1).every((f) => f < 0.01)) {
+    t.fail(`at ${(half / 2000).toFixed(2)}s the strokes are not drawn in order (${f2(mid)})`);
+  }
+  const done = await t.page.evaluate(async () => {
+    const anims = document.querySelector('.handwriting').getAnimations({ subtree: true });
+    for (const a of anims) { a.currentTime = 0; a.play(); }
+    await Promise.all(anims.map((a) => a.finished));
+  }).then(() => t.page.evaluate(drawn(css)));
+  if (!done.every((f) => f > 0.99)) t.fail(`the CSS version did not finish drawn (${f2(done)})`);
+  // Reduced motion: no animation, no dash.
+  await t.page.emulateMedia({ reducedMotion: 'reduce' });
+  const still = await t.page.evaluate((sel) => [...document.querySelectorAll(sel)].map((p) =>
+    `${p.getAnimations().length}/${getComputedStyle(p).strokeDasharray}`), css);
+  if (!still.every((v) => v === '0/none')) t.fail(`under reduced motion the strokes still animate or keep a dash (${[...new Set(still)].join(' ')})`);
+  await t.page.emulateMedia({ reducedMotion: 'no-preference' });
+  // The scroll version, in writing order all the way down.
+  const scroll = '#signature path';
+  await drawsOnScroll(t, scroll, { min: 8 });
+  await scrollTo(t.page, 0);
+  const seen = await walk(t.page, drawn(scroll), 24);
+  const ahead = seen.find((v) => v.some((f, i) => i > 0 && f > v[i - 1] + 0.01));
+  if (ahead) t.fail(`on scroll a stroke draws ahead of the one before it (${f2(ahead)})`);
+}
+
 // ── Known failures ───────────────────────────────────────────────────────────
 
 /**
@@ -454,6 +526,7 @@ const CASES = {
     // The scroll version under it.
     await drawsOnScroll(t, '#drawing svg > *', { min: 10 });
   },
+  'handwriting-animation-generator': async (t) => handwriting(t),
   'svg-morph-generator': async (t) => {
     const d = () => getComputedStyle(document.querySelector('#morph path')).d;
     const seen = await movesOnScroll(t, d, 'the path’s shape');

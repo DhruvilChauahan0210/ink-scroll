@@ -26,6 +26,7 @@ import { resolve as counterResolve, runnableHtml as counterHtml } from '@/compon
 import { runnable as cssDrivenRunnable } from '@/components/cssdriven/code';
 import { DEFAULTS as EASING_DEFAULTS, easingHtml, rangeOf } from '@/components/easing/code';
 import { curveStats, factoryCurve, NAMED } from '@/data/easing';
+import { buildOutput as hwOutput, DEFAULTS as HW_DEFAULTS, htmlPage as hwPage } from '@/components/handwriting/code';
 import { cssOnlyFile as hzCssOnly, DEFAULTS as HZ_DEFAULTS, jsFile as hzJs } from '@/components/horizontal/code';
 import { cssOnlyFile as mqCssOnly, DEFAULTS as MQ_DEFAULTS, jsFile as mqJs } from '@/components/marquee/code';
 import { markup as jsxMarkup, htmlPage as jsxPage } from '@/components/jsx/run';
@@ -171,6 +172,8 @@ export function build(version: string): Record<string, string> {
     const output = buildOutput(toTree(parsed.svg), m.shapes, LINE_DEFAULTS, { viewBox: m.viewBox, bare: m.bare, previewName: 'ldg-pv' });
     out['svg-line-drawing-generator'] = linePage(output, version);
   }
+  // HandwritingGenerator.tsx: DEFAULTS, the CSS file on top and the scroll version below.
+  out['handwriting-animation-generator'] = hwPage(hwOutput(HW_DEFAULTS), version);
   {
     // MorphGenerator.tsx: circle to star, automatic matching, 1 decimal, the whole outline.
     const read = (key: Parameters<typeof presetOf>[0]) => {

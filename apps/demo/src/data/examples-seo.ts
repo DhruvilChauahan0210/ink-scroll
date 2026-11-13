@@ -101,7 +101,7 @@ export const EXAMPLE_SEO: Record<string, ExampleSeo> = {
       'animated signature website',
     ],
     related: ['logo-reveal', 'scroll-text'],
-    tools: ['svg-path-editor'],
+    tools: ['handwriting-animation-generator', 'svg-path-editor'],
   },
 
   // ── Batch 2 · diagrams ────────────────────────────────────────────────────
