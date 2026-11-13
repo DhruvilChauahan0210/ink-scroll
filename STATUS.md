@@ -138,6 +138,13 @@ at all.
 
 ## Remaining / Next
 
+### Stacking cards and scroll marquee generators (2026-11-13; branch `feat/tools-stack-marquee`)
+
+- [x] `/stacking-cards-scroll-generator` (27th tool): 2–6 sticky cards a step apart, the covered one shrinking and dimming; CSS only (view timeline), HTML/CSS/JS on `scrollProgress`, React; both Run it pages in `test:tools`
+- [x] `/scroll-marquee-generator` (28th tool): 1–4 rows that slide apart with the scroll over an endless CSS drift, Pause motion, an `aria-hidden` loop copy; HTML/CSS/JS on `scrollAnimate`, React, CSS only; both Run it pages in `test:tools` (28 tools, 42 pages)
+- [x] Linked from `/blog/scroll-pin-without-gsap` and `/blog/horizontal-scroll-sections`
+- [ ] Request indexing for both; Search Console review in 2–3 weeks
+
 ### scrollFrames, its generator and the Groundtrack site (2026-11-13; branches `feat/scroll-frames`, `feat/frames-wrappers-bench`)
 
 - [x] 2.24.0: `svg-scroll-draw/frames` — `scrollFrames` scrubs an image sequence on a canvas: coarse-to-fine loading (first, last, then midpoints, 6 at a time), the nearest loaded frame until the right one arrives, a redraw only when the frame changes, DPR-sized buffer (capped at 2), cover/contain, `triggerElement` for a pinned stage, reduced motion loads and shows only the last frame; independently reviewed (attribute-sized canvas held, inert after destroy, throwing callbacks and frames function isolated); 4.0 KB gzipped, budget 4.1 — unit tests +47, browser tests per engine +19, mutations +9

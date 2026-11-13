@@ -158,6 +158,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
     },
     {
+      url: `${SITE_URL}/scroll-marquee-generator`,
+      lastModified: new Date("2026-11-13"),
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
       url: `${SITE_URL}/cubic-bezier-generator`,
       lastModified: new Date("2026-11-12"),
       changeFrequency: "monthly",
@@ -202,6 +208,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     {
       url: `${SITE_URL}/scroll-pin-generator`,
       lastModified: new Date("2026-11-12"),
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
+      url: `${SITE_URL}/stacking-cards-scroll-generator`,
+      lastModified: new Date("2026-11-13"),
       changeFrequency: "monthly",
       priority: 0.9,
     },

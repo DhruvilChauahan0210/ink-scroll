@@ -130,6 +130,7 @@ export const RELATED_BY_POST: Record<string, RelatedLinks> = {
     tools: ['horizontal-scroll-generator', 'css-scroll-snap-generator'],
     pages: [
       { href: '/vs-locomotive-scroll', label: 'vs Locomotive Scroll', blurb: 'Locomotive also does horizontal sections — and is smaller. What differs is scope.' },
+      { href: '/scroll-marquee-generator', label: 'Scroll marquee generator', blurb: 'Sideways motion without the pin: rows of text that slide apart as the page scrolls.' },
     ],
   },
   'replace-aos-scrollreveal': {
@@ -145,6 +146,7 @@ export const RELATED_BY_POST: Record<string, RelatedLinks> = {
     pages: [
       { href: '/vs-scrollmagic', label: 'vs ScrollMagic', blurb: 'ScrollMagic pins too — but needs GSAP to animate anything.' },
       { href: '/scroll-image-sequence-generator', label: 'Scroll image sequence generator', blurb: 'The pinned film as numbered stills on a canvas: turn a video into frames in the browser.' },
+      { href: '/stacking-cards-scroll-generator', label: 'Stacking cards on scroll generator', blurb: 'Pinning with position: sticky alone: cards that each stop a step lower and pile up.' },
     ],
   },
   'scroll-animation-groups': {

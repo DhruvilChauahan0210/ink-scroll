@@ -8,6 +8,24 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### Site
 
+- **Two new tools, the 27th and 28th:**
+  - **Stacking cards on scroll generator**
+    (`/stacking-cards-scroll-generator`). 2 to 6 cards, each `position:
+    sticky` a step lower than the one before, shrinking and dimming as the
+    next lands on it; set the top, the step, the card height, the scale, the
+    dim and the corners, and scroll the preview. Copies a CSS-only version
+    (a view timeline on the list), HTML, CSS and JS on `scrollProgress`, or
+    React. Under reduced motion the cards still stack and stop shrinking.
+  - **Scroll marquee generator** (`/scroll-marquee-generator`). 1 to 4 rows
+    of big text that slide sideways as the page scrolls (0 to 800 px a
+    screen), alternate rows the other way, over an endless CSS drift with a
+    Pause motion button; the loop's copy is `aria-hidden`, and under reduced
+    motion nothing moves and every item is on show. Copies HTML, CSS and JS
+    on `scrollAnimate`, React, or a CSS-only `view()` timeline version.
+  Both write their Run it pages from the same code module as the preview,
+  and `test:tools` runs both versions of each against the built library.
+  The pin and horizontal scroll posts link to them.
+
 - **README hero loops and a star on GitHub where search traffic lands.**
   Five loops recorded from a production build of the site (in
   `.github/media/`, repo only, not in the npm package): the homepage pen
@@ -42,6 +60,7 @@ All notable changes to `svg-scroll-draw` are documented here.
 - **The video scrub generator's notes are current.** Its loop follows the
   trigger window (since 2.23.5), and the React `<ScrollVideo>` takes a
   `poster` and follows `preload` (since 2.23.4).
+
 
 - **`/blog/scroll-image-sequence-animation`: an Apple-style scroll image
   sequence, step by step.** Why stills on a canvas rather than a scrubbed

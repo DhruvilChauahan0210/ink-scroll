@@ -27,6 +27,7 @@ import { runnable as cssDrivenRunnable } from '@/components/cssdriven/code';
 import { DEFAULTS as EASING_DEFAULTS, easingHtml, rangeOf } from '@/components/easing/code';
 import { curveStats, factoryCurve, NAMED } from '@/data/easing';
 import { cssOnlyFile as hzCssOnly, DEFAULTS as HZ_DEFAULTS, jsFile as hzJs } from '@/components/horizontal/code';
+import { cssOnlyFile as mqCssOnly, DEFAULTS as MQ_DEFAULTS, jsFile as mqJs } from '@/components/marquee/code';
 import { markup as jsxMarkup, htmlPage as jsxPage } from '@/components/jsx/run';
 import { readSvg } from '@/components/jsx/read-svg';
 import { WRAP_DEFAULTS } from '@/components/jsx/convert';
@@ -45,6 +46,7 @@ import { htmlPage as pathPage } from '@/components/pathedit/code';
 import { bounds as pathBounds, geometry, num as pathNum, parsePath, placesOf, writeD } from '@/components/pathedit/path-data';
 import { DEFAULT_SAMPLE } from '@/components/pathedit/samples';
 import { cssOnlyFile as pinCssOnly, jsFile as pinJs, PIN_DEFAULTS } from '@/components/pin/pin-code';
+import { cssOnlyFile as stackCssOnly, jsFile as stackJs, STACK_DEFAULTS } from '@/components/stackcards/stack-code';
 import { DEFAULTS as BAR_DEFAULTS, runnable as barRunnable } from '@/components/progressbar/code';
 import { revealHtml } from '@/components/reveal/reveal-code';
 import { drawPlan, htmlPage as s2pPage, markup as s2pMarkup, staggerFor, writeDrawings } from '@/components/shape2path/code';
@@ -114,8 +116,13 @@ export function build(version: string): Record<string, string> {
   out['css-scroll-snap-generator:js'] = snapRunnable(SNAP_DEFAULTS, 'js', version).html;
   out['horizontal-scroll-generator'] = hzJs(HZ_DEFAULTS, version);
   out['horizontal-scroll-generator:css'] = hzCssOnly(HZ_DEFAULTS);
+  out['scroll-marquee-generator'] = mqJs(MQ_DEFAULTS, version);
+  out['scroll-marquee-generator:css'] = mqCssOnly(MQ_DEFAULTS);
   out['scroll-pin-generator'] = pinJs(PIN_DEFAULTS, version);
   out['scroll-pin-generator:css'] = pinCssOnly(PIN_DEFAULTS);
+  // StackingCardsGenerator.tsx starts on its CSS only tab, so that is the main page.
+  out['stacking-cards-scroll-generator'] = stackCssOnly(STACK_DEFAULTS);
+  out['stacking-cards-scroll-generator:js'] = stackJs(STACK_DEFAULTS, version);
   out['scroll-video-scrub-generator'] = scrubFile(SCRUB_DEFAULTS, FILM_SOURCE, version);
   // FramesGenerator.tsx: the demo, which draws its own frames in the page.
   out['scroll-image-sequence-generator'] = framesFile(FRAMES_DEFAULTS, DEMO_SEQUENCE, version);

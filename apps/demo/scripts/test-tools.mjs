@@ -225,6 +225,27 @@ async function movesOnScroll(t, expr, what) {
   return seen;
 }
 
+/**
+ * Stacking cards: walked top to bottom, every card is seen stuck at its own
+ * stepped offset, the first one shrinks once the next lands on it, and the
+ * last one never does.
+ */
+async function stackingCards(t) {
+  const read = () => [...document.querySelectorAll('.stack-card')].map((c) => {
+    const cs = getComputedStyle(c);
+    return { at: c.getBoundingClientRect().top, top: parseFloat(cs.top), scale: cs.scale === 'none' ? 1 : Number(cs.scale) };
+  });
+  const top = await t.page.evaluate(read);
+  if (top.length < 2) return t.fail(`expected the cards, found ${top.length}`);
+  if (!top.every((c) => c.scale === 1)) t.fail(`a card is shrunk before the stack arrives (${f2(top.map((c) => c.scale))})`);
+  const seen = await walk(t.page, read, 24);
+  const stuck = top.map((_, i) => seen.some((s) => Math.abs(s[i].at - s[i].top) < 1));
+  if (!stuck.every(Boolean)) t.fail(`not every card stuck at its own top (${stuck.join(' ')})`);
+  if (new Set(top.map((c) => c.top)).size !== top.length) t.fail(`the cards do not stick at stepped offsets (${f2(top.map((c) => c.top))})`);
+  if (!seen.some((s) => s[0].scale < 0.95)) t.fail(`the first card never shrank (${f2(seen.map((s) => s[0].scale))})`);
+  if (seen.some((s) => s[s.length - 1].scale !== 1)) t.fail('the last card shrank, with nothing landing on it');
+}
+
 // ── Known failures ───────────────────────────────────────────────────────────
 
 /**
@@ -375,6 +396,8 @@ const CASES = {
   },
   'horizontal-scroll-generator': async (t) => horizontal(t),
   'horizontal-scroll-generator:css': async (t) => horizontal(t),
+  'scroll-marquee-generator': async (t) => marquee(t),
+  'scroll-marquee-generator:css': async (t) => marquee(t),
   'scroll-pin-generator': async (t) => {
     const read = () => {
       const stage = document.querySelector('.tour-stage');
@@ -392,6 +415,8 @@ const CASES = {
     const seen = await walk(t.page, () => [...document.querySelectorAll('.tour-step')].map((s) => getComputedStyle(s).opacity).join(), 24);
     if (new Set(seen).size < 3) t.fail(`the steps did not take turns while scrolling (${[...new Set(seen)].join(' | ')})`);
   },
+  'stacking-cards-scroll-generator': async (t) => stackingCards(t),
+  'stacking-cards-scroll-generator:js': async (t) => stackingCards(t),
   'scroll-video-scrub-generator': async (t) => {
     const ready = await until(t.page, () => document.querySelector('#film').readyState, (v) => v >= 1, 8000);
     if (!ready.ok) return t.fail('the film never loaded its metadata');
@@ -519,6 +544,30 @@ async function progressBar(t) {
   if (!seen.some((s) => s > 0.3 && s < 0.7)) t.fail(`the bar never part-full (${f2(seen)})`);
   const end = await until(t.page, bar, (v) => v[0] > 0.99);
   if (!end.ok) t.fail(`the bar not full at the bottom (${end.v[0]})`);
+}
+
+/** The scroll marquee: rows that move apart with the scroll, a drift, a copy screen readers skip, a pause that holds. */
+async function marquee(t) {
+  const shift = shiftX('.mq-shift');
+  const top = await t.page.evaluate(shift);
+  if (top.length !== 2) return t.fail(`expected 2 rows, found ${top.length}`);
+  const seen = await walk(t.page, shift);
+  if (!seen.some((v) => v[0] < top[0] - 5 && v[1] > top[1] + 5)) t.fail(`the rows never moved opposite ways with the scroll (${seen.map(f2).join(' | ')})`);
+  const copies = await t.page.evaluate(() => [...document.querySelectorAll('.mq-row')].every((r) =>
+    r.querySelectorAll('.mq-set').length === 2 && r.querySelectorAll('.mq-set[aria-hidden="true"]').length === 1));
+  if (!copies) t.fail('a row does not hold its items twice, the copy aria-hidden');
+  const anims = await t.page.evaluate(animations('.mq-track'));
+  if (!anims.every((a) => a.includes('mq-drift'))) t.fail(`a track does not drift (${JSON.stringify(anims)})`);
+  const x = shiftX('.mq-track');
+  const a = await t.page.evaluate(x);
+  const moving = await until(t.page, x, (v) => v.every((n, i) => Math.abs(n - a[i]) > 2));
+  if (!moving.ok) t.fail(`the drift does not move (${f2(a)} → ${f2(moving.v)})`);
+  await t.page.click('.mq-pause');
+  await settle(t.page);
+  const p0 = await t.page.evaluate(x);
+  await t.page.waitForTimeout(300);
+  const p1 = await t.page.evaluate(x);
+  if (p0.some((n, i) => Math.abs(n - p1[i]) > 0.01)) t.fail(`Pause motion did not stop the drift (${f2(p0)} → ${f2(p1)})`);
 }
 
 async function horizontal(t) {

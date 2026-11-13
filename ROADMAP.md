@@ -116,6 +116,7 @@
 - ~~Scroll image sequence (Apple-style frames on a canvas)~~ — `scrollFrames` in 2.24.0, with `/scroll-image-sequence-generator` (26 tools), the `/examples/scroll-frames` recipe and the Groundtrack showcase on NASA's public-domain Landsat 8 frames, and the post `/blog/scroll-image-sequence-animation`, 2026-11-13.
 - ~~scrollFrames framework wrappers for React and Vue~~ — `<ScrollFrames>` in 2.25.0 (Nuxt re-exports it), and the generator's React tab writes it, 2026-11-13.
 - scrollFrames next: wrappers for Svelte, Solid and Angular once someone asks; request indexing for the generator, the recipe and the showcase, and review them in Search Console after 2–3 weeks.
+- ~~Stacking cards and scroll marquee generators~~ — `/stacking-cards-scroll-generator` and `/scroll-marquee-generator` (28 tools), 2026-11-13.
 - Measure the tools before building more: `npm run report:numbers` weekly, Search Console per page after 2–3 weeks; improve the ones with impressions and few clicks.
 - GitHub Sponsors: the owner sets up the profile; the footer link and FUNDING.yml are on the branch. Ads: not at this traffic (see the 2026-11-11 discussion: about $1–5 a month, a consent banner, Vercel Hobby is non-commercial); revisit a single developer ad network (Carbon, EthicalAds) past ~10k views a month on a custom domain.
 - ~~Awesome-list PRs~~ — nine opened 2026-11-11 (see STATUS); follow up on review comments.
