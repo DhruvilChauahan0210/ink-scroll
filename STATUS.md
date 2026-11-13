@@ -152,7 +152,7 @@ at all.
 - [ ] Tag after it reaches `main`: `git tag v2.26.0 <sha> && git push origin v2.26.0` (2.25.0 also untagged)
 - [ ] GSAP benchmark: the full ~1 h run on `feat/gsap-bench`, on an idle machine
 - [ ] Request indexing for the new pages (queue in `reports/indexing-queue.md`); Search Console review in 2–3 weeks
-- [ ] shadcn directory listing: needs an SVG logo and signed commits by the owner
+- [ ] shadcn directory listing: the one-colour SVG logo is at `apps/demo/public/logo.svg` (served at /logo.svg); still needs signed commits by the owner
 - [ ] Awesome-list PRs: drafts in `reports/awesome-list-prs-2026-11-13.md`, for the owner to submit
 
 ### Handwriting animation generator (2026-11-13; branch `feat/tool-handwriting`)
