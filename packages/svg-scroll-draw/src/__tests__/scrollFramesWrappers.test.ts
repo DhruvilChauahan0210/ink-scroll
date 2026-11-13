@@ -5,7 +5,8 @@ import { createApp, h, nextTick, ref as vueRef, defineComponent } from 'vue';
 import type { ScrollFramesOptions } from '../frames';
 
 /*
- * The React and Vue <ScrollFrames>. scrollFrames is replaced by a recorder, so
+ * The React and Vue <ScrollFrames>, the Svelte action, the Solid primitives and
+ * the Angular ref class. scrollFrames is replaced by a recorder, so
  * each test reads exactly what the component handed it, how many films it
  * started and which of them it stopped. What a browser paints is
  * e2e/frames-wrappers.spec.ts's job.
@@ -23,8 +24,17 @@ vi.mock('../frames', () => ({
   },
 }));
 
+// Solid's browser build, whose effects run: the package resolves to its server
+// build here, where an effect never runs. The same API, without types of its own.
+// @ts-expect-error -- no declaration file for the browser build's path
+vi.mock('solid-js', async () => await import('solid-js/dist/solid.js'));
+
 const { ScrollFrames } = await import('../react');
 const vue = await import('../vue');
+const svelte = await import('../svelte');
+const solid = await import('../solid');
+const { ScrollFramesRef } = await import('../angular');
+const { createRoot: solidRoot, createSignal } = await import('solid-js');
 const { framesKey } = await import('../frames/wrapper');
 
 const url = (i: number) => `/f/${i}.jpg`;
@@ -382,5 +392,278 @@ describe('<ScrollFrames> (Vue)', () => {
     expect(calls.map((c) => c.options.count)).toEqual([3, 4]);
     unmount();
     expect(calls[1].destroyed).toBe(true);
+  });
+});
+
+// ── Svelte, Solid and Angular: the page owns the canvas ──────────────────────
+
+/** A canvas in the document, named unless `attrs` says otherwise. */
+function canvasWith(attrs: Record<string, string> = { role: 'img', 'aria-label': 'A film' }): HTMLCanvasElement {
+  const c = document.createElement('canvas');
+  for (const [k, v] of Object.entries(attrs)) c.setAttribute(k, v);
+  return document.body.appendChild(c);
+}
+
+const urlsOf = (f: ScrollFramesOptions['frames']) => [0, 1, 2].map((i) => (typeof f === 'function' ? f(i) : f[i]));
+
+/** Every name check the label warning makes, as attributes on a canvas the page wrote. */
+const QUIET: Record<string, string>[] = [
+  { role: 'img', 'aria-label': 'A film' },
+  { role: 'img', 'aria-labelledby': 'cap' },
+  { 'aria-hidden': 'true' },
+  { role: 'presentation' },
+];
+
+describe('scrollFramesAction (Svelte)', () => {
+  it('starts a film on the canvas with every option, and leaves its attributes alone', () => {
+    const c = canvasWith();
+    const onReady = vi.fn();
+    svelte.scrollFramesAction(c, {
+      frames: ['/a.jpg', '/b.jpg'], count: 2, trigger: { start: 'top top' }, easing: 'ease-in', once: true,
+      axis: 'x', fit: 'contain', concurrency: 2, onReady,
+    });
+    expect(calls).toHaveLength(1);
+    expect(calls[0].el).toBe(c);
+    expect(calls[0].options).toMatchObject({ frames: ['/a.jpg', '/b.jpg'], count: 2, fit: 'contain', concurrency: 2, once: true, axis: 'x' });
+    expect(calls[0].options.triggerElement).toBeUndefined();
+    calls[0].options.onReady!();
+    expect(onReady).toHaveBeenCalledOnce();
+    expect(c.getAttributeNames().sort()).toEqual(['aria-label', 'role']);
+  });
+
+  /*
+   * What Svelte does with an inline `use:scrollFramesAction={{ … }}` when
+   * anything in the expression changes: update() with a new object, a new
+   * frames function or a new array of the same URLs, a new trigger object and
+   * new callbacks.
+   */
+  it('update() with fresh equal options keeps the film, and its callbacks stay live', () => {
+    const first = vi.fn();
+    const second = vi.fn();
+    const a = svelte.scrollFramesAction(canvasWith(), { frames: (i) => `/f/${i}.jpg`, count: 3, trigger: { start: 'top top' }, onProgress: first });
+    a.update({ frames: (i) => `/f/${i}.jpg`, count: 3, trigger: { start: 'top top' }, onProgress: second });
+    const b = svelte.scrollFramesAction(canvasWith(), { frames: ['/a.jpg', '/b.jpg'] });
+    b.update({ frames: ['/a.jpg', '/b.jpg'] });
+    expect(calls).toHaveLength(2);
+    calls[0].options.onProgress!(0.5, 1);
+    expect(second).toHaveBeenCalledWith(0.5, 1);
+    expect(first).not.toHaveBeenCalled();
+  });
+
+  it('update() with other URLs, another count or fit starts a new film and stops the old one', () => {
+    const a = svelte.scrollFramesAction(canvasWith(), { frames: (i) => `/f/${i}.jpg`, count: 3 });
+    a.update({ frames: (i) => `/g/${i}.jpg`, count: 3 });
+    a.update({ frames: (i) => `/g/${i}.jpg`, count: 4 });
+    a.update({ frames: (i) => `/g/${i}.jpg`, count: 4, fit: 'contain' });
+    expect(calls).toHaveLength(4);
+    expect(calls.slice(0, 3).every((c) => c.destroyed)).toBe(true);
+    expect(urlsOf(calls[1].options.frames)).toEqual(['/g/0.jpg', '/g/1.jpg', '/g/2.jpg']);
+    const b = svelte.scrollFramesAction(canvasWith(), { frames: ['/a.jpg'] });
+    b.update({ frames: ['/b.jpg'] });
+    expect(calls).toHaveLength(6);
+  });
+
+  it('keeps a working film when frames turns from a function into a list of the same URLs', () => {
+    const a = svelte.scrollFramesAction(canvasWith(), { frames: url, count: 3 });
+    a.update({ frames: [0, 1, 2].map(url), count: 3 });
+    expect(calls).toHaveLength(1);
+    expect(urlsOf(calls[0].options.frames)).toEqual(['/f/0.jpg', '/f/1.jpg', '/f/2.jpg']);
+  });
+
+  it('takes triggerElement as an element or a selector found when the film starts', () => {
+    const track = document.body.appendChild(document.createElement('section'));
+    track.id = 'track';
+    svelte.scrollFramesAction(canvasWith(), { frames: url, count: 3, triggerElement: track });
+    svelte.scrollFramesAction(canvasWith(), { frames: url, count: 3, triggerElement: '#track' });
+    svelte.scrollFramesAction(canvasWith(), { frames: url, count: 3, triggerElement: '#nope' });
+    expect(calls.map((c) => c.options.triggerElement)).toEqual([track, track, undefined]);
+    expect(warned()).toMatch(/"#nope" matches nothing/);
+  });
+
+  it('warns when the canvas has no name, and not when it has one or is decoration', () => {
+    svelte.scrollFramesAction(canvasWith({}), { frames: url, count: 3 });
+    expect(warned()).toMatch(/scrollFramesAction: the canvas has no aria-label/);
+    warns.mockClear();
+    for (const attrs of QUIET) svelte.scrollFramesAction(canvasWith(attrs), { frames: url, count: 3 });
+    expect(warned()).toBe('');
+  });
+
+  it('destroy() stops the film', () => {
+    svelte.scrollFramesAction(canvasWith(), { frames: url, count: 3 }).destroy();
+    expect(calls[0].destroyed).toBe(true);
+  });
+
+  it('createScrollFrames gives an action and the live instance, gone after destroy', () => {
+    const { action, getInstance } = svelte.createScrollFrames({ frames: url, count: 3 });
+    expect(getInstance()).toBeNull();
+    const done = action(canvasWith({}));
+    expect(warned()).toMatch(/createScrollFrames: the canvas has no aria-label/);
+    expect(getInstance()).not.toBeNull();
+    expect(calls[0].options.frames).toBe(url);
+    done.destroy();
+    expect(calls[0].destroyed).toBe(true);
+    expect(getInstance()).toBeNull();
+  });
+});
+
+describe('useScrollFrames / createScrollFrames (Solid)', () => {
+  /** Runs `setup` in a Solid root, sets the ref to a canvas, and returns its disposer. */
+  function mount(setup: () => (el: HTMLCanvasElement) => void, canvas = canvasWith()) {
+    return solidRoot((dispose) => {
+      setup()(canvas);
+      return dispose;
+    });
+  }
+
+  it('starts a film once the ref is set, and stops it when the owner is disposed', () => {
+    const c = canvasWith();
+    const dispose = mount(() => solid.useScrollFrames({ frames: url, count: 3, fit: 'contain' }), c);
+    expect(calls).toHaveLength(1);
+    expect(calls[0].el).toBe(c);
+    expect(calls[0].options).toMatchObject({ count: 3, fit: 'contain' });
+    expect(c.getAttributeNames().sort()).toEqual(['aria-label', 'role']);
+    dispose();
+    expect(calls[0].destroyed).toBe(true);
+  });
+
+  it('an accessor re-run with fresh equal options keeps the film, and its callbacks stay live', () => {
+    const [tick, setTick] = createSignal(0);
+    const seen: string[] = [];
+    const dispose = mount(() =>
+      solid.useScrollFrames(() => {
+        const t = tick();
+        return { frames: (i: number) => `/f/${i}.jpg`, count: 3, trigger: { start: 'top top' }, onProgress: () => seen.push(`tick ${t}`) };
+      }),
+    );
+    setTick(1);
+    setTick(2);
+    expect(calls).toHaveLength(1);
+    calls[0].options.onProgress!(0.5, 1);
+    expect(seen).toEqual(['tick 2']);
+    dispose();
+  });
+
+  /*
+   * The key calls the frames function inside the effect, so a signal it reads
+   * is tracked: the URL pattern changing starts a new film, though the options
+   * object never did.
+   */
+  it('a signal the frames function reads starts a new film when it changes', () => {
+    const [base, setBase] = createSignal('/f/');
+    const frames = (i: number) => `${base()}${i}.jpg`;
+    const dispose = mount(() => solid.useScrollFrames(() => ({ frames, count: 3 })));
+    setBase('/g/');
+    expect(calls).toHaveLength(2);
+    expect(calls[0].destroyed).toBe(true);
+    expect(urlsOf(calls[1].options.frames)).toEqual(['/g/0.jpg', '/g/1.jpg', '/g/2.jpg']);
+    dispose();
+    expect(calls[1].destroyed).toBe(true);
+  });
+
+  it('keeps a working film when frames turns from a function into a list of the same URLs', () => {
+    const [list, setList] = createSignal(false);
+    const dispose = mount(() => solid.useScrollFrames(() => ({ frames: list() ? [0, 1, 2].map(url) : url, count: 3 })));
+    setList(true);
+    expect(calls).toHaveLength(1);
+    expect(urlsOf(calls[0].options.frames)).toEqual(['/f/0.jpg', '/f/1.jpg', '/f/2.jpg']);
+    dispose();
+  });
+
+  it('finds a triggerElement selector when the film starts', () => {
+    const track = document.body.appendChild(document.createElement('section'));
+    track.id = 'track';
+    const dispose = mount(() => solid.useScrollFrames({ frames: url, count: 3, triggerElement: '#track' }));
+    expect(calls[0].options.triggerElement).toBe(track);
+    dispose();
+  });
+
+  it('warns once when the canvas has no name, through every new film, and not when it is decoration', () => {
+    const [count, setCount] = createSignal(3);
+    const a = mount(() => solid.useScrollFrames(() => ({ frames: url, count: count() })), canvasWith({}));
+    setCount(4);
+    expect(calls).toHaveLength(2);
+    expect(warns.mock.calls.filter((c) => /useScrollFrames: the canvas has no aria-label/.test(String(c[0])))).toHaveLength(1);
+    a();
+    warns.mockClear();
+    for (const attrs of QUIET) mount(() => solid.useScrollFrames({ frames: url, count: 3 }), canvasWith(attrs))();
+    expect(warned()).toBe('');
+  });
+
+  it('createScrollFrames: getInstance follows the new film, and is gone after cleanup', () => {
+    const [count, setCount] = createSignal(3);
+    let api!: ReturnType<typeof solid.createScrollFrames>;
+    const dispose = mount(() => (api = solid.createScrollFrames(() => ({ frames: url, count: count() }))).ref);
+    const first = api.getInstance();
+    expect(first).toBeDefined();
+    setCount(4);
+    expect(api.getInstance()).not.toBe(first);
+    dispose();
+    expect(api.getInstance()).toBeUndefined();
+    expect(calls.every((c) => c.destroyed)).toBe(true);
+  });
+});
+
+describe('ScrollFramesRef (Angular)', () => {
+  it('init() starts a film with every option, and destroy() stops it', () => {
+    const c = canvasWith();
+    const film = new ScrollFramesRef().init(c, { frames: url, count: 3, fit: 'contain', concurrency: 2 });
+    expect(calls[0].el).toBe(c);
+    expect(calls[0].options).toMatchObject({ count: 3, fit: 'contain', concurrency: 2 });
+    expect(c.getAttributeNames().sort()).toEqual(['aria-label', 'role']);
+    film.destroy();
+    expect(calls[0].destroyed).toBe(true);
+  });
+
+  it('update() is a no-op before init(), as ngOnChanges runs before ngAfterViewInit', () => {
+    new ScrollFramesRef().update({ frames: url, count: 3 });
+    expect(calls).toHaveLength(0);
+  });
+
+  /* What ngOnChanges hands it: the component's options() built afresh on every change. */
+  it('update() with fresh equal options keeps the film, and its callbacks stay live', () => {
+    const first = vi.fn();
+    const second = vi.fn();
+    const film = new ScrollFramesRef().init(canvasWith(), { frames: (i) => `/f/${i}.jpg`, count: 3, trigger: { start: 'top top' }, onProgress: first });
+    film.update({ frames: (i) => `/f/${i}.jpg`, count: 3, trigger: { start: 'top top' }, onProgress: second });
+    expect(calls).toHaveLength(1);
+    calls[0].options.onProgress!(0.5, 1);
+    expect(second).toHaveBeenCalledWith(0.5, 1);
+    expect(first).not.toHaveBeenCalled();
+  });
+
+  it('update() with other URLs or another option starts a new film and stops the old one', () => {
+    const film = new ScrollFramesRef().init(canvasWith(), { frames: (i) => `/f/${i}.jpg`, count: 3 });
+    film.update({ frames: (i) => `/g/${i}.jpg`, count: 3 });
+    film.update({ frames: (i) => `/g/${i}.jpg`, count: 3, axis: 'x' });
+    expect(calls).toHaveLength(3);
+    expect(calls[0].destroyed && calls[1].destroyed).toBe(true);
+    expect(urlsOf(calls[1].options.frames)).toEqual(['/g/0.jpg', '/g/1.jpg', '/g/2.jpg']);
+    film.destroy();
+    expect(calls[2].destroyed).toBe(true);
+  });
+
+  it('keeps a working film when frames turns from a function into a list of the same URLs', () => {
+    const film = new ScrollFramesRef().init(canvasWith(), { frames: url, count: 3 });
+    film.update({ frames: [0, 1, 2].map(url), count: 3 });
+    expect(calls).toHaveLength(1);
+    expect(urlsOf(calls[0].options.frames)).toEqual(['/f/0.jpg', '/f/1.jpg', '/f/2.jpg']);
+  });
+
+  it('takes triggerElement as an element or a selector', () => {
+    const track = document.body.appendChild(document.createElement('section'));
+    track.id = 'track';
+    new ScrollFramesRef().init(canvasWith(), { frames: url, count: 3, triggerElement: track });
+    new ScrollFramesRef().init(canvasWith(), { frames: url, count: 3, triggerElement: '#track' });
+    expect(calls.map((c) => c.options.triggerElement)).toEqual([track, track]);
+  });
+
+  it('warns once per canvas without a name, through every new film, and not when it is decoration', () => {
+    const film = new ScrollFramesRef().init(canvasWith({}), { frames: url, count: 3 });
+    film.update({ frames: url, count: 4 });
+    expect(calls).toHaveLength(2);
+    expect(warns.mock.calls.filter((c) => /ScrollFramesRef: the canvas has no aria-label/.test(String(c[0])))).toHaveLength(1);
+    warns.mockClear();
+    for (const attrs of QUIET) new ScrollFramesRef().init(canvasWith(attrs), { frames: url, count: 3 });
+    expect(warned()).toBe('');
   });
 });

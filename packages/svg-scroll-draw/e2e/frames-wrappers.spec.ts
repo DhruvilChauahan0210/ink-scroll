@@ -2,13 +2,16 @@ import { test, expect, type Page } from '@playwright/test';
 import { openFixture, collectErrors, scrollToY, read, call, table, settle } from './helpers';
 
 /**
- * <ScrollFrames> in React and Vue, from dist/, in real browsers: the pinned
- * pattern (a sticky stage in a tall track, measured as triggerElement), what
- * a re-render rebuilds and what it keeps, and which callback the film calls.
+ * scrollFrames through every framework wrapper, from dist/, in real browsers:
+ * React's and Vue's <ScrollFrames>, the Svelte action, the Solid primitive and
+ * the Angular ref class. The pinned pattern (a sticky stage in a tall track,
+ * measured as triggerElement), what a re-render rebuilds and what it keeps,
+ * and which callback the film calls.
  *
- * The unit suite (scrollFramesWrappers.test.ts) checks what each component
+ * The unit suite (scrollFramesWrappers.test.ts) checks what each wrapper
  * hands scrollFrames with the engine replaced by a recorder; this checks the
- * frames a browser paints.
+ * frames a browser paints. In Svelte, Solid and Angular the page writes the
+ * canvas and its role and name; the components render them.
  *
  * Fixture geometry (viewport 900x800): the track starts at 1000 and is 1600
  * tall, so `top top` → `bottom bottom` is 1000 → 1800; 25 frames.
@@ -37,8 +40,17 @@ async function allLoaded(page: Page, loads = 1): Promise<void> {
   await settle(page);
 }
 
-for (const fw of ['react', 'vue'] as const) {
-  test.describe(`${fw} <ScrollFrames>`, () => {
+/** Each wrapper, by the name of its scrollFrames API (the test titles the mutations grep for). */
+const WRAPPERS = {
+  react: '<ScrollFrames>',
+  vue: '<ScrollFrames>',
+  svelte: 'scrollFramesAction',
+  solid: 'useScrollFrames',
+  angular: 'ScrollFramesRef',
+} as const;
+
+for (const [fw, name] of Object.entries(WRAPPERS)) {
+  test.describe(`${fw} ${name}`, () => {
     test('renders the canvas with its attributes, and paints the frame a pinned scroll calls for', async ({ page }) => {
       const errors = collectErrors(page);
       await openFixture(page, `fw-frames.html?fw=${fw}`);

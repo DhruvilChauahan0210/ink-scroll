@@ -1,7 +1,14 @@
-// What the React and Vue <ScrollFrames> share, beside the engine itself.
+// What every framework's scrollFrames wrapper shares, beside the engine itself:
+// the React and Vue <ScrollFrames>, Vue's useScrollFrames, the Svelte action,
+// the Solid primitives and the Angular ref class. startFrames, which all but
+// React use, is in ./start: entries load whole chunks, so a function here that
+// React never calls would still count against its size.
 import { optionsKey } from '../core/reactive';
 import { warn } from '../core/env';
 import type { ScrollFramesOptions } from './index';
+
+/** The options as scrollFrames takes them, but `triggerElement` may be a selector. */
+export type FramesInput = Omit<ScrollFramesOptions, 'triggerElement'> & { triggerElement?: Element | string | null };
 
 /** The most URLs a key reads from a `frames` function (a sequence is rarely past a few hundred). */
 const KEY_FRAMES = 10000;
@@ -14,7 +21,7 @@ const KEY_FRAMES = 10000;
  * identity an inline `frames={(i) => …}` rebuilt it, and reloaded every image,
  * on every render.
  */
-export function framesKey(options: ScrollFramesOptions): string {
+export function framesKey(options: FramesInput): string {
   const { frames, count } = options;
   if (typeof frames !== 'function') return optionsKey(options);
   const n = Number.isFinite(count) ? Math.min(Math.max(Math.floor(count!), 0), KEY_FRAMES) : 0;
@@ -28,13 +35,15 @@ export function framesKey(options: ScrollFramesOptions): string {
 }
 
 /**
- * The component renders role="img", which needs a name. Nothing to say when it
- * has one, or when the page marked the canvas as decoration.
+ * The film is a picture, and needs a name: role="img" (which the components
+ * render, and a page writes on its own canvas) with an aria-label. Nothing to
+ * say when it has one, or when the page marked the canvas as decoration.
+ * `who` names the API in the warning.
  */
-export function checkLabel(canvas: Element | null): void {
+export function checkLabel(canvas: Element | null, who = '<ScrollFrames>'): void {
   if (!canvas || canvas.getAttribute('aria-hidden') === 'true') return;
   const role = canvas.getAttribute('role');
   if (role === 'presentation' || role === 'none') return;
   if (canvas.getAttribute('aria-label') || canvas.getAttribute('aria-labelledby')) return;
-  warn('<ScrollFrames>: the canvas has no aria-label. Say what the frames show, or set aria-hidden="true" if they are decoration.', canvas);
+  warn(`${who}: the canvas has no aria-label. Say what the frames show, or set aria-hidden="true" if they are decoration.`, canvas);
 }

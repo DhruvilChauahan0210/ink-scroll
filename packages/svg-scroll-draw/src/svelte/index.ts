@@ -3,14 +3,17 @@ import { liveFns, optionsKey } from '../core/reactive';
 import { createAnimateEngine } from '../animate/engine';
 import { scrollCounter } from '../counter';
 import { scrollVideo } from '../video';
+import { framesKey, checkLabel, type FramesInput } from '../frames/wrapper';
+import { startFrames } from '../frames/start';
 import { scrollText } from '../text';
 import type { ScrollDrawOptions, ScrollDrawInstance } from '../core/types';
 import type { ScrollAnimateOptions } from '../animate';
 import type { ScrollCounterOptions } from '../counter';
 import type { ScrollVideoOptions } from '../video';
+import type { ScrollFramesOptions } from '../frames';
 import type { ScrollTextOptions } from '../text';
 
-export type { ScrollDrawOptions, ScrollAnimateOptions, ScrollCounterOptions, ScrollVideoOptions, ScrollTextOptions };
+export type { ScrollDrawOptions, ScrollAnimateOptions, ScrollCounterOptions, ScrollVideoOptions, ScrollFramesOptions, ScrollTextOptions };
 
 // ── The engine behind each action ────────────────────────────────────────────
 
@@ -19,23 +22,26 @@ export type { ScrollDrawOptions, ScrollAnimateOptions, ScrollCounterOptions, Scr
  * inline `use:scrollDraw={{ … }}` that is every time anything in the expression
  * changes. The engine is rebuilt only when an option really changed, and
  * callbacks are read live (`liveFns`), so a new arrow alone never rebuilds.
+ * `keyOf` is that fingerprint: scrollFrames passes its own, which reads a
+ * `frames` function by the URLs it gives.
  */
 function action<E extends Element, O extends object>(
   node: E,
   options: O,
-  create: (el: E, options: O) => ScrollDrawInstance,
+  create: (el: E, options: O, raw: O) => ScrollDrawInstance,
+  keyOf: (options: O) => string = optionsKey,
 ) {
   let latest = options;
-  let key = optionsKey(options);
-  let instance = create(node, liveFns(options, () => latest));
+  let key = keyOf(options);
+  let instance = create(node, liveFns(options, () => latest), options);
   return {
     update(next: O) {
       latest = next;
-      const nextKey = optionsKey(next);
+      const nextKey = keyOf(next);
       if (nextKey === key) return;
       key = nextKey;
       instance.destroy();
-      instance = create(node, liveFns(next, () => latest));
+      instance = create(node, liveFns(next, () => latest), next);
     },
     destroy() {
       instance.destroy();
@@ -193,6 +199,61 @@ export function createScrollVideo(options: ScrollVideoOptions = {}) {
 
   function action(node: HTMLVideoElement) {
     instance = scrollVideo(node, options);
+    return {
+      destroy() { instance?.destroy(); instance = null; },
+    };
+  }
+
+  return {
+    action,
+    getInstance: () => instance,
+  };
+}
+
+// ── scrollFramesAction ────────────────────────────────────────────────────────
+
+/**
+ * Svelte action — scrub an image sequence on a <canvas> with the scroll
+ * (scrollFrames). The canvas is yours, so give it role="img" and an
+ * aria-label saying what the frames show; in development the action warns
+ * when it has no name (unless it is aria-hidden="true" or role="presentation").
+ *
+ * An inline parameter is fine: `update()` starts a new film only when the URLs
+ * (a `frames` function is read by the URLs it gives for `count`) or another
+ * option changed, and callbacks are read live. `triggerElement` takes an
+ * element or a selector, found when the film starts.
+ *
+ * @example
+ * <section id="track" style="height: 400vh">
+ *   <div style="position: sticky; top: 0; height: 100vh">
+ *     <canvas role="img" aria-label="The headphones turning"
+ *       use:scrollFramesAction={{ frames: (i) => `/film/${i + 1}.jpg`, count: 120,
+ *         triggerElement: '#track', trigger: { start: 'top top', end: 'bottom bottom' } }} />
+ *   </div>
+ * </section>
+ */
+export function scrollFramesAction(node: HTMLCanvasElement, options: FramesInput) {
+  checkLabel(node, 'scrollFramesAction');
+  return action(node, options, startFrames, framesKey);
+}
+
+/**
+ * Returns an action and a getter for the live film instance. Its options are
+ * read once, like the other create* helpers.
+ *
+ * @example
+ * <script>
+ *   import { createScrollFrames } from 'svg-scroll-draw/svelte';
+ *   const { action, getInstance } = createScrollFrames({ frames: urls });
+ * </script>
+ * <canvas use:action role="img" aria-label="The headphones turning" />
+ */
+export function createScrollFrames(options: FramesInput) {
+  let instance: ScrollDrawInstance | null = null;
+
+  function action(node: HTMLCanvasElement) {
+    checkLabel(node, 'createScrollFrames');
+    instance = startFrames(node, options, options);
     return {
       destroy() { instance?.destroy(); instance = null; },
     };

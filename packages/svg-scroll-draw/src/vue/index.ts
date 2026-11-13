@@ -4,10 +4,9 @@ import { liveFns, optionsKey } from '../core/reactive';
 import { createAnimateEngine } from '../animate/engine';
 import { scrollCounter } from '../counter';
 import { scrollVideo } from '../video';
-import { scrollFrames } from '../frames';
-import { framesKey, checkLabel } from '../frames/wrapper';
+import { framesKey, checkLabel, type FramesInput } from '../frames/wrapper';
+import { startFrames } from '../frames/start';
 import { scrollText } from '../text';
-import { warn } from '../core/env';
 import type { ScrollDrawOptions } from '../core/types';
 import type { ScrollAnimateOptions } from '../animate';
 import type { ScrollCounterOptions } from '../counter';
@@ -257,22 +256,9 @@ export const ScrollVideo = defineComponent({
 
 // ── ScrollFrames ──────────────────────────────────────────────────────────────
 
-/** The options as scrollFrames takes them, but `triggerElement` may be a selector. */
-type FramesInput = Omit<ScrollFramesOptions, 'triggerElement'> & { triggerElement?: Element | string | null };
-
-/**
- * scrollFrames with `triggerElement` read when the film starts: a selector
- * finds the track then, mounted, so `trigger-element="#track"` works from a
- * template where a template ref is still null on the first render. `frames`
- * goes in as it was (`raw`), not read live: the key already starts a new film
- * when the URLs change, and a live `frames` that turned into a list of the
- * same URLs would be called as a function and throw.
- */
-const startFrames = (el: HTMLCanvasElement, { triggerElement: t, ...o }: FramesInput, raw: FramesInput) => {
-  const track = typeof t === 'string' ? document.querySelector(t) : t;
-  if (typeof t === 'string' && !track) warn(`<ScrollFrames>: triggerElement "${t}" matches nothing; measuring the canvas.`);
-  return scrollFrames(el, { ...o, frames: raw.frames, triggerElement: track ?? undefined });
-};
+// FramesInput (a selector allowed as triggerElement) and startFrames, which
+// reads it when the film starts, are shared with the other wrappers
+// (frames/wrapper).
 
 /**
  * Composable — returns a ref to bind to a <canvas>, which scrubs an image

@@ -215,10 +215,10 @@ describe('SSR — no window, no document', () => {
   });
 
   it('the Angular ref classes are safe to construct and tear down', async () => {
-    const { ScrollDrawRef, ScrollAnimateRef, ScrollCounterRef, ScrollVideoRef, ScrollTextRef } =
+    const { ScrollDrawRef, ScrollAnimateRef, ScrollCounterRef, ScrollVideoRef, ScrollFramesRef, ScrollTextRef } =
       await import('../angular');
 
-    for (const Ref of [ScrollDrawRef, ScrollAnimateRef, ScrollCounterRef, ScrollVideoRef, ScrollTextRef]) {
+    for (const Ref of [ScrollDrawRef, ScrollAnimateRef, ScrollCounterRef, ScrollVideoRef, ScrollFramesRef, ScrollTextRef]) {
       const ref = new Ref();
       expect(() => {
         ref.replay();
@@ -229,6 +229,28 @@ describe('SSR — no window, no document', () => {
       }, `${Ref.name} threw without a DOM`).not.toThrow();
       expect(ref.getProgress()).toBe(0);
     }
+  });
+
+  /*
+   * Angular Universal runs ngAfterViewInit on the server, so ScrollFramesRef.init
+   * gets a server-side canvas there; a selector triggerElement must not reach
+   * for a `document` that is not there. Solid's server build never runs the
+   * effect, and Svelte never runs an action on the server, but each hook has to
+   * be callable while a component renders to a string.
+   */
+  it('the Svelte, Solid and Angular scrollFrames wrappers stay inert without a DOM', async () => {
+    const { ScrollFramesRef } = await import('../angular');
+    const solid = await import('../solid');
+    const svelte = await import('../svelte');
+    const canvas = { tagName: 'CANVAS', getAttribute: (n: string) => (n === 'aria-label' ? 'A film' : null) } as never;
+    const options = { frames: (i: number) => `/f/${i}.jpg`, count: 3, triggerElement: '#track' };
+
+    const film = new ScrollFramesRef();
+    expect(() => film.init(canvas, options).update({ ...options, count: 4 }).destroy()).not.toThrow();
+    expect(film.getProgress()).toBe(0);
+    expect(typeof solid.useScrollFrames(options)).toBe('function');
+    expect(solid.createScrollFrames(() => options).getInstance()).toBeUndefined();
+    expect(svelte.createScrollFrames(options).getInstance()).toBeNull();
   });
 
   it('the web component entry registers nothing when there is no customElements', async () => {

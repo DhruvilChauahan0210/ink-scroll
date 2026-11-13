@@ -15,7 +15,7 @@ export const GUIDE: FrameworkGuide = {
       title: 'The action is a plain function',
       body: [
         '`scrollDraw` is an ordinary function with the shape Svelte expects of an action: it takes the node and your options, and returns `update()` and `destroy()`. Nothing in `svg-scroll-draw/svelte` imports from `svelte`, and the package lists no Svelte peer dependency, so there is no Svelte version for it to mismatch. `use:scrollDraw` does the same thing in a Svelte 4 component and a Svelte 5 one.',
-        '`scrollDraw`, `scrollTextAction` and `scrollVideoAction` default their options to `{}`, so a bare `use:scrollDraw` works. `scrollAnimate` needs `props` and `scrollCounterAction` needs `to`, so those two always take a value. `scrollVideoAction` is typed for an `HTMLVideoElement`: put it on the `<video>` itself.',
+        '`scrollDraw`, `scrollTextAction` and `scrollVideoAction` default their options to `{}`, so a bare `use:scrollDraw` works. `scrollAnimate` needs `props` and `scrollCounterAction` needs `to`, so those two always take a value. `scrollVideoAction` is typed for an `HTMLVideoElement`: put it on the `<video>` itself. `scrollFramesAction` (2.26.0+) needs `frames` and goes on a `<canvas>` you give `role="img"` and an `aria-label`; an inline `frames` function is read by the URLs it gives, so `update()` keeps the film unless they change.',
         'The browser suite calls the action the way Svelte does, on real nodes. After `destroy()` no IntersectionObserver and no animation frame loop is left running, and a second mount on a new node measures its own position again. That is the path an `{#if}` block takes each time it turns false and back to true.',
       ],
       sample: {

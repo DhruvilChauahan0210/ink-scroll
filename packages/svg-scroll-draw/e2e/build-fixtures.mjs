@@ -31,7 +31,8 @@ const ENTRIES = [
   { name: 'react' },
   { name: 'dropins-react' },
   { name: 'react-extras' },
-  // <ScrollFrames> in React and Vue, one bundle with both.
+  // scrollFrames in every wrapper that has it (React, Vue, Svelte, Solid,
+  // Angular), one bundle with all five.
   { name: 'frames-wrappers' },
   { name: 'vue' },
   { name: 'solid' },

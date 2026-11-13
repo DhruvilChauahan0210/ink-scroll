@@ -265,7 +265,10 @@ arrives. Loads frame 0, the last, then midpoints coarse to fine. Size the canvas
 with CSS; the buffer follows the box × devicePixelRatio (capped at 2). Reduced
 motion loads and shows only the last frame. Components: `<ScrollFrames>` in
 `svg-scroll-draw/react` and `svg-scroll-draw/vue` (and `useScrollFrames` in Vue
-and Nuxt). Called directly, give the canvas `role="img"` and an `aria-label`.
+and Nuxt). From 2.26.0 also `scrollFramesAction` / `createScrollFrames` (Svelte),
+`useScrollFrames` / `createScrollFrames` (Solid) and `ScrollFramesRef`
+(Angular), which bind to a canvas you write. Called directly, or on your own
+canvas, give it `role="img"` and an `aria-label`.
 
 ## `svg-scroll-draw/progress`
 
@@ -358,22 +361,32 @@ Options are read once on mount. Re-create by changing `key`.
 ### `svg-scroll-draw/svelte`
 
 Actions (support `update`/`destroy` automatically): `scrollDraw`, `scrollAnimate`,
-`scrollCounterAction`, `scrollVideoAction`, `scrollTextAction`.
+`scrollCounterAction`, `scrollVideoAction`, `scrollFramesAction` (2.26.0+),
+`scrollTextAction`.
 Factories returning `{ action, getInstance }`: `createScrollDraw`,
-`createScrollAnimate`, `createScrollCounter`, `createScrollVideo`, `createScrollText`.
+`createScrollAnimate`, `createScrollCounter`, `createScrollVideo`,
+`createScrollFrames` (2.26.0+), `createScrollText`.
+
+- `<canvas use:scrollFramesAction={{ frames, count, triggerElement: '#track', trigger }} role="img" aria-label="…" />` — on a `<canvas>`; `update()` starts a new film only when the URLs (a `frames` function is read by the URLs it gives) or another option changed; callbacks are live; `triggerElement` is an element or a selector, found when the film starts; warns in dev when the canvas has no `aria-label`
 
 ### `svg-scroll-draw/solid`
 
 Ref-setter hooks: `useScrollDraw`, `useScrollAnimate`, `useScrollCounter`,
-`useScrollVideo`, `useScrollText`. Factories returning `{ ref, getInstance }`:
-`createScrollDraw`, `createScrollAnimate`, `createScrollCounter`,
-`createScrollVideo`, `createScrollText`.
+`useScrollVideo`, `useScrollFrames` (2.26.0+), `useScrollText`. Factories
+returning `{ ref, getInstance }`: `createScrollDraw`, `createScrollAnimate`,
+`createScrollCounter`, `createScrollVideo`, `createScrollFrames` (2.26.0+),
+`createScrollText`.
+
+- `useScrollFrames(() => ({ frames, count, triggerElement: '#track', trigger }))` → ref for `<canvas ref={ref} role="img" aria-label="…" />`; an accessor keeps the options live (a signal the `frames` function reads is tracked), the same rebuild and live-callback rules as Svelte's action
 
 ### `svg-scroll-draw/angular`
 
-Classes with `init(element, options)` and `destroy()` (plus `replay`, `pause`,
-`resume`, `seek`, `getProgress`): `ScrollDrawRef`, `ScrollAnimateRef`,
-`ScrollCounterRef`, `ScrollVideoRef`, `ScrollTextRef`. No `@angular/core` dependency.
+Classes with `init(element, options)`, `update(options)` (for `ngOnChanges`)
+and `destroy()` (plus `replay`, `pause`, `resume`, `seek`, `getProgress`):
+`ScrollDrawRef`, `ScrollAnimateRef`, `ScrollCounterRef`, `ScrollVideoRef`,
+`ScrollFramesRef` (2.26.0+), `ScrollTextRef`. No `@angular/core` dependency.
+
+- `new ScrollFramesRef().init(canvas, { frames, count, triggerElement, trigger })` from `ngAfterViewInit`, `update(options)` from `ngOnChanges` (a new film only when the URLs or another option changed; callbacks live), `destroy()` from `ngOnDestroy`; the canvas in your template needs `role="img"` and an `aria-label`
 
 ### `svg-scroll-draw/astro`
 

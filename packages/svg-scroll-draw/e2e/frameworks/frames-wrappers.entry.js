@@ -1,8 +1,17 @@
 /**
- * <ScrollFrames> from both wrappers that have one, React and Vue, mounted for
- * real from dist/. One page mounts one of them (`?fw=react` or `?fw=vue`), in
- * the pinned pattern a page uses it for: a sticky stage in a tall track, the
- * track measured as triggerElement (a ref in React, a selector in Vue).
+ * scrollFrames through every framework wrapper, mounted for real from dist/:
+ * React's and Vue's <ScrollFrames>, the Svelte action, the Solid primitive and
+ * the Angular ref class. One page mounts one of them (`?fw=react`, `vue`,
+ * `svelte`, `solid` or `angular`), in the pinned pattern a page uses it for: a
+ * sticky stage in a tall track, the track measured as triggerElement (a ref in
+ * React, a selector in Vue and Solid, the element in Svelte and Angular).
+ *
+ * Svelte's action and Angular's class need no framework at runtime: this calls
+ * them exactly as Svelte does `use:scrollFramesAction={opts}` (update() with a
+ * fresh object whenever the expression re-runs) and as a component does from
+ * ngAfterViewInit / ngOnChanges / ngOnDestroy. Solid runs in a real reactive
+ * root, the options an accessor over signals. There the page writes the
+ * canvas, role and aria-label included, as the docs tell it to.
  *
  * Every render passes a fresh frames function, a fresh trigger object and
  * fresh callbacks, as inline props are written. Each callback captures the
@@ -14,6 +23,10 @@ import { createRoot } from 'react-dom/client';
 import { createApp, h as vh, nextTick, ref } from 'vue';
 import { ScrollFrames as ReactFrames } from '../../dist/react/index.mjs';
 import { ScrollFrames as VueFrames } from '../../dist/vue/index.mjs';
+import { scrollFramesAction } from '../../dist/svelte/index.mjs';
+import { useScrollFrames } from '../../dist/solid/index.mjs';
+import { ScrollFramesRef } from '../../dist/angular/index.mjs';
+import { createRoot as solidRoot, createSignal } from 'solid-js';
 
 const COUNT = 25;
 const frameUrl = (i, shift) => `/e2e/gen/frame.png?i=${i + shift}`;
@@ -120,4 +133,131 @@ function vueApi() {
   };
 }
 
-export const api = (fw) => (fw === 'vue' ? vueApi() : reactApi());
+// ── Svelte, Solid and Angular: the page writes the canvas ────────────────────
+
+/** The markup React and Vue render, written by hand: the track, the stage, the canvas. */
+function buildStage() {
+  const track = document.createElement('section');
+  track.id = 'track';
+  const stage = document.createElement('div');
+  stage.className = 'stage';
+  const canvas = document.createElement('canvas');
+  canvas.className = 'film';
+  canvas.setAttribute('role', 'img');
+  canvas.setAttribute('aria-label', 'A numbered test film');
+  stage.append(canvas);
+  track.append(stage);
+  document.querySelector('#root').append(track);
+  return { track, canvas };
+}
+
+/**
+ * Svelte and Angular hand the wrapper a new options object on every change, so
+ * both share this: the current state, and a fresh object built from it with a
+ * fresh frames function, trigger and callbacks, as an inline parameter is.
+ */
+function stateful() {
+  let state = { shift: 0, tick: 0, bucket: 'a' };
+  return {
+    options(track) {
+      const { shift, bucket } = state;
+      return {
+        frames: (i) => frameUrl(i, shift),
+        count: COUNT,
+        triggerElement: track,
+        trigger: TRIGGER(),
+        onReady: () => { stats.ready++; },
+        onLoad: () => { stats.load++; },
+        onProgress: () => { stats[bucket]++; },
+      };
+    },
+    set(patch) { state = { ...state, ...patch(state) }; },
+  };
+}
+
+function svelteApi() {
+  const s = stateful();
+  let dom = null;
+  let action = null;
+  const update = (patch) => { s.set(patch); action?.update(s.options(dom.track)); };
+  return {
+    mount() {
+      dom = buildStage();
+      action = scrollFramesAction(dom.canvas, s.options(dom.track));
+    },
+    rerender: () => update((st) => ({ tick: st.tick + 1 })),
+    bucket: (b) => update(() => ({ bucket: b })),
+    shift: (n) => update(() => ({ shift: n })),
+    unmount() {
+      // The order Svelte uses: the action's destroy, then the node goes.
+      action?.destroy();
+      action = null;
+      document.querySelector('#root').replaceChildren();
+    },
+  };
+}
+
+function angularApi() {
+  const s = stateful();
+  const film = new ScrollFramesRef();
+  let dom = null;
+  // What ngOnChanges does: update() with the component's options built afresh.
+  const update = (patch) => { s.set(patch); film.update(s.options(dom.track)); };
+  return {
+    mount() {
+      dom = buildStage();
+      film.init(dom.canvas, s.options(dom.track)); // ngAfterViewInit
+    },
+    rerender: () => update((st) => ({ tick: st.tick + 1 })),
+    bucket: (b) => update(() => ({ bucket: b })),
+    shift: (n) => update(() => ({ shift: n })),
+    unmount() {
+      film.destroy(); // ngOnDestroy
+      document.querySelector('#root').replaceChildren();
+    },
+  };
+}
+
+function solidApi() {
+  const [shift, setShift] = createSignal(0);
+  const [tick, setTick] = createSignal(0);
+  const [bucket, setBucket] = createSignal('a');
+  let dispose = null;
+  return {
+    mount() {
+      const { canvas } = buildStage();
+      dispose = solidRoot((d) => {
+        // The accessor reads every signal, so each change re-runs the effect
+        // with a fresh object; the track is a selector, found when the film starts.
+        const ref = useScrollFrames(() => {
+          tick();
+          const s = shift();
+          const b = bucket();
+          return {
+            frames: (i) => frameUrl(i, s),
+            count: COUNT,
+            triggerElement: '#track',
+            trigger: TRIGGER(),
+            onReady: () => { stats.ready++; },
+            onLoad: () => { stats.load++; },
+            onProgress: () => { stats[b]++; },
+          };
+        });
+        ref(canvas);
+        return d;
+      });
+    },
+    rerender: () => setTick((t) => t + 1),
+    bucket: (b) => setBucket(b),
+    shift: (n) => setShift(n),
+    unmount() {
+      dispose?.();
+      dispose = null;
+      document.querySelector('#root').replaceChildren();
+    },
+  };
+}
+
+const APIS = { react: reactApi, vue: vueApi, svelte: svelteApi, solid: solidApi, angular: angularApi };
+
+export const api = (fw) => (APIS[fw] ?? reactApi)();

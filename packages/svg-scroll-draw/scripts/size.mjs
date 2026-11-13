@@ -69,6 +69,16 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
  * URL fingerprint and label check (react 12.8 -> 14.89, vue 12.9 -> 15.06,
  * nuxt 13.0 -> 15.16; with the main entry 14.4 -> 16.55). An app's bundler
  * drops it when ScrollFrames is not imported. Same rule.
+ *
+ * After 2.25.0, svelte, solid and angular moved up about 2.1 KB each, the same
+ * step for the same reason: they gained scrollFrames (scrollFramesAction and
+ * createScrollFrames, useScrollFrames and createScrollFrames, ScrollFramesRef),
+ * which brings the scrollFrames engine into the entry plus the wrapper's URL
+ * fingerprint, label check and selector lookup (svelte 12.24 -> 14.35, solid
+ * 12.25 -> 14.36, angular 12.27 -> 14.39). The selector lookup Vue shares
+ * moved to frames/start, apart from frames/wrapper, so react does not load it
+ * (react 14.90 -> 14.91). An app's bundler drops it when they are not
+ * imported. Same rule.
  */
 const BUDGETS_KB = {
   '.':              11.8,
@@ -78,9 +88,9 @@ const BUDGETS_KB = {
   react:            15.0,
   vue:              15.2,
   nuxt:             15.3,
-  svelte:           12.7,
-  solid:            12.7,
-  angular:          12.7,
+  svelte:           14.5,
+  solid:            14.5,
+  angular:          14.5,
   astro:            12.3,
   group:             10.3,
   'web-component':   7.9,

@@ -84,9 +84,9 @@ export const SELF_ENTRIES: Record<string, number> = {
   // Each framework landing quotes its own entry, wrapper and engines included.
   vue: 15.1,
   nuxt: 15.2,
-  svelte: 12.2,
-  solid: 12.3,
-  angular: 12.3,
+  svelte: 14.3,
+  solid: 14.4,
+  angular: 14.4,
   astro: 11.9,
 };
 

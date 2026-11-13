@@ -4,14 +4,17 @@ import { liveFns, optionsKey } from '../core/reactive';
 import { createAnimateEngine } from '../animate/engine';
 import { scrollCounter } from '../counter';
 import { scrollVideo } from '../video';
+import { framesKey, checkLabel, type FramesInput } from '../frames/wrapper';
+import { startFrames } from '../frames/start';
 import { scrollText } from '../text';
 import type { ScrollDrawOptions, ScrollDrawInstance } from '../core/types';
 import type { ScrollAnimateOptions } from '../animate';
 import type { ScrollCounterOptions } from '../counter';
 import type { ScrollVideoOptions } from '../video';
+import type { ScrollFramesOptions } from '../frames';
 import type { ScrollTextOptions } from '../text';
 
-export type { ScrollDrawOptions, ScrollAnimateOptions, ScrollCounterOptions, ScrollVideoOptions, ScrollTextOptions };
+export type { ScrollDrawOptions, ScrollAnimateOptions, ScrollCounterOptions, ScrollVideoOptions, ScrollFramesOptions, ScrollTextOptions };
 
 /** Options as a plain object, or an accessor that keeps them live. */
 export type MaybeAccessor<T> = T | (() => T);
@@ -22,12 +25,14 @@ export type MaybeAccessor<T> = T | (() => T);
  * Creates the engine once the ref is set and rebuilds it when an option
  * changes. The effect reads every option — through an accessor, or through
  * Solid props' getters — so it subscribes to them; the fingerprint
- * (`optionsKey`) decides whether a change is real. The engine is built
- * untracked, so nothing it reads while starting becomes a dependency.
+ * (`optionsKey`, or the `keyOf` scrollFrames passes) decides whether a
+ * change is real. The engine is built untracked, so nothing it reads while
+ * starting becomes a dependency.
  */
 function bind<E extends Element, O extends object>(
   options: MaybeAccessor<O>,
-  create: (el: E, options: O) => ScrollDrawInstance,
+  create: (el: E, options: O, raw: O) => ScrollDrawInstance,
+  keyOf: (options: O) => string = optionsKey,
 ) {
   let el: E | undefined;
   let instance: ScrollDrawInstance | undefined;
@@ -36,12 +41,12 @@ function bind<E extends Element, O extends object>(
 
   createEffect(() => {
     latest = typeof options === 'function' ? (options as () => O)() : options;
-    const next = optionsKey(latest);
+    const next = keyOf(latest);
     if (!el || next === key) return;
     key = next;
     untrack(() => {
       instance?.destroy();
-      instance = create(el!, liveFns(latest, () => latest));
+      instance = create(el!, liveFns(latest, () => latest), latest);
     });
   });
 
@@ -179,6 +184,60 @@ export function useScrollVideo(options: MaybeAccessor<ScrollVideoOptions> = {}) 
  */
 export function createScrollVideo(options: MaybeAccessor<ScrollVideoOptions> = {}) {
   return bind<HTMLVideoElement, ScrollVideoOptions>(options, scrollVideo);
+}
+
+// ── useScrollFrames ───────────────────────────────────────────────────────────
+
+/**
+ * scrollFrames through bind(), keyed by framesKey: a `frames` function is read
+ * by the URLs it gives for `count` (inside the effect, so a signal it reads is
+ * tracked and a new URL pattern starts a new film), and an equal fresh one
+ * keeps the film. The label is checked once, when the first film starts.
+ */
+function bindFrames(options: MaybeAccessor<FramesInput>, who: string) {
+  let named = false;
+  return bind<HTMLCanvasElement, FramesInput>(options, (el, o, raw) => {
+    if (!named) checkLabel(el, who);
+    named = true;
+    return startFrames(el, o, raw);
+  }, framesKey);
+}
+
+/**
+ * SolidJS hook — scrub an image sequence on a <canvas> with the scroll
+ * (scrollFrames). The canvas is yours, so give it role="img" and an
+ * aria-label saying what the frames show; in development the hook warns when
+ * it has no name (unless it is aria-hidden="true" or role="presentation").
+ *
+ * Pass an accessor to keep the options live: a new film starts only when the
+ * URLs or another option changed, and callbacks are read live.
+ * `triggerElement` takes an element or a selector, found when the film starts.
+ *
+ * @example
+ * import { useScrollFrames } from 'svg-scroll-draw/solid';
+ *
+ * function Film() {
+ *   const ref = useScrollFrames({
+ *     frames: (i) => `/film/${i + 1}.jpg`, count: 120,
+ *     triggerElement: '#track', trigger: { start: 'top top', end: 'bottom bottom' },
+ *   });
+ *   return <canvas ref={ref} role="img" aria-label="The headphones turning" />;
+ * }
+ */
+export function useScrollFrames(options: MaybeAccessor<FramesInput>) {
+  return bindFrames(options, 'useScrollFrames').ref;
+}
+
+/**
+ * Returns both the ref setter and a getter for the live film instance.
+ *
+ * @example
+ * const { ref, getInstance } = createScrollFrames(() => ({ frames: urls(), fit: 'contain' }));
+ * <canvas ref={ref} role="img" aria-label="The headphones turning" />
+ * <button onClick={() => getInstance()?.replay()}>Replay</button>
+ */
+export function createScrollFrames(options: MaybeAccessor<FramesInput>) {
+  return bindFrames(options, 'createScrollFrames');
 }
 
 // ── useScrollText ─────────────────────────────────────────────────────────────

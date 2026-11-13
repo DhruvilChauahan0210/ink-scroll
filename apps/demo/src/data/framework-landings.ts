@@ -211,7 +211,7 @@ const heading = useScrollText({ split: 'words', stagger: 0.05 });
 </div>`,
       },
     ],
-    note: 'Note the naming: the draw and animate actions are scrollDraw and scrollAnimate, but text, counter and video are scrollTextAction, scrollCounterAction and scrollVideoAction — suffixed so they do not collide with the core functions of the same name if you import both.',
+    note: 'Note the naming: the draw and animate actions are scrollDraw and scrollAnimate, but text, counter, video and image sequences are scrollTextAction, scrollCounterAction, scrollVideoAction and scrollFramesAction (2.26.0+) — suffixed so they do not collide with the core functions of the same name if you import both.',
     faq: [
       {
         q: 'How do I animate on scroll in Svelte?',

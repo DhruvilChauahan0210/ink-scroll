@@ -357,6 +357,84 @@ const film = useScrollFrames(() => ({ frames: (i) => `/film/${i + 1}.jpg`, count
 
 Nuxt exports both, and `createScrollDrawPlugin()` registers `<ScrollFrames>` globally.
 
+#### Svelte, Solid and Angular (2.26.0+)
+
+Each binds to a `<canvas>` you write, the way their `scrollVideo` does to a `<video>`, so the canvas's `role="img"` and `aria-label` are yours to set (each warns in development when the canvas has no name, unless it is `aria-hidden="true"` or `role="presentation"`). The rules are React's and Vue's: a `frames` function is read by the URLs it gives, so a fresh equal one keeps the film and its loaded images; new URLs or another option start a new one; callbacks are read live. `triggerElement` takes an element or a selector, found when the film starts.
+
+```svelte
+<script>
+  import { scrollFramesAction } from 'svg-scroll-draw/svelte';
+</script>
+
+<section id="track" style="height: 400vh">
+  <div style="position: sticky; top: 0; height: 100vh">
+    <canvas
+      role="img"
+      aria-label="The headphones turning"
+      style="width: 100%; height: 100%"
+      use:scrollFramesAction={{
+        frames: (i) => `/film/${String(i + 1).padStart(4, '0')}.jpg`,
+        count: 120,
+        triggerElement: '#track',
+        trigger: { start: 'top top', end: 'bottom bottom' },
+      }}
+    />
+  </div>
+</section>
+```
+
+An inline parameter is fine: Svelte calls `update()` with a new object whenever the expression re-runs, and the film is kept unless something in it changed. `createScrollFrames(options)` returns `{ action, getInstance }`, its options read once.
+
+```tsx
+// Solid
+import { useScrollFrames } from 'svg-scroll-draw/solid';
+
+function Film(props) {
+  const ref = useScrollFrames(() => ({
+    frames: (i) => `/film/${String(i + 1).padStart(4, '0')}.jpg`,
+    count: props.count,
+    triggerElement: '#track',
+    trigger: { start: 'top top', end: 'bottom bottom' },
+  }));
+  return <canvas ref={ref} role="img" aria-label="The headphones turning" />;
+}
+```
+
+Pass an accessor to keep the options live: the `frames` function is called inside the effect, so a signal it reads is tracked, and a new URL pattern starts a new film. `createScrollFrames(options)` returns `{ ref, getInstance }`.
+
+```ts
+// Angular
+import { ScrollFramesRef } from 'svg-scroll-draw/angular';
+
+@Component({
+  template: `
+    <section #track style="height: 400vh">
+      <div style="position: sticky; top: 0; height: 100vh">
+        <canvas #film role="img" aria-label="The headphones turning"></canvas>
+      </div>
+    </section>`,
+})
+export class FilmComponent implements AfterViewInit, OnChanges, OnDestroy {
+  @ViewChild('film') filmRef!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('track') trackRef!: ElementRef<HTMLElement>;
+  @Input() count = 120;
+  private film = new ScrollFramesRef();
+
+  ngAfterViewInit() { this.film.init(this.filmRef.nativeElement, this.options()); }
+  ngOnChanges() { this.film.update(this.options()); }  // a no-op before init
+  ngOnDestroy() { this.film.destroy(); }
+
+  private options() {
+    return {
+      frames: (i: number) => `/film/${String(i + 1).padStart(4, '0')}.jpg`,
+      count: this.count,
+      triggerElement: this.trackRef?.nativeElement,
+      trigger: { start: 'top top', end: 'bottom bottom' },
+    };
+  }
+}
+```
+
 #### scrollFrames options
 
 | Option | Type | Default | Description |
@@ -757,9 +835,9 @@ devtools.highlight('#my-element'); // outline for 2 seconds
 | `svg-scroll-draw` | `scrollDraw`, `scrollAnimate`, `scrollCounter`, `scrollParallax`, `PRESETS`, easing factories |
 | `svg-scroll-draw/react` | `ScrollDraw`, `ScrollAnimate`, `ScrollCounter`, `ScrollVideo`, `ScrollFrames`, `ScrollText`, `useScrollDrawProgress` |
 | `svg-scroll-draw/vue` | `ScrollDraw`, `useScrollDraw` · **v2:** `ScrollAnimate`, `ScrollCounter`, `ScrollVideo`, `ScrollFrames`, `ScrollText`, `useScrollAnimate`, `useScrollCounter`, `useScrollVideo`, `useScrollFrames`, `useScrollText` |
-| `svg-scroll-draw/svelte` | `scrollDraw` action, `createScrollDraw` · **v2:** `scrollAnimate`, `scrollCounterAction`, `scrollVideoAction`, `scrollTextAction`, `createScrollAnimate`, `createScrollCounter`, `createScrollVideo`, `createScrollText` |
-| `svg-scroll-draw/solid` | `useScrollDraw`, `createScrollDraw` · **v2:** `useScrollAnimate`, `useScrollCounter`, `useScrollVideo`, `useScrollText`, `createScrollAnimate`, `createScrollCounter`, `createScrollVideo`, `createScrollText` |
-| `svg-scroll-draw/angular` | `ScrollDrawRef` · **v2:** `ScrollAnimateRef`, `ScrollCounterRef`, `ScrollVideoRef`, `ScrollTextRef` |
+| `svg-scroll-draw/svelte` | `scrollDraw` action, `createScrollDraw` · **v2:** `scrollAnimate`, `scrollCounterAction`, `scrollVideoAction`, `scrollFramesAction`, `scrollTextAction`, `createScrollAnimate`, `createScrollCounter`, `createScrollVideo`, `createScrollFrames`, `createScrollText` |
+| `svg-scroll-draw/solid` | `useScrollDraw`, `createScrollDraw` · **v2:** `useScrollAnimate`, `useScrollCounter`, `useScrollVideo`, `useScrollFrames`, `useScrollText`, `createScrollAnimate`, `createScrollCounter`, `createScrollVideo`, `createScrollFrames`, `createScrollText` |
+| `svg-scroll-draw/angular` | `ScrollDrawRef` · **v2:** `ScrollAnimateRef`, `ScrollCounterRef`, `ScrollVideoRef`, `ScrollFramesRef`, `ScrollTextRef` |
 | `svg-scroll-draw/astro` | `initScrollDraw()` · **v2:** `initScrollAnimate()`, `initScrollCounter()`, `initScrollText()`, `initAll()` |
 | `svg-scroll-draw/nuxt` | All Vue v1+v2 composables and components, `createScrollDrawPlugin()` |
 | `svg-scroll-draw/video` | `scrollVideo` |
@@ -785,7 +863,7 @@ devtools.highlight('#my-element'); // outline for 2 seconds
 |---|---|
 | `svg-scroll-draw` (main, every core API) | 11.5 KB |
 | `svg-scroll-draw/react` (includes the engine) | 14.9 KB |
-| `svg-scroll-draw` + `svg-scroll-draw/react` (together; the engine ships once) | 16.6 KB |
+| `svg-scroll-draw` + `svg-scroll-draw/react` (together; the engine ships once) | 16.5 KB |
 | `svg-scroll-draw/reveal` | 5.7 KB |
 | `svg-scroll-draw/text` | 3.5 KB |
 | `svg-scroll-draw/video` | 2.9 KB |

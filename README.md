@@ -69,8 +69,8 @@ If this saves you time, a ⭐ [on GitHub](https://github.com/DhruvilChauahan0210
 - **30+ options** — easing, stagger, fade, stroke color/width lerp, fill opacity, clip reveal, morphTo, velocityScale, waypoints, callbacks, repeat, autoReverse, and more
 - **Group / Sequence / Timeline APIs** — animate multiple containers simultaneously, one-after-another, or on independent scroll windows with `loop` for auto-looping after scroll completion
 - **CSS custom property** — `--scroll-draw-progress` is set on every frame so you can drive any CSS animation without a callback
-- **918 tests across 42 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
-- **324 browser tests on top of those**, run against Chromium, Firefox and WebKit in CI. The unit suite runs in jsdom, where `getTotalLength` is stubbed and `IntersectionObserver` is faked — it can check the engine's arithmetic but nothing about real browser behaviour. Both counts are derived from the suites themselves and enforced in CI, so neither can quietly drift out of date
+- **941 tests across 42 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
+- **336 browser tests on top of those**, run against Chromium, Firefox and WebKit in CI. The unit suite runs in jsdom, where `getTotalLength` is stubbed and `IntersectionObserver` is faked — it can check the engine's arithmetic but nothing about real browser behaviour. Both counts are derived from the suites themselves and enforced in CI, so neither can quietly drift out of date
 
 ---
 
@@ -272,6 +272,18 @@ Or use `createScrollDraw` for instance access:
 Changing the parameters of `use:scrollDraw` rebuilds the draw; a new object with equal
 values (Svelte passes one whenever anything in the expression changes) does not.
 
+`scrollFramesAction` (2.26.0+) scrubs an image sequence on a canvas you write, with the
+same rule: an inline `frames` function is read by the URLs it gives, so the film and its
+loaded images survive a re-run; new URLs start a new one.
+
+```svelte
+<canvas role="img" aria-label="The headphones turning"
+  use:scrollFramesAction={{ frames: (i) => `/film/${i + 1}.jpg`, count: 120,
+    triggerElement: '#track', trigger: { start: 'top top', end: 'bottom bottom' } }} />
+```
+
+`createScrollFrames` gives `{ action, getInstance }`. [More in the package README](./packages/svg-scroll-draw/README.md#svelte-solid-and-angular-2260).
+
 ### Solid.js
 
 ```tsx
@@ -303,6 +315,11 @@ Pass an accessor, or a component's props, to keep options live:
 `useScrollDraw(() => ({ speed: speed() }))` rebuilds the draw when the signal changes. A
 plain object is read once.
 
+`useScrollFrames` and `createScrollFrames` (2.26.0+) do the same for an image sequence
+on a canvas: `<canvas ref={useScrollFrames(() => ({ frames, count: count() }))} role="img"
+aria-label="…" />`. A signal the `frames` function reads is tracked, so a new URL pattern
+starts a new film. [More in the package README](./packages/svg-scroll-draw/README.md#svelte-solid-and-angular-2260).
+
 ### Angular
 
 ```ts
@@ -323,6 +340,10 @@ export class HeroComponent implements AfterViewInit, OnChanges, OnDestroy {
   private options() { return { easing: 'ease-out', speed: this.speed, once: true }; }
 }
 ```
+
+`ScrollFramesRef` (2.26.0+) has the same `init` / `update` / `destroy` for an image
+sequence on a `<canvas #film role="img" aria-label="…">` in your template; `update()` starts
+a new film only when the URLs or another option changed. [More in the package README](./packages/svg-scroll-draw/README.md#svelte-solid-and-angular-2260).
 
 ### Nuxt
 
@@ -864,10 +885,10 @@ outgrows its budget.
 |--------------------------------------|----:|--------:|
 | `svg-scroll-draw/nuxt`               | 43.6 KB | **15.2 KB** |
 | `svg-scroll-draw/vue`                | 43.3 KB | **15.1 KB** |
-| `svg-scroll-draw/react`              | 42.2 KB | **14.9 KB** |
-| `svg-scroll-draw/angular`            | 34.8 KB | **12.3 KB** |
-| `svg-scroll-draw/solid`              | 34.6 KB | **12.3 KB** |
-| `svg-scroll-draw/svelte`             | 35.0 KB | **12.2 KB** |
+| `svg-scroll-draw/react`              | 42.1 KB | **14.9 KB** |
+| `svg-scroll-draw/angular`            | 40.9 KB | **14.4 KB** |
+| `svg-scroll-draw/solid`              | 40.7 KB | **14.4 KB** |
+| `svg-scroll-draw/svelte`             | 41.1 KB | **14.3 KB** |
 | `svg-scroll-draw/astro`              | 33.5 KB | **11.9 KB** |
 | `svg-scroll-draw`                    | 32.3 KB | **11.5 KB** |
 | `dist/cdn/svg-scroll-draw.global.js` | 31.2 KB | **11.4 KB** |
@@ -895,7 +916,7 @@ outgrows its budget.
 | `svg-scroll-draw/pin`                | 3.7 KB | **1.6 KB** |
 | `svg-scroll-draw/lenis`              | 0.4 KB | **0.2 KB** |
 
-Entries share code through chunks instead of each carrying its own copy, so `svg-scroll-draw` + `svg-scroll-draw/react` together is **16.6 KB**, not 11.5 KB + 14.9 KB.
+Entries share code through chunks instead of each carrying its own copy, so `svg-scroll-draw` + `svg-scroll-draw/react` together is **16.5 KB**, not 11.5 KB + 14.9 KB.
 <!-- size-table:end -->
 
 The framework entries are larger because each re-exports the full API surface for that

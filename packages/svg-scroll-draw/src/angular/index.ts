@@ -3,14 +3,17 @@ import { liveFns, optionsKey } from '../core/reactive';
 import { createAnimateEngine } from '../animate/engine';
 import { scrollCounter } from '../counter';
 import { scrollVideo } from '../video';
+import { framesKey, checkLabel, type FramesInput } from '../frames/wrapper';
+import { startFrames } from '../frames/start';
 import { scrollText } from '../text';
 import type { ScrollDrawOptions, ScrollDrawInstance } from '../core/types';
 import type { ScrollAnimateOptions } from '../animate';
 import type { ScrollCounterOptions } from '../counter';
 import type { ScrollVideoOptions } from '../video';
+import type { ScrollFramesOptions } from '../frames';
 import type { ScrollTextOptions } from '../text';
 
-export type { ScrollDrawOptions, ScrollAnimateOptions, ScrollCounterOptions, ScrollVideoOptions, ScrollTextOptions, ScrollDrawInstance };
+export type { ScrollDrawOptions, ScrollAnimateOptions, ScrollCounterOptions, ScrollVideoOptions, ScrollFramesOptions, ScrollTextOptions, ScrollDrawInstance };
 
 // ── The engine behind each class ─────────────────────────────────────────────
 
@@ -19,7 +22,7 @@ export type { ScrollDrawOptions, ScrollAnimateOptions, ScrollCounterOptions, Scr
  * `ngOnChanges`: it rebuilds the engine when an option really changed and does
  * nothing for an equal object, so binding it to every change is safe. Callbacks
  * are read live, so a new function alone never rebuilds. Exported for typing;
- * use the five Ref classes below.
+ * use the six Ref classes below.
  */
 export class EngineRef<E extends Element, O extends object> {
   private instance: ScrollDrawInstance | null = null;
@@ -27,21 +30,29 @@ export class EngineRef<E extends Element, O extends object> {
   private key = '';
   private latest!: O;
 
-  constructor(private readonly create: (el: E, options: O) => ScrollDrawInstance) {}
+  /**
+   * `keyOf` is the options' fingerprint: optionsKey, or the one scrollFrames
+   * passes, which reads a `frames` function by the URLs it gives. `create`
+   * gets the options with live callbacks, and as they were passed.
+   */
+  constructor(
+    private readonly create: (el: E, options: O, raw: O) => ScrollDrawInstance,
+    private readonly keyOf: (options: O) => string = optionsKey,
+  ) {}
 
   init(element: E, options: O): this {
     this.destroy();
     this.el = element;
     this.latest = options;
-    this.key = optionsKey(options);
-    this.instance = this.create(element, liveFns(options, () => this.latest));
+    this.key = this.keyOf(options);
+    this.instance = this.create(element, liveFns(options, () => this.latest), options);
     return this;
   }
 
   /** Call from `ngOnChanges` with the current options. A no-op before `init()`. */
   update(options: O): this {
     if (!this.el) return this;
-    if (optionsKey(options) !== this.key) return this.init(this.el, options);
+    if (this.keyOf(options) !== this.key) return this.init(this.el, options);
     this.latest = options;
     return this;
   }
@@ -165,6 +176,59 @@ export class ScrollCounterRef extends EngineRef<HTMLElement, ScrollCounterOption
 export class ScrollVideoRef extends EngineRef<HTMLVideoElement, ScrollVideoOptions> {
   constructor() { super(scrollVideo); }
   init(element: HTMLVideoElement, options: ScrollVideoOptions = {}): this { return super.init(element, options); }
+}
+
+// ── ScrollFramesRef ───────────────────────────────────────────────────────────
+
+/**
+ * Scrub an image sequence on a <canvas> with the scroll (scrollFrames) —
+ * Angular class-based API. The canvas is in your template, so give it
+ * role="img" and an aria-label saying what the frames show; in development
+ * `init()` warns when it has no name (unless it is aria-hidden="true" or
+ * role="presentation").
+ *
+ * `update()` from ngOnChanges starts a new film only when the URLs (a `frames`
+ * function is read by the URLs it gives for `count`) or another option
+ * changed; callbacks are read live. `triggerElement` takes an element or a
+ * selector, found when the film starts.
+ *
+ * @example
+ * @Component({
+ *   template: `
+ *     <section #track style="height: 400vh">
+ *       <div style="position: sticky; top: 0; height: 100vh">
+ *         <canvas #film role="img" aria-label="The headphones turning"></canvas>
+ *       </div>
+ *     </section>`,
+ * })
+ * export class FilmComponent implements AfterViewInit, OnChanges, OnDestroy {
+ *   @ViewChild('film') filmRef!: ElementRef<HTMLCanvasElement>;
+ *   @ViewChild('track') trackRef!: ElementRef<HTMLElement>;
+ *   @Input() count = 120;
+ *   private film = new ScrollFramesRef();
+ *
+ *   ngAfterViewInit() { this.film.init(this.filmRef.nativeElement, this.options()); }
+ *   ngOnChanges() { this.film.update(this.options()); }
+ *   ngOnDestroy() { this.film.destroy(); }
+ *
+ *   private options() {
+ *     return {
+ *       frames: (i: number) => `/film/${i + 1}.jpg`, count: this.count,
+ *       triggerElement: this.trackRef?.nativeElement,
+ *       trigger: { start: 'top top', end: 'bottom bottom' },
+ *     };
+ *   }
+ * }
+ */
+export class ScrollFramesRef extends EngineRef<HTMLCanvasElement, FramesInput> {
+  /** The canvas whose label was checked: once per canvas, not per new film. */
+  private named: Element | null = null;
+  constructor() { super(startFrames, framesKey); }
+  init(element: HTMLCanvasElement, options: FramesInput): this {
+    if (this.named !== element) checkLabel(element, 'ScrollFramesRef');
+    this.named = element;
+    return super.init(element, options);
+  }
 }
 
 // ── ScrollTextRef ─────────────────────────────────────────────────────────────
