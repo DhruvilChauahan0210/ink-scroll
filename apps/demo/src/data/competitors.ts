@@ -80,10 +80,10 @@ export const SELF_ENTRIES: Record<string, number> = {
   video: 2.9,
   frames: 4.0,
   // `svg-scroll-draw/react`: every component, engines included.
-  react: 12.8,
+  react: 14.9,
   // Each framework landing quotes its own entry, wrapper and engines included.
-  vue: 12.9,
-  nuxt: 13.0,
+  vue: 15.1,
+  nuxt: 15.2,
   svelte: 12.2,
   solid: 12.3,
   angular: 12.3,

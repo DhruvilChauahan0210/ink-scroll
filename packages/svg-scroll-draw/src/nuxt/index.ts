@@ -9,6 +9,7 @@
  * import { useScrollDraw, ScrollDraw } from 'svg-scroll-draw/nuxt';
  * import { useScrollAnimate, ScrollAnimate } from 'svg-scroll-draw/nuxt';
  * import { useScrollText, useScrollCounter } from 'svg-scroll-draw/nuxt';
+ * import { useScrollFrames, ScrollFrames } from 'svg-scroll-draw/nuxt';
  * ```
  *
  * ## Option B — Global auto-registration via Nuxt plugin
@@ -37,6 +38,8 @@ export {
   ScrollCounter,
   useScrollVideo,
   ScrollVideo,
+  useScrollFrames,
+  ScrollFrames,
   useScrollText,
   ScrollText,
 } from '../vue';
@@ -45,19 +48,20 @@ export type {
   ScrollAnimateOptions,
   ScrollCounterOptions,
   ScrollVideoOptions,
+  ScrollFramesOptions,
   ScrollTextOptions,
 } from '../vue';
 
 // ── Plugin ────────────────────────────────────────────────────────────────────
 
 import type { App } from 'vue';
-import { ScrollDraw, ScrollAnimate, ScrollCounter, ScrollVideo, ScrollText } from '../vue';
+import { ScrollDraw, ScrollAnimate, ScrollCounter, ScrollVideo, ScrollFrames, ScrollText } from '../vue';
 
 /**
  * Vue plugin that globally registers all svg-scroll-draw components.
  * Pass to nuxtApp.vueApp.use() inside a Nuxt plugin.
  *
- * Registers: <ScrollDraw>, <ScrollAnimate>, <ScrollCounter>, <ScrollVideo>, <ScrollText>
+ * Registers: <ScrollDraw>, <ScrollAnimate>, <ScrollCounter>, <ScrollVideo>, <ScrollFrames>, <ScrollText>
  */
 export function createScrollDrawPlugin() {
   return {
@@ -66,6 +70,7 @@ export function createScrollDrawPlugin() {
       app.component('ScrollAnimate', ScrollAnimate);
       app.component('ScrollCounter', ScrollCounter);
       app.component('ScrollVideo',   ScrollVideo);
+      app.component('ScrollFrames',  ScrollFrames);
       app.component('ScrollText',    ScrollText);
     },
   };

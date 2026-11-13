@@ -55,8 +55,8 @@ Works in **React · Next.js · Vue 3 · Svelte · Solid · Angular · Nuxt · As
 - **30+ options** — easing, stagger, fade, stroke color/width lerp, fill opacity, clip reveal, morphTo, velocityScale, waypoints, callbacks, repeat, autoReverse, and more
 - **Group / Sequence / Timeline APIs** — animate multiple containers simultaneously, one-after-another, or on independent scroll windows with `loop` for auto-looping after scroll completion
 - **CSS custom property** — `--scroll-draw-progress` is set on every frame so you can drive any CSS animation without a callback
-- **891 tests across 41 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
-- **316 browser tests on top of those**, run against Chromium, Firefox and WebKit in CI. The unit suite runs in jsdom, where `getTotalLength` is stubbed and `IntersectionObserver` is faked — it can check the engine's arithmetic but nothing about real browser behaviour. Both counts are derived from the suites themselves and enforced in CI, so neither can quietly drift out of date
+- **918 tests across 42 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
+- **324 browser tests on top of those**, run against Chromium, Firefox and WebKit in CI. The unit suite runs in jsdom, where `getTotalLength` is stubbed and `IntersectionObserver` is faked — it can check the engine's arithmetic but nothing about real browser behaviour. Both counts are derived from the suites themselves and enforced in CI, so neither can quietly drift out of date
 
 ---
 
@@ -179,6 +179,24 @@ Need the progress value itself (to drive a label, a counter, your own styles)? U
 [`useScrollDrawProgress`](#usescrolldrawprogress-react) — the React entry has no
 `useScrollDraw` hook; that name exists in the Vue and Solid entries.
 
+The entry has a component for the other APIs too: `<ScrollAnimate>`, `<ScrollCounter>`,
+`<ScrollVideo>`, `<ScrollText>`, and `<ScrollFrames>`, which scrubs an image sequence on a
+`<canvas role="img">` (the product-page film):
+
+```tsx
+<ScrollFrames
+  frames={(i) => `/film/${String(i + 1).padStart(4, '0')}.jpg`}
+  count={120}
+  triggerElement={trackRef}
+  trigger={{ start: 'top top', end: 'bottom bottom' }}
+  aria-label="The headphones turning"
+/>
+```
+
+Every scrollFrames option is a prop. An inline `frames` function is compared by the URLs it
+gives, so a re-render keeps the film and its loaded images; new URLs start a new one.
+[All of it in the package README](./packages/svg-scroll-draw/README.md#scrollframes--image-sequence-scrubbing-on-a-canvas).
+
 ### Vue 3
 
 ```vue
@@ -204,6 +222,10 @@ const containerRef = useScrollDraw({ easing: 'ease-out', speed: 1.2 });
 Component props are live, and so are composable options passed as a getter or a ref —
 `useScrollDraw(() => ({ speed: speed.value }))` rebuilds the draw when `speed` changes. A
 plain object is read once. Equal options never rebuild.
+
+`<ScrollFrames>` and `useScrollFrames` are here as well, with the same props as React's;
+`trigger-element` also takes a selector (`trigger-element="#track"`), found when the film
+starts.
 
 ### Svelte
 
@@ -822,9 +844,9 @@ outgrows its budget.
 <!-- size-table:start -->
 | Entry point                          | Raw | Gzipped |
 |--------------------------------------|----:|--------:|
-| `svg-scroll-draw/nuxt`               | 37.2 KB | **13.0 KB** |
-| `svg-scroll-draw/vue`                | 36.9 KB | **12.9 KB** |
-| `svg-scroll-draw/react`              | 36.3 KB | **12.8 KB** |
+| `svg-scroll-draw/nuxt`               | 43.6 KB | **15.2 KB** |
+| `svg-scroll-draw/vue`                | 43.3 KB | **15.1 KB** |
+| `svg-scroll-draw/react`              | 42.2 KB | **14.9 KB** |
 | `svg-scroll-draw/angular`            | 34.8 KB | **12.3 KB** |
 | `svg-scroll-draw/solid`              | 34.6 KB | **12.3 KB** |
 | `svg-scroll-draw/svelte`             | 35.0 KB | **12.2 KB** |
@@ -841,7 +863,7 @@ outgrows its budget.
 | `svg-scroll-draw/vivus/react`        | 12.0 KB | **4.3 KB** |
 | `svg-scroll-draw/timeline`           | 9.8 KB | **4.2 KB** |
 | `svg-scroll-draw/vivus`              | 11.7 KB | **4.2 KB** |
-| `svg-scroll-draw/frames`             | 8.4 KB | **4.0 KB** |
+| `svg-scroll-draw/frames`             | 8.6 KB | **4.0 KB** |
 | `dist/cdn/vivus.global.js`           | 11.1 KB | **3.9 KB** |
 | `svg-scroll-draw/text`               | 7.9 KB | **3.5 KB** |
 | `svg-scroll-draw/aos/react`          | 9.2 KB | **3.4 KB** |
@@ -855,7 +877,7 @@ outgrows its budget.
 | `svg-scroll-draw/pin`                | 3.7 KB | **1.6 KB** |
 | `svg-scroll-draw/lenis`              | 0.4 KB | **0.2 KB** |
 
-Entries share code through chunks instead of each carrying its own copy, so `svg-scroll-draw` + `svg-scroll-draw/react` together is **14.4 KB**, not 11.5 KB + 12.8 KB.
+Entries share code through chunks instead of each carrying its own copy, so `svg-scroll-draw` + `svg-scroll-draw/react` together is **16.6 KB**, not 11.5 KB + 14.9 KB.
 <!-- size-table:end -->
 
 The framework entries are larger because each re-exports the full API surface for that

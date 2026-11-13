@@ -263,9 +263,9 @@ Use `<video muted playsinline preload="auto">`.
 Draws frame `round(alpha × (count − 1))`, or the nearest loaded one until it
 arrives. Loads frame 0, the last, then midpoints coarse to fine. Size the canvas
 with CSS; the buffer follows the box × devicePixelRatio (capped at 2). Reduced
-motion loads and shows only the last frame. No framework component: in React,
-call it in `useEffect` and return `destroy`. Give the canvas `role="img"` and an
-`aria-label`.
+motion loads and shows only the last frame. Components: `<ScrollFrames>` in
+`svg-scroll-draw/react` and `svg-scroll-draw/vue` (and `useScrollFrames` in Vue
+and Nuxt). Called directly, give the canvas `role="img"` and an `aria-label`.
 
 ## `svg-scroll-draw/progress`
 
@@ -332,13 +332,14 @@ Lenis v1, which does not update `window.scrollY`. Lenis v2+ needs no adapter.
 ### `svg-scroll-draw/react`
 
 Exports exactly: `ScrollDraw`, `ScrollAnimate`, `ScrollCounter`, `ScrollVideo`,
-`ScrollText`, `useScrollDrawProgress`. **No `useScrollDraw`.** No `'use client'`
+`ScrollFrames`, `ScrollText`, `useScrollDrawProgress`. **No `useScrollDraw`.** No `'use client'`
 directive in the build; add it to your own file in Next.js App Router.
 
 - `<ScrollDraw {...ScrollDrawOptions} className? style?>children</ScrollDraw>` — renders a `<div>`
 - `<ScrollAnimate {...ScrollAnimateOptions} className? style?>children</ScrollAnimate>` — renders a `<div>`
 - `<ScrollCounter {...ScrollCounterOptions} className? style? />` — renders a `<span>`
 - `<ScrollVideo src {...ScrollVideoOptions} muted={true} playsInline={true} className? style? />`
+- `<ScrollFrames {...ScrollFramesOptions} triggerElement?={element | ref} aria-label className? style? />` — renders a `<canvas role="img">`; warns in dev without an `aria-label`. A `frames` function is compared by the URLs it gives (an inline one keeps the film); callbacks are live
 - `<ScrollText {...ScrollTextOptions} as?="p" className? style?>plain string</ScrollText>` — children must be a string
 - `useScrollDrawProgress(ref | selector, { speed?, easing?, trigger?, axis?, scrollContainer?, once? }): number` — reactive 0–1
 
@@ -346,11 +347,12 @@ Options are read once on mount. Re-create by changing `key`.
 
 ### `svg-scroll-draw/vue` (and `svg-scroll-draw/nuxt`, which re-exports them plus `createScrollDrawPlugin()`)
 
-- Composables returning a template ref, destroyed on unmount: `useScrollDraw(opts)`, `useScrollAnimate(opts)`, `useScrollCounter(opts)`, `useScrollVideo(opts)`, `useScrollText(opts)`
+- Composables returning a template ref, destroyed on unmount: `useScrollDraw(opts)`, `useScrollAnimate(opts)`, `useScrollCounter(opts)`, `useScrollVideo(opts)`, `useScrollFrames(opts)` (bind to a `<canvas>`), `useScrollText(opts)`
 - `<ScrollDraw>` props: `selector, speed, fade, stagger, easing, direction, trigger, once, debug, onProgress, onStart, onComplete` (other ScrollDraw options: use the composable)
 - `<ScrollAnimate :options="{ props: {...} }">`
 - `<ScrollCounter :to :from :format :easing :trigger :once :decimals :onComplete />`
 - `<ScrollVideo src :options muted playsInline />`
+- `<ScrollFrames :frames :count trigger-element="#track" :trigger aria-label="…" />` — every ScrollFramesOptions key is a prop; `trigger-element` takes an element or a selector; renders a `<canvas role="img">`
 - `<ScrollText :options tag="p">`
 
 ### `svg-scroll-draw/svelte`

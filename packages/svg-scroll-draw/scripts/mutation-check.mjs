@@ -731,7 +731,9 @@ const MUTATIONS = [
     id: 'vue/equal-options',
     what: 'the Vue wrapper compares options by identity, so a fresh equal object rebuilds the engine',
     file: 'src/vue/index.ts',
-    from: '  watch(() => optionsKey((latest = options())), start);',
+    // Re-anchored for <ScrollFrames>: the key is a parameter (`keyOf`, optionsKey
+    // unless a component passes its own, as ScrollFrames passes framesKey).
+    from: '  watch(() => keyOf((latest = options())), start);',
     to: '  watch(() => (latest = options()), start);',
     spec: 'frameworks',
     grep: 'vue wrapper.*equal options keeps the running engine',
@@ -1387,6 +1389,53 @@ const MUTATIONS = [
     to: '  const gate = frameGate(window, [measured], () => { const r = canvas.getBoundingClientRect(); return r.bottom > 0 && r.top < innerHeight ? 0.5 : 0; }, update, () => {',
     spec: 'frames',
     grep: 'a jump past the whole window paints the last frame',
+  },
+  // <ScrollFrames> in React and Vue: when the film is rebuilt, and which
+  // callback it calls. Each is caught by e2e/frames-wrappers.spec.ts.
+  {
+    id: 'frames-wrappers/react-url-key',
+    what: 'React <ScrollFrames> keys a frames function as "a function", so new URLs at the same count keep the old film',
+    file: 'src/react/index.tsx',
+    from: "    framesKey(options) + (trackRef ? '+ref' : ''),",
+    to: "    optionsKey(options) + (trackRef ? '+ref' : ''),",
+    spec: 'frames-wrappers',
+    grep: 'react <ScrollFrames>.*gives other URLs starts a new film',
+  },
+  {
+    id: 'frames-wrappers/vue-url-key',
+    what: 'Vue <ScrollFrames> keys a frames function as "a function", so new URLs at the same count keep the old film',
+    file: 'src/vue/index.ts',
+    from: '    }, startFrames, framesKey as (o: FramesInput) => string);',
+    to: '    }, startFrames);',
+    spec: 'frames-wrappers',
+    grep: 'vue <ScrollFrames>.*gives other URLs starts a new film',
+  },
+  {
+    id: 'frames-wrappers/identity-key',
+    what: 'the <ScrollFrames> key changes on every render (as a frames function by identity would), so an inline frames={(i) => …} rebuilds the film and reloads every image',
+    file: 'src/frames/wrapper.ts',
+    from: '  return optionsKey({ ...options, frames: urls });',
+    to: '  return optionsKey({ ...options, frames: urls }) + Math.random();',
+    spec: 'frames-wrappers',
+    grep: 'react <ScrollFrames>.*equal options keeps the film',
+  },
+  {
+    id: 'frames-wrappers/react-live-callbacks',
+    what: 'React <ScrollFrames> hands the film the first render\'s callbacks, so a later onProgress is never called',
+    file: 'src/react/index.tsx',
+    from: '    const instance = create(ref.current as never, liveFns(latest.current, () => latest.current));',
+    to: '    const instance = create(ref.current as never, latest.current);',
+    spec: 'frames-wrappers',
+    grep: 'react <ScrollFrames>.*calls the latest callback',
+  },
+  {
+    id: 'frames-wrappers/vue-live-callbacks',
+    what: 'Vue <ScrollFrames> hands the film the first render\'s callbacks, so a later onProgress is never called',
+    file: 'src/vue/index.ts',
+    from: '    instance = el.value ? create(el.value, liveFns(latest, () => latest), latest) : null;',
+    to: '    instance = el.value ? create(el.value, latest, latest) : null;',
+    spec: 'frames-wrappers',
+    grep: 'vue <ScrollFrames>.*calls the latest callback',
   },
 ];
 

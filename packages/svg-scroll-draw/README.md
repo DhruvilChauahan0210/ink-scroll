@@ -284,24 +284,67 @@ For the pinned-film pattern, put the canvas in a `position: sticky` stage and po
 
 #### React
 
-There is no component; call it from an effect and return its `destroy`:
-
 ```tsx
-import { useEffect, useRef } from 'react';
-import { scrollFrames } from 'svg-scroll-draw/frames';
+'use client';
+import { useRef } from 'react';
+import { ScrollFrames } from 'svg-scroll-draw/react';
 
 export function Film() {
-  const ref = useRef<HTMLCanvasElement>(null);
-  useEffect(() => {
-    const film = scrollFrames(ref.current!, {
-      frames: (i) => `/film/${String(i + 1).padStart(4, '0')}.jpg`,
-      count: 120,
-    });
-    return () => film.destroy();
-  }, []);
-  return <canvas ref={ref} role="img" aria-label="The headphones turning" style={{ width: '100%', height: '100vh' }} />;
+  const track = useRef<HTMLElement>(null);
+  return (
+    <section ref={track} style={{ height: '400vh' }}>
+      <div style={{ position: 'sticky', top: 0, height: '100vh' }}>
+        <ScrollFrames
+          frames={(i) => `/film/${String(i + 1).padStart(4, '0')}.jpg`}
+          count={120}
+          triggerElement={track}
+          trigger={{ start: 'top top', end: 'bottom bottom' }}
+          aria-label="The headphones turning"
+          style={{ width: '100%', height: '100%' }}
+        />
+      </div>
+    </section>
+  );
 }
 ```
+
+`<ScrollFrames>` renders a `<canvas role="img">`. Every scrollFrames option is a prop, and `className`, `style`, `id`, `role`, `title` and `aria-*` / `data-*` go on the canvas. Pass an `aria-label` saying what the film shows (it warns in development without one, unless the canvas is `aria-hidden` or `role="presentation"`). `triggerElement` takes an element or a ref, read when the film starts, so the track can be an ancestor in the same component. The 'use client' line is only needed because `frames` is a function; the entry itself is marked `"use client"`.
+
+The film is rebuilt only when an option that needs it changes: a `frames` function is compared by the URLs it gives, so an inline `frames={(i) => …}` re-created on every render keeps the film and its loaded images, and new URLs (or a new `count`, `fit`, `trigger`…) start a new one. Callbacks are read live: a new `onProgress` takes effect without a rebuild. A `style` prop leaves alone the inline size the library holds on a canvas sized by its attributes, as React writes only the style keys that changed.
+
+#### Vue
+
+```vue
+<script setup>
+import { ScrollFrames } from 'svg-scroll-draw/vue';
+</script>
+
+<template>
+  <section id="track" style="height: 400vh">
+    <div style="position: sticky; top: 0; height: 100vh">
+      <ScrollFrames
+        :frames="(i) => `/film/${String(i + 1).padStart(4, '0')}.jpg`"
+        :count="120"
+        trigger-element="#track"
+        :trigger="{ start: 'top top', end: 'bottom bottom' }"
+        aria-label="The headphones turning"
+        :style="{ width: '100%', height: '100%' }"
+      />
+    </div>
+  </section>
+</template>
+```
+
+The same component as React's, with the same rebuild and live-callback rules: every option is a prop, `class`, `style` and `aria-label` fall through to the `<canvas role="img">`, and `trigger-element` also takes a selector, looked up when the film starts. Pass a `style` that changes as an object: Vue rewrites a changed style string whole. The composable binds to a canvas of your own, its options a getter or a ref to keep them live:
+
+```ts
+import { useScrollFrames } from 'svg-scroll-draw/vue';
+
+const film = useScrollFrames(() => ({ frames: (i) => `/film/${i + 1}.jpg`, count: count.value }));
+// <canvas :ref="film" role="img" aria-label="The headphones turning" />
+```
+
+Nuxt exports both, and `createScrollDrawPlugin()` registers `<ScrollFrames>` globally.
 
 #### scrollFrames options
 
@@ -701,8 +744,8 @@ devtools.highlight('#my-element'); // outline for 2 seconds
 | Import | Contents |
 |---|---|
 | `svg-scroll-draw` | `scrollDraw`, `scrollAnimate`, `scrollCounter`, `scrollParallax`, `PRESETS`, easing factories |
-| `svg-scroll-draw/react` | `ScrollDraw`, `ScrollAnimate`, `ScrollCounter`, `ScrollVideo`, `ScrollText`, `useScrollDrawProgress` |
-| `svg-scroll-draw/vue` | `ScrollDraw`, `useScrollDraw` · **v2:** `ScrollAnimate`, `ScrollCounter`, `ScrollVideo`, `ScrollText`, `useScrollAnimate`, `useScrollCounter`, `useScrollVideo`, `useScrollText` |
+| `svg-scroll-draw/react` | `ScrollDraw`, `ScrollAnimate`, `ScrollCounter`, `ScrollVideo`, `ScrollFrames`, `ScrollText`, `useScrollDrawProgress` |
+| `svg-scroll-draw/vue` | `ScrollDraw`, `useScrollDraw` · **v2:** `ScrollAnimate`, `ScrollCounter`, `ScrollVideo`, `ScrollFrames`, `ScrollText`, `useScrollAnimate`, `useScrollCounter`, `useScrollVideo`, `useScrollFrames`, `useScrollText` |
 | `svg-scroll-draw/svelte` | `scrollDraw` action, `createScrollDraw` · **v2:** `scrollAnimate`, `scrollCounterAction`, `scrollVideoAction`, `scrollTextAction`, `createScrollAnimate`, `createScrollCounter`, `createScrollVideo`, `createScrollText` |
 | `svg-scroll-draw/solid` | `useScrollDraw`, `createScrollDraw` · **v2:** `useScrollAnimate`, `useScrollCounter`, `useScrollVideo`, `useScrollText`, `createScrollAnimate`, `createScrollCounter`, `createScrollVideo`, `createScrollText` |
 | `svg-scroll-draw/angular` | `ScrollDrawRef` · **v2:** `ScrollAnimateRef`, `ScrollCounterRef`, `ScrollVideoRef`, `ScrollTextRef` |
@@ -730,8 +773,8 @@ devtools.highlight('#my-element'); // outline for 2 seconds
 | Entry | Gzipped |
 |---|---|
 | `svg-scroll-draw` (main, every core API) | 11.5 KB |
-| `svg-scroll-draw/react` (includes the engine) | 12.8 KB |
-| `svg-scroll-draw` + `svg-scroll-draw/react` (together; the engine ships once) | 14.4 KB |
+| `svg-scroll-draw/react` (includes the engine) | 14.9 KB |
+| `svg-scroll-draw` + `svg-scroll-draw/react` (together; the engine ships once) | 16.6 KB |
 | `svg-scroll-draw/reveal` | 5.7 KB |
 | `svg-scroll-draw/text` | 3.5 KB |
 | `svg-scroll-draw/video` | 2.9 KB |

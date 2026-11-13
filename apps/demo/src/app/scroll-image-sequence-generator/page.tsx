@@ -110,8 +110,8 @@ const FAQ: { q: string; a: string }[] = [
     a: 'Under prefers-reduced-motion: reduce, scrollFrames loads only the last frame, draws it, and does not follow the scroll. Turned on during a visit, the scrub stops on the last frame and nothing more is loaded. There is no option to change this; make the last frame one that stands on its own.',
   },
   {
-    q: 'Does it need a React component?',
-    a: 'No. There is no scrollFrames component; call it in a useEffect with a ref to the canvas (and one to the track when pinned) and return its destroy, which also stops the loads still in flight. The React tab writes exactly that.',
+    q: 'Is there a React component?',
+    a: 'Yes: <ScrollFrames> from svg-scroll-draw/react (Vue has one too, in svg-scroll-draw/vue). It renders the canvas with role="img", takes every option as a prop, with a ref to the track as triggerElement when pinned, and stops the film and the loads still in flight when it unmounts. A frames function written inline is compared by the URLs it gives, so a re-render keeps the film. The React tab writes exactly that.',
   },
 ];
 

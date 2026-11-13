@@ -31,6 +31,8 @@ const ENTRIES = [
   { name: 'react' },
   { name: 'dropins-react' },
   { name: 'react-extras' },
+  // <ScrollFrames> in React and Vue, one bundle with both.
+  { name: 'frames-wrappers' },
   { name: 'vue' },
   { name: 'solid' },
   {

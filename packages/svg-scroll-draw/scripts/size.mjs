@@ -61,15 +61,23 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
  * 2.23.0 moved the drop-ins up about 0.14 KB each: AOS, ScrollReveal and vivus
  * listen for reduced motion turned on mid-visit too (core/motion-watch). Only
  * aos crossed its budget (3.22).
+ *
+ * After 2.24.0, react, vue and nuxt moved up about 2.1 KB each: they gained
+ * <ScrollFrames> (and Vue useScrollFrames), which brings the scrollFrames
+ * engine into the entry (its loader, canvas sizing and draw; the frame gate,
+ * triggers and easings were already there for ScrollVideo) plus the wrapper's
+ * URL fingerprint and label check (react 12.8 -> 14.89, vue 12.9 -> 15.06,
+ * nuxt 13.0 -> 15.16; with the main entry 14.4 -> 16.55). An app's bundler
+ * drops it when ScrollFrames is not imported. Same rule.
  */
 const BUDGETS_KB = {
   '.':              11.8,
   // The whole library in one IIFE, web component included — the single file a
   // `<script src>` user downloads. Not split, so unchanged by the chunks.
   cdn:              11.7,
-  react:            13.3,
-  vue:              13.3,
-  nuxt:             13.4,
+  react:            15.0,
+  vue:              15.2,
+  nuxt:             15.3,
   svelte:           12.7,
   solid:            12.7,
   angular:          12.7,
@@ -133,7 +141,7 @@ const BUDGETS_KB = {
  * 18.1 KB); the budget is what keeps the sharing from quietly coming undone.
  */
 const COMBINATIONS = [
-  { names: ['.', 'react'], budget: 14.9 },
+  { names: ['.', 'react'], budget: 16.7 },
 ];
 
 // ── Measure ──────────────────────────────────────────────────────────────────

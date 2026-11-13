@@ -353,43 +353,63 @@ export function css(s: FramesSettings, src: Sequence): string {
 }`;
 }
 
-function reactComponent(s: FramesSettings, src: Sequence, client: boolean): string {
+/** The <ScrollFrames> props, one per line, with the comments optionLines gives them. */
+function reactProps(s: FramesSettings, src: Sequence): string[] {
+  const p = presetOf(s);
+  const out = src.naming.kind === 'pattern' ? ['frames={frames}', 'count={count}'] : ['frames={frames}'];
+  if (s.pin) {
+    out.push("// The stage is sticky, so the canvas's own box moves with the scroll.");
+    out.push('// Measure the track that holds the scroll room instead.');
+    out.push('triggerElement={track}');
+  }
+  if (p.start !== LIB_WINDOW.start || p.end !== LIB_WINDOW.end) {
+    out.push(`trigger={{ start: '${p.start}', end: '${p.end}' }}`);
+  }
+  if (s.fit !== 'cover') out.push(`fit="${s.fit}" // the whole frame, letterboxed`);
+  if (s.easing !== 'linear') out.push(`easing="${s.easing}"`);
+  if (s.once) out.push('once // scrolling back up does not turn it back');
+  out.push('aria-label={label}');
+  return out;
+}
+
+/**
+ * The React component: <ScrollFrames> from svg-scroll-draw/react, which renders
+ * the canvas and starts and stops the film. `hooks` are the React hooks the
+ * file imports beside the ones the component needs (the StackBlitz app adds its own).
+ */
+function reactComponent(s: FramesSettings, src: Sequence, client: boolean, hooks: string[] = []): string {
   const dir = '/frames/';
   const n = src.naming;
   const pattern = n.kind === 'pattern';
-  const opts = optionLines(s, src, dir, 'track.current').map((l) =>
-    l.startsWith('frames:') ? 'frames,' : l.startsWith('count:') ? 'count,' : l,
-  );
   const head = pattern
     ? `${framesComment(src, dir)}, in public/frames\nconst frameUrl = (i) => ${urlExpr(n, dir)};\n\n`
     : `// ${src.count} frames, in public/frames, in this order\n${listConst(src, dir)}`;
   const props = pattern
     ? `{ frames = frameUrl, count = ${src.count}, label = ${q(src.label)} }`
     : `{ frames = FRAMES, label = ${q(src.label)} }`;
-  const canvas = `<canvas ref={canvas}${s.pin ? '' : ' className="frames"'} role="img" aria-label={label} />`;
+  const indent = s.pin ? '        ' : '    ';
+  const film = [
+    '<ScrollFrames',
+    ...(s.pin ? [] : ['className="frames"']).concat(reactProps(s, src)).map((l) => `  ${l}`),
+    '/>',
+  ].map((l) => indent + l).join('\n');
   const body = s.pin
     ? `    <section ref={track} className="frames-track">
       <div className="frames-stage">
-        ${canvas}
+${film}
       </div>
     </section>`
-    : `    ${canvas}`;
-  return `${client ? "'use client';\n\n" : ''}import { useEffect, useRef } from 'react';
-import { scrollFrames } from 'svg-scroll-draw/frames';
+    : film;
+  const used = [...(s.pin ? ['useRef'] : []), ...hooks].sort();
+  const react = used.length ? `import { ${used.join(', ')} } from 'react';\n` : '';
+  return `${client ? "'use client';\n\n" : ''}${react}import { ScrollFrames } from 'svg-scroll-draw/react';
 
-${head}// There is no React component for scrollFrames: call it from an effect
-// and return its destroy.
+${head}// <ScrollFrames> renders the canvas (role="img") and stops the film, and
+// the loads still in flight, when it unmounts. A frames function is compared
+// by the URLs it gives, so a re-render keeps the film and its loaded frames.
+// With reduced motion on, it loads and shows the last frame only.
 export function FrameScrub(${props}) {
-${s.pin ? '  const track = useRef(null);\n' : ''}  const canvas = useRef(null);
-
-  useEffect(() => {
-    const film = scrollFrames(canvas.current, {
-${opts.map((l) => `      ${l}`).join('\n')}
-    });
-    return () => film.destroy();
-  }, [${pattern ? 'frames, count' : 'frames'}]);
-
-  return (
+${s.pin ? '  const track = useRef(null);\n\n' : ''}  return (
 ${body}
   );
 }`;
@@ -582,9 +602,8 @@ export function framesFile(s: FramesSettings, src: Sequence, version: string): s
 
 /** The React project for StackBlitz: the component, and a page to scroll it in. */
 export function reactApp(s: FramesSettings, src: Sequence): { app: string; css: string } {
-  const component = reactComponent(s, src, false);
   const app = src.kind === 'demo'
-    ? `${component.replace("import { useEffect, useRef } from 'react';", "import { useEffect, useRef, useState } from 'react';")}
+    ? `${reactComponent(s, src, false, ['useEffect', 'useState'])}
 
 // The demo's frames are drawn in the browser, so the project runs as it is.
 // With your own frames in public/frames, render <FrameScrub /> and drop this.
@@ -614,7 +633,7 @@ export default function App() {
     </>
   );
 }`
-    : `${component}
+    : `${reactComponent(s, src, false)}
 
 // Put the ${src.count} frames in public/frames.
 export default function App() {

@@ -4,11 +4,14 @@ import { liveFns, optionsKey } from '../core/reactive';
 import { createAnimateEngine } from '../animate/engine';
 import { scrollCounter } from '../counter';
 import { scrollVideo } from '../video';
+import { scrollFrames } from '../frames';
+import { framesKey, checkLabel } from '../frames/wrapper';
 import { scrollText } from '../text';
 import type { ScrollDrawOptions } from '../core/types';
 import type { ScrollAnimateOptions } from '../animate';
 import type { ScrollCounterOptions } from '../counter';
 import type { ScrollVideoOptions } from '../video';
+import type { ScrollFramesOptions } from '../frames';
 import type { ScrollTextOptions } from '../text';
 export { useScrollDrawProgress } from './useScrollDrawProgress';
 export type { UseScrollDrawProgressOptions } from './useScrollDrawProgress';
@@ -25,10 +28,10 @@ function useEngine<O extends object>(
   ref: RefObject<Element | null>,
   options: O,
   create: (el: never, options: O) => { destroy(): void },
+  key: string = optionsKey(options),
 ): void {
   const latest = useRef(options);
   latest.current = options;
-  const key = optionsKey(options);
 
   useEffect(() => {
     if (!ref.current) return;
@@ -155,6 +158,45 @@ export function ScrollVideo({ src, poster, className, style, muted = true, plays
       preload={options.preload ?? 'auto'}
     />
   );
+}
+
+// ── ScrollFrames ──────────────────────────────────────────────────────────────
+
+type ScrollFramesProps = Omit<ScrollFramesOptions, 'triggerElement'> & ElementAttrs & {
+  /**
+   * The tall track behind a sticky stage: an element, or a ref to one. A ref is
+   * read when the film starts, after React has attached it, so the track can
+   * be an ancestor rendered by the same component.
+   */
+  triggerElement?: Element | RefObject<Element | null> | null;
+  className?: string;
+  style?: React.CSSProperties;
+};
+
+/**
+ * A <canvas> that scrubs an image sequence with the scroll (scrollFrames). It
+ * renders role="img": pass an aria-label saying what the frames show.
+ */
+export function ScrollFrames({ className, style, role = 'img', triggerElement, ...rest }: ScrollFramesProps) {
+  const ref = useRef<HTMLCanvasElement>(null);
+  const [options, attrs] = split<ScrollFramesOptions>(rest);
+  const trackRef = triggerElement && 'current' in triggerElement ? triggerElement : null;
+  if (!trackRef && triggerElement) options.triggerElement = triggerElement as Element;
+
+  // `frames` goes in as this render passed it, not read live: the key already
+  // starts a new film when the URLs change, and a live `frames` that turned
+  // into a list of the same URLs would be called as a function and throw.
+  useEngine(
+    ref,
+    options,
+    (el: HTMLCanvasElement, o: ScrollFramesOptions) =>
+      scrollFrames(el, { ...o, frames: options.frames, ...(trackRef && { triggerElement: trackRef.current ?? undefined }) }),
+    framesKey(options) + (trackRef ? '+ref' : ''),
+  );
+
+  useEffect(() => checkLabel(ref.current), []);
+
+  return <canvas {...attrs} ref={ref} role={role} className={className} style={style} />;
 }
 
 // ── ScrollText ────────────────────────────────────────────────────────────────

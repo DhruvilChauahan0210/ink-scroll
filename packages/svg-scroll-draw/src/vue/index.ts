@@ -4,14 +4,18 @@ import { liveFns, optionsKey } from '../core/reactive';
 import { createAnimateEngine } from '../animate/engine';
 import { scrollCounter } from '../counter';
 import { scrollVideo } from '../video';
+import { scrollFrames } from '../frames';
+import { framesKey, checkLabel } from '../frames/wrapper';
 import { scrollText } from '../text';
+import { warn } from '../core/env';
 import type { ScrollDrawOptions } from '../core/types';
 import type { ScrollAnimateOptions } from '../animate';
 import type { ScrollCounterOptions } from '../counter';
 import type { ScrollVideoOptions } from '../video';
+import type { ScrollFramesOptions } from '../frames';
 import type { ScrollTextOptions } from '../text';
 
-export type { ScrollDrawOptions, ScrollAnimateOptions, ScrollCounterOptions, ScrollVideoOptions, ScrollTextOptions };
+export type { ScrollDrawOptions, ScrollAnimateOptions, ScrollCounterOptions, ScrollVideoOptions, ScrollFramesOptions, ScrollTextOptions };
 
 /** Options as a plain object, a ref, or a getter — the getter or ref keeps them live. */
 export type MaybeRefOrGetter<T> = T | Ref<T> | (() => T);
@@ -30,16 +34,17 @@ const read = <T>(o: MaybeRefOrGetter<T>): T =>
 function useEngine<E extends Element, O extends object>(
   el: Ref<E | null>,
   options: () => O,
-  create: (el: E, options: O) => { destroy(): void },
+  create: (el: E, options: O, raw: O) => { destroy(): void },
+  keyOf: (options: O) => string = optionsKey,
 ): void {
   let instance: { destroy(): void } | null = null;
   let latest = options();
   const start = () => {
     instance?.destroy();
-    instance = el.value ? create(el.value, liveFns(latest, () => latest)) : null;
+    instance = el.value ? create(el.value, liveFns(latest, () => latest), latest) : null;
   };
   onMounted(start);
-  watch(() => optionsKey((latest = options())), start);
+  watch(() => keyOf((latest = options())), start);
   onUnmounted(() => {
     instance?.destroy();
     instance = null;
@@ -247,6 +252,91 @@ export const ScrollVideo = defineComponent({
       preload: 'auto',
       class: props.class,
     });
+  },
+});
+
+// ── ScrollFrames ──────────────────────────────────────────────────────────────
+
+/** The options as scrollFrames takes them, but `triggerElement` may be a selector. */
+type FramesInput = Omit<ScrollFramesOptions, 'triggerElement'> & { triggerElement?: Element | string | null };
+
+/**
+ * scrollFrames with `triggerElement` read when the film starts: a selector
+ * finds the track then, mounted, so `trigger-element="#track"` works from a
+ * template where a template ref is still null on the first render. `frames`
+ * goes in as it was (`raw`), not read live: the key already starts a new film
+ * when the URLs change, and a live `frames` that turned into a list of the
+ * same URLs would be called as a function and throw.
+ */
+const startFrames = (el: HTMLCanvasElement, { triggerElement: t, ...o }: FramesInput, raw: FramesInput) => {
+  const track = typeof t === 'string' ? document.querySelector(t) : t;
+  if (typeof t === 'string' && !track) warn(`<ScrollFrames>: triggerElement "${t}" matches nothing; measuring the canvas.`);
+  return scrollFrames(el, { ...o, frames: raw.frames, triggerElement: track ?? undefined });
+};
+
+/**
+ * Composable — returns a ref to bind to a <canvas>, which scrubs an image
+ * sequence with the scroll. Options as in useScrollDraw: a getter or a ref
+ * keeps them live.
+ *
+ * @example
+ * <script setup>
+ *   import { useScrollFrames } from 'svg-scroll-draw/vue';
+ *   const film = useScrollFrames({ frames: (i) => `/film/${i + 1}.jpg`, count: 120 });
+ * </script>
+ * <canvas :ref="film" role="img" aria-label="The headphones turning" />
+ */
+export function useScrollFrames(options: MaybeRefOrGetter<FramesInput>) {
+  const canvasRef = ref<HTMLCanvasElement | null>(null);
+  useEngine(canvasRef, () => read(options), startFrames, framesKey as (o: FramesInput) => string);
+  return canvasRef;
+}
+
+/**
+ * Every ScrollFramesOptions key, as DRAW_KEYS: 1 marks a boolean. `satisfies`
+ * keeps the props in step with the options.
+ */
+const FRAMES_KEYS = {
+  frames: 0, count: 0, trigger: 0, easing: 0, once: 1, axis: 0, triggerElement: 0, fit: 0,
+  concurrency: 0, onReady: 0, onLoad: 0, onComplete: 0, onProgress: 0,
+} satisfies Record<keyof ScrollFramesOptions, 0 | 1>;
+
+/**
+ * Component — renders a <canvas role="img"> that scrubs an image sequence with
+ * the scroll. Every option is a prop; `class`, `style` and `aria-label` fall
+ * through to the canvas. Pass a `style` that changes as an object: Vue rewrites
+ * a changed style string whole, over the inline size scrollFrames holds on a
+ * canvas sized by its attributes.
+ *
+ * @example
+ * <section id="track" style="height: 400vh">
+ *   <div style="position: sticky; top: 0; height: 100vh">
+ *     <ScrollFrames :frames="(i) => `/film/${i + 1}.jpg`" :count="120" trigger-element="#track"
+ *       :trigger="{ start: 'top top', end: 'bottom bottom' }" aria-label="The headphones turning" />
+ *   </div>
+ * </section>
+ */
+export const ScrollFrames = defineComponent({
+  name: 'ScrollFrames',
+  props: Object.fromEntries(
+    Object.entries(FRAMES_KEYS).map(([k, t]) => [k, t ? flag(Boolean) : k === 'frames' ? { required: true } : null]),
+  ) as Record<keyof ScrollFramesOptions, null>,
+  setup(props) {
+    const canvasRef = ref<HTMLCanvasElement | null>(null);
+
+    useEngine(canvasRef, () => {
+      const opts: Record<string, unknown> = {};
+      for (const k in FRAMES_KEYS) {
+        const v = (props as Record<string, unknown>)[k];
+        if (v != null) opts[k] = v;
+      }
+      return opts as FramesInput;
+    }, startFrames, framesKey as (o: FramesInput) => string);
+
+    onMounted(() => checkLabel(canvasRef.value));
+
+    // role="img" unless the page passes its own: fallthrough attributes win.
+    return () => h('canvas', { ref: canvasRef, role: 'img' });
   },
 });
 

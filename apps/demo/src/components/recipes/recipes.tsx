@@ -741,22 +741,28 @@ ffmpeg -i turntable.mp4 -an -vf "fps=12,scale=960:-2" \\
         body: (
           <>
             A canvas in a sticky stage moves with the scroll while it is stuck, so measured on the canvas the
-            window comes out wrong. <C>triggerElement</C> measures the track instead: <C>top top</C> to{' '}
-            <C>bottom bottom</C> is exactly the stretch the stage is stuck. <C>{"fit: 'contain'"}</C> shows
-            the whole frame, letterboxed into the black stage; the default, <C>cover</C>, fills the box and crops.
-            Every option is in <Link href="/docs#scroll-frames" className="underline underline-offset-2">the docs</Link>.
+            window comes out wrong. <C>triggerElement</C> measures the track instead (a ref, read when the
+            film starts): <C>top top</C> to <C>bottom bottom</C> is exactly the stretch the stage is stuck.{' '}
+            <C>fit=&quot;contain&quot;</C> shows the whole frame, letterboxed into the black stage; the default,{' '}
+            <C>cover</C>, fills the box and crops. <C>{'<ScrollFrames>'}</C> renders the canvas with{' '}
+            <C>role=&quot;img&quot;</C> and stops the film, and the frames still loading, when it unmounts. Every
+            option is a prop, each one in <Link href="/docs#scroll-frames" className="underline underline-offset-2">the docs</Link>.
           </>
         ),
-        code: `const turn = scrollFrames(canvas.current, {
-  frames: (i) => \`\${base}/frame_\${String(i + 1).padStart(4, '0')}.webp\`,
-  count: 71,
-  fit: 'contain',
-  triggerElement: track.current,
-  trigger: { start: 'top top', end: 'bottom bottom' },
-});
+        code: `const track = useRef(null);
 
-// also stops the frames still loading
-return () => turn.destroy();`,
+<section ref={track} className="turn-track">
+  <div className="turn-stage">
+    <ScrollFrames
+      frames={(i) => \`\${base}/frame_\${String(i + 1).padStart(4, '0')}.webp\`}
+      count={71}
+      fit="contain"
+      triggerElement={track}
+      trigger={{ start: 'top top', end: 'bottom bottom' }}
+      aria-label="NASA's Landsat 8 satellite turning…"
+    />
+  </div>
+</section>`,
         caption: 'Which box sets the window',
         figure: <FigMeasureCanvas />,
       },
@@ -776,10 +782,10 @@ return () => turn.destroy();`,
   { from: 0.72, title: 'Two instruments', … },
 ];
 
-onProgress: (p, i) => {
+onProgress={(p, i) => {
   setChapter(chapterAt(p));
   setFrame(i);
-},`,
+}}`,
         note: (
           <>
             Under reduced motion scrollFrames loads only the last frame and shows it, so the chapters cannot be

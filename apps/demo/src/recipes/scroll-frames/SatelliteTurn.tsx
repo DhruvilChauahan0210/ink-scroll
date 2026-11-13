@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import { scrollFrames } from 'svg-scroll-draw/frames';
+import { useRef, useState } from 'react';
+import { ScrollFrames } from 'svg-scroll-draw/react';
 import './satellite-turn.css';
 
 /** 71 stills, frame_0001.webp … frame_0071.webp, 960×540 each. */
@@ -19,33 +19,29 @@ const chapterAt = (p: number) => CHAPTERS.reduce((at, c, i) => (p >= c.from ? i 
 /** `base`: the folder holding the frames, with no trailing slash. */
 export function SatelliteTurn({ base = '/frames/landsat' }: { base?: string }) {
   const track = useRef<HTMLElement>(null);
-  const canvas = useRef<HTMLCanvasElement>(null);
   const [chapter, setChapter] = useState(0);
   const [frame, setFrame] = useState(0);
-
-  useEffect(() => {
-    if (!track.current || !canvas.current) return;
-    const turn = scrollFrames(canvas.current, {
-      frames: (i) => `${base}/frame_${String(i + 1).padStart(4, '0')}.webp`,
-      count: COUNT,
-      fit: 'contain',
-      // The stage is sticky, so the canvas's own box moves with the scroll.
-      // Measure the track that holds the scroll room instead.
-      triggerElement: track.current,
-      trigger: { start: 'top top', end: 'bottom bottom' },
-      onProgress: (p, i) => {
-        setChapter(chapterAt(p));
-        setFrame(i);
-      },
-    });
-    return () => turn.destroy();
-  }, [base]);
 
   return (
     <section ref={track} className="turn-track">
       <div className="turn-stage">
         <figure className="turn-film">
-          <canvas ref={canvas} role="img" aria-label="NASA's Landsat 8 satellite turning a full circle on a turntable as you scroll" />
+          {/* A new frames function each render is fine: the film is kept while
+              it gives the same URLs, and rebuilt when `base` changes them. */}
+          <ScrollFrames
+            frames={(i) => `${base}/frame_${String(i + 1).padStart(4, '0')}.webp`}
+            count={COUNT}
+            fit="contain"
+            // The stage is sticky, so the canvas's own box moves with the scroll.
+            // Measure the track that holds the scroll room instead.
+            triggerElement={track}
+            trigger={{ start: 'top top', end: 'bottom bottom' }}
+            onProgress={(p, i) => {
+              setChapter(chapterAt(p));
+              setFrame(i);
+            }}
+            aria-label="NASA's Landsat 8 satellite turning a full circle on a turntable as you scroll"
+          />
           <figcaption className="turn-meta">
             <span>
               Landsat 8 (LDCM) model animation: NASA/Goddard Space Flight Center Conceptual Image Lab. Public domain

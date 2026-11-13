@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>React and Vue ScrollFrames: a pinned image sequence</title>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+  /* Viewport 900x800. The track starts at 1000 and is 1600 tall; the stage
+     sticks for its height less one window. Window `top top` → `bottom bottom`
+     is 1000 → 1800, so frame = round((y − 1000) / 800 × 24). */
+  #lead  { height: 1000px; }
+  #track { height: 1600px; }
+  .stage { position: sticky; top: 0; height: 800px; }
+  .film  { display: block; width: 320px; height: 400px; }
+  #tail  { height: 2000px; }
+</style>
+</head>
+<body>
+<!-- Frames from serve.mjs (/e2e/gen/frame.png): the red channel of the
+     canvas's centre pixel is the frame's `i` × 10. -->
+<div id="lead"></div>
+<div id="root"></div>
+<div id="tail"></div>
+
+<script type="module">
+import { api as make, stats } from './build/frames-wrappers.mjs';
+import { publish } from './_probe.mjs';
+
+const fw = new URLSearchParams(location.search).get('fw') ?? 'react';
+const api = make(fw);
+await api.mount();
+
+const film = () => document.querySelector('canvas');
+
+/** The frame a canvas shows, from its centre pixel: -1 for nothing drawn. */
+function frame() {
+  const c = film();
+  if (!c) return -1;
+  const d = c.getContext('2d').getImageData(Math.floor(c.width / 2), Math.floor(c.height / 2), 1, 1).data;
+  return d[3] === 0 ? -1 : Math.round(d[0] / 10);
+}
+
+publish({
+  read: () => ({
+    scrollY: window.scrollY,
+    frame: frame(),
+    ...stats,
+    role: film()?.getAttribute('role') ?? null,
+    label: film()?.getAttribute('aria-label') ?? null,
+    className: film()?.className ?? null,
+    trackTop: document.querySelector('#track')?.getBoundingClientRect().top + window.scrollY,
+  }),
+  rerender: () => api.rerender(),
+  bucket: (b) => api.bucket(b),
+  shift: (n) => api.shift(n),
+  unmount: () => api.unmount(),
+});
+</script>
+</body>
+</html>

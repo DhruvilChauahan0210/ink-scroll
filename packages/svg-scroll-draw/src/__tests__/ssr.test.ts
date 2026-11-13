@@ -128,6 +128,32 @@ describe('SSR — no window, no document', () => {
     expectInertInstance(scrollReveal('.card'), 'scrollReveal', ['destroy']);
   });
 
+  /*
+   * <ScrollFrames> calls the frames function while rendering (its key reads the
+   * URLs), so the render itself has to stay off the DOM, not only the effect.
+   */
+  it('<ScrollFrames> renders to a string in React and Vue', async () => {
+    const { createElement } = await import('react');
+    const { renderToString } = await import('react-dom/server');
+    const { ScrollFrames } = await import('../react');
+    const html = renderToString(
+      createElement(ScrollFrames, { frames: (i: number) => `/f/${i}.jpg`, count: 3, className: 'film', 'aria-label': 'A film' }),
+    );
+    const attrs = (s: string) => s.match(/[\w-]+="[^"]*"/g)!.sort();
+    const want = ['aria-label="A film"', 'class="film"', 'role="img"'];
+    expect(html.startsWith('<canvas ')).toBe(true);
+    expect(attrs(html)).toEqual(want);
+
+    const { createSSRApp, h } = await import('vue');
+    const { renderToString: vueToString } = await import('vue/server-renderer');
+    const vue = await import('../vue');
+    const out = await vueToString(
+      createSSRApp({ render: () => h(vue.ScrollFrames, { frames: (i: number) => `/f/${i}.jpg`, count: 3, class: 'film', 'aria-label': 'A film' }) }),
+    );
+    expect(out.startsWith('<canvas ')).toBe(true);
+    expect(attrs(out)).toEqual(want);
+  });
+
   it('the ScrollReveal drop-in returns an inert instance on the server', async () => {
     const ScrollReveal = (await import('../scrollreveal')).default;
     const sr = ScrollReveal({ distance: '20px' });
