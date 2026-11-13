@@ -1,4 +1,4 @@
-import { EASINGS } from '../core/easing';
+import { resolveEasing } from '../core/easing';
 import { warn } from '../core/env';
 import { _register, _unregister } from '../core/registry';
 import { watchReducedMotion } from '../core/motion-watch';
@@ -42,7 +42,7 @@ function parsePercent(v: string): number {
 }
 
 function easeOf(name: StoryEasing): (t: number) => number {
-  return EASINGS[name] ?? EASINGS.linear;
+  return resolveEasing(name);
 }
 
 /** An instance with nothing running: no mount (progress 0) or reduced motion (1). */

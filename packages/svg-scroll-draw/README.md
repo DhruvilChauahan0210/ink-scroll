@@ -59,7 +59,7 @@ If this saves you time, a ⭐ [on GitHub](https://github.com/DhruvilChauahan0210
 | `scrollDraw` | `svg-scroll-draw` | The original — scroll-driven SVG path drawing via `stroke-dashoffset`. |
 | `scrollVideo` | `svg-scroll-draw/video` | Tie `<video>.currentTime` to scroll. The Apple/Stripe product-page pattern. |
 | `scrollFrames` | `svg-scroll-draw/frames` | Scrub an image sequence on a `<canvas>` with the scroll: the frame-by-frame version of the same pattern, for footage a video decoder cannot seek smoothly. |
-| `scrollText` | `svg-scroll-draw/text` | Split text into chars/words/lines and stagger-animate each on scroll. 3.5 KB, nothing else to load. |
+| `scrollText` | `svg-scroll-draw/text` | Split text into chars/words/lines and stagger-animate each on scroll. 3.9 KB, nothing else to load. |
 | `devtools` | `svg-scroll-draw/devtools` | Visual overlay showing every active animation's triggers and progress. Dev-only. |
 | `AOS` | `svg-scroll-draw/aos` | Drop-in replacement for AOS: same `AOS.init()`, same `data-aos` markup, no `aos.css`. |
 | `ScrollReveal` | `svg-scroll-draw/scrollreveal` | Drop-in replacement for ScrollReveal.js 4, MIT instead of GPL-3.0. |
@@ -459,7 +459,7 @@ It returns the same instance as every other API: `{ destroy, replay, pause, resu
 
 ## scrollText — text reveal on scroll
 
-A 3.5 KB alternative to GSAP SplitText. SplitText is free and 3.6 KB, but it only splits — animating the pieces needs GSAP core (27.7 KB) on top.
+A 3.9 KB alternative to GSAP SplitText. SplitText is free and 3.6 KB, but it only splits — animating the pieces needs GSAP core (27.7 KB) on top.
 
 ```js
 import { scrollText } from 'svg-scroll-draw/text';
@@ -569,7 +569,7 @@ import { ScrollDraw } from 'svg-scroll-draw/vue';
 | `selector` | `string` | `"path, polyline…"` | CSS selector for child elements to animate |
 | `speed` | `number` | `1` | Scale factor relative to scroll distance |
 | `fade` | `boolean` | `false` | Animate `opacity 0 → 1` simultaneously |
-| `easing` | `string \| fn` | `"linear"` | `linear`, `ease-in`, `ease-out`, `ease-in-out`, `spring`, `bounce`, `elastic`, or `(t) => t` |
+| `easing` | `string \| fn` | `"linear"` | `linear`, `ease-in`, `ease-out`, `ease-in-out`, `spring`, `bounce`, `elastic`, a CSS `cubic-bezier(…)` or `ease` (2.26.0+), or `(t) => t` |
 | `stagger` | `number` | `0` | Offset between each path starting (fraction of scroll range). The last path ends that much after `trigger.end`; where the page ends first, the stagger tightens so it finishes at the bottom |
 | `direction` | `"forward" \| "reverse"` | `"forward"` | `reverse` erases the path as you scroll |
 | `trigger.start` | `string` | `"top bottom"` | When animation begins |
@@ -782,6 +782,10 @@ All APIs share the same easing system:
 // Named strings
 easing: 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | 'spring' | 'bounce' | 'elastic'
 
+// CSS timing functions (2.26.0+); steps() is not parsed: pass a function
+easing: 'cubic-bezier(.2, .8, .2, 1)'   // x1 and x2 in [0, 1]; y may overshoot
+easing: 'ease'                          // the CSS keyword, cubic-bezier(.25, .1, .25, 1)
+
 // Custom function
 easing: (t: number) => number
 
@@ -792,6 +796,14 @@ easing: createSpring({ tension: 3, friction: 1.8 })
 easing: createBounce({ bounces: 4, decay: 0.4 })
 easing: createElastic({ amplitude: 1.5, period: 0.3 })
 ```
+
+The library's own names win: `ease-in`, `ease-out` and `ease-in-out` are its
+quadratics, not the CSS keywords of the same name (write
+`cubic-bezier(.42, 0, 1, 1)` and friends for those). Any other string, a typo
+like `'easeOut'`, a `cubic-bezier()` with an `x` outside [0, 1] or a `steps()`,
+warns in development, naming the value and the valid forms, and runs as the
+API's default easing. On the native CSS path a `cubic-bezier()` string goes to
+CSS as written, so both engines draw the same curve.
 
 ---
 
@@ -861,17 +873,17 @@ devtools.highlight('#my-element'); // outline for 2 seconds
 <!-- size-table:start -->
 | Entry | Gzipped |
 |---|---|
-| `svg-scroll-draw` (main, every core API) | 11.5 KB |
-| `svg-scroll-draw/react` (includes the engine) | 14.9 KB |
-| `svg-scroll-draw` + `svg-scroll-draw/react` (together; the engine ships once) | 16.5 KB |
-| `svg-scroll-draw/reveal` | 5.7 KB |
-| `svg-scroll-draw/text` | 3.5 KB |
-| `svg-scroll-draw/video` | 2.9 KB |
-| `svg-scroll-draw/frames` | 4.0 KB |
+| `svg-scroll-draw` (main, every core API) | 11.9 KB |
+| `svg-scroll-draw/react` (includes the engine) | 15.3 KB |
+| `svg-scroll-draw` + `svg-scroll-draw/react` (together; the engine ships once) | 16.9 KB |
+| `svg-scroll-draw/reveal` | 6.2 KB |
+| `svg-scroll-draw/text` | 3.9 KB |
+| `svg-scroll-draw/video` | 3.3 KB |
+| `svg-scroll-draw/frames` | 4.4 KB |
 | `svg-scroll-draw/scrollreveal` | 4.7 KB |
 | `svg-scroll-draw/vivus` | 4.2 KB |
 | `svg-scroll-draw/aos` (styles included) | 3.2 KB |
-| `svg-scroll-draw/snap` | 2.0 KB |
+| `svg-scroll-draw/snap` | 2.4 KB |
 | `svg-scroll-draw/devtools` | 1.8 KB (dev only) |
 | `svg-scroll-draw/pin` | 1.6 KB |
 <!-- size-table:end -->

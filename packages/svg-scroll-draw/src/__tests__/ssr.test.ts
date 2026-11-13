@@ -129,6 +129,35 @@ describe('SSR — no window, no document', () => {
   });
 
   /*
+   * 2.26.0: a CSS easing string is parsed with no DOM involved (no CSS.supports,
+   * no getComputedStyle), so a server render that passes one is as inert as
+   * any other, and the curve itself is already usable on the server.
+   */
+  it('a CSS easing string resolves without a DOM, and the engines given one stay inert', async () => {
+    const { resolveEasing, cssEasing } = await import('../core/easing');
+    const { cssTimingFor } = await import('../core/css-easing');
+    expect(resolveEasing('cubic-bezier(.2,.8,.2,1)')(0.5)).toBeGreaterThan(0.9);
+    expect(cssEasing('ease')?.[1]).toBe('cubic-bezier(0.25,0.1,0.25,1)');
+    expect(cssTimingFor('cubic-bezier(.2,.8,.2,1)')).toBe('cubic-bezier(0.2,0.8,0.2,1)');
+
+    const easing = 'cubic-bezier(.2,.8,.2,1)' as const;
+    const { scrollDraw, scrollAnimate, scrollCounter } = await import('../index');
+    const { scrollText } = await import('../text');
+    const { scrollVideo } = await import('../video');
+    const { scrollFrames } = await import('../frames');
+    const { scrollProgress } = await import('../progress');
+    const { scrollSnap } = await import('../snap');
+    expectInertInstance(scrollDraw('#hero', { easing }), 'scrollDraw');
+    expectInertInstance(scrollAnimate('#card', { props: { opacity: [0, 1] }, easing }), 'scrollAnimate');
+    expectInertInstance(scrollCounter('#count', { to: 100, easing: 'ease' }), 'scrollCounter');
+    expectInertInstance(scrollText('#headline', { easing }), 'scrollText');
+    expectInertInstance(scrollVideo('#clip', { easing }), 'scrollVideo');
+    expectInertInstance(scrollFrames('#film', { frames: (i) => `/f/${i}.png`, count: 60, easing }), 'scrollFrames');
+    expectInertInstance(scrollProgress('#bar', { easing }), 'scrollProgress');
+    expectInertInstance(scrollSnap('.section', { easing }), 'scrollSnap', ['destroy', 'snapTo', 'getCurrentIndex']);
+  });
+
+  /*
    * <ScrollFrames> calls the frames function while rendering (its key reads the
    * URLs), so the render itself has to stay off the DOM, not only the effect.
    */

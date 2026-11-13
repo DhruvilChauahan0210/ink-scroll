@@ -1,5 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { scrollDrawTimeline } from '../timeline/index';
+import { SNAPPY, snappy } from './bezierReference';
+import type { Easing } from '../core/types';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -647,5 +649,25 @@ describe('scrollDrawTimeline — debug overlay', () => {
     });
     // Only the container itself was appended in makeContainer — no extra overlay
     expect(document.body.children.length).toBe(countBefore);
+  });
+});
+
+// ── 2.26.0: a CSS cubic-bezier() string is the curve it names ────────────────
+// Every engine read a string as EASINGS[easing] ?? its default, so this ran as
+// the default without a word. Same scroll position, three runs: the string,
+// an independent solver of the same curve (bezierReference), and linear.
+
+describe('scrollDrawTimeline — easing as a CSS string', () => {
+  function drawn(easing: Easing): number {
+    const container = makeContainer([{ cls: 'eased' }]);
+    scrollDrawTimeline(container, { tracks: [{ selector: '.eased', from: 0, to: 1, easing }] }).seek(0.3);
+    return 1 - parseFloat((container.querySelector('.eased') as SVGPathElement).style.strokeDashoffset) / 100;
+  }
+
+  it("draws a track along the cubic-bezier() it names, not linear", () => {
+    const css = drawn(SNAPPY);
+    expect(css).toBeCloseTo(snappy(0.3), 6);
+    expect(css).toBeCloseTo(drawn(snappy), 6);
+    expect(Math.abs(css - drawn('linear'))).toBeGreaterThan(0.05);
   });
 });

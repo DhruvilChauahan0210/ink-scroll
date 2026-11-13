@@ -1,5 +1,5 @@
-import type { EasingName } from '../core/types';
-import { EASINGS } from '../core/easing';
+import type { Easing } from '../core/types';
+import { resolveEasing } from '../core/easing';
 import { clamp } from '../core/math';
 import { warn } from '../core/env';
 import { prefersReducedMotion } from '../core/motion';
@@ -12,7 +12,7 @@ export interface ScrollSnapOptions {
   /** Snap animation duration in ms. Default: 600. */
   duration?: number;
   /** Easing for the snap scroll animation. Default: 'ease-in-out'. */
-  easing?: EasingName | ((t: number) => number);
+  easing?: Easing;
   /**
    * Fraction of a section's size the user must scroll past before it snaps
    * forward instead of snapping back. Range 0–1. Default: 0.3.
@@ -88,7 +88,7 @@ export function scrollSnap(
     ? watchReducedMotion((reduced) => { reduceMotion = reduced; })
     : () => {};
 
-  const easeFn = typeof easing === 'function' ? easing : (EASINGS[easing] ?? EASINGS['ease-in-out']);
+  const easeFn = resolveEasing(easing, 'ease-in-out');
   const isHorizontal = direction === 'horizontal';
   const dim  = isHorizontal ? 'Width' : 'Height';
   const side = isHorizontal ? 'left' : 'top';

@@ -1,5 +1,5 @@
-import type { EasingName, ScrollDrawInstance, TriggerConfig } from '../core/types';
-import { EASINGS } from '../core/easing';
+import type { Easing, ScrollDrawInstance, TriggerConfig } from '../core/types';
+import { resolveEasing } from '../core/easing';
 import { parseTrigger, computeProgress, computeTriggers } from '../core/trigger';
 import { measureTriggerFrame } from '../core/trigger-frame';
 import { lerpColor } from '../core/color';
@@ -14,7 +14,7 @@ import { frameGate } from '../core/frame-gate';
 export interface ScrollAnimateOptions {
   props: Record<string, string | number | [string | number, string | number]>;
   trigger?: TriggerConfig;
-  easing?: EasingName | ((t: number) => number);
+  easing?: Easing;
   speed?: number;
   once?: boolean;
   axis?: 'x' | 'y';
@@ -203,7 +203,7 @@ function buildAnimateEngine(
     onLeaveBack,
   } = options;
 
-  const easeFn         = typeof easing === 'function' ? easing : (EASINGS[easing] ?? EASINGS['ease-out']);
+  const easeFn         = resolveEasing(easing, 'ease-out');
   const startConfig    = parseTrigger(trigger.start || 'top bottom');
   const endConfig      = parseTrigger(trigger.end   || 'bottom top');
 

@@ -79,22 +79,34 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
  * moved to frames/start, apart from frames/wrapper, so react does not load it
  * (react 14.90 -> 14.91). An app's bundler drops it when they are not
  * imported. Same rule.
+ *
+ *
+ * 2.26.0 moved every entry that carries an easing up about 0.4 KB (main entry
+ * 11.50 -> 11.90, cdn 11.42 -> 11.79, react 14.91 -> 15.28, snap 1.98 -> 2.44, main + react 16.5 -> 16.87):
+ * `easing` takes a CSS cubic-bezier() string or 'ease' (core/easing
+ * resolveEasing: the parser, an eight-step Newton solver with a 30-step
+ * bisection fallback, and a one-line dev warning for anything else; core/
+ * css-easing hands the native path the same function). Before, every engine
+ * ran such a string as its default without a word. Kept to 0.4 KB on purpose:
+ * steps() is not parsed, there is no parse cache, and the warning is one short
+ * sentence. Each budget is the build rounded up to the next 0.1 KB, plus 0.1.
+ * The drop-ins, pin, devtools and lenis carry no easing and did not move.
  */
 const BUDGETS_KB = {
-  '.':              11.8,
+  '.':              12.0,
   // The whole library in one IIFE, web component included — the single file a
   // `<script src>` user downloads. Not split, so unchanged by the chunks.
-  cdn:              11.7,
-  react:            15.0,
-  vue:              15.2,
-  nuxt:             15.3,
-  svelte:           14.5,
-  solid:            14.5,
-  angular:          14.5,
-  astro:            12.3,
-  group:             10.3,
-  'web-component':   7.9,
-  reveal:            5.8,
+  cdn:              11.9,
+  react:            15.4,
+  vue:              15.6,
+  nuxt:             15.7,
+  svelte:           14.9,
+  solid:            14.9,
+  angular:          14.9,
+  astro:            12.5,
+  group:             10.7,
+  'web-component':   8.4,
+  reveal:            6.3,
   // The AOS drop-in, stylesheet included (AOS itself is 6.7 KB with aos.css).
   // 3.08 -> 3.22 in 2.23.0: it follows reduced motion turned on mid-visit.
   aos:               3.3,
@@ -112,13 +124,13 @@ const BUDGETS_KB = {
   'cdn-vivus':       4.2,
   // 4.7 -> 5.0 in 2.18.1: it follows the layout (ResizeObserver, a rebuild only
   // when the travel or the runway moved) and measures against its sticky stage.
-  horizontal:        5.7,
+  horizontal:        6.2,
   // 4.1 -> 4.2 in 2.22.0 with no change to its code: its files are the same
   // bytes, but the chunks now load in another order, and gzip of the joined
   // files went 4,198 -> 4,201 bytes, 3 over the line.
-  timeline:          4.2,
-  text:              3.5,
-  video:             2.9,
+  timeline:          4.8,
+  text:              4.1,
+  video:             3.5,
   // scrollFrames: 3.63 KB at its first build. It carries scrollVideo's engine
   // (the frame gate, triggers, easings, about 2.9 KB) plus the loader (load
   // order, concurrency, decode with its onload fallback), the canvas sizing
@@ -128,16 +140,16 @@ const BUDGETS_KB = {
   // 2x), isolates user callbacks so a throw cannot stall the loader, treats a
   // frames function that throws as a failed frame, and validates count and
   // concurrency. Rounded up to the next 0.1 KB with 0.1 KB more.
-  frames:            4.1,
+  frames:            4.6,
   // 2.4 -> 3.1 in 2.23.7: Cinematic moved off its IntersectionObserver onto the
   // shared frame gate (core/frame-gate + layout-watch, ~0.5 KB, the chunk every
   // other engine already ships), so a story jumped past paints its last frame.
   // A page that imports Cinematic with any other API pays it once.
   // 3.1 -> 3.2: it finds the element that scrolls the story (a scrolling div, a body-scroller) instead of assuming the window.
-  cinematic:         3.2,
-  progress:          2.5,
+  cinematic:         3.8,
+  progress:          3.0,
   devtools:          1.9,
-  snap:              2.0,
+  snap:              2.6,
   // 1.39 once clamp got a file of its own; it used to drag every easing along.
   // 1.58 in 2.20.0: pinDistance reads '150vh' (from an element 100vh tall, as
   // CSS measures it) and '600px', and warns once on anything else.
@@ -151,7 +163,7 @@ const BUDGETS_KB = {
  * 18.1 KB); the budget is what keeps the sharing from quietly coming undone.
  */
 const COMBINATIONS = [
-  { names: ['.', 'react'], budget: 16.7 },
+  { names: ['.', 'react'], budget: 17.0 },
 ];
 
 // ── Measure ──────────────────────────────────────────────────────────────────

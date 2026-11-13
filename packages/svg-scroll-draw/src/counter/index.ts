@@ -1,5 +1,5 @@
-import type { EasingName, ScrollDrawInstance, TriggerConfig } from '../core/types';
-import { EASINGS } from '../core/easing';
+import type { Easing, ScrollDrawInstance, TriggerConfig } from '../core/types';
+import { resolveEasing } from '../core/easing';
 import { parseTrigger, computeProgress, computeTriggers } from '../core/trigger';
 import { _register, _unregister } from '../core/registry';
 import { warn } from '../core/env';
@@ -12,7 +12,7 @@ export interface ScrollCounterOptions {
   from?: number;
   to: number;
   format?: (value: number) => string;
-  easing?: EasingName | ((t: number) => number);
+  easing?: Easing;
   trigger?: TriggerConfig;
   once?: boolean;
   decimals?: number;
@@ -60,7 +60,7 @@ function buildCounter(el: HTMLElement, options: ScrollCounterOptions, prefersRed
       ? (n) => n.toFixed(decimals)
       : (format ?? ((n) => String(Math.round(n))));
 
-  const easeFn      = typeof easing === 'function' ? easing : (EASINGS[easing] ?? EASINGS['ease-out']);
+  const easeFn      = resolveEasing(easing, 'ease-out');
   const startConfig = parseTrigger(trigger.start || 'top 80%');
   const endConfig   = parseTrigger(trigger.end   || 'top 20%');
 

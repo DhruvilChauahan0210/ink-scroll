@@ -1,5 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { scrollVideo } from '../video';
+import { SNAPPY, snappy } from './bezierReference';
+import type { Easing } from '../core/types';
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -341,5 +343,29 @@ describe('scrollVideo', () => {
     const video = makeVideo();
     scrollVideo(video, { from: 0, to: 5 });
     expect(video.currentTime).toBeCloseTo(5, 1);
+  });
+});
+
+// ── 2.26.0: a CSS cubic-bezier() string is the curve it names ────────────────
+// Every engine read a string as EASINGS[easing] ?? its default, so this ran as
+// the default without a word. Same scroll position, three runs: the string,
+// an independent solver of the same curve (bezierReference), and linear.
+
+describe('scrollVideo — easing as a CSS string', () => {
+  function alpha(easing: Easing): number {
+    vi.stubGlobal('scrollY', 0);
+    const inst = scrollVideo(makeVideo(), { easing });
+    scroll();
+    scroll(200);
+    raf.tick();
+    return inst.getProgress();
+  }
+
+  it('scrubs along the cubic-bezier() it names, not linear', () => {
+    const css = alpha(SNAPPY);
+    expect(css).toBeGreaterThan(0.05);
+    expect(css).toBeLessThan(0.99);
+    expect(css).toBeCloseTo(alpha(snappy), 6);
+    expect(Math.abs(css - alpha('linear'))).toBeGreaterThan(0.05);
   });
 });

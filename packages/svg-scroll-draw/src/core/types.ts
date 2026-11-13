@@ -1,5 +1,15 @@
 export type EasingName = 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | 'spring' | 'bounce' | 'elastic';
 
+/**
+ * A CSS timing function (2.26.0+): `cubic-bezier(x1, y1, x2, y2)` with x1 and
+ * x2 in [0, 1], or the keyword `ease`. The library's own `ease-in`, `ease-out`
+ * and `ease-in-out` are its quadratics, not the CSS keywords of the same name.
+ */
+export type CssEasing = 'ease' | `cubic-bezier(${string})`;
+
+/** What every `easing` option takes: a name, a CSS cubic-bezier(), or a curve over [0, 1]. */
+export type Easing = EasingName | CssEasing | ((t: number) => number);
+
 export type PresetName = 'sketch' | 'reveal' | 'typewriter' | 'cinematic' | 'spring';
 
 export interface TriggerConfig {
@@ -21,7 +31,7 @@ export interface ScrollDrawOptions {
   selector?: string;
   speed?: number;
   fade?: boolean;
-  easing?: EasingName | ((t: number) => number);
+  easing?: Easing;
   trigger?: TriggerConfig;
   /**
    * Each path starts this fraction of the scroll range after the previous one,

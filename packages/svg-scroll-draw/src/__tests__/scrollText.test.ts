@@ -1,5 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { scrollText } from '../text';
+import { SNAPPY, snappy } from './bezierReference';
+import type { Easing } from '../core/types';
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -418,5 +420,35 @@ describe('scrollText — resize handling', () => {
     const restored = el.innerHTML;
     resize();
     expect(el.innerHTML, 'a destroyed instance re-split on resize').toBe(restored);
+  });
+});
+
+// ── 2.26.0: a CSS cubic-bezier() string is the curve it names ────────────────
+// Every engine read a string as EASINGS[easing] ?? its default, so this ran as
+// the default without a word. Same scroll position, three runs: the string,
+// an independent solver of the same curve (bezierReference), and linear.
+
+describe('scrollText — easing as a CSS string', () => {
+  function alpha(easing: Easing): number {
+    vi.stubGlobal('scrollY', 0);
+    const el = makeParagraph();
+    // Window top 85% → top 40%: [20, 380]. y = 100 is 0.22 of the way in.
+    vi.spyOn(el, 'getBoundingClientRect').mockReturnValue({
+      top: 700, height: 100, left: 0, width: 400, right: 400, bottom: 800, x: 0, y: 0, toJSON: () => ({}),
+    });
+    scrollText(el, { split: 'words', easing });
+    scroll();
+    scroll(100);
+    raf.tick();
+    // The easing shapes each unit's own fade; the first word's opacity shows it.
+    return Number(el.querySelector<HTMLSpanElement>('span[style*="opacity"]')!.style.opacity);
+  }
+
+  it('reveals along the cubic-bezier() it names, not its ease-out default', () => {
+    const css = alpha(SNAPPY);
+    expect(css).toBeGreaterThan(0.05);
+    expect(css).toBeLessThan(0.99);
+    expect(css).toBeCloseTo(alpha(snappy), 6);
+    expect(Math.abs(css - alpha('ease-out'))).toBeGreaterThan(0.02);
   });
 });

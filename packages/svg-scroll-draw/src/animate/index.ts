@@ -7,7 +7,7 @@
  * importing this one would add these two functions to every entry that only
  * needs the engine.
  */
-import type { EasingName, ScrollDrawInstance, TriggerConfig } from '../core/types';
+import type { Easing, ScrollDrawInstance, TriggerConfig } from '../core/types';
 import { warn } from '../core/env';
 import { createAnimateEngine, type ScrollAnimateOptions } from './engine';
 
@@ -17,7 +17,7 @@ export type { ScrollAnimateOptions } from './engine';
 export interface ScrollParallaxOptions {
   speed?: number;
   axis?: 'x' | 'y';
-  easing?: EasingName | ((t: number) => number);
+  easing?: Easing;
   trigger?: TriggerConfig;
   onProgress?: (alpha: number) => void;
 }

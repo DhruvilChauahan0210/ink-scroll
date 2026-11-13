@@ -1,4 +1,4 @@
-import { EASINGS } from '../core/easing';
+import { resolveEasing } from '../core/easing';
 import { parseTrigger, computeProgress, computeTriggers } from '../core/trigger';
 import { getElementLength } from '../core/geometry';
 import { prefersReducedMotion } from '../core/motion';
@@ -6,7 +6,7 @@ import { watchReducedMotion } from '../core/motion-watch';
 import { warn } from '../core/env';
 import { _register, _unregister } from '../core/registry';
 import { frameGate } from '../core/frame-gate';
-import type { ScrollDrawInstance, EasingName } from '../core/types';
+import type { ScrollDrawInstance, Easing } from '../core/types';
 
 export interface TimelineTrack {
   /** CSS selector for paths within the container to animate on this track. */
@@ -16,7 +16,7 @@ export interface TimelineTrack {
   /** Progress value (0–1) within the overall scroll range where this track ends. */
   to: number;
   /** Easing for this track. Defaults to 'linear'. */
-  easing?: EasingName | ((t: number) => number);
+  easing?: Easing;
   /** Fade opacity in sync with this track's draw progress. */
   fade?: boolean;
 }
@@ -179,9 +179,7 @@ export function scrollDrawTimeline(
 
   // Resolve each track's elements + lengths up front
   const trackData = tracks.map((track) => {
-    const easeFn = typeof track.easing === 'function'
-      ? track.easing
-      : (EASINGS[track.easing ?? 'linear'] ?? EASINGS.linear);
+    const easeFn = resolveEasing(track.easing);
     const elements = Array.from(container.querySelectorAll<SVGElement>(track.selector));
     const lengths  = elements.map((el) => getElementLength(el));
     elements.forEach((el, i) => {

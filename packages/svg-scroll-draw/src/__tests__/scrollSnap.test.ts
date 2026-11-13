@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { scrollSnap } from '../snap';
+import { SNAPPY, snappy } from './bezierReference';
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 
@@ -510,5 +511,23 @@ describe('scrollSnap — where it starts and where it lands', () => {
       delete body.scrollHeight;
       delete body.clientHeight;
     }
+  });
+});
+
+// ── 2.26.0: a CSS cubic-bezier() string is the curve it names ────────────────
+// scrollSnap read a string as EASINGS[easing] ?? ease-in-out, so this glided
+// on its default curve without a word.
+describe('scrollSnap — easing as a CSS string', () => {
+  it('glides along the cubic-bezier() it names, not its ease-in-out default', () => {
+    const sections = makeSections(3);
+    vi.spyOn(performance, 'now').mockReturnValue(0);
+    const instance = scrollSnap(sections, { duration: 1000, easing: SNAPPY });
+    instance.snapTo(1);
+    const frame = rafCallbacks.splice(0);
+    frame.forEach((cb) => cb(300)); // 0.3 of the glide
+    expect(window.scrollY).toBeCloseTo(800 * snappy(0.3), 4);
+    // ease-in-out at 0.3 is 0.18: far from the 0.8 or so this curve is at.
+    expect(window.scrollY).toBeGreaterThan(800 * 0.5);
+    instance.destroy();
   });
 });

@@ -1,5 +1,5 @@
-import type { EasingName, ScrollDrawInstance, TriggerConfig } from '../core/types';
-import { EASINGS } from '../core/easing';
+import type { Easing, ScrollDrawInstance, TriggerConfig } from '../core/types';
+import { resolveEasing } from '../core/easing';
 import { parseTrigger, computeProgress, computeTriggers } from '../core/trigger';
 import { _register, _unregister } from '../core/registry';
 import { warn } from '../core/env';
@@ -12,7 +12,7 @@ export interface ScrollVideoOptions {
   trigger?: TriggerConfig;
   from?: number;
   to?: number;
-  easing?: EasingName | ((t: number) => number);
+  easing?: Easing;
   once?: boolean;
   axis?: 'x' | 'y';
   preload?: 'auto' | 'metadata';
@@ -71,7 +71,7 @@ export function scrollVideo(
   const measured: Element = triggerElement ?? video;
 
   let prefersReduced   = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const easeFn         = typeof easing === 'function' ? easing : (EASINGS[easing] ?? EASINGS.linear);
+  const easeFn         = resolveEasing(easing);
   const startConfig    = parseTrigger(trigger.start || 'top top');
   const endConfig      = parseTrigger(trigger.end   || 'bottom top');
 

@@ -1,5 +1,5 @@
 import type { ScrollDrawOptions, ScrollDrawInstance } from './types';
-import { EASINGS } from './easing';
+import { resolveEasing } from './easing';
 import { parseTrigger, computeProgress, computeTriggers } from './trigger';
 import { measureTriggerFrame } from './trigger-frame';
 import { getElementLength } from './geometry';
@@ -219,7 +219,7 @@ function buildEngine(
   const clipDirection: 'left' | 'right' | 'top' | 'bottom' | 'center' | false =
     clip === true ? 'left' : (typeof clip === 'string' ? clip : false);
 
-  const easeFn      = typeof easing === 'function' ? easing : (EASINGS[easing] ?? EASINGS.linear);
+  const easeFn      = resolveEasing(easing);
   const startConfig = parseTrigger(trigger.start || 'top bottom');
   const endConfig   = parseTrigger(trigger.end   || 'bottom top');
 

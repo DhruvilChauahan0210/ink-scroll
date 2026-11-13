@@ -1,5 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { scrollReveal } from '../reveal';
+import { SNAPPY, snappy } from './bezierReference';
+import type { Easing } from '../core/types';
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 
@@ -216,5 +218,27 @@ describe('scrollReveal', () => {
     expect(el.style.transform).toContain('translateY(0px)');
     expect(el.style.opacity).toBe('1');
     inst.destroy();
+  });
+});
+
+// ── 2.26.0: a CSS cubic-bezier() string is the curve it names ────────────────
+// scrollReveal hands `easing` to scrollAnimate, which read a string as
+// EASINGS[easing] ?? ease-out: this revealed on ease-out without a word.
+describe('scrollReveal — easing as a CSS string', () => {
+  function alpha(easing: Easing): number {
+    scroll(0);
+    const el = makeEl('div', 700);
+    scrollReveal([el], { easing, from: { opacity: 0 } });
+    scroll(100);
+    raf.tick();
+    return Number(el.style.opacity);
+  }
+
+  it('reveals along the cubic-bezier() it names, not its ease-out default', () => {
+    const css = alpha(SNAPPY);
+    expect(css).toBeGreaterThan(0.05);
+    expect(css).toBeLessThan(0.999);
+    expect(css).toBeCloseTo(alpha(snappy), 6);
+    expect(Math.abs(css - alpha('ease-out'))).toBeGreaterThan(0.02);
   });
 });

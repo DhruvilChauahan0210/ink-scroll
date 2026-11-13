@@ -12,7 +12,7 @@
  */
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { cssTimingFor } from '../core/css-easing';
-import { EASINGS } from '../core/utils';
+import { EASINGS, resolveEasing } from '../core/utils';
 
 /**
  * Evaluate a CSS `cubic-bezier(x1,y1,x2,y2)` at x, the way a browser does:
@@ -79,6 +79,7 @@ function stubSupport(supported: boolean): void {
 
 afterEach(() => {
   vi.unstubAllGlobals();
+  vi.restoreAllMocks();
 });
 
 describe('cssTimingFor', () => {
@@ -122,5 +123,32 @@ describe('cssTimingFor', () => {
     // The two that need no feature detection are still available.
     expect(cssTimingFor('ease-out')).toContain('cubic-bezier');
     expect(cssTimingFor('linear')).toBe('linear');
+  });
+
+  /**
+   * 2.26.0: a cubic-bezier() the user wrote goes to CSS as written
+   * (normalized), so the native path runs the very curve the JS engine parsed.
+   * Before, every one of them returned null here and ran on the JS engine as
+   * linear, while the parity tests compared linear with linear.
+   */
+  it('passes a cubic-bezier() string through, normalized, as the same curve resolveEasing runs', () => {
+    const decl = cssTimingFor('cubic-bezier(.2, .8, .2, 1)');
+    expect(decl).toBe('cubic-bezier(0.2,0.8,0.2,1)');
+    expect(worstError(evaluate(decl!), resolveEasing('cubic-bezier(.2, .8, .2, 1)'))).toBeLessThan(1e-5);
+    expect(cssTimingFor('ease')).toBe('cubic-bezier(0.25,0.1,0.25,1)');
+  });
+
+  // steps() is not parsed (2.26.0 keeps the main entry small), so it declines
+  // here and warns where an engine resolves it.
+  it('declines steps(), which resolveEasing does not parse either', () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    for (const s of ['steps(4)', 'steps(4, jump-end)', 'steps(1, start)']) expect(cssTimingFor(s), s).toBeNull();
+  });
+
+  it('declines a malformed CSS string rather than emitting an invalid declaration', () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    for (const s of ['cubic-bezier(1.5, 0, 0, 1)', 'cubic-bezier(.2,.8,.2)', 'steps(0)', 'easeOut']) {
+      expect(cssTimingFor(s), s).toBeNull();
+    }
   });
 });

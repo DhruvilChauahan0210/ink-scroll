@@ -1,10 +1,10 @@
 # Project Status — svg-scroll-draw
 
 > Current version: **2.25.0** staged on `feat/frames-wrappers-bench` (not tagged); npm `latest` is **2.24.0** (`v2.24.0` on `b43237b`)
-> Tests: **941 unit** across 42 suites · **336 browser tests** per engine (1008 runs
-> across Chromium/Firefox/WebKit) · **157 mutations**, each caught by the one test
+> Tests: **1009 unit** across 43 suites · **337 browser tests** per engine (1011 runs
+> across Chromium/Firefox/WebKit) · **161 mutations**, each caught by the one test
 > named for it · **91.5% line coverage** (gate 90/90/82/82)
-> Bundle: **11.5 KB gzipped** (main entry as shipped files, chunks included; per-API entries from 0.2 KB) · zero runtime dependencies
+> Bundle: **11.9 KB gzipped** (main entry as shipped files, chunks included; per-API entries from 0.2 KB) · zero runtime dependencies
 > Last updated: 2026-11-13
 
 ---
@@ -50,11 +50,11 @@
 - [x] `scrollAnimateGroup` + `scrollAnimateSequence` + `scrollParallaxGroup` in `svg-scroll-draw/group`
 
 ### Testing
-- [x] 941 tests across 42 suites — `motionLive` (reduced motion turned on mid-visit, every engine and the React hook), `reactive` (the wrappers' option fingerprint and live callbacks), `directives` (the built files' "use client"), `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollFrames` (47), `scrollFramesWrappers` (48), `scrollText` (23)
+- [x] 1009 tests across 43 suites — `motionLive` (reduced motion turned on mid-visit, every engine and the React hook), `reactive` (the wrappers' option fingerprint and live callbacks), `directives` (the built files' "use client"), `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollFrames` (47), `scrollFramesWrappers` (48), `scrollText` (23)
 - [x] Initial state fix — `createAnimateEngine` and `scrollCounter` now apply correct alpha immediately on init (no flash before IO fires)
 
 ### Browser tests (Phase 2, `packages/svg-scroll-draw/e2e`)
-336 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
+337 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
 `helpers.ts` (deterministic sweep — scroll to a fixed offset, wait two frames,
 read) and `fixtures/_probe.mjs` (parsing stays in the page, so specs assert on
 numbers).

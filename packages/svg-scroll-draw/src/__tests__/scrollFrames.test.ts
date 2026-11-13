@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { scrollFrames, type ScrollFramesOptions } from '../frames';
 import { _getRegistry } from '../core/registry';
 import type { ScrollDrawInstance } from '../core/types';
+import { SNAPPY, snappy } from './bezierReference';
 
 /*
  * jsdom has no image decoder and no 2D canvas, so both are faked here: an
@@ -786,5 +787,23 @@ describe('scrollFrames: odd inputs', () => {
     await remeasure();
     await remeasure();
     expect(zero()).toBe(1);
+  });
+});
+
+// ── 2.26.0: a CSS cubic-bezier() string is the curve it names ────────────────
+// scrollFrames read a string as EASINGS[easing] ?? linear, so this scrubbed
+// linearly without a word.
+describe('scrollFrames — easing as a CSS string', () => {
+  it('picks frames along the cubic-bezier() it names, not linear', async () => {
+    const onProgress = vi.fn();
+    frames(9, { easing: SNAPPY, onProgress, concurrency: 9 });
+    await loadAll(0, 1, 2, 3, 4, 5, 6, 7, 8);
+    scroll(120); // raw 0.2 of the window [0, 600]
+    raf.tick();
+    const [alpha, frame] = onProgress.mock.calls.at(-1)!;
+    expect(alpha).toBeCloseTo(snappy(0.2), 6);
+    expect(Math.abs(alpha - 0.2)).toBeGreaterThan(0.05);
+    expect(frame).toBe(Math.round(snappy(0.2) * 8));
+    expect(lastDrawn()).toBe(frame);
   });
 });

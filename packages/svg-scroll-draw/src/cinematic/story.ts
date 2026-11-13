@@ -6,6 +6,8 @@
   editor's exporter — every field here must be honored at runtime.
 */
 
+import type { CssEasing } from '../core/types';
+
 export type StoryEasing =
   | 'linear'
   | 'ease-in'
@@ -13,7 +15,9 @@ export type StoryEasing =
   | 'ease-in-out'
   | 'spring'
   | 'bounce'
-  | 'elastic';
+  | 'elastic'
+  // A CSS timing function (2.26.0+): cubic-bezier() or ease.
+  | CssEasing;
 
 /** A traced path that strokes itself on across a scroll range. */
 export interface DrawAnimation {

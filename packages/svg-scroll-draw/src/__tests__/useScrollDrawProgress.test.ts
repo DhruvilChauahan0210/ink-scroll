@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { createElement, useRef, act } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import { useScrollDrawProgress, type UseScrollDrawProgressOptions } from '../react/useScrollDrawProgress';
+import { SNAPPY, snappy } from './bezierReference';
 
 /*
  * useScrollDrawProgress with `once`. It held the eased value with Math.max, as
@@ -202,5 +203,30 @@ describe('useScrollDrawProgress — scrollContainer', () => {
     } finally {
       vi.useRealTimers();
     }
+  });
+});
+
+// ── 2.26.0: a CSS cubic-bezier() string is the curve it names ────────────────
+// Every engine read a string as EASINGS[easing] ?? its default, so this ran as
+// the default without a word. Same scroll position, three runs: the string,
+// an independent solver of the same curve (bezierReference), and linear.
+
+describe('useScrollDrawProgress — easing as a CSS string', () => {
+  function at400(easing: UseScrollDrawProgressOptions['easing']): number {
+    vi.stubGlobal('scrollY', 0);
+    const seen = mount({ easing });
+    scrollTo(400);
+    const v = seen.at(-1)!;
+    act(() => root?.unmount());
+    root = null;
+    return v;
+  }
+
+  it('returns the cubic-bezier() it names, not linear', () => {
+    const css = at400(SNAPPY);
+    expect(css).toBeGreaterThan(0.05);
+    expect(css).toBeLessThan(0.99);
+    expect(css).toBeCloseTo(at400(snappy), 6);
+    expect(Math.abs(css - at400('linear'))).toBeGreaterThan(0.05);
   });
 });

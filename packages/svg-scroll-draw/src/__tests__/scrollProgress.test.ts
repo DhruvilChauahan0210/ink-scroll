@@ -1,5 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { scrollProgress } from '../progress';
+import { SNAPPY, snappy } from './bezierReference';
+import type { Easing } from '../core/types';
 
 function makeEl(top = 0): HTMLElement {
   const el = document.createElement('div');
@@ -137,5 +139,28 @@ describe('scrollProgress', () => {
     delete global.window;
     expect(() => scrollProgress('#el')).not.toThrow();
     global.window = orig;
+  });
+});
+
+// ── 2.26.0: a CSS cubic-bezier() string is the curve it names ────────────────
+// Every engine read a string as EASINGS[easing] ?? its default, so this ran as
+// the default without a word. Same scroll position, three runs: the string,
+// an independent solver of the same curve (bezierReference), and linear.
+
+describe('scrollProgress — easing as a CSS string', () => {
+  function eased(easing: Easing): number {
+    let last = NaN;
+    scrollProgress(makeEl(300), { easing, onProgress: (_raw, e) => { last = e; } });
+    scroll();
+    raf.tick();
+    return last;
+  }
+
+  it('eases with the cubic-bezier() it names, not linear', () => {
+    const css = eased(SNAPPY);
+    expect(css).toBeGreaterThan(0.05);
+    expect(css).toBeLessThan(0.99);
+    expect(css).toBeCloseTo(eased(snappy), 6);
+    expect(Math.abs(css - eased('linear'))).toBeGreaterThan(0.05);
   });
 });

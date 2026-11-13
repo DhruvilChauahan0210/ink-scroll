@@ -529,8 +529,18 @@ instance.destroy();   // cleanup on unmount`}
               <Opt name="speed" type="number" defaultVal="1">
                 Animation speed multiplier. Values above 1 complete the draw over a shorter scroll distance. Values below 1 slow it down.
               </Opt>
-              <Opt name="easing" type="'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | 'spring' | 'bounce' | 'elastic' | (t: number) => number" defaultVal="'linear'">
+              <Opt name="easing" type="'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | 'spring' | 'bounce' | 'elastic' | `cubic-bezier(…)` | 'ease' | (t: number) => number" defaultVal="'linear'">
                 Easing curve applied to draw progress. Pass a custom function for full control — it receives progress from 0 to 1 and may return values outside 0–1: overshoot past 1 is how spring and elastic work.
+                Since 2.26.0 it also takes a CSS cubic-bezier() as you would write it in a stylesheet, in every API:{' '}
+                <code className="font-mono text-pitch-black">{"'cubic-bezier(.2, .8, .2, 1)'"}</code> (x1 and x2 in [0, 1]),
+                and the keyword{' '}
+                <code className="font-mono text-pitch-black">ease</code> (steps() is not parsed: pass a function). The library&apos;s own names come first:{' '}
+                <code className="font-mono text-pitch-black">ease-in</code>,{' '}
+                <code className="font-mono text-pitch-black">ease-out</code> and{' '}
+                <code className="font-mono text-pitch-black">ease-in-out</code> are its quadratics, not the CSS keywords
+                of the same name. Any other string (a typo like{' '}
+                <code className="font-mono text-pitch-black">{"'easeOut'"}</code>) warns in development, naming the value and
+                the valid forms, and runs as the default; in 2.25 and earlier every one of these strings ran as the default without a word.
               </Opt>
               <Opt name="direction" type="'forward' | 'reverse'" defaultVal="'forward'">
                 <code className="font-mono text-pitch-black">{"'forward'"}</code> draws the path as you scroll in.{' '}
@@ -552,7 +562,7 @@ instance.destroy();   // cleanup on unmount`}
                 exactly drawn. In 2.23.2 and earlier it stayed on the overshoot, drawn past its end; fixed in 2.23.3.
               </Opt>
             </OptGroup>
-            <Try>Watch each named easing draw a line in the <Link href="/easing-visualizer" className={TRY_LINK}>easing visualizer</Link>, or shape your own curve in the <Link href="/cubic-bezier-generator" className={TRY_LINK}>cubic-bezier generator</Link> and copy it as a JS easing function.</Try>
+            <Try>Watch each named easing draw a line in the <Link href="/easing-visualizer" className={TRY_LINK}>easing visualizer</Link>, or shape your own curve in the <Link href="/cubic-bezier-generator" className={TRY_LINK}>cubic-bezier generator</Link> and paste its cubic-bezier() string straight into easing (2.26.0+).</Try>
           </DocSection>
 
           {/* ── Trigger ──────────────────────────────────────── */}
@@ -1324,7 +1334,7 @@ export function ParallaxSection() {
             <Sub>Options</Sub>
             <OptGroup>
               <Opt name="speed" type="number" defaultVal="1">Same speed multiplier as <code className="font-mono text-pitch-black">scrollDraw()</code>.</Opt>
-              <Opt name="easing" type="EasingName | (t: number) => number" defaultVal="'linear'">Same easing curves as <code className="font-mono text-pitch-black">scrollDraw()</code>.</Opt>
+              <Opt name="easing" type="Easing (a name, a CSS cubic-bezier() string, or (t: number) => number)" defaultVal="'linear'">Same easing curves as <code className="font-mono text-pitch-black">scrollDraw()</code>.</Opt>
               <Opt name="trigger" type="TriggerConfig">Same trigger syntax. Default: start <code className="font-mono text-pitch-black">{"'top bottom'"}</code>, end <code className="font-mono text-pitch-black">{"'bottom top'"}</code>.</Opt>
               <Opt name="axis" type="'x' | 'y'" defaultVal="'y'">Scroll axis.</Opt>
               <Opt name="scrollContainer" type="string | Element">Custom scroll container.</Opt>
@@ -1349,13 +1359,16 @@ export function ParallaxSection() {
             <p className="text-sm text-graphite-border leading-relaxed mb-4">
               Default trigger, optional{' '}
               <code className="font-mono text-pitch-black">fade</code>, forward or reverse direction,
-              and one of four easings:{' '}
+              and one of four named easings:{' '}
               <code className="font-mono text-pitch-black">linear</code>,{' '}
               <code className="font-mono text-pitch-black">ease-in</code>,{' '}
               <code className="font-mono text-pitch-black">ease-out</code>,{' '}
               <code className="font-mono text-pitch-black">ease-in-out</code>. Those four are emitted as
               CSS timing functions that reproduce this library&apos;s own curves — <em>not</em> the CSS
               keywords of the same name, which are different curves and differ by up to 0.069.
+              Since 2.26.0 a CSS{' '}
+              <code className="font-mono text-pitch-black">cubic-bezier()</code> string you pass is eligible too, and goes to CSS
+              as written, so both engines run the same curve.
               Any other easing (<code className="font-mono text-pitch-black">spring</code>,{' '}
               <code className="font-mono text-pitch-black">bounce</code>,{' '}
               <code className="font-mono text-pitch-black">elastic</code>, or a function) declines the
@@ -1559,7 +1572,7 @@ instance.destroy();`}
               <Opt name="to" type="number">
                 Progress value (0–1) within the overall range where this track finishes drawing.
               </Opt>
-              <Opt name="easing" type="EasingName | function" defaultVal="'linear'">
+              <Opt name="easing" type="EasingName | CSS cubic-bezier() string | function" defaultVal="'linear'">
                 Easing applied to this track’s local progress independently of other tracks.
               </Opt>
               <Opt name="fade" type="boolean" defaultVal="false">

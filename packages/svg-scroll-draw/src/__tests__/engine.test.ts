@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { createEngine } from '../core/engine';
 import { scrollDraw } from '../index';
+import { SNAPPY, snappy } from './bezierReference';
+import type { Easing } from '../core/types';
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -460,5 +462,26 @@ describe('scrollDraw', () => {
       const container = makeContainer([makeSvgPath()]);
       expect(() => createEngine(container).destroy()).not.toThrow();
     });
+  });
+});
+
+// ── 2.26.0: a CSS cubic-bezier() string is the curve it names ────────────────
+// Every engine read a string as EASINGS[easing] ?? its default, so this ran as
+// the default without a word. Same scroll position, three runs: the string,
+// an independent solver of the same curve (bezierReference), and linear.
+
+describe('scrollDraw — easing as a CSS string', () => {
+  function drawn(easing: Easing): number {
+    const path = makeSvgPath();
+    scrollDraw(makeContainer([path]), { easing, native: false });
+    scroll();
+    raf.tick();
+    return 1 - parseFloat(path.style.strokeDashoffset) / 100;
+  }
+
+  it('draws the cubic-bezier() it names, not linear', () => {
+    const css = drawn(SNAPPY);
+    expect(css).toBeCloseTo(drawn(snappy), 6);
+    expect(Math.abs(css - drawn('linear'))).toBeGreaterThan(0.05);
   });
 });

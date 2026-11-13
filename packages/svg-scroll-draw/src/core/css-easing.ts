@@ -1,4 +1,4 @@
-import { EASINGS } from './easing';
+import { EASINGS, cssEasing } from './easing';
 
 /**
  * CSS timing functions that reproduce this library's own easing curves.
@@ -76,7 +76,8 @@ function sampleAsLinear(fn: (t: number) => number): string {
  * is none — in which case the caller must stay on the JS engine rather than
  * substitute a curve the user did not ask for.
  *
- * Only the four named easings that had a (wrong) mapping before are handled.
+ * The four named easings that had a (wrong) mapping before, and (2.26.0+) a
+ * CSS cubic-bezier() string, are handled.
  * `spring`, `bounce`, `elastic` and function easings deliberately return null:
  * `linear()` could sample those too, but widening which configurations take the
  * fast path is a behaviour change, not a correctness fix.
@@ -92,6 +93,8 @@ export function cssTimingFor(easing: string): string | null {
     case 'ease-in-out':
       return supportsLinearTiming() ? sampleAsLinear(EASINGS['ease-in-out']) : null;
     default:
-      return null;
+      // A cubic-bezier() string the user wrote (2.26.0+) goes to CSS normalized,
+      // so both engines run the curve resolveEasing parsed.
+      return cssEasing(easing)?.[1] ?? null;
   }
 }

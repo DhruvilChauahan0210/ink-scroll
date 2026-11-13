@@ -1,5 +1,5 @@
-import type { EasingName, TriggerConfig, ScrollDrawInstance } from '../core/types';
-import { EASINGS } from '../core/easing';
+import type { Easing, TriggerConfig, ScrollDrawInstance } from '../core/types';
+import { resolveEasing } from '../core/easing';
 import { parseTrigger, computeProgress, computeTriggers } from '../core/trigger';
 import { measureTriggerFrame } from '../core/trigger-frame';
 import { _register, _unregister } from '../core/registry';
@@ -20,7 +20,7 @@ export interface ScrollProgressOptions {
    */
   easedVariable?: string | null;
   trigger?: TriggerConfig;
-  easing?: EasingName | ((t: number) => number);
+  easing?: Easing;
   speed?: number;
   /** Scroll axis. Default: 'y'. */
   axis?: 'x' | 'y';
@@ -77,7 +77,7 @@ export function scrollProgress(
     onProgress,
   } = options;
 
-  const easeFn      = typeof easing === 'function' ? easing : (EASINGS[easing] ?? EASINGS.linear);
+  const easeFn      = resolveEasing(easing);
   const startConfig = parseTrigger(trigger.start || 'top bottom');
   const endConfig   = parseTrigger(trigger.end   || 'bottom top');
 

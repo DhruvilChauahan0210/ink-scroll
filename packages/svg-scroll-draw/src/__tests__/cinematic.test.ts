@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { Cinematic } from '../cinematic';
 import type { Story } from '../cinematic/story';
+import { SNAPPY, snappy } from './bezierReference';
+import type { StoryEasing } from '../cinematic/story';
 
 // ── fakes ──────────────────────────────────────────────────────────────────────
 
@@ -273,5 +275,30 @@ describe('Cinematic', () => {
       document.body.style.overflowY = '';
       for (const k of ['scrollHeight', 'clientHeight', 'scrollTop']) delete (document.body as unknown as Record<string, unknown>)[k];
     }
+  });
+});
+
+// ── 2.26.0: a CSS cubic-bezier() string is the curve it names ────────────────
+// Every engine read a string as EASINGS[easing] ?? its default, so this ran as
+// the default without a word. Same scroll position, three runs: the string,
+// an independent solver of the same curve (bezierReference), and linear.
+
+describe('Cinematic — easing as a CSS string', () => {
+  function drawn(easing: StoryEasing): number {
+    const mount = document.createElement('div');
+    document.body.appendChild(mount);
+    stubScroll(mount, -500); // progress 0.5
+    const story = makeStory();
+    story.scenes[0].animations = [
+      { type: 'draw', target: '#path-a', d: 'M0 0 L100 0', length: 100, start: '0%', end: '100%', stroke: '#fff', strokeWidth: 3, easing },
+    ];
+    new Cinematic({ wrapper: mount }).loadStory(story);
+    return 1 - Number((mount.querySelector('#path-a') as SVGPathElement).style.strokeDashoffset) / 100;
+  }
+
+  it('draws a story path along the cubic-bezier() it names, not linear', () => {
+    const css = drawn(SNAPPY);
+    expect(css).toBeCloseTo(snappy(0.5), 6);
+    expect(Math.abs(css - drawn('linear'))).toBeGreaterThan(0.05);
   });
 });

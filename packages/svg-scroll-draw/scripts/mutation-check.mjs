@@ -1515,6 +1515,46 @@ const MUTATIONS = [
     spec: 'frames-wrappers',
     grep: 'angular ScrollFramesRef.*unmounting stops the film',
   },
+  // 2.26.0: a CSS timing function string as `easing`. Every engine used to run
+  // it as its fallback, and the native path declined it, so the two engines
+  // agreed with each other on the wrong curve. Each mutation puts back one half.
+  {
+    id: 'easing/css-string-ignored',
+    what: 'resolveEasing parses a cubic-bezier() string and then runs the fallback anyway, as every engine did before',
+    file: 'src/core/easing.ts',
+    from: '  if (css) return css[0];',
+    to: '  if (css) return EASINGS[fallback];',
+    spec: 'e2e/parity.spec.ts',
+    grep: 'a CSS cubic-bezier\\(\\) string renders the same curve on both engines',
+  },
+  {
+    id: 'easing/bezier-unsolved',
+    what: 'the cubic-bezier() solver never runs, so y is read at u = x instead of where x(u) = x',
+    file: 'src/core/easing.ts',
+    // Both halves of the solver: no Newton steps, and no bisection either.
+    from: '    let u = x;\n    for (let i = 0; i < 8; i++)',
+    to: '    let u = x;\n    return at(y1, y2, u);\n    for (let i = 0; i < 8; i++)',
+    spec: 'e2e/parity.spec.ts',
+    grep: 'a CSS cubic-bezier\\(\\) string renders the same curve on both engines',
+  },
+  {
+    id: 'easing/native-declines-css',
+    what: 'the native path declines a cubic-bezier() string, so the fast path never runs it',
+    file: 'src/core/css-easing.ts',
+    from: '      return cssEasing(easing)?.[1] ?? null;',
+    to: '      return null;',
+    spec: 'e2e/parity.spec.ts',
+    grep: 'a CSS cubic-bezier\\(\\) string renders the same curve on both engines',
+  },
+  {
+    id: 'easing/native-wrong-curve',
+    what: 'the native path hands CSS a different timing function from the one the JS engine solves',
+    file: 'src/core/easing.ts',
+    from: '    return [cubicBezier(v[0], v[1], v[2], v[3]), `cubic-bezier(${v})`];',
+    to: "    return [cubicBezier(v[0], v[1], v[2], v[3]), 'ease'];",
+    spec: 'e2e/parity.spec.ts',
+    grep: 'a CSS cubic-bezier\\(\\) string renders the same curve on both engines',
+  },
 ];
 
 const args = process.argv.slice(2);

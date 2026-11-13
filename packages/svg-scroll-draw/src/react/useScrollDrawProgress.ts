@@ -1,16 +1,16 @@
 import { useState, useEffect, useRef, type RefObject } from 'react';
-import { EASINGS } from '../core/easing';
+import { resolveEasing } from '../core/easing';
 import { parseTrigger, computeProgress, computeTriggers } from '../core/trigger';
 import { measureTriggerFrame } from '../core/trigger-frame';
 import { watchReducedMotion } from '../core/motion-watch';
 import { frameGate } from '../core/frame-gate';
-import type { EasingName, TriggerConfig } from '../core/types';
+import type { Easing, TriggerConfig } from '../core/types';
 
 export interface UseScrollDrawProgressOptions {
   /** Same speed multiplier as ScrollDraw. Values > 1 complete faster. Default 1. */
   speed?: number;
   /** Same easing curves as ScrollDraw. Default 'linear'. */
-  easing?: EasingName | ((t: number) => number);
+  easing?: Easing;
   /** Same trigger syntax as ScrollDraw. Default: start 'top bottom', end 'bottom top'. */
   trigger?: TriggerConfig;
   /** Scroll axis. Default 'y'. */
@@ -99,7 +99,7 @@ export function useScrollDrawProgress(
 
     function tick(): void {
       const { speed = 1, easing = 'linear', once = false } = optsRef.current;
-      const easeFn = typeof easing === 'function' ? easing : (EASINGS[easing] ?? EASINGS.linear);
+      const easeFn = resolveEasing(easing);
 
       const raw = computeProgress(scrollPos(), tStart, tEnd, speed);
       const p = easeFn(once ? (frozenRef.current = Math.max(frozenRef.current, raw)) : raw);

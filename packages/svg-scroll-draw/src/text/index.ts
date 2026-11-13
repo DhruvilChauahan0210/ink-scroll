@@ -1,5 +1,5 @@
-import type { EasingName, ScrollDrawInstance, TriggerConfig } from '../core/types';
-import { EASINGS } from '../core/easing';
+import type { Easing, ScrollDrawInstance, TriggerConfig } from '../core/types';
+import { resolveEasing } from '../core/easing';
 import { parseTrigger, computeProgress, computeTriggers } from '../core/trigger';
 import { _register, _unregister } from '../core/registry';
 import { warn } from '../core/env';
@@ -12,7 +12,7 @@ import { clamp } from '../core/math';
 export interface ScrollTextOptions {
   split?: 'chars' | 'words' | 'lines';
   stagger?: number;
-  easing?: EasingName | ((t: number) => number);
+  easing?: Easing;
   from?: {
     opacity?: number;
     y?: number;
@@ -214,7 +214,7 @@ function buildText(el: HTMLElement, options: ScrollTextOptions, prefersReduced: 
     onComplete,
   } = options;
 
-  const easeFn         = typeof easing === 'function' ? easing : (EASINGS[easing] ?? EASINGS['ease-out']);
+  const easeFn         = resolveEasing(easing, 'ease-out');
   const startConfig    = parseTrigger(trigger.start || 'top 85%');
   const endConfig      = parseTrigger(trigger.end   || 'top 40%');
 

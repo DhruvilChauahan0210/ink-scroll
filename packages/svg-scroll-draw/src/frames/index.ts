@@ -1,5 +1,5 @@
-import type { EasingName, ScrollDrawInstance, TriggerConfig } from '../core/types';
-import { EASINGS } from '../core/easing';
+import type { Easing, ScrollDrawInstance, TriggerConfig } from '../core/types';
+import { resolveEasing } from '../core/easing';
 import { parseTrigger, computeProgress, computeTriggers } from '../core/trigger';
 import { _register, _unregister } from '../core/registry';
 import { warn } from '../core/env';
@@ -14,7 +14,7 @@ export interface ScrollFramesOptions {
   /** Number of frames; required when `frames` is a function, else frames.length. */
   count?: number;
   trigger?: TriggerConfig;
-  easing?: EasingName | ((t: number) => number);
+  easing?: Easing;
   once?: boolean;
   axis?: 'x' | 'y';
   /**
@@ -132,7 +132,7 @@ export function scrollFrames(
   const measured: Element = triggerElement ?? canvas;
 
   let prefersReduced   = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const easeFn         = typeof easing === 'function' ? easing : (EASINGS[easing] ?? EASINGS.linear);
+  const easeFn         = resolveEasing(easing);
   /** An easing that returns NaN (a custom one dividing by zero) reads as the start. */
   const ease = (t: number): number => {
     const v = easeFn(t);

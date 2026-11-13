@@ -1,4 +1,4 @@
-import type { EasingName, TriggerConfig } from '../core/types';
+import type { Easing, TriggerConfig } from '../core/types';
 import { createAnimateEngine } from '../animate/engine';
 import { warn } from '../core/env';
 
@@ -66,7 +66,7 @@ export interface ScrollRevealOptions {
    */
   stagger?: number;
   /** Animation easing. Default: `'ease-out'`. */
-  easing?: EasingName | ((t: number) => number);
+  easing?: Easing;
   /** Freeze at max progress — don't reverse on scroll back. Default: true. */
   once?: boolean;
   /** Override the default trigger window. */

@@ -66,6 +66,28 @@
 
 <div class="spacer"></div>
 
+<!-- A third pair with a CSS timing function string (2.26.0+). Before, every engine
+     read it as EASINGS[easing] ?? linear, and the native path declined it, so
+     both cells ran linear and agreed with each other on the wrong curve. -->
+<div class="row">
+  <div class="cell">
+    <div class="box" id="nativeB">
+      <svg viewBox="0 0 200 100" preserveAspectRatio="none">
+        <path d="M10 50 C 40 10, 80 10, 100 50 S 160 90, 190 50"></path>
+      </svg>
+    </div>
+  </div>
+  <div class="cell">
+    <div class="box" id="jsB">
+      <svg viewBox="0 0 200 100" preserveAspectRatio="none">
+        <path d="M10 50 C 40 10, 80 10, 100 50 S 160 90, 190 50"></path>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<div class="spacer"></div>
+
 <script type="module">
 import { scrollDraw } from '/dist/index.mjs';
 
@@ -86,6 +108,11 @@ const supportsNative =
 // same-named keyword for that is not the same curve.
 const nativeEasedInst = scrollDraw('#nativeE', { native: true,  easing: 'ease-out' });
 const jsEasedInst     = scrollDraw('#jsE',     { native: false, easing: 'ease-out' });
+
+// The same pair once more with what anyone coming from CSS writes.
+const BEZIER = 'cubic-bezier(.2,.8,.2,1)';
+scrollDraw('#nativeB', { native: true,  easing: BEZIER });
+scrollDraw('#jsB',     { native: false, easing: BEZIER });
 
 const nativePath = document.querySelector('#native path');
 const jsPath     = document.querySelector('#js path');
@@ -118,6 +145,16 @@ window.__probe = {
     js: drawnFraction(jsEasedPath),
     scrollY: window.scrollY,
   }),
+  // The cubic-bezier() pair: what it reads, whether the native path took it,
+  // and where its window sits.
+  readBezier: () => ({
+    native: drawnFraction(document.querySelector('#nativeB path')),
+    js: drawnFraction(document.querySelector('#jsB path')),
+    scrollY: window.scrollY,
+  }),
+  bezierNativeEngaged: () =>
+    document.querySelector('#nativeB path').className.baseVal.includes('svg-scroll-draw-'),
+  bezierTop: () => document.querySelector('#nativeB').getBoundingClientRect().top + window.scrollY,
   easedGeometry: () => {
     const box = document.querySelector('#nativeE');
     const top = box.getBoundingClientRect().top + window.scrollY;

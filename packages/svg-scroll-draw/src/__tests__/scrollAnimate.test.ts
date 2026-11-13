@@ -1,5 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { scrollAnimate, scrollParallax, interpolateValue } from '../animate';
+import { SNAPPY, snappy } from './bezierReference';
+import type { Easing } from '../core/types';
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -561,5 +563,29 @@ describe('scrollParallax', () => {
     const inst = scrollParallax(el);
     inst.destroy();
     expect(unlisten).toHaveBeenCalledWith('scroll', expect.any(Function), expect.anything());
+  });
+});
+
+// ── 2.26.0: a CSS cubic-bezier() string is the curve it names ────────────────
+// Every engine read a string as EASINGS[easing] ?? its default, so this ran as
+// the default without a word. Same scroll position, three runs: the string,
+// an independent solver of the same curve (bezierReference), and linear.
+
+describe('scrollAnimate — easing as a CSS string', () => {
+  function alpha(easing: Easing): number {
+    const el = document.createElement('div');
+    document.body.appendChild(el);
+    const inst = scrollAnimate(el, { props: { opacity: [0, 1] }, easing, native: false });
+    scroll();
+    raf.tick();
+    return inst.getProgress();
+  }
+
+  it('runs the cubic-bezier() it names, not its ease-out default', () => {
+    const css = alpha(SNAPPY);
+    expect(css).toBeGreaterThan(0.05);
+    expect(css).toBeLessThan(0.95);
+    expect(css).toBeCloseTo(alpha(snappy), 6);
+    expect(Math.abs(css - alpha('ease-out'))).toBeGreaterThan(0.02);
   });
 });

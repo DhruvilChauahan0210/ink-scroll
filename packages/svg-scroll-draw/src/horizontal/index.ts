@@ -1,4 +1,4 @@
-import type { EasingName, TriggerConfig, ScrollDrawInstance } from '../core/types';
+import type { Easing, TriggerConfig, ScrollDrawInstance } from '../core/types';
 import { createAnimateEngine } from '../animate/engine';
 import { warn } from '../core/env';
 import { watchLayout } from '../core/layout-watch';
@@ -22,7 +22,7 @@ export interface ScrollHorizontalOptions {
    */
   trigger?: TriggerConfig;
   /** Easing for the horizontal movement. Default: `'linear'` (scrub feel). */
-  easing?: EasingName | ((t: number) => number);
+  easing?: Easing;
   /** Custom scroll container. Default: window. */
   scrollContainer?: string | Element;
   /**

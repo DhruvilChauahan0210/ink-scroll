@@ -36,6 +36,9 @@ type Probe = {
   read: () => { native: number; js: number; scrollY: number };
   totalLength: () => number;
   readEased: () => { native: number; js: number; scrollY: number };
+  readBezier: () => { native: number; js: number; scrollY: number };
+  bezierNativeEngaged: () => boolean;
+  bezierTop: () => number;
   easedGeometry: () => {
     top: number;
     height: number;
@@ -249,6 +252,71 @@ test.describe('native CSS fast path vs JS engine', () => {
 
     // Not vacuous: the sweep has to include genuinely partial draws.
     expect(rows.filter((r) => r.want > 0.05 && r.want < 0.95).length, shown).toBeGreaterThanOrEqual(3);
+  });
+
+  /**
+   * 2.26.0: `easing: 'cubic-bezier(.2,.8,.2,1)'`, a CSS timing function string.
+   *
+   * Every engine used to read it as `EASINGS[easing] ?? linear`, and the native
+   * path, finding no mapping for it, declined it: both cells ran linear, agreed
+   * with each other, and both were wrong. The native path now hands CSS the
+   * string (normalized) and the JS engine solves the same bézier, so both are
+   * held to an independent solve of the curve, not just to each other.
+   *
+   * Fixture: the third pair sits two spacers below the eased one, 300 tall:
+   * top = 5400, tStart = 4600, tEnd = 5700.
+   */
+  test('a CSS cubic-bezier() string renders the same curve on both engines', async ({ page }) => {
+    await open(page);
+
+    const { supportsNative, engaged, top } = await page.evaluate(() => ({
+      supportsNative: window.__probe.supportsNative,
+      engaged: window.__probe.bezierNativeEngaged(),
+      top: window.__probe.bezierTop(),
+    }));
+    expect(top, 'bezier pair is not where this test thinks').toBe(5400);
+    // Where the browser has scroll timelines, the string must take the fast
+    // path: declining it would compare the JS engine with itself.
+    expect(engaged).toBe(supportsNative);
+
+    /** cubic-bezier(.2,.8,.2,1) by bisection: nothing shared with the library. */
+    const bez = (x: number) => {
+      const b = (a: number, c: number, u: number) => 3 * a * u * (1 - u) ** 2 + 3 * c * u * u * (1 - u) + u ** 3;
+      let lo = 0;
+      let hi = 1;
+      for (let i = 0; i < 60; i++) {
+        const mid = (lo + hi) / 2;
+        if (b(0.2, 0.2, mid) < x) lo = mid;
+        else hi = mid;
+      }
+      return b(0.8, 1, (lo + hi) / 2);
+    };
+    const alphaAt = (y: number) => Math.min(1, Math.max(0, (y - 4600) / (5700 - 4600)));
+
+    const rows: { y: number; native: number; js: number; want: number }[] = [];
+    for (let y = 4500; y <= 5800; y += 100) {
+      await page.evaluate((to) => window.scrollTo(0, to), y);
+      await settle(page);
+      const v = await page.evaluate(() => window.__probe.readBezier());
+      rows.push({ y: v.scrollY, native: v.native, js: v.js, want: bez(alphaAt(v.scrollY)) });
+    }
+
+    const shown = rows
+      .map(
+        (r) =>
+          `  y=${String(r.y).padStart(4)}  native=${r.native.toFixed(4)}  js=${r.js.toFixed(4)}` +
+          `  want=${r.want.toFixed(4)}`,
+      )
+      .join('\n');
+
+    for (const r of rows) {
+      expect(Math.abs(r.js - r.want), `the JS engine is off the bézier at y=${r.y}\n${shown}`).toBeLessThanOrEqual(TOLERANCE);
+      expect(Math.abs(r.native - r.want), `the native path is off the bézier at y=${r.y}\n${shown}`).toBeLessThanOrEqual(TOLERANCE);
+    }
+
+    // Not vacuous, and not linear: somewhere mid-window the curve is well
+    // clear of the straight line it used to run as.
+    expect(rows.some((r) => r.want - alphaAt(r.y) > 0.2), shown).toBe(true);
   });
 
   test('scrolling back up reverses both engines together', async ({ page }) => {
