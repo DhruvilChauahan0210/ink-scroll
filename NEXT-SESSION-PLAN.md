@@ -1,6 +1,6 @@
 # Next Session Plan — svg-scroll-draw
 
-> Updated: 2026-11-13 — **Branch `feat/tools-tests-gates-links`**: CI tests every tool page, 2.23.5 (window gate in every engine), tool links from docs/examples/blog. After it reaches `main`: `git tag v2.23.5 <sha> && git push origin v2.23.5`. Next: cinematic window gate; Google indexing queue (`reports/indexing-queue.md`, ~2 a day); measure tools in Search Console. Earlier history below.
+> Updated: 2026-11-13 — **Branch `feat/heart-and-speed`**: messaging leads with line drawing; tool page speed. 2.23.6 is docs-only (npm README/description). After it reaches `main`: `git tag v2.23.6 <sha> && git push origin v2.23.6`. Next: cinematic window gate; Google indexing queue (~2 a day); Search Console per tool in 2–3 weeks. Earlier history below.
 
 ---
 

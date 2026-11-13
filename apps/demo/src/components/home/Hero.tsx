@@ -2,6 +2,8 @@ import './hero.css';
 import Link from 'next/link';
 import { PenDrawing } from './PenDrawing';
 import { CopyCommand } from './CopyCommand';
+import { COMPETITORS } from '@/data/competitors';
+import { TOOLS } from '@/data/tools';
 
 type Props = { gzipKb: number; unitTests: number; browserTests: number };
 
@@ -30,15 +32,26 @@ export function Hero({ gzipKb, unitTests, browserTests }: Props) {
         <div className="he-in">
           <div className="he-copy">
             <p className="he-kicker"><span>00 / svg-scroll-draw</span><span>MIT · open source</span></p>
-            <h1 className="he-title">The scroll animation library that draws</h1>
+            <h1 className="he-title">SVG line drawing on scroll, done right</h1>
             <p className="he-sub">
-              Paths, text, pins and video — inked by scroll on the browser’s own timeline, with a frame loop
-              wherever it has none
+              Correct path lengths, stagger and morph, drawn on the browser’s own scroll timeline where it can
+              be and by a frame loop where it can’t.{' '}
+              <span className="he-sub-size">
+                {gzipKb} KB gzipped, against {COMPETITORS.gsapStack.gzipKb} KB for GSAP, ScrollTrigger and DrawSVG.
+              </span>
             </p>
             <div className="he-cta">
               <CopyCommand />
               <Link href="/docs" className="btn btn-solid" data-magnetic>Get started</Link>
             </div>
+            <p className="he-alt">
+              <span>
+                Switch from <Link href="/vs-aos">AOS, ScrollReveal</Link> or <Link href="/vs-vivus">vivus</Link> in
+                one line
+              </span>
+              <span className="he-alt-more" aria-hidden="true">·</span>
+              <Link href="/tools" className="he-alt-more">{TOOLS.length} free tools</Link>
+            </p>
             <dl className="he-stats">
               <div><dt>Gzipped</dt><dd>{gzipKb}<small> KB</small></dd></div>
               <div><dt>Dependencies</dt><dd>0</dd></div>

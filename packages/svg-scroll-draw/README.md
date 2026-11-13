@@ -7,7 +7,22 @@
 [![license](https://img.shields.io/npm/l/svg-scroll-draw)](./LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/DhruvilChauahan0210/ink-scroll?style=flat)](https://github.com/DhruvilChauahan0210/ink-scroll/stargazers)
 
-> Draw SVG paths on scroll — plus reveal, pin, snap, parallax, counters, video scrub and text splitting. **11.6 KB gzipped for every API, from 1.6 KB if you import one.** Zero dependencies, MIT, and a native CSS fast path that runs with no per-frame JavaScript. Works in React, Next.js, Vue, Svelte, Solid, Angular, Astro, Nuxt and vanilla JS.
+> SVG line drawing on scroll, done right: correct path lengths, stagger across many paths, and `morphTo`. Where the browser supports `animation-timeline: view()` the draw runs on its own scroll timeline in CSS, with no per-frame JavaScript; in other browsers, and for options CSS can't express, a JavaScript engine draws it, and a parity suite checks in Chromium, Firefox and WebKit that both draw the same frame. **11.4 KB gzipped for every API, from 1.6 KB if you import one**, against 47.5 KB for GSAP + ScrollTrigger + DrawSVG. Zero dependencies, MIT.
+
+**Switch in one line.** Already on AOS, ScrollReveal or vivus? Change the import and keep your markup and calls:
+
+```diff
+- import AOS from 'aos';
++ import AOS from 'svg-scroll-draw/aos';           // and delete aos.css: the styles ship inside
+- import ScrollReveal from 'scrollreveal';
++ import ScrollReveal from 'svg-scroll-draw/scrollreveal';
+- import Vivus from 'vivus';
++ import Vivus from 'svg-scroll-draw/vivus';
+```
+
+Each drop-in is tested side by side against the original in real browsers (AOS 2.3.4, which has had no release since; ScrollReveal 4.0.9, which is GPL-3.0 where this is MIT; vivus 0.4.6). `npx svg-scroll-draw migrate` makes the change across a project.
+
+**And the rest of scroll animation.** Reveal, pin, snap, parallax, counters, video scrub and text splitting, each its own entry point, so you load only what you import. Works in React, Next.js, Vue, Svelte, Solid, Angular, Astro, Nuxt and vanilla JS. Plus [free in-browser tools](https://svg-scroll-draw.vercel.app/tools) — generators, editors and converters — that write the code for you.
 
 **[Live Demo](https://svg-scroll-draw.vercel.app)** · [npm](https://www.npmjs.com/package/svg-scroll-draw) · [Docs](https://svg-scroll-draw.vercel.app/docs) · [Examples](https://svg-scroll-draw.vercel.app/examples) · [Report a bug](https://github.com/DhruvilChauahan0210/ink-scroll/issues)
 
@@ -378,7 +393,7 @@ import { ScrollDraw } from 'svg-scroll-draw/vue';
 Already using [AOS](https://github.com/michalsnik/aos)? `svg-scroll-draw/aos` speaks its API and
 reads its markup, so the move is an import change — or one command: `npx svg-scroll-draw migrate`. Keep every `data-aos`, `data-aos-offset`,
 `data-aos-delay`, `data-aos-anchor-placement` and custom animation; delete `aos.css` — the styles ship
-inside the module. 3.1 KB gzipped with the styles, against 6.7 KB for AOS 2.3.4 with its stylesheet.
+inside the module. 3.2 KB gzipped with the styles, against 6.7 KB for AOS 2.3.4 with its stylesheet.
 
 ```diff
 - import AOS from 'aos';

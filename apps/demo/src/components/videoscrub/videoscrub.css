@@ -260,7 +260,9 @@
 .site .vsg-tl-key { position: absolute; bottom: 0; height: 8px; border-left: 1px solid var(--fg-3); }
 .site .vsg-tl-ask { position: absolute; top: 0; height: 10px; margin-left: -3px; border: 3px solid transparent; border-top-color: var(--fg); }
 .site .vsg-tl-now { position: absolute; top: -4px; bottom: -4px; margin-left: -1px; border-left: 2px solid var(--accent); }
-.site .vsg-tl-read { margin: 0; font-size: 12.5px; line-height: 1.5; color: var(--fg-2); }
+/* Two lines held for the frame readout, so "Waiting for the film." (one line)
+   does not push the page down when the film arrives while the tool is in view. */
+.site .vsg-tl-read { margin: 0; min-height: 3em; font-size: 12.5px; line-height: 1.5; color: var(--fg-2); }
 
 .site .vsg-seeks { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0; border-top: 1px solid var(--line-2); border-bottom: 1px solid var(--line); }
 .site .vsg-seeks > div { display: grid; gap: 4px; padding: 8px 0; }

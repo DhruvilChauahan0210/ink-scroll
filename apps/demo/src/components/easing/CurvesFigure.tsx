@@ -43,11 +43,13 @@ export function CurvesFigure() {
                 <clipPath id={`ezf-clip-${c.name}`}>
                   <rect x={BOX.x} y={0} width={BOX.w} height={yOf(1) - 2} />
                 </clipPath>
+                {/* Written once and drawn twice (ink, then the overshoot in the accent): 200 points a curve. */}
+                <path id={`ezf-d-${c.name}`} d={c.d} vectorEffect="non-scaling-stroke" />
               </defs>
               <line className="ezf-zero" x1={BOX.x} x2={BOX.x + BOX.w} y1={yOf(0)} y2={yOf(0)} />
               <line className="ezf-one" x1={BOX.x} x2={BOX.x + BOX.w} y1={yOf(1)} y2={yOf(1)} />
-              <path className="ezf-curve" d={c.d} />
-              <path className="ezf-over" d={c.d} clipPath={`url(#ezf-clip-${c.name})`} />
+              <use className="ezf-curve" href={`#ezf-d-${c.name}`} />
+              <use className="ezf-over" href={`#ezf-d-${c.name}`} clipPath={`url(#ezf-clip-${c.name})`} />
             </svg>
             <p className="ezf-lab">
               <span className="ezf-name">{c.name}</span>

@@ -250,11 +250,15 @@ const ART: Record<LayerKey, ReactNode> = {
  * The scene, its layers in stacking order, each marked `data-plx-layer` for the
  * generator to find. Memoised: the generator re-renders on every scroll frame
  * of the preview, and the drawing never changes.
+ *
+ * `empty` draws the frame alone, at the same size (its aspect-ratio is CSS):
+ * the scene's art is about 30 KB of markup, so the second copy on the page
+ * waits outside the server HTML until the reader comes near it.
  */
-export const ParallaxScene = memo(function ParallaxScene({ ref, label }: { ref?: Ref<HTMLDivElement>; label: string }) {
+export const ParallaxScene = memo(function ParallaxScene({ ref, label, empty = false }: { ref?: Ref<HTMLDivElement>; label: string; empty?: boolean }) {
   return (
     <div ref={ref} className="plx-scene" role="img" aria-label={label}>
-      {PARALLAX_LAYERS.map(({ key }) => (
+      {!empty && PARALLAX_LAYERS.map(({ key }) => (
         <div key={key} className={`plx-layer plx-l-${key}`} data-plx-layer={key}>
           <svg viewBox={SCENE_VIEW.viewBox} preserveAspectRatio={SCENE_VIEW.fit} aria-hidden="true" focusable="false">
             <g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">

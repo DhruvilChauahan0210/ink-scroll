@@ -1,4 +1,4 @@
-import { COMPETITORS, SELF } from '@/data/competitors';
+import { COMPETITORS, SELF, SELF_ENTRIES } from '@/data/competitors';
 import { BROWSER_TESTS, UNIT_TESTS } from '@/data/facts';
 import { EXAMPLE_COUNT } from '@/data/examples-index';
 import { AOS_EFFECT_COUNT } from '@/data/aos-effects';
@@ -11,11 +11,19 @@ const TOOL_LINES = TOOLS.map((t) => `- [${t.name}](https://svg-scroll-draw.verce
 
 const BODY = `# svg-scroll-draw
 
-> Scroll-driven animation for the web. Draw SVG paths, reveal elements, pin
-> sections, scrub video, split text, and count numbers — all tied to scroll
-> position. ${SELF.gzipKb} KB gzipped for the whole main entry, zero runtime dependencies,
-> and a native CSS fast path, driven by the browser's scroll timeline with no
-> per-frame JavaScript, where the browser supports \`animation-timeline: view()\`.
+> SVG line drawing on scroll: correct path lengths, stagger across many paths,
+> and morphTo. Where the browser supports \`animation-timeline: view()\` the draw
+> runs on its own scroll timeline in CSS, with no per-frame JavaScript; elsewhere,
+> and for options CSS can't express, a JavaScript engine draws it, and parity
+> suites check both give the same frame in Chromium, Firefox and WebKit.
+> ${SELF.gzipKb} KB gzipped for the whole main entry, against ${COMPETITORS.gsapStack.gzipKb} KB for GSAP +
+> ScrollTrigger + DrawSVG; zero runtime dependencies, MIT.
+>
+> Switch in one line: drop-in replacements for AOS, ScrollReveal and vivus keep
+> existing markup and calls; change the import (see below) or run
+> \`npx svg-scroll-draw migrate\`. Also: reveal, pin, snap, parallax, counters,
+> video scrub and text splitting, each its own entry point, and ${TOOLS.length} free
+> in-browser tools (listed under Tools).
 
 Native CSS support: Chrome and Edge 115+, Safari 26+, and Firefox 159+ (Firefox
 turned scroll-driven animations on by default on 27 Oct 2026). Our CI runs the
@@ -39,9 +47,9 @@ Every API is a separate entry point, so you only pay for what you import:
 - \`scrollSnap\` (2.0 KB) — snap between sections
 - \`npx svg-scroll-draw migrate\` (add --dry-run to preview) rewrites a project's aos / scrollreveal / vivus imports, CDN script tags, aos.css and package.json to the drop-ins below.
 - React / Next.js hooks for the drop-ins (\"use client\" entries): \`import { AOSInit, useAOS } from 'svg-scroll-draw/aos/react'\` (put \`<AOSInit />\` in app/layout.tsx), \`useScrollReveal({ selector, interval })\` from 'svg-scroll-draw/scrollreveal/react' (returns a ref), \`const [ref, vivus] = useVivus(options)\` from 'svg-scroll-draw/vivus/react'. Each cleans up on unmount.
-- \`svg-scroll-draw/vivus\` (4.0 KB) — drop-in replacement for vivus 0.4: \`import Vivus from 'svg-scroll-draw/vivus'; new Vivus('svg-id', { type: 'oneByOne' })\`. Script tag: https://unpkg.com/svg-scroll-draw/dist/cdn/vivus.global.js (defines window.Vivus)
-- \`svg-scroll-draw/scrollreveal\` (4.5 KB) — drop-in replacement for ScrollReveal.js 4 under MIT: \`import ScrollReveal from 'svg-scroll-draw/scrollreveal'; ScrollReveal().reveal('.card')\`. Script tag: https://unpkg.com/svg-scroll-draw/dist/cdn/scrollreveal.global.js (defines window.ScrollReveal)
-- \`svg-scroll-draw/aos\` (3.1 KB, styles included) — drop-in replacement for AOS: \`import AOS from 'svg-scroll-draw/aos'; AOS.init()\` runs existing \`data-aos\` markup with no aos.css. Script tag: https://unpkg.com/svg-scroll-draw/dist/cdn/aos.global.js (defines window.AOS)
+- \`svg-scroll-draw/vivus\` (${SELF_ENTRIES.vivus} KB) — drop-in replacement for vivus 0.4: \`import Vivus from 'svg-scroll-draw/vivus'; new Vivus('svg-id', { type: 'oneByOne' })\`. Script tag: https://unpkg.com/svg-scroll-draw/dist/cdn/vivus.global.js (defines window.Vivus)
+- \`svg-scroll-draw/scrollreveal\` (${SELF_ENTRIES.scrollreveal} KB) — drop-in replacement for ScrollReveal.js 4 under MIT: \`import ScrollReveal from 'svg-scroll-draw/scrollreveal'; ScrollReveal().reveal('.card')\`. Script tag: https://unpkg.com/svg-scroll-draw/dist/cdn/scrollreveal.global.js (defines window.ScrollReveal)
+- \`svg-scroll-draw/aos\` (${SELF_ENTRIES.aos} KB, styles included) — drop-in replacement for AOS: \`import AOS from 'svg-scroll-draw/aos'; AOS.init()\` runs existing \`data-aos\` markup with no aos.css. Script tag: https://unpkg.com/svg-scroll-draw/dist/cdn/aos.global.js (defines window.AOS)
 - \`scrollParallax\` — move an element at a multiple of scroll distance
 - \`scrollCounter\` — animate a number from → to
 - \`scrollVideo\` — bind \`video.currentTime\` to scroll position

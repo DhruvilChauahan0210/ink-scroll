@@ -1,6 +1,6 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **2.23.5** staged on `feat/tools-tests-gates-links` (not tagged); npm `latest` is **2.23.4** (`v2.23.4` on `06cfc6c`, published 2026-11-12)
+> Current version: **2.23.6** staged on `feat/heart-and-speed` (docs-only, not tagged); npm `latest` is **2.23.5** (`v2.23.5` on `fe49755`, published 2026-11-13)
 > Tests: **833 unit** across 40 suites · **295 browser tests** per engine (885 runs
 > across Chromium/Firefox/WebKit) · **133 mutations**, each caught by the one test
 > named for it · **91.5% line coverage** (gate 90/90/82/82)
@@ -135,6 +135,11 @@ at all.
 - [x] MobileMenu version badge updated to v2.7.0
 
 ## Remaining / Next
+
+### Lead with the heart, tool page speed (2026-11-13; branch `feat/heart-and-speed`)
+
+- [x] Home hero, meta and JSON-LD, both READMEs, the npm description and llms.txt lead with SVG line drawing on the native scroll timeline, then the one-line switch from AOS, ScrollReveal and vivus
+- [x] Tool pages measured (phone, 4x CPU, slow network): all 25 already good on LCP, CLS and TBT; the video scrub page no longer downloads its 1.6 MB film on load on phones; parallax and easing send less HTML
 
 ### Tools test, window gate everywhere, links (2026-11-13; branch `feat/tools-tests-gates-links`)
 

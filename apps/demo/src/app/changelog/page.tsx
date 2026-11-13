@@ -55,6 +55,14 @@ const KINDS: { k: Kind; label: string }[] = [
  */
 const RELEASES: Release[] = [
   {
+    version: '2.23.6',
+    title: 'The npm page leads with line drawing',
+    date: '2026-11-13',
+    items: [
+      { type: 'site', text: 'The package README and description, the page npm shows, lead with SVG line drawing on the browser’s own scroll timeline and the one-line switch from AOS, ScrollReveal and vivus. No library code changed.' },
+    ],
+  },
+  {
     version: '2.23.5',
     title: 'Every engine paints the frame a jump calls for',
     date: '2026-11-13',

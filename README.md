@@ -6,7 +6,22 @@
 [![license](https://img.shields.io/npm/l/svg-scroll-draw)](./LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/DhruvilChauahan0210/ink-scroll?style=flat)](https://github.com/DhruvilChauahan0210/ink-scroll/stargazers)
 
-> Scroll-driven animation for the web. Draw SVG paths, reveal elements, pin sections, scrub video. Zero dependencies. Native CSS fast path on modern browsers.
+> SVG line drawing on scroll, done right: correct path lengths, stagger across many paths, and `morphTo`. Where the browser supports `animation-timeline: view()` the draw runs on its own scroll timeline in CSS, with no per-frame JavaScript; in other browsers, and for options CSS can't express, a JavaScript engine draws it, and a parity suite checks in Chromium, Firefox and WebKit that both draw the same frame. **11.4 KB gzipped** for every API, against 47.5 KB for GSAP + ScrollTrigger + DrawSVG. Zero dependencies, MIT.
+
+**Switch in one line.** Already on AOS, ScrollReveal or vivus? Change the import and keep your markup and calls:
+
+```diff
+- import AOS from 'aos';
++ import AOS from 'svg-scroll-draw/aos';           // and delete aos.css: the styles ship inside
+- import ScrollReveal from 'scrollreveal';
++ import ScrollReveal from 'svg-scroll-draw/scrollreveal';
+- import Vivus from 'vivus';
++ import Vivus from 'svg-scroll-draw/vivus';
+```
+
+Each drop-in is tested side by side against the original in real browsers (AOS 2.3.4, which has had no release since; ScrollReveal 4.0.9, which is GPL-3.0 where this is MIT; vivus 0.4.6). `npx svg-scroll-draw migrate` makes the change across a project. [Details below](#aos-drop-in--switch-from-aos-in-one-line).
+
+**And the rest of scroll animation.** Reveal, pin, snap, parallax, counters, video scrub and text splitting, each its own entry point, so you load only what you import. Plus [free in-browser tools](https://svg-scroll-draw.vercel.app/tools) — generators, editors and converters — that write the code for you.
 
 **[Live Demo](https://svg-scroll-draw.vercel.app)** · **[23 Examples](https://svg-scroll-draw.vercel.app/examples)** · **[Blocks](https://svg-scroll-draw.vercel.app/blocks)** · **[Docs](https://svg-scroll-draw.vercel.app/docs)** · **[⚡ Playground](https://svg-scroll-draw.vercel.app/playground)** · [npm](https://www.npmjs.com/package/svg-scroll-draw)
 
@@ -26,13 +41,14 @@ Works in **React · Next.js · Vue 3 · Svelte · Solid · Angular · Nuxt · As
 
 ## Features at a glance
 
-- **11.4 KB gzipped** for the whole main entry — and you rarely need all of it. Every API is a separate entry point: `scrollReveal` is 5.7 KB, `scrollPin` 1.6 KB, `scrollSnap` 2.0 KB. [Full size table below](#bundle-sizes), measured by `npm run size` and enforced in CI.
+- **Line drawing that measures correctly** — lengths come from the browser's `getTotalLength()`, a declared `pathLength`, or the shape's own geometry for `rect` and `circle`; `stagger` offsets each path within the scroll range and `morphTo` changes a path's shape as it draws
 - **Native CSS fast path** — where the browser supports scroll-driven animations the draw runs on a CSS `view-timeline` with zero per-frame JavaScript, and falls back to the JS engine automatically everywhere else. Both engines are [verified to produce the same output](#native-css-rendering) by a cross-browser test suite rather than assumed to.
+- **AOS drop-in** — `import AOS from 'svg-scroll-draw/aos'` runs your existing `data-aos` markup with no `aos.css`; tested side by side against AOS 2.3.4. [Details](#aos-drop-in--switch-from-aos-in-one-line)
+- **ScrollReveal drop-in** — `import ScrollReveal from 'svg-scroll-draw/scrollreveal'`: the same API under MIT instead of GPL-3.0, inline styles matched byte for byte against ScrollReveal 4.0.9. [Details](#scrollreveal-drop-in--mit-instead-of-gpl)
+- **vivus drop-in** — `import Vivus from 'svg-scroll-draw/vivus'` keeps your `new Vivus()` code; SVG output matched exactly against vivus 0.4.6. [Details](#vivus-drop-in--keep-your-new-vivus-code)
+- **11.4 KB gzipped** for the whole main entry — and you rarely need all of it. Every API is a separate entry point: `scrollReveal` is 5.7 KB, `scrollPin` 1.6 KB, `scrollSnap` 2.0 KB. [Full size table below](#bundle-sizes), measured by `npm run size` and enforced in CI.
 - **Zero dependencies** — no GSAP, no ScrollTrigger, no heavyweight runtime
 - **Reduced motion, followed live** — under `prefers-reduced-motion: reduce` every effect shows its finished state instead of animating, and a reader who turns the setting on while the page is open sees everything still moving finish at once. Scrubbing that moves only with the reader's own scroll (the horizontal strip, a timeline's scroll pass) keeps working, because holding it would hide content
-- **vivus drop-in** — `import Vivus from 'svg-scroll-draw/vivus'` keeps your `new Vivus()` code; SVG output matched exactly against vivus 0.4.6. [Details](#vivus-drop-in--keep-your-new-vivus-code)
-- **ScrollReveal drop-in** — `import ScrollReveal from 'svg-scroll-draw/scrollreveal'`: the same API under MIT instead of GPL-3.0, inline styles matched byte for byte against ScrollReveal 4.0.9. [Details](#scrollreveal-drop-in--mit-instead-of-gpl)
-- **AOS drop-in** — `import AOS from 'svg-scroll-draw/aos'` runs your existing `data-aos` markup with no `aos.css`; tested side by side against AOS 2.3.4. [Details](#aos-drop-in--switch-from-aos-in-one-line)
 - **Full playback API** — `pause`, `resume`, `seek`, `replay`, `getProgress`, `destroy`
 - **Presets** — `{ preset: 'reveal' }` for instant one-liner setup; five named presets: `sketch`, `reveal`, `typewriter`, `cinematic`, `spring`
 - **CLI** — `npx svg-scroll-draw init` generates a starter file for your framework; `npx svg-scroll-draw migrate` switches a project from AOS, ScrollReveal or vivus to the drop-ins in one command
@@ -643,7 +659,7 @@ function Section() {
 Already using [AOS](https://github.com/michalsnik/aos)? `svg-scroll-draw/aos` speaks its API and
 reads its markup, so the move is an import change — or one command: `npx svg-scroll-draw migrate`. Keep every `data-aos`, `data-aos-offset`,
 `data-aos-delay`, `data-aos-anchor-placement` and custom animation; delete `aos.css` — the styles ship
-inside the module. 3.1 KB gzipped with the styles, against 6.7 KB for AOS 2.3.4 with its stylesheet.
+inside the module. 3.2 KB gzipped with the styles, against 6.7 KB for AOS 2.3.4 with its stylesheet.
 
 ```diff
 - import AOS from 'aos';

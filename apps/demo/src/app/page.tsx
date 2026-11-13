@@ -46,7 +46,7 @@ const APP = {
   '@id': `${SITE_URL}/#software`,
   name: 'svg-scroll-draw',
   description:
-    `A lightweight scroll-animation toolkit with best-in-class SVG path drawing. Draw SVG paths, reveal content, animate text, scrub video, and drive CSS from scroll. ${SELF.gzipKb} KB gzipped, zero dependencies, MIT.`,
+    `SVG line drawing on scroll with correct path lengths, stagger and morph. It runs on the browser's own scroll timeline (CSS animation-timeline: view()) where supported, and on a JavaScript engine elsewhere. Drop-in replacements for AOS, ScrollReveal and vivus, plus reveal, pin, snap, text, counters and video scrub. ${SELF.gzipKb} KB gzipped, zero dependencies, MIT.`,
   applicationCategory: 'DeveloperApplication',
   operatingSystem: 'Web',
   url: SITE_URL,
@@ -57,7 +57,7 @@ const APP = {
   programmingLanguage: ['JavaScript', 'TypeScript'],
   author: { '@type': 'Person', name: 'Dhruvil Chauhan' },
   keywords:
-    'scroll draw, svg scroll draw, scroll draw animation, scroll draw library, svg, animation, scroll, javascript, react, vue, web animation',
+    'scroll draw, svg scroll draw, svg line drawing, scroll draw animation, scroll draw library, scroll-driven animations, animation-timeline, aos alternative, scrollreveal alternative, vivus alternative, gsap alternative, svg, animation, scroll, javascript, react, vue, web animation',
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
 };
 

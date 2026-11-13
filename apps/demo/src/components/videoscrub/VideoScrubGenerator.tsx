@@ -32,6 +32,11 @@ import {
  * - A video picked from disk is played from URL.createObjectURL: it never
  *   leaves the browser, and the URL is revoked when another is picked and on
  *   unmount. So is the poster frame, drawn from the video onto a canvas.
+ * - The film is 1.6 MB, and the tool starts about a screen below the fold on a
+ *   phone. The preview video gets its src once the tool is within 400px of
+ *   the screen, so the page above it loads without the film competing for the
+ *   connection. Until then the readouts use FILM's duration and size, as they
+ *   do before any metadata is in; a file picked from disk loads at once.
  */
 
 type Tab = 'html' | 'css' | 'js' | 'react';
@@ -124,8 +129,10 @@ export function VideoScrubGenerator({ version }: { version: string }) {
   const [rmView, setRmView] = useState(false);
   const [poster, setPoster] = useState<Poster | null>(null);
   const [tab, setTab] = useState<Tab>('js');
+  const [near, setNear] = useState(false);
   const reduced = useSyncExternalStore(subscribeReduced, getReduced, () => false);
 
+  const root = useRef<HTMLDivElement>(null);
   const box = useRef<HTMLDivElement>(null);
   const track = useRef<HTMLDivElement>(null);
   const video = useRef<HTMLVideoElement>(null);
@@ -161,6 +168,23 @@ export function VideoScrubGenerator({ version }: { version: string }) {
   const asked = duration !== null ? timeAt(s, duration, target) : null;
   const max = geo?.max ?? 0;
   const stuck = s.pin && geo !== null && scroll >= geo.top && scroll <= geo.top + geo.h - geo.v;
+
+  // Load the film only once the tool is close to the screen.
+  useEffect(() => {
+    const el = root.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setNear(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: '400px 0px' },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   // The box's real height and the measured element's place in it: the
   // track when pinned (triggerElement), the video itself in the flow.
@@ -354,7 +378,7 @@ export function VideoScrubGenerator({ version }: { version: string }) {
     <PreviewVideo
       key={videoKey}
       ref={video}
-      src={srcUrl}
+      src={near || picked ? srcUrl : undefined}
       label={source.label}
       ratio={s.pin ? undefined : m ? `${m.width} / ${m.height}` : `${FILM.width} / ${FILM.height}`}
       onMeta={(el) => setMeta({ key: srcKey, duration: el.duration, width: el.videoWidth, height: el.videoHeight })}
@@ -369,7 +393,7 @@ export function VideoScrubGenerator({ version }: { version: string }) {
   );
 
   return (
-    <div className="vsg">
+    <div ref={root} className="vsg">
       <div className="vsg-panel">
         <div className="vsg-source">
           <div className="vsg-field" role="group" aria-label="The video">
@@ -791,7 +815,8 @@ function PreviewVideo({
   ref, src, label, ratio, onMeta, onSeeking, onSeeked, onFail,
 }: {
   ref: Ref<HTMLVideoElement>;
-  src: string;
+  /** Left out until the tool is near the screen: no request at all until then. */
+  src: string | undefined;
   label: string;
   ratio?: string;
   onMeta: (el: HTMLVideoElement) => void;

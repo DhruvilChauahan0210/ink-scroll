@@ -23,7 +23,10 @@ import { jsCode, parallaxHtml, reactCode, reactProject } from './parallax-code';
  *   value the instance would compute from the page scroll; seek() applies it
  *   without easing, and scrollParallax's easing is 'linear'.
  * - "On real scroll" below runs the same settings with no seek(), on the
- *   page's own scroll, exactly as the generated code would.
+ *   page's own scroll, exactly as the generated code would. Its scene is drawn
+ *   (and its instances made) once the reader scrolls near it: until then it is
+ *   an empty frame of the same size, which keeps a second copy of the art out
+ *   of the server HTML.
  * - The code is generated from the same state, with every option that is at
  *   scrollParallax's default left out (parallax-code.ts). The Run it row under
  *   it saves the HTML tab's page with this scene drawn in its layers, or opens
@@ -37,7 +40,7 @@ import { jsCode, parallaxHtml, reactCode, reactProject } from './parallax-code';
 type Lib = typeof import('svg-scroll-draw');
 type Instance = ReturnType<Lib['scrollParallax']>;
 type Tab = 'js' | 'react' | 'html';
-type Built = { s: LayerSetting; reduced: boolean; preview: Instance; page: Instance };
+type Built = { s: LayerSetting; reduced: boolean; preview: Instance; page: Instance | null };
 type Geo = { v: number; h: number; w: number };
 
 const REDUCED = '(prefers-reduced-motion: reduce)';
@@ -94,11 +97,13 @@ export function ParallaxGenerator({ version }: { version: string }) {
   const [geo, setGeo] = useState<Geo>({ v: 360, h: 276, w: 828 });
   const [tab, setTab] = useState<Tab>('js');
   const [playing, setPlaying] = useState(false);
+  const [near, setNear] = useState(false);
   const reduced = useSyncExternalStore(subscribeReduced, reducedNow, reducedOnServer);
   const ticks = useId();
   const box = useRef<HTMLDivElement>(null);
   const scene = useRef<HTMLDivElement>(null);
   const page = useRef<HTMLDivElement>(null);
+  const live = useRef<HTMLDivElement>(null);
   const built = useRef(new Map<LayerKey, Built>());
   const raf = useRef(0);
 
@@ -110,6 +115,23 @@ export function ParallaxGenerator({ version }: { version: string }) {
     return () => {
       live = false;
     };
+  }, []);
+
+  // Draw the real-scroll scene a screen or so before it comes into view.
+  useEffect(() => {
+    const el = live.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setNear(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: '800px 0px' },
+    );
+    io.observe(el);
+    return () => io.disconnect();
   }, []);
 
   // Start with the scene in the middle of the box, and keep the readouts' sizes
@@ -131,25 +153,29 @@ export function ParallaxGenerator({ version }: { version: string }) {
     return () => ro.disconnect();
   }, []);
 
-  // One scrollParallax per layer in each scene; a changed layer is destroyed and made again.
+  // One scrollParallax per layer in each scene; a changed layer is destroyed
+  // and made again. The real-scroll scene joins in once it is drawn.
   useEffect(() => {
     const b = box.current;
     const s = scene.current;
-    const pg = page.current;
-    if (!lib || !b || !s || !pg) return;
+    const pg = near ? page.current : null;
+    if (!lib || !b || !s) return;
     const map = built.current;
     const p = progressOf(b, s);
     for (const key of KEYS) {
       const want = layers[key];
       const had = map.get(key);
-      if (had && had.reduced === reduced && had.s.speed === want.speed && had.s.axis === want.axis) continue;
+      if (had && had.reduced === reduced && had.s.speed === want.speed && had.s.axis === want.axis) {
+        if (pg && !had.page) map.set(key, { ...had, page: lib.scrollParallax(layerIn(pg, key), optionsOf(want)) });
+        continue;
+      }
       had?.preview.destroy();
-      had?.page.destroy();
+      had?.page?.destroy();
       const preview = lib.scrollParallax(layerIn(s, key), optionsOf(want));
       preview.seek(p);
-      map.set(key, { s: want, reduced, preview, page: lib.scrollParallax(layerIn(pg, key), optionsOf(want)) });
+      map.set(key, { s: want, reduced, preview, page: pg ? lib.scrollParallax(layerIn(pg, key), optionsOf(want)) : null });
     }
-  }, [lib, layers, reduced]);
+  }, [lib, layers, reduced, near]);
 
   useEffect(() => {
     const map = built.current;
@@ -158,7 +184,7 @@ export function ParallaxGenerator({ version }: { version: string }) {
       cancelAnimationFrame(frame.current);
       map.forEach((b) => {
         b.preview.destroy();
-        b.page.destroy();
+        b.page?.destroy();
       });
       map.clear();
     };
@@ -335,9 +361,9 @@ export function ParallaxGenerator({ version }: { version: string }) {
         <ToolExport title="Parallax scrolling" filename="parallax-scrolling.html" html={html} react={react} />
       </div>
 
-      <div className="plx-live">
+      <div ref={live} className="plx-live">
         <p className="plx-k">On real scroll · the same settings, no seek()</p>
-        <ParallaxScene ref={page} label={SCENE_LABEL} />
+        <ParallaxScene ref={page} label={SCENE_LABEL} empty={!near} />
         <p className="plx-live-note">
           This one follows the page. Each layer’s window runs from its top reaching the bottom of your window to its
           bottom leaving the top, so the whole effect plays while the scene is in view.

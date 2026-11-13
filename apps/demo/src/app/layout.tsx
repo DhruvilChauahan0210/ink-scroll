@@ -38,7 +38,7 @@ const SITE_URL = "https://svg-scroll-draw.vercel.app";
 // Both read the measured size, so the title and the description cannot disagree.
 const HOME_TITLE = `SVG Scroll Animation Library — ${SELF.gzipKb} KB, MIT, No GSAP`;
 const HOME_DESCRIPTION =
-  `Draw SVG paths, reveal content, split text and scrub video on scroll. ${SELF.gzipKb} KB gzipped, zero dependencies, MIT. React, Next.js, Vue, Svelte or vanilla JS.`;
+  `SVG line drawing on scroll, on the browser's own scroll timeline. Switch from AOS, ScrollReveal or vivus in one line. ${SELF.gzipKb} KB gzipped, zero dependencies, MIT.`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

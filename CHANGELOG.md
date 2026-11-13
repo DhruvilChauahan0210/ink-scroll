@@ -8,6 +8,43 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### Site
 
+- **The home hero fits a short phone.** At 375 x 667 the pinned screen ran
+  the "Get started" button over the frameworks strip, and the stroke counter
+  sat under the nav's buttons; the strip (its frameworks are in chapter 07)
+  and the counter step aside there, and the drawing is a little smaller.
+
+- **Tool pages load less up front.** All 25 were measured on a production
+  build (Playwright, 412×823 phone, 4× CPU, 150 ms / 1.6 Mbps): LCP was
+  0.67–0.82 s on every page, CLS 0 and TBT under 15 ms, so the work went into
+  what each page sends before anyone needs it.
+  - `/scroll-video-scrub-generator` no longer downloads its 1.6 MB film on
+    load. The preview video gets its `src` when the tool is within 400px of
+    the screen, which on a phone is about a screen below the fold: on load it
+    is 0 KB instead of 1,629 KB, and the whole film still buffers on the way
+    in. The timeline readout holds two lines, so its one-line "Waiting for the
+    film." no longer shifts the page by 19px (CLS 0.021) when the film arrives
+    in view.
+  - `/parallax-scrolling-generator` draws its second scene ("On real scroll")
+    when the reader comes within 800px of it; until then it is the empty frame
+    at the same size. The server HTML drops from 256 to 225 KB (59 → 46 KB
+    gzipped), with the same pixels once drawn.
+  - `/easing-visualizer`'s Fig. 1 writes each of its seven 200-point curves
+    once and draws it twice with `<use>`: 299 → 273 KB of HTML.
+
+- **The first impression leads with line drawing.** The home hero, its meta
+  description and JSON-LD, both READMEs, the npm description and llms.txt now
+  open with what the library does best: SVG line drawing on scroll with correct
+  path lengths, stagger and morph, on the browser's own scroll timeline where
+  `animation-timeline: view()` exists and a JavaScript engine elsewhere, against
+  GSAP + ScrollTrigger + DrawSVG's size. Next comes the one-line switch from
+  AOS, ScrollReveal and vivus (the hero links to /vs-aos and /vs-vivus), then
+  the rest of the APIs and the tools. Sizes and the tool count are read from
+  `competitors.ts` and `tools.ts`; llms.txt's drop-in sizes now read
+  `SELF_ENTRIES` (they said 3.1 / 4.5 / 4.0 KB against 3.2 / 4.7 / 4.2), and the
+  npm README's 11.6 KB is the measured 11.4. New npm keywords: draw-on-scroll,
+  svg-draw-on-scroll, scroll-animation-library, scroll-driven-animations,
+  stroke-dasharray, drawsvg-alternative.
+
 - **The docs, examples, guides and blog link to the tools.** Each docs
   section ends with the tool that builds its code (`#scroll-reveal` → the
   scroll reveal generator, easing → the easing visualizer and cubic-bezier
@@ -965,6 +1002,16 @@ All notable changes to `svg-scroll-draw` are documented here.
   allowed, followed by `check-jsx-text` and `check-nav`.
 
 ---
+
+## [2.23.6] — 2026-11-13
+
+### Docs
+
+- The package README and `description`, the page npm shows, lead with SVG
+  line drawing on the browser's own scroll timeline and the one-line switch
+  from AOS, ScrollReveal and vivus; new keywords for draw-on-scroll and
+  scroll-driven animations. The AOS drop-in's size reads its measured 3.2 KB
+  (it said 3.1). No library code changed: `dist/` is 2.23.5's.
 
 ## [2.23.5] — 2026-11-13
 
