@@ -74,6 +74,7 @@ const AT_A_GLANCE: SpecRow[] = [
     win: 0,
   },
   { k: 'Runtime dependencies', cells: ['0', '0'] },
+  { k: 'Runtime cost', cells: ['Measured per scenario in the benchmark', 'Measured per scenario in the benchmark'] },
   {
     k: 'SSR (Next.js, Nuxt)',
     cells: ['Safe to import; no-op on the server', 'Safe to import; create triggers client-side'],
@@ -376,6 +377,12 @@ export default function VsGsapPage() {
                 {provenance([`gsap ${COMPETITORS.gsapStack.version}`, `svg-scroll-draw ${SELF.version}`])}{' '}
                 SplitText is free to use as of 2025; it still costs you the bytes.
               </p>
+              <p className="h2h-p">
+                Bytes are what you download. What the main thread pays while the page scrolls is a separate question,
+                measured scenario by scenario in the{' '}
+                <Link href="/benchmarks/gsap-vs-svg-scroll-draw">GSAP vs svg-scroll-draw benchmark</Link>, with every
+                result GSAP wins left in.
+              </p>
             </section>
 
             {/* ── 02 License ─────────────────────────────────── */}
@@ -471,6 +478,7 @@ export default function VsGsapPage() {
             <>
               <Link href="/docs" className="btn btn-solid" data-magnetic>Read the docs →</Link>
               <Link href="/guides/gsap-scrolltrigger-react" className="btn" data-magnetic>Migration guide →</Link>
+              <Link href="/benchmarks/gsap-vs-svg-scroll-draw" className="btn" data-magnetic>Runtime benchmark →</Link>
             </>
           }
         >

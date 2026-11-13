@@ -1,0 +1,66 @@
+/* /benchmarks/gsap-vs-svg-scroll-draw: tables, bars and the provisional note.
+   Colours are the site's tokens (home.css), so both themes follow. */
+
+.site .bn-head { padding-bottom: clamp(32px, 4vw, 56px); }
+.site .bn-head .pg-lede a,
+.site .bn .h2h-p a,
+.site .bn .h2h-src a,
+.site .bn-list a { text-decoration: underline; text-underline-offset: 3px; }
+
+.site .bn-prov {
+  margin: 20px 0 0;
+  max-width: 72ch;
+  padding: 14px 16px;
+  border: 1px solid var(--accent);
+  border-left-width: 4px;
+  background: var(--accent-2);
+  color: var(--fg);
+  font-size: 14px;
+  line-height: 1.6;
+}
+.site .bn-prov strong { color: var(--accent); font-weight: 600; }
+
+.site .bn-h3 { margin: 28px 0 10px; font: 500 15px/1.4 var(--sans); color: var(--fg); }
+.site .bn-list { margin: 0 0 16px; padding-left: 20px; max-width: 76ch; color: var(--fg-2); font-size: 15px; line-height: 1.7; }
+.site .bn-list li { margin: 0 0 8px; }
+.site .bn-list strong { color: var(--fg); font-weight: 500; }
+.site .bn-list code, .site .bn .h2h-p code { font: 400 0.9em var(--mono); }
+.site .bn-verdict { color: var(--fg-3); }
+
+/* Tables scroll inside their own box on a phone, never the page. */
+.site .bn-scroll { max-width: 100%; overflow-x: auto; margin: 16px 0 8px; }
+.site .bn-table { width: 100%; border-collapse: collapse; font-size: 13px; line-height: 1.45; color: var(--fg-2); }
+.site .bn-table th,
+.site .bn-table td { padding: 8px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+.site .bn-table thead th { font: 500 11px/1.4 var(--mono); color: var(--fg-3); border-bottom-color: var(--line-2); }
+.site .bn-table thead th.is-ours { color: var(--accent); }
+.site .bn-table tbody th { font-weight: 400; color: var(--fg); min-width: 140px; }
+@media (min-width: 760px) { .site .bn-table tbody th { min-width: 180px; } }
+.site .bn-table td { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.site .bn-env td { white-space: normal; }
+.site .bn-sub { display: block; font-weight: 400; color: var(--fg-3); }
+.site .bn-unit { color: var(--fg-3); }
+.site .bn-group th { padding-top: 18px; font: 500 11px/1.4 var(--mono); color: var(--fg-3); text-transform: none; }
+.site .bn-med { color: var(--fg); }
+.site .bn-p90 { display: block; font-size: 11px; color: var(--fg-3); }
+.site .bn-table td.is-win .bn-med { font-weight: 600; }
+.site .bn-mark { font-size: 11px; color: var(--accent); }
+
+.site .bn-cond { margin: 20px 0 0; border: 1px solid var(--line-2); border-radius: 6px; padding: 0 14px; background: var(--panel); }
+.site .bn-cond summary { cursor: pointer; padding: 12px 0; font: 500 13px/1.4 var(--mono); color: var(--fg); }
+.site .bn-cond[open] summary { border-bottom: 1px solid var(--line); }
+
+.site .bn-fig { margin: 16px 0 4px; }
+.site .bn-bars { list-style: none; margin: 0; padding: 0; max-width: 720px; }
+.site .bn-row { display: grid; grid-template-columns: minmax(96px, 190px) minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 4px 0; }
+.site .bn-lab { font-size: 12px; line-height: 1.3; color: var(--fg-2); }
+.site .bn-val { font: 400 12px var(--mono); color: var(--fg); white-space: nowrap; }
+.site .bn-track { position: relative; height: 16px; }
+.site .bn-bar { position: absolute; left: 0; top: 0; bottom: 0; min-width: 1px; border-radius: 2px; background: var(--fg-3); }
+.site .bn-none .bn-bar { background: var(--line-2); }
+.site .bn-ours .bn-bar, .site .bn-ours-js .bn-bar { background: var(--accent); }
+.site .bn-ours-js .bn-bar { opacity: 0.55; }
+.site .bn-wh { position: absolute; top: 50%; height: 0; border-top: 1.5px solid var(--fg); }
+.site .bn-wh::after { content: ''; position: absolute; right: 0; top: -6px; height: 11px; border-right: 1.5px solid var(--fg); }
+.site .bn-base { position: absolute; top: -4px; bottom: -4px; border-left: 1px dashed var(--fg-2); }
+.site .bn-cap { margin: 6px 0 0; font: 400 11.5px/1.6 var(--mono); color: var(--fg-3); max-width: 80ch; }

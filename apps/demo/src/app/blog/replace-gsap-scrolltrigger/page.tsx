@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { seoTitle } from '../../_lib/seo';
 import { COMPETITORS, MEASURED_ON, SELF, provenance, ratioVsSelf } from '@/data/competitors';
 import { BlogArticle, Section, Code, Compare, Callout, Figure } from '@/components/blog/BlogArticle';
@@ -112,6 +113,11 @@ export default function Page() {
           The cost: <strong>{kb(STACK)} gzipped</strong> (ScrollTrigger adds {kb(TRIGGER)} on top of GSAP core&apos;s{' '}
           {kb(CORE)}) and a non-trivial API surface. It is not a licence cost any more: since 2025 every GSAP plugin,
           SplitText included, is free. For most projects, though, much of that weight covers use cases you never touch.
+        </p>
+        <p>
+          Runtime is a separate question from bytes: the{' '}
+          <Link href="/benchmarks/gsap-vs-svg-scroll-draw">GSAP vs svg-scroll-draw benchmark</Link> measures what each
+          costs the main thread during a scroll, with the results GSAP wins left in.
         </p>
       </Section>
 

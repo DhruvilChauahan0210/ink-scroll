@@ -157,6 +157,7 @@ export const RELATED_BY_POST: Record<string, RelatedLinks> = {
     tools: ['css-scroll-driven-animation-generator'],
     pages: [
       { href: '/vs-gsap', label: 'svg-scroll-draw vs GSAP', blurb: 'Measured sizes and where GSAP is still the better call.' },
+      { href: '/benchmarks/gsap-vs-svg-scroll-draw', label: 'GSAP vs svg-scroll-draw benchmark', blurb: 'Main-thread time, frame pacing and idle cost, measured per scenario.' },
     ],
   },
   'unslop-ai-looking-ui': {

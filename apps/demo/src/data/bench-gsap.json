@@ -1,0 +1,2213 @@
+{
+ "provisional": true,
+ "meta": {
+  "date": "2026-11-13T13:50:40.647Z",
+  "git": {
+   "sha": "b43237b291a10c5d4b287ce30e253f17086a91b9",
+   "dirty": true
+  },
+  "machine": {
+   "cpu": "Apple M5",
+   "cores": 10,
+   "memGb": 24,
+   "os": "darwin 25.6.0",
+   "power": "ac"
+  },
+  "node": "v22.15.0",
+  "playwright": "1.65.0",
+  "browsers": [
+   {
+    "name": "chromium",
+    "version": "158.0.8127.18",
+    "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.0.0 Safari/537.36",
+    "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+    "vsyncHz": 60,
+    "nativeScrollTimeline": true
+   }
+  ],
+  "versions": {
+   "gsap": "3.15.0",
+   "svgScrollDraw": "2.24.0",
+   "oursDistSha256": "8ea7c176b0649b90"
+  },
+  "settings": {
+   "viewport": {
+    "width": 1280,
+    "height": 800
+   },
+   "dpr": 1,
+   "runs": 1,
+   "warmup": 0,
+   "traces": 1,
+   "speeds": [
+    3000
+   ],
+   "throttles": [
+    1
+   ],
+   "idleMs": 3000,
+   "seed": 20261113,
+   "wheelStepPx": 100,
+   "network": false,
+   "args": [
+    "--browser=chromium",
+    "--scenario=a-draw-one",
+    "--runs=1",
+    "--warmup=0",
+    "--traces=1",
+    "--throttles=1",
+    "--speeds=3000",
+    "--port=3401",
+    "--out=/private/tmp/claude-501/-Users-dhruvilchauhan-Developer-CDH-ink-scroll/56dd6dd5-7177-44ec-8f11-1cc07927b7ee/scratchpad/bench/t1.json"
+   ]
+  },
+  "durationMin": 1.1
+ },
+ "metrics": {
+  "mainMs": {
+   "label": "Main-thread script + style + layout during the scroll",
+   "unit": "ms",
+   "browsers": [
+    "chromium"
+   ]
+  },
+  "scriptMs": {
+   "label": "Script during the scroll",
+   "unit": "ms",
+   "browsers": [
+    "chromium"
+   ]
+  },
+  "styleMs": {
+   "label": "Style recalculation during the scroll",
+   "unit": "ms",
+   "browsers": [
+    "chromium"
+   ]
+  },
+  "layoutMs": {
+   "label": "Layout during the scroll",
+   "unit": "ms",
+   "browsers": [
+    "chromium"
+   ]
+  },
+  "taskMs": {
+   "label": "All main-thread tasks during the scroll",
+   "unit": "ms",
+   "browsers": [
+    "chromium"
+   ]
+  },
+  "frameP50": {
+   "label": "Frame interval, median",
+   "unit": "ms",
+   "browsers": [
+    "chromium",
+    "firefox",
+    "webkit"
+   ]
+  },
+  "frameP95": {
+   "label": "Frame interval, p95",
+   "unit": "ms",
+   "browsers": [
+    "chromium",
+    "firefox",
+    "webkit"
+   ]
+  },
+  "frameP99": {
+   "label": "Frame interval, p99",
+   "unit": "ms",
+   "browsers": [
+    "chromium",
+    "firefox",
+    "webkit"
+   ]
+  },
+  "jankPct": {
+   "label": "Frames longer than 1.5 × vsync",
+   "unit": "%",
+   "browsers": [
+    "chromium",
+    "firefox",
+    "webkit"
+   ]
+  },
+  "longestFrame": {
+   "label": "Longest frame",
+   "unit": "ms",
+   "browsers": [
+    "chromium",
+    "firefox",
+    "webkit"
+   ]
+  },
+  "longtaskCount": {
+   "label": "Long tasks (> 50 ms)",
+   "unit": "",
+   "browsers": [
+    "chromium"
+   ]
+  },
+  "longtaskBlockMs": {
+   "label": "Long-task blocking time",
+   "unit": "ms",
+   "browsers": [
+    "chromium"
+   ]
+  },
+  "loafBlockMs": {
+   "label": "Long-animation-frame blocking time",
+   "unit": "ms",
+   "browsers": [
+    "chromium"
+   ]
+  },
+  "inputDelay": {
+   "label": "Tap input delay during the scroll",
+   "unit": "ms",
+   "browsers": [
+    "chromium",
+    "firefox",
+    "webkit"
+   ]
+  },
+  "tapToFrame": {
+   "label": "Tap to next frame during the scroll",
+   "unit": "ms",
+   "browsers": [
+    "chromium",
+    "firefox",
+    "webkit"
+   ]
+  },
+  "initMs": {
+   "label": "Setup call",
+   "unit": "ms",
+   "browsers": [
+    "chromium",
+    "firefox",
+    "webkit"
+   ]
+  },
+  "startupTaskMs": {
+   "label": "Main-thread work from navigation to ready",
+   "unit": "ms",
+   "browsers": [
+    "chromium"
+   ]
+  },
+  "firstCorrectMs": {
+   "label": "First frame in the correct starting state",
+   "unit": "ms",
+   "browsers": [
+    "chromium",
+    "firefox",
+    "webkit"
+   ]
+  },
+  "flash": {
+   "label": "Runs that showed the finished state first",
+   "unit": "share",
+   "browsers": [
+    "chromium",
+    "firefox",
+    "webkit"
+   ]
+  },
+  "idleTaskMs": {
+   "label": "Main-thread work while parked 3 s",
+   "unit": "ms",
+   "browsers": [
+    "chromium"
+   ]
+  },
+  "idleRafCalls": {
+   "label": "requestAnimationFrame calls while parked 3 s",
+   "unit": "",
+   "browsers": [
+    "chromium",
+    "firefox",
+    "webkit"
+   ]
+  },
+  "heapMb": {
+   "label": "JS heap after ready",
+   "unit": "MB",
+   "browsers": [
+    "chromium"
+   ]
+  },
+  "tracePaintMs": {
+   "label": "Paint, pre-paint, layerize and commit (trace)",
+   "unit": "ms",
+   "browsers": [
+    "chromium"
+   ],
+   "trace": true
+  },
+  "traceStyleLayoutMs": {
+   "label": "Style and layout (trace)",
+   "unit": "ms",
+   "browsers": [
+    "chromium"
+   ],
+   "trace": true
+  },
+  "traceScriptMs": {
+   "label": "Script, including rAF callbacks (trace)",
+   "unit": "ms",
+   "browsers": [
+    "chromium"
+   ],
+   "trace": true
+  },
+  "droppedFrames": {
+   "label": "Dropped frames (trace)",
+   "unit": "",
+   "browsers": [
+    "chromium"
+   ],
+   "trace": true
+  }
+ },
+ "scenarios": [
+  "a-draw-one"
+ ],
+ "parity": [
+  {
+   "browser": "chromium",
+   "scenario": "a-draw-one",
+   "pairs": [
+    {
+     "a": "gsap",
+     "b": "ours",
+     "rule": "drawn share within 1%",
+     "maxDiff": 0,
+     "pass": true
+    },
+    {
+     "a": "gsap",
+     "b": "ours-js",
+     "rule": "drawn share within 1%",
+     "maxDiff": 0,
+     "pass": true
+    }
+   ],
+   "paths": {
+    "gsap": null,
+    "ours": "native",
+    "ours-js": "js"
+   },
+   "errors": [],
+   "pass": true
+  }
+ ],
+ "sizes": {
+  "method": "gzip level 9 (Node zlib). GSAP: each dist file the pages load. svg-scroll-draw: each ES module entry with every chunk it imports, as npm run size measures it.",
+  "gsap": {
+   "files": {
+    "gsap.min.js": 28375,
+    "ScrollTrigger.min.js": 18000,
+    "DrawSVGPlugin.min.js": 2214
+   },
+   "kib": {
+    "gsap.min.js": 27.7,
+    "ScrollTrigger.min.js": 17.6,
+    "DrawSVGPlugin.min.js": 2.2
+   }
+  },
+  "ours": {
+   "main": 11.5,
+   "reveal": 5.7,
+   "mainPlusPin": 12.4
+  },
+  "loaded": [
+   "node_modules/gsap/dist/DrawSVGPlugin.min.js",
+   "node_modules/gsap/dist/ScrollTrigger.min.js",
+   "node_modules/gsap/dist/gsap.min.js",
+   "packages/svg-scroll-draw/dist/chunk-2PYLM3E7.mjs",
+   "packages/svg-scroll-draw/dist/chunk-4DOJSIEQ.mjs",
+   "packages/svg-scroll-draw/dist/chunk-5PJEKEEP.mjs",
+   "packages/svg-scroll-draw/dist/chunk-7USW2XFB.mjs",
+   "packages/svg-scroll-draw/dist/chunk-7XOFQCQE.mjs",
+   "packages/svg-scroll-draw/dist/chunk-BDXWPUBJ.mjs",
+   "packages/svg-scroll-draw/dist/chunk-EBU6E26L.mjs",
+   "packages/svg-scroll-draw/dist/chunk-LFSU6LR3.mjs",
+   "packages/svg-scroll-draw/dist/chunk-NV6YTPHI.mjs",
+   "packages/svg-scroll-draw/dist/chunk-NX74KN5X.mjs",
+   "packages/svg-scroll-draw/dist/chunk-QZKYGS74.mjs",
+   "packages/svg-scroll-draw/dist/chunk-THPTANES.mjs",
+   "packages/svg-scroll-draw/dist/chunk-U5TKLHGW.mjs",
+   "packages/svg-scroll-draw/dist/chunk-UPWWULKI.mjs",
+   "packages/svg-scroll-draw/dist/chunk-V3Z6G5JE.mjs",
+   "packages/svg-scroll-draw/dist/chunk-XC5NR2MU.mjs",
+   "packages/svg-scroll-draw/dist/index.mjs"
+  ]
+ },
+ "cells": [
+  {
+   "scenario": "a-draw-one",
+   "lib": "none",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "path": null,
+   "scroll": 4695,
+   "samples": {
+    "mainMs": [
+     4.119
+    ],
+    "scriptMs": [
+     3.336
+    ],
+    "styleMs": [
+     0.355
+    ],
+    "layoutMs": [
+     0.428
+    ],
+    "taskMs": [
+     79.71
+    ],
+    "frameP50": [
+     16.7
+    ],
+    "frameP95": [
+     16.7
+    ],
+    "frameP99": [
+     17.132
+    ],
+    "jankPct": [
+     1
+    ],
+    "longestFrame": [
+     50
+    ],
+    "longtaskCount": [
+     0
+    ],
+    "longtaskBlockMs": [
+     0
+    ],
+    "loafBlockMs": [
+     0
+    ],
+    "inputDelay": [
+     0.633
+    ],
+    "tapToFrame": [
+     21.1
+    ],
+    "startupTaskMs": [
+     19.535
+    ],
+    "idleTaskMs": [
+     1.119
+    ],
+    "idleRafCalls": [
+     0
+    ],
+    "heapMb": [
+     2.317
+    ],
+    "tracePaintMs": [
+     9.711
+    ],
+    "traceStyleLayoutMs": [
+     0.9
+    ],
+    "traceScriptMs": [
+     7.83
+    ],
+    "droppedFrames": [
+     0
+    ]
+   },
+   "summary": {
+    "mainMs": {
+     "n": 1,
+     "median": 4.119,
+     "p90": 4.119,
+     "min": 4.119,
+     "max": 4.119,
+     "iqr": 0
+    },
+    "scriptMs": {
+     "n": 1,
+     "median": 3.336,
+     "p90": 3.336,
+     "min": 3.336,
+     "max": 3.336,
+     "iqr": 0
+    },
+    "styleMs": {
+     "n": 1,
+     "median": 0.355,
+     "p90": 0.355,
+     "min": 0.355,
+     "max": 0.355,
+     "iqr": 0
+    },
+    "layoutMs": {
+     "n": 1,
+     "median": 0.428,
+     "p90": 0.428,
+     "min": 0.428,
+     "max": 0.428,
+     "iqr": 0
+    },
+    "taskMs": {
+     "n": 1,
+     "median": 79.71,
+     "p90": 79.71,
+     "min": 79.71,
+     "max": 79.71,
+     "iqr": 0
+    },
+    "frameP50": {
+     "n": 1,
+     "median": 16.7,
+     "p90": 16.7,
+     "min": 16.7,
+     "max": 16.7,
+     "iqr": 0
+    },
+    "frameP95": {
+     "n": 1,
+     "median": 16.7,
+     "p90": 16.7,
+     "min": 16.7,
+     "max": 16.7,
+     "iqr": 0
+    },
+    "frameP99": {
+     "n": 1,
+     "median": 17.132,
+     "p90": 17.132,
+     "min": 17.132,
+     "max": 17.132,
+     "iqr": 0
+    },
+    "jankPct": {
+     "n": 1,
+     "median": 1,
+     "p90": 1,
+     "min": 1,
+     "max": 1,
+     "iqr": 0
+    },
+    "longestFrame": {
+     "n": 1,
+     "median": 50,
+     "p90": 50,
+     "min": 50,
+     "max": 50,
+     "iqr": 0
+    },
+    "longtaskCount": {
+     "n": 1,
+     "median": 0,
+     "p90": 0,
+     "min": 0,
+     "max": 0,
+     "iqr": 0
+    },
+    "longtaskBlockMs": {
+     "n": 1,
+     "median": 0,
+     "p90": 0,
+     "min": 0,
+     "max": 0,
+     "iqr": 0
+    },
+    "loafBlockMs": {
+     "n": 1,
+     "median": 0,
+     "p90": 0,
+     "min": 0,
+     "max": 0,
+     "iqr": 0
+    },
+    "inputDelay": {
+     "n": 1,
+     "median": 0.633,
+     "p90": 0.633,
+     "min": 0.633,
+     "max": 0.633,
+     "iqr": 0
+    },
+    "tapToFrame": {
+     "n": 1,
+     "median": 21.1,
+     "p90": 21.1,
+     "min": 21.1,
+     "max": 21.1,
+     "iqr": 0
+    },
+    "startupTaskMs": {
+     "n": 1,
+     "median": 19.535,
+     "p90": 19.535,
+     "min": 19.535,
+     "max": 19.535,
+     "iqr": 0
+    },
+    "idleTaskMs": {
+     "n": 1,
+     "median": 1.119,
+     "p90": 1.119,
+     "min": 1.119,
+     "max": 1.119,
+     "iqr": 0
+    },
+    "idleRafCalls": {
+     "n": 1,
+     "median": 0,
+     "p90": 0,
+     "min": 0,
+     "max": 0,
+     "iqr": 0
+    },
+    "heapMb": {
+     "n": 1,
+     "median": 2.317,
+     "p90": 2.317,
+     "min": 2.317,
+     "max": 2.317,
+     "iqr": 0
+    },
+    "tracePaintMs": {
+     "n": 1,
+     "median": 9.711,
+     "p90": 9.711,
+     "min": 9.711,
+     "max": 9.711,
+     "iqr": 0
+    },
+    "traceStyleLayoutMs": {
+     "n": 1,
+     "median": 0.9,
+     "p90": 0.9,
+     "min": 0.9,
+     "max": 0.9,
+     "iqr": 0
+    },
+    "traceScriptMs": {
+     "n": 1,
+     "median": 7.83,
+     "p90": 7.83,
+     "min": 7.83,
+     "max": 7.83,
+     "iqr": 0
+    },
+    "droppedFrames": {
+     "n": 1,
+     "median": 0,
+     "p90": 0,
+     "min": 0,
+     "max": 0,
+     "iqr": 0
+    }
+   },
+   "extras": {
+    "vsyncMs": {
+     "n": 1,
+     "median": 16.7,
+     "p90": 16.7,
+     "min": 16.7,
+     "max": 16.7,
+     "iqr": 0
+    },
+    "gestureMs": {
+     "n": 1,
+     "median": 1682,
+     "p90": 1682,
+     "min": 1682,
+     "max": 1682,
+     "iqr": 0
+    }
+   }
+  },
+  {
+   "scenario": "a-draw-one",
+   "lib": "gsap",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "path": null,
+   "scroll": 4695,
+   "samples": {
+    "mainMs": [
+     16.072
+    ],
+    "scriptMs": [
+     13.161
+    ],
+    "styleMs": [
+     2.24
+    ],
+    "layoutMs": [
+     0.671
+    ],
+    "taskMs": [
+     96.088
+    ],
+    "frameP50": [
+     16.7
+    ],
+    "frameP95": [
+     16.7
+    ],
+    "frameP99": [
+     17.464
+    ],
+    "jankPct": [
+     1.01
+    ],
+    "longestFrame": [
+     50
+    ],
+    "longtaskCount": [
+     0
+    ],
+    "longtaskBlockMs": [
+     0
+    ],
+    "loafBlockMs": [
+     0
+    ],
+    "inputDelay": [
+     0.967
+    ],
+    "tapToFrame": [
+     20.7
+    ],
+    "initMs": [
+     3.1
+    ],
+    "startupTaskMs": [
+     35.827
+    ],
+    "firstCorrectMs": [
+     22.1
+    ],
+    "flash": [
+     0
+    ],
+    "idleTaskMs": [
+     39.107
+    ],
+    "idleRafCalls": [
+     282
+    ],
+    "heapMb": [
+     2.908
+    ],
+    "tracePaintMs": [
+     19.527
+    ],
+    "traceStyleLayoutMs": [
+     3.194
+    ],
+    "traceScriptMs": [
+     22.071
+    ],
+    "droppedFrames": [
+     0
+    ]
+   },
+   "summary": {
+    "mainMs": {
+     "n": 1,
+     "median": 16.072,
+     "p90": 16.072,
+     "min": 16.072,
+     "max": 16.072,
+     "iqr": 0
+    },
+    "scriptMs": {
+     "n": 1,
+     "median": 13.161,
+     "p90": 13.161,
+     "min": 13.161,
+     "max": 13.161,
+     "iqr": 0
+    },
+    "styleMs": {
+     "n": 1,
+     "median": 2.24,
+     "p90": 2.24,
+     "min": 2.24,
+     "max": 2.24,
+     "iqr": 0
+    },
+    "layoutMs": {
+     "n": 1,
+     "median": 0.671,
+     "p90": 0.671,
+     "min": 0.671,
+     "max": 0.671,
+     "iqr": 0
+    },
+    "taskMs": {
+     "n": 1,
+     "median": 96.088,
+     "p90": 96.088,
+     "min": 96.088,
+     "max": 96.088,
+     "iqr": 0
+    },
+    "frameP50": {
+     "n": 1,
+     "median": 16.7,
+     "p90": 16.7,
+     "min": 16.7,
+     "max": 16.7,
+     "iqr": 0
+    },
+    "frameP95": {
+     "n": 1,
+     "median": 16.7,
+     "p90": 16.7,
+     "min": 16.7,
+     "max": 16.7,
+     "iqr": 0
+    },
+    "frameP99": {
+     "n": 1,
+     "median": 17.464,
+     "p90": 17.464,
+     "min": 17.464,
+     "max": 17.464,
+     "iqr": 0
+    },
+    "jankPct": {
+     "n": 1,
+     "median": 1.01,
+     "p90": 1.01,
+     "min": 1.01,
+     "max": 1.01,
+     "iqr": 0
+    },
+    "longestFrame": {
+     "n": 1,
+     "median": 50,
+     "p90": 50,
+     "min": 50,
+     "max": 50,
+     "iqr": 0
+    },
+    "longtaskCount": {
+     "n": 1,
+     "median": 0,
+     "p90": 0,
+     "min": 0,
+     "max": 0,
+     "iqr": 0
+    },
+    "longtaskBlockMs": {
+     "n": 1,
+     "median": 0,
+     "p90": 0,
+     "min": 0,
+     "max": 0,
+     "iqr": 0
+    },
+    "loafBlockMs": {
+     "n": 1,
+     "median": 0,
+     "p90": 0,
+     "min": 0,
+     "max": 0,
+     "iqr": 0
+    },
+    "inputDelay": {
+     "n": 1,
+     "median": 0.967,
+     "p90": 0.967,
+     "min": 0.967,
+     "max": 0.967,
+     "iqr": 0
+    },
+    "tapToFrame": {
+     "n": 1,
+     "median": 20.7,
+     "p90": 20.7,
+     "min": 20.7,
+     "max": 20.7,
+     "iqr": 0
+    },
+    "initMs": {
+     "n": 1,
+     "median": 3.1,
+     "p90": 3.1,
+     "min": 3.1,
+     "max": 3.1,
+     "iqr": 0
+    },
+    "startupTaskMs": {
+     "n": 1,
+     "median": 35.827,
+     "p90": 35.827,
+     "min": 35.827,
+     "max": 35.827,
+     "iqr": 0
+    },
+    "firstCorrectMs": {
+     "n": 1,
+     "median": 22.1,
+     "p90": 22.1,
+     "min": 22.1,
+     "max": 22.1,
+     "iqr": 0
+    },
+    "flash": {
+     "n": 1,
+     "median": 0,
+     "p90": 0,
+     "min": 0,
+     "max": 0,
+     "iqr": 0
+    },
+    "idleTaskMs": {
+     "n": 1,
+     "median": 39.107,
+     "p90": 39.107,
+     "min": 39.107,
+     "max": 39.107,
+     "iqr": 0
+    },
+    "idleRafCalls": {
+     "n": 1,
+     "median": 282,
+     "p90": 282,
+     "min": 282,
+     "max": 282,
+     "iqr": 0
+    },
+    "heapMb": {
+     "n": 1,
+     "median": 2.908,
+     "p90": 2.908,
+     "min": 2.908,
+     "max": 2.908,
+     "iqr": 0
+    },
+    "tracePaintMs": {
+     "n": 1,
+     "median": 19.527,
+     "p90": 19.527,
+     "min": 19.527,
+     "max": 19.527,
+     "iqr": 0
+    },
+    "traceStyleLayoutMs": {
+     "n": 1,
+     "median": 3.194,
+     "p90": 3.194,
+     "min": 3.194,
+     "max": 3.194,
+     "iqr": 0
+    },
+    "traceScriptMs": {
+     "n": 1,
+     "median": 22.071,
+     "p90": 22.071,
+     "min": 22.071,
+     "max": 22.071,
+     "iqr": 0
+    },
+    "droppedFrames": {
+     "n": 1,
+     "median": 0,
+     "p90": 0,
+     "min": 0,
+     "max": 0,
+     "iqr": 0
+    }
+   },
+   "extras": {
+    "vsyncMs": {
+     "n": 1,
+     "median": 16.7,
+     "p90": 16.7,
+     "min": 16.7,
+     "max": 16.7,
+     "iqr": 0
+    },
+    "gestureMs": {
+     "n": 1,
+     "median": 1680,
+     "p90": 1680,
+     "min": 1680,
+     "max": 1680,
+     "iqr": 0
+    }
+   }
+  },
+  {
+   "scenario": "a-draw-one",
+   "lib": "ours",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "path": "native",
+   "scroll": 4695,
+   "samples": {
+    "mainMs": [
+     6.315
+    ],
+    "scriptMs": [
+     3.241
+    ],
+    "styleMs": [
+     2.402
+    ],
+    "layoutMs": [
+     0.672
+    ],
+    "taskMs": [
+     86.382
+    ],
+    "frameP50": [
+     16.7
+    ],
+    "frameP95": [
+     16.7
+    ],
+    "frameP99": [
+     17.133
+    ],
+    "jankPct": [
+     1
+    ],
+    "longestFrame": [
+     50.1
+    ],
+    "longtaskCount": [
+     0
+    ],
+    "longtaskBlockMs": [
+     0
+    ],
+    "loafBlockMs": [
+     0
+    ],
+    "inputDelay": [
+     3.8
+    ],
+    "tapToFrame": [
+     18.933
+    ],
+    "initMs": [
+     2.9
+    ],
+    "startupTaskMs": [
+     22.038
+    ],
+    "firstCorrectMs": [
+     43.9
+    ],
+    "flash": [
+     1
+    ],
+    "idleTaskMs": [
+     3.148
+    ],
+    "idleRafCalls": [
+     0
+    ],
+    "heapMb": [
+     2.537
+    ],
+    "tracePaintMs": [
+     21.281
+    ],
+    "traceStyleLayoutMs": [
+     3.687
+    ],
+    "traceScriptMs": [
+     12.234
+    ],
+    "droppedFrames": [
+     0
+    ]
+   },
+   "summary": {
+    "mainMs": {
+     "n": 1,
+     "median": 6.315,
+     "p90": 6.315,
+     "min": 6.315,
+     "max": 6.315,
+     "iqr": 0
+    },
+    "scriptMs": {
+     "n": 1,
+     "median": 3.241,
+     "p90": 3.241,
+     "min": 3.241,
+     "max": 3.241,
+     "iqr": 0
+    },
+    "styleMs": {
+     "n": 1,
+     "median": 2.402,
+     "p90": 2.402,
+     "min": 2.402,
+     "max": 2.402,
+     "iqr": 0
+    },
+    "layoutMs": {
+     "n": 1,
+     "median": 0.672,
+     "p90": 0.672,
+     "min": 0.672,
+     "max": 0.672,
+     "iqr": 0
+    },
+    "taskMs": {
+     "n": 1,
+     "median": 86.382,
+     "p90": 86.382,
+     "min": 86.382,
+     "max": 86.382,
+     "iqr": 0
+    },
+    "frameP50": {
+     "n": 1,
+     "median": 16.7,
+     "p90": 16.7,
+     "min": 16.7,
+     "max": 16.7,
+     "iqr": 0
+    },
+    "frameP95": {
+     "n": 1,
+     "median": 16.7,
+     "p90": 16.7,
+     "min": 16.7,
+     "max": 16.7,
+     "iqr": 0
+    },
+    "frameP99": {
+     "n": 1,
+     "median": 17.133,
+     "p90": 17.133,
+     "min": 17.133,
+     "max": 17.133,
+     "iqr": 0
+    },
+    "jankPct": {
+     "n": 1,
+     "median": 1,
+     "p90": 1,
+     "min": 1,
+     "max": 1,
+     "iqr": 0
+    },
+    "longestFrame": {
+     "n": 1,
+     "median": 50.1,
+     "p90": 50.1,
+     "min": 50.1,
+     "max": 50.1,
+     "iqr": 0
+    },
+    "longtaskCount": {
+     "n": 1,
+     "median": 0,
+     "p90": 0,
+     "min": 0,
+     "max": 0,
+     "iqr": 0
+    },
+    "longtaskBlockMs": {
+     "n": 1,
+     "median": 0,
+     "p90": 0,
+     "min": 0,
+     "max": 0,
+     "iqr": 0
+    },
+    "loafBlockMs": {
+     "n": 1,
+     "median": 0,
+     "p90": 0,
+     "min": 0,
+     "max": 0,
+     "iqr": 0
+    },
+    "inputDelay": {
+     "n": 1,
+     "median": 3.8,
+     "p90": 3.8,
+     "min": 3.8,
+     "max": 3.8,
+     "iqr": 0
+    },
+    "tapToFrame": {
+     "n": 1,
+     "median": 18.933,
+     "p90": 18.933,
+     "min": 18.933,
+     "max": 18.933,
+     "iqr": 0
+    },
+    "initMs": {
+     "n": 1,
+     "median": 2.9,
+     "p90": 2.9,
+     "min": 2.9,
+     "max": 2.9,
+     "iqr": 0
+    },
+    "startupTaskMs": {
+     "n": 1,
+     "median": 22.038,
+     "p90": 22.038,
+     "min": 22.038,
+     "max": 22.038,
+     "iqr": 0
+    },
+    "firstCorrectMs": {
+     "n": 1,
+     "median": 43.9,
+     "p90": 43.9,
+     "min": 43.9,
+     "max": 43.9,
+     "iqr": 0
+    },
+    "flash": {
+     "n": 1,
+     "median": 1,
+     "p90": 1,
+     "min": 1,
+     "max": 1,
+     "iqr": 0
+    },
+    "idleTaskMs": {
+     "n": 1,
+     "median": 3.148,
+     "p90": 3.148,
+     "min": 3.148,
+     "max": 3.148,
+     "iqr": 0
+    },
+    "idleRafCalls": {
+     "n": 1,
+     "median": 0,
+     "p90": 0,
+     "min": 0,
+     "max": 0,
+     "iqr": 0
+    },
+    "heapMb": {
+     "n": 1,
+     "median": 2.537,
+     "p90": 2.537,
+     "min": 2.537,
+     "max": 2.537,
+     "iqr": 0
+    },
+    "tracePaintMs": {
+     "n": 1,
+     "median": 21.281,
+     "p90": 21.281,
+     "min": 21.281,
+     "max": 21.281,
+     "iqr": 0
+    },
+    "traceStyleLayoutMs": {
+     "n": 1,
+     "median": 3.687,
+     "p90": 3.687,
+     "min": 3.687,
+     "max": 3.687,
+     "iqr": 0
+    },
+    "traceScriptMs": {
+     "n": 1,
+     "median": 12.234,
+     "p90": 12.234,
+     "min": 12.234,
+     "max": 12.234,
+     "iqr": 0
+    },
+    "droppedFrames": {
+     "n": 1,
+     "median": 0,
+     "p90": 0,
+     "min": 0,
+     "max": 0,
+     "iqr": 0
+    }
+   },
+   "extras": {
+    "vsyncMs": {
+     "n": 1,
+     "median": 16.7,
+     "p90": 16.7,
+     "min": 16.7,
+     "max": 16.7,
+     "iqr": 0
+    },
+    "gestureMs": {
+     "n": 1,
+     "median": 1669,
+     "p90": 1669,
+     "min": 1669,
+     "max": 1669,
+     "iqr": 0
+    }
+   }
+  },
+  {
+   "scenario": "a-draw-one",
+   "lib": "ours-js",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "path": "js",
+   "scroll": 4695,
+   "samples": {
+    "mainMs": [
+     10.71
+    ],
+    "scriptMs": [
+     7.169
+    ],
+    "styleMs": [
+     3.028
+    ],
+    "layoutMs": [
+     0.513
+    ],
+    "taskMs": [
+     88.773
+    ],
+    "frameP50": [
+     16.7
+    ],
+    "frameP95": [
+     16.7
+    ],
+    "frameP99": [
+     17.131
+    ],
+    "jankPct": [
+     1
+    ],
+    "longestFrame": [
+     49.9
+    ],
+    "longtaskCount": [
+     0
+    ],
+    "longtaskBlockMs": [
+     0
+    ],
+    "loafBlockMs": [
+     0
+    ],
+    "inputDelay": [
+     0.7
+    ],
+    "tapToFrame": [
+     19.667
+    ],
+    "initMs": [
+     1.4
+    ],
+    "startupTaskMs": [
+     23.87
+    ],
+    "firstCorrectMs": [
+     37.2
+    ],
+    "flash": [
+     1
+    ],
+    "idleTaskMs": [
+     49.979
+    ],
+    "idleRafCalls": [
+     180
+    ],
+    "heapMb": [
+     2.488
+    ],
+    "tracePaintMs": [
+     21.242
+    ],
+    "traceStyleLayoutMs": [
+     4.245
+    ],
+    "traceScriptMs": [
+     21.945
+    ],
+    "droppedFrames": [
+     0
+    ]
+   },
+   "summary": {
+    "mainMs": {
+     "n": 1,
+     "median": 10.71,
+     "p90": 10.71,
+     "min": 10.71,
+     "max": 10.71,
+     "iqr": 0
+    },
+    "scriptMs": {
+     "n": 1,
+     "median": 7.169,
+     "p90": 7.169,
+     "min": 7.169,
+     "max": 7.169,
+     "iqr": 0
+    },
+    "styleMs": {
+     "n": 1,
+     "median": 3.028,
+     "p90": 3.028,
+     "min": 3.028,
+     "max": 3.028,
+     "iqr": 0
+    },
+    "layoutMs": {
+     "n": 1,
+     "median": 0.513,
+     "p90": 0.513,
+     "min": 0.513,
+     "max": 0.513,
+     "iqr": 0
+    },
+    "taskMs": {
+     "n": 1,
+     "median": 88.773,
+     "p90": 88.773,
+     "min": 88.773,
+     "max": 88.773,
+     "iqr": 0
+    },
+    "frameP50": {
+     "n": 1,
+     "median": 16.7,
+     "p90": 16.7,
+     "min": 16.7,
+     "max": 16.7,
+     "iqr": 0
+    },
+    "frameP95": {
+     "n": 1,
+     "median": 16.7,
+     "p90": 16.7,
+     "min": 16.7,
+     "max": 16.7,
+     "iqr": 0
+    },
+    "frameP99": {
+     "n": 1,
+     "median": 17.131,
+     "p90": 17.131,
+     "min": 17.131,
+     "max": 17.131,
+     "iqr": 0
+    },
+    "jankPct": {
+     "n": 1,
+     "median": 1,
+     "p90": 1,
+     "min": 1,
+     "max": 1,
+     "iqr": 0
+    },
+    "longestFrame": {
+     "n": 1,
+     "median": 49.9,
+     "p90": 49.9,
+     "min": 49.9,
+     "max": 49.9,
+     "iqr": 0
+    },
+    "longtaskCount": {
+     "n": 1,
+     "median": 0,
+     "p90": 0,
+     "min": 0,
+     "max": 0,
+     "iqr": 0
+    },
+    "longtaskBlockMs": {
+     "n": 1,
+     "median": 0,
+     "p90": 0,
+     "min": 0,
+     "max": 0,
+     "iqr": 0
+    },
+    "loafBlockMs": {
+     "n": 1,
+     "median": 0,
+     "p90": 0,
+     "min": 0,
+     "max": 0,
+     "iqr": 0
+    },
+    "inputDelay": {
+     "n": 1,
+     "median": 0.7,
+     "p90": 0.7,
+     "min": 0.7,
+     "max": 0.7,
+     "iqr": 0
+    },
+    "tapToFrame": {
+     "n": 1,
+     "median": 19.667,
+     "p90": 19.667,
+     "min": 19.667,
+     "max": 19.667,
+     "iqr": 0
+    },
+    "initMs": {
+     "n": 1,
+     "median": 1.4,
+     "p90": 1.4,
+     "min": 1.4,
+     "max": 1.4,
+     "iqr": 0
+    },
+    "startupTaskMs": {
+     "n": 1,
+     "median": 23.87,
+     "p90": 23.87,
+     "min": 23.87,
+     "max": 23.87,
+     "iqr": 0
+    },
+    "firstCorrectMs": {
+     "n": 1,
+     "median": 37.2,
+     "p90": 37.2,
+     "min": 37.2,
+     "max": 37.2,
+     "iqr": 0
+    },
+    "flash": {
+     "n": 1,
+     "median": 1,
+     "p90": 1,
+     "min": 1,
+     "max": 1,
+     "iqr": 0
+    },
+    "idleTaskMs": {
+     "n": 1,
+     "median": 49.979,
+     "p90": 49.979,
+     "min": 49.979,
+     "max": 49.979,
+     "iqr": 0
+    },
+    "idleRafCalls": {
+     "n": 1,
+     "median": 180,
+     "p90": 180,
+     "min": 180,
+     "max": 180,
+     "iqr": 0
+    },
+    "heapMb": {
+     "n": 1,
+     "median": 2.488,
+     "p90": 2.488,
+     "min": 2.488,
+     "max": 2.488,
+     "iqr": 0
+    },
+    "tracePaintMs": {
+     "n": 1,
+     "median": 21.242,
+     "p90": 21.242,
+     "min": 21.242,
+     "max": 21.242,
+     "iqr": 0
+    },
+    "traceStyleLayoutMs": {
+     "n": 1,
+     "median": 4.245,
+     "p90": 4.245,
+     "min": 4.245,
+     "max": 4.245,
+     "iqr": 0
+    },
+    "traceScriptMs": {
+     "n": 1,
+     "median": 21.945,
+     "p90": 21.945,
+     "min": 21.945,
+     "max": 21.945,
+     "iqr": 0
+    },
+    "droppedFrames": {
+     "n": 1,
+     "median": 0,
+     "p90": 0,
+     "min": 0,
+     "max": 0,
+     "iqr": 0
+    }
+   },
+   "extras": {
+    "vsyncMs": {
+     "n": 1,
+     "median": 16.7,
+     "p90": 16.7,
+     "min": 16.7,
+     "max": 16.7,
+     "iqr": 0
+    },
+    "gestureMs": {
+     "n": 1,
+     "median": 1682,
+     "p90": 1682,
+     "min": 1682,
+     "max": 1682,
+     "iqr": 0
+    }
+   }
+  }
+ ],
+ "comparisons": [
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours",
+   "metric": "mainMs",
+   "diff": 9.757,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours",
+   "metric": "scriptMs",
+   "diff": 9.92,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours",
+   "metric": "styleMs",
+   "diff": -0.162,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours",
+   "metric": "layoutMs",
+   "diff": -0.001,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours",
+   "metric": "taskMs",
+   "diff": 9.706,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours",
+   "metric": "frameP50",
+   "diff": 0,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours",
+   "metric": "frameP95",
+   "diff": 0,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours",
+   "metric": "frameP99",
+   "diff": 0.331,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours",
+   "metric": "jankPct",
+   "diff": 0.01,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours",
+   "metric": "longestFrame",
+   "diff": -0.1,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours",
+   "metric": "longtaskCount",
+   "diff": 0,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours",
+   "metric": "longtaskBlockMs",
+   "diff": 0,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours",
+   "metric": "loafBlockMs",
+   "diff": 0,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours",
+   "metric": "inputDelay",
+   "diff": -2.833,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours",
+   "metric": "tapToFrame",
+   "diff": 1.767,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours",
+   "metric": "initMs",
+   "diff": 0.2,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours",
+   "metric": "startupTaskMs",
+   "diff": 13.789,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours",
+   "metric": "firstCorrectMs",
+   "diff": -21.8,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours",
+   "metric": "flash",
+   "diff": -1,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours",
+   "metric": "idleTaskMs",
+   "diff": 35.959,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours",
+   "metric": "idleRafCalls",
+   "diff": 282,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours",
+   "metric": "heapMb",
+   "diff": 0.371,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours",
+   "metric": "tracePaintMs",
+   "diff": -1.754,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours",
+   "metric": "traceStyleLayoutMs",
+   "diff": -0.493,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours",
+   "metric": "traceScriptMs",
+   "diff": 9.837,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours",
+   "metric": "droppedFrames",
+   "diff": 0,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours-js",
+   "metric": "mainMs",
+   "diff": 5.362,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours-js",
+   "metric": "scriptMs",
+   "diff": 5.992,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours-js",
+   "metric": "styleMs",
+   "diff": -0.788,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours-js",
+   "metric": "layoutMs",
+   "diff": 0.158,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours-js",
+   "metric": "taskMs",
+   "diff": 7.315,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours-js",
+   "metric": "frameP50",
+   "diff": 0,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours-js",
+   "metric": "frameP95",
+   "diff": 0,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours-js",
+   "metric": "frameP99",
+   "diff": 0.333,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours-js",
+   "metric": "jankPct",
+   "diff": 0.01,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours-js",
+   "metric": "longestFrame",
+   "diff": 0.1,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours-js",
+   "metric": "longtaskCount",
+   "diff": 0,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours-js",
+   "metric": "longtaskBlockMs",
+   "diff": 0,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours-js",
+   "metric": "loafBlockMs",
+   "diff": 0,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours-js",
+   "metric": "inputDelay",
+   "diff": 0.267,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours-js",
+   "metric": "tapToFrame",
+   "diff": 1.033,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours-js",
+   "metric": "initMs",
+   "diff": 1.7,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours-js",
+   "metric": "startupTaskMs",
+   "diff": 11.957,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours-js",
+   "metric": "firstCorrectMs",
+   "diff": -15.1,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours-js",
+   "metric": "flash",
+   "diff": -1,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours-js",
+   "metric": "idleTaskMs",
+   "diff": -10.872,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours-js",
+   "metric": "idleRafCalls",
+   "diff": 102,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours-js",
+   "metric": "heapMb",
+   "diff": 0.42,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours-js",
+   "metric": "tracePaintMs",
+   "diff": -1.715,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours-js",
+   "metric": "traceStyleLayoutMs",
+   "diff": -1.051,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours-js",
+   "metric": "traceScriptMs",
+   "diff": 0.126,
+   "ci": null,
+   "winner": "none"
+  },
+  {
+   "scenario": "a-draw-one",
+   "browser": "chromium",
+   "throttle": 1,
+   "speed": 3000,
+   "a": "gsap",
+   "b": "ours-js",
+   "metric": "droppedFrames",
+   "diff": 0,
+   "ci": null,
+   "winner": "none"
+  }
+ ]
+}

@@ -194,6 +194,10 @@ export default function Page() {
           159+), svg-scroll-draw also hands the simple draw case to the browser’s native CSS scroll timeline — zero
           per-frame JavaScript.
         </p>
+        <p>
+          What that saves while the page scrolls, and where GSAP comes out ahead, is measured scenario by scenario in
+          the <Link href="/benchmarks/gsap-vs-svg-scroll-draw">GSAP vs svg-scroll-draw benchmark</Link>.
+        </p>
       </Section>
 
       <Section id="code" k="code comparison" title="Same animation, both libraries">

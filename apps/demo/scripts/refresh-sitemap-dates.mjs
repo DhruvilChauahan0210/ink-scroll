@@ -44,6 +44,8 @@ const ALSO = {
   '/examples': ['components/ExamplesPage.tsx'],
   '/blocks': ['../registry'],
   '/blog/horizontal-scroll-sections': ['components/recipes', 'recipes/horizontal-scroll-sections'],
+  // The page renders the results file and prints the scenario setups.
+  '/benchmarks/gsap-vs-svg-scroll-draw': ['data/bench-gsap.json', 'data/bench-gsap.ts', '../public/benchmarks/gsap'],
 };
 
 /** Map a sitemap URL path to the source files that render it. */

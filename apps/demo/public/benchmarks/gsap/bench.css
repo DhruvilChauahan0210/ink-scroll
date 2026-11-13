@@ -1,0 +1,36 @@
+/* Shared by every scenario page, whatever the library: identical CSS on both sides. */
+* { box-sizing: border-box; }
+html { color-scheme: light; }
+body {
+  margin: 0;
+  font: 16px/1.55 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  color: #1d1d1f;
+  background: #fafaf7;
+}
+main { max-width: 1232px; margin: 0 auto; padding: 0 16px; }
+.bench-head { padding: 24px 0 8px; }
+.bench-head h1 { font-size: 22px; margin: 0 0 4px; }
+.bench-head p { margin: 0; color: #555; }
+.filler { overflow: hidden; color: #6b6b6b; }
+.filler p { margin: 0 0 18px; max-width: 70ch; }
+.stage svg, #d svg { display: block; width: 100%; height: auto; max-width: 1200px; }
+svg path { fill: none; stroke: #1d1d1f; stroke-width: 4; stroke-linecap: butt; }
+.b1 svg { margin: 0 0 40px; }
+#d { height: 100vh; display: grid; place-items: center; background: #f0efe9; }
+#d svg { max-height: 90vh; }
+.grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+.card { background: #fff; border: 1px solid #e3e2dc; border-radius: 10px; padding: 16px; will-change: transform; }
+.card .ph { height: 160px; border-radius: 6px; }
+.card h3 { margin: 12px 0 4px; font-size: 17px; }
+.card p { margin: 0; color: #555; font-size: 14px; }
+.bench-bar {
+  position: fixed; right: 12px; bottom: 12px; z-index: 10;
+  display: flex; gap: 6px; align-items: center; flex-wrap: wrap;
+  padding: 6px; background: #fff; border: 1px solid #ccc; border-radius: 8px;
+  font-size: 13px;
+}
+.bench-bar a { color: #1d1d1f; padding: 4px 6px; }
+.bench-bar a[aria-current] { font-weight: 700; text-decoration: none; }
+.bench-bar button { font: inherit; padding: 4px 10px; min-width: 64px; }
+.bench-bar button.on { background: #1d1d1f; color: #fff; }
+@media (max-width: 700px) { .grid { grid-template-columns: 1fr; } }

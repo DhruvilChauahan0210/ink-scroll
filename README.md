@@ -974,6 +974,10 @@ Framer Motion's CJS entry 34.3 KB — so the full main entry here is about a qua
 the GSAP stack (11.9 KB against 47.5), and a single-purpose import like `scrollReveal` (6.1 KB) under a seventh. On supporting browsers the simple draw case
 runs as a native CSS scroll animation with no JS on the critical path at all.
 
+Runtime cost is measured separately: the [GSAP vs svg-scroll-draw benchmark](https://svg-scroll-draw.vercel.app/benchmarks/gsap-vs-svg-scroll-draw)
+scrolls six scenarios in Chromium, Firefox and WebKit and publishes every result, the ones GSAP wins
+included. Run it yourself with `npm run bench:gsap`.
+
 ---
 
 ## Browser support

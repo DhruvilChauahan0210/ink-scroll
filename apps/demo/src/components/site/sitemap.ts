@@ -41,6 +41,7 @@ const FRAMEWORKS: SiteLink[] = [
 /** GSAP, Framer Motion and AOS have dedicated pages; the rest are generated from VERSUS. */
 const COMPARE: SiteLink[] = [
   { href: '/vs-gsap', label: 'vs GSAP' },
+  { href: '/benchmarks/gsap-vs-svg-scroll-draw', label: 'Benchmark vs GSAP' },
   { href: '/vs-framer-motion', label: 'vs Framer Motion' },
   { href: '/vs-aos', label: 'vs AOS' },
   ...VERSUS.map((v) => ({ href: `/${v.slug}`, label: `vs ${COMPETITORS[v.competitorKey].label}` })),

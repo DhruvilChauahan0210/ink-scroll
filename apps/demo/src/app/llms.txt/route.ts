@@ -125,6 +125,7 @@ ${TOOL_LINES}
 ## Comparisons
 
 - [vs GSAP](https://svg-scroll-draw.vercel.app/vs-gsap)
+- [Benchmark vs GSAP](https://svg-scroll-draw.vercel.app/benchmarks/gsap-vs-svg-scroll-draw): runtime cost per scenario in Chromium, Firefox and WebKit, GSAP's wins included; raw results at /benchmarks/gsap-vs-svg-scroll-draw/results.json
 - [vs Framer Motion](https://svg-scroll-draw.vercel.app/vs-framer-motion)
 - [vs Motion](https://svg-scroll-draw.vercel.app/vs-motion)
 - [vs AOS and ScrollReveal](https://svg-scroll-draw.vercel.app/vs-aos)
