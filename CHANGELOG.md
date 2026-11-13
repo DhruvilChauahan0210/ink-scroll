@@ -8,6 +8,25 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### Site
 
+- **Two more guides:**
+  - `/blog/animate-on-scroll-css`: fade up, slide in, zoom, a stagger
+    (`nth-child` to `--i`, and `sibling-index()` behind its own
+    `@supports`), a clip-path reveal and an end-of-page fix, all on
+    `view()` with an `@supports` fallback that never hides content, and the
+    one thing CSS cannot do (play once) with a five-line observer or
+    `scrollReveal`.
+  - `/blog/nextjs-scroll-animations`: where `'use client'` goes, client
+    islands in server pages, CSS-only effects with no JavaScript, server HTML
+    that shows, streaming, route changes and `next/image`; every listing is
+    built with `next build` and run.
+  Every listing runs as printed in Chromium, Firefox and WebKit.
+
+- **`/nextjs-scroll-animation` pattern 2 builds on Next 16.** It called
+  `next/dynamic` with `ssr: false` in a Server Component, which Next 16
+  refuses to build; the dynamic import now sits in a `'use client'` file
+  without `ssr: false`, so the section stays in the server HTML and only
+  its JavaScript is split. The FAQ says the same.
+
 - **A new tool, the 29th: Handwriting animation generator**
   (`/handwriting-animation-generator`). Type a name or a short line and get an
   SVG that writes itself stroke by stroke in pen order, from a single-stroke
@@ -27,6 +46,7 @@ All notable changes to `svg-scroll-draw` are documented here.
   post link to it. The scroll version uses butt caps: under scrollDraw's dash
   (the length with an equal gap) WebKit paints a round cap at the end of each
   stroke not yet drawn.
+
 
 - **Two posts for people choosing or leaving a scroll library:**
   - `/blog/react-scroll-animations`: four ways in React (CSS `view()`, a

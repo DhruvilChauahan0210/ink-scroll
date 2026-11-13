@@ -94,30 +94,25 @@ export function AnimatedCards({ cards }: { cards: Card[] }) {
 }`,
   },
   {
-    file: 'app/page.tsx',
-    title: 'Dynamic import (heavy animated sections)',
-    lede: <>For large animated sections, lazy-load them so they don&apos;t block the initial page render.</>,
-    code: `import dynamic from 'next/dynamic';
+    file: 'components/LazyShowcase.tsx',
+    title: 'Dynamic import (split a heavy section’s code)',
+    lede: <>Call <C>next/dynamic</C> from a client file. Without <C>ssr: false</C> the section is still rendered on the server, so its content is in the HTML; only its JavaScript comes in a chunk of its own. A Server Component cannot do this: Next refuses <C>ssr: false</C> there, and does not split a client component that a Server Component imports dynamically.</>,
+    code: `'use client';
+import dynamic from 'next/dynamic';
 
-// This section and its scroll animations only load when needed
-const AnimatedShowcase = dynamic(
-  () => import('@/components/AnimatedShowcase'),
-  {
-    ssr:     false,
-    loading: () => <div className="h-96 animate-pulse bg-gray-100" />,
-  }
-);
+// Rendered on the server as usual; its JavaScript loads as a separate chunk.
+// No ssr: false — that would leave the section out of the server HTML.
+const AnimatedShowcase = dynamic(() => import('./AnimatedShowcase'));
 
-// Server Component — no 'use client' needed here
-export default async function Page() {
-  const data = await fetchData(); // server-side data fetching
-  return (
-    <main>
-      <Hero />          {/* Server Component — static */}
-      <AnimatedShowcase data={data} />  {/* Client, lazy */}
-    </main>
-  );
-}`,
+type Item = { id: string; title: string };
+
+export function LazyShowcase({ items }: { items: Item[] }) {
+  return <AnimatedShowcase items={items} />;
+}
+
+// app/page.tsx stays a Server Component, no directive:
+//   const items = await getItems();
+//   return <main><Hero /><LazyShowcase items={items} /></main>;`,
   },
   {
     file: 'components/PinnedSection.tsx',
@@ -267,7 +262,7 @@ const FAQ: { q: string; a: string }[] = [
   },
   {
     q: 'Do I need next/dynamic with ssr: false?',
-    a: 'No. The library is safe to render on the server as it is. Use next/dynamic only to lazy-load a heavy animated section so it does not hold up the first paint.',
+    a: "No. The library renders on the server as it is, and ssr: false would take the section out of the server HTML; Next 16 also refuses ssr: false in a Server Component. To load a heavy animated section's JavaScript in a chunk of its own, call next/dynamic without ssr: false from a 'use client' file, as in pattern 2.",
   },
   {
     q: 'Will scroll animations cause hydration errors in Next.js?',

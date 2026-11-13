@@ -19,6 +19,28 @@ export type BlogPost = {
 
 export const POSTS: BlogPost[] = [
   {
+    slug: 'animate-on-scroll-css',
+    title: 'Animate on scroll with CSS only (no library, no JavaScript)',
+    description:
+      'Fade up, slide in, zoom, stagger and clip-path reveals on scroll in pure CSS, with an @supports fallback, reduced motion, and the one thing CSS cannot do.',
+    tag: 'How-To',
+    tagColor: '#60a5fa',
+    readTime: '9 min read',
+    date: 'November 2026',
+    published: '2026-11-13',
+  },
+  {
+    slug: 'nextjs-scroll-animations',
+    title: 'Scroll animations in Next.js (App Router): a practical guide',
+    description:
+      'Scroll animations in the Next.js App Router: where ‘use client’ goes, client islands, CSS-only effects, server HTML that shows, route changes and next/image.',
+    tag: 'Framework Guide',
+    tagColor: '#42b883',
+    readTime: '11 min read',
+    date: 'November 2026',
+    published: '2026-11-13',
+  },
+  {
     slug: 'react-scroll-animations',
     title: 'React scroll animations: CSS, Framer Motion or a hook?',
     description:

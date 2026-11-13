@@ -65,7 +65,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${SITE_URL}/nextjs-scroll-animation`,
-      lastModified: new Date("2026-11-11"),
+      lastModified: new Date("2026-11-13"),
       changeFrequency: "monthly",
       priority: 0.9,
     },
@@ -324,6 +324,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
 
     // ── Blog posts ──────────────────────────────────────────────────────────
+    {
+      url: `${SITE_URL}/blog/animate-on-scroll-css`,
+      lastModified: new Date("2026-11-13"),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${SITE_URL}/blog/nextjs-scroll-animations`,
+      lastModified: new Date("2026-11-13"),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
     {
       url: `${SITE_URL}/blog/react-scroll-animations`,
       lastModified: new Date("2026-11-13"),

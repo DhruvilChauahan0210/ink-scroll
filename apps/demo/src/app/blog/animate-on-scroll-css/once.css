@@ -1,0 +1,63 @@
+/* /blog/animate-on-scroll-css — fig. 1, progress-linked or play once. Scoped under .site .ba .pof. */
+
+.site .ba .pof { display: grid; gap: 0; }
+.site .ba .pof-row {
+  display: grid;
+  grid-template-columns: 140px minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+.site .ba .pof-l { display: grid; gap: 2px; font: 400 11px/1.3 var(--mono); color: var(--fg-3); }
+.site .ba .pof-l b { font: 600 13px/1.3 var(--sans, inherit); color: var(--fg); }
+.site .ba .pof-track {
+  position: relative;
+  display: block;
+  background-image: linear-gradient(to right, var(--line) 1px, transparent 1px);
+  background-size: 10% 100%;
+  box-shadow: 1px 0 0 var(--line);
+}
+.site .ba .pof-track svg { display: block; width: 100%; height: 44px; overflow: visible; }
+.site .ba .pof-track path,
+.site .ba .pof-track polyline { fill: none; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
+.site .ba .pof-base { stroke: var(--line-2); stroke-width: 1; stroke-dasharray: 2 3; }
+.site .ba .pof-mark { stroke: var(--fg-3); stroke-width: 1; stroke-dasharray: 3 3; }
+.site .ba .pof-scroll { stroke: var(--fg-3); stroke-width: 2; }
+.site .ba .pof-view { stroke: var(--accent); stroke-width: 3; }
+.site .ba .pof-once { stroke: var(--fg); stroke-width: 3; }
+
+.site .ba .pof-phases { border-bottom: 1px solid var(--fg-3); padding: 0 0 8px; }
+.site .ba .pof-ph {
+  height: 1.3em;
+  background: none;
+  box-shadow: none;
+  font: 500 10.5px/1.3 var(--mono);
+  color: var(--fg-3);
+}
+.site .ba .pof-ph span {
+  position: absolute;
+  top: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+.site .ba .pof-ph i { font-style: normal; }
+
+.site .ba .pof-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin: 10px 0 0;
+  font: 400 11px/1.4 var(--mono);
+  color: var(--fg-3);
+}
+.site .ba .pof-key i { display: inline-block; width: 0; height: 12px; margin-right: 6px; vertical-align: middle; border-left: 1px dashed var(--fg-3); }
+
+@media (max-width: 559px) {
+  .site .ba .pof-row { grid-template-columns: 92px minmax(0, 1fr); gap: 10px; }
+  .site .ba .pof-l span { font-size: 10px; }
+  .site .ba .pof-ph { font-size: 9.5px; }
+  .site .ba .pof-ph i { display: none; }
+}

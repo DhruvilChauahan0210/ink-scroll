@@ -22,6 +22,22 @@ export type RelatedLinks = {
 };
 
 export const RELATED_BY_POST: Record<string, RelatedLinks> = {
+  'animate-on-scroll-css': {
+    examples: ['scroll-reveal', 'scroll-animate'],
+    tools: ['css-scroll-driven-animation-generator', 'scroll-reveal-generator'],
+    pages: [
+      { href: '/aos-animation', label: 'AOS animation examples', blurb: 'Every data-aos effect running, if that is the look you are matching.' },
+      { href: '/vs-aos', label: 'vs AOS and ScrollReveal', blurb: 'The honest comparison, with measured figures.' },
+    ],
+  },
+  'nextjs-scroll-animations': {
+    examples: ['scroll-animate', 'scroll-reveal'],
+    tools: ['scroll-reveal-generator', 'text-animation-generator'],
+    pages: [
+      { href: '/nextjs-scroll-animation', label: 'Next.js scroll animation', blurb: 'Quick start, patterns and FAQ for the App Router.' },
+      { href: '/blocks', label: 'Scroll animation blocks', blurb: 'Client islands you install with the shadcn CLI.' },
+    ],
+  },
   'react-scroll-animations': {
     examples: ['scroll-animate', 'scroll-reveal'],
     tools: ['scroll-reveal-generator', 'text-animation-generator'],
