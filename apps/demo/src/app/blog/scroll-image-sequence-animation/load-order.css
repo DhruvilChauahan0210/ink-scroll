@@ -1,0 +1,70 @@
+/* /blog/scroll-image-sequence-animation — fig. 1, the load order. Scoped under .site .ba .lo. */
+
+.site .ba .lo { display: grid; gap: 0; }
+.site .ba .lo-row {
+  display: grid;
+  grid-template-columns: 104px minmax(0, 1fr) 44px;
+  gap: 14px;
+  align-items: center;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--line);
+}
+.site .ba .lo-l { font: 400 11px/1.3 var(--mono); color: var(--fg-3); white-space: nowrap; }
+.site .ba .lo-l b { font: 600 13px/1.3 var(--mono); color: var(--fg); margin-left: 4px; }
+.site .ba .lo-r { font: 600 13px/1.3 var(--mono); color: var(--fg-2); text-align: right; }
+.site .ba .lo-r.is-exact { color: var(--accent); }
+
+.site .ba .lo-cells {
+  display: grid;
+  grid-template-columns: repeat(9, minmax(0, 1fr));
+  gap: 4px;
+}
+.site .ba .lo-cells i {
+  display: block;
+  aspect-ratio: 16 / 10;
+  border: 1px dashed var(--line-2);
+  box-sizing: border-box;
+}
+.site .ba .lo-cells i.is-col { border-color: var(--fg-3); }
+.site .ba .lo-cells i.is-in {
+  border: 1px solid var(--fg-3);
+  background: color-mix(in srgb, var(--fg-3) 35%, transparent);
+}
+.site .ba .lo-cells i.is-new { border: 2px solid var(--fg); }
+.site .ba .lo-cells i.is-shown { border-color: var(--accent); background: var(--accent); }
+
+.site .ba .lo-axis { border-bottom: 1px solid var(--fg-3); padding: 0 0 8px; }
+.site .ba .lo-axis .lo-l,
+.site .ba .lo-axis .lo-r { font: 400 10px/1.3 var(--mono); color: var(--fg-3); }
+.site .ba .lo-axis .lo-cells span {
+  font: 500 11px/1.3 var(--mono);
+  color: var(--fg-3);
+  text-align: center;
+}
+.site .ba .lo-axis .lo-cells span.is-want { color: var(--accent); font-weight: 700; }
+
+.site .ba .lo-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin: 10px 0 0;
+  font: 400 11px/1.4 var(--mono);
+  color: var(--fg-3);
+}
+.site .ba .lo-key i {
+  display: inline-block;
+  width: 16px;
+  height: 10px;
+  margin-right: 6px;
+  vertical-align: -1px;
+  box-sizing: border-box;
+}
+.site .ba .lo-key .is-in { border: 1px solid var(--fg-3); background: color-mix(in srgb, var(--fg-3) 35%, transparent); }
+.site .ba .lo-key .is-new { border: 2px solid var(--fg); }
+.site .ba .lo-key .is-shown { border: 1px solid var(--accent); background: var(--accent); }
+
+@media (max-width: 559px) {
+  .site .ba .lo-row { grid-template-columns: 78px minmax(0, 1fr) 32px; gap: 8px; }
+  .site .ba .lo-cells { gap: 3px; }
+  .site .ba .lo-l { font-size: 10px; }
+}

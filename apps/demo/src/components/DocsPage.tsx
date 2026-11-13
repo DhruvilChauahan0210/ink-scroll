@@ -2624,7 +2624,7 @@ import { ScrollVideo } from 'svg-scroll-draw/react';
             <Try>Set the pin, range and easing on your own clip in the <Link href="/scroll-video-scrub-generator" className={TRY_LINK}>scroll video scrub generator</Link>.</Try>
           </DocSection>
 
-          <DocSection id="scroll-frames" tag="Scroll APIs" heading="scrollFrames">
+          <DocSection id="scroll-frames" tag="v2.24.0" heading="scrollFrames">
             <p className="text-sm text-graphite-border leading-relaxed mb-2">
               The same film drawn one still at a time: frame <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">round(progress × (count − 1))</code> of a numbered image sequence, painted on a <code className="font-mono text-[0.85em] bg-marketplace-gray px-1 py-0.5 rounded">{'<canvas>'}</code> as you scroll. A video seeks to a keyframe and decodes forward; a decoded image shows at once, in every browser. {SELF_ENTRIES.frames} KB gzipped for its entry.
             </p>

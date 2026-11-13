@@ -1,11 +1,11 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **2.23.7** staged on `feat/cinematic-gate` (not tagged); npm `latest` is **2.23.6** (`v2.23.6` on `6af06ff`, docs-only)
+> Current version: **2.24.0** staged on `feat/scroll-frames` (not tagged); npm `latest` is **2.23.7** (`v2.23.7` on `751cf7d`)
 > Tests: **891 unit** across 41 suites · **316 browser tests** per engine (948 runs
 > across Chromium/Firefox/WebKit) · **144 mutations**, each caught by the one test
 > named for it · **91.5% line coverage** (gate 90/90/82/82)
 > Bundle: **11.5 KB gzipped** (main entry as shipped files, chunks included; per-API entries from 0.2 KB) · zero runtime dependencies
-> Last updated: 2026-11-11
+> Last updated: 2026-11-13
 
 ---
 
@@ -16,6 +16,7 @@
 - [x] `src/animate/` — `scrollAnimate`, `scrollParallax`, value interpolation
 - [x] `src/counter/` — `scrollCounter`
 - [x] `src/video/` — `scrollVideo`
+- [x] `src/frames/` — `scrollFrames` (2.24.0)
 - [x] `src/text/` — `scrollText`
 - [x] `src/devtools/` — visual overlay (dev-only)
 - [x] `src/react/` `src/vue/` `src/svelte/` `src/solid/` `src/angular/` `src/astro/` `src/nuxt/` `src/web-component/`
@@ -135,6 +136,15 @@ at all.
 - [x] MobileMenu version badge updated to v2.7.0
 
 ## Remaining / Next
+
+### scrollFrames, its generator and the Groundtrack site (2026-11-13; branch `feat/scroll-frames`)
+
+- [x] 2.24.0: `svg-scroll-draw/frames` — `scrollFrames` scrubs an image sequence on a canvas: coarse-to-fine loading (first, last, then midpoints, 6 at a time), the nearest loaded frame until the right one arrives, a redraw only when the frame changes, DPR-sized buffer (capped at 2), cover/contain, `triggerElement` for a pinned stage, reduced motion loads and shows only the last frame; independently reviewed (attribute-sized canvas held, inert after destroy, throwing callbacks and frames function isolated); 4.0 KB gzipped, budget 4.1 — unit tests +47, browser tests per engine +19, mutations +9
+- [x] `/scroll-image-sequence-generator` (26 tools): demo sequence, your own frames, or frames extracted from a video and downloaded as a zip; preview and code; its Run it page in `test:tools`
+- [x] `/examples/scroll-frames` recipe (24 examples, run in `test-recipes`) and the Groundtrack showcase (`/showcase/groundtrack`) on NASA's public-domain Landsat 8 frames (71 WebP, credit on every page and in `public/frames/landsat/README.md`)
+- [ ] Framework wrappers for scrollFrames (React `<ScrollFrames>` / Vue / Svelte), if anyone asks; today the docs show an effect returning `destroy`
+- [x] `/blog/scroll-image-sequence-animation`: canvas vs video, extracting frames, a hand-written version and `scrollFrames`, the frame budget, reduced motion; leads into the generator, the example and Groundtrack
+- [ ] Request indexing for `/scroll-image-sequence-generator`, `/examples/scroll-frames` and `/showcase/groundtrack`; Search Console review in 2–3 weeks
 
 ### Lead with the heart, tool page speed (2026-11-13; branch `feat/heart-and-speed`)
 

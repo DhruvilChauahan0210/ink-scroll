@@ -22,6 +22,13 @@ export type RelatedLinks = {
 };
 
 export const RELATED_BY_POST: Record<string, RelatedLinks> = {
+  'scroll-image-sequence-animation': {
+    examples: ['scroll-frames', 'scroll-video'],
+    tools: ['scroll-image-sequence-generator', 'scroll-video-scrub-generator'],
+    pages: [
+      { href: '/showcase/groundtrack', label: 'Groundtrack showcase', blurb: 'A whole site built around one pinned image sequence of Landsat 8.' },
+    ],
+  },
   'css-scroll-snap': {
     examples: ['scroll-snap', 'scroll-pin'],
     tools: ['css-scroll-snap-generator', 'horizontal-scroll-generator'],

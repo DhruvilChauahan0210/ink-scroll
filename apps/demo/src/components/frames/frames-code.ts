@@ -237,7 +237,10 @@ const q = (s: string) => `'${s.replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`;
 function urlExpr(n: Extract<Naming, { kind: 'pattern' }>, dir: string): string {
   const num = n.start === 0 ? 'i' : `i + ${n.start}`;
   const padded = n.width ? `String(${num}).padStart(${n.width}, '0')` : num;
-  return `\`${dir}${n.prefix.replace(/[`$\\]/g, '\\$&')}\${${padded}}${n.ext}\``;
+  // Encoded like the list form's names, so a '#', '?' or '%' in a file name
+  // stays part of the path.
+  const tpl = (s: string) => encodeURIComponent(s).replace(/[`$\\]/g, '\\$&');
+  return `\`${dir}${tpl(n.prefix)}\${${padded}}${tpl(n.ext)}\``;
 }
 
 /** The line that names the frames, and the count when frames is a function. */

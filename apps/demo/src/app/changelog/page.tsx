@@ -55,6 +55,17 @@ const KINDS: { k: Kind; label: string }[] = [
  */
 const RELEASES: Release[] = [
   {
+    version: '2.24.0',
+    title: 'scrollFrames: an image sequence scrubbed on a canvas',
+    date: '2026-11-13',
+    items: [
+      { type: 'new', text: "svg-scroll-draw/frames: scrollFrames(canvas, { frames, count }) draws frame round(progress × (count − 1)) of an image sequence as the page scrolls, the Apple product-page film. Frames load coarse to fine (the first, the last, then the middle of every gap, 6 at a time) and the nearest loaded one shows until the right one arrives; the canvas is redrawn only when the frame changes, sized to its box × devicePixelRatio (capped at 2), with fit: 'cover' or 'contain' and triggerElement for a pinned stage. Under reduced motion only the last frame is loaded and drawn. 4.0 KB gzipped." },
+      { type: 'fix', text: 'Before its first release, from an independent review: a canvas sized by its own width and height attributes keeps its box instead of growing every frame, nothing runs after destroy(), and a callback or frames function that throws cannot stall the loader.' },
+      { type: 'test', text: '47 unit tests, 19 browser tests per engine and nine mutations, each caught.' },
+      { type: 'site', text: 'A free scroll image sequence generator (/scroll-image-sequence-generator): frames from a video, your own images or a demo sequence, previewed and written as code. A new recipe, /examples/scroll-frames, and the Groundtrack showcase site, on 71 frames of NASA’s public-domain Landsat 8 model.' },
+    ],
+  },
+  {
     version: '2.23.7',
     title: 'Cinematic paints the frame a jump calls for',
     date: '2026-11-13',

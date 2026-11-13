@@ -8,6 +8,15 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### Site
 
+- **`/blog/scroll-image-sequence-animation`: an Apple-style scroll image
+  sequence, step by step.** Why stills on a canvas rather than a scrubbed
+  video (it depends on the encode, from the video scrub tool's own
+  timings), turning a video into frames with ffmpeg or the generator's zip,
+  a hand-written version, the same in one `scrollFrames` call, the frame
+  budget in decoded memory, and reduced motion; into the scroll image
+  sequence generator, the example and the Groundtrack site. Every listing,
+  and the ffmpeg command, is run as printed in Chromium, Firefox and WebKit.
+
 - **Three more how-to posts, each leading into its tool:**
   - `/blog/parallax-scrolling-css`: layers at different speeds in pure CSS
     on a `view()` timeline, why not `background-attachment: fixed` or the
@@ -1046,6 +1055,89 @@ All notable changes to `svg-scroll-draw` are documented here.
   allowed, followed by `check-jsx-text` and `check-nav`.
 
 ---
+
+## [2.24.0] — 2026-11-13
+
+### Added
+
+- **`scrollFrames`, in `svg-scroll-draw/frames`: an image sequence scrubbed
+  on a canvas.** The product-page film drawn one still at a time:
+  `scrollFrames(canvas, { frames, count })` paints frame
+  `round(progress × (count − 1))` as the page scrolls. A video seeks to a
+  keyframe and decodes forward, so a fast scrub stutters; a decoded image
+  shows at once, in every browser. `frames` is a list of URLs or a function
+  from a 0-based index to one (`count` is then required). It takes the same
+  `trigger`, `easing`, `once`, `axis` and `triggerElement` as `scrollVideo`
+  (the tall track behind a `position: sticky` stage), runs its frames through
+  the shared frame gate (a jump past the whole window paints the last frame
+  and fires `onComplete`), and returns the same instance as every other API.
+  Callbacks: `onReady` (the first frame is drawn), `onLoad` (every frame has
+  loaded or failed), `onProgress(alpha, frame)` and `onComplete`.
+- **Loading, coarse to fine.** Frame 0 loads first, then the last, then the
+  midpoint of every gap, at most `concurrency` (6) at a time, so a reader who
+  scrolls fast has a frame near wherever they land after a handful of loads.
+  Until the frame the scroll calls for arrives, the nearest loaded one shows,
+  and the canvas moves closer as frames come in. A frame that fails to load,
+  or a `frames` function that gives no URL, is skipped for its nearest
+  neighbour with one warning. `destroy()` stops the loads still in flight.
+- **Drawn only when the frame changes**, not on every animation frame. The
+  drawing buffer follows the canvas's CSS box × `devicePixelRatio`, capped at
+  2, and is resized and redrawn when the box changes (a window resize, a zoom,
+  a container query). `fit: 'cover'` (the default) fills the box and crops;
+  `'contain'` shows the whole frame; both centred.
+- **Reduced motion loads one frame.** Under `prefers-reduced-motion: reduce`
+  only the last frame is requested and drawn. Turned on mid-visit, the scrub
+  stops on the last frame and nothing more loads beyond it; one way, as in
+  every engine.
+- **Hardened before its first release by an independent review.** A canvas
+  sized by its own `width` and `height` attributes (no CSS size) took its box
+  from the buffer the library wrote, so at a ratio of 2 an unstyled canvas
+  doubled every frame without end; the library now holds that box with an
+  inline size or `aspect-ratio` the first time it writes the buffer. Every
+  method is inert after `destroy()` (`resume()` and `replay()` restarted
+  frames on a canvas nothing owned). A callback that throws is reported as
+  uncaught and cannot stall the loader or leave the canvas blank, and a
+  `frames` function that throws counts as a failed frame. `count` and
+  `concurrency` are checked before anything is set up.
+
+### Size
+
+- `svg-scroll-draw/frames` is 4.0 KB gzipped: `scrollVideo`'s engine (the
+  frame gate, triggers and easings) plus the loader, the canvas sizing and the
+  cover/contain draw. Its budget is 4.1 KB, with the reason in
+  `scripts/size.mjs`. The main entry is unchanged at 11.5 KB; the nuxt entry
+  reads 13.0 KB (was 12.9) and solid 12.3 (12.2), within their budgets, with
+  their raw sizes unchanged.
+
+### Tests
+
+- `scrollFrames.test.ts` and the no-DOM `ssr` suite: 47 unit tests, 891 in
+  all across 41 suites. `e2e/frames.spec.ts`, 19 browser tests per engine in
+  Chromium, Firefox and WebKit (316 in all), on frames the test server draws
+  on request, each one's colour naming its index: the frame the scroll calls
+  for, the load order, the nearest frame while one is missing, no redraw at
+  rest, a failed frame, a jump past the window, `destroy()` mid-load, reduced
+  motion at load and mid-scrub, cover and contain geometry, attribute-sized
+  canvases at 1x and 2x, the 2x buffer and the cap at 3x. Nine mutations, each
+  caught by the test named for it (144 in all).
+
+### Site
+
+- **New tool: scroll image sequence generator**
+  (`/scroll-image-sequence-generator`), the 26th. Scrub a demo sequence, your
+  own frames, or frames extracted from a video in the browser and downloaded
+  as a zip; preview it pinned or in the flow, and copy the code.
+- **A recipe and a showcase site.** `/examples/scroll-frames` (24 examples)
+  builds the pinned film step by step on 71 real frames, its HTML run in a
+  browser against the built library; `/showcase/groundtrack` is the exhibit
+  page of a satellite exhibition, one canvas turning the Landsat 8 model from
+  the hero to a full-bleed pinned stage. The frames (71 WebP stills, 960×540)
+  are NASA's Landsat 8 model animation, NASA/Goddard Space Flight Center
+  Conceptual Image Lab, public domain; the credit is on every page that shows
+  them and in `public/frames/landsat/README.md`.
+- The docs have a `scrollFrames` section, the scroll video scrub generator and
+  the complete guide to scroll animations link to the new tool, and
+  `llms.txt` lists it.
 
 ## [2.23.7] — 2026-11-13
 

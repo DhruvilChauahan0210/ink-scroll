@@ -19,6 +19,17 @@ export type BlogPost = {
 
 export const POSTS: BlogPost[] = [
   {
+    slug: 'scroll-image-sequence-animation',
+    title: 'How to build an Apple-style scroll image sequence animation',
+    description:
+      'Turn a video into an image sequence, draw it on a canvas frame by frame as the page scrolls, Apple-style, and keep its memory and reduced motion in check.',
+    tag: 'How-To',
+    tagColor: '#60a5fa',
+    readTime: '8 min read',
+    date: 'November 2026',
+    published: '2026-11-13',
+  },
+  {
     slug: 'css-scroll-snap',
     title: 'CSS scroll snap: carousels and full-page sections',
     description:

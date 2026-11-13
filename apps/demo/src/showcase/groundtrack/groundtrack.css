@@ -104,6 +104,11 @@ html:has(.gt) body { background: #000; }
     mask-image: linear-gradient(to bottom, transparent 0, rgba(0, 0, 0, 0.6) 5%, #000 12%);
   }
   .gt-band { top: calc(var(--nav) + 56.25vw + 8px); bottom: auto; padding-top: 16px; padding-bottom: 24px; background: none; }
+  /* The band sits where the hero's copy and buttons are, so it comes in only
+     as the satellite settles (--t from 2/3 to 1), and takes no clicks or
+     reading order before then. */
+  .gt-band { opacity: clamp(0, calc(var(--t) * 3 - 2), 1); }
+  .gt-stage:not(.is-away) .gt-band { visibility: hidden; }
 }
 
 /* ── The mission, in numbers ─────────────────────────────────────────────── */
@@ -155,6 +160,7 @@ html:has(.gt) body { background: #000; }
   .gt-sat { position: static; inset: auto; transform: none; aspect-ratio: 16 / 9; mix-blend-mode: normal; }
   .gt-sat canvas { transition: none; -webkit-mask-image: none; mask-image: none; }
   .gt-band { position: static; padding: 0; background: none; }
+  .gt-band, .gt-stage:not(.is-away) .gt-band { opacity: 1; visibility: visible; }
   .gt-parts-wrap { opacity: 1; transform: none; margin-bottom: 24px; }
   .gt-parts li, .gt-parts li.is-new { grid-area: auto; opacity: 1; transform: none; transition: none; }
   .gt-parts li i { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
