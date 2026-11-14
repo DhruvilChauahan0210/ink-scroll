@@ -6,6 +6,14 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ## [Unreleased]
 
+### Tests
+
+- **The Nuxt module in a real Nuxt app, in CI.** `scripts/nuxt-module-check.mjs`
+  packs the library, installs it with Nuxt into a scratch app that uses the
+  components and a composable with no imports, builds it, serves it, checks
+  the server HTML and scrolls it in Chromium. The new `nuxt` job runs it for
+  Nuxt ^4 and ^3.
+
 ### Site
 
 - **Two more guides:**

@@ -1,6 +1,6 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **2.27.0** on branch `feat/nuxt-module` (not tagged); npm `latest` is **2.26.2** (`v2.26.2` on `3f13111`)
+> Current version: **2.27.0** on `main`, tagged and on npm (`latest`, `v2.27.0` on `a4c3f1f`)
 > Tests: **1031 unit** across 45 suites · **341 browser tests** per engine (1023 runs
 > across Chromium/Firefox/WebKit) · **164 mutations**, each caught by the one test
 > named for it · **91.5% line coverage** (gate 90/90/82/82)
@@ -145,9 +145,9 @@ at all.
 
 - [x] `modules: ['svg-scroll-draw/nuxt']` auto-imports the six components and six composables (src/nuxt/module.ts, a plain function module through `components:extend` / `imports:extend`; no dependency on nuxt or @nuxt/kit); options `prefix`, `components`, `composables` (`nuxtModule.test.ts`)
 - [x] Checked in Nuxt 4.6.4 and 3.21.11 apps installed from the packed tarball: build, server HTML, scrolling in three engines, the prefix
-- [ ] A CI job that builds a real Nuxt app with the module (today the check is by hand; the e2e Nuxt fixture bundles the plugin with esbuild, not Nuxt)
-- [ ] Submit to the nuxt.com/modules directory (nuxt/modules repository) once 2.27.0 is on npm
-- [ ] Tag after it reaches `main`: `git tag v2.27.0 <sha> && git push origin v2.27.0`
+- [x] CI job `nuxt` (Nuxt ^4 and ^3): `scripts/nuxt-module-check.mjs` packs the library, builds a scratch Nuxt app that uses the components with no imports, checks the server HTML and scrolls it in Chromium (2026-11-14)
+- [ ] nuxt.com/modules listing: nuxt/modules#1744 (entry passed their CI) was closed by their bot as automated; they require PR text written by a person. Owner: reopen it with a description in your own words
+- [x] Tagged and published 2026-11-14 (`latest`)
 
 ### 2.26.2: clip-path shapes, scrollSnap Next, scrollVideo range (2026-11-14; on npm)
 

@@ -5,8 +5,8 @@ import type { FrameworkGuide } from './types';
  * module), src/nuxt/index.ts (the plugin and the re-exports) and
  * src/vue/index.ts (the components), and checked against
  * src/__tests__/nuxtModule.test.ts, e2e/frameworks/nuxt.entry.js,
- * e2e/frameworks.spec.ts, src/__tests__/ssr.test.ts and Nuxt 4.6 and 3.21
- * apps built with the module (2.27.0).
+ * e2e/frameworks.spec.ts, src/__tests__/ssr.test.ts and scripts/nuxt-module-check.mjs
+ * (a real Nuxt 4 and Nuxt 3 app built with the module, in CI).
  */
 export const GUIDE: FrameworkGuide = {
   slug: 'nuxt-scroll-animation',
@@ -18,7 +18,7 @@ export const GUIDE: FrameworkGuide = {
       body: [
         'Since 2.27.0 `svg-scroll-draw/nuxt` is a Nuxt module. Add it to `modules` and Nuxt auto-imports six components (`<ScrollDraw>`, `<ScrollAnimate>`, `<ScrollCounter>`, `<ScrollVideo>`, `<ScrollFrames>`, `<ScrollText>`) and six composables (`useScrollDraw` to `useScrollText`), the way it auto-imports its own. Each points at `svg-scroll-draw/vue`, so they are the Vue wrappers, prop for prop.',
         'Its options go under `svgScrollDraw` in the config, or inline as `[\'svg-scroll-draw/nuxt\', { … }]`, which wins. `prefix` goes before every component name (`\'Ink\'` gives `<InkScrollDraw>`), and `components` or `composables` set to `false` leaves that half out.',
-        'It is a plain function module that adds entries through two of Nuxt\'s hooks, `components:extend` and `imports:extend`, so the package still has no dependencies: not `nuxt`, not `@nuxt/kit`. It was checked by building Nuxt 4.6 and 3.21 apps with it, rendering on the server and scrolling in Chromium, Firefox and WebKit.',
+        'It is a plain function module that adds entries through two of Nuxt\'s hooks, `components:extend` and `imports:extend`, so the package still has no dependencies: not `nuxt`, not `@nuxt/kit`. CI builds a Nuxt 4 and a Nuxt 3 app with it on every push, checks the server HTML and scrolls it in Chromium.',
       ],
       sample: {
         file: 'nuxt.config.ts',

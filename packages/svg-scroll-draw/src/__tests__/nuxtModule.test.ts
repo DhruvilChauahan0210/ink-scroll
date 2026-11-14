@@ -5,7 +5,7 @@ import * as vue from '../vue';
 /*
  * The Nuxt module adds the components and composables through Nuxt's own
  * hooks. Here a stand-in Nuxt records what each hook receives; the real
- * install, build and render is checked in a Nuxt app (see the changelog).
+ * install, build and render run in scripts/nuxt-module-check.mjs (CI job `nuxt`).
  */
 
 type Entry = Record<string, unknown>;

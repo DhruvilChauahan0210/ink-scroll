@@ -1,6 +1,6 @@
 # svg-scroll-draw — Roadmap
 
-> Last updated: 2026-11-14 — 2.27.0 prepared (a Nuxt module); 2.26.2 on npm
+> Last updated: 2026-11-14 — 2.27.0 on npm (a Nuxt module); its real-Nuxt check runs in CI
 >
 > Items marked ✓ are shipped. Remaining items are ordered by value/effort ratio.
 
@@ -125,7 +125,7 @@
 - ~~scrollSnap Next twice in one glide; onSnap again on the last section~~ — 2.26.2, 2026-11-14.
 - ~~scrollVideo time outside [from, to] under overshooting easings~~ — clamped, 2.26.2, 2026-11-14.
 - ~~A real Nuxt module~~ — `modules: ['svg-scroll-draw/nuxt']`, auto-imports, no dependencies, 2.27.0, 2026-11-14.
-- Next for Nuxt: a CI job that builds a real Nuxt app with the module; the nuxt.com/modules listing.
+- Next for Nuxt: the nuxt.com/modules listing (owner reopens nuxt/modules#1744 in their own words). The real-Nuxt check runs in CI (job `nuxt`).
 - ~~Awesome-list PRs (shadcn, web components, UI component libraries)~~ — opened 2026-11-13.
 - Next: the GSAP benchmark's full ~1 h run on `feat/gsap-bench` (idle machine); request indexing for the new pages (Google takes about 2 a day) and review them in Search Console after 2–3 weeks; a shadcn directory listing (logo ready, needs signed commits by the owner); links to inner pages (tools, posts), which Search Console shows as the bottleneck: 9 external links, all to the home page.
 - ~~Stacking cards and scroll marquee generators~~ — `/stacking-cards-scroll-generator` and `/scroll-marquee-generator` (28 tools), 2026-11-13.

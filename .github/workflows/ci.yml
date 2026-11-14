@@ -93,6 +93,40 @@ jobs:
       - name: Check doc claims
         run: npm run check:claims
 
+  # The Nuxt module in a real Nuxt app: the packed library and Nuxt installed
+  # into a scratch app that uses the components with no imports, built, served
+  # and scrolled in Chromium (scripts/nuxt-module-check.mjs). Its own job,
+  # because it installs Nuxt from npm.
+  nuxt:
+    name: Nuxt module (nuxt ${{ matrix.nuxt }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    container:
+      image: mcr.microsoft.com/playwright:v1.65.0-noble
+      options: --user 1001
+    strategy:
+      fail-fast: false
+      matrix:
+        nuxt: ['^4', '^3']
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build the library
+        run: npm run build:lib
+
+      - name: The module in a real Nuxt app
+        run: node scripts/nuxt-module-check.mjs --nuxt=${{ matrix.nuxt }}
+        working-directory: packages/svg-scroll-draw
+
   e2e:
     name: Browser tests
     runs-on: ubuntu-latest
