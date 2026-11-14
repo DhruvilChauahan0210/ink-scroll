@@ -357,6 +357,20 @@ const film = useScrollFrames(() => ({ frames: (i) => `/film/${i + 1}.jpg`, count
 
 Nuxt exports both, and `createScrollDrawPlugin()` registers `<ScrollFrames>` globally.
 
+#### Nuxt module (2.27.0+)
+
+```ts
+// nuxt.config.ts
+export default defineNuxtConfig({ modules: ['svg-scroll-draw/nuxt'] });
+```
+
+`<ScrollDraw>`, `<ScrollAnimate>`, `<ScrollCounter>`, `<ScrollVideo>`, `<ScrollFrames>`,
+`<ScrollText>` and their `useScroll…` composables are then auto-imported, from
+`svg-scroll-draw/vue`. Options go under `svgScrollDraw` in nuxt.config, or inline as
+`['svg-scroll-draw/nuxt', { … }]`: `prefix` (`'Ink'` gives `<InkScrollDraw>`), and
+`components` / `composables` (default `true`) to leave either half out. Nuxt 3 and 4,
+no extra dependency: it is a plain module that adds entries through Nuxt's own hooks.
+
 #### Svelte, Solid and Angular (2.26.0+)
 
 Each binds to a `<canvas>` you write, the way their `scrollVideo` does to a `<video>`, so the canvas's `role="img"` and `aria-label` are yours to set (each warns in development when the canvas has no name, unless it is `aria-hidden="true"` or `role="presentation"`). The rules are React's and Vue's: a `frames` function is read by the URLs it gives, so a fresh equal one keeps the film and its loaded images; new URLs or another option start a new one; callbacks are read live. `triggerElement` takes an element or a selector, found when the film starts.
@@ -851,7 +865,7 @@ devtools.highlight('#my-element'); // outline for 2 seconds
 | `svg-scroll-draw/solid` | `useScrollDraw`, `createScrollDraw` · **v2:** `useScrollAnimate`, `useScrollCounter`, `useScrollVideo`, `useScrollFrames`, `useScrollText`, `createScrollAnimate`, `createScrollCounter`, `createScrollVideo`, `createScrollFrames`, `createScrollText` |
 | `svg-scroll-draw/angular` | `ScrollDrawRef` · **v2:** `ScrollAnimateRef`, `ScrollCounterRef`, `ScrollVideoRef`, `ScrollFramesRef`, `ScrollTextRef` |
 | `svg-scroll-draw/astro` | `initScrollDraw()` · **v2:** `initScrollAnimate()`, `initScrollCounter()`, `initScrollText()`, `initAll()` |
-| `svg-scroll-draw/nuxt` | All Vue v1+v2 composables and components, `createScrollDrawPlugin()` |
+| `svg-scroll-draw/nuxt` | The Nuxt module (`modules: ['svg-scroll-draw/nuxt']`, auto-imports every component and composable), all Vue v1+v2 composables and components, `createScrollDrawPlugin()` |
 | `svg-scroll-draw/video` | `scrollVideo` |
 | `svg-scroll-draw/frames` | `scrollFrames` |
 | `svg-scroll-draw/text` | `scrollText` |

@@ -1,10 +1,19 @@
 /**
- * Nuxt 3 integration for svg-scroll-draw.
+ * Nuxt integration for svg-scroll-draw.
  *
- * Re-exports all Vue composables and components (v1 + v2) for direct use,
- * plus a plugin factory for global auto-registration.
+ * ## The module (recommended)
+ * ```ts
+ * // nuxt.config.ts
+ * export default defineNuxtConfig({ modules: ['svg-scroll-draw/nuxt'] });
+ * ```
+ * Every component and composable is then auto-imported. Options go under
+ * `svgScrollDraw` in nuxt.config, or inline:
+ * `['svg-scroll-draw/nuxt', { prefix: 'Ink', composables: false }]`.
  *
- * ## Option A — Import per component (recommended)
+ * Also re-exports all Vue composables and components (v1 + v2) for direct use,
+ * plus a plugin factory for global registration.
+ *
+ * ## Option A — Import per component
  * ```ts
  * import { useScrollDraw, ScrollDraw } from 'svg-scroll-draw/nuxt';
  * import { useScrollAnimate, ScrollAnimate } from 'svg-scroll-draw/nuxt';
@@ -23,6 +32,11 @@
  *
  * Then use <ScrollDraw>, <ScrollAnimate>, <ScrollCounter>, etc. globally.
  */
+
+// ── The module ─────────────────────────────────────────────────────────────────
+
+export { default } from './module';
+export type { ModuleOptions } from './module';
 
 // ── v1 re-exports ─────────────────────────────────────────────────────────────
 

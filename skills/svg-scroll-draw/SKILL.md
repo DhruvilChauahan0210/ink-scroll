@@ -45,7 +45,8 @@ Docs: https://svg-scroll-draw.vercel.app/docs · LLM summary: https://svg-scroll
 | A smooth scroller that keeps a **virtual** position (not Lenis) | `svg-scroll-draw/lenis` | `createLenisAdapter(scroller)` (Lenis 1.x scrolls the real page and needs nothing) |
 
 Framework wrappers: `/react`, `/vue`, `/nuxt`, `/svelte`, `/solid`, `/angular`,
-`/astro`, `/web-component`. Full signatures and options: `references/api.md`.
+`/astro`, `/web-component`. In Nuxt, `modules: ['svg-scroll-draw/nuxt']` auto-imports the
+components and composables. Full signatures and options: `references/api.md`.
 
 ## Core usage (vanilla)
 
@@ -138,12 +139,12 @@ const svgWrap = useScrollDraw({ easing: 'ease-out', fade: true });
 **CDN, no build** — the global build exposes the main entry as `SvgScrollDraw` and registers `<scroll-draw>`:
 
 ```html
-<script src="https://unpkg.com/svg-scroll-draw@2.26.2/dist/cdn/svg-scroll-draw.global.js"></script>
+<script src="https://unpkg.com/svg-scroll-draw@2.27.0/dist/cdn/svg-scroll-draw.global.js"></script>
 <script>SvgScrollDraw.scrollDraw('#logo', { easing: 'ease-out' });</script>
 ```
 
 For other entries without a bundler, import the self-contained ESM file:
-`import { scrollReveal } from 'https://cdn.jsdelivr.net/npm/svg-scroll-draw@2.26.2/dist/reveal/index.mjs'`.
+`import { scrollReveal } from 'https://cdn.jsdelivr.net/npm/svg-scroll-draw@2.27.0/dist/reveal/index.mjs'`.
 
 ## SSR safety
 

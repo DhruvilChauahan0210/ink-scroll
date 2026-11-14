@@ -101,6 +101,12 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
  * final number in the server HTML instead of an empty span (counter
  * counterText, shared by React and Vue), about 20 bytes on the main entry and
  * 40 on react, both inside their own budgets; only the pair crossed 17.0.
+ *
+ * 2.27.0: nuxt 15.7 -> 16.1 (built 15.92). `svg-scroll-draw/nuxt` is now also
+ * a Nuxt module (nuxt/module.ts, its default export): a function Nuxt runs at
+ * build time to add auto-import entries. An app that uses the module imports
+ * from svg-scroll-draw/vue and never ships it; only a hand import from /nuxt
+ * carries it, as this measure of the whole entry does.
  */
 const BUDGETS_KB = {
   '.':              12.0,
@@ -109,7 +115,7 @@ const BUDGETS_KB = {
   cdn:              11.9,
   react:            15.4,
   vue:              15.6,
-  nuxt:             15.7,
+  nuxt:             16.1,
   svelte:           14.9,
   solid:            14.9,
   angular:          14.9,

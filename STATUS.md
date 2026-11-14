@@ -1,7 +1,7 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **2.26.2** on branch `fix/snap-video-clip` (not tagged); npm `latest` is **2.26.1** (`v2.26.1` on `c5884c7`)
-> Tests: **1026 unit** across 44 suites · **341 browser tests** per engine (1023 runs
+> Current version: **2.27.0** on branch `feat/nuxt-module` (not tagged); npm `latest` is **2.26.2** (`v2.26.2` on `3f13111`)
+> Tests: **1031 unit** across 45 suites · **341 browser tests** per engine (1023 runs
 > across Chromium/Firefox/WebKit) · **164 mutations**, each caught by the one test
 > named for it · **91.5% line coverage** (gate 90/90/82/82)
 > Bundle: **11.8 KB gzipped** (main entry as shipped files, chunks included; per-API entries from 0.3 KB) · zero runtime dependencies
@@ -51,7 +51,7 @@
 - [x] `scrollAnimateGroup` + `scrollAnimateSequence` + `scrollParallaxGroup` in `svg-scroll-draw/group`
 
 ### Testing
-- [x] 1026 tests across 44 suites — `motionLive` (reduced motion turned on mid-visit, every engine and the React hook), `reactive` (the wrappers' option fingerprint and live callbacks), `directives` (the built files' "use client"), `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollFrames` (47), `scrollFramesWrappers` (48), `scrollText` (23)
+- [x] 1031 tests across 45 suites — `motionLive` (reduced motion turned on mid-visit, every engine and the React hook), `reactive` (the wrappers' option fingerprint and live callbacks), `directives` (the built files' "use client"), `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollFrames` (47), `scrollFramesWrappers` (48), `scrollText` (23)
 - [x] Initial state fix — `createAnimateEngine` and `scrollCounter` now apply correct alpha immediately on init (no flash before IO fires)
 
 ### Browser tests (Phase 2, `packages/svg-scroll-draw/e2e`)
@@ -141,12 +141,20 @@ at all.
 
 ## Remaining / Next
 
-### 2.26.2: clip-path shapes, scrollSnap Next, scrollVideo range (2026-11-14; branch `fix/snap-video-clip`)
+### 2.27.0: a Nuxt module (2026-11-14; branch `feat/nuxt-module`)
+
+- [x] `modules: ['svg-scroll-draw/nuxt']` auto-imports the six components and six composables (src/nuxt/module.ts, a plain function module through `components:extend` / `imports:extend`; no dependency on nuxt or @nuxt/kit); options `prefix`, `components`, `composables` (`nuxtModule.test.ts`)
+- [x] Checked in Nuxt 4.6.4 and 3.21.11 apps installed from the packed tarball: build, server HTML, scrolling in three engines, the prefix
+- [ ] A CI job that builds a real Nuxt app with the module (today the check is by hand; the e2e Nuxt fixture bundles the plugin with esbuild, not Nuxt)
+- [ ] Submit to the nuxt.com/modules directory (nuxt/modules repository) once 2.27.0 is on npm
+- [ ] Tag after it reaches `main`: `git tag v2.27.0 <sha> && git push origin v2.27.0`
+
+### 2.26.2: clip-path shapes, scrollSnap Next, scrollVideo range (2026-11-14; on npm)
 
 - [x] scrollAnimate writes clip-path shapes (`inset`, `circle … at`, `polygon`) in a syntax browsers apply: values with functions move number by number in their own text (`e2e/clip-path.spec.ts` in three engines + the `animate/clip-path-units` mutation); main entry 11.8 KB (was 12.0)
 - [x] scrollSnap: `getCurrentIndex()` is the section being snapped to from the start of a snap, so Next pressed twice in one glide moves two; a snap that stays on the section `onSnap` last reported does not fire it again
 - [x] scrollVideo clamps `currentTime` to `[from, to]` under overshooting easings
-- [ ] Tag after it reaches `main`: `git tag v2.26.2 <sha> && git push origin v2.26.2`
+- [x] Tagged and published 2026-11-14
 
 ### 2.26.1: ScrollCounter server HTML (2026-11-14; on npm)
 

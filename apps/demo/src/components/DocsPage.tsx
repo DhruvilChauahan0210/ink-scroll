@@ -1062,10 +1062,30 @@ export class HeadlineComponent implements AfterViewInit, OnDestroy {
           {/* ── Nuxt ─────────────────────────────────────────── */}
           <DocSection id="nuxt" tag="Frameworks" heading="Nuxt">
             <p className="text-sm text-graphite-border leading-relaxed mb-2">
-              <code className="font-mono text-pitch-black">svg-scroll-draw/nuxt</code> re-exports all v1 and v2 Vue composables and components, plus a plugin factory that globally registers all of them at once.
+              <code className="font-mono text-pitch-black">svg-scroll-draw/nuxt</code> is a Nuxt module (2.27.0+): add it to <code className="font-mono text-pitch-black">modules</code> and every component and composable is auto-imported. Nuxt 3 and 4, no extra dependency. It also re-exports all v1 and v2 Vue composables and components, plus a plugin factory, for apps that import them by hand.
             </p>
 
-            <Sub>v2 composables — per-component import (recommended)</Sub>
+            <Sub>The module (recommended)</Sub>
+            <CodeBlock file="nuxt.config.ts">
+{`export default defineNuxtConfig({
+  modules: ['svg-scroll-draw/nuxt'],
+  // Optional. prefix: 'Ink' gives <InkScrollDraw>; either half can be left out.
+  svgScrollDraw: { prefix: '', components: true, composables: true },
+});`}
+            </CodeBlock>
+            <CodeBlock file="pages/index.vue">
+{`<script setup>
+// No imports: useScrollCounter and the components are auto-imported.
+const revenue = useScrollCounter({ to: 1_250_000, format: n => '$' + Math.round(n).toLocaleString() });
+</script>
+
+<template>
+  <ScrollDraw :once="false"><svg>…</svg></ScrollDraw>
+  <span :ref="revenue" />
+</template>`}
+            </CodeBlock>
+
+            <Sub>v2 composables — per-component import</Sub>
             <CodeBlock file="pages/index.vue">
 {`<script setup>
 import { useScrollAnimate, useScrollText, useScrollCounter } from 'svg-scroll-draw/nuxt';

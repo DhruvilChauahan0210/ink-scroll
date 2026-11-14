@@ -11,7 +11,7 @@ const SITE_URL = "https://svg-scroll-draw.vercel.app";
 // Pages generated from data share one date per group: the last commit to the
 // template, its component or its data file. `npm run sitemap:dates` rewrites
 // these alongside the literal entries below — never type them by hand.
-const FRAMEWORK_PAGES_DATE = "2026-11-13";
+const FRAMEWORK_PAGES_DATE = "2026-11-14";
 const VERSUS_PAGES_DATE = "2026-11-13";
 const EXAMPLE_PAGES_DATE = "2026-11-14";
 const GUIDE_PAGES_DATE = "2026-11-13";
@@ -27,7 +27,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${SITE_URL}/docs`,
-      lastModified: new Date("2026-11-13"),
+      lastModified: new Date("2026-11-14"),
       changeFrequency: "weekly",
       priority: 0.9,
     },

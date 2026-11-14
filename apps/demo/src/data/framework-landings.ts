@@ -516,15 +516,16 @@ export class StatsComponent implements AfterViewInit, OnDestroy {
   },
   {
     slug: 'nuxt-scroll-animation',
-    name: 'Nuxt 3',
+    name: 'Nuxt',
     entry: 'svg-scroll-draw/nuxt',
     accent: '#00dc82',
-    worksWith: 'Nuxt 3 · SSR · static',
-    title: 'Nuxt 3 Scroll Animation — SSR-Safe Composables',
+    worksWith: 'Nuxt 3 & 4 · SSR · static',
+    title: 'Nuxt Scroll Animation — One-Line Module, SSR-Safe',
     description:
-      `Scroll animations for Nuxt 3: import composables per component, or register every component globally with one plugin. SSR-safe, ${KB} KB for every API.`,
+      `Scroll animations for Nuxt 3 and 4: add the module and every component and composable is auto-imported. SSR-safe, no dependencies, ${KB} KB for every API.`,
     keywords: [
       'nuxt scroll animation',
+      'nuxt animation module',
       'nuxt 3 animate on scroll',
       'nuxt scroll reveal',
       'nuxt svg animation',
@@ -534,13 +535,42 @@ export class StatsComponent implements AfterViewInit, OnDestroy {
       'nuxt gsap alternative',
       'vue nuxt scroll trigger',
     ],
-    headline: 'Per component, or global.',
+    headline: 'One line in nuxt.config.',
     intro:
-      'Nuxt re-exports the full Vue surface plus a plugin factory, so you get to choose: import a composable in the one component that needs it, or register every component once and use them anywhere without imports. Both are SSR-safe — the engine only starts after mount, so server rendering never touches the DOM.',
-    primitive: 'Composable, component, or plugin',
+      'svg-scroll-draw/nuxt is a Nuxt module: add it to modules and every component and composable is auto-imported, the way Nuxt\'s own are. It still re-exports the full Vue surface, so you can import by hand instead. Either way it is SSR-safe — the engine only starts after mount, so server rendering never touches the DOM.',
+    primitive: 'Module, composable or component',
     samples: [
       {
-        heading: 'Option A — import per component',
+        heading: 'Add the module',
+        file: 'nuxt.config.ts',
+        code: `export default defineNuxtConfig({
+  modules: ['svg-scroll-draw/nuxt'],
+});`,
+      },
+      {
+        heading: 'Use the components and composables — no imports',
+        file: 'pages/index.vue',
+        code: `<script setup>
+// Auto-imported by the module.
+const card = useScrollAnimate({ props: { opacity: [0, 1] }, once: true });
+</script>
+
+<template>
+  <ScrollDraw :speed="1.2" once>
+    <svg viewBox="0 0 200 100">
+      <path d="M10 50 Q 100 10 190 50" stroke="#111" fill="none" />
+    </svg>
+  </ScrollDraw>
+
+  <ScrollText tag="h2" :options="{ split: 'words', stagger: 0.05 }">
+    Every API, one package.
+  </ScrollText>
+
+  <div :ref="card">…</div>
+</template>`,
+      },
+      {
+        heading: 'Or import by hand',
         file: 'components/Hero.vue',
         code: `<script setup>
 import { useScrollDraw } from 'svg-scroll-draw/nuxt';
@@ -556,48 +586,20 @@ const container = useScrollDraw({ easing: 'ease-out', speed: 1.2 });
   </div>
 </template>`,
       },
-      {
-        heading: 'Option B — register globally, once',
-        file: 'plugins/svg-scroll-draw.ts',
-        code: `import { createScrollDrawPlugin } from 'svg-scroll-draw/nuxt';
-
-export default defineNuxtPlugin((nuxtApp) => {
-  nuxtApp.vueApp.use(createScrollDrawPlugin());
-});
-
-// Now <ScrollDraw>, <ScrollAnimate>, <ScrollCounter> and <ScrollText>
-// are available in any component with no import.`,
-      },
-      {
-        heading: 'Using the globally registered components',
-        file: 'pages/index.vue',
-        code: `<template>
-  <!-- No <script setup> import needed once the plugin is registered -->
-  <ScrollDraw :speed="1.2" once>
-    <svg viewBox="0 0 200 100">
-      <path d="M10 50 Q 100 10 190 50" stroke="#111" fill="none" />
-    </svg>
-  </ScrollDraw>
-
-  <ScrollText :split="'words'" :stagger="0.05">
-    Every API, one package.
-  </ScrollText>
-</template>`,
-      },
     ],
     note: 'The Nuxt entry re-exports the Vue wrappers rather than reimplementing them, so anything true of the Vue API is true here — including that the composables return refs you bind, rather than taking a ref as an argument.',
     faq: [
       {
-        q: 'How do I add scroll animations to Nuxt 3?',
-        a: 'Install svg-scroll-draw and import useScrollDraw or ScrollDraw from svg-scroll-draw/nuxt in any component. Alternatively register createScrollDrawPlugin() in a Nuxt plugin to make every component globally available without imports.',
+        q: 'How do I add scroll animations to Nuxt?',
+        a: 'Install svg-scroll-draw and add \'svg-scroll-draw/nuxt\' to modules in nuxt.config. Every component (<ScrollDraw>, <ScrollAnimate>, <ScrollCounter>, <ScrollVideo>, <ScrollFrames>, <ScrollText>) and composable is then auto-imported. It works in Nuxt 3 and 4 and adds no dependencies.',
       },
       {
         q: 'Is it SSR-safe in Nuxt?',
         a: 'Yes. Initialisation happens in onMounted, so nothing runs during server rendering and there is no window or document access on the server. No <ClientOnly> wrapper is needed.',
       },
       {
-        q: 'Should I import per component or use the plugin?',
-        a: 'Import per component if only a few components animate — it keeps the bundle smaller through tree-shaking. Use the plugin if animations appear across most pages and the repeated imports become noise.',
+        q: 'Should I use the module or import by hand?',
+        a: 'The module, in most apps: it only adds auto-import entries, and Nuxt imports a component or composable where a page uses it. Import by hand if your team prefers explicit imports; both use the same Vue wrappers. createScrollDrawPlugin() is still there for apps that register components globally.',
       },
     ],
     related: ['vue-scroll-animation', 'astro-scroll-animation'],

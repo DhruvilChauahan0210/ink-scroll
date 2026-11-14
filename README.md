@@ -69,7 +69,7 @@ If this saves you time, a ⭐ [on GitHub](https://github.com/DhruvilChauahan0210
 - **30+ options** — easing, stagger, fade, stroke color/width lerp, fill opacity, clip reveal, morphTo, velocityScale, waypoints, callbacks, repeat, autoReverse, and more
 - **Group / Sequence / Timeline APIs** — animate multiple containers simultaneously, one-after-another, or on independent scroll windows with `loop` for auto-looping after scroll completion
 - **CSS custom property** — `--scroll-draw-progress` is set on every frame so you can drive any CSS animation without a callback
-- **1026 tests across 44 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
+- **1031 tests across 45 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
 - **341 browser tests on top of those**, run against Chromium, Firefox and WebKit in CI. The unit suite runs in jsdom, where `getTotalLength` is stubbed and `IntersectionObserver` is faked — it can check the engine's arithmetic but nothing about real browser behaviour. Both counts are derived from the suites themselves and enforced in CI, so neither can quietly drift out of date
 
 ---
@@ -347,11 +347,25 @@ a new film only when the URLs or another option changed. [More in the package RE
 
 ### Nuxt
 
+Add the module (2.27.0+), and every component and composable is auto-imported:
+
 ```ts
-import { ScrollDraw } from 'svg-scroll-draw/nuxt';
-// or globally via plugin:
-import { createScrollDrawPlugin } from 'svg-scroll-draw/nuxt';
+// nuxt.config.ts
+export default defineNuxtConfig({
+  modules: ['svg-scroll-draw/nuxt'],
+  // optional: svgScrollDraw: { prefix: 'Ink', components: true, composables: true },
+});
 ```
+
+```vue
+<template>
+  <ScrollDraw :once="false"><svg>…</svg></ScrollDraw>
+  <ScrollCounter :to="1250" />
+</template>
+```
+
+Nuxt 3 and 4, no extra dependency. Without the module, import from `svg-scroll-draw/nuxt`
+as from `svg-scroll-draw/vue`, or register them all with `createScrollDrawPlugin()`.
 
 ### Astro
 
@@ -914,7 +928,7 @@ outgrows its budget.
 <!-- size-table:start -->
 | Entry point                          | Raw | Gzipped |
 |--------------------------------------|----:|--------:|
-| `svg-scroll-draw/nuxt`               | 44.4 KB | **15.6 KB** |
+| `svg-scroll-draw/nuxt`               | 45.1 KB | **15.9 KB** |
 | `svg-scroll-draw/vue`                | 44.1 KB | **15.5 KB** |
 | `svg-scroll-draw/react`              | 42.8 KB | **15.3 KB** |
 | `svg-scroll-draw/angular`            | 41.6 KB | **14.8 KB** |

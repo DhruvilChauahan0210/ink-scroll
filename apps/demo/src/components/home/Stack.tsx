@@ -123,7 +123,7 @@ export function Hero() {
     nets: ['vue', 'nuxt'],
     code: `<script setup>
 import { ScrollDraw } from 'svg-scroll-draw/vue';
-// Nuxt: the same components from 'svg-scroll-draw/nuxt'
+// Nuxt: modules: ['svg-scroll-draw/nuxt'] auto-imports them
 </script>
 
 <template>

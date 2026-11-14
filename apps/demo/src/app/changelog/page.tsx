@@ -55,6 +55,16 @@ const KINDS: { k: Kind; label: string }[] = [
  */
 const RELEASES: Release[] = [
   {
+    version: '2.27.0',
+    title: 'A Nuxt module',
+    date: '2026-11-14',
+    items: [
+      { type: 'new', text: "A Nuxt module: modules: ['svg-scroll-draw/nuxt'] in nuxt.config, and every component and composable is auto-imported. Options under svgScrollDraw: prefix, components, composables. Nuxt 3 and 4, and still no dependencies: it adds entries through Nuxt's own hooks." },
+      { type: 'site', text: '/nuxt-scroll-animation, its guide and the docs lead with the module; the guide is corrected on ScrollCounter server HTML and the six components the plugin registers.' },
+      { type: 'test', text: 'Unit tests of the module, and Nuxt 4.6 and 3.21 apps built with it, rendered on the server and scrolled in Chromium, Firefox and WebKit.' },
+    ],
+  },
+  {
     version: '2.26.2',
     title: 'clip-path shapes, scrollSnap Next, scrollVideo range',
     date: '2026-11-14',

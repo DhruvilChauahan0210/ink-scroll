@@ -354,6 +354,8 @@ Options are read once on mount. Re-create by changing `key`.
 
 ### `svg-scroll-draw/vue` (and `svg-scroll-draw/nuxt`, which re-exports them plus `createScrollDrawPlugin()`)
 
+In Nuxt, prefer the module (2.27.0+): `modules: ['svg-scroll-draw/nuxt']` in nuxt.config auto-imports the six components and six composables below from `svg-scroll-draw/vue`. Options under `svgScrollDraw`: `prefix` (`'Ink'` gives `<InkScrollDraw>`), `components` and `composables` (default `true`). No extra dependency; Nuxt 3 and 4.
+
 - Composables returning a template ref, destroyed on unmount: `useScrollDraw(opts)`, `useScrollAnimate(opts)`, `useScrollCounter(opts)`, `useScrollVideo(opts)`, `useScrollFrames(opts)` (bind to a `<canvas>`), `useScrollText(opts)`
 - `<ScrollDraw>` props: `selector, speed, fade, stagger, easing, direction, trigger, once, debug, onProgress, onStart, onComplete` (other ScrollDraw options: use the composable)
 - `<ScrollAnimate :options="{ props: {...} }">`

@@ -1,22 +1,42 @@
 import type { FrameworkGuide } from './types';
 
 /**
- * Nuxt only. Written from packages/svg-scroll-draw/src/nuxt/index.ts (the
- * plugin and the re-exports) and src/vue/index.ts (the components it
- * registers), and checked against e2e/frameworks/nuxt.entry.js,
- * e2e/frameworks.spec.ts and src/__tests__/ssr.test.ts.
+ * Nuxt only. Written from packages/svg-scroll-draw/src/nuxt/module.ts (the
+ * module), src/nuxt/index.ts (the plugin and the re-exports) and
+ * src/vue/index.ts (the components), and checked against
+ * src/__tests__/nuxtModule.test.ts, e2e/frameworks/nuxt.entry.js,
+ * e2e/frameworks.spec.ts, src/__tests__/ssr.test.ts and Nuxt 4.6 and 3.21
+ * apps built with the module (2.27.0).
  */
 export const GUIDE: FrameworkGuide = {
   slug: 'nuxt-scroll-animation',
   sections: [
     {
+      id: 'fw-nuxt-module',
+      k: 'module',
+      title: 'One line in nuxt.config',
+      body: [
+        'Since 2.27.0 `svg-scroll-draw/nuxt` is a Nuxt module. Add it to `modules` and Nuxt auto-imports six components (`<ScrollDraw>`, `<ScrollAnimate>`, `<ScrollCounter>`, `<ScrollVideo>`, `<ScrollFrames>`, `<ScrollText>`) and six composables (`useScrollDraw` to `useScrollText`), the way it auto-imports its own. Each points at `svg-scroll-draw/vue`, so they are the Vue wrappers, prop for prop.',
+        'Its options go under `svgScrollDraw` in the config, or inline as `[\'svg-scroll-draw/nuxt\', { … }]`, which wins. `prefix` goes before every component name (`\'Ink\'` gives `<InkScrollDraw>`), and `components` or `composables` set to `false` leaves that half out.',
+        'It is a plain function module that adds entries through two of Nuxt\'s hooks, `components:extend` and `imports:extend`, so the package still has no dependencies: not `nuxt`, not `@nuxt/kit`. It was checked by building Nuxt 4.6 and 3.21 apps with it, rendering on the server and scrolling in Chromium, Firefox and WebKit.',
+      ],
+      sample: {
+        file: 'nuxt.config.ts',
+        code: `export default defineNuxtConfig({
+  modules: ['svg-scroll-draw/nuxt'],
+  // Optional; these are the defaults.
+  svgScrollDraw: { prefix: '', components: true, composables: true },
+});`,
+      },
+    },
+    {
       id: 'fw-nuxt-plugin',
       k: 'plugin',
-      title: 'One plugin, five global components',
+      title: 'Without the module: one plugin, six global components',
       body: [
-        '`createScrollDrawPlugin()` returns a plain Vue plugin. Its `install` makes five `app.component()` calls, for `ScrollDraw`, `ScrollAnimate`, `ScrollCounter`, `ScrollVideo` and `ScrollText`, and does nothing else: no directive, no `provide`, no composables. The browser suite installs it on a real Vue app and renders `<ScrollDraw>` and `<ScrollAnimate>` by name, with no local `components` option.',
+        '`createScrollDrawPlugin()` returns a plain Vue plugin. Its `install` makes six `app.component()` calls, for `ScrollDraw`, `ScrollAnimate`, `ScrollCounter`, `ScrollVideo`, `ScrollFrames` and `ScrollText`, and does nothing else: no directive, no `provide`, no composables. The browser suite installs it on a real Vue app and renders `<ScrollDraw>` and `<ScrollAnimate>` by name, with no local `components` option.',
         'The plugin file needs no `.client` suffix. Registering a component touches no browser API, and the no-DOM suite imports the Nuxt entry with `window` and `document` undefined. Keep the plugin universal: the server render has to resolve `<ScrollDraw>` as well, and Nuxt does not load a `.client` plugin there.',
-        'The five take options in different ways. `<ScrollDraw>` declares every draw option as its own prop, and `<ScrollCounter>` declares `to`, `from`, `format`, `easing`, `trigger`, `once`, `decimals` and `onComplete`. `<ScrollAnimate>`, `<ScrollText>` and `<ScrollVideo>` take one `options` object. Beside it, `<ScrollText>` has `tag` (a `<p>` by default), and `<ScrollVideo>` has the required `src` plus `muted` and `playsInline`, both true unless you bind `false`. A `split` written straight on `<ScrollText>` is not a prop, so Vue puts it on the element as an attribute.',
+        'The six take options in different ways. `<ScrollDraw>` declares every draw option as its own prop, and `<ScrollCounter>` declares `to`, `from`, `format`, `easing`, `trigger`, `once`, `decimals` and `onComplete`. `<ScrollAnimate>`, `<ScrollText>` and `<ScrollVideo>` take one `options` object. Beside it, `<ScrollText>` has `tag` (a `<p>` by default), and `<ScrollVideo>` has the required `src` plus `muted` and `playsInline`, both true unless you bind `false`. `<ScrollFrames>` declares each film option as its own prop, `frames` required, and renders a `<canvas role="img">` that wants an `aria-label`. A `split` written straight on `<ScrollText>` is not a prop, so Vue puts it on the element as an attribute.',
       ],
       sample: {
         file: 'pages/launch.vue',
@@ -44,7 +64,7 @@ export const GUIDE: FrameworkGuide = {
       title: 'What the server sends',
       body: [
         'On the server each component renders its element and nothing more. So the HTML Nuxt sends is your content as written: `<ScrollDraw>` is a `<div>` around your SVG with every stroke fully drawn, `<ScrollText>` holds its sentence as plain text, and `<ScrollVideo>` is a `<video>` with `preload="auto"` already set. The dash styles that hide the strokes, and the split into spans with its `aria-label`, are written by the engine once `onMounted` runs in the browser, after hydration.',
-        '`<ScrollCounter>` renders an empty `<span>`, so its number is not in the server HTML at all. When the figure has to be in the page source, for crawlers or for readers before the scripts load, bind `useScrollCounter` to your own element and put the final value inside it. On mount the engine replaces that text with the value for the current scroll position, which is `from` (0 by default) until the trigger starts. A reader who asks for reduced motion gets the final value straight away.',
+        '`<ScrollCounter>` renders its final number (`to`, through `decimals` or `format`), so the figure is in the server HTML for crawlers and for readers before the scripts load (2.26.1+; it was an empty `<span>` before). On mount the engine takes the text over and writes the value for the current scroll position, which is `from` (0 by default) until the trigger starts. With `useScrollCounter` on your own element, put the final value inside it yourself, as below. A reader who asks for reduced motion gets the final value straight away.',
       ],
       sample: {
         file: 'components/SignupCount.vue',
@@ -67,30 +87,22 @@ const signups = useScrollCounter({
     {
       id: 'fw-nuxt-imports',
       k: 'imports',
-      title: 'No module, no auto-imports',
+      title: 'Importing by hand',
       body: [
-        'The package ships a plugin factory, not a Nuxt module. There is nothing to add to `modules` in `nuxt.config.ts`, and Nuxt\'s auto-imports do not know `useScrollDraw` or the other composables. Import them at the top of `<script setup>`. Components are the same: Nuxt scans your own `components/` directory by default, not packages, so without the plugin `<ScrollDraw>` needs an import too.',
-        'Mixing the two entry points costs nothing. In the ESM build `svg-scroll-draw/nuxt` and `svg-scroll-draw/vue` import their wrappers from one shared chunk, so a component copied from a Vue example that imports from `/vue` can sit beside one that imports from `/nuxt` without loading the wrappers or the engines twice. `createScrollDrawPlugin` is the only runtime export the Vue entry lacks.',
-        'To have the composables auto-imported anyway, list them as a preset in your Nuxt config.',
+        'Without the module, Nuxt\'s auto-imports do not know `useScrollDraw` or the components, because Nuxt scans your own `components/` and `composables/` directories, not packages. Import them at the top of `<script setup>`, from `svg-scroll-draw/nuxt` or `svg-scroll-draw/vue`.',
+        'Mixing the two entry points costs nothing. In the ESM build `svg-scroll-draw/nuxt` and `svg-scroll-draw/vue` import their wrappers from one shared chunk, so a component copied from a Vue example that imports from `/vue` can sit beside one that imports from `/nuxt` without loading the wrappers or the engines twice. `createScrollDrawPlugin` and the module are the only runtime exports the Vue entry lacks.',
       ],
       sample: {
-        file: 'nuxt.config.ts',
-        code: `export default defineNuxtConfig({
-  imports: {
-    presets: [
-      {
-        from: 'svg-scroll-draw/nuxt',
-        imports: [
-          'useScrollDraw',
-          'useScrollAnimate',
-          'useScrollCounter',
-          'useScrollVideo',
-          'useScrollText',
-        ],
-      },
-    ],
-  },
-});`,
+        file: 'components/Hero.vue',
+        code: `<script setup>
+import { useScrollDraw } from 'svg-scroll-draw/nuxt';
+
+const container = useScrollDraw({ easing: 'ease-out', speed: 1.2 });
+</script>
+
+<template>
+  <div ref="container"><svg>…</svg></div>
+</template>`,
       },
     },
   ],

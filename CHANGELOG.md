@@ -1163,6 +1163,41 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ---
 
+## [2.27.0] — 2026-11-14
+
+### Added
+
+- **A Nuxt module.** `modules: ['svg-scroll-draw/nuxt']` in nuxt.config, and
+  `<ScrollDraw>`, `<ScrollAnimate>`, `<ScrollCounter>`, `<ScrollVideo>`,
+  `<ScrollFrames>`, `<ScrollText>` and their `useScroll…` composables are
+  auto-imported, the way Nuxt's own are, from `svg-scroll-draw/vue`. Options
+  under `svgScrollDraw` in the config, or inline (inline wins): `prefix`
+  (`'Ink'` gives `<InkScrollDraw>`), and `components` / `composables`
+  (default `true`) to leave either half out. It is a plain function module
+  that adds entries through Nuxt's own `components:extend` and
+  `imports:extend` hooks, so the package still has no dependencies, not
+  `nuxt` and not `@nuxt/kit`. The re-exports and `createScrollDrawPlugin()`
+  are unchanged.
+
+### Tests
+
+- Unit tests of what the module hands each hook, checked against the names
+  `svg-scroll-draw/vue` really exports, the prefix and both opt-outs.
+- Checked by hand in real apps, installed from the packed tarball: Nuxt 4.6.4
+  and Nuxt 3.21.11 build with the module and no warnings; the server HTML has
+  the auto-imported components and composable resolved (and the counter's
+  number); in Chromium, Firefox and WebKit the line draws and the counter
+  counts on scroll, with no console errors or hydration warnings; the prefix
+  option renders `<InkScrollDraw>` and `<InkScrollCounter>`.
+
+### Site
+
+- `/nuxt-scroll-animation`, its guide and the docs lead with the module. The
+  guide no longer says `<ScrollCounter>` renders an empty span (fixed in
+  2.26.1) or that the plugin registers five components (six since
+  `<ScrollFrames>`), and the landing page's `<ScrollText>` example passes
+  `split` inside `options`, where the component reads it.
+
 ## [2.26.2] — 2026-11-14
 
 ### Fixed
