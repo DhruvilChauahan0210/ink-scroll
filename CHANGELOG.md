@@ -1163,6 +1163,45 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ---
 
+## [2.27.2] — 2026-11-14
+
+### Fixed
+
+- **Dev warnings show in Vite apps.** The library logged its warnings only
+  when `typeof process !== 'undefined'`. Vite replaces the text
+  `process.env.NODE_ENV` with `"development"`, but `process` itself does not
+  exist in the browser, so in every Vite app (Vue, Svelte, Solid, Astro and
+  most React setups) every warning was off. It now reads
+  `process.env.NODE_ENV` as a literal inside a `try`: a bundler replaces it,
+  and without one the read throws, which counts as production, as before.
+- **`scrollAnimate` without `props` warns and does nothing** instead of
+  throwing, which in the Vue, Svelte and Solid wrappers took the whole
+  component down. `from` is an option of `scrollText` and `scrollReveal`, not
+  of `scrollAnimate`.
+
+### Site
+
+- **Eight framework samples on the site did not work as printed**, found by
+  running all 36 in their frameworks: the Vue, Svelte and Solid "Stats" and the
+  Astro "Features" passed scrollAnimate `from` (now `props`); the Svelte and
+  Solid "Replayable" destructured `createScrollDraw` as an array (it returns
+  `{ action, getInstance }` / `{ ref, getInstance }`); the Angular "Stats"
+  component had no imports, decorator or template; the Nuxt page had three
+  root elements.
+
+### Tests
+
+- `apps/demo/scripts/test-framework-samples.mjs` mounts every sample from the
+  Vue, Svelte, Solid, Angular (runtime compiler) and Astro pages and guides in
+  its framework, scrolls it in Chromium and reads the instance registry: a
+  sample passes when an engine ran to the end and nothing warned. Four that
+  cannot run alone (two wrappers, a button-gated drawing, a layout script) are
+  listed with their reason. Run against the old site data, it fails.
+- A weekly workflow (`examples.yml`) runs it, and installs and builds every
+  starter in `examples/` from npm.
+- `scrollAnimate` without `props`, and the dev check as a bundler and a plain
+  browser see it, each watched failing on the old code.
+
 ## [2.27.1] — 2026-11-14
 
 ### Fixed

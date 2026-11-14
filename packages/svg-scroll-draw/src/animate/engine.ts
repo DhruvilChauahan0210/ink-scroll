@@ -159,6 +159,13 @@ export function createAnimateEngine(
   options: ScrollAnimateOptions,
 ): ScrollDrawInstance {
   if (typeof window === 'undefined') return NOOP;
+  // Without `props` there is nothing to animate. Reading them threw, which in a
+  // framework wrapper took the whole component down with it (a site sample
+  // passed `from`, an option of scrollText and scrollReveal, not this one).
+  if (!options?.props) {
+    warn('scrollAnimate: no `props` to animate, e.g. { props: { opacity: [0, 1] } }', el);
+    return NOOP;
+  }
   if (options.respectReducedMotion === false) return buildAnimateEngine(el, options, false);
   // Reduced motion turned on mid-visit applies the final state as a page loaded
   // under it would (core/motion-live).

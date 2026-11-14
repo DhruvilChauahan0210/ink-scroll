@@ -41,7 +41,7 @@ Agent skill (Claude Code and other coding agents): https://github.com/DhruvilCha
 Every API is a separate entry point, so you only pay for what you import:
 
 - \`scrollDraw\` — animate an SVG path's \`stroke-dashoffset\` on scroll (the core case)
-- \`scrollReveal\` (6.0 KB) — fade/slide elements in as they enter the viewport
+- \`scrollReveal\` (6.1 KB) — fade/slide elements in as they enter the viewport
 - \`scrollAnimate\` — animate any CSS property: opacity, transform, color, any unit value
 - \`scrollPin\` (1.6 KB) — pin an element while the page scrolls past it
 - \`scrollSnap\` (2.5 KB) — snap between sections

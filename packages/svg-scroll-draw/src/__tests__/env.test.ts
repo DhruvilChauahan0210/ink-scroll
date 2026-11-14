@@ -69,21 +69,35 @@ describe('dev-warning environment guard', () => {
     ).toEqual([]);
   });
 
-  it('core/env.ts guards its process access with typeof', () => {
+  /*
+   * The read is the literal `process.env.NODE_ENV`, inside a try. Guarded with
+   * `typeof process` instead, it was false in every Vite app: Vite replaces
+   * `process.env.NODE_ENV` with a string, but `process` does not exist in the
+   * browser, so no warning ever showed.
+   */
+  it('core/env.ts reads process.env.NODE_ENV as a literal a bundler can replace, inside a try', () => {
     const src = readFileSync(join(SRC, 'core', 'env.ts'), 'utf8');
-    expect(src).toMatch(/typeof process !== 'undefined'/);
-    expect(src).toMatch(/typeof process\.env !== 'undefined'/);
+    expect(src).toMatch(/try \{\s*return process\.env\.NODE_ENV !== 'production';\s*\} catch/);
+    expect(src).not.toMatch(/typeof process !== 'undefined'/);
   });
 
+  // The function body as each environment sees it: no bundler (no `process`),
+  // a bundler that replaced the literal, and Node.
+  const evaluate = (body: string) => new Function('process', body);
+  const TRY = "try { return process.env.NODE_ENV !== 'production'; } catch { return false; }";
+
   it('evaluates IS_DEV without throwing when process is absent', () => {
-    // Re-evaluate the guard expression with `process` shadowed as undefined,
-    // which is what a browser sees.
-    const evaluate = new Function(
-      'process',
-      "return typeof process !== 'undefined' && typeof process.env !== 'undefined' && process.env.NODE_ENV !== 'production';",
-    );
-    expect(() => evaluate(undefined)).not.toThrow();
-    expect(evaluate(undefined)).toBe(false);
+    expect(() => evaluate(TRY)(undefined)).not.toThrow();
+    expect(evaluate(TRY)(undefined)).toBe(false);
+  });
+
+  it('is on where a bundler replaced process.env.NODE_ENV and process does not exist', () => {
+    const replaced = (mode: string) => evaluate(TRY.replace('process.env.NODE_ENV', JSON.stringify(mode)))(undefined);
+    expect(replaced('development')).toBe(true);
+    expect(replaced('production')).toBe(false);
+    // What the typeof guard gave in the same browser: off whatever the mode.
+    const old = "return typeof process !== 'undefined' && \"development\" !== 'production';";
+    expect(evaluate(old)(undefined)).toBe(false);
   });
 
   it('IS_DEV is true under the test runner', () => {

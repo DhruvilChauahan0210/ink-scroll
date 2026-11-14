@@ -160,6 +160,19 @@ describe('scrollAnimate', () => {
     expect(() => inst.destroy()).not.toThrow();
   });
 
+  // Reading `props` that were not there threw, and in the Vue, Svelte and
+  // Solid wrappers took the component down. Three site samples passed `from`.
+  it('warns and does nothing without props, instead of throwing', () => {
+    const el = makeDiv();
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    let inst: ReturnType<typeof scrollAnimate> | undefined;
+    expect(() => { inst = scrollAnimate(el, { from: { opacity: 0 } } as never); }).not.toThrow();
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('no `props`'), el);
+    expect(inst!.getProgress()).toBe(0);
+    expect(() => inst!.destroy()).not.toThrow();
+    expect(el.getAttribute('style') ?? '').toBe('');
+  });
+
   it('listens for scroll on the window, and keeps no IntersectionObserver', () => {
     const el = makeDiv();
     const listen = vi.spyOn(window, 'addEventListener');

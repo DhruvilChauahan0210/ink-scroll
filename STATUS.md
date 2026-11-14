@@ -1,10 +1,10 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **2.27.1** on branch `feat/starters` (not tagged); npm `latest` is **2.27.0** (`v2.27.0` on `a4c3f1f`)
-> Tests: **1032 unit** across 45 suites · **341 browser tests** per engine (1023 runs
+> Current version: **2.27.2** on branch `test/framework-samples` (not tagged); npm `latest` is **2.27.1** (`v2.27.1` on `98614e4`)
+> Tests: **1034 unit** across 45 suites · **341 browser tests** per engine (1023 runs
 > across Chromium/Firefox/WebKit) · **164 mutations**, each caught by the one test
 > named for it · **91.5% line coverage** (gate 90/90/82/82)
-> Bundle: **11.8 KB gzipped** (main entry as shipped files, chunks included; per-API entries from 0.3 KB) · zero runtime dependencies
+> Bundle: **11.9 KB gzipped** (main entry as shipped files, chunks included; per-API entries from 0.3 KB) · zero runtime dependencies
 > Last updated: 2026-11-14
 
 ---
@@ -51,7 +51,7 @@
 - [x] `scrollAnimateGroup` + `scrollAnimateSequence` + `scrollParallaxGroup` in `svg-scroll-draw/group`
 
 ### Testing
-- [x] 1032 tests across 45 suites — `motionLive` (reduced motion turned on mid-visit, every engine and the React hook), `reactive` (the wrappers' option fingerprint and live callbacks), `directives` (the built files' "use client"), `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollFrames` (47), `scrollFramesWrappers` (48), `scrollText` (23)
+- [x] 1034 tests across 45 suites — `motionLive` (reduced motion turned on mid-visit, every engine and the React hook), `reactive` (the wrappers' option fingerprint and live callbacks), `directives` (the built files' "use client"), `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollFrames` (47), `scrollFramesWrappers` (48), `scrollText` (23)
 - [x] Initial state fix — `createAnimateEngine` and `scrollCounter` now apply correct alpha immediately on init (no flash before IO fires)
 
 ### Browser tests (Phase 2, `packages/svg-scroll-draw/e2e`)
@@ -141,12 +141,19 @@ at all.
 
 ## Remaining / Next
 
-### 2.27.1: Vue refs that bind; four starters (2026-11-14; branch `feat/starters`)
+### 2.27.2: dev warnings in Vite; every framework sample runs (2026-11-14; branch `test/framework-samples`)
+
+- [x] Dev warnings were off in every Vite app (`typeof process` guard); `core/env` reads `process.env.NODE_ENV` as a literal in a try (env tests, mutation `env/dev-cdn-flag` re-anchored)
+- [x] `scrollAnimate` without `props` warns and no-ops instead of throwing
+- [x] 8 of 36 framework samples fixed; `apps/demo/scripts/test-framework-samples.mjs` runs all of them (Vue, Svelte, Solid, Angular, Astro), weekly in `examples.yml` with every starter's install and build
+- [ ] Tag after it reaches `main`: `git tag v2.27.2 <sha> && git push origin v2.27.2`
+
+### 2.27.1: Vue refs that bind; four starters (2026-11-14; on npm)
 
 - [x] `npx svg-scroll-draw init` (Vue) and every Vue example bound a composable's ref with `:ref="name"` (null in `<script setup>`); all `ref="name"` now, the CLI test watched failing, and `check:claims` bans `:ref="name"` in the site, READMEs, skill, library source and examples
 - [x] `examples/vue`, `examples/nuxt`, `examples/sveltekit`, `examples/solid`: built from npm 2.27.0 and checked in Chromium (draw, words, fade, counter; server number in Nuxt and SvelteKit); linked from the framework pages and both READMEs
-- [ ] The starters are checked by hand (they install from npm); no CI job yet
-- [ ] Tag after it reaches `main`: `git tag v2.27.1 <sha> && git push origin v2.27.1`
+- [x] The starters install and build weekly in CI (`examples.yml`)
+- [x] Tagged and published 2026-11-14
 
 ### 2.27.0: a Nuxt module (2026-11-14; on npm)
 

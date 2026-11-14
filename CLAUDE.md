@@ -59,3 +59,11 @@ SIGINT cannot stop it between builds; if you kill it, `git diff` the one file
 the last mutation names before anything else. `--anchors` (in `verify` and CI)
 checks in a second that every mutation still applies, so a refactor that moves
 an anchor fails at once instead of at the next full run.
+
+## Framework samples on the site run in their frameworks
+
+The code samples on the framework pages and guides (`apps/demo/src/data/framework-landings.ts`,
+`framework-guides/`) are strings the site never runs. `node apps/demo/scripts/test-framework-samples.mjs`
+mounts each in Vue, Svelte, Solid, Angular or Astro and scrolls it; run it after editing a sample
+(it installs the frameworks from npm, so it is weekly in CI, not in `verify`). The same workflow
+installs and builds every starter in `examples/`.
