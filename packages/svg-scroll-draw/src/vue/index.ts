@@ -2,7 +2,7 @@ import { ref, unref, watch, onMounted, onUnmounted, defineComponent, h, type Ref
 import { createEngine } from '../core/engine';
 import { liveFns, optionsKey } from '../core/reactive';
 import { createAnimateEngine } from '../animate/engine';
-import { scrollCounter } from '../counter';
+import { scrollCounter, counterText } from '../counter';
 import { scrollVideo } from '../video';
 import { framesKey, checkLabel, type FramesInput } from '../frames/wrapper';
 import { startFrames } from '../frames/start';
@@ -202,7 +202,11 @@ export const ScrollCounter = defineComponent({
       return opts;
     }, scrollCounter);
 
-    return () => h('span', { ref: counterRef });
+    // The final number goes in the server HTML, rendered once: the engine owns
+    // the text after mount, and a new `to` patched in after its rebuild would
+    // leave the final number showing.
+    const text = counterText({ to: props.to, decimals: props.decimals, format: props.format as ScrollCounterOptions['format'] });
+    return () => h('span', { ref: counterRef }, text);
   },
 });
 

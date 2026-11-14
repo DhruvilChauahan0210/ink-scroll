@@ -1163,6 +1163,25 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ---
 
+## [2.26.1] — 2026-11-14
+
+### Fixed
+
+- **`<ScrollCounter>` in React and Vue renders its number on the server.** The
+  server HTML was an empty `<span>`, so a crawler, a reader without
+  JavaScript and the first paint showed no figure at all. Both components now
+  render the final number (`to`, through `decimals` or `format`), and the
+  engine takes the text over when it mounts. The text is rendered once: after
+  mount the engine owns it, so a new `to` can no longer be patched in by Vue
+  after the engine rebuilt, which would have left the final number showing.
+
+### Tests
+
+- A React render-and-hydrate test and a Vue server-render test in jsdom, and a
+  browser test in Chromium, Firefox and WebKit: server HTML holds the number,
+  hydration reports nothing, the counter draws `from` below the fold and
+  counts to the final number on scroll.
+
 ## [2.26.0] — 2026-11-13
 
 ### Added

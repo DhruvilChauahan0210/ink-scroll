@@ -1,11 +1,11 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **2.26.0** staged on `feat/frames-wrappers-more` (not tagged); 2.25.0 is on `main`, not tagged; npm `latest` is **2.24.0** (`v2.24.0` on `b43237b`)
-> Tests: **1013 unit** across 43 suites · **339 browser tests** per engine (1017 runs
+> Current version: **2.26.1** on branch `fix/counter-ssr` (not tagged); npm `latest` is **2.26.0** (`v2.26.0` on `430f390`, 2.25.0 and 2.24.0 tagged and published)
+> Tests: **1016 unit** across 44 suites · **340 browser tests** per engine (1020 runs
 > across Chromium/Firefox/WebKit) · **163 mutations**, each caught by the one test
 > named for it · **91.5% line coverage** (gate 90/90/82/82)
-> Bundle: **11.9 KB gzipped** (main entry as shipped files, chunks included; per-API entries from 0.3 KB) · zero runtime dependencies
-> Last updated: 2026-11-13
+> Bundle: **12.0 KB gzipped** (main entry as shipped files, chunks included; per-API entries from 0.3 KB) · zero runtime dependencies
+> Last updated: 2026-11-14
 
 ---
 
@@ -51,11 +51,11 @@
 - [x] `scrollAnimateGroup` + `scrollAnimateSequence` + `scrollParallaxGroup` in `svg-scroll-draw/group`
 
 ### Testing
-- [x] 1013 tests across 43 suites — `motionLive` (reduced motion turned on mid-visit, every engine and the React hook), `reactive` (the wrappers' option fingerprint and live callbacks), `directives` (the built files' "use client"), `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollFrames` (47), `scrollFramesWrappers` (48), `scrollText` (23)
+- [x] 1016 tests across 44 suites — `motionLive` (reduced motion turned on mid-visit, every engine and the React hook), `reactive` (the wrappers' option fingerprint and live callbacks), `directives` (the built files' "use client"), `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollFrames` (47), `scrollFramesWrappers` (48), `scrollText` (23)
 - [x] Initial state fix — `createAnimateEngine` and `scrollCounter` now apply correct alpha immediately on init (no flash before IO fires)
 
 ### Browser tests (Phase 2, `packages/svg-scroll-draw/e2e`)
-339 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
+340 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
 `helpers.ts` (deterministic sweep — scroll to a fixed offset, wait two frames,
 read) and `fixtures/_probe.mjs` (parsing stays in the page, so specs assert on
 numbers).
@@ -141,7 +141,12 @@ at all.
 
 ## Remaining / Next
 
-### 2.26.0: scrollFrames for Svelte, Solid and Angular; CSS easing strings; Lenis (2026-11-13; branch `feat/frames-wrappers-more`)
+### 2.26.1: ScrollCounter server HTML (2026-11-14; branch `fix/counter-ssr`)
+
+- [x] `<ScrollCounter>` in React and Vue renders the final number in the server HTML (was an empty `<span>`); rendered once, the engine owns the text after mount (`scrollCounterRender.test.ts`, `e2e/react-extras.spec.ts` in three engines)
+- [ ] Tag after it reaches `main`: `git tag v2.26.1 <sha> && git push origin v2.26.1`
+
+### 2.26.0: scrollFrames for Svelte, Solid and Angular; CSS easing strings; Lenis (2026-11-13; on npm)
 
 - [x] scrollFrames wrappers for Svelte, Solid and Angular (see the scrollFrames section below)
 - [x] `easing: 'cubic-bezier(…)'` (and `ease`) is the curve written, in every engine; it used to run as the default without a word. Unknown strings warn in development; `steps()` needs a function. The native path gets the same curve (`parity` e2e). Main entry 11.9 KB gzipped (was 11.5)
@@ -149,11 +154,11 @@ at all.
 - [x] Lenis docs corrected: Lenis 1.x (every release so far; 2.0 only as dev prereleases) scrolls the real page and needs no adapter — `/lenis-scroll-animation`, the docs' Lenis Adapter section, `/vs-locomotive-scroll` (and `data-scroll-sticky` labelled v4), the skill
 - [x] `/blog/css-cubic-bezier-easing` says a `cubic-bezier()` string works since 2.26.0
 - [x] The draw dash is `L 2L` (core/dash.ts) in scrollDraw (JS and native), timelines and Cinematic: with an equal gap WebKit painted a cap dot on undrawn diagonal lines and closed outlines (`e2e/round-cap.spec.ts`, screenshot-compared in three engines; its mutation runs in WebKit)
-- [ ] Tag after it reaches `main`: `git tag v2.26.0 <sha> && git push origin v2.26.0` (2.25.0 also untagged)
+- [x] Tagged and published: v2.24.0, v2.25.0 (`previous`), v2.26.0 (`latest`), 2026-11-13
 - [ ] GSAP benchmark: the full ~1 h run on `feat/gsap-bench`, on an idle machine
-- [ ] Request indexing for the new pages (queue in `reports/indexing-queue.md`); Search Console review in 2–3 weeks
+- [ ] Request indexing for the new pages (queue in `reports/indexing-queue.md`; sitemap resubmitted 2026-11-14, 112 URLs read; Google's quota refused the first request that day); Search Console review in 2–3 weeks (snapshot: `reports/search-console-2026-11-13.md`)
 - [ ] shadcn directory listing: the one-colour SVG logo is at `apps/demo/public/logo.svg` (served at /logo.svg); still needs signed commits by the owner
-- [ ] Awesome-list PRs: drafts in `reports/awesome-list-prs-2026-11-13.md`, for the owner to submit
+- [x] Awesome-list PRs opened 2026-11-13: awesome-shadcn-ui#762, awesome-web-components#166, awesome-ui-component-library#80 (waiting on maintainers)
 
 ### Handwriting animation generator (2026-11-13; branch `feat/tool-handwriting`)
 

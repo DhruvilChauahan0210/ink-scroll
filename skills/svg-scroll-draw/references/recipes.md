@@ -42,7 +42,7 @@ HTML for the draw: give paths a stroke and no fill.
 ## CDN, no build step
 
 ```html
-<script src="https://unpkg.com/svg-scroll-draw@2.26.0/dist/cdn/svg-scroll-draw.global.js"></script>
+<script src="https://unpkg.com/svg-scroll-draw@2.26.1/dist/cdn/svg-scroll-draw.global.js"></script>
 
 <!-- Declarative: only speed, easing, stagger, direction, selector, fade are read -->
 <scroll-draw easing="ease-out" speed="1.2" fade>
@@ -55,8 +55,8 @@ HTML for the draw: give paths a stroke and no fill.
 
 <!-- Other entries: self-contained ES modules -->
 <script type="module">
-  import { scrollReveal } from 'https://cdn.jsdelivr.net/npm/svg-scroll-draw@2.26.0/dist/reveal/index.mjs';
-  import { scrollPin } from 'https://cdn.jsdelivr.net/npm/svg-scroll-draw@2.26.0/dist/pin/index.mjs';
+  import { scrollReveal } from 'https://cdn.jsdelivr.net/npm/svg-scroll-draw@2.26.1/dist/reveal/index.mjs';
+  import { scrollPin } from 'https://cdn.jsdelivr.net/npm/svg-scroll-draw@2.26.1/dist/pin/index.mjs';
   scrollReveal('.card');
   scrollPin('#panel', { pinDistance: 800 });
 </script>

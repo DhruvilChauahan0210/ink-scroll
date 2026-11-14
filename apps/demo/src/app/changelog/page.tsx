@@ -55,6 +55,15 @@ const KINDS: { k: Kind; label: string }[] = [
  */
 const RELEASES: Release[] = [
   {
+    version: '2.26.1',
+    title: 'ScrollCounter renders its number on the server',
+    date: '2026-11-14',
+    items: [
+      { type: 'fix', text: '<ScrollCounter> in React and Vue renders the final number in the server HTML instead of an empty span, so crawlers, readers without JavaScript and the first paint see the figure. The text is rendered once; the engine takes it over on mount.' },
+      { type: 'test', text: 'A render-and-hydrate test in jsdom and in Chromium, Firefox and WebKit.' },
+    ],
+  },
+  {
     version: '2.26.0',
     title: 'scrollFrames for Svelte, Solid and Angular; CSS easing strings',
     date: '2026-11-13',

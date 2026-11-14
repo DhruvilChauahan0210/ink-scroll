@@ -15,6 +15,7 @@ vi.mock('../core/engine', () => ({
 }));
 vi.mock('../counter', () => ({
   scrollCounter: (_el: Element, o: Record<string, unknown>) => { counterCalls.push(o); return { destroy() {} }; },
+  counterText: (o: { to: number }) => String(o.to),
 }));
 
 const { ScrollDraw, ScrollCounter } = await import('../vue');

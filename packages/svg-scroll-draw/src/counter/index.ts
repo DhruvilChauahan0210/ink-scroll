@@ -19,6 +19,18 @@ export interface ScrollCounterOptions {
   onComplete?: () => void;
 }
 
+const formatter = ({ decimals, format }: ScrollCounterOptions): ((n: number) => string) =>
+  decimals !== undefined
+    ? (n) => n.toFixed(decimals)
+    : (format ?? ((n) => String(Math.round(n))));
+
+/**
+ * The final number as the counter will write it: the text the React and Vue
+ * components render on the server, so a crawler, a reader without JavaScript
+ * and the first paint see the figure instead of an empty span.
+ */
+export const counterText = (options: ScrollCounterOptions): string => formatter(options)(options.to);
+
 // ── Engine ────────────────────────────────────────────────────────────────────
 
 const NOOP: ScrollDrawInstance = {
@@ -47,18 +59,13 @@ function buildCounter(el: HTMLElement, options: ScrollCounterOptions, prefersRed
   const {
     from        = 0,
     to,
-    format,
     easing      = 'ease-out',
     trigger     = {},
     once        = true,
-    decimals,
     onComplete,
   } = options;
 
-  const fmt: (n: number) => string =
-    decimals !== undefined
-      ? (n) => n.toFixed(decimals)
-      : (format ?? ((n) => String(Math.round(n))));
+  const fmt = formatter(options);
 
   const easeFn      = resolveEasing(easing, 'ease-out');
   const startConfig = parseTrigger(trigger.start || 'top 80%');

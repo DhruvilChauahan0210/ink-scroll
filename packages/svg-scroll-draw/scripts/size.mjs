@@ -96,6 +96,11 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
  * The dash fix in the same release (core/dash.ts, `L 2L` so WebKit paints no
  * cap dot on an undrawn path) is a shared module: main + react 16.87 -> about
  * 16.95 and cinematic 3.6 -> 3.7, both inside their budgets.
+ *
+ * 2.26.1: main + react 17.0 -> 17.1 (built 17.01). <ScrollCounter> renders its
+ * final number in the server HTML instead of an empty span (counter
+ * counterText, shared by React and Vue), about 20 bytes on the main entry and
+ * 40 on react, both inside their own budgets; only the pair crossed 17.0.
  */
 const BUDGETS_KB = {
   '.':              12.0,
@@ -168,7 +173,7 @@ const BUDGETS_KB = {
  * 18.1 KB); the budget is what keeps the sharing from quietly coming undone.
  */
 const COMBINATIONS = [
-  { names: ['.', 'react'], budget: 17.0 },
+  { names: ['.', 'react'], budget: 17.1 },
 ];
 
 // ── Measure ──────────────────────────────────────────────────────────────────

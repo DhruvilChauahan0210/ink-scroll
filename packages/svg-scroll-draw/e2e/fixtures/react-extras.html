@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>React — useScrollDrawProgress in a container, ScrollVideo attributes</title>
+<title>React — useScrollDrawProgress in a container, ScrollVideo attributes, ScrollCounter hydration</title>
 <style>
   * { box-sizing: border-box; }
   html { scroll-behavior: auto; }
@@ -17,6 +17,8 @@
   #panel { height: 200px; background: #0a7; }
   #below { height: 600px; }
   #tail  { height: 1200px; }
+  #count-host { height: 100px; }
+  #after { height: 1200px; }
 </style>
 </head>
 <body>
@@ -29,9 +31,11 @@
 </div>
 <div id="film"></div>
 <div id="tail"></div>
+<div id="count-host"></div>
+<div id="after"></div>
 
 <script type="module">
-import { mount } from './build/react-extras.mjs';
+import { mount, hydrateCounter } from './build/react-extras.mjs';
 import { publish } from './_probe.mjs';
 
 mount();
@@ -50,6 +54,9 @@ publish({
     const v = document.querySelector('#rv');
     return { preload: v.getAttribute('preload'), poster: v.getAttribute('poster') };
   },
+  /** <ScrollCounter>: its server HTML, then hydrated, below the fold. */
+  hydrateCounter: () => hydrateCounter(document.querySelector('#count-host')),
+  count: () => document.querySelector('#count').textContent,
   geometry: () => ({
     boxTop: box.getBoundingClientRect().top + window.scrollY,
     clientHeight: box.clientHeight,

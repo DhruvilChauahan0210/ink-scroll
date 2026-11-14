@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { openFixture, collectErrors, read, call, settle, table } from './helpers';
+import { openFixture, collectErrors, read, call, settle, table, scrollToY } from './helpers';
 
 /**
  * The React pieces the shared framework contract does not reach.
@@ -57,5 +57,23 @@ test.describe('<ScrollVideo> attributes', () => {
   test('preload follows the option, and poster reaches the video', async ({ page }) => {
     await openFixture(page, 'react-extras.html');
     expect(await call(page, 'video')).toEqual({ preload: 'metadata', poster: '/e2e/fixtures/poster.png' });
+  });
+});
+
+// <ScrollCounter> rendered an empty <span> on the server up to 2.26.0, so a
+// crawler, a reader without JavaScript and the first paint had no number.
+test.describe('<ScrollCounter> server HTML', () => {
+  test('holds the final number, hydrates without a warning, then counts', async ({ page }) => {
+    const errors = collectErrors(page);
+    const warnings: string[] = [];
+    page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') warnings.push(m.text()); });
+    await openFixture(page, 'react-extras.html');
+    // Below the fold, the engine draws `from` over the hydrated text.
+    expect(await call(page, 'hydrateCounter')).toEqual({ server: '1,250', hydrated: '0', nodes: 1 });
+    await scrollToY(page, 100_000);
+    await settle(page);
+    expect(await call(page, 'count')).toBe('1,250');
+    expect(errors).toEqual([]);
+    expect(warnings.filter((w) => /hydrat|did not match/i.test(w))).toEqual([]);
   });
 });

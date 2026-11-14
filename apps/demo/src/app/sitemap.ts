@@ -13,7 +13,7 @@ const SITE_URL = "https://svg-scroll-draw.vercel.app";
 // these alongside the literal entries below — never type them by hand.
 const FRAMEWORK_PAGES_DATE = "2026-11-13";
 const VERSUS_PAGES_DATE = "2026-11-13";
-const EXAMPLE_PAGES_DATE = "2026-11-13";
+const EXAMPLE_PAGES_DATE = "2026-11-14";
 const GUIDE_PAGES_DATE = "2026-11-13";
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -51,7 +51,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${SITE_URL}/changelog`,
-      lastModified: new Date("2026-11-13"),
+      lastModified: new Date("2026-11-14"),
       changeFrequency: "monthly",
       priority: 0.5,
     },
@@ -464,7 +464,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${SITE_URL}/blog/horizontal-scroll-sections`,
-      lastModified: new Date("2026-11-13"),
+      lastModified: new Date("2026-11-14"),
       changeFrequency: "monthly",
       priority: 0.8,
     },

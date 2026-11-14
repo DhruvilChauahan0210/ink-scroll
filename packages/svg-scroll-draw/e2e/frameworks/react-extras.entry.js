@@ -5,11 +5,13 @@
  *    into `data-progress` so the spec reads what a component would render;
  *  - <ScrollVideo> with a `preload` option and a `poster`;
  *  - useScrollDrawProgress on the window, for engine-gate.html: a jump across
- *    its whole window (mountJump).
+ *    its whole window (mountJump);
+ *  - <ScrollCounter> rendered on the server, then hydrated (hydrateCounter).
  */
 import React from 'react';
-import { createRoot } from 'react-dom/client';
-import { useScrollDrawProgress, ScrollVideo } from '../../dist/react/index.mjs';
+import { createRoot, hydrateRoot } from 'react-dom/client';
+import { renderToString } from 'react-dom/server';
+import { useScrollDrawProgress, ScrollVideo, ScrollCounter } from '../../dist/react/index.mjs';
 
 const h = React.createElement;
 
@@ -40,4 +42,18 @@ export function mountJump(slot) {
   const root = createRoot(slot);
   const render = () => root.render(h(JumpPanel));
   React.act ? React.act(render) : render();
+}
+
+/**
+ * <ScrollCounter> as a server renders it, then hydrated over that HTML, the way
+ * Next.js does. Up to 2.26.0 the server HTML was an empty <span>.
+ */
+export function hydrateCounter(host) {
+  const counter = () => h(ScrollCounter, { to: 1250, format: (n) => Math.round(n).toLocaleString('en-US'), id: 'count' });
+  host.innerHTML = renderToString(counter());
+  const span = host.querySelector('#count');
+  const server = span.textContent;
+  const hydrate = () => { hydrateRoot(host, counter()); };
+  React.act ? React.act(hydrate) : hydrate();
+  return { server, hydrated: span.textContent, nodes: span.childNodes.length };
 }

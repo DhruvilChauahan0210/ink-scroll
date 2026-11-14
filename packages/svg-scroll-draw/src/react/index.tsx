@@ -2,7 +2,7 @@ import React, { useRef, useEffect, type RefObject } from 'react';
 import { createEngine } from '../core/engine';
 import { liveFns, optionsKey } from '../core/reactive';
 import { createAnimateEngine } from '../animate/engine';
-import { scrollCounter } from '../counter';
+import { scrollCounter, counterText } from '../counter';
 import { scrollVideo } from '../video';
 import { scrollFrames } from '../frames';
 import { framesKey, checkLabel } from '../frames/wrapper';
@@ -122,7 +122,10 @@ export function ScrollCounter({ className, style, ...rest }: ScrollCounterProps)
 
   useEngine(ref, options, scrollCounter);
 
-  return <span ref={ref} className={className} style={style} {...attrs} />;
+  // The final number goes in the server HTML, rendered once: the engine owns
+  // the text after mount, so React must not write to it again.
+  const text = useRef(counterText(options)).current;
+  return <span ref={ref} className={className} style={style} {...attrs}>{text}</span>;
 }
 
 // ── ScrollVideo ───────────────────────────────────────────────────────────────

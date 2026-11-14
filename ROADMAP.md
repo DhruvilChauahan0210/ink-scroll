@@ -1,6 +1,6 @@
 # svg-scroll-draw — Roadmap
 
-> Last updated: 2026-11-13 — 2.26.0 prepared (scrollFrames for Svelte, Solid and Angular; CSS `cubic-bezier()` easing strings; the Lenis adapter's restore)
+> Last updated: 2026-11-14 — 2.26.1 prepared (`<ScrollCounter>` renders its number on the server); 2.26.0 on npm
 >
 > Items marked ✓ are shipped. Remaining items are ordered by value/effort ratio.
 
@@ -120,7 +120,9 @@
 - ~~CSS `cubic-bezier()` strings as `easing`~~ — they silently ran as the default; every engine and the native path take them in 2.26.0, 2026-11-13.
 - ~~The Lenis story~~ — Lenis 1.x scrolls the real page and needs no adapter; the docs, the Lenis page and the Locomotive comparison said otherwise, corrected with the adapter's `destroy()` fix in 2.26.0, 2026-11-13.
 - ~~WebKit cap dot on undrawn paths~~ — the draw dash is `L 2L` in every engine, 2.26.0, 2026-11-13.
-- Next: the GSAP benchmark's full ~1 h run on `feat/gsap-bench` (idle machine); request indexing for the new pages (the generators, the recipe, the showcase, the new posts) and review them in Search Console after 2–3 weeks; a shadcn directory listing (needs an SVG logo and signed commits by the owner); the awesome-list PR drafts in `reports/awesome-list-prs-2026-11-13.md`, for the owner to submit.
+- ~~`ScrollCounter` empty in server HTML~~ — React and Vue render the final number, 2.26.1, 2026-11-14.
+- ~~Awesome-list PRs (shadcn, web components, UI component libraries)~~ — opened 2026-11-13.
+- Next: the GSAP benchmark's full ~1 h run on `feat/gsap-bench` (idle machine); request indexing for the new pages (Google takes about 2 a day) and review them in Search Console after 2–3 weeks; a shadcn directory listing (logo ready, needs signed commits by the owner); links to inner pages (tools, posts), which Search Console shows as the bottleneck: 9 external links, all to the home page.
 - ~~Stacking cards and scroll marquee generators~~ — `/stacking-cards-scroll-generator` and `/scroll-marquee-generator` (28 tools), 2026-11-13.
 - ~~Handwriting animation generator~~ — `/handwriting-animation-generator` (29 tools), Hershey single-stroke fonts, 2026-11-13.
 - scrollDraw on round-capped paths in WebKit: a dot at the end of each path not yet drawn (the dash's gap equals the length, so the next, empty dash starts at the end). Write the gap as twice the length, with a browser test that counts pixels before the draw; then the handwriting generator's scroll version can go back to round caps.
