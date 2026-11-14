@@ -8,6 +8,13 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### Site
 
+- **scrollfx, linked where React and shadcn readers look.** `/blocks` ends
+  with a section on [scrollfx](https://scrollfx-ui.vercel.app), a separate
+  folio of whole sections built on the library (a picture of its hero in the
+  site's theme, the install command, links to the site and its source), and
+  its "More" list gains a row for it. The React page's API section points to
+  `/blocks` and scrollfx for readers who want whole sections, not parts.
+
 - **A slow GitHub API can no longer hold up a page.** The star count and the
   homepage's live figures fetched GitHub with no time limit, so a source that
   never answered held every page that renders one. The fetch gives up after 8

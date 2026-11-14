@@ -146,7 +146,8 @@ at all.
 - [x] `scrollText` words and chars modes kept spaces in `white-space: pre` spans, so every wrapped line after the first began one space in; spaces are plain whitespace marked `data-gap`
 - [x] Browser test `scrollText wrapping` (words and chars, three or more lines, each starting under 1px from the edge); mutation `text/wrap-indent` caught, `text/line-gaps` re-anchored
 - [x] Both READMEs describe scrollfx as the plotter folio it is now
-- [ ] Tag and publish (owner pushes the tag)
+- [x] Tag and publish: v2.27.3 on npm (`latest`) and both CDNs, 2026-11-14
+- [x] scrollfx linked from `/blocks` (a section with its hero, and a More row) and the React page
 
 ### 2.27.2: dev warnings in Vite; every framework sample runs (2026-11-14; branch `test/framework-samples`)
 

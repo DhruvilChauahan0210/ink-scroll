@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import type { ComponentType } from 'react';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import Image from 'next/image';
 import Link from 'next/link';
 import '@/components/blocks.css';
 import { CopyButton } from '@/components/CopyButton';
@@ -37,6 +38,9 @@ import videoScrubItem from '../../../public/r/video-scrub.json';
 import readingProgressItem from '../../../public/r/reading-progress.json';
 
 const SITE = 'https://svg-scroll-draw.vercel.app';
+/** scrollfx: a separate folio of sections built on this library. */
+const SCROLLFX = 'https://scrollfx-ui.vercel.app';
+const SCROLLFX_REPO = 'https://github.com/DhruvilChauahan0210/scrollfx';
 
 const TITLE = 'Scroll Animation Blocks for React & shadcn';
 const DESCRIPTION =
@@ -306,10 +310,39 @@ export default function BlocksPage() {
           })}
         </div>
 
+        {/* ── scrollfx: whole sections, built on the library ── */}
+        <section className="bk-manual bk-sister" aria-labelledby="bk-sister-title">
+          <div className="bk-manual-l">
+            <Strip n={pad(BLOCKS.length + 1)}><span>Whole sections</span><span className="bk-tb-name">scrollfx</span></Strip>
+            <h2 id="bk-sister-title" className="bk-h2">Need a whole section? Try scrollfx</h2>
+            <p className="bk-desc">
+              The blocks above are single parts. <a href={SCROLLFX}>scrollfx</a> is a separate folio of whole
+              sections built on this library: a hero, a chart, features, steps, a changelog, pricing and a call
+              to action. Each one carries a pen-plotter drawing (a flow field, a contour map, a harmonograph)
+              that draws itself as the reader scrolls. They install with the same shadcn CLI and pick up your
+              theme.
+            </p>
+            <div className="bk-sister-cmd">
+              <InstallCommand cmd={`npx shadcn@latest add ${SCROLLFX}/r/hero-flow-field.json`} />
+            </div>
+            <p className="bk-desc bk-sister-links">
+              <a href={SCROLLFX}>See every section →</a>
+              <a href={SCROLLFX_REPO}>Source on GitHub →</a>
+            </p>
+          </div>
+          <a href={SCROLLFX} className="bk-manual-r bk-sister-shot" aria-label="scrollfx, opens the site">
+            {/* Both themes; the one that does not apply is hidden, and a hidden lazy image never loads. */}
+            <Image className="is-light" src="/scrollfx/hero-light.webp" width={1200} height={717} sizes="(min-width: 1000px) 50vw, 100vw"
+              alt="The scrollfx hero: the headline 'Pages, plotted as you read.' beside a round flow field of ink strokes with a red curl." />
+            <Image className="is-dark" src="/scrollfx/hero-dark.webp" width={1200} height={717} sizes="(min-width: 1000px) 50vw, 100vw"
+              alt="The scrollfx hero in dark mode: the headline 'Pages, plotted as you read.' beside a round flow field of pale strokes with a red curl." />
+          </a>
+        </section>
+
         {/* ── Manual install + more ───────────────────────── */}
         <section className="bk-manual" aria-labelledby="bk-manual-title">
           <div className="bk-manual-l">
-            <Strip n={pad(BLOCKS.length + 1)}><span>Manual install</span></Strip>
+            <Strip n={pad(BLOCKS.length + 2)}><span>Manual install</span></Strip>
             <h2 id="bk-manual-title" className="bk-h2">Without the shadcn CLI</h2>
             <p className="bk-desc">
               Install the package, then paste a block&apos;s source into{' '}
@@ -345,6 +378,14 @@ export default function BlocksPage() {
                 </span>
                 <span className="ex-rel-go" aria-hidden="true">Open →</span>
               </Link>
+              <a href={SCROLLFX} className="ex-rel-row">
+                <span className="ex-rel-n">04</span>
+                <span>
+                  <span className="ex-rel-t">scrollfx</span>
+                  <span className="ex-rel-d">Whole sections built on the library, each drawn by a pen as you scroll.</span>
+                </span>
+                <span className="ex-rel-go" aria-hidden="true">Open →</span>
+              </a>
             </div>
           </div>
         </section>

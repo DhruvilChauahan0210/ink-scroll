@@ -381,6 +381,11 @@ export default function ReactScrollAnimationPage() {
                 <Link href="/scroll-reveal-generator">scroll reveal generator</Link> copies a ready React component
                 for card reveals.
               </p>
+              <p className="stk-p stk-more">
+                Want whole sections rather than parts? The <Link href="/blocks">blocks</Link> install one component
+                each with the shadcn CLI, and <a href="https://scrollfx-ui.vercel.app">scrollfx</a> is a folio of
+                full sections built on this library, each with a pen-plotter drawing that draws itself as you scroll.
+              </p>
             </Sec>
 
             {/* ── 04 Next.js App Router ─────────────────────── */}

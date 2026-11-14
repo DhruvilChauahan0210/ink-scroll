@@ -223,3 +223,15 @@ html:has(.site .blocks) { scroll-behavior: smooth; }
 .site .bk-manual .code-box { margin-top: 24px; max-width: 520px; }
 .site .bk-more-h { margin: 0 0 16px; font: 500 10.5px/1.4 var(--mono); letter-spacing: 0; color: var(--fg-3); }
 @media (min-width: 1000px) { .site .bk-more-h { margin-top: 8px; } }
+
+/* ── scrollfx: a picture of its hero, the theme's own ────────────────── */
+
+.site .bk-sister { border-top: 1px solid var(--line); }
+.site .bk-sister-cmd { margin-top: 24px; max-width: 560px; }
+.site .bk-sister-links { display: flex; flex-wrap: wrap; gap: 8px 24px; margin-top: 20px; }
+.site .bk-sister-links a { color: var(--fg); text-decoration: underline; text-decoration-color: var(--line-2); text-underline-offset: 4px; }
+.site .bk-sister-shot { display: block; border: 1px solid var(--line-2); background: var(--bg-2); }
+.site .bk-sister-shot img { display: block; width: 100%; height: auto; }
+.site .bk-sister-shot .is-dark { display: none; }
+.dark .site .bk-sister-shot .is-light { display: none; }
+.dark .site .bk-sister-shot .is-dark { display: block; }

@@ -39,7 +39,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${SITE_URL}/blocks`,
-      lastModified: new Date("2026-11-12"),
+      lastModified: new Date("2026-11-14"),
       changeFrequency: "monthly",
       priority: 0.8,
     },
@@ -59,7 +59,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // ── Framework landing pages ─────────────────────────────────────────────
     {
       url: `${SITE_URL}/react-scroll-animation`,
-      lastModified: new Date("2026-11-13"),
+      lastModified: new Date("2026-11-14"),
       changeFrequency: "monthly",
       priority: 0.9,
     },
