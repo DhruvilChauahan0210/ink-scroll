@@ -118,7 +118,7 @@ npx svg-scroll-draw migrate --dry-run   # preview, then run without --dry-run
 
 **Try it in your browser, no install** (StackBlitz): [Vanilla JS](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/vanilla) · [React](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/react) · [Vue](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/vue) · [Nuxt](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/nuxt) · [SvelteKit](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/sveltekit) · [Solid](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/solid)
 
-**Ready-made effects:** [scrollfx](https://github.com/DhruvilChauahan0210/scrollfx) has 31 copy-paste scroll effects built on this library, each one HTML file: signature drawing, route maps, reveals, word-by-word text, counters, pinned steps, horizontal galleries and image sequences.
+**Ready-made sections:** [scrollfx](https://github.com/DhruvilChauahan0210/scrollfx) has scroll-driven sections for React and Tailwind built on this library (a hero whose screenshot straightens as you scroll, a changelog whose line draws down the page, pricing that counts in), installed with the shadcn CLI.
 
 **Using an AI coding agent?** Give it the [svg-scroll-draw skill](skills/svg-scroll-draw/SKILL.md) or point it at [llms.txt](https://svg-scroll-draw.vercel.app/llms.txt).
 
