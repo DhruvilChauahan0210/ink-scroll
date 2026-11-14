@@ -43,6 +43,8 @@ Each drop-in is tested side by side against the original in real browsers (AOS 2
 
 **Try it in your browser, no install** (StackBlitz): [Vanilla JS](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/vanilla) · [React](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/react) · [Vue](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/vue) · [Nuxt](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/nuxt) · [SvelteKit](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/sveltekit) · [Solid](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/solid)
 
+**Ready-made effects:** [scrollfx](https://github.com/DhruvilChauahan0210/scrollfx) has 31 copy-paste scroll effects built on this library, each one HTML file: signature drawing, route maps, reveals, word-by-word text, counters, pinned steps, horizontal galleries and image sequences.
+
 **Using an AI coding agent?** Give it the [svg-scroll-draw skill](https://github.com/DhruvilChauahan0210/ink-scroll/blob/main/skills/svg-scroll-draw/SKILL.md) or point it at [llms.txt](https://svg-scroll-draw.vercel.app/llms.txt).
 
 If this saves you time, a ⭐ [on GitHub](https://github.com/DhruvilChauahan0210/ink-scroll) helps others find it.
