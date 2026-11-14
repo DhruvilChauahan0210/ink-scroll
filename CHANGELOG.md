@@ -6,14 +6,6 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ## [Unreleased]
 
-### Tests
-
-- **The Nuxt module in a real Nuxt app, in CI.** `scripts/nuxt-module-check.mjs`
-  packs the library, installs it with Nuxt into a scratch app that uses the
-  components and a composable with no imports, builds it, serves it, checks
-  the server HTML and scrolls it in Chromium. The new `nuxt` job runs it for
-  Nuxt ^4 and ^3.
-
 ### Site
 
 - **Two more guides:**
@@ -1170,6 +1162,42 @@ All notable changes to `svg-scroll-draw` are documented here.
   allowed, followed by `check-jsx-text` and `check-nav`.
 
 ---
+
+## [2.27.1] — 2026-11-14
+
+### Fixed
+
+- **`npx svg-scroll-draw init` writes a Vue file that draws.** It wrote
+  `const { ref } = useScrollDraw(…)` and `<div :ref="ref">`. `useScrollDraw`
+  returns the template ref itself, so `ref` was `undefined`, and in
+  `<script setup>` a `:ref="name"` binding unwraps to `null` anyway: the
+  generated component never started. It now writes
+  `const container = useScrollDraw(…)` and `<div ref="container">`.
+- **Every Vue example binds its ref by name.** The library's doc comments,
+  the npm README, the docs page, the Nuxt landing page and the Vue post wrote
+  `:ref="el"` for a composable's ref, which binds nothing in `<script setup>`
+  (checked in a Vite build and in dev mode: the counter never attached). They
+  write `ref="el"` now, and `check:claims` fails on `:ref="name"` in the site,
+  the READMEs, the skill, the library source and the starters.
+
+### Added
+
+- **Starters for Vue, Nuxt, SvelteKit and Solid** in `examples/`, each opening
+  on StackBlitz with nothing to install: a line drawing, words on scroll, a
+  fade-in and a counter. The Nuxt one uses the module with no imports; Nuxt
+  and SvelteKit render the counter's number on the server. Each was built from
+  npm (2.27.0) and checked in Chromium. The Vue, Nuxt, Svelte and Solid pages
+  and both READMEs link them.
+
+### Tests
+
+- The CLI's Vue output binds the ref `useScrollDraw` returns, by name
+  (watched failing on the old generator).
+- **The Nuxt module in a real Nuxt app, in CI.** `scripts/nuxt-module-check.mjs`
+  packs the library, installs it with Nuxt into a scratch app that uses the
+  components and a composable with no imports, builds it, serves it, checks
+  the server HTML and scrolls it in Chromium. The new `nuxt` job runs it for
+  Nuxt ^4 and ^3.
 
 ## [2.27.0] — 2026-11-14
 

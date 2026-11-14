@@ -1081,7 +1081,7 @@ const revenue = useScrollCounter({ to: 1_250_000, format: n => '$' + Math.round(
 
 <template>
   <ScrollDraw :once="false"><svg>…</svg></ScrollDraw>
-  <span :ref="revenue" />
+  <span ref="revenue" />
 </template>`}
             </CodeBlock>
 
@@ -1109,9 +1109,9 @@ const revenue = useScrollCounter({
 </script>
 
 <template>
-  <div :ref="card">...</div>
-  <h2 :ref="headline">Animate on scroll.</h2>
-  <span :ref="revenue" />
+  <div ref="card">...</div>
+  <h2 ref="headline">Animate on scroll.</h2>
+  <span ref="revenue" />
 </template>`}
             </CodeBlock>
 
@@ -1759,7 +1759,7 @@ const el = useScrollAnimate({
 </script>
 
 <template>
-  <div :ref="el">Animates on scroll.</div>
+  <div ref="el">Animates on scroll.</div>
 </template>
 
 <!-- Or use the component wrapper: -->
@@ -1782,7 +1782,7 @@ const el = useScrollCounter({
 </script>
 
 <template>
-  <span :ref="el" />
+  <span ref="el" />
 </template>
 
 <!-- Or use the component: -->
@@ -1805,7 +1805,7 @@ const vid = useScrollVideo({
 </script>
 
 <template>
-  <video :ref="vid" src="/hero.mp4" muted playsinline preload="auto" />
+  <video ref="vid" src="/hero.mp4" muted playsinline preload="auto" />
 </template>
 
 <!-- Or use the component: -->
@@ -1829,7 +1829,7 @@ const el = useScrollText({
 </script>
 
 <template>
-  <h2 :ref="el">Animate on scroll.</h2>
+  <h2 ref="el">Animate on scroll.</h2>
 </template>
 
 <!-- Or use the component (tag defaults to "p"): -->

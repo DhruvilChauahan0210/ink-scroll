@@ -122,7 +122,7 @@ export const ScrollDraw = defineComponent({
  *   import { useScrollAnimate } from 'svg-scroll-draw/vue';
  *   const el = useScrollAnimate({ props: { opacity: [0, 1] }, easing: 'ease-out', once: true });
  * </script>
- * <div :ref="el">...</div>
+ * <div ref="el">...</div>
  */
 export function useScrollAnimate(options: MaybeRefOrGetter<ScrollAnimateOptions>) {
   const containerRef = ref<HTMLElement | null>(null);
@@ -161,7 +161,7 @@ export const ScrollAnimate = defineComponent({
  *   import { useScrollCounter } from 'svg-scroll-draw/vue';
  *   const el = useScrollCounter({ to: 1000, easing: 'ease-out', once: true });
  * </script>
- * <span :ref="el" />
+ * <span ref="el" />
  */
 export function useScrollCounter(options: MaybeRefOrGetter<ScrollCounterOptions>) {
   const counterRef = ref<HTMLElement | null>(null);
@@ -220,7 +220,7 @@ export const ScrollCounter = defineComponent({
  *   import { useScrollVideo } from 'svg-scroll-draw/vue';
  *   const vid = useScrollVideo({ trigger: { start: 'top top', end: 'bottom top' } });
  * </script>
- * <video :ref="vid" src="..." muted playsinline preload="auto" />
+ * <video ref="vid" src="..." muted playsinline preload="auto" />
  */
 export function useScrollVideo(options: MaybeRefOrGetter<ScrollVideoOptions> = {}) {
   const videoRef = ref<HTMLVideoElement | null>(null);
@@ -274,7 +274,7 @@ export const ScrollVideo = defineComponent({
  *   import { useScrollFrames } from 'svg-scroll-draw/vue';
  *   const film = useScrollFrames({ frames: (i) => `/film/${i + 1}.jpg`, count: 120 });
  * </script>
- * <canvas :ref="film" role="img" aria-label="The headphones turning" />
+ * <canvas ref="film" role="img" aria-label="The headphones turning" />
  */
 export function useScrollFrames(options: MaybeRefOrGetter<FramesInput>) {
   const canvasRef = ref<HTMLCanvasElement | null>(null);
@@ -340,7 +340,7 @@ export const ScrollFrames = defineComponent({
  *   import { useScrollText } from 'svg-scroll-draw/vue';
  *   const el = useScrollText({ split: 'words', stagger: 0.05, once: true });
  * </script>
- * <h2 :ref="el">Animate on scroll.</h2>
+ * <h2 ref="el">Animate on scroll.</h2>
  */
 export function useScrollText(options: MaybeRefOrGetter<ScrollTextOptions> = {}) {
   const textRef = ref<HTMLElement | null>(null);

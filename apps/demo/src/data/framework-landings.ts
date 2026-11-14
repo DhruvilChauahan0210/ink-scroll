@@ -39,11 +39,14 @@ export type FrameworkLanding = {
   note: string;
   faq: { q: string; a: string }[];
   related: string[];
+  /** A folder in examples/ that runs as is on StackBlitz, when there is one. */
+  starter?: string;
 };
 
 export const FRAMEWORK_LANDINGS: FrameworkLanding[] = [
   {
     slug: 'vue-scroll-animation',
+    starter: 'vue',
     name: 'Vue 3',
     entry: 'svg-scroll-draw/vue',
     accent: '#42b883',
@@ -140,6 +143,7 @@ const heading = useScrollText({ split: 'words', stagger: 0.05 });
   },
   {
     slug: 'svelte-scroll-animation',
+    starter: 'sveltekit',
     name: 'Svelte',
     entry: 'svg-scroll-draw/svelte',
     accent: '#ff3e00',
@@ -230,6 +234,7 @@ const heading = useScrollText({ split: 'words', stagger: 0.05 });
   },
   {
     slug: 'solid-scroll-animation',
+    starter: 'solid',
     name: 'Solid.js',
     entry: 'svg-scroll-draw/solid',
     accent: '#2c4f7c',
@@ -516,6 +521,7 @@ export class StatsComponent implements AfterViewInit, OnDestroy {
   },
   {
     slug: 'nuxt-scroll-animation',
+    starter: 'nuxt',
     name: 'Nuxt',
     entry: 'svg-scroll-draw/nuxt',
     accent: '#00dc82',
@@ -566,7 +572,7 @@ const card = useScrollAnimate({ props: { opacity: [0, 1] }, once: true });
     Every API, one package.
   </ScrollText>
 
-  <div :ref="card">…</div>
+  <div ref="card">…</div>
 </template>`,
       },
       {

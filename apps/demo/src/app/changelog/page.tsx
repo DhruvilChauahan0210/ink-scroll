@@ -55,6 +55,17 @@ const KINDS: { k: Kind; label: string }[] = [
  */
 const RELEASES: Release[] = [
   {
+    version: '2.27.1',
+    title: 'Vue refs that bind; starters for Vue, Nuxt, SvelteKit and Solid',
+    date: '2026-11-14',
+    items: [
+      { type: 'fix', text: 'npx svg-scroll-draw init wrote a Vue file that never drew: it destructured a ref useScrollDraw does not return and bound it with :ref. It writes const container = useScrollDraw(…) and ref="container" now.' },
+      { type: 'fix', text: 'Every Vue example (doc comments, README, docs, the Nuxt page, the Vue post) wrote :ref="el", which binds nothing in <script setup>; they write ref="el", and check:claims rejects the old form.' },
+      { type: 'new', text: 'Starters for Vue, Nuxt (with the module), SvelteKit and Solid in examples/, each opening on StackBlitz with nothing to install, linked from the framework pages.' },
+      { type: 'test', text: 'A test of the CLI\'s Vue output, and a CI job that builds a real Nuxt 4 and Nuxt 3 app with the module.' },
+    ],
+  },
+  {
     version: '2.27.0',
     title: 'A Nuxt module',
     date: '2026-11-14',

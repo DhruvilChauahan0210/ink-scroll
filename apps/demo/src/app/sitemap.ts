@@ -494,7 +494,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${SITE_URL}/blog/vue-svelte-solid-v2`,
-      lastModified: new Date("2026-11-07"),
+      lastModified: new Date("2026-11-14"),
       changeFrequency: "monthly",
       priority: 0.7,
     },

@@ -1,0 +1,17 @@
+{
+  "name": "svg-scroll-draw-solid-starter",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "solid-js": "^1.9.19",
+    "svg-scroll-draw": "^2.27.0"
+  },
+  "devDependencies": {
+    "vite": "^8.3.8",
+    "vite-plugin-solid": "^2.11.16"
+  }
+}

@@ -58,6 +58,19 @@ describe('CLI generators — output validity', () => {
     expect(code).toContain('svg-scroll-draw');
   });
 
+  // Regression: the Vue file read `const { ref } = useScrollDraw(…)` and
+  // `:ref="ref"`. useScrollDraw returns the template ref itself, so `ref` was
+  // undefined; and in <script setup> `:ref="name"` unwraps to null anyway.
+  // Either way the generated component never drew.
+  it('vue binds the ref useScrollDraw returns, by name', () => {
+    const code = GENERATORS.vue(base);
+    const name = code.match(/const (\w+) = useScrollDraw\(/)?.[1];
+    expect(name).toBeTruthy();
+    expect(code).toContain(`ref="${name}"`);
+    expect(code).not.toMatch(/:ref="/);
+    expect(code).not.toMatch(/const \{/);
+  });
+
   // Regression: these were camelCase and therefore inert in HTML templates.
   it.each(HTML_TARGETS)('%s uses hyphenated SVG attributes, not camelCase', (fw) => {
     const code = GENERATORS[fw](base);

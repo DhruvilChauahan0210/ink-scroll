@@ -138,7 +138,7 @@ const el = useScrollAnimate({
 </script>
 
 <template>
-  <div :ref="el">
+  <div ref="el">
     This fades and slides in as it scrolls into view.
   </div>
 </template>`}</Code>
@@ -163,8 +163,8 @@ const subline = useScrollText({
 </script>
 
 <template>
-  <h1 :ref="headline">Ship faster. Zero GSAP.</h1>
-  <p  :ref="subline">Every character trickles in on scroll.</p>
+  <h1 ref="headline">Ship faster. Zero GSAP.</h1>
+  <p  ref="subline">Every character trickles in on scroll.</p>
 </template>`}</Code>
 
         <h3 className="ba-h3">scrollCounter — animated numbers</h3>
@@ -181,7 +181,7 @@ const users = useScrollCounter({
 
 <template>
   <!-- Renders a <span> that counts 0 → 50,000+ on scroll -->
-  <span :ref="users" />
+  <span ref="users" />
 </template>`}</Code>
 
         <h3 className="ba-h3">Component wrappers</h3>

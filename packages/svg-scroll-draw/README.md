@@ -41,7 +41,7 @@ Each drop-in is tested side by side against the original in real browsers (AOS 2
 
 **Compared with:** [GSAP](https://svg-scroll-draw.vercel.app/vs-gsap) · [Framer Motion](https://svg-scroll-draw.vercel.app/vs-framer-motion) · [Motion](https://svg-scroll-draw.vercel.app/vs-motion) · [AOS](https://svg-scroll-draw.vercel.app/vs-aos) · [Locomotive Scroll](https://svg-scroll-draw.vercel.app/vs-locomotive-scroll) · [ScrollMagic](https://svg-scroll-draw.vercel.app/vs-scrollmagic) · [Vivus](https://svg-scroll-draw.vercel.app/vs-vivus)
 
-**Try it in your browser, no install:** [Vanilla JS on StackBlitz](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/vanilla) · [React on StackBlitz](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/react)
+**Try it in your browser, no install** (StackBlitz): [Vanilla JS](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/vanilla) · [React](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/react) · [Vue](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/vue) · [Nuxt](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/nuxt) · [SvelteKit](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/sveltekit) · [Solid](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/solid)
 
 **Using an AI coding agent?** Give it the [svg-scroll-draw skill](https://github.com/DhruvilChauahan0210/ink-scroll/blob/main/skills/svg-scroll-draw/SKILL.md) or point it at [llms.txt](https://svg-scroll-draw.vercel.app/llms.txt).
 
@@ -352,7 +352,7 @@ The same component as React's, with the same rebuild and live-callback rules: ev
 import { useScrollFrames } from 'svg-scroll-draw/vue';
 
 const film = useScrollFrames(() => ({ frames: (i) => `/film/${i + 1}.jpg`, count: count.value }));
-// <canvas :ref="film" role="img" aria-label="The headphones turning" />
+// <canvas ref="film" role="img" aria-label="The headphones turning" />
 ```
 
 Nuxt exports both, and `createScrollDrawPlugin()` registers `<ScrollFrames>` globally.

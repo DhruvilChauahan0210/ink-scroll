@@ -1,0 +1,19 @@
+{
+  "name": "svg-scroll-draw-sveltekit-starter",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "svg-scroll-draw": "^2.27.0"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-auto": "^8.0.1",
+    "@sveltejs/kit": "^3.2.0",
+    "@sveltejs/vite-plugin-svelte": "^7.3.1",
+    "svelte": "^5.57.3",
+    "vite": "^8.3.8"
+  }
+}

@@ -342,7 +342,8 @@ if (entries) {
  * Claims that are wrong whatever the build says. Each one shipped: "9× smaller"
  * (measured 4.5–4.75×), "covers 95% of use cases" (never measured), SplitText
  * "+18 KB" (it is 3.6 KB in gsap 3.15.0), the paid-plugin claim (free since
- * 2025), and Firefox 110 / Safari 18 for the native path (Firefox 159, Safari 26).
+ * 2025), Firefox 110 / Safari 18 for the native path (Firefox 159, Safari 26),
+ * and :ref="name" in the Vue examples, which left every one of them unbound.
  */
 const BANNED = [
   [/\b9×\s*smaller/, '"9× smaller" — measured is about 4.5× (vs core + ScrollTrigger) to 4.75× (with DrawSVG)'],
@@ -351,11 +352,36 @@ const BANNED = [
   [/requires? (?:a )?(?:paid|\$150)|\$150\+?\/yr Club/i, 'GSAP plugins as paid — all free since 2025'],
   [/Firefox 110\+/, 'Firefox 110+ for the native path — Firefox ships it from 159'],
   [/Safari 18\+/, 'Safari 18+ for the native path — WebKit ships it from 26'],
+  // In <script setup> a template expression unwraps the ref, so :ref="name"
+  // binds null and the composable never starts; it has to be ref="name".
+  [/:ref="[A-Za-z_]\w*"/, ':ref="name" on a composable binds nothing in <script setup> — write ref="name"'],
 ];
 for (const rel of PUBLIC) {
   const lines = readFileSync(join(ROOT, rel), 'utf8').split('\n');
   for (const [i, line] of lines.entries()) {
     for (const [re, why] of BANNED) {
+      if (re.test(line)) failures.push(`${rel}:${i + 1}: ${why}`);
+    }
+  }
+}
+
+// The :ref rule also reaches the code people copy that is not site copy: the
+// library's own doc comments, the CLI's generated files and the starters.
+{
+  const files = [];
+  const walk = (dir) => {
+    for (const name of readdirSync(join(ROOT, dir))) {
+      if (name === 'node_modules' || name === '__tests__') continue;
+      const rel = `${dir}/${name}`;
+      if (statSync(join(ROOT, rel)).isDirectory()) walk(rel);
+      else if (/\.(ts|tsx|vue|md)$/.test(name)) files.push(rel);
+    }
+  };
+  walk('packages/svg-scroll-draw/src');
+  if (existsSync(join(ROOT, 'examples'))) walk('examples');
+  const [re, why] = BANNED[BANNED.length - 1];
+  for (const rel of files) {
+    for (const [i, line] of readFileSync(join(ROOT, rel), 'utf8').split('\n').entries()) {
       if (re.test(line)) failures.push(`${rel}:${i + 1}: ${why}`);
     }
   }

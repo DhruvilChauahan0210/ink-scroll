@@ -192,6 +192,15 @@ export default async function Page({ params }: { params: Promise<{ framework: st
                 Import from <code className="fw-code">{f.entry}</code> — every sample below is written against the
                 wrappers this package actually exports.
               </p>
+              {f.starter && (
+                <p className="cmp-p">
+                  Or start from a running project: the{' '}
+                  <a href={`https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/${f.starter}`} target="_blank" rel="noopener">
+                    {f.name} starter on StackBlitz ↗
+                  </a>{' '}
+                  opens in the browser with nothing to install: a line drawing, words on scroll, a fade-in and a counter.
+                </p>
+              )}
 
               <ol className="fw-samples">
                 {f.samples.map((s, i) => (

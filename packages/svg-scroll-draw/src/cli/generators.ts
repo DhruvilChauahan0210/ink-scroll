@@ -74,13 +74,14 @@ export function AnimatedSVG() {
 const genVue: Generator = (opts) => `<script setup>
 import { useScrollDraw } from 'svg-scroll-draw/vue';
 
-const { ref } = useScrollDraw({
+// useScrollDraw returns a template ref: bind it by name, as ref="container".
+const container = useScrollDraw({
   ${optionsBody(opts)},
 });
 </script>
 
 <template>
-  <div :ref="ref">
+  <div ref="container">
     ${SAMPLE_SVG_HTML}
   </div>
 </template>
