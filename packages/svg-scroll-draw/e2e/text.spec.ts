@@ -246,6 +246,20 @@ test.describe('scrollText replay()', () => {
   }
 });
 
+// The spaces between split words were `white-space: pre`, which keeps a
+// space's width at the start of a wrapped line: every line after the first
+// began one space in, ragged against the paragraph's edge.
+test.describe('scrollText wrapping', () => {
+  for (const [sel, split] of [['#flow', 'words'], ['#wrap', 'chars']] as const) {
+    test(`every wrapped line starts flush (split: '${split}')`, async ({ page }) => {
+      await openFixture(page, 'text.html');
+      const starts = await call<number[]>(page, 'lineStarts', sel);
+      expect(starts.length, 'the paragraph does not wrap, so there is nothing to check').toBeGreaterThan(2);
+      for (const [i, x] of starts.entries()) expect(x, `line ${i + 1} starts ${x}px in`).toBeLessThan(1);
+    });
+  }
+});
+
 test.describe("scrollText split: 'chars'", () => {
   // Every letter was an inline-block of its own, so a line could break between
   // any two: 'Typewriters type' broke as 'Typewriters ty' / 'pe'. Each word's

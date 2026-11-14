@@ -43,7 +43,7 @@ Each drop-in is tested side by side against the original in real browsers (AOS 2
 
 **Try it in your browser, no install** (StackBlitz): [Vanilla JS](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/vanilla) · [React](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/react) · [Vue](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/vue) · [Nuxt](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/nuxt) · [SvelteKit](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/sveltekit) · [Solid](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/solid)
 
-**Ready-made sections:** [scrollfx](https://github.com/DhruvilChauahan0210/scrollfx) has scroll-driven sections for React and Tailwind built on this library (a hero whose screenshot straightens as you scroll, a changelog whose line draws down the page, pricing that counts in), installed with the shadcn CLI.
+**Ready-made sections:** [scrollfx](https://github.com/DhruvilChauahan0210/scrollfx) is a folio of generative sections for React and Tailwind built on this library: pen-plotter drawings (a flow field, a contour map, a hatched chart, a globe) that ink themselves in as the reader scrolls, installed with the shadcn CLI.
 
 **Using an AI coding agent?** Give it the [svg-scroll-draw skill](https://github.com/DhruvilChauahan0210/ink-scroll/blob/main/skills/svg-scroll-draw/SKILL.md) or point it at [llms.txt](https://svg-scroll-draw.vercel.app/llms.txt).
 

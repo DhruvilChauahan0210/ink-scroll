@@ -55,6 +55,15 @@ const KINDS: { k: Kind; label: string }[] = [
  */
 const RELEASES: Release[] = [
   {
+    version: '2.27.3',
+    title: 'Wrapped text starts flush',
+    date: '2026-11-14',
+    items: [
+      { type: 'fix', text: 'scrollText kept every space in a white-space: pre span, so at the start of a wrapped line the space kept its width and each line after the first began one space in. Spaces are ordinary whitespace now, dropped at a line break as in any text.' },
+      { type: 'test', text: 'A browser test wraps a words-mode and a chars-mode paragraph three or more times and checks every line starts flush; a mutation that puts the pre spans back fails it.' },
+    ],
+  },
+  {
     version: '2.27.2',
     title: 'Dev warnings in Vite; every framework sample runs',
     date: '2026-11-14',

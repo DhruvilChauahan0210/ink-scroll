@@ -1180,6 +1180,29 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ---
 
+## [2.27.3] — 2026-11-14
+
+### Fixed
+
+- **Wrapped text starts flush with the margin.** `scrollText` split words and
+  characters into spans and kept each space in a `white-space: pre` span, so a
+  space keeps its width wherever it lands. At the start of a wrapped line that
+  meant every line after the first began one space in, in words and chars
+  mode alike. Spaces are ordinary whitespace now (marked `data-gap` for lines
+  mode), which the browser drops at a line break as it does for any text.
+
+### Docs
+
+- Both READMEs describe scrollfx as it is now: a folio of generative,
+  pen-plotter sections built on the library.
+
+### Tests
+
+- A browser test sets a paragraph in words mode and one in chars mode at a
+  width that wraps them three or more times, and checks that every line
+  starts flush: under 1px from the left edge. Mutation `text/wrap-indent`
+  puts the `pre` spans back and that test fails.
+
 ## [2.27.2] — 2026-11-14
 
 ### Fixed

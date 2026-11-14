@@ -1,6 +1,6 @@
 # svg-scroll-draw — Roadmap
 
-> Last updated: 2026-11-14 — 2.27.2 prepared (dev warnings in Vite, every framework sample runs); 2.27.1 on npm
+> Last updated: 2026-11-14 — 2.27.3 prepared (wrapped text starts flush); 2.27.2 on npm
 >
 > Items marked ✓ are shipped. Remaining items are ordered by value/effort ratio.
 
@@ -126,6 +126,7 @@
 - ~~scrollVideo time outside [from, to] under overshooting easings~~ — clamped, 2.26.2, 2026-11-14.
 - ~~A real Nuxt module~~ — `modules: ['svg-scroll-draw/nuxt']`, auto-imports, no dependencies, 2.27.0, 2026-11-14.
 - ~~Run every framework sample~~ — `test-framework-samples.mjs`, weekly with the starters; it found 8 broken samples and the dev warnings being off in Vite, 2.27.2, 2026-11-14.
+- ~~Wrapped `scrollText` lines indented by a space~~ — spaces are plain whitespace, checked flush in the browser, 2.27.3, 2026-11-14.
 - ~~Starters for Vue, Nuxt, SvelteKit and Solid~~ — `examples/`, on StackBlitz, 2.27.1, 2026-11-14 (with the Vue `:ref` fix they turned up).
 - Next for Nuxt: the nuxt.com/modules listing (owner reopens nuxt/modules#1744 in their own words). The real-Nuxt check runs in CI (job `nuxt`).
 - ~~Awesome-list PRs (shadcn, web components, UI component libraries)~~ — opened 2026-11-13.

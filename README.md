@@ -70,7 +70,7 @@ If this saves you time, a ⭐ [on GitHub](https://github.com/DhruvilChauahan0210
 - **Group / Sequence / Timeline APIs** — animate multiple containers simultaneously, one-after-another, or on independent scroll windows with `loop` for auto-looping after scroll completion
 - **CSS custom property** — `--scroll-draw-progress` is set on every frame so you can drive any CSS animation without a callback
 - **1034 tests across 45 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
-- **341 browser tests on top of those**, run against Chromium, Firefox and WebKit in CI. The unit suite runs in jsdom, where `getTotalLength` is stubbed and `IntersectionObserver` is faked — it can check the engine's arithmetic but nothing about real browser behaviour. Both counts are derived from the suites themselves and enforced in CI, so neither can quietly drift out of date
+- **343 browser tests on top of those**, run against Chromium, Firefox and WebKit in CI. The unit suite runs in jsdom, where `getTotalLength` is stubbed and `IntersectionObserver` is faked — it can check the engine's arithmetic but nothing about real browser behaviour. Both counts are derived from the suites themselves and enforced in CI, so neither can quietly drift out of date
 
 ---
 
@@ -118,7 +118,7 @@ npx svg-scroll-draw migrate --dry-run   # preview, then run without --dry-run
 
 **Try it in your browser, no install** (StackBlitz): [Vanilla JS](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/vanilla) · [React](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/react) · [Vue](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/vue) · [Nuxt](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/nuxt) · [SvelteKit](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/sveltekit) · [Solid](https://stackblitz.com/github/DhruvilChauahan0210/ink-scroll/tree/main/examples/solid)
 
-**Ready-made sections:** [scrollfx](https://github.com/DhruvilChauahan0210/scrollfx) has scroll-driven sections for React and Tailwind built on this library (a hero whose screenshot straightens as you scroll, a changelog whose line draws down the page, pricing that counts in), installed with the shadcn CLI.
+**Ready-made sections:** [scrollfx](https://github.com/DhruvilChauahan0210/scrollfx) is a folio of generative sections for React and Tailwind built on this library: pen-plotter drawings (a flow field, a contour map, a hatched chart, a globe) that ink themselves in as the reader scrolls, installed with the shadcn CLI.
 
 **Using an AI coding agent?** Give it the [svg-scroll-draw skill](skills/svg-scroll-draw/SKILL.md) or point it at [llms.txt](https://svg-scroll-draw.vercel.app/llms.txt).
 
@@ -933,9 +933,9 @@ outgrows its budget.
 | `svg-scroll-draw/nuxt`               | 45.2 KB | **16.0 KB** |
 | `svg-scroll-draw/vue`                | 44.2 KB | **15.5 KB** |
 | `svg-scroll-draw/react`              | 42.9 KB | **15.3 KB** |
-| `svg-scroll-draw/angular`            | 41.7 KB | **14.8 KB** |
+| `svg-scroll-draw/angular`            | 41.6 KB | **14.8 KB** |
 | `svg-scroll-draw/solid`              | 41.5 KB | **14.8 KB** |
-| `svg-scroll-draw/svelte`             | 41.9 KB | **14.8 KB** |
+| `svg-scroll-draw/svelte`             | 41.8 KB | **14.7 KB** |
 | `svg-scroll-draw/astro`              | 34.2 KB | **12.3 KB** |
 | `svg-scroll-draw`                    | 33.1 KB | **11.9 KB** |
 | `dist/cdn/svg-scroll-draw.global.js` | 31.7 KB | **11.7 KB** |

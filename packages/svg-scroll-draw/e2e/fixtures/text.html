@@ -18,6 +18,8 @@
   #wrap { width: 200px; font: 32px/1.2 serif; }
   /* The same box, with Chinese: no spaces, so it breaks between characters. */
   #cjk { width: 200px; font: 32px/1.2 serif; }
+  /* split: 'words' wrapping onto several lines: each must start flush. */
+  #flow { width: 260px; font: 24px/1.3 sans-serif; padding: 0; }
 </style>
 </head>
 <body>
@@ -32,6 +34,7 @@
 <p id="emoji">Hi 👋 there</p>
 <p id="many">abcdefghijklmnopqrstuvwxyzABCDEFGHIJ</p>
 <p id="cjk">这是一个很长的中文句子用来测试换行</p>
+<p id="flow">Motion that follows the scroll waits for the reader and stops when they stop</p>
 <div class="tail"></div>
 
 <script type="module">
@@ -61,6 +64,7 @@ const linesInst = scrollText('#lines', { split: 'lines', stagger: 0.1 });
 const wrap = document.querySelector('#wrap');
 const wrapHeight = wrap.offsetHeight;
 scrollText('#wrap', { split: 'chars' });
+scrollText('#flow', { split: 'words' });
 scrollText('#emoji', { split: 'chars' });
 // 36 characters: more than the default stagger (0.04) fits in one window.
 const manyInst = scrollText('#many', { split: 'chars', easing: 'linear' });
@@ -164,6 +168,22 @@ publish({
       broken: words.filter((w) => new Set(w.map((s) => s.offsetTop)).size > 1)
         .map((w) => w.map((s) => s.textContent).join('')),
     };
+  },
+  /**
+   * Where each line of a split paragraph starts, in px from the paragraph's
+   * left edge: the leftmost word box on each line. A space kept with
+   * `white-space: pre` at a line start pushed every wrapped line in.
+   */
+  lineStarts: (sel) => {
+    const el = document.querySelector(sel);
+    const left = el.getBoundingClientRect().left;
+    const boxes = [...el.children].filter((c) => c !== srOf(el) && getComputedStyle(c).display === 'inline-block');
+    const lines = new Map();
+    for (const b of boxes) {
+      const top = b.offsetTop;
+      lines.set(top, Math.min(lines.get(top) ?? Infinity, b.getBoundingClientRect().left - left));
+    }
+    return [...lines.values()].map((x) => Math.round(x * 10) / 10);
   },
   /** #cjk's height before and after the split, and whether it ran out of its box. */
   cjkWrap: () => ({ before: cjkHeight, after: cjk.offsetHeight, overflow: cjk.scrollWidth > cjk.clientWidth }),

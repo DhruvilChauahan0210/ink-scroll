@@ -1,8 +1,8 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **2.27.2** on `main`, tagged and on npm (`latest`); site sample fixes on branch `test/react-samples`
-> Tests: **1034 unit** across 45 suites · **341 browser tests** per engine (1023 runs
-> across Chromium/Firefox/WebKit) · **164 mutations**, each caught by the one test
+> Current version: **2.27.3** prepared on branch `fix/text-wrap-indent` (wrapped text starts flush); 2.27.2 tagged and on npm (`latest`)
+> Tests: **1034 unit** across 45 suites · **343 browser tests** per engine (1029 runs
+> across Chromium/Firefox/WebKit) · **165 mutations**, each caught by the one test
 > named for it · **91.5% line coverage** (gate 90/90/82/82)
 > Bundle: **11.9 KB gzipped** (main entry as shipped files, chunks included; per-API entries from 0.3 KB) · zero runtime dependencies
 > Last updated: 2026-11-14
@@ -55,7 +55,7 @@
 - [x] Initial state fix — `createAnimateEngine` and `scrollCounter` now apply correct alpha immediately on init (no flash before IO fires)
 
 ### Browser tests (Phase 2, `packages/svg-scroll-draw/e2e`)
-341 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
+343 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
 `helpers.ts` (deterministic sweep — scroll to a fixed offset, wait two frames,
 read) and `fixtures/_probe.mjs` (parsing stays in the page, so specs assert on
 numbers).
@@ -140,6 +140,13 @@ at all.
 - [x] MobileMenu version badge updated to v2.7.0
 
 ## Remaining / Next
+
+### 2.27.3: wrapped text starts flush (2026-11-14; branch `fix/text-wrap-indent`)
+
+- [x] `scrollText` words and chars modes kept spaces in `white-space: pre` spans, so every wrapped line after the first began one space in; spaces are plain whitespace marked `data-gap`
+- [x] Browser test `scrollText wrapping` (words and chars, three or more lines, each starting under 1px from the edge); mutation `text/wrap-indent` caught, `text/line-gaps` re-anchored
+- [x] Both READMEs describe scrollfx as the plotter folio it is now
+- [ ] Tag and publish (owner pushes the tag)
 
 ### 2.27.2: dev warnings in Vite; every framework sample runs (2026-11-14; branch `test/framework-samples`)
 

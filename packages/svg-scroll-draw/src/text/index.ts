@@ -55,9 +55,11 @@ function splitIntoWords(el: Element): HTMLSpanElement[] {
   el.textContent = '';
   return text.split(/(\s+)/).filter(Boolean).map((chunk) => {
     const span = el.appendChild(piece(chunk));
-    // Whitespace keeps its width in a `pre` span, and is not animated.
+    // Whitespace stays ordinary whitespace, and is not animated. It used to be
+    // `white-space: pre`, which kept a space's width at the start of a wrapped
+    // line: every line after the first began one space in.
     const gap = /^\s+$/.test(chunk);
-    if (gap) span.style.whiteSpace = 'pre';
+    if (gap) span.dataset.gap = '';
     else span.style.display = 'inline-block';
     return gap ? null : span;
   }).filter((s): s is HTMLSpanElement => s !== null);
@@ -73,7 +75,7 @@ function splitIntoChars(el: Element): HTMLSpanElement[] {
   for (const char of text) {
     const span = piece(char);
     const gap  = char === ' ';
-    if (gap) span.style.whiteSpace = 'pre';
+    if (gap) span.dataset.gap = '';
     else {
       span.style.display = 'inline-block';
       units.push(span);
@@ -119,7 +121,7 @@ function splitIntoLines(el: Element): HTMLSpanElement[] {
       /*
        * The gap after this word, if there is one.
        *
-       * `splitIntoWords` emits a `white-space: pre` span for every run of
+       * `splitIntoWords` emits a `data-gap` span for every run of
        * whitespace and then filters those out of what it returns — so the array
        * being moved here is words only. Moving just the words and then clearing
        * the element threw every gap away, and "Hello world foo bar" rendered as
@@ -128,7 +130,7 @@ function splitIntoLines(el: Element): HTMLSpanElement[] {
        */
       const gap = ws.nextElementSibling as HTMLElement | null;
       lineSpan.appendChild(ws);
-      if (i < words.length - 1 && gap && gap.style.whiteSpace === 'pre') {
+      if (i < words.length - 1 && gap && gap.dataset.gap !== undefined) {
         lineSpan.appendChild(gap);
       }
     });
