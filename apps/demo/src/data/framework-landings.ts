@@ -113,7 +113,7 @@ import { ScrollDraw } from 'svg-scroll-draw/vue';
         code: `<script setup>
 import { useScrollAnimate, useScrollCounter, useScrollText } from 'svg-scroll-draw/vue';
 
-const card    = useScrollAnimate({ from: { opacity: 0, y: 24 } });
+const card    = useScrollAnimate({ props: { opacity: [0, 1], transform: ['translateY(24px)', 'translateY(0px)'] } });
 const revenue = useScrollCounter({ to: 48000, format: n => \`$\${n.toLocaleString()}\` });
 const heading = useScrollText({ split: 'words', stagger: 0.05 });
 </script>
@@ -186,8 +186,8 @@ const heading = useScrollText({ split: 'words', stagger: 0.05 });
         code: `<script>
   import { createScrollDraw } from 'svg-scroll-draw/svelte';
 
-  // createScrollDraw returns [action, getInstance]
-  const [draw, getInstance] = createScrollDraw({ easing: 'ease-out' });
+  // createScrollDraw returns { action, getInstance }
+  const { action: draw, getInstance } = createScrollDraw({ easing: 'ease-out' });
 </script>
 
 <div use:draw>
@@ -210,7 +210,7 @@ const heading = useScrollText({ split: 'words', stagger: 0.05 });
   Every API, one package.
 </h2>
 
-<div use:scrollAnimate={{ from: { opacity: 0, y: 24 } }}>
+<div use:scrollAnimate={{ props: { opacity: [0, 1], transform: ['translateY(24px)', 'translateY(0px)'] } }}>
   <span use:scrollCounterAction={{ to: 48000 }}>0</span>
 </div>`,
       },
@@ -282,7 +282,7 @@ export function Hero() {
         code: `import { createScrollDraw } from 'svg-scroll-draw/solid';
 
 export function Replayable() {
-  const [draw, getInstance] = createScrollDraw({ easing: 'ease-out' });
+  const { ref: draw, getInstance } = createScrollDraw({ easing: 'ease-out' });
 
   return (
     <>
@@ -303,7 +303,7 @@ export function Replayable() {
   from 'svg-scroll-draw/solid';
 
 export function Stats() {
-  const card    = useScrollAnimate({ from: { opacity: 0, y: 24 } });
+  const card    = useScrollAnimate({ props: { opacity: [0, 1], transform: ['translateY(24px)', 'translateY(0px)'] } });
   const revenue = useScrollCounter({ to: 48000 });
   const heading = useScrollText({ split: 'words', stagger: 0.05 });
 
@@ -396,8 +396,18 @@ export class HeroComponent implements AfterViewInit, OnDestroy {
       {
         heading: 'Counters and text',
         file: 'stats.component.ts',
-        code: `import { ScrollCounterRef, ScrollTextRef } from 'svg-scroll-draw/angular';
+        code: `import { Component, ElementRef, ViewChild,
+         AfterViewInit, OnDestroy } from '@angular/core';
+import { ScrollCounterRef, ScrollTextRef } from 'svg-scroll-draw/angular';
 
+@Component({
+  standalone: true,
+  selector: 'app-stats',
+  template: \`
+    <h2 #headline>Every API, one package.</h2>
+    <p><span #revenue>0</span> in revenue</p>
+  \`,
+})
 export class StatsComponent implements AfterViewInit, OnDestroy {
   @ViewChild('revenue') revenueRef!: ElementRef<HTMLElement>;
   @ViewChild('headline') headlineRef!: ElementRef<HTMLElement>;
@@ -497,7 +507,7 @@ export class StatsComponent implements AfterViewInit, OnDestroy {
 
 <span data-scroll-counter data-scroll-counter-options='{"to":48000}'>0</span>
 
-<div data-scroll-animate data-scroll-animate-options='{"from":{"opacity":0,"y":24}}'>
+<div data-scroll-animate data-scroll-animate-options='{"props":{"opacity":[0,1],"transform":["translateY(24px)","translateY(0px)"]}}'>
   Fades up on scroll.
 </div>`,
       },
@@ -562,17 +572,19 @@ const card = useScrollAnimate({ props: { opacity: [0, 1] }, once: true });
 </script>
 
 <template>
-  <ScrollDraw :speed="1.2" once>
-    <svg viewBox="0 0 200 100">
-      <path d="M10 50 Q 100 10 190 50" stroke="#111" fill="none" />
-    </svg>
-  </ScrollDraw>
+  <main>
+    <ScrollDraw :speed="1.2" once>
+      <svg viewBox="0 0 200 100">
+        <path d="M10 50 Q 100 10 190 50" stroke="#111" fill="none" />
+      </svg>
+    </ScrollDraw>
 
-  <ScrollText tag="h2" :options="{ split: 'words', stagger: 0.05 }">
-    Every API, one package.
-  </ScrollText>
+    <ScrollText tag="h2" :options="{ split: 'words', stagger: 0.05 }">
+      Every API, one package.
+    </ScrollText>
 
-  <div ref="card">…</div>
+    <div ref="card">…</div>
+  </main>
 </template>`,
       },
       {

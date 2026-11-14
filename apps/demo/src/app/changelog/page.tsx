@@ -55,6 +55,17 @@ const KINDS: { k: Kind; label: string }[] = [
  */
 const RELEASES: Release[] = [
   {
+    version: '2.27.2',
+    title: 'Dev warnings in Vite; every framework sample runs',
+    date: '2026-11-14',
+    items: [
+      { type: 'fix', text: 'Dev warnings were off in every Vite app (Vue, Svelte, Solid, Astro, most React): the check needed a process global that Vite does not provide. It reads process.env.NODE_ENV as a literal now, which Vite replaces.' },
+      { type: 'fix', text: 'scrollAnimate without props warns and does nothing instead of throwing, which took a Vue, Svelte or Solid component down with it.' },
+      { type: 'site', text: 'Eight framework samples did not work as printed (scrollAnimate given from, createScrollDraw destructured as an array, an Angular component missing its decorator, a Nuxt page with three roots). All 36 now run in their frameworks.' },
+      { type: 'test', text: 'A script that runs every framework sample in its framework and scrolls it, weekly in CI with every starter.' },
+    ],
+  },
+  {
     version: '2.27.1',
     title: 'Vue refs that bind; starters for Vue, Nuxt, SvelteKit and Solid',
     date: '2026-11-14',

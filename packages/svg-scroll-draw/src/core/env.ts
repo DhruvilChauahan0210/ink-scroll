@@ -34,9 +34,23 @@ export const IS_DEV: boolean =
    */
   typeof __SVG_SCROLL_DRAW_DEV__ !== 'undefined'
     ? __SVG_SCROLL_DRAW_DEV__
-    : typeof process !== 'undefined' &&
-      typeof process.env !== 'undefined' &&
-      process.env.NODE_ENV !== 'production';
+    : fromNodeEnv();
+
+/**
+ * `process.env.NODE_ENV`, read as that literal so a bundler replaces it with a
+ * string. It used to be guarded by a typeof check on `process`, which
+ * no bundler replaces: in a Vite app `process.env.NODE_ENV` became
+ * "development" but `process` itself does not exist in the browser, so every
+ * warning was off in every Vite app (Vue, Svelte, Solid, Astro, most React).
+ * Without a bundler the read throws, and that counts as production, as before.
+ */
+function fromNodeEnv(): boolean {
+  try {
+    return process.env.NODE_ENV !== 'production';
+  } catch {
+    return false;
+  }
+}
 
 /** Dev-only console warning. No-ops entirely in production builds. */
 export function warn(msg: string, ...rest: unknown[]): void {

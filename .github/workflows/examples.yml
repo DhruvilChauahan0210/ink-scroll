@@ -1,0 +1,59 @@
+name: Examples
+
+# The code people copy, run against the frameworks as they are released.
+# Weekly rather than on every push: both jobs install whole frameworks from
+# npm, and what they catch is mostly a framework release breaking a sample or
+# a starter (SvelteKit 3 moved its config into the Vite plugin, and the
+# starter written the day before stopped building).
+on:
+  schedule:
+    - cron: '0 4 * * 1'
+  workflow_dispatch:
+
+jobs:
+  samples:
+    name: Framework samples run as printed
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    container:
+      image: mcr.microsoft.com/playwright:v1.65.0-noble
+      options: --user 1001
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build the library
+        run: npm run build:lib
+
+      # Every sample on the Vue, Svelte, Solid, Angular and Astro pages and
+      # guides, mounted in its framework and scrolled in Chromium.
+      - name: Framework samples
+        run: node apps/demo/scripts/test-framework-samples.mjs
+
+  starters:
+    name: Starter ${{ matrix.starter }} installs and builds
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        starter: [vanilla, react, vue, nuxt, sveltekit, solid, aos, scrollreveal, vivus]
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      # As someone opening it on StackBlitz gets it: the published package and
+      # the framework versions its package.json allows today.
+      - name: Install from npm and build
+        run: npm install --no-audit --no-fund && npm run build
+        working-directory: examples/${{ matrix.starter }}
