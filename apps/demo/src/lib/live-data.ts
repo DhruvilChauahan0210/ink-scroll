@@ -27,7 +27,10 @@ export type Day = { day: string; downloads: number };
 
 async function getJSON<T>(url: string, headers?: Record<string, string>): Promise<Got<T>> {
   // Not cached here: the `unstable_cache` around each figure is the cache.
-  const r = await fetch(url, { cache: 'no-store', headers });
+  // Bounded: a source that never answers held up every page that renders a
+  // figure (the sign-off's star count is on every tool and post). A timeout
+  // throws, so `keep` serves the last good value.
+  const r = await fetch(url, { cache: 'no-store', headers, signal: AbortSignal.timeout(8000) });
   if (!r.ok) {
     const limited = r.headers.get('x-ratelimit-remaining') === '0' ? ', rate limit reached' : '';
     throw new Error(`${new URL(url).host} answered ${r.status}${limited}`);

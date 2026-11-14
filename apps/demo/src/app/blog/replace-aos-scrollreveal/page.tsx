@@ -236,10 +236,10 @@ scrollReveal('.testimonial', {
 
       <Section id="react" k="react" title="React usage">
         <Code file="FeaturesSection.tsx">{`'use client';
-import { useEffect } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { scrollReveal } from 'svg-scroll-draw/reveal';
 
-export function FeaturesSection() {
+export function FeaturesSection({ features }: { features: { id: string; content: ReactNode }[] }) {
   useEffect(() => {
     const instance = scrollReveal('.feature-card', {
       preset:  'fadeUp',

@@ -8,6 +8,23 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### Site
 
+- **A slow GitHub API can no longer hold up a page.** The star count and the
+  homepage's live figures fetched GitHub with no time limit, so a source that
+  never answered held every page that renders one. The fetch gives up after 8
+  seconds and the last good figure is kept. CI's site-checks step has a
+  15-minute limit and the axe pass prints its progress, after it hung twice
+  with no output until the job's 30-minute limit.
+
+- **The docs page and posts' framework samples run as printed.** The samples
+  script now also reads every file-labelled sample in the site's pages (the
+  docs page and the posts), and adds React. It found eight more that did not
+  work: four Vue files on the docs page showed the component alternative after
+  `</template>`, so they did not compile; three Angular components there had
+  no `@angular/core` imports and one drew an `<svg>...</svg>` placeholder;
+  the Vue post's `FeatureGrid.vue` looped over a `cards` it never declared;
+  and the AOS post's `FeaturesSection` mapped a `features` it never received.
+  All fixed.
+
 - **Two more guides:**
   - `/blog/animate-on-scroll-css`: fade up, slide in, zoom, a stagger
     (`nth-child` to `--i`, and `sibling-index()` behind its own

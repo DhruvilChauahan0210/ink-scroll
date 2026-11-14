@@ -422,7 +422,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${SITE_URL}/blog/replace-aos-scrollreveal`,
-      lastModified: new Date("2026-11-13"),
+      lastModified: new Date("2026-11-14"),
       changeFrequency: "monthly",
       priority: 0.8,
     },

@@ -188,7 +188,11 @@ jobs:
       # what a crawler reads on each (title, description, canonical, h1,
       # preview image, JSON-LD, inbound links); and the showcase sites, which
       # the sitemap leaves out, for page errors and colour contrast.
+      # About eight minutes here (the axe pass is five). It hung twice on 2026-11-14 in the axe pass with
+      # no output until the job's limit; the limit here and the axe pass's
+      # progress lines make the next one say where it stopped.
       - name: Blocks work on /blocks, every page passes axe, its links and the SEO check, and the showcase sites pass contrast
+        timeout-minutes: 15
         run: |
           npx next start -p 3100 &
           for i in $(seq 1 60); do curl -sf http://localhost:3100/blocks > /dev/null && break; sleep 1; done

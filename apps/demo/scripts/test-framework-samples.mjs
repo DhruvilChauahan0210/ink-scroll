@@ -25,11 +25,13 @@
  * not in `verify`. Build the library first (npm run build:lib).
  */
 import { execFileSync, spawn } from 'node:child_process';
-import { existsSync, mkdirSync, mkdtempSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:net';
 import { tmpdir } from 'node:os';
-import { dirname, join, resolve } from 'node:path';
+import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { readFileSync } from 'node:fs';
+import ts from 'typescript';
 import { build } from 'esbuild';
 import { chromium } from 'playwright';
 
@@ -49,6 +51,7 @@ const PARTIAL = {
   'solid-scroll-animation guide:fw-solid-accessor': 'a wrapper: it draws the SVG passed as children',
   'solid-scroll-animation guide:fw-solid-owner': 'the drawing mounts when its button is pressed',
   'astro-scroll-animation landing#2': 'a layout script with nothing of its own to animate',
+  'app/blog/nextjs-scroll-animations/page.tsx line 437': 'the pattern the post says to avoid',
 };
 
 if (!existsSync(join(pkg, 'dist', 'index.mjs'))) {
@@ -68,7 +71,66 @@ for (const g of [${guides.map((_, i) => `G${i}`).join(', ')}]) for (const sec of
 `;
 const out = join(work, 'samples.mjs');
 await build({ stdin: { contents: entry, resolveDir: demo, loader: 'ts' }, bundle: true, format: 'esm', platform: 'node', outfile: out, tsconfig: join(demo, 'tsconfig.json'), logLevel: 'warning' });
-const { samples } = await import(pathToFileURL(out));
+const { samples: fromData } = await import(pathToFileURL(out));
+// The pages' kinds by slug; Nuxt's are the Vue ones through the module, which
+// scripts/nuxt-module-check.mjs builds in a real Nuxt app.
+for (const s of fromData) s.kind = s.slug.split('-')[0] === 'nuxt' ? null : s.slug.split('-')[0];
+
+/*
+ * And every file-labelled sample in the site's pages: the docs page and the
+ * posts pass them to <Code file="…"> or <CodeBlock file="…">, inline or as a
+ * top-level `const` listing. Read with the TypeScript parser; the kind comes
+ * from the file name and the imports.
+ */
+const fromPages = [];
+const tsxFiles = [];
+const walk = (d) => {
+  for (const n of readdirSync(d, { withFileTypes: true })) {
+    if (n.isDirectory()) walk(join(d, n.name));
+    else if (n.name.endsWith('.tsx')) tsxFiles.push(join(d, n.name));
+  }
+};
+walk(join(demo, 'src'));
+for (const f of tsxFiles) {
+  const src = readFileSync(f, 'utf8');
+  if (!src.includes('file=')) continue;
+  const sf = ts.createSourceFile(f, src, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+  const consts = {};
+  for (const st of sf.statements) if (ts.isVariableStatement(st)) for (const d of st.declarationList.declarations) {
+    if (d.initializer && (ts.isNoSubstitutionTemplateLiteral(d.initializer) || ts.isStringLiteral(d.initializer))) consts[d.name.getText()] = d.initializer.text;
+  }
+  const visit = (node) => {
+    if (ts.isJsxElement(node)) {
+      const attr = node.openingElement.attributes.properties.find((a) => ts.isJsxAttribute(a) && a.name.getText() === 'file');
+      if (attr?.initializer && ts.isStringLiteral(attr.initializer)) {
+        for (const ch of node.children) {
+          const e = ts.isJsxExpression(ch) ? ch.expression : null;
+          const code = e && (ts.isNoSubstitutionTemplateLiteral(e) || ts.isStringLiteral(e) ? e.text : ts.isIdentifier(e) ? consts[e.text] : null);
+          if (!code) continue;
+          const file = attr.initializer.text;
+          const ext = file.split(' ')[0].split('.').pop();
+          const kind = ext === 'vue' ? 'vue' : ext === 'svelte' ? 'svelte'
+            : ext === 'ts' && code.includes('@Component') ? 'angular'
+            : /^(tsx|jsx)$/.test(ext) ? (/svg-scroll-draw\/solid|solid-js/.test(code) ? 'solid' : /svg-scroll-draw\/react|from 'react'/.test(code) ? 'react' : null)
+            : null;
+          // Only samples of this library, and only whole files: a fragment with
+          // no export is an excerpt of a file shown elsewhere.
+          const whole = /\.(vue|svelte)$/.test(file) || /\bexport\b/.test(code);
+          if (kind && whole && code.includes('svg-scroll-draw')) fromPages.push({ slug: relative(join(demo, 'src'), f), src: `line ${sf.getLineAndCharacterOfPosition(node.getStart()).line + 1}`, file, code, kind });
+        }
+      }
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(sf);
+}
+// A listing shown twice is run once.
+const seen = new Set();
+const samples = [...fromData, ...fromPages].filter((s) => s.kind && !seen.has(s.code) && seen.add(s.code));
+
+/** Next.js files: they need Next, and the Next.js post builds its own with `next build`. */
+const NEXT_ONLY = (s) => s.kind === 'react' && (/from 'next\//.test(s.code) || /^app\//.test(s.file));
+console.log(`· ${samples.length} framework samples (${fromData.length} from the framework pages' data, the rest from the site's pages); ${samples.filter(NEXT_ONLY).length} Next.js-only left to the Next.js post's own build`);
 
 execFileSync('npm', ['pack', '--silent', '--pack-destination', work], { cwd: pkg, stdio: ['ignore', 'pipe', 'pipe'] });
 const tarball = `file:${join(work, readdirSync(work).find((f) => f.endsWith('.tgz')))}`;
@@ -85,6 +147,8 @@ mods[Object.keys(mods).find((k) => k.includes('/s' + s + '.'))]()
 `;
 
 const VITE = '^8.3.8';
+/** A 1×1 transparent PNG. */
+const PIXEL = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
 const APPS = {
   vue: {
     slug: 'vue-scroll-animation', ext: '.vue',
@@ -92,7 +156,20 @@ const APPS = {
     files: {
       'vite.config.js': "import vue from '@vitejs/plugin-vue';\nexport default { plugins: [vue()] };\n",
       'index.html': page('<div id="app"></div>', '/main.js'),
-      'main.js': `import { createApp } from 'vue';\n${loader('./samples/*.vue', "createApp(m.default).mount('#app')")}`,
+      // MyCard stands for the reader's own component in the docs; a list goes
+      // to a component that declares one as a prop, as its parent would pass.
+      'main.js': `import { createApp, h } from 'vue';\nconst list = [1, 2, 3].map((i) => ({ id: String(i), title: 'Card ' + i }));\n${loader('./samples/*.vue', "{ const declared = Object.keys(m.default.props ?? {}); const props = Object.fromEntries(declared.filter((k) => ['cards', 'features', 'items'].includes(k)).map((k) => [k, list])); const app = createApp(m.default, props); app.component('MyCard', { render: () => h('div', { class: 'my-card' }, 'Your card') }); app.mount('#app'); }")}`,
+    },
+  },
+  react: {
+    ext: '.tsx',
+    deps: { react: '^19.0.0', 'react-dom': '^19.0.0' }, dev: { '@vitejs/plugin-react': '^5.0.0', vite: VITE, typescript: '^5.9.0' },
+    files: {
+      'vite.config.js': "import react from '@vitejs/plugin-react';\nexport default { plugins: [react()] };\n",
+      'index.html': page('<div id="app"></div>', '/main.jsx'),
+      // StrictMode, as a React app runs in development: effects mount twice.
+      // Props a parent would pass: a list for the samples that render one.
+      'main.jsx': `import { StrictMode, createElement } from 'react';\nimport { createRoot } from 'react-dom/client';\nconst features = [1, 2, 3].map((i) => ({ id: String(i), title: 'Feature ' + i, description: 'What it does.', content: 'Feature ' + i }));\n${loader('./samples/*.tsx', "createRoot(document.getElementById('app')).render(createElement(StrictMode, null, createElement(m.default ?? Object.values(m).find((v) => typeof v === 'function'), { features, children: 'Content' })))")}`,
     },
   },
   svelte: {
@@ -157,12 +234,23 @@ const freePort = () => new Promise((ok) => { const srv = createServer().listen(0
 try {
   for (const [fw, app] of Object.entries(APPS)) {
     if (ONLY.length && !ONLY.includes(fw)) continue;
-    const list = samples.filter((s) => s.slug === app.slug);
+    const list = samples.filter((s) => s.kind === fw && !NEXT_ONLY(s));
     const dir = join(work, fw);
     mkdirSync(join(dir, app.astro ? 'src/pages' : 'samples'), { recursive: true });
     if (app.astro) mkdirSync(join(dir, 'src/components'), { recursive: true });
     writeFileSync(join(dir, 'package.json'), JSON.stringify({ name: `samples-${fw}`, private: true, type: 'module', dependencies: { ...app.deps, 'svg-scroll-draw': tarball }, devDependencies: app.dev }));
     for (const [f, c] of Object.entries(app.files)) writeFileSync(join(dir, f), c);
+    // The assets the samples point at (/hero.mp4, /launch.png): the reader's
+    // own files, which Vite resolves at build time, so they have to exist. The
+    // browser suite's short clip for a video, a one-pixel PNG for an image.
+    mkdirSync(join(dir, 'public'), { recursive: true });
+    for (const s of list) {
+      for (const [, name, ext] of s.code.matchAll(/(?:src|poster)="\/([\w./-]+?\.(mp4|webm|png|jpe?g|webp))"/g)) {
+        mkdirSync(dirname(join(dir, 'public', name)), { recursive: true });
+        if (/mp4|webm/.test(ext)) copyFileSync(join(pkg, 'e2e/fixtures/clip.webm'), join(dir, 'public', name));
+        else writeFileSync(join(dir, 'public', name), Buffer.from(PIXEL, 'base64'));
+      }
+    }
 
     if (fw === 'angular') {
       // The tag each sample renders as. A required input gets a value, as the
@@ -229,6 +317,12 @@ try {
         const m = globalThis[Symbol.for('svg-scroll-draw.registry')];
         return m ? [...m.values()].map((e) => ({ type: e.type, p: e.getProgress() })) : [];
       });
+      // useScrollDrawProgress registers no engine: it hands back a number, and
+      // the samples style an element with it. Full progress is opacity 1.
+      if (s.code.includes('useScrollDrawProgress') && !engines.length) {
+        const full = await tab.evaluate(() => [...document.querySelectorAll('#app [style]')].some((el) => el.style.opacity === '1'));
+        if (full) engines.push({ type: 'progress hook', p: 1 });
+      }
       const mountError = await tab.evaluate(() => window.__mountError);
       await tab.close();
 

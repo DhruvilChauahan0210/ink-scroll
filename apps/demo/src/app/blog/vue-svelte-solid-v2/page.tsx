@@ -335,9 +335,10 @@ function HeroSection() {
           for a natural cascade:
         </p>
         <Code file="FeatureGrid.vue">{`<script setup>
-import { useScrollAnimate } from 'svg-scroll-draw/vue';
 import { ref as vueRef, onMounted } from 'vue';
 import { scrollAnimate } from 'svg-scroll-draw';
+
+defineProps({ cards: { type: Array, required: true } });
 
 const cardRefs = vueRef([]);
 

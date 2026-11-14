@@ -952,7 +952,7 @@ import { ScrollDrawRef } from 'svg-scroll-draw/angular';
 
 @Component({
   selector: 'app-hero',
-  template: \`<div #container><svg>...</svg></div>\`,
+  template: \`<div #container><svg viewBox="0 0 200 100"><path d="M10 50 Q 100 10 190 50" stroke="#111" fill="none" /></svg></div>\`,
 })
 export class HeroComponent implements AfterViewInit, OnChanges, OnDestroy {
   @ViewChild('container') containerRef!: ElementRef<HTMLElement>;
@@ -977,7 +977,8 @@ export class HeroComponent implements AfterViewInit, OnChanges, OnDestroy {
 
             <Sub>ScrollAnimateRef — animate any CSS property (v2)</Sub>
             <CodeBlock file="card.component.ts">
-{`import { ScrollAnimateRef } from 'svg-scroll-draw/angular';
+{`import { Component, ViewChild, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
+import { ScrollAnimateRef } from 'svg-scroll-draw/angular';
 
 @Component({
   selector: 'app-card',
@@ -1004,7 +1005,8 @@ export class CardComponent implements AfterViewInit, OnDestroy {
 
             <Sub>ScrollCounterRef — animated number (v2)</Sub>
             <CodeBlock file="stats.component.ts">
-{`import { ScrollCounterRef } from 'svg-scroll-draw/angular';
+{`import { Component, ViewChild, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
+import { ScrollCounterRef } from 'svg-scroll-draw/angular';
 
 @Component({
   selector: 'app-stats',
@@ -1028,7 +1030,8 @@ export class StatsComponent implements AfterViewInit, OnDestroy {
 
             <Sub>ScrollTextRef — split text animation (v2)</Sub>
             <CodeBlock file="headline.component.ts">
-{`import { ScrollTextRef } from 'svg-scroll-draw/angular';
+{`import { Component, ViewChild, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
+import { ScrollTextRef } from 'svg-scroll-draw/angular';
 
 @Component({
   selector: 'app-headline',
@@ -1749,7 +1752,7 @@ scrollDraw('#hero-svg', { easing: 'ease-out', once: true });
             <Sub>useScrollAnimate + &lt;ScrollAnimate&gt;</Sub>
             <CodeBlock file="Hero.vue">
 {`<script setup>
-import { useScrollAnimate } from 'svg-scroll-draw/vue';
+import { useScrollAnimate, ScrollAnimate } from 'svg-scroll-draw/vue';
 
 const el = useScrollAnimate({
   props: { opacity: [0, 1], transform: ['translateY(40px)', 'translateY(0)'] },
@@ -1760,18 +1763,18 @@ const el = useScrollAnimate({
 
 <template>
   <div ref="el">Animates on scroll.</div>
-</template>
 
-<!-- Or use the component wrapper: -->
-<ScrollAnimate :options="{ props: { opacity: [0, 1] }, easing: 'ease-out', once: true }">
-  <div>Animates on scroll.</div>
-</ScrollAnimate>`}
+  <!-- Or use the component wrapper: -->
+  <ScrollAnimate :options="{ props: { opacity: [0, 1] }, easing: 'ease-out', once: true }">
+    <div>Animates on scroll.</div>
+  </ScrollAnimate>
+</template>`}
             </CodeBlock>
 
             <Sub>useScrollCounter + &lt;ScrollCounter&gt;</Sub>
             <CodeBlock file="Stats.vue">
 {`<script setup>
-import { useScrollCounter } from 'svg-scroll-draw/vue';
+import { useScrollCounter, ScrollCounter } from 'svg-scroll-draw/vue';
 
 const el = useScrollCounter({
   to: 1_250_000,
@@ -1783,21 +1786,21 @@ const el = useScrollCounter({
 
 <template>
   <span ref="el" />
-</template>
 
-<!-- Or use the component: -->
-<ScrollCounter
-  :to="1250000"
-  :format="n => '$' + Math.round(n).toLocaleString()"
-  easing="ease-out"
-  :once="true"
-/>`}
+  <!-- Or use the component: -->
+  <ScrollCounter
+    :to="1250000"
+    :format="n => '$' + Math.round(n).toLocaleString()"
+    easing="ease-out"
+    :once="true"
+  />
+</template>`}
             </CodeBlock>
 
             <Sub>useScrollVideo + &lt;ScrollVideo&gt;</Sub>
             <CodeBlock file="HeroVideo.vue">
 {`<script setup>
-import { useScrollVideo } from 'svg-scroll-draw/vue';
+import { useScrollVideo, ScrollVideo } from 'svg-scroll-draw/vue';
 
 const vid = useScrollVideo({
   trigger: { start: 'top top', end: 'bottom top' },
@@ -1806,19 +1809,19 @@ const vid = useScrollVideo({
 
 <template>
   <video ref="vid" src="/hero.mp4" muted playsinline preload="auto" />
-</template>
 
-<!-- Or use the component: -->
-<ScrollVideo
-  src="/hero.mp4"
-  :options="{ trigger: { start: 'top top', end: 'bottom top' } }"
-/>`}
+  <!-- Or use the component: -->
+  <ScrollVideo
+    src="/hero.mp4"
+    :options="{ trigger: { start: 'top top', end: 'bottom top' } }"
+  />
+</template>`}
             </CodeBlock>
 
             <Sub>useScrollText + &lt;ScrollText&gt;</Sub>
             <CodeBlock file="Headline.vue">
 {`<script setup>
-import { useScrollText } from 'svg-scroll-draw/vue';
+import { useScrollText, ScrollText } from 'svg-scroll-draw/vue';
 
 const el = useScrollText({
   split: 'words',
@@ -1830,12 +1833,12 @@ const el = useScrollText({
 
 <template>
   <h2 ref="el">Animate on scroll.</h2>
-</template>
 
-<!-- Or use the component (tag defaults to "p"): -->
-<ScrollText :options="{ split: 'words', stagger: 0.05 }" tag="h2">
-  Animate on scroll.
-</ScrollText>`}
+  <!-- Or use the component (tag defaults to "p"): -->
+  <ScrollText :options="{ split: 'words', stagger: 0.05 }" tag="h2">
+    Animate on scroll.
+  </ScrollText>
+</template>`}
             </CodeBlock>
           </DocSection>
 

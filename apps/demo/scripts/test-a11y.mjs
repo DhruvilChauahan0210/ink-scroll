@@ -78,7 +78,13 @@ async function audit(page, path) {
   }
 }
 
+// One line every 20 pages: when CI stops this step at its limit, the log says
+// where it was.
+let done = 0;
+const progress = (pass) => { if (++done % 20 === 0) console.log(`  · ${pass}: ${done} of ${pages.length} pages`); };
+
 for (const path of pages) {
+  progress('dark');
   const page = await ctx.newPage();
   page.on('pageerror', (e) => pageErrors.push(`${path}: ${String(e).slice(0, 160)}`));
   const res = await page.goto(BASE + path, { waitUntil: 'load' });
@@ -113,7 +119,9 @@ for (const path of pages) {
 // Copy button at 2.87:1 shipped on every page in it.
 const light = await browser.newContext({ viewport: { width: 1280, height: 800 }, reducedMotion: 'reduce' });
 await light.addInitScript(() => localStorage.setItem('theme', 'light'));
+done = 0;
 for (const path of pages) {
+  progress('light');
   const page = await light.newPage();
   page.on('pageerror', (e) => pageErrors.push(`${path} (light): ${String(e).slice(0, 160)}`));
   await page.goto(BASE + path, { waitUntil: 'load' });

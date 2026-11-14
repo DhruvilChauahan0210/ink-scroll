@@ -1,6 +1,6 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **2.27.2** on branch `test/framework-samples` (not tagged); npm `latest` is **2.27.1** (`v2.27.1` on `98614e4`)
+> Current version: **2.27.2** on `main`, tagged and on npm (`latest`); site sample fixes on branch `test/react-samples`
 > Tests: **1034 unit** across 45 suites · **341 browser tests** per engine (1023 runs
 > across Chromium/Firefox/WebKit) · **164 mutations**, each caught by the one test
 > named for it · **91.5% line coverage** (gate 90/90/82/82)
@@ -146,7 +146,8 @@ at all.
 - [x] Dev warnings were off in every Vite app (`typeof process` guard); `core/env` reads `process.env.NODE_ENV` as a literal in a try (env tests, mutation `env/dev-cdn-flag` re-anchored)
 - [x] `scrollAnimate` without `props` warns and no-ops instead of throwing
 - [x] 8 of 36 framework samples fixed; `apps/demo/scripts/test-framework-samples.mjs` runs all of them (Vue, Svelte, Solid, Angular, Astro), weekly in `examples.yml` with every starter's install and build
-- [ ] Tag after it reaches `main`: `git tag v2.27.2 <sha> && git push origin v2.27.2`
+- [x] Tagged and published 2026-11-14 (`latest`)
+- [x] The samples script also reads every file-labelled sample in the site's pages and runs React: 8 more fixed (docs page Vue SFCs, Angular imports, two data-less components); 63 samples run in 6 frameworks (59 all the way, 4 partial by design)
 
 ### 2.27.1: Vue refs that bind; four starters (2026-11-14; on npm)
 
