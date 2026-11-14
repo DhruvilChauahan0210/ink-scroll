@@ -1163,6 +1163,40 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ---
 
+## [2.26.2] — 2026-11-14
+
+### Fixed
+
+- **clip-path shapes in `scrollAnimate` reach the page.** The JS engine
+  rebuilt every CSS function as `fn(a, b, c)`, so `inset(0 50% 0 0)` became
+  `inset(0, 25%, 0, 0)` (commas, which no browser accepts), `circle(0% at
+  50% 50%)` lost its `at`, and `polygon()` the `%` of a bare `0`. The browser
+  dropped each one, and the element stayed unclipped for the whole scroll.
+  Values with functions now interpolate number by number inside the from
+  value's own text, and a bare `0` takes the other end's unit; two values
+  that differ in more than their numbers switch at the end, as before. This
+  also covers transforms (`translate3d(0px, 10px, 0)`), and the new code is
+  smaller than the old parser: the main entry is 11.8 KB gzipped (was 12.0).
+- **scrollSnap: Next pressed twice during one glide moves two sections.**
+  `getCurrentIndex()` changed only when a glide landed, so
+  `snapTo(getCurrentIndex() + 1)` pressed twice aimed both presses at the
+  same section. It now returns the section being snapped to from the moment
+  the snap starts.
+- **scrollSnap: Next on the last section no longer fires `onSnap` again.**
+  A snap that does not move and stays on the section `onSnap` last reported
+  is not reported twice. The first snap to the current section still fires,
+  so `snapTo(0)` on load can set up page dots.
+- **scrollVideo keeps the time inside `[from, to]`.** An overshooting easing
+  (spring, elastic, a `cubic-bezier()` with y past 0 or 1) carried
+  `currentTime` out of the range, into footage the page cut out. The time is
+  clamped; `onProgress` and `--scroll-draw-progress` keep the overshoot.
+
+### Tests
+
+- Unit tests for each fix, watched failing without it; a browser test in
+  Chromium, Firefox and WebKit that the three clip-path shapes are applied
+  (on the old build every engine dropped them); one mutation for it.
+
 ## [2.26.1] — 2026-11-14
 
 ### Fixed

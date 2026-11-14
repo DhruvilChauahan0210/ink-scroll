@@ -143,6 +143,58 @@ describe('scrollSnap', () => {
     instance.destroy();
   });
 
+  /*
+   * currentIndex changed only on landing, so a Next button pressed twice in one
+   * glide (`snapTo(getCurrentIndex() + 1)`) aimed both presses at section 1.
+   */
+  /** Frames that a cancel really removes, run until the glide is over. */
+  function realFrames(): () => void {
+    const frames = new Map<number, FrameRequestCallback>();
+    let id = 0;
+    vi.stubGlobal('requestAnimationFrame', (cb: FrameRequestCallback) => { frames.set(++id, cb); return id; });
+    vi.stubGlobal('cancelAnimationFrame', (n: number) => { frames.delete(n); });
+    return () => {
+      for (let guard = 0; frames.size && guard < 100; guard++) {
+        const batch = [...frames.values()];
+        frames.clear();
+        batch.forEach((cb) => cb(performance.now() + 10_000));
+      }
+    };
+  }
+
+  it('Next pressed twice during one glide moves two sections', () => {
+    const finish   = realFrames();
+    const onSnap   = vi.fn();
+    const instance = scrollSnap(makeSections(4), { onSnap, duration: 400 });
+    const next = () => instance.snapTo(instance.getCurrentIndex() + 1);
+
+    next();
+    expect(instance.getCurrentIndex()).toBe(1);
+    next();
+    expect(instance.getCurrentIndex()).toBe(2);
+
+    finish();
+    expect(window.scrollY).toBe(1600);
+    expect(onSnap.mock.calls).toEqual([[2]]);
+    instance.destroy();
+  });
+
+  // Next on the last section clamps to it, and onSnap fired for it again.
+  it('a snap that stays on the reported section does not fire onSnap again', () => {
+    const finish   = realFrames();
+    const onSnap   = vi.fn();
+    const instance = scrollSnap(makeSections(3), { onSnap });
+    instance.snapTo(2);
+    finish();
+    expect(onSnap.mock.calls).toEqual([[2]]);
+
+    instance.snapTo(instance.getCurrentIndex() + 1);
+    instance.snapTo(2);
+    expect(onSnap.mock.calls).toEqual([[2]]);
+    expect(instance.getCurrentIndex()).toBe(2);
+    instance.destroy();
+  });
+
   it('destroy removes scroll listener without throwing', () => {
     const sections = makeSections(2);
     const instance = scrollSnap(sections);
@@ -196,7 +248,7 @@ describe('scrollSnap', () => {
 
       // An animation frame was scheduled rather than jumping.
       expect(rafCallbacks.length).toBeGreaterThan(0);
-      expect(instance.getCurrentIndex()).toBe(0);
+      expect(window.scrollY).toBe(0);
 
       instance.destroy();
     });

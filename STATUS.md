@@ -1,10 +1,10 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **2.26.1** on branch `fix/counter-ssr` (not tagged); npm `latest` is **2.26.0** (`v2.26.0` on `430f390`, 2.25.0 and 2.24.0 tagged and published)
-> Tests: **1016 unit** across 44 suites · **340 browser tests** per engine (1020 runs
-> across Chromium/Firefox/WebKit) · **163 mutations**, each caught by the one test
+> Current version: **2.26.2** on branch `fix/snap-video-clip` (not tagged); npm `latest` is **2.26.1** (`v2.26.1` on `c5884c7`)
+> Tests: **1026 unit** across 44 suites · **341 browser tests** per engine (1023 runs
+> across Chromium/Firefox/WebKit) · **164 mutations**, each caught by the one test
 > named for it · **91.5% line coverage** (gate 90/90/82/82)
-> Bundle: **12.0 KB gzipped** (main entry as shipped files, chunks included; per-API entries from 0.3 KB) · zero runtime dependencies
+> Bundle: **11.8 KB gzipped** (main entry as shipped files, chunks included; per-API entries from 0.3 KB) · zero runtime dependencies
 > Last updated: 2026-11-14
 
 ---
@@ -51,11 +51,11 @@
 - [x] `scrollAnimateGroup` + `scrollAnimateSequence` + `scrollParallaxGroup` in `svg-scroll-draw/group`
 
 ### Testing
-- [x] 1016 tests across 44 suites — `motionLive` (reduced motion turned on mid-visit, every engine and the React hook), `reactive` (the wrappers' option fingerprint and live callbacks), `directives` (the built files' "use client"), `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollFrames` (47), `scrollFramesWrappers` (48), `scrollText` (23)
+- [x] 1026 tests across 44 suites — `motionLive` (reduced motion turned on mid-visit, every engine and the React hook), `reactive` (the wrappers' option fingerprint and live callbacks), `directives` (the built files' "use client"), `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollFrames` (47), `scrollFramesWrappers` (48), `scrollText` (23)
 - [x] Initial state fix — `createAnimateEngine` and `scrollCounter` now apply correct alpha immediately on init (no flash before IO fires)
 
 ### Browser tests (Phase 2, `packages/svg-scroll-draw/e2e`)
-340 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
+341 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
 `helpers.ts` (deterministic sweep — scroll to a fixed offset, wait two frames,
 read) and `fixtures/_probe.mjs` (parsing stays in the page, so specs assert on
 numbers).
@@ -141,10 +141,17 @@ at all.
 
 ## Remaining / Next
 
-### 2.26.1: ScrollCounter server HTML (2026-11-14; branch `fix/counter-ssr`)
+### 2.26.2: clip-path shapes, scrollSnap Next, scrollVideo range (2026-11-14; branch `fix/snap-video-clip`)
+
+- [x] scrollAnimate writes clip-path shapes (`inset`, `circle … at`, `polygon`) in a syntax browsers apply: values with functions move number by number in their own text (`e2e/clip-path.spec.ts` in three engines + the `animate/clip-path-units` mutation); main entry 11.8 KB (was 12.0)
+- [x] scrollSnap: `getCurrentIndex()` is the section being snapped to from the start of a snap, so Next pressed twice in one glide moves two; a snap that stays on the section `onSnap` last reported does not fire it again
+- [x] scrollVideo clamps `currentTime` to `[from, to]` under overshooting easings
+- [ ] Tag after it reaches `main`: `git tag v2.26.2 <sha> && git push origin v2.26.2`
+
+### 2.26.1: ScrollCounter server HTML (2026-11-14; on npm)
 
 - [x] `<ScrollCounter>` in React and Vue renders the final number in the server HTML (was an empty `<span>`); rendered once, the engine owns the text after mount (`scrollCounterRender.test.ts`, `e2e/react-extras.spec.ts` in three engines)
-- [ ] Tag after it reaches `main`: `git tag v2.26.1 <sha> && git push origin v2.26.1`
+- [x] Tagged and published 2026-11-14 (`latest`)
 
 ### 2.26.0: scrollFrames for Svelte, Solid and Angular; CSS easing strings; Lenis (2026-11-13; on npm)
 

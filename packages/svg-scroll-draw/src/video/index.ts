@@ -5,6 +5,7 @@ import { _register, _unregister } from '../core/registry';
 import { warn } from '../core/env';
 import { watchReducedMotion } from '../core/motion-watch';
 import { frameGate } from '../core/frame-gate';
+import { clamp } from '../core/math';
 
 // ── Public types ──────────────────────────────────────────────────────────────
 
@@ -117,7 +118,9 @@ export function scrollVideo(
   function applyAlpha(alpha: number): void {
     if (!ready) return;
     const effectiveTo = to ?? video.duration ?? 0;
-    const time = from + (effectiveTo - from) * alpha;
+    // An overshooting easing (spring, elastic, a cubic-bezier past 0 or 1)
+    // carried the time out of [from, to], into footage the page cut out.
+    const time = clamp(from + (effectiveTo - from) * alpha, Math.min(from, effectiveTo), Math.max(from, effectiveTo));
     /*
      * Every write to `currentTime` starts a seek — even to the value it already
      * has. `update()` runs every frame while the video is visible, so a page at

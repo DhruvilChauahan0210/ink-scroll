@@ -72,39 +72,26 @@ function isColorValue(val: string): boolean {
   return val.startsWith('#') || val.startsWith('rgb') || val.startsWith('hsl');
 }
 
-function parseTransformFns(str: string): Array<{ fn: string; nums: number[]; units: string[] }> {
-  const result: Array<{ fn: string; nums: number[]; units: string[] }> = [];
-  const re = /([\w]+)\(([^)]*)\)/g;
-  let m: RegExpExecArray | null;
-  while ((m = re.exec(str)) !== null) {
-    const nums: number[] = [];
-    const units: string[] = [];
-    const raw = m[2].trim();
-    if (raw) {
-      for (const arg of raw.split(/[\s,]+/)) {
-        const pm = arg.match(/^([-+]?[\d.eE]+)(.*)$/);
-        nums.push(pm ? parseFloat(pm[1]) : 0);
-        units.push(pm ? pm[2] : '');
-      }
-    }
-    result.push({ fn: m[1], nums, units });
-  }
-  return result;
-}
+/** A number and its unit anywhere in a CSS value: `40px`, `.5`, `-1e3`, `50%`. */
+const NUM = /[-+]?(?:\d*\.)?\d+(?:e[-+]?\d+)?([a-z%]*)/gi;
 
-function interpolateTransform(from: string, to: string, t: number): string {
-  const fp = parseTransformFns(from);
-  const tp = parseTransformFns(to);
-  if (fp.length === 0 || fp.length !== tp.length) return t < 1 ? from : to;
-  return fp.map((f, i) => {
-    const tf = tp[i];
-    if (f.fn !== tf.fn || f.nums.length !== tf.nums.length) {
-      return t < 1
-        ? `${f.fn}(${f.nums.map((n, j) => `${n}${f.units[j]}`).join(', ')})`
-        : `${tf.fn}(${tf.nums.map((n, j) => `${n}${tf.units[j]}`).join(', ')})`;
-    }
-    return `${f.fn}(${f.nums.map((n, j) => `${n + (tf.nums[j] - n) * t}${f.units[j]}`).join(', ')})`;
-  }).join(' ');
+/**
+ * A value with functions — `translateY(40px) scale(.9)`, `inset(0 50% 0 0)`,
+ * `circle(0% at 50% 50%)`, `polygon(…)` — moves number by number inside the
+ * from value's own text; a bare 0 takes the other end's unit. Each function
+ * used to be rebuilt as `fn(a, b, c)`, so clip-path's inset() got commas (which
+ * no browser accepts), circle() lost its `at` and polygon() the % of a bare 0.
+ * Two values that differ in more than their numbers switch at the end.
+ */
+function interpolateFns(from: string, to: string, t: number): string {
+  const ends = [...to.matchAll(NUM)];
+  if (from.replace(NUM, '#') !== to.replace(NUM, '#')) return t < 1 ? from : to;
+  let i = 0;
+  return from.replace(NUM, (m: string, unit: string) => {
+    const [end, endUnit] = ends[i++];
+    const a = parseFloat(m);
+    return `${a + (parseFloat(end) - a) * t}${unit || endUnit}`;
+  });
 }
 
 export function interpolateValue(from: string | number, to: string | number, t: number): string {
@@ -115,7 +102,7 @@ export function interpolateValue(from: string | number, to: string | number, t: 
   const tStr = String(to);
 
   if (isColorValue(f)) return lerpColor(f, tStr, t);
-  if (f.includes('(')) return interpolateTransform(f, tStr, t);
+  if (f.includes('(')) return interpolateFns(f, tStr, t);
 
   const fm = f.match(/^([-+]?[\d.]+)(.*)$/);
   const tm = tStr.match(/^([-+]?[\d.]+)(.*)$/);

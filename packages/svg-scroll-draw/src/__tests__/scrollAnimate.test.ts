@@ -130,6 +130,25 @@ describe('interpolateValue', () => {
     expect(interpolateValue('auto', 'none', 0)).toBe('auto');
     expect(interpolateValue('auto', 'none', 1)).toBe('none');
   });
+
+  /*
+   * clip-path shapes were rebuilt as `fn(a, b, c)`: inset() got commas, which
+   * no browser accepts, circle() lost its `at`, polygon() the % of a bare 0.
+   */
+  it.each([
+    ['inset(0 50% 0 0)', 'inset(0 0% 0 0)', 'inset(0 25% 0 0)'],
+    ['inset(0 50% 0 0 round 8px)', 'inset(0 0% 0 0 round 8px)', 'inset(0 25% 0 0 round 8px)'],
+    ['circle(0% at 50% 50%)', 'circle(75% at 50% 50%)', 'circle(37.5% at 50% 50%)'],
+    ['polygon(0 0, 0 0, 0 100%, 0 100%)', 'polygon(0 0, 100% 0, 100% 100%, 0 100%)', 'polygon(0 0, 50% 0, 50% 100%, 0 100%)'],
+    ['translate3d(0px, 10px, 0)', 'translate3d(0px, 0px, 0)', 'translate3d(0px, 5px, 0)'],
+  ])('interpolates %s to %s in its own syntax', (from, to, mid) => {
+    expect(interpolateValue(from, to, 0.5)).toBe(mid);
+  });
+
+  it('switches at the end between shapes that differ in more than numbers', () => {
+    expect(interpolateValue('inset(0 50% 0 0)', 'circle(50%)', 0.5)).toBe('inset(0 50% 0 0)');
+    expect(interpolateValue('inset(0 50% 0 0)', 'circle(50%)', 1)).toBe('circle(50%)');
+  });
 });
 
 // ── scrollAnimate core ────────────────────────────────────────────────────────

@@ -110,6 +110,24 @@ describe('scrollVideo', () => {
     expect(video.currentTime).toBeGreaterThanOrEqual(0);
   });
 
+  /*
+   * An easing that overshoots (spring, elastic, a cubic-bezier with y past 0
+   * or 1) carried the time out of [from, to]: footage the page cut out showed
+   * at both ends. The time is clamped; the progress keeps the overshoot.
+   */
+  it.each([
+    ['past the end',   1.3, 3],
+    ['before the start', -0.5, 1],
+  ])('an easing that overshoots %s keeps the time inside [from, to]', (_, value, time) => {
+    const video = makeVideo();
+    const onProgress = vi.fn();
+    scrollVideo(video, { from: 1, to: 3, easing: () => value, onProgress, once: false });
+    scroll(100);
+    raf.tick();
+    expect(video.currentTime).toBe(time);
+    expect(onProgress).toHaveBeenLastCalledWith(value);
+  });
+
   it('seek sets currentTime proportionally', () => {
     const video = makeVideo();
     const inst = scrollVideo(video, { from: 0, to: 4 });

@@ -55,6 +55,17 @@ const KINDS: { k: Kind; label: string }[] = [
  */
 const RELEASES: Release[] = [
   {
+    version: '2.26.2',
+    title: 'clip-path shapes, scrollSnap Next, scrollVideo range',
+    date: '2026-11-14',
+    items: [
+      { type: 'fix', text: 'scrollAnimate: clip-path shapes reach the page. inset() was written with commas, circle() lost its at and polygon() the % of a bare 0, so browsers dropped them and the element stayed unclipped. Values with functions now move number by number in their own syntax; the main entry is 11.8 KB gzipped (was 12.0).' },
+      { type: 'fix', text: 'scrollSnap: Next pressed twice during one glide moves two sections (getCurrentIndex() returns the section being snapped to), and Next on the last section no longer fires onSnap again.' },
+      { type: 'fix', text: 'scrollVideo keeps currentTime inside [from, to] under an overshooting easing such as spring or elastic.' },
+      { type: 'test', text: 'Unit tests for each fix, a clip-path browser test in three engines, and one mutation.' },
+    ],
+  },
+  {
     version: '2.26.1',
     title: 'ScrollCounter renders its number on the server',
     date: '2026-11-14',

@@ -37,7 +37,7 @@ export interface ScrollSnapInstance {
   destroy: () => void;
   /** Programmatically snap to a section by zero-based index. */
   snapTo: (index: number) => void;
-  /** Returns the index of the currently snapped section. */
+  /** The section snapped to, or being snapped to while a snap runs. */
   getCurrentIndex: () => number;
 }
 
@@ -154,12 +154,24 @@ export function scrollSnap(
     return offsets.reduce((best, at, i) => (Math.abs(at - scroll) < Math.abs(offsets[best] - scroll) ? i : best), 0);
   }
 
+  /**
+   * The section a snap is going to, from the moment it starts. It used to
+   * change only on landing, so a Next button (`snapTo(getCurrentIndex() + 1)`)
+   * pressed twice in one glide aimed both presses at the same section.
+   */
   let currentIndex = nearest();
+  /** The section onSnap last reported: none yet, so a first snapTo(current) reports it. */
+  let landed = -1;
 
-  /** The snap is over, on section `i`. */
-  function land(i: number): void {
-    isAnimating  = false;
-    currentIndex = i;
+  /**
+   * The snap is over, on section `i`. A snap that did not move and stays on
+   * the section already reported is not one: Next on the last section fired
+   * onSnap for it again.
+   */
+  function land(i: number, moved: boolean): void {
+    isAnimating = false;
+    if (!moved && i === landed) return;
+    landed = i;
     onSnap?.(i);
   }
 
@@ -167,18 +179,19 @@ export function scrollSnap(
     const targetIndex = clamp(index, 0, els.length - 1);
     // A snap still running is replaced.
     cancelAnimationFrame(animRafId);
-    isAnimating = true;
+    isAnimating  = true;
+    currentIndex = targetIndex;
 
     const offsets    = getSectionOffsets();
     const startScroll = getScroll();
     const endScroll   = offsets[targetIndex];
 
-    if (Math.abs(startScroll - endScroll) < 1) return land(targetIndex);
+    if (Math.abs(startScroll - endScroll) < 1) return land(targetIndex, false);
 
     // Reduced motion: land on the section immediately, no animated scroll.
     if (reduceMotion) {
       setScroll(endScroll);
-      return land(targetIndex);
+      return land(targetIndex, true);
     }
 
     const startTime = performance.now();
@@ -187,7 +200,7 @@ export function scrollSnap(
       const progress = clamp((now - startTime) / duration, 0, 1);
       setScroll(startScroll + (endScroll - startScroll) * easeFn(progress));
       if (progress < 1) animRafId = requestAnimationFrame(animate);
-      else land(targetIndex);
+      else land(targetIndex, true);
     }
 
     animRafId = requestAnimationFrame(animate);

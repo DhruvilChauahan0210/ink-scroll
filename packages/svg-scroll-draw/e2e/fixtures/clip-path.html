@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>scrollAnimate — clip-path shapes on the JS engine</title>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; }
+  /* Each box is 200px tall, 1000px down; the default window is
+     [top - 800, top + 200] = [200, 1200], so scrollY 700 is halfway. */
+  .lead { height: 1000px; }
+  .row  { display: flex; gap: 20px; height: 200px; }
+  .box  { flex: 1; background: #0a7; }
+  .tail { height: 1600px; }
+</style>
+</head>
+<body>
+<div class="lead"></div>
+<div class="row">
+  <div class="box" id="inset"></div>
+  <div class="box" id="circle"></div>
+  <div class="box" id="polygon"></div>
+</div>
+<div class="tail"></div>
+
+<script type="module">
+import { scrollAnimate } from '/dist/index.mjs';
+import { publish } from './_probe.mjs';
+
+// The JS engine, which wrote these shapes in a syntax no browser accepted.
+const shapes = {
+  inset:   ['inset(0 50% 0 0 round 8px)', 'inset(0 0% 0 0 round 8px)'],
+  circle:  ['circle(0% at 50% 50%)', 'circle(75% at 50% 50%)'],
+  polygon: ['polygon(0 0, 0 0, 0 100%, 0 100%)', 'polygon(0 0, 100% 0, 100% 100%, 0 100%)'],
+};
+for (const [id, clipPath] of Object.entries(shapes)) {
+  scrollAnimate(`#${id}`, { props: { clipPath }, easing: 'linear', once: false, native: false });
+}
+
+publish({
+  read: () => Object.fromEntries(Object.keys(shapes).map((id) => {
+    const el = document.getElementById(id);
+    return [id, { inline: el.style.clipPath, computed: getComputedStyle(el).clipPath }];
+  })),
+});
+</script>
+</body>
+</html>
