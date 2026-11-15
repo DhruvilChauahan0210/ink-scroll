@@ -22,11 +22,19 @@ export type RelatedLinks = {
 };
 
 export const RELATED_BY_POST: Record<string, RelatedLinks> = {
+  'vue-scroll-animation-components': {
+    examples: ['vue', 'signature'],
+    pages: [
+      { href: '/blocks', label: 'Scroll animation blocks', blurb: 'Every block with its Vue version and the shadcn-vue command.' },
+      { href: '/vue-scroll-animation', label: 'Vue 3 guide', blurb: 'Composable and component, with SSR notes.' },
+    ],
+  },
   'svelte-scroll-animation-components': {
     examples: ['svelte', 'signature'],
     pages: [
       { href: '/blocks', label: 'Scroll animation blocks', blurb: 'Every block with its Svelte version and the shadcn-svelte command.' },
       { href: '/svelte-scroll-animation', label: 'Svelte guide', blurb: 'Native actions — no wrapper element.' },
+      { href: '/blog/vue-scroll-animation-components', label: 'The same, for Vue 3', blurb: 'shadcn-vue, ScrollDraw and the ref trap.' },
     ],
   },
   'generative-svg-line-art': {
@@ -205,6 +213,7 @@ export const RELATED_BY_POST: Record<string, RelatedLinks> = {
     examples: ['vue', 'svelte', 'solid', 'astro'],
     pages: [
       { href: '/vue-scroll-animation', label: 'Vue 3 guide', blurb: 'Composable and component, with SSR notes.' },
+      { href: '/blog/vue-scroll-animation-components', label: 'Vue components with shadcn-vue', blurb: 'Install ready-made sections into Vue 3, and the three Vue traps.' },
       { href: '/svelte-scroll-animation', label: 'Svelte guide', blurb: 'Native actions — no wrapper element.' },
       { href: '/blog/svelte-scroll-animation-components', label: 'Svelte components with shadcn-svelte', blurb: 'Install ready-made sections into SvelteKit, and the three Svelte traps.' },
       { href: '/solid-scroll-animation', label: 'Solid.js guide', blurb: 'Runs outside the reactive graph, so no re-renders.' },

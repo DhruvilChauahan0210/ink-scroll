@@ -19,6 +19,17 @@ export type BlogPost = {
 
 export const POSTS: BlogPost[] = [
   {
+    slug: 'vue-scroll-animation-components',
+    title: 'Scroll-drawn Vue 3 components, installed with shadcn-vue',
+    description:
+      'Install ready-made scroll animation sections into a Vue 3 app with the shadcn-vue CLI, then the three Vue details that decide whether a drawing animates.',
+    tag: 'How-To',
+    tagColor: '#60a5fa',
+    readTime: '6 min read',
+    date: 'November 2026',
+    published: '2026-11-16',
+  },
+  {
     slug: 'svelte-scroll-animation-components',
     title: 'Scroll-drawn Svelte 5 components, installed with shadcn-svelte',
     description:

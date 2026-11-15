@@ -8,6 +8,12 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### Site
 
+- **Blog: scroll-drawn Vue 3 components, installed with shadcn-vue.**
+  `/blog/vue-scroll-animation-components`, the Vue counterpart of the Svelte
+  post: install the Vue blocks with shadcn-vue, put `v-if` on `ScrollDraw`
+  until generated paths exist, `ref="name"` rather than `:ref` for the
+  composables, and `ScrollAnimate`'s single `:options` object.
+
 - **Blog: scroll-drawn Svelte 5 components, installed with shadcn-svelte.**
   `/blog/svelte-scroll-animation-components` installs the Svelte blocks into a
   SvelteKit app and covers three Svelte details: mount `use:scrollDraw` inside
