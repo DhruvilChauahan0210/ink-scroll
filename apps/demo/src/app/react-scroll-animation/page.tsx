@@ -386,6 +386,11 @@ export default function ReactScrollAnimationPage() {
                 each with the shadcn CLI, and <a href="https://scrollfx-ui.vercel.app">scrollfx</a> is a folio of
                 full sections built on this library, each with a pen-plotter drawing that draws itself as you scroll.
               </p>
+              <p className="stk-p stk-more">
+                Further reading: <Link href="/blog/react-scroll-animations">React scroll animations, compared</Link>,{' '}
+                <Link href="/blog/nextjs-scroll-animations">scroll animations in the Next.js App Router</Link>, and{' '}
+                <Link href="/blog/accessible-split-text-animation">split text that screen readers still read</Link>.
+              </p>
             </Sec>
 
             {/* ── 04 Next.js App Router ─────────────────────── */}

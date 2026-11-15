@@ -36,6 +36,8 @@
 
 .site .tk-next-more { display: grid; align-content: start; min-width: 0; border-top: 1px solid var(--fg-3); }
 .site .tk-next-k { margin: 0; padding: 10px 0; font: 500 10px/1.4 var(--mono); color: var(--fg-3); text-transform: uppercase; letter-spacing: 0.08em; }
+/* "Next tool" after the guides: a little room between the two lists. */
+.site .tk-next-k-gap { margin-top: 18px; }
 .site .tk-next-row { display: grid; gap: 4px; padding: 12px 0; border-top: 1px solid var(--line); color: inherit; text-decoration: none; }
 .site .tk-next-row:hover .tk-next-t, .site .tk-next-row:focus-visible .tk-next-t { text-decoration: underline; text-underline-offset: 3px; }
 .site .tk-next-t { font-size: 16px; font-weight: 500; color: var(--fg); }

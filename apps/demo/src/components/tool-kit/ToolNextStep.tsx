@@ -3,7 +3,25 @@ import { CodeBox } from '@/components/site/CodeBox';
 import { GitHubStar } from '@/components/site/GitHubStar';
 import { SELF, SELF_ENTRIES } from '@/data/competitors';
 import { TOOLS, type Tool } from '@/data/tools';
+import { POSTS } from '@/data/blog-posts';
+import { RELATED_BY_POST } from '@/data/related-links';
 import './tool-kit.css';
+
+/**
+ * The articles about a tool, read backwards out of RELATED_BY_POST (each post
+ * names the tools that build what it describes), so the post-to-tool links and
+ * these tool-to-post links can never disagree. A post that names this tool
+ * first is about it, so those come first; at most two.
+ */
+function guidesFor(slug: string) {
+  return Object.entries(RELATED_BY_POST)
+    .map(([post, r], order) => ({ post, rank: r.tools?.indexOf(slug) ?? -1, order }))
+    .filter((g) => g.rank >= 0)
+    .sort((a, b) => a.rank - b.rank || a.order - b.order)
+    .map((g) => POSTS.find((p) => p.slug === g.post))
+    .filter((p): p is (typeof POSTS)[number] => p != null)
+    .slice(0, 2);
+}
 
 /** Tools every page points on to: the drawing tools are what the library is for. */
 const CORE = ['svg-path-viewer', 'svg-line-drawing-generator'];
@@ -46,6 +64,7 @@ export function ToolNextStep({
     .map((s) => TOOLS.find((t) => t.slug === s))
     .filter((t): t is Tool => t != null)
     .slice(0, 3);
+  const guides = guidesFor(slug);
 
   return (
     <div className="tk-next">
@@ -65,9 +84,20 @@ export function ToolNextStep({
           <p>Saved you some time? A star helps others find it.</p>
         </div>
       </div>
-      {next.length ? (
+      {next.length || guides.length ? (
         <div className="tk-next-more">
-          <p className="tk-next-k">Next tool</p>
+          {guides.length ? (
+            <>
+              <p className="tk-next-k">Read the guide</p>
+              {guides.map((g) => (
+                <Link key={g.slug} href={`/blog/${g.slug}`} className="tk-next-row">
+                  <span className="tk-next-t">{g.title}</span>
+                  <span className="tk-next-d">{g.readTime}</span>
+                </Link>
+              ))}
+            </>
+          ) : null}
+          <p className={`tk-next-k${guides.length ? ' tk-next-k-gap' : ''}`}>Next tool</p>
           {next.map((t) => (
             <Link key={t.slug} href={`/${t.slug}`} className="tk-next-row">
               <span className="tk-next-t">{t.name}</span>

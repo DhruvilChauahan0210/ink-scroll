@@ -8,6 +8,16 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### Site
 
+- **Tools link to the articles about them.** Every post already named the
+  tools that build what it describes (`data/related-links.ts`), but no tool
+  linked back, so the blog's 29 posts had 4 to 9 internal links each and
+  almost none from a page Google already ranks. Each tool's next-step block
+  now lists up to two of those posts ("Read the guide"), read backwards out
+  of the same map, so the two directions cannot disagree; a post that names
+  the tool first comes first. 21 tools gain the list and 22 posts gain
+  links (counted from the built site). The React page adds a further-reading
+  line to its three React posts.
+
 - **scrollfx, linked where React and shadcn readers look.** `/blocks` ends
   with a section on [scrollfx](https://scrollfx-ui.vercel.app), a separate
   folio of whole sections built on the library (a picture of its hero in the

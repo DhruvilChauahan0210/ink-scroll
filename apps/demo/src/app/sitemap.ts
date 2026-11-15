@@ -59,7 +59,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // ── Framework landing pages ─────────────────────────────────────────────
     {
       url: `${SITE_URL}/react-scroll-animation`,
-      lastModified: new Date("2026-11-14"),
+      lastModified: new Date("2026-11-15"),
       changeFrequency: "monthly",
       priority: 0.9,
     },

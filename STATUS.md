@@ -148,6 +148,7 @@ at all.
 - [x] Both READMEs describe scrollfx as the plotter folio it is now
 - [x] Tag and publish: v2.27.3 on npm (`latest`) and both CDNs, 2026-11-14
 - [x] scrollfx linked from `/blocks` (a section with its hero, and a More row) and the React page
+- [x] Tool pages list the posts about them ("Read the guide", from `related-links.ts`); the React page links its three React posts
 
 ### 2.27.2: dev warnings in Vite; every framework sample runs (2026-11-14; branch `test/framework-samples`)
 
