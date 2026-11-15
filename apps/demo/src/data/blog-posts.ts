@@ -19,6 +19,17 @@ export type BlogPost = {
 
 export const POSTS: BlogPost[] = [
   {
+    slug: 'svelte-scroll-animation-components',
+    title: 'Scroll-drawn Svelte 5 components, installed with shadcn-svelte',
+    description:
+      'Install ready-made scroll animation sections into a SvelteKit app with the shadcn-svelte CLI, then the three Svelte details that decide whether a drawing animates.',
+    tag: 'How-To',
+    tagColor: '#60a5fa',
+    readTime: '6 min read',
+    date: 'November 2026',
+    published: '2026-11-15',
+  },
+  {
     slug: 'generative-svg-line-art',
     title: 'Generative SVG line art that draws itself on scroll',
     description:

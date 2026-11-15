@@ -8,6 +8,14 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### Site
 
+- **Blog: scroll-drawn Svelte 5 components, installed with shadcn-svelte.**
+  `/blog/svelte-scroll-animation-components` installs the Svelte blocks into a
+  SvelteKit app and covers three Svelte details: mount `use:scrollDraw` inside
+  `{#if}` once generated paths exist (outside it the line shows whole and never
+  animates), Svelte 5 trimming the leading space of an element's text, and
+  shadcn-svelte resolving registry targets inside the alias folder. Its Svelte
+  listings were mounted in SvelteKit 2 with Svelte 5.57 and checked in Chromium.
+
 - **Svelte blocks install where they should.** shadcn-svelte resolves a file's
   `target` inside the components alias, not from the project root, so the
   registry's `src/lib/components/scroll/<Name>.svelte` installed at

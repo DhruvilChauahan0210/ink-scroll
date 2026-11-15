@@ -22,6 +22,13 @@ export type RelatedLinks = {
 };
 
 export const RELATED_BY_POST: Record<string, RelatedLinks> = {
+  'svelte-scroll-animation-components': {
+    examples: ['svelte', 'signature'],
+    pages: [
+      { href: '/blocks', label: 'Scroll animation blocks', blurb: 'Every block with its Svelte version and the shadcn-svelte command.' },
+      { href: '/svelte-scroll-animation', label: 'Svelte guide', blurb: 'Native actions — no wrapper element.' },
+    ],
+  },
   'generative-svg-line-art': {
     examples: ['signature', 'logo-reveal'],
     tools: ['svg-line-drawing-generator', 'svg-path-viewer'],
@@ -199,6 +206,7 @@ export const RELATED_BY_POST: Record<string, RelatedLinks> = {
     pages: [
       { href: '/vue-scroll-animation', label: 'Vue 3 guide', blurb: 'Composable and component, with SSR notes.' },
       { href: '/svelte-scroll-animation', label: 'Svelte guide', blurb: 'Native actions — no wrapper element.' },
+      { href: '/blog/svelte-scroll-animation-components', label: 'Svelte components with shadcn-svelte', blurb: 'Install ready-made sections into SvelteKit, and the three Svelte traps.' },
       { href: '/solid-scroll-animation', label: 'Solid.js guide', blurb: 'Runs outside the reactive graph, so no re-renders.' },
       { href: '/nuxt-scroll-animation', label: 'Nuxt 3 guide', blurb: 'Per-component imports or one global plugin. SSR-safe either way.' },
       { href: '/astro-scroll-animation', label: 'Astro guide', blurb: 'A data attribute and one init call — no island, no hydration.' },

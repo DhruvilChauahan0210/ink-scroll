@@ -1,0 +1,12 @@
+{
+  "name": "spiral",
+  "type": "registry:block",
+  "dependencies": ["svg-scroll-draw"],
+  "files": [
+    {
+      "type": "registry:component",
+      "target": "scroll/Spiral.svelte",
+      "content": "<script lang=\"ts\">…</script>…"
+    }
+  ]
+}
