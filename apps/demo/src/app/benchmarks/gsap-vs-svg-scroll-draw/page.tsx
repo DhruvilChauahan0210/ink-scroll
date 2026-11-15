@@ -17,6 +17,7 @@ import {
   type Cell,
   type Lib,
 } from '@/data/bench-gsap';
+import { RUN_NOTES } from '@/data/bench-gsap-notes';
 import { jsonLd } from '@/lib/json-ld';
 import { SiteShell } from '@/components/site/SiteShell';
 import { CodeSet, Head, Nb, Toc } from '@/components/h2h/parts';
@@ -27,6 +28,8 @@ const PAGE_URL = 'https://svg-scroll-draw.vercel.app/benchmarks/gsap-vs-svg-scro
 const { meta, metrics: METRICS, provisional: PROVISIONAL } = BENCH;
 const MEASURED = meta.date.slice(0, 10);
 const RUNS = meta.settings.runs;
+// Notes about this run's machine, shown only when they were written for this run.
+const NOTES = RUN_NOTES.run === MEASURED ? RUN_NOTES.notes : [];
 const SCENARIOS = BENCH.scenarios.filter((s) => SCENARIO_INFO[s]);
 const CONDITIONS = conditions();
 const LIBS: Lib[] = ['none', 'gsap', 'ours', 'ours-js'];
@@ -442,6 +445,9 @@ export default function BenchmarkPage() {
                   {meta.settings.traces} traced round(s) for the paint split. Each round runs every cell once in a
                   seeded random order, in a freshly launched browser, so drift spreads across libraries.
                 </li>
+                {NOTES.map((note) => (
+                  <li key={note}>{note}</li>
+                ))}
                 <li>
                   Medians and p90 are reported. A difference is called only when the 95% bootstrap interval of the
                   difference in medians excludes zero; otherwise the page says there is no measurable difference.
