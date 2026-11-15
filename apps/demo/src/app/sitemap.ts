@@ -325,6 +325,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
     // ── Blog posts ──────────────────────────────────────────────────────────
     {
+      url: `${SITE_URL}/blog/generative-svg-line-art`,
+      lastModified: new Date("2026-11-15"),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
       url: `${SITE_URL}/blog/animate-on-scroll-css`,
       lastModified: new Date("2026-11-13"),
       changeFrequency: "monthly",

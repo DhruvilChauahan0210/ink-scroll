@@ -22,6 +22,13 @@ export type RelatedLinks = {
 };
 
 export const RELATED_BY_POST: Record<string, RelatedLinks> = {
+  'generative-svg-line-art': {
+    examples: ['signature', 'logo-reveal'],
+    tools: ['svg-line-drawing-generator', 'svg-path-viewer'],
+    pages: [
+      { href: '/blocks', label: 'Scroll animation blocks', blurb: 'The signature that draws itself, and eight more, installed with the shadcn CLI.' },
+    ],
+  },
   'animate-on-scroll-css': {
     examples: ['scroll-reveal', 'scroll-animate'],
     tools: ['css-scroll-driven-animation-generator', 'scroll-reveal-generator'],

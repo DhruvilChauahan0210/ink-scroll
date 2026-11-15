@@ -8,6 +8,18 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### Site
 
+- **A post on generative SVG line art** (`/blog/generative-svg-line-art`): a
+  seeded generator, a harmonograph and an evenly spaced flow field in plain
+  JavaScript, drawn with scrollDraw and timed so the last stroke lands as
+  the drawing reaches the middle of the screen. The listings are files in
+  the post's folder: the page prints them and its two figures import them.
+  Run in Chromium with the built library, each drawing is still unfinished
+  with its centre at 65% of the screen and done at 45%. Writing it found
+  that one seed gives a few strokes more or fewer per engine (392 in
+  Firefox and Node, 395 in Chromium, 396 in WebKit: engines may round
+  `Math.sin` differently), so the post says what a seed does and does not
+  fix. It links scrollfx, which is built from these drawings.
+
 - **Tools link to the articles about them.** Every post already named the
   tools that build what it describes (`data/related-links.ts`), but no tool
   linked back, so the blog's 29 posts had 4 to 9 internal links each and

@@ -19,6 +19,17 @@ export type BlogPost = {
 
 export const POSTS: BlogPost[] = [
   {
+    slug: 'generative-svg-line-art',
+    title: 'Generative SVG line art that draws itself on scroll',
+    description:
+      'A harmonograph and a flow field in plain JavaScript, drawn stroke by stroke as the reader scrolls and timed to finish as they reach the middle of the screen.',
+    tag: 'How-To',
+    tagColor: '#60a5fa',
+    readTime: '8 min read',
+    date: 'November 2026',
+    published: '2026-11-15',
+  },
+  {
     slug: 'animate-on-scroll-css',
     title: 'Animate on scroll with CSS only (no library, no JavaScript)',
     description:

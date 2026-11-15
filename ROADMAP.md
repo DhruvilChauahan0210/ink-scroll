@@ -126,6 +126,7 @@
 - ~~scrollVideo time outside [from, to] under overshooting easings~~ — clamped, 2.26.2, 2026-11-14.
 - ~~A real Nuxt module~~ — `modules: ['svg-scroll-draw/nuxt']`, auto-imports, no dependencies, 2.27.0, 2026-11-14.
 - ~~Run every framework sample~~ — `test-framework-samples.mjs`, weekly with the starters; it found 8 broken samples and the dev warnings being off in Vite, 2.27.2, 2026-11-14.
+- ~~A post on generative SVG line art~~ — harmonograph and flow field listings, run as printed, 2026-11-15.
 - ~~Tool pages link to the posts about them~~ — read backwards out of `related-links.ts`, 22 of 29 posts gain links, 2026-11-15.
 - ~~Link scrollfx from the site~~ — `/blocks` and the React page, 2026-11-14.
 - ~~Wrapped `scrollText` lines indented by a space~~ — spaces are plain whitespace, checked flush in the browser, 2.27.3, 2026-11-14.
