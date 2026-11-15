@@ -18,7 +18,7 @@
 
   // The versions the harness checks against node_modules and the package.
   var GSAP_VERSION = '3.15.0';
-  var OURS_VERSION = '2.26.2';
+  var OURS_VERSION = '2.27.3';
   var CDN = 'https://cdn.jsdelivr.net/npm/';
   var GSAP = CDN + 'gsap@' + GSAP_VERSION + '/dist/';
   var OURS = CDN + 'svg-scroll-draw@' + OURS_VERSION + '/dist/';
