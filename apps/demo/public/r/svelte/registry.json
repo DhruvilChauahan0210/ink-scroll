@@ -14,7 +14,7 @@
       "files": [
         {
           "type": "registry:component",
-          "target": "src/lib/components/scroll/SignatureDraw.svelte"
+          "target": "scroll/SignatureDraw.svelte"
         }
       ],
       "categories": [
@@ -33,7 +33,7 @@
       "files": [
         {
           "type": "registry:component",
-          "target": "src/lib/components/scroll/RevealCards.svelte"
+          "target": "scroll/RevealCards.svelte"
         }
       ],
       "categories": [
@@ -52,7 +52,7 @@
       "files": [
         {
           "type": "registry:component",
-          "target": "src/lib/components/scroll/StatCounterRow.svelte"
+          "target": "scroll/StatCounterRow.svelte"
         }
       ],
       "categories": [
@@ -71,7 +71,7 @@
       "files": [
         {
           "type": "registry:component",
-          "target": "src/lib/components/scroll/StickyFeature.svelte"
+          "target": "scroll/StickyFeature.svelte"
         }
       ],
       "categories": [
@@ -90,7 +90,7 @@
       "files": [
         {
           "type": "registry:component",
-          "target": "src/lib/components/scroll/HeadlineTextReveal.svelte"
+          "target": "scroll/HeadlineTextReveal.svelte"
         }
       ],
       "categories": [
@@ -110,7 +110,7 @@
       "files": [
         {
           "type": "registry:component",
-          "target": "src/lib/components/scroll/PinnedFeatureTour.svelte"
+          "target": "scroll/PinnedFeatureTour.svelte"
         }
       ],
       "categories": [
@@ -130,7 +130,7 @@
       "files": [
         {
           "type": "registry:component",
-          "target": "src/lib/components/scroll/HorizontalCaseStrip.svelte"
+          "target": "scroll/HorizontalCaseStrip.svelte"
         }
       ],
       "categories": [
@@ -149,7 +149,7 @@
       "files": [
         {
           "type": "registry:component",
-          "target": "src/lib/components/scroll/VideoScrub.svelte"
+          "target": "scroll/VideoScrub.svelte"
         }
       ],
       "categories": [
@@ -168,7 +168,7 @@
       "files": [
         {
           "type": "registry:component",
-          "target": "src/lib/components/scroll/ReadingProgress.svelte"
+          "target": "scroll/ReadingProgress.svelte"
         }
       ],
       "categories": [

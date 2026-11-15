@@ -39,7 +39,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${SITE_URL}/blocks`,
-      lastModified: new Date("2026-11-14"),
+      lastModified: new Date("2026-11-15"),
       changeFrequency: "monthly",
       priority: 0.8,
     },

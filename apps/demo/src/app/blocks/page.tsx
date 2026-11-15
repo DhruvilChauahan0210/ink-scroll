@@ -125,9 +125,10 @@ const BLOCKS: Block[] = [
 
 const installCommand = (name: string) => `npx shadcn@latest add ${SITE}/r/${name}.json`;
 /** The other frameworks a block can come in, each from its own CLI and registry folder. */
+/** Where each CLI puts the file: shadcn-svelte resolves a target inside $lib/components. */
 const FRAMEWORK_VERSIONS = [
-  { dir: 'vue', label: 'vue', cli: 'shadcn-vue' },
-  { dir: 'svelte', label: 'svelte', cli: 'shadcn-svelte' },
+  { dir: 'vue', label: 'vue', cli: 'shadcn-vue', installsAt: (t: string) => t },
+  { dir: 'svelte', label: 'svelte', cli: 'shadcn-svelte', installsAt: (t: string) => `src/lib/components/${t}` },
 ];
 
 type FrameworkFile = { path?: string; content: string; target?: string };
@@ -287,10 +288,10 @@ export default function BlocksPage() {
                     <CodeBox file={target(f)}>{f.content}</CodeBox>
                   </details>
                 ))}
-                {FRAMEWORK_VERSIONS.map(({ dir, label, cli }) => {
+                {FRAMEWORK_VERSIONS.map(({ dir, label, cli, installsAt }) => {
                   const f = frameworkFile(dir, item.name);
                   if (!f) return null;
-                  const file = f.target ?? f.path ?? item.name;
+                  const file = f.target ? installsAt(f.target) : (f.path ?? item.name);
                   return (
                     <details key={dir} className="bk-src">
                       <summary>

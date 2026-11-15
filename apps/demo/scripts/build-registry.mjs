@@ -111,13 +111,16 @@ const FRAMEWORKS = [
   },
   {
     // shadcn-svelte's item schema requires content, type and target on every
-    // file and forbids `path`, so its items carry no path.
+    // file and forbids `path`, so its items carry no path. Its target is
+    // relative to the components alias ($lib/components), not to the project:
+    // a full src/lib/components/... target installed at
+    // src/lib/components/src/lib/components/scroll/<Name>.svelte.
     dir: 'svelte',
     ext: '.svelte',
     allowed: (spec) => spec === 'svelte' || spec.startsWith('svelte/') || spec === 'svg-scroll-draw' || spec.startsWith('svg-scroll-draw/'),
     itemSchema: 'https://shadcn-svelte.com/schema/registry-item.json',
     registrySchema: 'https://shadcn-svelte.com/schema/registry.json',
-    target: (name) => `src/lib/components/scroll/${pascal(name)}.svelte`,
+    target: (name) => `scroll/${pascal(name)}.svelte`,
     noPath: true,
   },
 ];

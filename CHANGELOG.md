@@ -8,6 +8,14 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### Site
 
+- **Svelte blocks install where they should.** shadcn-svelte resolves a file's
+  `target` inside the components alias, not from the project root, so the
+  registry's `src/lib/components/scroll/<Name>.svelte` installed at
+  `src/lib/components/src/lib/components/scroll/<Name>.svelte`. The target
+  is `scroll/<Name>.svelte` now; installed into a fresh SvelteKit app, a
+  block lands at `src/lib/components/scroll/`. `/blocks` labels each Svelte
+  file with where it lands. Found while building scrollfx's Svelte registry.
+
 - **A post on generative SVG line art** (`/blog/generative-svg-line-art`): a
   seeded generator, a harmonograph and an evenly spaced flow field in plain
   JavaScript, drawn with scrollDraw and timed so the last stroke lands as
