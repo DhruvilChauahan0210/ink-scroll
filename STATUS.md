@@ -150,6 +150,7 @@ at all.
 - [x] scrollfx linked from `/blocks` (a section with its hero, and a More row) and the React page
 - [x] Post: generative SVG line art (`/blog/generative-svg-line-art`), listings imported by its own figures
 - [x] Post: Svelte 5 components with shadcn-svelte (`/blog/svelte-scroll-animation-components`), listings mounted in SvelteKit 2 and checked in Chromium
+- [x] Post: Vue 3 components with shadcn-vue (`/blog/vue-scroll-animation-components`), listings mounted in Vite + Vue 3 and checked in Chromium (v-if race, :ref, vue-tsc note)
 - [x] Tool pages list the posts about them ("Read the guide", from `related-links.ts`); the React page links its three React posts
 
 ### 2.27.2: dev warnings in Vite; every framework sample runs (2026-11-14; branch `test/framework-samples`)
