@@ -503,3 +503,46 @@ describe('scrollDraw — easing as a CSS string', () => {
     expect(Math.abs(css - drawn('linear'))).toBeGreaterThan(0.05);
   });
 });
+
+// ── 2.28.0: no-flash.css hides strokes until this attribute is gone ─────────
+// The benchmark saw svg-scroll-draw paint the finished drawing first in every
+// run: the paths are whole in the HTML until the module runs. no-flash.css
+// hides strokes under [data-scroll-draw-pending]; the engine has to remove it,
+// on every branch, once the paths hold their starting state.
+
+describe('createEngine — data-scroll-draw-pending', () => {
+  function pending(paths = [makeSvgPath()]): HTMLDivElement {
+    const c = makeContainer(paths);
+    c.setAttribute('data-scroll-draw-pending', '');
+    return c;
+  }
+
+  it('removes it on the JS engine, with the starting state already set', () => {
+    const path = makeSvgPath();
+    const c = pending([path]);
+    createEngine(c, { native: false });
+    expect(c.hasAttribute('data-scroll-draw-pending')).toBe(false);
+    expect(path.style.strokeDashoffset).toBe('100');
+  });
+
+  it('removes it under reduced motion, which returns early', () => {
+    vi.stubGlobal('matchMedia', (query: string) => ({
+      matches: query.includes('reduce'), media: query, addEventListener: vi.fn(), removeEventListener: vi.fn(),
+    }));
+    const c = pending();
+    createEngine(c);
+    expect(c.hasAttribute('data-scroll-draw-pending')).toBe(false);
+  });
+
+  it('removes it on autoplay', () => {
+    const c = pending();
+    createEngine(c, { autoplay: true });
+    expect(c.hasAttribute('data-scroll-draw-pending')).toBe(false);
+  });
+
+  it('removes it when there are no paths yet, so nothing stays hidden', () => {
+    const c = pending([]);
+    createEngine(c);
+    expect(c.hasAttribute('data-scroll-draw-pending')).toBe(false);
+  });
+});

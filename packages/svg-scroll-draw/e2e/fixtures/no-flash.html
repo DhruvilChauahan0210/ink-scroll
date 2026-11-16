@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>A drawing on screen at load, with and without no-flash.css</title>
+<link rel="stylesheet" href="/no-flash.css" id="nf">
+<script>
+  // Classic and in <head>: runs before the first paint, as no module can.
+  // ?css=0 drops the stylesheet, to show what the test catches without it.
+  if (new URLSearchParams(location.search).get('css') === '0') document.getElementById('nf').remove();
+  // Every frame until the engine has run: is any stroke painted whole? A path
+  // with no dash yet is the finished drawing; stroke-opacity 0 is no-flash.css.
+  window.__frames = [];
+  (function watch() {
+    const paths = document.querySelectorAll('#art path');
+    if (paths.length) {
+      let whole = 0;
+      for (const p of paths) {
+        const cs = getComputedStyle(p);
+        if (parseFloat(cs.strokeOpacity) > 0 && cs.strokeDasharray === 'none') whole++;
+      }
+      window.__frames.push(whole);
+    }
+    if (!window.__ready) requestAnimationFrame(watch);
+  })();
+</script>
+<style>
+  body { margin: 0; }
+  #art svg { display: block; width: 600px; height: 200px; }
+  #art path { fill: none; stroke: #234; stroke-width: 6; }
+  .tail { height: 2000px; }
+</style>
+</head>
+<body>
+<!--
+  Viewport 900x800. The drawing is on screen at load, inside a container marked
+  data-scroll-draw-pending, as <ScrollDraw> renders it. The library arrives
+  300 ms after the page, as a module on a slower network would: GSAP's classic
+  scripts ran before first paint in the benchmark, and these frames are what
+  a module-loaded drawing showed in every run on 2.27.3.
+-->
+<div id="art" data-scroll-draw-pending>
+  <svg viewBox="0 0 600 200">
+    <path d="M20 40 H580" />
+    <path d="M20 100 H580" />
+    <path d="M20 160 C 200 60, 400 200, 580 120" />
+  </svg>
+</div>
+<div class="tail"></div>
+<script type="module">
+  await new Promise((r) => setTimeout(r, 300));
+  const { scrollDraw } = await import('/dist/index.mjs');
+  scrollDraw('#art');
+  // One more frame, so the monitor records the state the engine left.
+  await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+  window.__ready = true;
+</script>
+</body>
+</html>

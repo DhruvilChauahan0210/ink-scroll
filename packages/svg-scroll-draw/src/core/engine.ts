@@ -518,6 +518,11 @@ function buildEngine(
     }
   });
 
+  // Every path now holds its starting state, so the strokes no-flash.css hid
+  // until now can show. Done here, before any branch, in the same task that
+  // wrote the state: no frame paints between the two, on any engine.
+  container.removeAttribute('data-scroll-draw-pending');
+
   if (prefersReduced) {
     if (clipDirection) (container as HTMLElement).style.clipPath = computeClipPath(1);
     onComplete?.();

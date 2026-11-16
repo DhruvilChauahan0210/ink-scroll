@@ -1,6 +1,6 @@
 {
   "name": "svg-scroll-draw",
-  "version": "2.27.3",
+  "version": "2.28.0",
   "description": "SVG line drawing on scroll, on the browser's own scroll timeline (CSS animation-timeline, JS fallback). Drop-in for AOS, ScrollReveal and vivus. Plus reveal, pin, snap, text, video and image-sequence scrub. Zero dependencies. React, Vue, Svelte, Solid, Angular, Astro, vanilla JS",
   "keywords": [
     "svg",
@@ -189,6 +189,7 @@
   },
   "files": [
     "dist",
+    "no-flash.css",
     "README.md",
     "LICENSE"
   ],
@@ -203,6 +204,7 @@
         "default": "./dist/index.cjs"
       }
     },
+    "./no-flash.css": "./no-flash.css",
     "./react": {
       "import": {
         "types": "./dist/react/index.d.mts",
@@ -505,6 +507,7 @@
     "vue": "^3.5.34"
   },
   "sideEffects": [
+    "./no-flash.css",
     "./dist/web-component/*",
     "./dist/cdn/*",
     "./src/web-component/*",

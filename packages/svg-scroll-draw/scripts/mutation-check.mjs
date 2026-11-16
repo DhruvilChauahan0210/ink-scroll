@@ -649,6 +649,15 @@ const MUTATIONS = [
     grep: 'reduced motion keeps scrubbing but does not run the loop',
   },
   {
+    id: 'engine/no-flash',
+    what: 'the engine never removes data-scroll-draw-pending, so with no-flash.css the drawing stays hidden',
+    file: 'src/core/engine.ts',
+    from: "  container.removeAttribute('data-scroll-draw-pending');\n",
+    to: '',
+    spec: 'no-flash',
+    grep: 'no frame paints a stroke whole',
+  },
+  {
     id: 'text/wrap-indent',
     what: 'the spaces between split words keep their width at a line start, so wrapped lines begin indented',
     file: 'src/text/index.ts',

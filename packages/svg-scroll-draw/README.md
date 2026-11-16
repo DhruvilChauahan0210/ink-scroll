@@ -559,6 +559,13 @@ export default function Hero() {
 > Component can render these components directly. Options that are functions, such as `onProgress`,
 > cannot cross from server to client: put those in a `'use client'` component of your own.
 
+> **No flash on load (2.28.0):** until the script runs, an SVG in server HTML is drawn in full, so a
+> drawing on screen at load shows finished, then jumps back to empty. Import
+> `svg-scroll-draw/no-flash.css` once (e.g. in your root layout) and it stays hidden until the engine
+> has set its starting state. `<ScrollDraw>` (React and Vue) marks its element
+> `data-scroll-draw-pending`; with `scrollDraw()`, the Svelte action or plain HTML, add that attribute
+> to the container yourself. Without JavaScript the drawing still shows whole.
+
 #### Vue 3
 
 ```vue
@@ -891,7 +898,7 @@ devtools.highlight('#my-element'); // outline for 2 seconds
 |---|---|
 | `svg-scroll-draw` (main, every core API) | 11.9 KB |
 | `svg-scroll-draw/react` (includes the engine) | 15.3 KB |
-| `svg-scroll-draw` + `svg-scroll-draw/react` (together; the engine ships once) | 16.9 KB |
+| `svg-scroll-draw` + `svg-scroll-draw/react` (together; the engine ships once) | 17.0 KB |
 | `svg-scroll-draw/reveal` | 6.1 KB |
 | `svg-scroll-draw/text` | 3.9 KB |
 | `svg-scroll-draw/video` | 3.3 KB |

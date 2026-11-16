@@ -81,8 +81,11 @@ export function ScrollDraw({ children, className, style, ...rest }: ScrollDrawPr
 
   useEngine(ref, options, createEngine);
 
+  // data-scroll-draw-pending: with svg-scroll-draw/no-flash.css imported, the
+  // strokes stay hidden from the server HTML until the engine has set their
+  // starting state (it removes the attribute). Without the CSS it does nothing.
   return (
-    <div ref={ref} className={className} style={style} {...attrs}>
+    <div ref={ref} className={className} style={style} data-scroll-draw-pending="" {...attrs}>
       {children}
     </div>
   );

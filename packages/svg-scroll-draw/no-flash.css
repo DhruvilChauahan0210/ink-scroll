@@ -1,0 +1,18 @@
+/*
+ * svg-scroll-draw/no-flash.css
+ *
+ * Until the engine runs, an SVG in the page's HTML is drawn in full, so a
+ * drawing on screen at load shows finished, then jumps back to empty when the
+ * script sets its starting state. This hides the strokes inside any element
+ * marked `data-scroll-draw-pending` until then: the engine removes the
+ * attribute in the same task that sets the state, so no frame shows either the
+ * finished drawing or a half-set one. <ScrollDraw> in React and Vue add the
+ * attribute for you; on other elements, write it in your markup.
+ *
+ * Only with scripting on: a visitor without JavaScript sees the drawing whole.
+ */
+@media (scripting: enabled) {
+  [data-scroll-draw-pending] :is(path, polyline, line, polygon, rect, circle, ellipse) {
+    stroke-opacity: 0;
+  }
+}

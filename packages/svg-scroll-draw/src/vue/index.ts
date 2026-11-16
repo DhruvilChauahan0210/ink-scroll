@@ -107,7 +107,9 @@ export const ScrollDraw = defineComponent({
       return opts as ScrollDrawOptions;
     }, createEngine);
 
-    return () => h('div', { ref: containerRef }, slots.default?.());
+    // data-scroll-draw-pending: see no-flash.css. The engine removes it once
+    // the paths hold their starting state; without the CSS it does nothing.
+    return () => h('div', { ref: containerRef, 'data-scroll-draw-pending': '' }, slots.default?.());
   },
 });
 

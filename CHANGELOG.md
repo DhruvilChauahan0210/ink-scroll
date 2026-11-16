@@ -1243,6 +1243,31 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ---
 
+## [2.28.0] — 2026-11-16
+
+### Added
+
+- **`svg-scroll-draw/no-flash.css`: no finished drawing before the script
+  runs.** An SVG in the page's HTML is drawn in full until the engine sets its
+  starting state, so a drawing on screen at load showed finished, then jumped
+  back to empty. The GSAP benchmark measured it in every run on 2.27.3 (GSAP's
+  classic scripts run before first paint; a module runs after). The stylesheet
+  hides the strokes inside any element marked `data-scroll-draw-pending`, only
+  with scripting on, and the engine removes the attribute in the same task that
+  sets the state, on every engine: native, JavaScript, autoplay and reduced
+  motion. `<ScrollDraw>` in React and Vue renders the attribute; elsewhere,
+  write it in your markup. It is exported, listed in `files` and marked a side
+  effect so bundlers keep the import.
+
+### Tests
+
+- A browser test (no-flash) loads the library as a module 300 ms after the
+  page and records every frame until it runs: with the stylesheet no frame
+  paints a stroke whole, in Chromium, Firefox and WebKit (30 of 30 runs);
+  without it the same page does, so the test catches the flash. Mutation
+  `engine/no-flash` drops the removal and that test fails it. Unit tests cover
+  the attribute on every engine branch and in React and Vue server HTML.
+
 ## [2.27.3] — 2026-11-14
 
 ### Fixed

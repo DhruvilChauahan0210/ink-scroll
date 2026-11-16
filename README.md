@@ -69,8 +69,8 @@ If this saves you time, a ⭐ [on GitHub](https://github.com/DhruvilChauahan0210
 - **30+ options** — easing, stagger, fade, stroke color/width lerp, fill opacity, clip reveal, morphTo, velocityScale, waypoints, callbacks, repeat, autoReverse, and more
 - **Group / Sequence / Timeline APIs** — animate multiple containers simultaneously, one-after-another, or on independent scroll windows with `loop` for auto-looping after scroll completion
 - **CSS custom property** — `--scroll-draw-progress` is set on every frame so you can drive any CSS animation without a callback
-- **1034 tests across 45 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
-- **343 browser tests on top of those**, run against Chromium, Firefox and WebKit in CI. The unit suite runs in jsdom, where `getTotalLength` is stubbed and `IntersectionObserver` is faked — it can check the engine's arithmetic but nothing about real browser behaviour. Both counts are derived from the suites themselves and enforced in CI, so neither can quietly drift out of date
+- **1043 tests across 46 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
+- **345 browser tests on top of those**, run against Chromium, Firefox and WebKit in CI. The unit suite runs in jsdom, where `getTotalLength` is stubbed and `IntersectionObserver` is faked — it can check the engine's arithmetic but nothing about real browser behaviour. Both counts are derived from the suites themselves and enforced in CI, so neither can quietly drift out of date
 
 ---
 
@@ -190,6 +190,19 @@ In the Next.js App Router this works as it is in a Server Component: `svg-scroll
 is marked `"use client"` (from 2.16.1). Options that are functions, such as `onProgress`, go
 in a `'use client'` component of your own. A complete App Router project is in the
 [Next.js guide](https://svg-scroll-draw.vercel.app/nextjs-scroll-animation).
+
+**No flash on load (2.28.0).** Until the script runs, an SVG in server HTML is drawn in full, so
+a drawing on screen at load shows finished, then jumps back to empty. Import the stylesheet once
+and it stays hidden until the engine has set its starting state:
+
+```tsx
+import 'svg-scroll-draw/no-flash.css'; // e.g. in your root layout
+```
+
+`<ScrollDraw>` (React and Vue) marks its element `data-scroll-draw-pending`; the engine removes
+it in the same task that sets the state. With `scrollDraw()`, the Svelte action or plain HTML,
+put the attribute on the container yourself. Visitors without JavaScript still see the drawing
+whole: the rule only applies with scripting on.
 
 Props are live: change `speed`, `easing` or a `trigger` and the component rebuilds its
 animation (from 2.17.0). A re-render with equal props — an inline `trigger={{ … }}`, a new
@@ -931,16 +944,16 @@ outgrows its budget.
 | Entry point                          | Raw | Gzipped |
 |--------------------------------------|----:|--------:|
 | `svg-scroll-draw/nuxt`               | 45.2 KB | **16.0 KB** |
-| `svg-scroll-draw/vue`                | 44.2 KB | **15.5 KB** |
-| `svg-scroll-draw/react`              | 42.9 KB | **15.3 KB** |
-| `svg-scroll-draw/angular`            | 41.6 KB | **14.8 KB** |
+| `svg-scroll-draw/vue`                | 44.2 KB | **15.6 KB** |
+| `svg-scroll-draw/react`              | 43.0 KB | **15.3 KB** |
+| `svg-scroll-draw/angular`            | 41.7 KB | **14.8 KB** |
 | `svg-scroll-draw/solid`              | 41.5 KB | **14.8 KB** |
-| `svg-scroll-draw/svelte`             | 41.8 KB | **14.7 KB** |
-| `svg-scroll-draw/astro`              | 34.2 KB | **12.3 KB** |
+| `svg-scroll-draw/svelte`             | 41.9 KB | **14.8 KB** |
+| `svg-scroll-draw/astro`              | 34.3 KB | **12.3 KB** |
 | `svg-scroll-draw`                    | 33.1 KB | **11.9 KB** |
 | `dist/cdn/svg-scroll-draw.global.js` | 31.7 KB | **11.7 KB** |
-| `svg-scroll-draw/group`              | 29.8 KB | **10.5 KB** |
-| `svg-scroll-draw/web-component`      | 21.6 KB | **8.3 KB** |
+| `svg-scroll-draw/group`              | 29.9 KB | **10.5 KB** |
+| `svg-scroll-draw/web-component`      | 21.7 KB | **8.3 KB** |
 | `svg-scroll-draw/reveal`             | 14.4 KB | **6.1 KB** |
 | `svg-scroll-draw/horizontal`         | 14.7 KB | **6.0 KB** |
 | `svg-scroll-draw/scrollreveal/react` | 12.3 KB | **4.8 KB** |
@@ -963,7 +976,7 @@ outgrows its budget.
 | `svg-scroll-draw/pin`                | 3.7 KB | **1.6 KB** |
 | `svg-scroll-draw/lenis`              | 0.5 KB | **0.3 KB** |
 
-Entries share code through chunks instead of each carrying its own copy, so `svg-scroll-draw` + `svg-scroll-draw/react` together is **16.9 KB**, not 11.9 KB + 15.3 KB.
+Entries share code through chunks instead of each carrying its own copy, so `svg-scroll-draw` + `svg-scroll-draw/react` together is **17.0 KB**, not 11.9 KB + 15.3 KB.
 <!-- size-table:end -->
 
 The framework entries are larger because each re-exports the full API surface for that

@@ -82,9 +82,9 @@ export const SELF_ENTRIES: Record<string, number> = {
   // `svg-scroll-draw/react`: every component, engines included.
   react: 15.3,
   // Each framework landing quotes its own entry, wrapper and engines included.
-  vue: 15.5,
+  vue: 15.6,
   nuxt: 16.0,
-  svelte: 14.7,
+  svelte: 14.8,
   solid: 14.8,
   angular: 14.8,
   astro: 12.3,
