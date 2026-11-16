@@ -482,7 +482,7 @@
     "build:lowmem": "node scripts/build-lowmem.mjs",
     "dev": "tsup --watch",
     "typecheck": "tsc --noEmit",
-    "prepare": "npm run build",
+    "prepare": "node scripts/prepare.mjs",
     "size": "node scripts/size.mjs",
     "size:check": "node scripts/size.mjs --check",
     "test": "vitest run",
