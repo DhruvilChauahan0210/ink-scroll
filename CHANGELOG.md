@@ -8,6 +8,18 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### Site
 
+- **Benchmark: GSAP vs svg-scroll-draw.** `/benchmarks/gsap-vs-svg-scroll-draw`
+  scrolls six scenarios (draw one path, draw many, staggered draw, two card
+  reveals, pin and scrub) with each library in Chromium, Firefox and WebKit:
+  15 timed runs, two scroll speeds, Chromium also at 4× CPU throttle, behind a
+  parity gate that both libraries end in the same state. Measured on 2.27.3
+  against GSAP 3.15.0, Chromium main-thread time: svg-scroll-draw spends less
+  on all three draws in every condition, and on pin and scrub in three of four
+  (GSAP is ahead unthrottled at slow scroll). GSAP spends less on card reveals:
+  the matched setup in every condition, the usual setup at slow scroll (no
+  measurable difference at fast). The page says so. Every result is on the page and at `results.json`;
+  `npm run bench:gsap` reruns it.
+
 - **Blog: scroll-drawn Vue 3 components, installed with shadcn-vue.**
   `/blog/vue-scroll-animation-components`, the Vue counterpart of the Svelte
   post: install the Vue blocks with shadcn-vue, put `v-if` on `ScrollDraw`

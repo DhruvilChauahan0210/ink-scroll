@@ -197,7 +197,7 @@ at all.
 - [x] `/blog/css-cubic-bezier-easing` says a `cubic-bezier()` string works since 2.26.0
 - [x] The draw dash is `L 2L` (core/dash.ts) in scrollDraw (JS and native), timelines and Cinematic: with an equal gap WebKit painted a cap dot on undrawn diagonal lines and closed outlines (`e2e/round-cap.spec.ts`, screenshot-compared in three engines; its mutation runs in WebKit)
 - [x] Tagged and published: v2.24.0, v2.25.0 (`previous`), v2.26.0 (`latest`), 2026-11-13
-- [ ] GSAP benchmark: the full ~1 h run on `feat/gsap-bench`, on an idle machine
+- [x] GSAP benchmark: full run 2026-11-16 (9.7 h, three browsers), published at `/benchmarks/gsap-vs-svg-scroll-draw` with every result, GSAP's wins included (card reveals, pin and scrub unthrottled at slow scroll)
 - [ ] Request indexing for the new pages (queue in `reports/indexing-queue.md`; sitemap resubmitted 2026-11-14, 112 URLs read; Google's quota refused the first request that day); Search Console review in 2–3 weeks (snapshot: `reports/search-console-2026-11-13.md`)
 - [ ] shadcn directory listing: the one-colour SVG logo is at `apps/demo/public/logo.svg` (served at /logo.svg); still needs signed commits by the owner
 - [x] Awesome-list PRs opened 2026-11-13: awesome-shadcn-ui#762, awesome-web-components#166, awesome-ui-component-library#80 (waiting on maintainers)
