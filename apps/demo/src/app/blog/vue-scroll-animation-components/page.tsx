@@ -9,9 +9,12 @@ import { BlogArticle, Section, Code, Callout, Closing } from '@/components/blog/
 // blocks", "vue 3 svg animation", "vue draw svg on scroll", "vue template ref
 // composable null". The listings are files in ./listings, printed from disk, and
 // were mounted in a Vite + Vue 3 app (scratch harness) before publishing:
-// vue-tsc clean; in Chromium the spiral still drawing with its centre at 65% of
+// in Chromium the spiral still drawing with its centre at 65% of
 // the screen and finished at 45%; without v-if the line shows whole and never
-// animates; with the ref bound as an expression the composable gets no element and nothing draws.
+// animates (3 of 3 on a page where nothing else moves; it drew only when a later
+// mount elsewhere changed the layout and every instance re-measured); with the ref bound as an expression the composable gets no
+// element and nothing draws. vue-tsc (noUnusedLocals, as create-vite sets it)
+// reports a template ref used only by name as unused, Vue's own ref() included.
 const SLUG = 'vue-scroll-animation-components';
 const TITLE = 'Scroll-Drawn Vue 3 Components, Installed With shadcn-vue';
 const DESCRIPTION =
@@ -149,6 +152,11 @@ export default function Page() {
           site had that mistake until 2.27.1, along with the file <code>npx svg-scroll-draw init</code> writes for Vue,
           and nothing errored; a check in CI now rejects it.
         </p>
+        <Callout k="vue-tsc">
+          With <code>noUnusedLocals</code> on, as a new Vite app sets it, vue-tsc reports <code>logo</code> as declared
+          but never read: it does not count a ref the template names only by string. It reports Vue&apos;s own{' '}
+          <code>ref()</code> the same way. The binding works; the report is the type checker&apos;s.
+        </Callout>
       </Section>
 
       <Section id="options" k="components" title="ScrollAnimate takes one options object">
