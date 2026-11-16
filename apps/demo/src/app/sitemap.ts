@@ -81,13 +81,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // ── Comparison pages ────────────────────────────────────────────────────
     {
       url: `${SITE_URL}/vs-gsap`,
-      lastModified: new Date("2026-11-13"),
+      lastModified: new Date("2026-11-16"),
       changeFrequency: "monthly",
       priority: 0.9,
     },
     {
       url: `${SITE_URL}/benchmarks/gsap-vs-svg-scroll-draw`,
-      lastModified: new Date("2026-11-13"),
+      lastModified: new Date("2026-11-16"),
       changeFrequency: "monthly",
       priority: 0.8,
     },
@@ -434,13 +434,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${SITE_URL}/blog/replace-gsap-scrolltrigger`,
-      lastModified: new Date("2026-11-07"),
+      lastModified: new Date("2026-11-16"),
       changeFrequency: "monthly",
       priority: 0.9,
     },
     {
       url: `${SITE_URL}/blog/gsap-drawsvg-alternative`,
-      lastModified: new Date("2026-11-13"),
+      lastModified: new Date("2026-11-16"),
       changeFrequency: "monthly",
       priority: 0.9,
     },
