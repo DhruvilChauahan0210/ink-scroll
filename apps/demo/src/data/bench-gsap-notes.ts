@@ -6,14 +6,10 @@
  * last run's notes.
  */
 export const RUN_NOTES: { run: string; notes: string[] } = {
-  run: '',
-  notes: [],
+  // The run from 2026-11-15 20:02 to 2026-11-16 05:44 IST (log: reports/bench-run-2026-11-16.log).
+  run: '2026-11-16',
+  notes: [
+    'This run: one laptop on mains power from start to end (the log reads the power source at both), its lid open and kept awake.',
+    'For about an hour and a half during the Chromium rounds, light work ran alongside: type checks, one short test of a Svelte app and a few page loads. Every round runs all cells in a shuffled order, so it fell on both libraries alike, but it widens the Chromium intervals.',
+  ],
 };
-
-// Draft for the run that started 2026-11-15 20:02 IST (fill in `run` with its
-// date from bench-gsap.json and check each line against /tmp/bench-run.log):
-// - Started on battery (68%); on mains power from about 22:00 to the end.
-// - Light work ran alongside for a few minutes in Chromium's first browser:
-//   type checks, one short Svelte app test and a few page loads, between 22:15
-//   and 23:30. Every round runs all cells in a shuffled order, so this lands
-//   on both libraries alike, but it widens the Chromium intervals.
