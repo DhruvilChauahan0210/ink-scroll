@@ -11,7 +11,7 @@ import { BlogArticle, Section, Code, Callout, Closing } from '@/components/blog/
 // were mounted in a Vite + Vue 3 app (scratch harness) before publishing:
 // vue-tsc clean; in Chromium the spiral still drawing with its centre at 65% of
 // the screen and finished at 45%; without v-if the line shows whole and never
-// animates; with :ref="logo" the composable's ref stays null and nothing draws.
+// animates; with the ref bound as an expression the composable gets no element and nothing draws.
 const SLUG = 'vue-scroll-animation-components';
 const TITLE = 'Scroll-Drawn Vue 3 Components, Installed With shadcn-vue';
 const DESCRIPTION =
