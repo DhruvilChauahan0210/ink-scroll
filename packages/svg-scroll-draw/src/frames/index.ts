@@ -39,6 +39,12 @@ export interface ScrollFramesOptions {
    * canvas shows the nearest loaded frame until that one arrives.
    */
   onProgress?: (alpha: number, frame: number) => void;
+  /**
+   * Write `--scroll-draw-progress` on the element every frame, for CSS to read
+   * (default true). The variable inherits, so each write recalculates the style
+   * of everything inside the element: turn it off when nothing reads it.
+   */
+  progressVar?: boolean;
 }
 
 // ── Engine ────────────────────────────────────────────────────────────────────
@@ -100,6 +106,7 @@ export function scrollFrames(
     onLoad,
     onComplete,
     onProgress,
+    progressVar = true,
   } = options || ({} as ScrollFramesOptions);
 
   // Every input is checked before anything is set up: a refusal leaves no
@@ -341,7 +348,7 @@ export function scrollFrames(
 
   function applyAlpha(alpha: number): void {
     wanted = Math.min(last, Math.max(0, Math.round(alpha * last)));
-    canvas.style.setProperty('--scroll-draw-progress', String(alpha));
+    if (progressVar) canvas.style.setProperty('--scroll-draw-progress', String(alpha));
     paint();
     fire(onProgress, alpha, wanted);
   }

@@ -69,7 +69,7 @@ If this saves you time, a ⭐ [on GitHub](https://github.com/DhruvilChauahan0210
 - **30+ options** — easing, stagger, fade, stroke color/width lerp, fill opacity, clip reveal, morphTo, velocityScale, waypoints, callbacks, repeat, autoReverse, and more
 - **Group / Sequence / Timeline APIs** — animate multiple containers simultaneously, one-after-another, or on independent scroll windows with `loop` for auto-looping after scroll completion
 - **CSS custom property** — `--scroll-draw-progress` is set on every frame so you can drive any CSS animation without a callback
-- **1043 tests across 46 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
+- **1046 tests across 47 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
 - **345 browser tests on top of those**, run against Chromium, Firefox and WebKit in CI. The unit suite runs in jsdom, where `getTotalLength` is stubbed and `IntersectionObserver` is faked — it can check the engine's arithmetic but nothing about real browser behaviour. Both counts are derived from the suites themselves and enforced in CI, so neither can quietly drift out of date
 
 ---
@@ -548,6 +548,12 @@ Every instance sets `--scroll-draw-progress` on the container element on every f
 scrollDraw('#hero-svg', { easing: 'ease-out', once: true });
 ```
 
+The variable inherits, so each write also recalculates the style of everything inside the
+element. Where nothing reads it, turn it off with `progressVar: false` (every API takes it).
+**`scrollReveal` leaves it off by default from 2.29.0:** a 60-card reveal spent most of its
+main-thread time on it (76 ms → 41 ms with it off, median of 7, Chromium at 4× CPU slowdown). If your CSS reads
+`--scroll-draw-progress` inside a revealed element, pass `scrollReveal('.card', { progressVar: true })`.
+
 ---
 
 ## CSS timing functions
@@ -943,28 +949,28 @@ outgrows its budget.
 <!-- size-table:start -->
 | Entry point                          | Raw | Gzipped |
 |--------------------------------------|----:|--------:|
-| `svg-scroll-draw/nuxt`               | 45.2 KB | **16.0 KB** |
+| `svg-scroll-draw/nuxt`               | 45.3 KB | **16.1 KB** |
 | `svg-scroll-draw/vue`                | 44.2 KB | **15.6 KB** |
-| `svg-scroll-draw/react`              | 43.0 KB | **15.3 KB** |
-| `svg-scroll-draw/angular`            | 41.7 KB | **14.8 KB** |
+| `svg-scroll-draw/react`              | 43.0 KB | **15.4 KB** |
+| `svg-scroll-draw/angular`            | 41.7 KB | **14.9 KB** |
 | `svg-scroll-draw/solid`              | 41.5 KB | **14.8 KB** |
 | `svg-scroll-draw/svelte`             | 41.9 KB | **14.8 KB** |
-| `svg-scroll-draw/astro`              | 34.3 KB | **12.3 KB** |
+| `svg-scroll-draw/astro`              | 34.2 KB | **12.4 KB** |
 | `svg-scroll-draw`                    | 33.1 KB | **11.9 KB** |
-| `dist/cdn/svg-scroll-draw.global.js` | 31.7 KB | **11.7 KB** |
-| `svg-scroll-draw/group`              | 29.9 KB | **10.5 KB** |
-| `svg-scroll-draw/web-component`      | 21.7 KB | **8.3 KB** |
+| `dist/cdn/svg-scroll-draw.global.js` | 31.6 KB | **11.7 KB** |
+| `svg-scroll-draw/group`              | 29.8 KB | **10.5 KB** |
+| `svg-scroll-draw/web-component`      | 21.6 KB | **8.3 KB** |
 | `svg-scroll-draw/reveal`             | 14.4 KB | **6.1 KB** |
 | `svg-scroll-draw/horizontal`         | 14.7 KB | **6.0 KB** |
 | `svg-scroll-draw/scrollreveal/react` | 12.3 KB | **4.8 KB** |
 | `svg-scroll-draw/scrollreveal`       | 12.1 KB | **4.7 KB** |
-| `svg-scroll-draw/timeline`           | 10.7 KB | **4.7 KB** |
+| `svg-scroll-draw/timeline`           | 10.8 KB | **4.7 KB** |
 | `dist/cdn/scrollreveal.global.js`    | 11.7 KB | **4.6 KB** |
 | `svg-scroll-draw/frames`             | 9.5 KB | **4.4 KB** |
 | `svg-scroll-draw/vivus/react`        | 12.0 KB | **4.3 KB** |
 | `svg-scroll-draw/vivus`              | 11.7 KB | **4.2 KB** |
+| `svg-scroll-draw/text`               | 8.8 KB | **3.9 KB** |
 | `dist/cdn/vivus.global.js`           | 11.1 KB | **3.9 KB** |
-| `svg-scroll-draw/text`               | 8.7 KB | **3.9 KB** |
 | `svg-scroll-draw/cinematic`          | 8.2 KB | **3.7 KB** |
 | `svg-scroll-draw/aos/react`          | 9.2 KB | **3.4 KB** |
 | `svg-scroll-draw/video`              | 7.1 KB | **3.3 KB** |
@@ -976,7 +982,7 @@ outgrows its budget.
 | `svg-scroll-draw/pin`                | 3.7 KB | **1.6 KB** |
 | `svg-scroll-draw/lenis`              | 0.5 KB | **0.3 KB** |
 
-Entries share code through chunks instead of each carrying its own copy, so `svg-scroll-draw` + `svg-scroll-draw/react` together is **17.0 KB**, not 11.9 KB + 15.3 KB.
+Entries share code through chunks instead of each carrying its own copy, so `svg-scroll-draw` + `svg-scroll-draw/react` together is **17.0 KB**, not 11.9 KB + 15.4 KB.
 <!-- size-table:end -->
 
 The framework entries are larger because each re-exports the full API surface for that

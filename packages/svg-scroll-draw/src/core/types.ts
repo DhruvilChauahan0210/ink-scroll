@@ -142,6 +142,12 @@ export interface ScrollDrawOptions {
    * - `false`: always use the JS engine.
    */
   native?: boolean;
+  /**
+   * Write `--scroll-draw-progress` on the element every frame, for CSS to read
+   * (default true). The variable inherits, so each write recalculates the style
+   * of everything inside the element: turn it off when nothing reads it.
+   */
+  progressVar?: boolean;
 }
 
 export interface ScrollDrawInstance {

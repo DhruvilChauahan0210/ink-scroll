@@ -23,6 +23,12 @@ export interface ScrollTextOptions {
   trigger?: TriggerConfig;
   once?: boolean;
   onComplete?: () => void;
+  /**
+   * Write `--scroll-draw-progress` on the element every frame, for CSS to read
+   * (default true). The variable inherits, so each write recalculates the style
+   * of everything inside the element: turn it off when nothing reads it.
+   */
+  progressVar?: boolean;
 }
 
 // ── Text splitting helpers ────────────────────────────────────────────────────
@@ -214,6 +220,7 @@ function buildText(el: HTMLElement, options: ScrollTextOptions, prefersReduced: 
     trigger = {},
     once    = true,
     onComplete,
+    progressVar = true,
   } = options;
 
   const easeFn         = resolveEasing(easing, 'ease-out');
@@ -243,7 +250,7 @@ function buildText(el: HTMLElement, options: ScrollTextOptions, prefersReduced: 
   }
 
   function applyAll(masterAlpha: number): void {
-    el.style.setProperty('--scroll-draw-progress', String(masterAlpha));
+    if (progressVar) el.style.setProperty('--scroll-draw-progress', String(masterAlpha));
     spans.forEach((span, i) => {
       const ua = easeFn(unitAlpha(masterAlpha, i, n, stagger));
       applyUnitAlpha(span, ua);

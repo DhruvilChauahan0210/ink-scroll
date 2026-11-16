@@ -79,6 +79,12 @@ export interface ScrollDrawTimelineOptions {
    * Set to `false` to loop regardless of the preference.
    */
   respectReducedMotion?: boolean;
+  /**
+   * Write `--scroll-draw-progress` on the element every frame, for CSS to read
+   * (default true). The variable inherits, so each write recalculates the style
+   * of everything inside the element: turn it off when nothing reads it.
+   */
+  progressVar?: boolean;
 }
 
 const DEBUG_COLORS = ['#ff90e8', '#ffc900', '#5865F2', '#22c55e', '#f59e0b', '#ef4444', '#aaa', '#60a5fa'];
@@ -128,6 +134,7 @@ export function scrollDrawTimeline(
     debug        = false,
     label,
     respectReducedMotion = true,
+    progressVar = true,
   } = options;
 
   const startConfig = parseTrigger(trigger.start || 'top bottom');
@@ -282,7 +289,7 @@ export function scrollDrawTimeline(
   }
 
   function applyGlobalAlpha(globalAlpha: number) {
-    (container as HTMLElement).style.setProperty('--scroll-draw-progress', String(globalAlpha));
+    if (progressVar) (container as HTMLElement).style.setProperty('--scroll-draw-progress', String(globalAlpha));
     trackData.forEach(({ elements, lengths, from, to, easeFn, fade }) => {
       const range      = to - from;
       const localRaw   = range > 0 ? Math.min(1, Math.max(0, (globalAlpha - from) / range)) : 0;
@@ -306,7 +313,7 @@ export function scrollDrawTimeline(
         if (fade) el.style.opacity = '0';
       });
     });
-    (container as HTMLElement).style.setProperty('--scroll-draw-progress', '0');
+    if (progressVar) (container as HTMLElement).style.setProperty('--scroll-draw-progress', '0');
   }
 
   /** What runs the frames: the trigger window, or the screen while a loop runs. */

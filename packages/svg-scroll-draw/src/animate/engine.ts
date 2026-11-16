@@ -64,6 +64,12 @@ export interface ScrollAnimateOptions {
   onEnterBack?: () => void;
   /** Fires when scroll exits the trigger zone at the start (scrolling back). */
   onLeaveBack?: () => void;
+  /**
+   * Write `--scroll-draw-progress` on the element every frame, for CSS to read
+   * (default true). The variable inherits, so each write recalculates the style
+   * of everything inside the element: turn it off when nothing reads it.
+   */
+  progressVar?: boolean;
 }
 
 // ── Value interpolation ───────────────────────────────────────────────────────
@@ -189,6 +195,7 @@ function buildAnimateEngine(
     native   = true,
     velocityScale = false,
     triggerElement,
+    progressVar = true,
     onProgress,
     onComplete,
     onEnter,
@@ -424,7 +431,7 @@ function buildAnimateEngine(
   }
 
   function applyAlpha(alpha: number): void {
-    (el as HTMLElement).style.setProperty(PROGRESS_VAR, String(alpha));
+    if (progressVar) (el as HTMLElement).style.setProperty(PROGRESS_VAR, String(alpha));
     for (const entry of entries) {
       (el as HTMLElement).style.setProperty(entry.prop, interpolateValue(entry.from, entry.to, alpha));
     }

@@ -1243,6 +1243,34 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ---
 
+## [2.29.0] — 2026-11-16
+
+### Changed
+
+- **`scrollReveal` no longer writes `--scroll-draw-progress` by default.** The
+  variable inherits, so every write recalculates the style of everything
+  inside the element, every frame. A 60-card reveal spent most of its
+  main-thread time there: 76 → 41 ms (style 45.5 → 13.6 ms), median of 7 in
+  Chromium at 4× CPU slowdown, which is where the GSAP benchmark had GSAP ahead
+  on both card reveals. If your CSS reads the variable inside a revealed
+  element, pass `scrollReveal(el, { progressVar: true })`. Every other API
+  writes it as before.
+
+### Added
+
+- **`progressVar` on every API** (scrollDraw, scrollAnimate, scrollCounter,
+  scrollVideo, scrollFrames, scrollText, scrollDrawTimeline, and their
+  framework components): `false` stops the per-frame write where nothing reads
+  it. Defaults to `true` except in scrollReveal. The Vue components take it as
+  a prop.
+
+### Tests
+
+- Unit tests: scrollDraw and scrollAnimate write the variable by default and
+  not with `progressVar: false` (the animation still runs); scrollReveal leaves
+  it off by default and writes it with `progressVar: true`. Flipping the
+  reveal default back fails them.
+
 ## [2.28.0] — 2026-11-16
 
 ### Added

@@ -17,6 +17,12 @@ export interface ScrollCounterOptions {
   once?: boolean;
   decimals?: number;
   onComplete?: () => void;
+  /**
+   * Write `--scroll-draw-progress` on the element every frame, for CSS to read
+   * (default true). The variable inherits, so each write recalculates the style
+   * of everything inside the element: turn it off when nothing reads it.
+   */
+  progressVar?: boolean;
 }
 
 const formatter = ({ decimals, format }: ScrollCounterOptions): ((n: number) => string) =>
@@ -63,6 +69,7 @@ function buildCounter(el: HTMLElement, options: ScrollCounterOptions, prefersRed
     trigger     = {},
     once        = true,
     onComplete,
+    progressVar = true,
   } = options;
 
   const fmt = formatter(options);
@@ -119,7 +126,7 @@ function buildCounter(el: HTMLElement, options: ScrollCounterOptions, prefersRed
 
   function applyAlpha(alpha: number): void {
     el.textContent = fmt(from + (to - from) * alpha);
-    el.style.setProperty('--scroll-draw-progress', String(alpha));
+    if (progressVar) el.style.setProperty('--scroll-draw-progress', String(alpha));
   }
 
   /** Where the scroll is through the window: what runs the frames (core/frame-gate). */

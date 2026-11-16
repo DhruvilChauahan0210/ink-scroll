@@ -1,7 +1,7 @@
 # Project Status — svg-scroll-draw
 
 > Current version: **2.27.3** prepared on branch `fix/text-wrap-indent` (wrapped text starts flush); 2.27.2 tagged and on npm (`latest`)
-> Tests: **1043 unit** across 46 suites · **345 browser tests** per engine (1035 runs
+> Tests: **1046 unit** across 47 suites · **345 browser tests** per engine (1035 runs
 > across Chromium/Firefox/WebKit) · **165 mutations**, each caught by the one test
 > named for it · **91.5% line coverage** (gate 90/90/82/82)
 > Bundle: **11.9 KB gzipped** (main entry as shipped files, chunks included; per-API entries from 0.3 KB) · zero runtime dependencies
@@ -51,7 +51,7 @@
 - [x] `scrollAnimateGroup` + `scrollAnimateSequence` + `scrollParallaxGroup` in `svg-scroll-draw/group`
 
 ### Testing
-- [x] 1043 tests across 46 suites — `motionLive` (reduced motion turned on mid-visit, every engine and the React hook), `reactive` (the wrappers' option fingerprint and live callbacks), `directives` (the built files' "use client"), `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollFrames` (47), `scrollFramesWrappers` (48), `scrollText` (23)
+- [x] 1046 tests across 47 suites — `motionLive` (reduced motion turned on mid-visit, every engine and the React hook), `reactive` (the wrappers' option fingerprint and live callbacks), `directives` (the built files' "use client"), `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollFrames` (47), `scrollFramesWrappers` (48), `scrollText` (23)
 - [x] Initial state fix — `createAnimateEngine` and `scrollCounter` now apply correct alpha immediately on init (no flash before IO fires)
 
 ### Browser tests (Phase 2, `packages/svg-scroll-draw/e2e`)
@@ -197,6 +197,7 @@ at all.
 - [x] `/blog/css-cubic-bezier-easing` says a `cubic-bezier()` string works since 2.26.0
 - [x] The draw dash is `L 2L` (core/dash.ts) in scrollDraw (JS and native), timelines and Cinematic: with an equal gap WebKit painted a cap dot on undrawn diagonal lines and closed outlines (`e2e/round-cap.spec.ts`, screenshot-compared in three engines; its mutation runs in WebKit)
 - [x] Tagged and published: v2.24.0, v2.25.0 (`previous`), v2.26.0 (`latest`), 2026-11-13
+- [x] 2.29.0: `progressVar` option on every API; scrollReveal off by default (60-card reveal 76 → 41 ms main thread, Chromium 4× CPU)
 - [x] 2.28.0: `svg-scroll-draw/no-flash.css` — no finished drawing before the script runs (the benchmark's flash finding); browser test + mutation `engine/no-flash`
 - [x] GSAP benchmark: full run 2026-11-16 (9.7 h, three browsers), published at `/benchmarks/gsap-vs-svg-scroll-draw` with every result, GSAP's wins included (card reveals, pin and scrub unthrottled at slow scroll)
 - [ ] Request indexing for the new pages (queue in `reports/indexing-queue.md`; sitemap resubmitted 2026-11-14, 112 URLs read; Google's quota refused the first request that day); Search Console review in 2–3 weeks (snapshot: `reports/search-console-2026-11-13.md`)

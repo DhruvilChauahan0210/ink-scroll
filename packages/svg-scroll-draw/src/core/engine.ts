@@ -208,6 +208,7 @@ function buildEngine(
     autoplay    = false,
     duration    = 1000,
     native      = true,
+    progressVar = true,
     onProgress,
     onStart,
     onComplete,
@@ -216,6 +217,11 @@ function buildEngine(
     onEnterBack,
     onLeaveBack,
   } = options;
+
+  /** --scroll-draw-progress for CSS to read, unless progressVar is off (types.ts). */
+  const writeVar = (value: string): void => {
+    if (progressVar) (container as HTMLElement).style.setProperty('--scroll-draw-progress', value);
+  };
 
   const clipDirection: 'left' | 'right' | 'top' | 'bottom' | 'center' | false =
     clip === true ? 'left' : (typeof clip === 'string' ? clip : false);
@@ -406,7 +412,7 @@ function buildEngine(
   // ── Apply alpha to all paths ──────────────────────────────────────────────
 
   function applyAlpha(alpha: number, dir: 'forward' | 'reverse'): void {
-    (container as HTMLElement).style.setProperty('--scroll-draw-progress', String(alpha));
+    writeVar(String(alpha));
     if (clipDirection) {
       const a = dir === 'reverse' ? 1 - alpha : alpha;
       (container as HTMLElement).style.clipPath = computeClipPath(a);
@@ -443,7 +449,7 @@ function buildEngine(
   }
 
   function resetPaths(): void {
-    (container as HTMLElement).style.setProperty('--scroll-draw-progress', '0');
+    writeVar('0');
     if (clipDirection) {
       // Reversed, progress 0 is fully shown, as applyAlpha() draws it.
       (container as HTMLElement).style.clipPath = computeClipPath(direction === 'reverse' ? 1 : 0);
@@ -727,7 +733,7 @@ function buildEngine(
         const raw   = Math.min(1, Math.max(0, elapsed / effectiveDuration));
         const alpha = easeFn(raw);
         currentAlpha = alpha;
-        (container as HTMLElement).style.setProperty('--scroll-draw-progress', String(alpha));
+        writeVar(String(alpha));
         (container as HTMLElement).style.clipPath = computeClipPath(direction === 'reverse' ? 1 - alpha : alpha);
         onProgress?.(alpha);
         if (raw < 1) allDone = false;
@@ -745,7 +751,7 @@ function buildEngine(
         const runAlpha = easeFn(runRaw);
         currentAlpha = runAlpha;
         onProgress?.(runAlpha);
-        (container as HTMLElement).style.setProperty('--scroll-draw-progress', String(runAlpha));
+        writeVar(String(runAlpha));
       }
 
       if (waypoints) {
@@ -983,7 +989,7 @@ function buildEngine(
     if (clipDirection) {
       const alpha = latch(0, computeProgress(currentScroll, tStart, tEnd, effectiveSpeed));
       currentAlpha = alpha;
-      (container as HTMLElement).style.setProperty('--scroll-draw-progress', String(alpha));
+      writeVar(String(alpha));
       const visual = effectiveDir === 'reverse' ? 1 - alpha : alpha;
       (container as HTMLElement).style.clipPath = computeClipPath(visual);
       onProgress?.(alpha);
@@ -1012,7 +1018,7 @@ function buildEngine(
         // onComplete still waits for the last path.
         currentAlpha = alpha;
         onProgress?.(alpha);
-        (container as HTMLElement).style.setProperty('--scroll-draw-progress', String(alpha));
+        writeVar(String(alpha));
       }
       if (alpha < 1) allComplete = false;
     });

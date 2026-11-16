@@ -31,6 +31,12 @@ export interface ScrollVideoOptions {
   onReady?: () => void;
   onComplete?: () => void;
   onProgress?: (alpha: number) => void;
+  /**
+   * Write `--scroll-draw-progress` on the element every frame, for CSS to read
+   * (default true). The variable inherits, so each write recalculates the style
+   * of everything inside the element: turn it off when nothing reads it.
+   */
+  progressVar?: boolean;
 }
 
 // ── Engine ────────────────────────────────────────────────────────────────────
@@ -67,6 +73,7 @@ export function scrollVideo(
     onReady,
     onComplete,
     onProgress,
+    progressVar = true,
   } = options;
 
   const measured: Element = triggerElement ?? video;
@@ -131,7 +138,7 @@ export function scrollVideo(
       lastTime = time;
       video.currentTime = time;
     }
-    video.style.setProperty('--scroll-draw-progress', String(alpha));
+    if (progressVar) video.style.setProperty('--scroll-draw-progress', String(alpha));
     onProgress?.(alpha);
   }
 

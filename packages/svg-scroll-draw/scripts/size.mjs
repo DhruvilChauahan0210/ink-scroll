@@ -107,14 +107,20 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
  * build time to add auto-import entries. An app that uses the module imports
  * from svg-scroll-draw/vue and never ships it; only a hand import from /nuxt
  * carries it, as this measure of the whole entry does.
+ *
+ * 2.29.0: react 15.4 -> 15.5 (built 15.41), vue 15.6 -> 15.7 (built 15.64).
+ * `progressVar` (types.ts) guards the --scroll-draw-progress write in each of
+ * seven engines, a few bytes each, and these two entries carry all of them.
+ * It is what takes a 60-card scrollReveal from 76 to 41 ms of main-thread
+ * time (CHANGELOG 2.29.0).
  */
 const BUDGETS_KB = {
   '.':              12.0,
   // The whole library in one IIFE, web component included — the single file a
   // `<script src>` user downloads. Not split, so unchanged by the chunks.
   cdn:              11.9,
-  react:            15.4,
-  vue:              15.6,
+  react:            15.5,
+  vue:              15.7,
   nuxt:             16.1,
   svelte:           14.9,
   solid:            14.9,

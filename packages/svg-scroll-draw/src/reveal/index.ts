@@ -75,6 +75,14 @@ export interface ScrollRevealOptions {
   onEnter?: () => void;
   /** Fires when the last element leaves the trigger zone. */
   onLeave?: () => void;
+  /**
+   * Write `--scroll-draw-progress` on each element every frame. Default: false
+   * (2.29.0): the variable inherits, so each write recalculates the style of
+   * everything inside the card, and a 60-card reveal spent most of its
+   * main-thread time on that. Pass true if your CSS reads it inside a revealed
+   * element.
+   */
+  progressVar?: boolean;
 }
 
 export interface ScrollRevealInstance {
@@ -203,6 +211,7 @@ export function scrollReveal(
     trigger,
     onEnter,
     onLeave,
+    progressVar = false,
   } = options;
 
   const fromState = { ...REVEAL_PRESETS[preset], ...from };
@@ -226,6 +235,7 @@ export function scrollReveal(
       easing,
       once,
       native: false,
+      progressVar,
       trigger: by > 0
         ? { start: shift(start, by), end: shift(end, by) }
         : { start, end },

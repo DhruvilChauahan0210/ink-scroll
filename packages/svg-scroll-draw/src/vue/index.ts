@@ -77,6 +77,7 @@ const DRAW_KEYS = {
   strokeWidth: 0, fillOpacity: 0, clip: 2, waypoints: 0, velocityScale: 3, threshold: 0,
   rootMargin: 0, repeat: 0, repeatDelay: 0, morphTo: 0, onProgress: 0, onStart: 0, onComplete: 0,
   onEnter: 0, onLeave: 0, onEnterBack: 0, onLeaveBack: 0, autoplay: 1, duration: 0, native: 1,
+  progressVar: 1,
 } satisfies Record<keyof ScrollDrawOptions, 0 | 1 | 2 | 3>;
 
 const BOOLEAN_TYPES = [null, Boolean, [Boolean, String], [Boolean, Number]];
@@ -290,7 +291,7 @@ export function useScrollFrames(options: MaybeRefOrGetter<FramesInput>) {
  */
 const FRAMES_KEYS = {
   frames: 0, count: 0, trigger: 0, easing: 0, once: 1, axis: 0, triggerElement: 0, fit: 0,
-  concurrency: 0, onReady: 0, onLoad: 0, onComplete: 0, onProgress: 0,
+  concurrency: 0, onReady: 0, onLoad: 0, onComplete: 0, onProgress: 0, progressVar: 1,
 } satisfies Record<keyof ScrollFramesOptions, 0 | 1>;
 
 /**
