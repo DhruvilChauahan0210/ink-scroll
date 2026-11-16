@@ -18,10 +18,11 @@
 
   // The versions the harness checks against node_modules and the package.
   var GSAP_VERSION = '3.15.0';
-  var OURS_VERSION = '2.27.3';
+  var OURS_VERSION = '2.29.0';
   var CDN = 'https://cdn.jsdelivr.net/npm/';
   var GSAP = CDN + 'gsap@' + GSAP_VERSION + '/dist/';
-  var OURS = CDN + 'svg-scroll-draw@' + OURS_VERSION + '/dist/';
+  var OURS_ROOT = CDN + 'svg-scroll-draw@' + OURS_VERSION + '/';
+  var OURS = OURS_ROOT + 'dist/';
   // svg-scroll-draw's ES modules, so the setups import it as an app would. (Its
   // single-file script build has scrollDraw but not scrollReveal or scrollPin.)
   var IMPORTS = {
@@ -365,7 +366,11 @@
   function initialOk() {
     var els = sc.probe(), el = els[els.length - 1];
     if (sc.kind === 'draw') {
-      var d = drawn(el);
+      // A stroke that is not painted shows nothing, finished or not: that is
+      // the empty starting state (no-flash.css hides strokes this way until the
+      // engine runs). The same rule for every library.
+      var cs = getComputedStyle(el);
+      var d = parseFloat(cs.strokeOpacity) === 0 || parseFloat(cs.opacity) === 0 ? 0 : drawn(el);
       if (d > 0.99) bench.flash = true;
       return d < 0.01;
     }
@@ -404,6 +409,28 @@
   };
   bench.rafCalls = function () { return rafCalls; };
   bench.maxScroll = function () { return document.documentElement.scrollHeight - innerHeight; };
+
+  /* ── no-flash.css (2.28.0), for svg-scroll-draw ─────────────────────────────── */
+
+  // As its README says to use it: the shipped stylesheet in <head> before the
+  // first paint, as a bundled stylesheet would be, and the containers each setup draws
+  // marked data-scroll-draw-pending, which the engine removes. Card reveals
+  // have no strokes, so it does nothing for C1 and C2.
+  // svg-scroll-draw's no-flash.css, byte for byte: the harness refuses to run
+  // if it differs from the package's file (scripts/bench-gsap.mjs).
+  var NO_FLASH_CSS = "/*\n * svg-scroll-draw/no-flash.css\n *\n * Until the engine runs, an SVG in the page's HTML is drawn in full, so a\n * drawing on screen at load shows finished, then jumps back to empty when the\n * script sets its starting state. This hides the strokes inside any element\n * marked `data-scroll-draw-pending` until then: the engine removes the\n * attribute in the same task that sets the state, so no frame shows either the\n * finished drawing or a half-set one. <ScrollDraw> in React and Vue add the\n * attribute for you; on other elements, write it in your markup.\n *\n * Only with scripting on: a visitor without JavaScript sees the drawing whole.\n */\n@media (scripting: enabled) {\n  [data-scroll-draw-pending] :is(path, polyline, line, polygon, rect, circle, ellipse) {\n    stroke-opacity: 0;\n  }\n}\n";
+  var PENDING = {
+    'a-draw-one': '#a',
+    'b1-draw-many': '.b1 svg',
+    'b2-draw-stagger': '#b2',
+    'd-pin-scrub': '#d svg',
+  };
+  if ((lib === 'ours' || lib === 'ours-js') && PENDING[name]) {
+    var st = document.createElement('style');
+    st.textContent = NO_FLASH_CSS;
+    document.head.appendChild(st);
+    document.querySelectorAll(PENDING[name]).forEach(function (el) { el.setAttribute('data-scroll-draw-pending', ''); });
+  }
 
   /* ── Libraries, then the setup ───────────────────────────────────────────── */
 

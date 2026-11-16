@@ -104,6 +104,11 @@ function die(msg) {
 const shared = readFileSync(join(pagesDir, 'shared.js'), 'utf8');
 const urlGsap = shared.match(/GSAP_VERSION = '([^']+)'/)?.[1];
 const urlOurs = shared.match(/OURS_VERSION = '([^']+)'/)?.[1];
+// The scenario pages carry svg-scroll-draw's no-flash.css inline: it has to be the shipped file.
+const inlineNoFlash = JSON.parse(shared.match(/var NO_FLASH_CSS = ("(?:[^"\\]|\\.)*");/)?.[1] ?? 'null');
+if (inlineNoFlash !== readFileSync(join(repoRoot, 'packages/svg-scroll-draw/no-flash.css'), 'utf8')) {
+  die('shared.js NO_FLASH_CSS differs from packages/svg-scroll-draw/no-flash.css. Copy the file in again.');
+}
 const gsapPkg = JSON.parse(readFileSync(require.resolve('gsap/package.json'), 'utf8'));
 const oursPkg = JSON.parse(readFileSync(join(repoRoot, 'packages/svg-scroll-draw/package.json'), 'utf8'));
 const gsapDist = join(dirname(require.resolve('gsap/package.json')), 'dist');
@@ -160,6 +165,8 @@ const served = new Map();
 function localFor(url) {
   const g = url.match(/\/npm\/gsap@([^/]+)\/dist\/([\w.]+\.js)$/);
   if (g) return join(gsapDist, g[2]);
+  // no-flash.css sits at the package root, beside dist/ (2.28.0).
+  if (/\/npm\/svg-scroll-draw@[^/]+\/no-flash\.css$/.test(url)) return join(oursDist, '..', 'no-flash.css');
   const o = url.match(/\/npm\/svg-scroll-draw@[^/]+\/dist\/([\w./-]+\.mjs)$/);
   if (o) {
     const file = join(oursDist, normalize(o[1]));
@@ -173,7 +180,14 @@ async function routeLibraries(context) {
     const file = localFor(route.request().url());
     if (!file) return route.abort();
     served.set(route.request().url(), file);
-    await route.fulfill({ status: 200, contentType: 'text/javascript; charset=utf-8', body: readFileSync(file) });
+    const css = file.endsWith('.css');
+    await route.fulfill({
+      status: 200,
+      contentType: css ? 'text/css; charset=utf-8' : 'text/javascript; charset=utf-8',
+      // The pages read no-flash.css with a request from localhost: as jsDelivr does, allow it.
+      headers: { 'Access-Control-Allow-Origin': '*' },
+      body: readFileSync(file),
+    });
   });
 }
 
