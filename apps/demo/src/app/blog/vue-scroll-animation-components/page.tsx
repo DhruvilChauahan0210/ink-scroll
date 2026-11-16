@@ -155,7 +155,7 @@ export default function Page() {
         <Callout k="vue-tsc">
           With <code>noUnusedLocals</code> on, as a new Vite app sets it, vue-tsc reports <code>logo</code>{' '}
           as declared but never read: it does not count a ref the template names only by string. It reports
-          Vue&apos;s own <code>ref()</code> the same way. The binding works; the report is the type checker&apos;s.
+          Vue’s own <code>ref()</code> the same way. The binding works; the report is the type checker’s.
         </Callout>
       </Section>
 
