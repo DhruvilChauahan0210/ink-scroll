@@ -51,3 +51,6 @@ next-env.d.ts
 packages/*/test-results/
 packages/*/playwright-report/
 packages/*/blob-report/
+
+# Local tool state
+.nebula/

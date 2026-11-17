@@ -1,0 +1,105 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "demo",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev"
+      ],
+      "port": 3000
+    },
+    {
+      "name": "demo-prod-3200",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "start",
+        "--workspace=apps/demo",
+        "--",
+        "-p",
+        "3200"
+      ],
+      "port": 3200
+    },
+    {
+      "name": "scrollfx",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "--prefix",
+        "/Users/dhruvilchauhan/Developer/CDH/scrollfx",
+        "run",
+        "dev"
+      ],
+      "port": 4400
+    },
+    {
+      "name": "demo-dev-3210",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev",
+        "--workspace=apps/demo",
+        "--",
+        "-p",
+        "3210"
+      ],
+      "port": 3210
+    },
+    {
+      "name": "x-static",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "4610",
+        "--directory",
+        "launch-video/public"
+      ],
+      "port": 4610
+    },
+    {
+      "name": "bench-prod-3300",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "next",
+        "start",
+        "/Users/dhruvilchauhan/Developer/CDH/ink-scroll-bench/apps/demo",
+        "-p",
+        "3300"
+      ],
+      "port": 3300
+    },
+    {
+      "name": "scrollfx-prod-4410",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "next",
+        "start",
+        "/Users/dhruvilchauhan/Developer/CDH/scrollfx",
+        "-p",
+        "4410"
+      ],
+      "port": 4410
+    },
+    {
+      "name": "scrollfx-charts",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": [
+        "-c",
+        "cd /Users/dhruvilchauhan/Developer/CDH/scrollfx-wt-charts && exec npx next dev -p 4420"
+      ],
+      "port": 4420
+    },
+    {
+      "name": "scrollfx-office",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": [
+        "-c",
+        "cd /Users/dhruvilchauhan/Developer/CDH/scrollfx-wt-office && exec npx next dev -p 4420"
+      ],
+      "port": 4420
+    }
+  ]
+}
