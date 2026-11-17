@@ -27,3 +27,7 @@ Account @CoDhruvil82870, posted from the personal laptop's Chrome, each one appr
 | 2026-11-22 22:30 IST (scheduled) | — | Plan #21 recap: 14 clips × 1.6 s, launch track; GitHub star ask | |
 
 Week complete: 1 posted + 20 scheduled (X → Drafts → Scheduled shows all 20).
+
+## Replies
+
+- 17 Nov 2026 — replied to @AxialisSoftware (https://x.com/AxialisSoftware/status/2122396220286976449), who asked how one `<path>` with several subpaths reveals. Checked first in Chromium, WebKit and Firefox: the dash restarts at every subpath, so they draw together; for a sequence, split into paths and use `stagger: 1`. Reply text approved by CD.

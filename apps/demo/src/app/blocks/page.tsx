@@ -314,20 +314,22 @@ export default function BlocksPage() {
         {/* ── scrollfx: whole sections, built on the library ── */}
         <section className="bk-manual bk-sister" aria-labelledby="bk-sister-title">
           <div className="bk-manual-l">
-            <Strip n={pad(BLOCKS.length + 1)}><span>Whole sections</span><span className="bk-tb-name">scrollfx</span></Strip>
-            <h2 id="bk-sister-title" className="bk-h2">Need a whole section? Try scrollfx</h2>
+            <Strip n={pad(BLOCKS.length + 1)}><span>Sections and components</span><span className="bk-tb-name">scrollfx</span></Strip>
+            <h2 id="bk-sister-title" className="bk-h2">Need a whole section, or a chart? Try scrollfx</h2>
             <p className="bk-desc">
-              The blocks above are single parts. <a href={SCROLLFX}>scrollfx</a> is a separate folio of whole
-              sections built on this library: a hero, a chart, features, steps, a changelog, pricing and a call
-              to action. Each one carries a pen-plotter drawing (a flow field, a contour map, a harmonograph)
-              that draws itself as the reader scrolls. They install with the same shadcn CLI and pick up your
-              theme.
+              The blocks above are single parts. <a href={SCROLLFX}>scrollfx</a> is a separate folio built on
+              this library: whole sections (a hero, features, pricing, team, FAQ, a call to action and more), and{' '}
+              <a href={`${SCROLLFX}/components`}>components</a> to set inside your own pages: line, area, bar,
+              pie, radar and scatter charts, sparklines, highlights, dividers, frames, stamps and arrows. Each
+              one is a pen-plotter drawing that draws itself as the reader scrolls. They install with the same
+              shadcn CLI and pick up your theme.
             </p>
             <div className="bk-sister-cmd">
               <InstallCommand cmd={`npx shadcn@latest add ${SCROLLFX}/r/hero-flow-field.json`} />
             </div>
             <p className="bk-desc bk-sister-links">
               <a href={SCROLLFX}>See every section →</a>
+              <a href={`${SCROLLFX}/components`}>See the components →</a>
               <a href={SCROLLFX_REPO}>Source on GitHub →</a>
             </p>
           </div>

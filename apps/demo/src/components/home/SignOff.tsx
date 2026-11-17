@@ -188,7 +188,8 @@ const PARTS: PartCol[] = [
       { label: 'GitHub', href: GH, external: true },
       { label: 'npm', href: NPM, external: true },
       { label: 'Changelog', href: '/changelog' },
-      { label: 'Blog', href: '/blog' },
+      // Blog is in the nav; the parts list holds four rows, so the sister site takes its place.
+      { label: 'scrollfx', href: 'https://scrollfx-ui.vercel.app', external: true },
     ],
   },
 ];

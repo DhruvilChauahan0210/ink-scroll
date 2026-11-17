@@ -128,7 +128,7 @@
 - ~~Run every framework sample~~ — `test-framework-samples.mjs`, weekly with the starters; it found 8 broken samples and the dev warnings being off in Vite, 2.27.2, 2026-11-14.
 - ~~A post on generative SVG line art~~ — harmonograph and flow field listings, run as printed, 2026-11-15.
 - ~~Tool pages link to the posts about them~~ — read backwards out of `related-links.ts`, 22 of 29 posts gain links, 2026-11-15.
-- ~~Link scrollfx from the site~~ — `/blocks` and the React page, 2026-11-14.
+- ~~Link scrollfx from the site~~ — `/blocks` and the React page, 2026-11-14; its component library site-wide (menus, footers), 2026-11-17.
 - ~~Wrapped `scrollText` lines indented by a space~~ — spaces are plain whitespace, checked flush in the browser, 2.27.3, 2026-11-14.
 - ~~Starters for Vue, Nuxt, SvelteKit and Solid~~ — `examples/`, on StackBlitz, 2.27.1, 2026-11-14 (with the Vue `:ref` fix they turned up).
 - Next for Nuxt: the nuxt.com/modules listing (owner reopens nuxt/modules#1744 in their own words). The real-Nuxt check runs in CI (job `nuxt`).

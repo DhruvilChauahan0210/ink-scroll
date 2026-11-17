@@ -148,6 +148,7 @@ at all.
 - [x] Both READMEs describe scrollfx as the plotter folio it is now
 - [x] Tag and publish: v2.27.3 on npm (`latest`) and both CDNs, 2026-11-14
 - [x] scrollfx linked from `/blocks` (a section with its hero, and a More row) and the React page
+- [x] scrollfx's component library linked site-wide (More menu, phone menu, footer index, home footer) and from the `/blocks` section (2026-11-17)
 - [x] Post: generative SVG line art (`/blog/generative-svg-line-art`), listings imported by its own figures
 - [x] Post: Svelte 5 components with shadcn-svelte (`/blog/svelte-scroll-animation-components`), listings mounted in SvelteKit 2 and checked in Chromium
 - [x] Post: Vue 3 components with shadcn-vue (`/blog/vue-scroll-animation-components`), listings mounted in Vite + Vue 3 and checked in Chromium (v-if race, :ref, vue-tsc note)

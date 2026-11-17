@@ -80,6 +80,8 @@ const RESOURCES: SiteLink[] = [
   { href: '/playground', label: 'Playground' },
   { href: '/verify', label: 'Verify' },
   { href: '/changelog', label: 'Changelog' },
+  // The sister site: sections and components built on this library.
+  { href: 'https://scrollfx-ui.vercel.app/components', label: 'scrollfx components' },
 ];
 
 /** What the "More" menu and the phone menu list below the primary sections. */
