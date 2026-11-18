@@ -4,7 +4,7 @@ Bing: all 93 sitemap URLs submitted 2026-11-12 (Bing Webmaster → URL Submissio
 
 Sitemap resubmitted 2026-11-14: Search Console now reads 112 URLs (was 64 from 2026-11-06).
 
-Updated 2026-11-18: /blog/vue-scroll-animation-components and /blog/svelte-scroll-animation-components are now **indexed** (from the sitemap, no request needed). The first request of the day (T04) hit Quota Exceeded again, at 10:30 IST, the sixth day running. Likely cause: the daily quota resets at midnight Pacific (13:30 IST), so a morning-IST request still counts against Google's previous day. **From now on, request after 13:30 IST.** Inspections today: T05, T08, T09, T10, T13 indexed; T06, T07, T12, T14 discovered, not indexed; T11 unknown to Google. scrollfx: /components (published 17 Nov) is unknown to Google yet; it is in scrollfx's sitemap, which was resubmitted 17 Nov. The "request-indexing" scheduled task no longer exists on this Mac.
+Updated 2026-11-18: /blog/vue-scroll-animation-components and /blog/svelte-scroll-animation-components are now **indexed** (from the sitemap, no request needed). The first request of the day (T04) hit Quota Exceeded again, at 10:30 IST, the sixth day running. Likely cause: the daily quota resets at midnight Pacific (13:30 IST), so a morning-IST request still counts against Google's previous day. **From now on, request after 13:30 IST.** Afternoon run at 14:50 IST: scrollfx /components (S01) → **Indexing requested** (first success in six days); svg-scroll-draw T04 → Quota Exceeded again. So the quota is per property, not per account as noted on 15 Nov, and svg-scroll-draw's is exhausted or near zero while scrollfx's works; svg-scroll-draw pages keep getting indexed from the sitemap regardless (7 more seen today). A scheduled task, request-indexing, now runs this daily at 14:00 IST. Inspections today: T05, T08, T09, T10, T13 indexed; T06, T07, T12, T14 discovered, not indexed; T11 unknown to Google. scrollfx: /components (published 17 Nov) is unknown to Google yet; it is in scrollfx's sitemap, which was resubmitted 17 Nov. The "request-indexing" scheduled task no longer exists on this Mac.
 
 Updated 2026-11-17: both sitemaps resubmitted (svg-scroll-draw, and scrollfx with the three new plates: stats, logos, bento). /benchmarks/gsap-vs-svg-scroll-draw is already indexed. /blog/vue-scroll-animation-components and /blog/svelte-scroll-animation-components are "Discovered – currently not indexed" (found via the sitemap); the first request of the day (the Vue post) hit Quota Exceeded again, the fifth day running. Retry those two first.
 
@@ -26,7 +26,7 @@ It stops for the day at the quota message and leaves the rest `todo`.
 
 | # | URL | Status |
 |---|---|---|
-| S01 | https://scrollfx-ui.vercel.app/components | todo — new 17 Nov, unknown to Google; request first after 13:30 IST (scrollfx property) |
+| S01 | https://scrollfx-ui.vercel.app/components | requested 2026-11-18 (14:50 IST) |
 | T01 | https://svg-scroll-draw.vercel.app/tools | 2026-11-12 (Google) |
 | T02 | https://svg-scroll-draw.vercel.app/svg-line-drawing-generator | 2026-11-12 (Google) |
 | T03 | https://svg-scroll-draw.vercel.app/scroll-reveal-generator | indexed (seen 2026-11-13) |
