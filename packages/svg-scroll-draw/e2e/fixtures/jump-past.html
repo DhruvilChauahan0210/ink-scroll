@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>A jump past a whole window ends where a slow scroll does</title>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+  .lead { height: 1600px; }
+  .gap  { height: 120px; }
+  .tail { height: 1600px; }
+  .item { height: 160px; display: block; }
+  svg.item { width: 300px; }
+  #box { height: 300px; overflow: auto; border: 2px solid #999; width: 340px; }
+  #box .lead { height: 900px; }
+  #box .tail { height: 900px; }
+</style>
+</head>
+<body>
+
+<!--
+  Viewport 900x800. Every window starts below the fold at y = 0 and ends above
+  it at the end of the page. #box scrolls on its own: its drawing's window is
+  below its fold at scrollTop 0 and above it at its end.
+-->
+<div class="lead"></div>
+<svg class="item" id="plain" viewBox="0 0 300 160"><path d="M10 80 H290" stroke="#222" stroke-width="4" fill="none"/></svg>
+<div class="gap"></div>
+<svg class="item" id="once" viewBox="0 0 300 160"><path d="M10 80 H290" stroke="#222" stroke-width="4" fill="none"/></svg>
+<div class="gap"></div>
+<svg class="item" id="reverse" viewBox="0 0 300 160"><path d="M10 80 H290" stroke="#222" stroke-width="4" fill="none"/></svg>
+<div class="gap"></div>
+<svg class="item" id="waypoints" viewBox="0 0 300 160"><path d="M10 80 H290" stroke="#222" stroke-width="4" fill="none"/></svg>
+<div class="gap"></div>
+<svg class="item" id="native" viewBox="0 0 300 160"><path d="M10 80 H290" stroke="#222" stroke-width="4" fill="none"/></svg>
+<div class="gap"></div>
+<div class="item" id="counter">0</div>
+<div class="gap"></div>
+<p class="item" id="text">every word arrives</p>
+<div class="gap"></div>
+<div id="box">
+  <div class="lead"></div>
+  <svg class="item" id="inbox" viewBox="0 0 300 160"><path d="M10 80 H290" stroke="#222" stroke-width="4" fill="none"/></svg>
+  <div class="tail"></div>
+</div>
+<div class="tail"></div>
+<div id="end"></div>
+
+<script type="module">
+import { scrollDraw, scrollCounter } from '/dist/index.mjs';
+import { scrollText } from '/dist/text/index.mjs';
+import { drawnFraction, publish } from './_probe.mjs';
+
+const $ = (sel) => document.querySelector(sel);
+const fired = { plain: 0, once: 0, reverse: 0, waypoints: 0, counter: 0, text: 0, inbox: 0, wp: [] };
+const done = (name) => () => { fired[name]++; };
+
+const instances = {
+  plain: scrollDraw('#plain', { onComplete: done('plain') }),
+  once: scrollDraw('#once', { once: true, onComplete: done('once') }),
+  reverse: scrollDraw('#reverse', { direction: 'reverse', onComplete: done('reverse') }),
+  waypoints: scrollDraw('#waypoints', {
+    onComplete: done('waypoints'),
+    waypoints: { 0.25: () => fired.wp.push(0.25), 0.5: () => fired.wp.push(0.5), 1: () => fired.wp.push(1) },
+  }),
+  // No callbacks: the native CSS path where the browser has one.
+  native: scrollDraw('#native'),
+  counter: scrollCounter('#counter', { to: 100, once: false, onComplete: done('counter') }),
+  text: scrollText('#text', { once: false, onComplete: done('text') }),
+  inbox: scrollDraw('#inbox', { scrollContainer: '#box', onComplete: done('inbox') }),
+};
+
+const words = () => Array.from($('#text').querySelectorAll('span[aria-hidden] '))
+  .filter((s) => s.style.opacity !== '');
+const box = $('#box');
+
+publish({
+  read: () => ({
+    plain: drawnFraction($('#plain path')),
+    once: drawnFraction($('#once path')),
+    reverse: drawnFraction($('#reverse path')),
+    waypoints: drawnFraction($('#waypoints path')),
+    native: drawnFraction($('#native path')),
+    counter: Number($('#counter').textContent),
+    text: words().map((s) => Math.round(Number(getComputedStyle(s).opacity) * 1000) / 1000),
+    inbox: drawnFraction($('#inbox path')),
+    fired: JSON.parse(JSON.stringify(fired)),
+    progresses: Object.fromEntries(Object.entries(instances).map(([k, i]) => [k, Math.round(i.getProgress() * 1000) / 1000])),
+  }),
+  maxScroll: () => document.documentElement.scrollHeight - innerHeight,
+  boxMax: () => box.scrollHeight - box.clientHeight,
+  boxTo: (y) => { box.scrollTop = y; },
+});
+</script>
+</body>
+</html>

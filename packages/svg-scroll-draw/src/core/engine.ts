@@ -302,6 +302,23 @@ function buildEngine(
     debugOverlay = null;
   }
   const firedWaypoints = new Set<number>();
+  /**
+   * The waypoints by position. An object's integer keys come first in a
+   * for-in, so a jump past a whole window fired `1` before `0.25` and `0.5`;
+   * a slow scroll crosses them in order and fired them in order.
+   */
+  const marks = Object.keys(waypoints ?? {})
+    .map((k) => [parseFloat(k), waypoints![k as unknown as number]] as const)
+    .sort((a, b) => a[0] - b[0]);
+  /** Every waypoint at or below `alpha` not yet fired, lowest first. */
+  function fireWaypoints(alpha: number): void {
+    for (const [t, fn] of marks) {
+      if (alpha >= t && !firedWaypoints.has(t)) {
+        firedWaypoints.add(t);
+        fn?.();
+      }
+    }
+  }
 
   // Idle short-circuit state. `lastAppliedScroll` is the scroll position the
   // currently-rendered frame was computed from; NaN means "nothing rendered yet".
@@ -754,16 +771,7 @@ function buildEngine(
         writeVar(String(runAlpha));
       }
 
-      if (waypoints) {
-        const globalAlpha = easeFn(runRaw);
-        for (const key in waypoints) {
-          const t = parseFloat(key);
-          if (globalAlpha >= t && !firedWaypoints.has(t)) {
-            firedWaypoints.add(t);
-            waypoints[key as unknown as number]?.();
-          }
-        }
-      }
+      fireWaypoints(easeFn(runRaw));
 
       return allDone;
     }
@@ -1023,17 +1031,7 @@ function buildEngine(
       if (alpha < 1) allComplete = false;
     });
 
-    // Waypoints
-    if (waypoints) {
-      const rawAlpha = easeFn(computeProgress(currentScroll, tStart, tEnd, effectiveSpeed));
-      for (const key in waypoints) {
-        const t = parseFloat(key);
-        if (rawAlpha >= t && !firedWaypoints.has(t)) {
-          firedWaypoints.add(t);
-          waypoints[key as unknown as number]?.();
-        }
-      }
-    }
+    if (marks.length) fireWaypoints(easeFn(computeProgress(currentScroll, tStart, tEnd, effectiveSpeed)));
 
     // onStart
     if (!started && computeProgress(currentScroll, tStart, tEnd, effectiveSpeed) > 0) {

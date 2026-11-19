@@ -1608,6 +1608,27 @@ const MUTATIONS = [
     grep: 'an undrawn round-cap path paints no pixels',
     project: 'webkit',
   },
+  // ── 2.30.0 ──────────────────────────────────────────────────────────────────
+  // A jump past a whole window ends where a slow scroll does (jump-past.spec):
+  // waypoints in order, and a drawing in a scrolling container still woken.
+  {
+    id: 'jump/waypoint-order',
+    what: 'waypoints fire in the object\'s key order, so a jump fires 1 before 0.25 and 0.5',
+    file: 'src/core/engine.ts',
+    from: '    .sort((a, b) => a[0] - b[0]);',
+    to: '    ;',
+    spec: 'e2e/jump-past.spec.ts',
+    grep: 'down past every window, then back above them',
+  },
+  {
+    id: 'jump/container-gate',
+    what: 'scrollDraw in a scrollContainer listens to the window, so a jump inside the container paints nothing',
+    file: 'src/core/engine.ts',
+    from: '    scrollEl ?? window,\n    [container],',
+    to: '    window,\n    [container],',
+    spec: 'e2e/jump-past.spec.ts',
+    grep: 'down past every window, then back above them',
+  },
 ];
 
 const args = process.argv.slice(2);

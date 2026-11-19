@@ -577,6 +577,18 @@ describe('createEngine — waypoints', () => {
     raf.tick(); // after replay, scrollY still 500 → fires again
     expect(half).toHaveBeenCalledTimes(2);
   });
+
+  it('a jump past every waypoint fires them in order, lowest first', () => {
+    // An object's integer keys come first in a for-in: up to 2.29.0 a jump
+    // fired 1 before 0.25 and 0.5.
+    const order: number[] = [];
+    createEngine(makeContainer(), {
+      waypoints: { 0.25: () => order.push(0.25), 1: () => order.push(1), 0.5: () => order.push(0.5) },
+    });
+    scroll(500); // past the end in one scroll
+    raf.tick();
+    expect(order).toEqual([0.25, 0.5, 1]);
+  });
 });
 
 // ── autoReverse ───────────────────────────────────────────────────────────────
@@ -1254,6 +1266,20 @@ describe('createEngine — autoplay', () => {
     raf.tick();
 
     expect(onComplete).toHaveBeenCalledTimes(1);
+  });
+
+  it('a frame that lands past every waypoint fires them in order', () => {
+    const t = mockPerformanceNow();
+    const order: number[] = [];
+    createEngine(makeContainer([makePath()]), {
+      autoplay: true, duration: 500,
+      waypoints: { 0.5: () => order.push(0.5), 1: () => order.push(1), 0.25: () => order.push(0.25) },
+    });
+    t.now = 0;
+    FakeIO.instances[0].trigger(true);
+    t.now = 600; // a long frame: the whole run at once
+    raf.tick();
+    expect(order).toEqual([0.25, 0.5, 1]);
   });
 
   it('fires onStart on first tick', () => {
