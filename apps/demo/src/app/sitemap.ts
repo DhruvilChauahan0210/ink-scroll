@@ -27,7 +27,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${SITE_URL}/docs`,
-      lastModified: new Date("2026-11-14"),
+      lastModified: new Date("2026-11-19"),
       changeFrequency: "weekly",
       priority: 0.9,
     },

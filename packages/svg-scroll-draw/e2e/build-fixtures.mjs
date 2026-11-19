@@ -35,6 +35,8 @@ const ENTRIES = [
   // Angular), one bundle with all five.
   { name: 'frames-wrappers' },
   { name: 'vue' },
+  // svg-scroll-draw/subpaths with React's and Vue's <ScrollDraw> (2.30.0).
+  { name: 'subpaths' },
   { name: 'solid' },
   {
     name: 'nuxt',

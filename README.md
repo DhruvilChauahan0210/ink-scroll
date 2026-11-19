@@ -69,8 +69,8 @@ If this saves you time, a ⭐ [on GitHub](https://github.com/DhruvilChauahan0210
 - **30+ options** — easing, stagger, fade, stroke color/width lerp, fill opacity, clip reveal, morphTo, velocityScale, waypoints, callbacks, repeat, autoReverse, and more
 - **Group / Sequence / Timeline APIs** — animate multiple containers simultaneously, one-after-another, or on independent scroll windows with `loop` for auto-looping after scroll completion
 - **CSS custom property** — `--scroll-draw-progress` is set on every frame so you can drive any CSS animation without a callback
-- **1046 tests across 47 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
-- **345 browser tests on top of those**, run against Chromium, Firefox and WebKit in CI. The unit suite runs in jsdom, where `getTotalLength` is stubbed and `IntersectionObserver` is faked — it can check the engine's arithmetic but nothing about real browser behaviour. Both counts are derived from the suites themselves and enforced in CI, so neither can quietly drift out of date
+- **1057 tests across 48 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
+- **353 browser tests on top of those**, run against Chromium, Firefox and WebKit in CI. The unit suite runs in jsdom, where `getTotalLength` is stubbed and `IntersectionObserver` is faked — it can check the engine's arithmetic but nothing about real browser behaviour. Both counts are derived from the suites themselves and enforced in CI, so neither can quietly drift out of date
 
 ---
 
@@ -490,7 +490,7 @@ The library falls back to the JS engine automatically when:
 | `velocityScale` | `boolean \| number` | `false` | Scale speed by scroll velocity — faster scrolling draws faster |
 | `repeat` | `number \| "infinite"` | `0` | Repeat the animation N times after completion |
 | `repeatDelay` | `number` | `0` | Milliseconds between repeats |
-| `waypoints` | `Record<number, () => void>` | — | Fire callbacks at specific progress thresholds, e.g. `{ 0.5: fn }` |
+| `waypoints` | `Record<number, () => void>` | — | Fire callbacks at specific progress thresholds, e.g. `{ 0.5: fn }`. A jump past several fires them in order, lowest first |
 | `onProgress` | `(alpha: number) => void` | — | Called every animation frame with current draw progress (0–1) |
 | `onStart` | `() => void` | — | Fires once when the animation begins |
 | `onComplete` | `() => void` | — | Fires once when all paths reach full draw progress |
@@ -514,6 +514,47 @@ scrollDraw('#logo', { trigger: { start: '20%', end: '80%' } });
 ```
 
 Available named anchors: `top`, `center`, `bottom`.
+
+### Paths with several subpaths
+
+Browsers restart the dash pattern at every subpath, so a `<path>` whose `d` has
+several `M`s draws all of them at once, each from its own start. Measured in
+Chromium, WebKit and Firefox: at 30% of the total length, subpaths of 360, 180
+and 80 px showed 186, 180 and 80 px drawn. To draw them one after another, split
+them first with `svg-scroll-draw/subpaths` (2.30.0, 0.8 KB, an entry of its own
+so the draw engine carries none of it):
+
+```js
+import { scrollDraw } from 'svg-scroll-draw';
+import { splitSubpaths, joinSubpaths } from 'svg-scroll-draw/subpaths';
+
+const draw = scrollDraw(splitSubpaths('#signature'), { stagger: 1 });
+
+// Later, to put the markup back as it was:
+draw.destroy();
+joinSubpaths('#signature');
+```
+
+`splitSubpaths(target)` takes a selector (every element it matches), an element or
+a list of elements, splits every `<path>` inside with more than one subpath, and
+returns `target` unchanged, so it chains into `scrollDraw`, `scrollDrawTimeline`
+or any engine. The path keeps its first subpath, so a framework that rendered it
+still finds its node in place; each later subpath is a copy inserted after it with
+the same attributes (class, stroke, transform, style; not `id` or `pathLength`),
+marked `data-scroll-draw-piece`. A relative `m` that starts a later subpath
+becomes an absolute `M` from where the piece before it ends, read from the
+browser, so arcs and every other command go through its own parser. A path with
+one subpath is left alone, and a split path is not split twice.
+`joinSubpaths(target)` removes the pieces and gives each path back its `d`,
+`pathLength` and `style` exactly; destroy the drawing first.
+
+The pieces are ordinary paths: `stagger` orders them in document order and
+decides the overlap (`stagger: 1` draws each in a window of its own, one after
+another). It is a plain function, so it works with every wrapper: call it on the
+element before the drawing starts. In React, in a `useLayoutEffect` of the
+component that renders the `<svg>` (it runs before `<ScrollDraw>`'s effect),
+with `joinSubpaths` in its cleanup; in Vue, in a function ref on the `<svg>`. A
+`d` changed after the split does not reach the pieces: join, then split again.
 
 ---
 
@@ -949,17 +990,17 @@ outgrows its budget.
 <!-- size-table:start -->
 | Entry point                          | Raw | Gzipped |
 |--------------------------------------|----:|--------:|
-| `svg-scroll-draw/nuxt`               | 45.3 KB | **16.1 KB** |
+| `svg-scroll-draw/nuxt`               | 45.2 KB | **16.0 KB** |
 | `svg-scroll-draw/vue`                | 44.2 KB | **15.6 KB** |
-| `svg-scroll-draw/react`              | 43.0 KB | **15.4 KB** |
-| `svg-scroll-draw/angular`            | 41.7 KB | **14.9 KB** |
-| `svg-scroll-draw/solid`              | 41.5 KB | **14.8 KB** |
-| `svg-scroll-draw/svelte`             | 41.9 KB | **14.8 KB** |
-| `svg-scroll-draw/astro`              | 34.2 KB | **12.4 KB** |
-| `svg-scroll-draw`                    | 33.1 KB | **11.9 KB** |
-| `dist/cdn/svg-scroll-draw.global.js` | 31.6 KB | **11.7 KB** |
-| `svg-scroll-draw/group`              | 29.8 KB | **10.5 KB** |
-| `svg-scroll-draw/web-component`      | 21.6 KB | **8.3 KB** |
+| `svg-scroll-draw/react`              | 42.9 KB | **15.4 KB** |
+| `svg-scroll-draw/angular`            | 41.6 KB | **14.8 KB** |
+| `svg-scroll-draw/solid`              | 41.4 KB | **14.8 KB** |
+| `svg-scroll-draw/svelte`             | 41.8 KB | **14.8 KB** |
+| `svg-scroll-draw/astro`              | 34.1 KB | **12.3 KB** |
+| `svg-scroll-draw`                    | 33.0 KB | **11.9 KB** |
+| `dist/cdn/svg-scroll-draw.global.js` | 31.6 KB | **11.8 KB** |
+| `svg-scroll-draw/group`              | 29.7 KB | **10.5 KB** |
+| `svg-scroll-draw/web-component`      | 21.5 KB | **8.3 KB** |
 | `svg-scroll-draw/reveal`             | 14.4 KB | **6.1 KB** |
 | `svg-scroll-draw/horizontal`         | 14.7 KB | **6.0 KB** |
 | `svg-scroll-draw/scrollreveal/react` | 12.3 KB | **4.8 KB** |
@@ -980,6 +1021,7 @@ outgrows its budget.
 | `svg-scroll-draw/snap`               | 5.1 KB | **2.5 KB** |
 | `svg-scroll-draw/devtools`           | 4.0 KB | **1.8 KB** |
 | `svg-scroll-draw/pin`                | 3.7 KB | **1.6 KB** |
+| `svg-scroll-draw/subpaths`           | 1.5 KB | **0.8 KB** |
 | `svg-scroll-draw/lenis`              | 0.5 KB | **0.3 KB** |
 
 Entries share code through chunks instead of each carrying its own copy, so `svg-scroll-draw` + `svg-scroll-draw/react` together is **17.0 KB**, not 11.9 KB + 15.4 KB.

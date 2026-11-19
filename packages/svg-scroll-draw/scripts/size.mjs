@@ -177,6 +177,11 @@ const BUDGETS_KB = {
   // CSS measures it) and '600px', and warns once on anything else.
   pin:               1.6,
   lenis:             0.5,
+  // 2.30.0: splitSubpaths / joinSubpaths, 0.80 KB at its first build. An entry
+  // of its own so the draw engine carries none of it: every other entry stayed
+  // at its 2.29.0 size (main 11.95 -> 11.93 with the waypoint fix's shared
+  // loop). Rounded up with 0.1 KB more.
+  subpaths:          0.9,
 };
 
 /*

@@ -25,6 +25,7 @@ const ENTRIES: Record<string, string> = {
   'pin/index':                'src/pin/index.ts',
   'snap/index':               'src/snap/index.ts',
   'lenis/index':              'src/lenis/index.ts',
+  'subpaths/index':           'src/subpaths/index.ts',
   'reveal/index':             'src/reveal/index.ts',
   'aos/index':                'src/aos/index.ts',
   'scrollreveal/index':       'src/scrollreveal/index.ts',

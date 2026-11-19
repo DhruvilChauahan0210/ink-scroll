@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>svg-scroll-draw/subpaths</title>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+  .lead { height: 1200px; }
+  .gap  { height: 300px; }
+  .tail { height: 3000px; }
+  .item { display: block; width: 400px; height: 200px; }
+  svg { display: block; }
+  #geom-ref { visibility: hidden; position: absolute; left: 0; top: 0; }
+</style>
+</head>
+<body>
+
+<!--
+  Viewport 900x800. Every drawing is 200px tall and 400 wide, with three
+  subpaths of 360, 180 and 80 px. With stagger 1 each piece's window starts
+  where the one before ends, so the drawing runs over three windows; the page
+  has room for all of them below its fold at y = 0 and above it at the end.
+-->
+<div class="lead"></div>
+<div class="item" id="together"><svg width="400" height="200"><path d="M20 40 H380 M20 100 H200 M20 160 H100" fill="none" stroke="#111" stroke-width="6"/></svg></div>
+<div class="gap"></div>
+<div class="item" id="seq"><svg width="400" height="200"><path id="seq-path" class="ink" pathLength="1" style="color: red" d="M20 40 H380 M20 100 H200 M20 160 H100" fill="none" stroke="#111" stroke-width="6"/></svg></div>
+<div class="gap"></div>
+<!-- Relative movetos after z and after an open subpath, an arc with touching
+     flags, a quadratic: each piece must start where the original's subpath does. -->
+<div class="item" id="geom"><svg width="400" height="200"><path d="M20 20 h80 v40 z m10 50 a30 30 0 0160 0 l40 10 m-20 30 q40 40 80 0 t60 -10 M300 20 c20 0 40 20 40 40 s-20 40 -40 40" fill="none" stroke="#111" stroke-width="4"/></svg></div>
+<svg width="400" height="200" id="geom-ref"><path d="M20 20 h80 v40 z m10 50 a30 30 0 0160 0 l40 10 m-20 30 q40 40 80 0 t60 -10 M300 20 c20 0 40 20 40 40 s-20 40 -40 40"/></svg>
+<div class="gap"></div>
+<scroll-draw class="item" id="wc" stagger="1"><svg width="400" height="200"><path d="M20 40 H380 M20 100 H200 M20 160 H100" fill="none" stroke="#111" stroke-width="6"/></svg></scroll-draw>
+<div class="gap"></div>
+<div class="item" id="attr" data-scroll-draw data-scroll-draw-options='{"stagger":1,"native":false}'><svg width="400" height="200"><path d="M20 40 H380 M20 100 H200 M20 160 H100" fill="none" stroke="#111" stroke-width="6"/></svg></div>
+<div class="gap"></div>
+<div id="react"></div>
+<div class="gap"></div>
+<div id="vue"></div>
+<div class="tail"></div>
+
+<script type="module">
+import { scrollDraw } from '/dist/index.mjs';
+import { initScrollDraw } from '/dist/astro/index.mjs';
+import { splitSubpaths, joinSubpaths } from '/dist/subpaths/index.mjs';
+import { api } from './build/subpaths.mjs';
+import { drawnFraction, publish } from './_probe.mjs';
+
+const $ = (sel) => document.querySelector(sel);
+
+/** Every element's attributes, sorted: a join puts them back, not necessarily in their order. */
+const snapshot = (root) => Array.from(root.querySelectorAll('*')).map((el) =>
+  [el.tagName, ...Array.from(el.attributes).map((a) => `${a.name}=${a.value}`).sort()].join(' '));
+const before = { seq: snapshot($('#seq')), geom: snapshot($('#geom')) };
+
+const completed = { seq: 0 };
+const instances = {
+  together: scrollDraw('#together', { native: false }),
+  seq: scrollDraw(splitSubpaths('#seq'), { stagger: 1, native: false, onComplete: () => completed.seq++ }),
+};
+splitSubpaths('#geom');
+// The web component builds when it connects, which is when its module loads.
+splitSubpaths('#wc');
+await import('/dist/web-component/index.mjs');
+splitSubpaths('#attr');
+const attr = initScrollDraw();
+api.mount();
+
+const round = (n) => Math.round(n * 1000) / 1000;
+
+publish({
+  ds: (sel) => Array.from(document.querySelectorAll(`${sel} path`)).map((p) => p.getAttribute('d').trim()),
+  read: (sel) => Array.from(document.querySelectorAll(`${sel} path`)).map((p) => round(drawnFraction(p))),
+  count: (sel) => ({
+    all: document.querySelectorAll(`${sel} path`).length,
+    pieces: document.querySelectorAll(`${sel} [data-scroll-draw-piece]`).length,
+    split: document.querySelectorAll(`${sel} [data-scroll-draw-split]`).length,
+  }),
+  /** The scroll at which `sel`'s trigger window is `p` of the way through (p > 1: past it). */
+  yAt: (sel, p) => {
+    const r = $(sel).getBoundingClientRect();
+    const top = r.top + scrollY;
+    const start = top - innerHeight;
+    return start + p * (innerHeight + r.height);
+  },
+  maxScroll: () => document.documentElement.scrollHeight - innerHeight,
+  completed: () => ({ ...completed }),
+  /** Each piece of #geom against the same path left whole. */
+  geometry: () => {
+    const ref = $('#geom-ref path');
+    const ps = Array.from(document.querySelectorAll('#geom path'));
+    let at = 0;
+    return {
+      total: round(ref.getTotalLength()),
+      sum: round(ps.reduce((s, p) => s + p.getTotalLength(), 0)),
+      starts: ps.map((p) => {
+        const a = p.getPointAtLength(0);
+        // Just inside the subpath, where the whole path's point is unambiguous.
+        const b = ref.getPointAtLength(at + 0.001);
+        at += p.getTotalLength();
+        return [round(a.x), round(a.y), round(b.x), round(b.y)];
+      }),
+    };
+  },
+  /** destroy(), then joinSubpaths(): each drawing as it was, attributes and all. */
+  join: () => {
+    instances.seq.destroy();
+    joinSubpaths('#seq');
+    joinSubpaths($('#geom'));
+    return {
+      seq: JSON.stringify(snapshot($('#seq'))) === JSON.stringify(before.seq),
+      geom: JSON.stringify(snapshot($('#geom'))) === JSON.stringify(before.geom),
+    };
+  },
+  rerender: () => api.rerender(),
+  unmount: () => api.unmount(),
+  frameworkPaths: () => ({
+    react: Array.from(document.querySelectorAll('#react path')).map((p) => [p.getAttribute('class'), p.hasAttribute('data-scroll-draw-piece')]),
+    vue: Array.from(document.querySelectorAll('#vue path')).map((p) => [p.getAttribute('class'), p.hasAttribute('data-scroll-draw-piece')]),
+  }),
+  attrCount: () => attr.length,
+});
+</script>
+</body>
+</html>

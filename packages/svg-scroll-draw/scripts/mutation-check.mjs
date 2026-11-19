@@ -1629,6 +1629,34 @@ const MUTATIONS = [
     spec: 'e2e/jump-past.spec.ts',
     grep: 'down past every window, then back above them',
   },
+  // svg-scroll-draw/subpaths (subpaths.spec).
+  {
+    id: 'subpaths/order',
+    what: 'each piece goes in before the path instead of after the one before, so stagger draws them out of order',
+    file: 'src/subpaths/index.ts',
+    from: '        at.after(p);',
+    to: '        el.before(p);',
+    spec: 'e2e/subpaths.spec.ts',
+    grep: 'the pieces draw one after another in document order',
+  },
+  {
+    id: 'subpaths/relative-m',
+    what: 'a piece that starts with a relative m keeps it, relative to 0,0 on its own',
+    file: 'src/subpaths/index.ts',
+    from: "      if (k && piece[0] === 'm') {",
+    to: "      if (false as boolean) {",
+    spec: 'e2e/subpaths.spec.ts',
+    grep: 'each piece starts where its subpath does',
+  },
+  {
+    id: 'subpaths/join',
+    what: 'joinSubpaths() leaves the pieces in place',
+    file: 'src/subpaths/index.ts',
+    from: '    s.pieces.forEach((p) => p.remove());',
+    to: '',
+    spec: 'e2e/subpaths.spec.ts',
+    grep: 'joinSubpaths\\(\\) after destroy\\(\\) puts every path back',
+  },
 ];
 
 const args = process.argv.slice(2);

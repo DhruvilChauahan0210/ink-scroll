@@ -158,6 +158,9 @@
       "lenis": [
         "./dist/lenis/index.d.ts"
       ],
+      "subpaths": [
+        "./dist/subpaths/index.d.ts"
+      ],
       "reveal": [
         "./dist/reveal/index.d.ts"
       ],
@@ -383,6 +386,16 @@
       "require": {
         "types": "./dist/lenis/index.d.ts",
         "default": "./dist/lenis/index.cjs"
+      }
+    },
+    "./subpaths": {
+      "import": {
+        "types": "./dist/subpaths/index.d.mts",
+        "default": "./dist/subpaths/index.mjs"
+      },
+      "require": {
+        "types": "./dist/subpaths/index.d.ts",
+        "default": "./dist/subpaths/index.cjs"
       }
     },
     "./reveal": {

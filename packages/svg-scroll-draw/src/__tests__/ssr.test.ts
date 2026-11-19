@@ -76,6 +76,7 @@ describe('SSR — no window, no document', () => {
       '../horizontal',
       '../reveal',
       '../lenis',
+      '../subpaths',
       '../devtools',
       '../aos',
       '../scrollreveal',
@@ -88,6 +89,13 @@ describe('SSR — no window, no document', () => {
     for (const entry of entries) {
       await expect(import(entry), `importing ${entry} on the server threw`).resolves.toBeTruthy();
     }
+  });
+
+  it('splitSubpaths and joinSubpaths hand back their target and touch nothing', async () => {
+    const { splitSubpaths, joinSubpaths } = await import('../subpaths');
+    expect(splitSubpaths('#logo')).toBe('#logo');
+    expect(joinSubpaths('#logo')).toBe('#logo');
+    expect(splitSubpaths(null)).toBe(null);
   });
 
   it('the core APIs return inert instances rather than throwing', async () => {

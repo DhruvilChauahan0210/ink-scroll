@@ -1,8 +1,9 @@
 'use client';
 
 import './docs.css';
-import { Children, useState, useEffect, useRef } from 'react';
+import { Children, useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { ScrollDraw } from 'svg-scroll-draw/react';
+import { splitSubpaths, joinSubpaths } from 'svg-scroll-draw/subpaths';
 import Link from 'next/link';
 import { CopyButton } from './CopyButton';
 import { CopyCommand } from './home/CopyCommand';
@@ -31,6 +32,7 @@ const NAV_GROUPS = [
       { id: 'visual',                   label: 'Visual' },
       { id: 'callbacks',                label: 'Callbacks' },
       { id: 'advanced',                 label: 'Advanced' },
+      { id: 'subpaths',                 label: 'Subpaths' },
     ],
   },
   {
@@ -232,6 +234,54 @@ function OptGroup({ children }: { children: React.ReactNode }) {
       </ScrollDraw>
       <div className="dc-opts-h" aria-hidden="true"><span>option · type · default</span><span>What it does</span></div>
       {children}
+    </div>
+  );
+}
+
+/**
+ * The same four-subpath drawing twice, left whole and split, side by side:
+ * the house is one subpath, its door and window start with a relative m
+ * after z, and the sun is two arcs. With stagger 1 each piece of the split
+ * one draws in a window a third as long, so both finish together.
+ */
+const HOUSE =
+  'M20 110 L80 60 L140 110 V170 H20 Z m40 60 v-35 h25 v35 m30 -45 h22 v18 h-22 z M175 45 a18 18 0 1 0 36 0 a18 18 0 1 0 -36 0';
+
+function House({ split, label }: { split: boolean; label: string }) {
+  const svg = useRef<SVGSVGElement>(null);
+  useLayoutEffect(() => {
+    const el = svg.current;
+    if (!split) return;
+    splitSubpaths(el);
+    return () => { joinSubpaths(el); };
+  }, [split]);
+  return (
+    <svg ref={svg} viewBox="0 0 230 190" className="w-full h-auto" role="img" aria-label={label}>
+      <path d={HOUSE} fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function SubpathsDemo() {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+      <figure className="border border-graphite-border/30 p-4 m-0">
+        <ScrollDraw trigger={{ start: 'top 90%', end: 'top 30%' }}>
+          <House split={false} label="A house, a door, a window and the sun, all drawn at once" />
+        </ScrollDraw>
+        <figcaption className="mt-3 text-[12px] text-graphite-border">
+          One <code className="font-mono text-pitch-black">{'<path>'}</code>: every subpath at once
+        </figcaption>
+      </figure>
+      <figure className="border border-graphite-border/30 p-4 m-0">
+        <ScrollDraw stagger={1} trigger={{ start: 'top 90%', end: 'top 75%' }}>
+          <House split label="A house, a door, a window and the sun, drawn one after another" />
+        </ScrollDraw>
+        <figcaption className="mt-3 text-[12px] text-graphite-border">
+          <code className="font-mono text-pitch-black">splitSubpaths</code> +{' '}
+          <code className="font-mono text-pitch-black">{'stagger: 1'}</code>: one after another
+        </figcaption>
+      </figure>
     </div>
   );
 }
@@ -720,14 +770,94 @@ scrollDraw('#shape', { morphTo: 'M10 80 Q50 10 90 80', easing: 'spring' });`}
                 Stripped in production — dev only.
               </Opt>
               <Opt name="threshold" type="number" defaultVal="0">
-                IntersectionObserver threshold (0–1). Controls what percentage of the element must be
-                visible before the rAF loop activates.
+                With <code className="font-mono text-pitch-black">autoplay</code>, the IntersectionObserver
+                threshold (0–1) at which the run starts. A scroll-linked draw follows its trigger window
+                and has no observer.
               </Opt>
               <Opt name="rootMargin" type="string" defaultVal="'0px'">
-                IntersectionObserver rootMargin. Adjusts the effective bounding box of the viewport
-                for intersection detection.
+                With <code className="font-mono text-pitch-black">autoplay</code>, the IntersectionObserver
+                rootMargin.
               </Opt>
             </OptGroup>
+          </DocSection>
+
+          {/* ── Subpaths ─────────────────────────────────────── */}
+          <DocSection id="subpaths" tag="v2.30.0" heading="Paths with several subpaths">
+            <p className="text-sm text-graphite-border leading-relaxed mb-4">
+              Browsers restart the dash pattern at every subpath, so one{' '}
+              <code className="font-mono text-pitch-black">{'<path>'}</code> whose{' '}
+              <code className="font-mono text-pitch-black">d</code> has several{' '}
+              <code className="font-mono text-pitch-black">M</code>s draws all of them at once, each from its
+              own start. Measured in Chromium, WebKit and Firefox: at 30% of the total length, subpaths of
+              360, 180 and 80 px showed 186, 180 and 80 px drawn. To draw them one after another, split them
+              with <code className="font-mono text-pitch-black">svg-scroll-draw/subpaths</code> (0.8 KB, an
+              entry of its own) and let <code className="font-mono text-pitch-black">stagger</code> order the
+              pieces. Scroll the two below: the same path, split on the right.
+            </p>
+            <SubpathsDemo />
+            <CodeBlock file="subpaths.js">
+{`import { scrollDraw } from 'svg-scroll-draw';
+import { splitSubpaths, joinSubpaths } from 'svg-scroll-draw/subpaths';
+
+// One <path> with four subpaths: the house, its door and window (a relative
+// m after z), and the sun (two arcs). Each piece draws in a window of its own.
+const draw = scrollDraw(splitSubpaths('#house'), { stagger: 1 });
+
+// To put the markup back exactly:
+// draw.destroy(); joinSubpaths('#house');`}
+            </CodeBlock>
+            <CodeBlock file="House.tsx">
+{`import { useLayoutEffect, useRef } from 'react';
+import { ScrollDraw } from 'svg-scroll-draw/react';
+import { splitSubpaths, joinSubpaths } from 'svg-scroll-draw/subpaths';
+
+// A layout effect in the component that renders the <svg> runs before
+// <ScrollDraw> starts, so the drawing sees the pieces.
+function House() {
+  const svg = useRef<SVGSVGElement>(null);
+  useLayoutEffect(() => {
+    const el = svg.current;
+    splitSubpaths(el);
+    return () => { joinSubpaths(el); };
+  }, []);
+  return (
+    <svg ref={svg} viewBox="0 0 230 190">
+      <path d="M20 110 L80 60 L140 110 V170 H20 Z m40 60 v-35 h25 v35" fill="none" stroke="currentColor" />
+    </svg>
+  );
+}
+
+export function Drawing() {
+  return <ScrollDraw stagger={1}><House /></ScrollDraw>;
+}`}
+            </CodeBlock>
+            <Sub>What it does to the markup</Sub>
+            <p className="text-sm text-graphite-border leading-relaxed mb-4">
+              <code className="font-mono text-pitch-black">splitSubpaths(target)</code> takes a selector (every
+              element it matches), an element or a list, and returns it unchanged, so it chains into any engine.
+              Each <code className="font-mono text-pitch-black">{'<path>'}</code> inside with more than one
+              subpath keeps its first, so a framework that rendered it still finds its node in place; each later
+              subpath is a copy inserted after it, with the same attributes (not{' '}
+              <code className="font-mono text-pitch-black">id</code> or{' '}
+              <code className="font-mono text-pitch-black">pathLength</code>), marked{' '}
+              <code className="font-mono text-pitch-black">data-scroll-draw-piece</code>. A relative{' '}
+              <code className="font-mono text-pitch-black">m</code> that starts a later subpath becomes an absolute{' '}
+              <code className="font-mono text-pitch-black">M</code> from where the piece before it ends; arcs and
+              every other command are left to the browser’s own parser. A path with one subpath is left alone.{' '}
+              <code className="font-mono text-pitch-black">joinSubpaths(target)</code> removes the pieces and gives
+              each path back its <code className="font-mono text-pitch-black">d</code>,{' '}
+              <code className="font-mono text-pitch-black">pathLength</code> and{' '}
+              <code className="font-mono text-pitch-black">style</code> exactly.
+            </p>
+            <Note>
+              It is a plain function, so it works with every wrapper: call it on the element before the drawing
+              starts. React: a <code className="font-mono">useLayoutEffect</code> in the component that renders
+              the <code className="font-mono">{'<svg>'}</code>, as above. Vue: a function ref on the{' '}
+              <code className="font-mono">{'<svg>'}</code>. Svelte, Solid, Angular and plain JavaScript: before
+              the action, hook or <code className="font-mono">scrollDraw()</code> call. A{' '}
+              <code className="font-mono">d</code> changed after the split does not reach the pieces: join, then
+              split again.
+            </Note>
           </DocSection>
 
           {/* ── Instance Methods ─────────────────────────────── */}

@@ -608,7 +608,7 @@ import { ScrollDraw } from 'svg-scroll-draw/vue';
 | `fillOpacity` | `number \| [number, number]` | — | Animate fill opacity in sync with the draw |
 | `clip` | `boolean \| "left" \| "right" \| "top" \| "bottom" \| "center"` | `false` | Reveal via CSS `clip-path` instead of stroke-dashoffset |
 | `morphTo` | `string` | — | SVG path `d` value to morph toward |
-| `waypoints` | `Record<number, () => void>` | — | Callbacks at specific progress thresholds (0–1) |
+| `waypoints` | `Record<number, () => void>` | — | Callbacks at specific progress thresholds (0–1), in order |
 | `velocityScale` | `boolean \| number` | `false` | Scale draw speed by scroll velocity |
 | `repeat` | `number \| "infinite"` | `0` | Replay N times after completion |
 | `repeatDelay` | `number` | `0` | ms between repeats |
@@ -619,6 +619,25 @@ import { ScrollDraw } from 'svg-scroll-draw/vue';
 | `onProgress` | `(alpha: number) => void` | — | Called as the scroll moves, with draw progress (0–1); under `stagger`, the first path’s, as `getProgress()` |
 | `onStart` | `() => void` | — | Fires on the first frame |
 | `onComplete` | `() => void` | — | Fires when all paths reach 100% |
+
+#### Paths with several subpaths
+
+Browsers restart the dash at every subpath (every `M`), so one `<path>` with several draws them all
+at once, each from its own start. `svg-scroll-draw/subpaths` (2.30.0, 0.8 KB) splits them into one
+`<path>` per subpath, and the pieces draw as ordinary paths, `stagger` ordering them:
+
+```js
+import { splitSubpaths, joinSubpaths } from 'svg-scroll-draw/subpaths';
+
+const draw = scrollDraw(splitSubpaths('#signature'), { stagger: 1 });
+// draw.destroy(); joinSubpaths('#signature'); puts the markup back exactly
+```
+
+`splitSubpaths` takes a selector, an element or a list and returns it. The path keeps its first
+subpath (a framework still finds its node); the rest are copies after it, same attributes, no `id`,
+marked `data-scroll-draw-piece`; relative movetos are made absolute. It is a plain function that works
+with every wrapper: call it before the drawing starts (React: a `useLayoutEffect` in the component
+that renders the `<svg>`; Vue: a function ref on the `<svg>`).
 
 ---
 
@@ -882,6 +901,7 @@ devtools.highlight('#my-element'); // outline for 2 seconds
 | `svg-scroll-draw/timeline` | `scrollDrawTimeline` |
 | `svg-scroll-draw/cinematic` | `Cinematic` |
 | `svg-scroll-draw/devtools` | `devtools` (dev-only) |
+| `svg-scroll-draw/subpaths` | `splitSubpaths`, `joinSubpaths` (2.30.0) |
 | `svg-scroll-draw/aos` | `AOS` (default), `init`, `refresh`, `refreshHard`, `destroy` |
 | `svg-scroll-draw/scrollreveal` | `ScrollReveal` (default and named) |
 | `svg-scroll-draw/vivus` | `Vivus` (default and named) |
