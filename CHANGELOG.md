@@ -1243,6 +1243,88 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ---
 
+## [2.30.0] — 2026-11-19
+
+### Added
+
+- **`svg-scroll-draw/subpaths`: draw a path's subpaths one after another.**
+  Browsers restart the dash pattern at every subpath, so one `<path>` whose
+  `d` has several `M`s draws them all at once, each from its own start
+  (measured on 17 Nov in Chromium, WebKit and Firefox: at 30% of the total
+  length, subpaths of 360, 180 and 80 px showed 186, 180 and 80 px drawn).
+  `splitSubpaths(target)` splits every such path inside `target` (a selector,
+  matching every element it names; an element; or a list) into one `<path>`
+  per subpath and returns `target`, so it chains:
+  `scrollDraw(splitSubpaths('#logo'), { stagger: 1 })`. The pieces are
+  ordinary paths: `stagger` orders them in document order and decides the
+  overlap. The path keeps its first subpath, so a framework that rendered it
+  still finds its node in place; each later subpath is a copy inserted after
+  it with the same attributes (not `id`, not `pathLength`), marked
+  `data-scroll-draw-piece`, and the path is marked `data-scroll-draw-split`. A
+  relative `m` that starts a later subpath becomes an absolute `M` from where
+  the piece before it ends, read from the browser, so arcs and every other
+  command go through its own parser; a moveto that draws nothing stays with
+  what follows; a path with one subpath, or one already split, is left alone.
+  `joinSubpaths(target)` removes the pieces and gives each path back its `d`,
+  `pathLength` and `style` attribute exactly. A plain function, so it works
+  with every wrapper: call it before the drawing starts (React: a
+  `useLayoutEffect` in the component that renders the `<svg>`; Vue: a function
+  ref). No DOM at import, and a no-op without one. 0.8 KB gzipped, an entry of
+  its own: the draw engine carries none of it and every other entry stays at
+  its 2.29.0 size. Not in the CDN bundle, which carries the main entry and the
+  web component only, as for the other optional entries (lenis, pin, snap…).
+
+### Fixed
+
+- **Waypoints fire in order on a jump.** A jump past several waypoints (the
+  End key, an anchor link) fired them in the object's key order, and integer
+  keys come first: `{ 0.25, 0.5, 1 }` fired `1`, then `0.25`, then `0.5`. They
+  fire lowest first now, on the scroll path and on `autoplay`, as a slow scroll
+  always did.
+
+### Checked: a jump across a whole window (no change)
+
+- NEXT-SESSION-PLAN listed moving `scrollDraw`'s JS engine, `scrollCounter`,
+  `scrollText`, `scrollVideo` and `useScrollDrawProgress` off their
+  IntersectionObserver onto the trigger-window gate. That shipped in 2.23.5
+  (core/frame-gate); the plan entry was stale. Reproduced on the 2.29.0 build
+  before any change: `e2e/engine-gate.spec.ts` passes in Chromium, Firefox and
+  WebKit, and a new `e2e/jump-past.spec.ts` compares a jump straight past every
+  window, and back above it, with the same page scrolled there in 60 steps,
+  for `once`, `direction: 'reverse'`, `waypoints`, the native path,
+  `scrollCounter` and `scrollText` with `once: false`, and a drawing in a
+  scrolling container. Everything matched, `onComplete` included (once on the
+  jump, as the animate engine does), except the waypoint order above. The
+  observer left in `scrollDraw` is `autoplay`'s, which runs on a clock from
+  viewport entry by design.
+
+### Size
+
+- New: `svg-scroll-draw/subpaths` 0.80 KB gzipped (budget 0.9). Every other
+  entry is at its 2.29.0 size, a few bytes under from the waypoint fix's shared
+  loop: main 11.95 → 11.93 KB, react 15.41 → 15.38, vue 15.64 → 15.62, cdn
+  11.75 → 11.75, main + react 17.05 → 17.02. An earlier draft made it a
+  `subpaths` option of scrollDraw, which put 0.7 KB on every entry with the
+  draw engine; a separate import keeps that cost with the people who use it.
+
+### Tests
+
+- Unit: `subpaths.test.ts` (8: the cut, selector, element, list and path
+  targets, the first subpath kept in place, relative movetos, empty movetos,
+  idempotence, `joinSubpaths` after a drawing, and scrollDraw with `stagger: 1`
+  drawing the pieces exactly as three separate paths); `ssr.test.ts` imports
+  the entry and calls both functions with no DOM; waypoint order on scroll and
+  on `autoplay`.
+- Browser, in Chromium, Firefox and WebKit: `e2e/subpaths.spec.ts` (real
+  lengths, document order under `stagger: 1`, each piece's start against the
+  path left whole with relative movetos and arcs, a jump, `joinSubpaths`, the
+  web component, the data attribute, and React's and Vue's `<ScrollDraw>`
+  through a re-render and an unmount) and `e2e/jump-past.spec.ts`.
+- Mutations, each caught: `jump/waypoint-order`, `jump/container-gate`,
+  `subpaths/order`, `subpaths/relative-m`, `subpaths/join`; the 2.23.5 gates
+  `gate/draw`, `gate/counter`, `gate/text`, `gate/video` and `gate/react`
+  still are.
+
 ## [2.29.0] — 2026-11-16
 
 ### Changed

@@ -1,6 +1,6 @@
 # svg-scroll-draw — Roadmap
 
-> Last updated: 2026-11-14 — 2.27.3 prepared (wrapped text starts flush); 2.27.2 on npm
+> Last updated: 2026-11-19 — 2.30.0 prepared (`svg-scroll-draw/subpaths`, waypoints in order on a jump); 2.29.0 before it
 >
 > Items marked ✓ are shipped. Remaining items are ordered by value/effort ratio.
 
@@ -18,7 +18,8 @@
 - [x] `fade`, `speed`, `once`, `debug`, `delay`, `axis`, `scrollContainer`, `threshold`, `rootMargin`
 - [x] `trigger.start` / `trigger.end` — anchor strings + percentage format
 - [x] `autoReverse` — follows scroll direction
-- [x] `waypoints` — callbacks at specific progress thresholds
+- [x] `waypoints` — callbacks at specific progress thresholds; in order on a jump past several (2.30.0)
+- [x] `svg-scroll-draw/subpaths` — `splitSubpaths()` / `joinSubpaths()`: a path's subpaths as separate paths, so `stagger` draws them one after another (2.30.0)
 - [x] `strokeColor`, `strokeWidth` — animated color and width
 - [x] `fillOpacity` — flood fill in sync with stroke draw
 - [x] `clip` — clip-path reveal mode (left/right/top/bottom/center)

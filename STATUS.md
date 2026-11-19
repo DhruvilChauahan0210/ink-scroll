@@ -1,11 +1,11 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **2.27.3** prepared on branch `fix/text-wrap-indent` (wrapped text starts flush); 2.27.2 tagged and on npm (`latest`)
-> Tests: **1046 unit** across 47 suites · **345 browser tests** per engine (1035 runs
-> across Chromium/Firefox/WebKit) · **165 mutations**, each caught by the one test
+> Current version: **2.30.0** prepared on branch `release/2.30.0` (`svg-scroll-draw/subpaths`; waypoints in order on a jump); 2.29.0 before it
+> Tests: **1057 unit** across 48 suites · **353 browser tests** per engine (1059 runs
+> across Chromium/Firefox/WebKit) · **171 mutations**, each caught by the one test
 > named for it · **91.5% line coverage** (gate 90/90/82/82)
 > Bundle: **11.9 KB gzipped** (main entry as shipped files, chunks included; per-API entries from 0.3 KB) · zero runtime dependencies
-> Last updated: 2026-11-14
+> Last updated: 2026-11-19
 
 ---
 
@@ -24,7 +24,8 @@
 - [x] `src/group/` `src/timeline/` `src/cinematic/` `src/cli/`
 
 ### v1 APIs (scrollDraw — unchanged)
-- [x] All `scrollDraw` options — selector, speed, fade, easing, stagger, direction, once, debug, axis, scrollContainer, autoReverse, delay, strokeColor, strokeWidth, fillOpacity, clip, morphTo, velocityScale, repeat, repeatDelay, waypoints, autoplay, duration, native, preset
+- [x] All `scrollDraw` options — selector, speed, fade, easing, stagger, direction, once, debug, axis, scrollContainer, autoReverse, delay, strokeColor, strokeWidth, fillOpacity, clip, morphTo, velocityScale, repeat, repeatDelay, waypoints (in order on a jump, 2.30.0), autoplay, duration, native, preset, progressVar (2.29.0)
+- [x] `svg-scroll-draw/subpaths` (2.30.0) — `splitSubpaths(target)` splits each multi-subpath `<path>` into one path per subpath (the path keeps the first, copies after it, relative movetos made absolute), so `stagger` draws them one after another; `joinSubpaths(target)` puts the markup back exactly. 0.8 KB, an entry of its own
 - [x] Native CSS `animation-timeline: view()` fast path with automatic JS fallback
 - [x] Instance API — `destroy`, `replay`, `pause`, `resume`, `seek`, `getProgress`
 - [x] Easing factories — `createSpring`, `createBounce`, `createElastic`
@@ -51,11 +52,11 @@
 - [x] `scrollAnimateGroup` + `scrollAnimateSequence` + `scrollParallaxGroup` in `svg-scroll-draw/group`
 
 ### Testing
-- [x] 1046 tests across 47 suites — `motionLive` (reduced motion turned on mid-visit, every engine and the React hook), `reactive` (the wrappers' option fingerprint and live callbacks), `directives` (the built files' "use client"), `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollFrames` (47), `scrollFramesWrappers` (48), `scrollText` (23)
+- [x] 1057 tests across 48 suites — `motionLive` (reduced motion turned on mid-visit, every engine and the React hook), `reactive` (the wrappers' option fingerprint and live callbacks), `directives` (the built files' "use client"), `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollFrames` (47), `scrollFramesWrappers` (48), `scrollText` (23)
 - [x] Initial state fix — `createAnimateEngine` and `scrollCounter` now apply correct alpha immediately on init (no flash before IO fires)
 
 ### Browser tests (Phase 2, `packages/svg-scroll-draw/e2e`)
-345 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
+353 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
 `helpers.ts` (deterministic sweep — scroll to a fixed offset, wait two frames,
 read) and `fixtures/_probe.mjs` (parsing stays in the page, so specs assert on
 numbers).

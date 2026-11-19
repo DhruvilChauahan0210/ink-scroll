@@ -83,11 +83,11 @@ export const SELF_ENTRIES: Record<string, number> = {
   react: 15.4,
   // Each framework landing quotes its own entry, wrapper and engines included.
   vue: 15.6,
-  nuxt: 16.1,
+  nuxt: 16.0,
   svelte: 14.8,
   solid: 14.8,
-  angular: 14.9,
-  astro: 12.4,
+  angular: 14.8,
+  astro: 12.3,
 };
 
 export const COMPETITORS: Record<string, Competitor> = {
