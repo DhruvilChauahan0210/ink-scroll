@@ -55,6 +55,36 @@ const KINDS: { k: Kind; label: string }[] = [
  */
 const RELEASES: Release[] = [
   {
+    version: '2.30.0',
+    title: 'Subpaths one after another; waypoints in order on a jump',
+    date: '2026-11-19',
+    items: [
+      { type: 'new', text: "svg-scroll-draw/subpaths (0.8 KB, its own entry): browsers restart the dash at every subpath, so a path with several Ms drew them all at once. splitSubpaths(target) splits each such path into one path per subpath and returns the target, so scrollDraw(splitSubpaths('#logo'), { stagger: 1 }) draws them one after another. The path keeps its first subpath, so a framework still finds its node; relative movetos are made absolute; joinSubpaths(target) puts the markup back exactly. Every other entry stays at its 2.29.0 size." },
+      { type: 'fix', text: 'A jump past several waypoints (the End key, an anchor link) fired them in the object\'s key order, integer keys first: 1, then 0.25, then 0.5. They fire lowest first now, as a slow scroll always did.' },
+      { type: 'test', text: 'A browser test compares a jump past every window, and back, with the same page scrolled there in 60 steps, for once, reverse, waypoints, the native path, a counter, split text and a scrolling container: everything already matched but the waypoint order. Browser tests of the split in three engines, React and Vue through a re-render and an unmount; five new mutations, each caught.' },
+      { type: 'site', text: '/docs#subpaths, with a path drawn whole beside the same path split; this page now lists 2.28.0 and 2.29.0.' },
+    ],
+  },
+  {
+    version: '2.29.0',
+    title: 'scrollReveal stops restyling every card each frame',
+    date: '2026-11-16',
+    items: [
+      { type: 'fix', text: 'scrollReveal no longer writes --scroll-draw-progress by default. The variable inherits, so every write restyled everything inside each card, every frame: a 60-card reveal took 76 ms of main-thread time, 41 ms without it (Chromium, 4x CPU slowdown, median of 7). Pass progressVar: true if your CSS reads it inside a revealed element.' },
+      { type: 'new', text: 'progressVar on every API and framework component: false stops the per-frame write where nothing reads it. On by default everywhere but scrollReveal.' },
+      { type: 'test', text: 'Unit tests for the write on and off in scrollDraw, scrollAnimate and scrollReveal; flipping the reveal default back fails them.' },
+    ],
+  },
+  {
+    version: '2.28.0',
+    title: 'No finished drawing before the script runs',
+    date: '2026-11-16',
+    items: [
+      { type: 'new', text: 'svg-scroll-draw/no-flash.css: an SVG in the page HTML is drawn in full until the engine sets its starting state, so a drawing on screen at load showed finished, then jumped back to empty. The stylesheet hides strokes inside any element marked data-scroll-draw-pending until the engine removes the mark, in the same task that sets the state. <ScrollDraw> in React and Vue renders the mark; elsewhere, write it in your markup.' },
+      { type: 'test', text: 'A browser test records every frame until a late module runs: with the stylesheet no frame paints a stroke whole, in Chromium, Firefox and WebKit; without it the flash shows, so the test catches it.' },
+    ],
+  },
+  {
     version: '2.27.3',
     title: 'Wrapped text starts flush',
     date: '2026-11-14',
