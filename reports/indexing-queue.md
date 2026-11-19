@@ -4,6 +4,8 @@ Bing: all 93 sitemap URLs submitted 2026-11-12 (Bing Webmaster → URL Submissio
 
 Sitemap resubmitted 2026-11-14: Search Console now reads 112 URLs (was 64 from 2026-11-06).
 
+Updated 2026-11-19: scheduled run at 14:10 IST (after the 13:30 IST reset). The first request (T04) hit **Quota Exceeded** again, the seventh day running for svg-scroll-draw, even after 13:30 IST, so the reset-time theory does not explain it: this property's manual quota looks exhausted. No requests got through. Inspections of the next nine todo rows: T15, T16, T17 are now **indexed** (from the sitemap); T06, T07, T12, T14 are still "Discovered – currently not indexed"; T11 and T18 are "URL unknown to Google". S01 (scrollfx /components) was requested yesterday and was not re-checked.
+
 Updated 2026-11-18: /blog/vue-scroll-animation-components and /blog/svelte-scroll-animation-components are now **indexed** (from the sitemap, no request needed). The first request of the day (T04) hit Quota Exceeded again, at 10:30 IST, the sixth day running. Likely cause: the daily quota resets at midnight Pacific (13:30 IST), so a morning-IST request still counts against Google's previous day. **From now on, request after 13:30 IST.** Afternoon run at 14:50 IST: scrollfx /components (S01) → **Indexing requested** (first success in six days); svg-scroll-draw T04 → Quota Exceeded again. So the quota is per property, not per account as noted on 15 Nov, and svg-scroll-draw's is exhausted or near zero while scrollfx's works; svg-scroll-draw pages keep getting indexed from the sitemap regardless (7 more seen today). A scheduled task, request-indexing, now runs this daily at 14:00 IST. Inspections today: T05, T08, T09, T10, T13 indexed; T06, T07, T12, T14 discovered, not indexed; T11 unknown to Google. scrollfx: /components (published 17 Nov) is unknown to Google yet; it is in scrollfx's sitemap, which was resubmitted 17 Nov. The "request-indexing" scheduled task no longer exists on this Mac.
 
 Updated 2026-11-17: both sitemaps resubmitted (svg-scroll-draw, and scrollfx with the three new plates: stats, logos, bento). /benchmarks/gsap-vs-svg-scroll-draw is already indexed. /blog/vue-scroll-animation-components and /blog/svelte-scroll-animation-components are "Discovered – currently not indexed" (found via the sitemap); the first request of the day (the Vue post) hit Quota Exceeded again, the fifth day running. Retry those two first.
@@ -30,7 +32,7 @@ It stops for the day at the quota message and leaves the rest `todo`.
 | T01 | https://svg-scroll-draw.vercel.app/tools | 2026-11-12 (Google) |
 | T02 | https://svg-scroll-draw.vercel.app/svg-line-drawing-generator | 2026-11-12 (Google) |
 | T03 | https://svg-scroll-draw.vercel.app/scroll-reveal-generator | indexed (seen 2026-11-13) |
-| T04 | https://svg-scroll-draw.vercel.app/svg-path-editor | todo — Quota Exceeded 2026-11-13 to 2026-11-18 (first request each day, all before 13:30 IST); retry first, after 13:30 IST |
+| T04 | https://svg-scroll-draw.vercel.app/svg-path-editor | todo — Quota Exceeded 2026-11-19 (14:10 IST; also every day 2026-11-13 to 2026-11-18), retry first |
 | T05 | https://svg-scroll-draw.vercel.app/css-scroll-driven-animation-generator | indexed (seen 2026-11-18) |
 | T06 | https://svg-scroll-draw.vercel.app/scroll-trigger-visualizer | todo — tool page, 2026-11-11/12 |
 | T07 | https://svg-scroll-draw.vercel.app/text-animation-generator | todo — tool page, 2026-11-11/12 |
@@ -41,10 +43,10 @@ It stops for the day at the quota message and leaves the rest `todo`.
 | T12 | https://svg-scroll-draw.vercel.app/parallax-scrolling-generator | todo — tool page, 2026-11-11/12 |
 | T13 | https://svg-scroll-draw.vercel.app/svg-morph-generator | indexed (seen 2026-11-18) |
 | T14 | https://svg-scroll-draw.vercel.app/svg-to-jsx-converter | todo — tool page, 2026-11-11/12 |
-| T15 | https://svg-scroll-draw.vercel.app/svg-shape-to-path-converter | todo — tool page, 2026-11-11/12 |
-| T16 | https://svg-scroll-draw.vercel.app/typewriter-effect-generator | todo — tool page, 2026-11-11/12 |
-| T17 | https://svg-scroll-draw.vercel.app/text-fill-scroll-generator | todo — tool page, 2026-11-11/12 |
-| T18 | https://svg-scroll-draw.vercel.app/scroll-video-scrub-generator | todo — tool page, 2026-11-11/12 |
+| T15 | https://svg-scroll-draw.vercel.app/svg-shape-to-path-converter | indexed (seen 2026-11-19) |
+| T16 | https://svg-scroll-draw.vercel.app/typewriter-effect-generator | indexed (seen 2026-11-19) |
+| T17 | https://svg-scroll-draw.vercel.app/text-fill-scroll-generator | indexed (seen 2026-11-19) |
+| T18 | https://svg-scroll-draw.vercel.app/scroll-video-scrub-generator | todo — URL unknown to Google (2026-11-19) |
 | T19 | https://svg-scroll-draw.vercel.app/horizontal-scroll-generator | todo — tool page, 2026-11-11/12 |
 | T20 | https://svg-scroll-draw.vercel.app/scroll-pin-generator | todo — tool page, 2026-11-11/12 |
 | T21 | https://svg-scroll-draw.vercel.app/css-scroll-snap-generator | todo — tool page, 2026-11-11/12 |
