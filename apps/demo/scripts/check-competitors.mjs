@@ -17,6 +17,7 @@ import { fileURLToPath } from 'node:url';
 const here = dirname(fileURLToPath(import.meta.url));
 const appDir = resolve(here, '../src/app');
 const dataFile = resolve(here, '../src/data/competitors.ts');
+const pkgFile = resolve(here, '../../../packages/svg-scroll-draw/package.json');
 
 const src = readFileSync(dataFile, 'utf8');
 const measuredOn = src.match(/MEASURED_ON = '([\d-]+)'/)?.[1];
@@ -60,6 +61,19 @@ if (entriesChecked === 0) {
   failures.push('competitors.ts: parsed 0 entries — the check is not actually reading the file.');
 } else {
   console.log(`✓ ${entriesChecked} competitor entries each cite a version and a command`);
+}
+
+// SELF.version is the version the site header shows. Releases bumped it by
+// hand and four in a row did not (the header read 2.27.3 through 2.31.0), so
+// it must equal the package's own version.
+const selfVersion = src.match(/export const SELF[\s\S]*?\n  version: '([^']+)'/)?.[1];
+const pkgVersion = JSON.parse(readFileSync(pkgFile, 'utf8')).version;
+if (!selfVersion) {
+  failures.push('competitors.ts: could not read SELF.version.');
+} else if (selfVersion !== pkgVersion) {
+  failures.push(`competitors.ts: SELF.version is ${selfVersion}, the package is ${pkgVersion}. The site header shows SELF.version: set it to ${pkgVersion}.`);
+} else {
+  console.log(`✓ the site shows the package's version, ${pkgVersion}`);
 }
 
 // Claims we know were wrong before. If any reappears anywhere under src/app, fail.
