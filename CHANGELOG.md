@@ -8,6 +8,11 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ### Site
 
+- **The site header shows the current version.** It read v2.27.3 from 2.28.0
+  to 2.31.0: `SELF.version` in `data/competitors.ts` was bumped by hand and
+  four releases did not. `check-competitors` (in the build and CI) now fails
+  when it differs from the package's own version.
+
 - **Benchmark: GSAP vs svg-scroll-draw.** `/benchmarks/gsap-vs-svg-scroll-draw`
   scrolls six scenarios (draw one path, draw many, staggered draw, two card
   reveals, pin and scrub) with each library in Chromium, Firefox and WebKit:
