@@ -14,9 +14,9 @@ import { BlogArticle, Section, Code, Callout, Closing } from '@/components/blog/
 // {#if} showed the line whole with no animation; the caption kept its space,
 // and the plain-text version compiled to "· seed" with the space gone.
 const SLUG = 'svelte-scroll-animation-components';
-const TITLE = 'Scroll-Drawn Svelte 5 Components, Installed With shadcn-svelte';
+const TITLE = 'Scroll-Drawn Svelte 5 Components With shadcn-svelte';
 const DESCRIPTION =
-  'Install ready-made scroll animation sections into a SvelteKit app with the shadcn-svelte CLI, then the three Svelte details that decide whether a drawing animates: when the action mounts, trimmed whitespace and registry targets.';
+  'Install scroll animation sections into a SvelteKit app with the shadcn-svelte CLI, then the three Svelte details that decide whether a drawing animates.';
 const URL = `https://svg-scroll-draw.vercel.app/blog/${SLUG}`;
 const SITE = 'https://svg-scroll-draw.vercel.app';
 
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
 const articleJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'TechArticle',
-  headline: 'Scroll-drawn Svelte 5 components, installed with shadcn-svelte',
+  headline: 'Scroll-drawn Svelte 5 components with shadcn-svelte',
   description: DESCRIPTION,
   url: URL,
   datePublished: '2026-11-15',

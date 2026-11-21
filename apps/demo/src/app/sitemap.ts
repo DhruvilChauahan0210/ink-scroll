@@ -332,13 +332,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // ── Blog posts ──────────────────────────────────────────────────────────
     {
       url: `${SITE_URL}/blog/vue-scroll-animation-components`,
-      lastModified: new Date("2026-11-16"),
+      lastModified: new Date("2026-11-21"),
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
       url: `${SITE_URL}/blog/svelte-scroll-animation-components`,
-      lastModified: new Date("2026-11-15"),
+      lastModified: new Date("2026-11-21"),
       changeFrequency: "monthly",
       priority: 0.8,
     },

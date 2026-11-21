@@ -18,7 +18,7 @@ import { BlogArticle, Section, Code, Callout, Closing } from '@/components/blog/
 const SLUG = 'vue-scroll-animation-components';
 const TITLE = 'Scroll-Drawn Vue 3 Components, Installed With shadcn-vue';
 const DESCRIPTION =
-  'Install ready-made scroll animation sections into a Vue 3 app with the shadcn-vue CLI, then the three Vue details that decide whether a drawing animates: when ScrollDraw mounts, ref versus :ref, and ScrollAnimate’s options prop.';
+  'Install ready-made scroll animation sections into a Vue 3 app with the shadcn-vue CLI, then the three Vue details that decide whether a drawing animates.';
 const URL = `https://svg-scroll-draw.vercel.app/blog/${SLUG}`;
 const SITE = 'https://svg-scroll-draw.vercel.app';
 

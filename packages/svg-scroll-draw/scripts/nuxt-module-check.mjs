@@ -97,7 +97,12 @@ try {
   if (!html) throw new Error('the server never answered');
 
   if (!/<p id="composable">function<\/p>/.test(html)) problems.push('server HTML: the auto-imported composable did not resolve');
-  if (!/<div id="draw"><svg/.test(html)) problems.push('server HTML: <ScrollDraw> did not render its <div> and SVG');
+  // Since 2.28.0 the <div> carries data-scroll-draw-pending (no-flash.css), and
+  // Vue writes it first: `<div data-scroll-draw-pending id="draw"><svg`. The
+  // exact `<div id="draw"><svg` this matched before failed every run since.
+  const drawDiv = html.match(/<div\b[^>]*\bid="draw"[^>]*>(?=<svg)/)?.[0];
+  if (!drawDiv) problems.push('server HTML: <ScrollDraw> did not render its <div> and SVG');
+  else if (!/\bdata-scroll-draw-pending\b/.test(drawDiv)) problems.push('server HTML: <ScrollDraw> lost data-scroll-draw-pending, so no-flash.css cannot hide the strokes before the script runs');
   if (!/<span id="count">1250<\/span>/.test(html)) problems.push('server HTML: <ScrollCounter> did not render its final number');
 
   const browser = await chromium.launch();

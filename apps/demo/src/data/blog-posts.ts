@@ -31,9 +31,9 @@ export const POSTS: BlogPost[] = [
   },
   {
     slug: 'svelte-scroll-animation-components',
-    title: 'Scroll-drawn Svelte 5 components, installed with shadcn-svelte',
+    title: 'Scroll-drawn Svelte 5 components with shadcn-svelte',
     description:
-      'Install ready-made scroll animation sections into a SvelteKit app with the shadcn-svelte CLI, then the three Svelte details that decide whether a drawing animates.',
+      'Install scroll animation sections into a SvelteKit app with the shadcn-svelte CLI, then the three Svelte details that decide whether a drawing animates.',
     tag: 'How-To',
     tagColor: '#60a5fa',
     readTime: '6 min read',

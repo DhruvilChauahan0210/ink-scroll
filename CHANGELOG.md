@@ -1287,6 +1287,16 @@ All notable changes to `svg-scroll-draw` are documented here.
   than the line, the accessible name and `destroy()`, and a page loaded under
   reduced motion. Mutations `write/pace`, `write/reduced` and `write/restore`.
 
+### CI
+
+- **CI on `main` was red from 16 Nov; it is green again.** Two checks had not
+  kept up with changes that were right. The Nuxt module check matched the
+  server HTML `<div id="draw"><svg` exactly, and since 2.28.0 `<ScrollDraw>`
+  renders `<div data-scroll-draw-pending id="draw">` (no-flash.css): it now
+  finds the `<div>` whatever its attributes, and fails if the attribute is
+  gone. The SEO check refused the Vue and Svelte posts (descriptions of 228
+  characters, limit 160; the Svelte title 62, limit 60): both are shortened.
+
 ## [2.30.0] — 2026-11-19
 
 ### Added
