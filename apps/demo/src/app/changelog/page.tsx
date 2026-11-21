@@ -55,6 +55,16 @@ const KINDS: { k: Kind; label: string }[] = [
  */
 const RELEASES: Release[] = [
   {
+    version: '2.31.0',
+    title: 'Handwriting on scroll',
+    date: '2026-11-21',
+    items: [
+      { type: 'new', text: "svg-scroll-draw/write (7.0 KB, its own entry): scrollWrite('#signature') writes the element's text in a single-stroke font as the page scrolls, one stroke after another at one pen speed, the pen lifting between letters and at spaces. Script, roman and italic; the text stays readable to screen readers; written at once under reduced motion. writePaths() is the layout alone, for the server. The main entry stays 11.9 KB." },
+      { type: 'test', text: 'Unit tests of the layout, the pen timing and the element; browser tests of order and pace in a real window, a jump, once, a narrow parent, the accessible name and reduced motion; three new mutations, each caught.' },
+      { type: 'site', text: '/docs#write, with two lines written as you scroll.' },
+    ],
+  },
+  {
     version: '2.30.0',
     title: 'Subpaths one after another; waypoints in order on a jump',
     date: '2026-11-19',

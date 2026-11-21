@@ -1,6 +1,6 @@
 # svg-scroll-draw — Roadmap
 
-> Last updated: 2026-11-19 — 2.30.0 prepared (`svg-scroll-draw/subpaths`, waypoints in order on a jump); 2.29.0 before it
+> Last updated: 2026-11-21 — 2.31.0 prepared (`svg-scroll-draw/write`: `scrollWrite`, handwriting on scroll); 2.30.0 tagged and on npm
 >
 > Items marked ✓ are shipped. Remaining items are ordered by value/effort ratio.
 
@@ -20,6 +20,7 @@
 - [x] `autoReverse` — follows scroll direction
 - [x] `waypoints` — callbacks at specific progress thresholds; in order on a jump past several (2.30.0)
 - [x] `svg-scroll-draw/subpaths` — `splitSubpaths()` / `joinSubpaths()`: a path's subpaths as separate paths, so `stagger` draws them one after another (2.30.0)
+- [x] `svg-scroll-draw/write` — `scrollWrite('#signature')`: text written stroke by stroke in a Hershey single-stroke font as the page scrolls, at one pen speed; `writePaths()` for the server (2.31.0)
 - [x] `strokeColor`, `strokeWidth` — animated color and width
 - [x] `fillOpacity` — flood fill in sync with stroke draw
 - [x] `clip` — clip-path reveal mode (left/right/top/bottom/center)
@@ -134,9 +135,12 @@
 - ~~Starters for Vue, Nuxt, SvelteKit and Solid~~ — `examples/`, on StackBlitz, 2.27.1, 2026-11-14 (with the Vue `:ref` fix they turned up).
 - Next for Nuxt: the nuxt.com/modules listing (owner reopens nuxt/modules#1744 in their own words). The real-Nuxt check runs in CI (job `nuxt`).
 - ~~Awesome-list PRs (shadcn, web components, UI component libraries)~~ — opened 2026-11-13.
-- Next: rerun the GSAP benchmark for each minor release (about 10 h, overnight); rerun the GSAP benchmark on 2.29.0 overnight with no-flash.css in the svg-scroll-draw setups (2.28.0 fixes the flash finding, 2.29.0 the card-reveal cost) and publish it; request indexing for the new pages (Google takes about 2 a day) and review them in Search Console after 2–3 weeks; a shadcn directory listing (logo ready, needs signed commits by the owner); links to inner pages (tools, posts), which Search Console shows as the bottleneck: 9 external links, all to the home page.
+- Paused by the owner (2026-11-17): the GSAP benchmark re-run. The page keeps its 2.27.3 numbers; the 2.29.0 setup (no-flash.css in the svg-scroll-draw setups) waits on `bench/2.29.0` until the owner asks for a run (about 10 h, overnight). Next; request indexing for the new pages (Google takes about 2 a day) and review them in Search Console after 2–3 weeks; a shadcn directory listing (logo ready, needs signed commits by the owner); links to inner pages (tools, posts), which Search Console shows as the bottleneck: 9 external links, all to the home page.
 - ~~Stacking cards and scroll marquee generators~~ — `/stacking-cards-scroll-generator` and `/scroll-marquee-generator` (28 tools), 2026-11-13.
 - ~~Handwriting animation generator~~ — `/handwriting-animation-generator` (29 tools), Hershey single-stroke fonts, 2026-11-13.
+- ~~Handwriting in the library~~ — `scrollWrite()` in `svg-scroll-draw/write`, 2.31.0, 2026-11-21. Next: the generator could build its output on `writePaths` instead of its own copy of the layout and fonts; more than one line (wrap or `
+`); framework components once the API settles.
+- The rare first-frame flash on Chrome's native CSS path (agreed next, 2026-11-19): no repro yet.
 - scrollDraw on round-capped paths in WebKit: a dot at the end of each path not yet drawn (the dash's gap equals the length, so the next, empty dash starts at the end). Write the gap as twice the length, with a browser test that counts pixels before the draw; then the handwriting generator's scroll version can go back to round caps.
 - Measure the tools before building more: `npm run report:numbers` weekly, Search Console per page after 2–3 weeks; improve the ones with impressions and few clicks.
 - GitHub Sponsors: the owner sets up the profile; the footer link and FUNDING.yml are on the branch. Ads: not at this traffic (see the 2026-11-11 discussion: about $1–5 a month, a consent banner, Vercel Hobby is non-commercial); revisit a single developer ad network (Carbon, EthicalAds) past ~10k views a month on a custom domain.
