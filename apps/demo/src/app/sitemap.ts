@@ -27,7 +27,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${SITE_URL}/docs`,
-      lastModified: new Date("2026-11-19"),
+      lastModified: new Date("2026-11-21"),
       changeFrequency: "weekly",
       priority: 0.9,
     },
@@ -51,7 +51,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${SITE_URL}/changelog`,
-      lastModified: new Date("2026-11-19"),
+      lastModified: new Date("2026-11-21"),
       changeFrequency: "monthly",
       priority: 0.5,
     },

@@ -1657,6 +1657,34 @@ const MUTATIONS = [
     spec: 'e2e/subpaths.spec.ts',
     grep: 'joinSubpaths\\(\\) after destroy\\(\\) puts every path back',
   },
+  // svg-scroll-draw/write (write.spec).
+  {
+    id: 'write/pace',
+    what: 'every stroke gets an equal slice of the window, not one in proportion to its length',
+    file: 'src/write/index.ts',
+    from: '    t += s.length / size;',
+    to: '    t += 1;',
+    spec: 'e2e/write.spec.ts',
+    grep: 'at the pen speed penTimes gives',
+  },
+  {
+    id: 'write/reduced',
+    what: 'under reduced motion the line starts unwritten and waits for the scroll',
+    file: 'src/write/index.ts',
+    from: '  if (reduced) {',
+    to: '  if (false as boolean) {',
+    spec: 'e2e/write.spec.ts',
+    grep: 'under reduced motion the line is written at once',
+  },
+  {
+    id: 'write/restore',
+    what: 'destroy() leaves the <svg> in the element',
+    file: 'src/write/index.ts',
+    from: '  const restore = () => { el.innerHTML = originalHTML; };',
+    to: '  const restore = () => {};',
+    spec: 'e2e/write.spec.ts',
+    grep: 'destroy\\(\\) puts the content back',
+  },
 ];
 
 const args = process.argv.slice(2);

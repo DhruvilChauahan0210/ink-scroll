@@ -524,6 +524,69 @@ import { ScrollText } from 'svg-scroll-draw/react';
 
 ---
 
+## scrollWrite — handwriting on scroll
+
+`svg-scroll-draw/write` (2.31.0) writes a line of text with a pen as the page scrolls: one stroke
+after another in writing order, the pen moving at one speed, lifting between letters and longer at a
+space. Scrolling back unwrites it.
+
+```js
+import { scrollWrite } from 'svg-scroll-draw/write';
+
+scrollWrite('#signature');                                  // writes the element's own text
+scrollWrite('#hello', { text: 'Hello', font: 'roman', once: true });
+```
+
+The text is set in a Hershey single-stroke font, so every path is the pen's centre line, drawn once.
+An outline font's letters are filled shapes: a line-drawing animation traces their edges, both sides
+of every stroke, and the word comes out as a double line. Three faces: `script` (joined up, the
+default), `roman` (upright print) and `italic` (roman slanted). ASCII only: accents are dropped
+(é → e), curly quotes and dashes straightened, anything else left out with a warning in development.
+
+The element's content becomes an `<svg>` the size of the line, in `currentColor`, which scales down
+in a narrower parent. The `<svg>` is `aria-hidden` and the text stays readable in a visually hidden
+span, as with `scrollText`; `destroy()` puts the element's content back exactly. Under
+`prefers-reduced-motion: reduce` the line is written at once.
+
+It replaces the element's content, so in React, Vue or another framework call it on an element the
+framework renders empty and pass `text`:
+
+```tsx
+function Signature() {
+  const ref = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    const write = scrollWrite(ref.current!, { text: 'Ada Lovelace', size: 64 });
+    return () => write.destroy();
+  }, []);
+  return <span ref={ref} />;
+}
+```
+
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `text` | `string` | the element's text | What to write |
+| `font` | `"script" \| "roman" \| "italic"` | `"script"` | The face |
+| `size` | `number` | 1.5 × the element's font size | Pixels to the em; at 1.5× the capitals are about as tall as the type they replace |
+| `strokeWidth` | `number` | `size / 28` | Line width in px |
+| `color` | `string` | `"currentColor"` | Ink colour |
+| `letterPause` | `number` | `0.3` | How long the pen lifts between letters, as the scroll it takes to write that many em of line |
+| `wordPause` | `number` | `2` | How long it lifts at a space, in the same em |
+| `trigger` | `TriggerConfig` | `{ start: 'top 85%', end: 'top 35%' }` | The window, on the written line: the last stroke lands at its end |
+| `once` | `boolean` | `false` | Stay written once written |
+| `onComplete` | `() => void` | — | Fires when the last stroke is written |
+| `progressVar` | `boolean` | `true` | Write `--scroll-draw-progress` on the `<svg>` |
+
+It returns the usual instance (`pause`, `resume`, `seek`, `replay`, `getProgress`, `destroy`).
+`writePaths(text, { font, size })` is the layout on its own, with no DOM: every stroke's path data and
+length in writing order, the line's width, height and baseline. Use it to render the `<svg>` on a
+server, or to draw it with `scrollDraw` yourself.
+
+The entry is 7.0 KB gzipped, most of it the two fonts, and the main entry carries none of it. The
+Hershey fonts were created by Dr. A. V. Hershey at the U.S. National Bureau of Standards; the data
+format is James Hurt's (Cognition, Inc.). Both acknowledgements ship with the font data.
+
+---
+
 ## scrollDraw — SVG path drawing (v1 API, unchanged)
 
 ```js
@@ -902,6 +965,7 @@ devtools.highlight('#my-element'); // outline for 2 seconds
 | `svg-scroll-draw/cinematic` | `Cinematic` |
 | `svg-scroll-draw/devtools` | `devtools` (dev-only) |
 | `svg-scroll-draw/subpaths` | `splitSubpaths`, `joinSubpaths` (2.30.0) |
+| `svg-scroll-draw/write` | `scrollWrite`, `writePaths` (2.31.0) |
 | `svg-scroll-draw/aos` | `AOS` (default), `init`, `refresh`, `refreshHard`, `destroy` |
 | `svg-scroll-draw/scrollreveal` | `ScrollReveal` (default and named) |
 | `svg-scroll-draw/vivus` | `Vivus` (default and named) |
@@ -922,7 +986,7 @@ devtools.highlight('#my-element'); // outline for 2 seconds
 | `svg-scroll-draw/reveal` | 6.1 KB |
 | `svg-scroll-draw/text` | 3.9 KB |
 | `svg-scroll-draw/video` | 3.3 KB |
-| `svg-scroll-draw/frames` | 4.4 KB |
+| `svg-scroll-draw/frames` | 4.5 KB |
 | `svg-scroll-draw/scrollreveal` | 4.7 KB |
 | `svg-scroll-draw/vivus` | 4.2 KB |
 | `svg-scroll-draw/aos` (styles included) | 3.2 KB |

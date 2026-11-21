@@ -77,6 +77,7 @@ describe('SSR — no window, no document', () => {
       '../reveal',
       '../lenis',
       '../subpaths',
+      '../write',
       '../devtools',
       '../aos',
       '../scrollreveal',
@@ -96,6 +97,12 @@ describe('SSR — no window, no document', () => {
     expect(splitSubpaths('#logo')).toBe('#logo');
     expect(joinSubpaths('#logo')).toBe('#logo');
     expect(splitSubpaths(null)).toBe(null);
+  });
+
+  it('scrollWrite is inert and writePaths still lays text out', async () => {
+    const { scrollWrite, writePaths } = await import('../write');
+    expect(scrollWrite('#sig').getProgress()).toBe(0);
+    expect(writePaths('Hi').strokes.length).toBeGreaterThan(0);
   });
 
   it('the core APIs return inert instances rather than throwing', async () => {

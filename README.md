@@ -62,6 +62,7 @@ If this saves you time, a ⭐ [on GitHub](https://github.com/DhruvilChauahan0210
 - **vivus drop-in** — `import Vivus from 'svg-scroll-draw/vivus'` keeps your `new Vivus()` code; SVG output matched exactly against vivus 0.4.6. [Details](#vivus-drop-in--keep-your-new-vivus-code)
 - **11.9 KB gzipped** for the whole main entry — and you rarely need all of it. Every API is a separate entry point: `scrollReveal` is 6.1 KB, `scrollPin` 1.6 KB, `scrollSnap` 2.5 KB. [Full size table below](#bundle-sizes), measured by `npm run size` and enforced in CI.
 - **Zero dependencies** — no GSAP, no ScrollTrigger, no heavyweight runtime
+- **Handwriting** — `scrollWrite('#signature')` writes a line of text stroke by stroke in a single-stroke font as the page scrolls, the pen at one speed. [Details](#scrollwrite--handwriting-on-scroll)
 - **Reduced motion, followed live** — under `prefers-reduced-motion: reduce` every effect shows its finished state instead of animating, and a reader who turns the setting on while the page is open sees everything still moving finish at once. Scrubbing that moves only with the reader's own scroll (the horizontal strip, a timeline's scroll pass) keeps working, because holding it would hide content
 - **Full playback API** — `pause`, `resume`, `seek`, `replay`, `getProgress`, `destroy`
 - **Presets** — `{ preset: 'reveal' }` for instant one-liner setup; five named presets: `sketch`, `reveal`, `typewriter`, `cinematic`, `spring`
@@ -69,8 +70,8 @@ If this saves you time, a ⭐ [on GitHub](https://github.com/DhruvilChauahan0210
 - **30+ options** — easing, stagger, fade, stroke color/width lerp, fill opacity, clip reveal, morphTo, velocityScale, waypoints, callbacks, repeat, autoReverse, and more
 - **Group / Sequence / Timeline APIs** — animate multiple containers simultaneously, one-after-another, or on independent scroll windows with `loop` for auto-looping after scroll completion
 - **CSS custom property** — `--scroll-draw-progress` is set on every frame so you can drive any CSS animation without a callback
-- **1057 tests across 48 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
-- **353 browser tests on top of those**, run against Chromium, Firefox and WebKit in CI. The unit suite runs in jsdom, where `getTotalLength` is stubbed and `IntersectionObserver` is faked — it can check the engine's arithmetic but nothing about real browser behaviour. Both counts are derived from the suites themselves and enforced in CI, so neither can quietly drift out of date
+- **1077 tests across 49 suites** — engine, options, native fast path, group, timeline, framework wrappers, cinematic, and each v2 API
+- **359 browser tests on top of those**, run against Chromium, Firefox and WebKit in CI. The unit suite runs in jsdom, where `getTotalLength` is stubbed and `IntersectionObserver` is faked — it can check the engine's arithmetic but nothing about real browser behaviour. Both counts are derived from the suites themselves and enforced in CI, so neither can quietly drift out of date
 
 ---
 
@@ -86,6 +87,7 @@ If this saves you time, a ⭐ [on GitHub](https://github.com/DhruvilChauahan0210
 - [createSpring](#createspring)
 - [Group & Sequence APIs](#group--sequence-apis)
 - [Timeline API](#scrolldrawtimeline)
+- [scrollWrite — handwriting](#scrollwrite--handwriting-on-scroll)
 - [useScrollDrawProgress](#usescrolldrawprogress-react)
 - [Bundle sizes](#bundle-sizes)
 - [Browser support](#browser-support)
@@ -794,6 +796,69 @@ scrollDrawTimeline('#chart', {
 
 ---
 
+## scrollWrite — handwriting on scroll
+
+`svg-scroll-draw/write` (2.31.0) writes a line of text with a pen as the page scrolls: one stroke
+after another in writing order, the pen moving at one speed, lifting between letters and longer at a
+space. Scrolling back unwrites it.
+
+```js
+import { scrollWrite } from 'svg-scroll-draw/write';
+
+scrollWrite('#signature');                                  // writes the element's own text
+scrollWrite('#hello', { text: 'Hello', font: 'roman', once: true });
+```
+
+The text is set in a Hershey single-stroke font, so every path is the pen's centre line, drawn once.
+An outline font's letters are filled shapes: a line-drawing animation traces their edges, both sides
+of every stroke, and the word comes out as a double line. Three faces: `script` (joined up, the
+default), `roman` (upright print) and `italic` (roman slanted). ASCII only: accents are dropped
+(é → e), curly quotes and dashes straightened, anything else left out with a warning in development.
+
+The element's content becomes an `<svg>` the size of the line, in `currentColor`, which scales down
+in a narrower parent. The `<svg>` is `aria-hidden` and the text stays readable in a visually hidden
+span, as with `scrollText`; `destroy()` puts the element's content back exactly. Under
+`prefers-reduced-motion: reduce` the line is written at once.
+
+It replaces the element's content, so in React, Vue or another framework call it on an element the
+framework renders empty and pass `text`:
+
+```tsx
+function Signature() {
+  const ref = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    const write = scrollWrite(ref.current!, { text: 'Ada Lovelace', size: 64 });
+    return () => write.destroy();
+  }, []);
+  return <span ref={ref} />;
+}
+```
+
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `text` | `string` | the element's text | What to write |
+| `font` | `"script" \| "roman" \| "italic"` | `"script"` | The face |
+| `size` | `number` | 1.5 × the element's font size | Pixels to the em; at 1.5× the capitals are about as tall as the type they replace |
+| `strokeWidth` | `number` | `size / 28` | Line width in px |
+| `color` | `string` | `"currentColor"` | Ink colour |
+| `letterPause` | `number` | `0.3` | How long the pen lifts between letters, as the scroll it takes to write that many em of line |
+| `wordPause` | `number` | `2` | How long it lifts at a space, in the same em |
+| `trigger` | `TriggerConfig` | `{ start: 'top 85%', end: 'top 35%' }` | The window, on the written line: the last stroke lands at its end |
+| `once` | `boolean` | `false` | Stay written once written |
+| `onComplete` | `() => void` | — | Fires when the last stroke is written |
+| `progressVar` | `boolean` | `true` | Write `--scroll-draw-progress` on the `<svg>` |
+
+It returns the usual instance (`pause`, `resume`, `seek`, `replay`, `getProgress`, `destroy`).
+`writePaths(text, { font, size })` is the layout on its own, with no DOM: every stroke's path data and
+length in writing order, the line's width, height and baseline. Use it to render the `<svg>` on a
+server, or to draw it with `scrollDraw` yourself.
+
+The entry is 7.0 KB gzipped, most of it the two fonts, and the main entry carries none of it. The
+Hershey fonts were created by Dr. A. V. Hershey at the U.S. National Bureau of Standards; the data
+format is James Hurt's (Cognition, Inc.). Both acknowledgements ship with the font data.
+
+---
+
 ## useScrollDrawProgress (React)
 
 A hook that exposes reactive scroll progress (0–1) for any element — use it to drive any animation alongside or independent of an SVG draw:
@@ -990,10 +1055,10 @@ outgrows its budget.
 <!-- size-table:start -->
 | Entry point                          | Raw | Gzipped |
 |--------------------------------------|----:|--------:|
-| `svg-scroll-draw/nuxt`               | 45.2 KB | **16.0 KB** |
+| `svg-scroll-draw/nuxt`               | 45.2 KB | **16.1 KB** |
 | `svg-scroll-draw/vue`                | 44.2 KB | **15.6 KB** |
 | `svg-scroll-draw/react`              | 42.9 KB | **15.4 KB** |
-| `svg-scroll-draw/angular`            | 41.6 KB | **14.8 KB** |
+| `svg-scroll-draw/angular`            | 41.6 KB | **14.9 KB** |
 | `svg-scroll-draw/solid`              | 41.4 KB | **14.8 KB** |
 | `svg-scroll-draw/svelte`             | 41.8 KB | **14.8 KB** |
 | `svg-scroll-draw/astro`              | 34.1 KB | **12.3 KB** |
@@ -1001,13 +1066,14 @@ outgrows its budget.
 | `dist/cdn/svg-scroll-draw.global.js` | 31.6 KB | **11.8 KB** |
 | `svg-scroll-draw/group`              | 29.7 KB | **10.5 KB** |
 | `svg-scroll-draw/web-component`      | 21.5 KB | **8.3 KB** |
+| `svg-scroll-draw/write`              | 14.8 KB | **7.0 KB** |
 | `svg-scroll-draw/reveal`             | 14.4 KB | **6.1 KB** |
 | `svg-scroll-draw/horizontal`         | 14.7 KB | **6.0 KB** |
 | `svg-scroll-draw/scrollreveal/react` | 12.3 KB | **4.8 KB** |
 | `svg-scroll-draw/scrollreveal`       | 12.1 KB | **4.7 KB** |
 | `svg-scroll-draw/timeline`           | 10.8 KB | **4.7 KB** |
 | `dist/cdn/scrollreveal.global.js`    | 11.7 KB | **4.6 KB** |
-| `svg-scroll-draw/frames`             | 9.5 KB | **4.4 KB** |
+| `svg-scroll-draw/frames`             | 9.5 KB | **4.5 KB** |
 | `svg-scroll-draw/vivus/react`        | 12.0 KB | **4.3 KB** |
 | `svg-scroll-draw/vivus`              | 11.7 KB | **4.2 KB** |
 | `svg-scroll-draw/text`               | 8.8 KB | **3.9 KB** |

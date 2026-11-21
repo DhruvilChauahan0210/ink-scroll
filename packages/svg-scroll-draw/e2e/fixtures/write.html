@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>svg-scroll-draw/write</title>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+  .lead { height: 1200px; }
+  .gap  { height: 700px; }
+  .tail { height: 3000px; }
+  h2 { font: 40px/1.2 serif; margin: 0; color: #123; }
+  #narrow-box { width: 180px; }
+</style>
+</head>
+<body>
+
+<!--
+  Viewport 900x800. Each line's window runs from its <svg>'s top at 85% of
+  the viewport to its top at 35% (the defaults), and the gaps leave each its
+  own stretch of scroll.
+-->
+<div class="lead"></div>
+<h2 id="sig">Ada Lovelace</h2>
+<div class="gap"></div>
+<p id="once">Hello</p>
+<div class="gap"></div>
+<div id="narrow-box"><h2 id="narrow">Signature line</h2></div>
+<div class="gap"></div>
+<h2 id="kept">Sign <b>here</b></h2>
+<div class="tail"></div>
+
+<script type="module">
+import { scrollWrite, writePaths } from '/dist/write/index.mjs';
+import { drawnFraction, publish } from './_probe.mjs';
+
+const $ = (sel) => document.querySelector(sel);
+const completed = { sig: 0 };
+const kept = $('#kept').innerHTML;
+const instances = {
+  sig: scrollWrite('#sig', { onComplete: () => completed.sig++ }),
+  once: scrollWrite('#once', { font: 'roman', size: 48, once: true }),
+  narrow: scrollWrite('#narrow', { font: 'italic' }),
+  kept: scrollWrite('#kept'),
+};
+
+const round = (n) => Math.round(n * 1000) / 1000;
+const svgOf = (sel) => $(`${sel} svg`);
+
+publish({
+  read: (sel) => Array.from(document.querySelectorAll(`${sel} path`)).map((p) => round(drawnFraction(p))),
+  /**
+   * What each stroke should show at `p` of the window, worked out here rather
+   * than with the library's penTimes, so a change to its timing cannot move
+   * the expectation with it (mutation write/pace): the pen covers every em of
+   * line in the same scroll, and lifts for 0.3 em between letters and 2 at a
+   * space, the defaults.
+   */
+  expected: (sel, p) => {
+    const svg = svgOf(sel);
+    const size = +svg.getAttribute('height');
+    const text = $(`${sel} span`).textContent;
+    const font = sel === '#once' ? 'roman' : sel === '#narrow' ? 'italic' : 'script';
+    const strokes = writePaths(text, { font, size }).strokes;
+    let t = 0;
+    const spans = strokes.map((s, i) => {
+      const prev = strokes[i - 1];
+      if (prev) t += s.word !== prev.word ? 2 : s.letter !== prev.letter ? 0.3 : 0;
+      const a = t;
+      t += s.length / size;
+      return [a, t];
+    });
+    return spans.map(([a, b]) => round(Math.min(1, Math.max(0, (p * t - a) / (b - a)))));
+  },
+  /** The scroll at which `sel`'s window (top 85% → top 35%) is `p` of the way through. */
+  yAt: (sel, p) => {
+    const top = svgOf(sel).getBoundingClientRect().top + scrollY;
+    return top - 0.85 * innerHeight + p * 0.5 * innerHeight;
+  },
+  box: (sel) => {
+    const r = svgOf(sel).getBoundingClientRect();
+    return { w: round(r.width), h: round(r.height), parent: round($(sel).getBoundingClientRect().width) };
+  },
+  size: (sel) => +svgOf(sel).getAttribute('height'),
+  completed: () => ({ ...completed }),
+  maxScroll: () => document.documentElement.scrollHeight - innerHeight,
+  destroyKept: () => {
+    instances.kept.destroy();
+    return $('#kept').innerHTML === kept;
+  },
+});
+</script>
+</body>
+</html>
