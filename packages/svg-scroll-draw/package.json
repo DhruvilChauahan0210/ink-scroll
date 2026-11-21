@@ -161,6 +161,9 @@
       "subpaths": [
         "./dist/subpaths/index.d.ts"
       ],
+      "write": [
+        "./dist/write/index.d.ts"
+      ],
       "reveal": [
         "./dist/reveal/index.d.ts"
       ],
@@ -396,6 +399,16 @@
       "require": {
         "types": "./dist/subpaths/index.d.ts",
         "default": "./dist/subpaths/index.cjs"
+      }
+    },
+    "./write": {
+      "import": {
+        "types": "./dist/write/index.d.mts",
+        "default": "./dist/write/index.mjs"
+      },
+      "require": {
+        "types": "./dist/write/index.d.ts",
+        "default": "./dist/write/index.cjs"
       }
     },
     "./reveal": {

@@ -182,6 +182,13 @@ const BUDGETS_KB = {
   // at its 2.29.0 size (main 11.95 -> 11.93 with the waypoint fix's shared
   // loop). Rounded up with 0.1 KB more.
   subpaths:          0.9,
+  // 2.31.0: scrollWrite and writePaths with two Hershey single-stroke fonts,
+  // 7.0 KB at its first build: the fonts are 2.9 of it (roman, which italic
+  // slants, 1.3), the shared trigger, frame-gate and reduced-motion files 1.4.
+  // Its own frame loop rather than scrollDrawTimeline, which made it 9.8.
+  // The chunks it splits cost frames 12 bytes, angular 15 and nuxt 14 (each
+  // rounds up 0.1 KB, within budget), the main entry 3. Rounded up with 0.1 KB more.
+  write:             7.1,
 };
 
 /*

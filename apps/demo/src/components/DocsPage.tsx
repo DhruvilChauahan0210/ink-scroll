@@ -4,6 +4,7 @@ import './docs.css';
 import { Children, useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { ScrollDraw } from 'svg-scroll-draw/react';
 import { splitSubpaths, joinSubpaths } from 'svg-scroll-draw/subpaths';
+import { scrollWrite } from 'svg-scroll-draw/write';
 import Link from 'next/link';
 import { CopyButton } from './CopyButton';
 import { CopyCommand } from './home/CopyCommand';
@@ -33,6 +34,7 @@ const NAV_GROUPS = [
       { id: 'callbacks',                label: 'Callbacks' },
       { id: 'advanced',                 label: 'Advanced' },
       { id: 'subpaths',                 label: 'Subpaths' },
+      { id: 'write',                    label: 'Handwriting' },
     ],
   },
   {
@@ -280,6 +282,37 @@ function SubpathsDemo() {
         <figcaption className="mt-3 text-[12px] text-graphite-border">
           <code className="font-mono text-pitch-black">splitSubpaths</code> +{' '}
           <code className="font-mono text-pitch-black">{'stagger: 1'}</code>: one after another
+        </figcaption>
+      </figure>
+    </div>
+  );
+}
+
+/**
+ * Two lines written as the page scrolls: script, the default, and roman.
+ * scrollWrite replaces the element's content, so it runs on spans React
+ * renders empty, with the text passed in; destroy() empties them again.
+ */
+function WriteDemo() {
+  const script = useRef<HTMLSpanElement>(null);
+  const roman = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    const a = scrollWrite(script.current!, { text: 'Ada Lovelace', size: 64 });
+    const b = scrollWrite(roman.current!, { text: 'Hello, world', font: 'roman', size: 48 });
+    return () => { a.destroy(); b.destroy(); };
+  }, []);
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+      <figure className="border border-graphite-border/30 p-4 m-0 text-pitch-black">
+        <span ref={script} className="block" />
+        <figcaption className="mt-3 text-[12px] text-graphite-border">
+          <code className="font-mono text-pitch-black">script</code>: joined up, the default
+        </figcaption>
+      </figure>
+      <figure className="border border-graphite-border/30 p-4 m-0 text-pitch-black">
+        <span ref={roman} className="block" />
+        <figcaption className="mt-3 text-[12px] text-graphite-border">
+          <code className="font-mono text-pitch-black">{"font: 'roman'"}</code>: upright print
         </figcaption>
       </figure>
     </div>
@@ -857,6 +890,66 @@ export function Drawing() {
               the action, hook or <code className="font-mono">scrollDraw()</code> call. A{' '}
               <code className="font-mono">d</code> changed after the split does not reach the pieces: join, then
               split again.
+            </Note>
+          </DocSection>
+
+          {/* ── Handwriting ──────────────────────────────────── */}
+          <DocSection id="write" tag="v2.31.0" heading="Handwriting: scrollWrite">
+            <p className="text-sm text-graphite-border leading-relaxed mb-4">
+              <code className="font-mono text-pitch-black">svg-scroll-draw/write</code> writes a line of text
+              with a pen as the page scrolls: one stroke after another in writing order, the pen moving at one
+              speed, lifting between letters and longer at a space. The text is set in a Hershey single-stroke
+              font, so every path is the pen’s centre line, drawn once; an outline font’s letters would come out
+              as double lines, both edges of every stroke. Scroll the two below; scrolling back unwrites them.
+            </p>
+            <WriteDemo />
+            <CodeBlock file="signature.js">
+{`import { scrollWrite } from 'svg-scroll-draw/write';
+
+// Writes the element's own text, 1.5 × its font size, in currentColor.
+scrollWrite('#signature');
+
+// Or say what, in which face, and keep it written.
+scrollWrite('#hello', { text: 'Hello, world', font: 'roman', once: true });`}
+            </CodeBlock>
+            <OptGroup>
+              <Opt name="text" type="string" defaultVal="the element's text">What to write.</Opt>
+              <Opt name="font" type="'script' | 'roman' | 'italic'" defaultVal="'script'">
+                Joined-up script, upright roman, or roman slanted.
+              </Opt>
+              <Opt name="size" type="number" defaultVal="1.5 × font size">
+                Pixels to the em. At 1.5 × the element’s font size the capitals are about as tall as the type
+                they replace.
+              </Opt>
+              <Opt name="strokeWidth" type="number" defaultVal="size / 28">Line width in px.</Opt>
+              <Opt name="color" type="string" defaultVal="'currentColor'">Ink colour.</Opt>
+              <Opt name="letterPause" type="number" defaultVal="0.3">
+                How long the pen lifts between letters, as the scroll it takes to write that many em of line.
+              </Opt>
+              <Opt name="wordPause" type="number" defaultVal="2">How long it lifts at a space, in the same em.</Opt>
+              <Opt name="trigger" type="TriggerConfig" defaultVal="top 85% → top 35%">
+                The window, on the written line. The last stroke lands at its end.
+              </Opt>
+              <Opt name="once" type="boolean" defaultVal="false">Stay written once written.</Opt>
+              <Opt name="onComplete" type="() => void">Fires when the last stroke is written.</Opt>
+            </OptGroup>
+            <Sub>What it does to the element</Sub>
+            <p className="text-sm text-graphite-border leading-relaxed mb-4">
+              The element’s content becomes an <code className="font-mono text-pitch-black">{'<svg>'}</code> the
+              size of the line, which scales down in a narrower parent. The{' '}
+              <code className="font-mono text-pitch-black">{'<svg>'}</code> is hidden from screen readers and the
+              text stays readable in a visually hidden span, as with{' '}
+              <code className="font-mono text-pitch-black">scrollText</code>;{' '}
+              <code className="font-mono text-pitch-black">destroy()</code> puts the content back exactly. Under
+              reduced motion the line is written at once. ASCII only: accents are dropped and curly quotes
+              straightened. <code className="font-mono text-pitch-black">writePaths(text, {'{ font, size }'})</code>{' '}
+              is the layout alone, with no DOM, to render the{' '}
+              <code className="font-mono text-pitch-black">{'<svg>'}</code> on a server.
+            </p>
+            <Note>
+              It replaces the element’s content, so in React, Vue or another framework call it on an element the
+              framework renders empty, and pass <code className="font-mono">text</code>, as the demo above does.
+              The entry is 7.0 KB gzipped, most of it the two fonts; the main entry carries none of it.
             </Note>
           </DocSection>
 
