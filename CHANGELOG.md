@@ -1243,6 +1243,50 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ---
 
+## [2.31.0] — 2026-11-21
+
+### Added
+
+- **`svg-scroll-draw/write`: handwriting on scroll.** `scrollWrite(target,
+  options)` replaces the element's content with its text (or `options.text`)
+  written in a Hershey single-stroke font, and writes it as the page scrolls:
+  one stroke after another in writing order, the pen moving at one speed
+  (each stroke a slice of the window in proportion to its length), lifting
+  between letters (`letterPause`, 0.3 em of line) and longer at a space
+  (`wordPause`, 2 em: the site's handwriting tool's timing). Scrolling back
+  unwrites it; `once` keeps it. Every path is the pen's centre line, drawn
+  once, which an outline font cannot give: a line-drawing animation traces
+  both edges of each of its strokes. Three faces: `script` (joined up, the
+  default), `roman` and `italic`. `size` defaults to 1.5 × the element's font
+  size (capitals about as tall as the type they replace), `strokeWidth` to
+  size / 28, `color` to `currentColor`, the window to `top 85%` → `top 35%`.
+  The `<svg>` is `aria-hidden` and the text stays in a visually hidden span,
+  as with scrollText; `destroy()` puts the content back exactly. Under reduced
+  motion the line is written at once, and turned on mid-visit it finishes
+  then. ASCII only: accents dropped, curly quotes and dashes straightened,
+  anything else left out with a warning. `writePaths(text, { font, size })` is
+  the layout alone, with no DOM, for rendering the `<svg>` on a server. Its
+  own frame loop on the shared trigger window (`core/frame-gate`), so a jump
+  past it writes the whole line and fires `onComplete`. 7.0 KB gzipped, an
+  entry of its own (the two fonts are 2.9 KB): built on `scrollDrawTimeline`
+  it was 9.8. The main entry carries none of it (+3 bytes, a chunk import);
+  the shared chunks split a little, so frames, angular and nuxt grow 12 to 15
+  bytes, which rounds them up to 4.5, 14.9 and 16.1 KB.
+  The Hershey fonts' acknowledgement ships with the built data, as their
+  licence asks.
+
+### Tests
+
+- `scrollWrite.test.ts` (19): the layout (writing order, letters and words,
+  scale, typography, missing characters, the italic slant), the pen's timing,
+  and the element (the readable copy, options, order while scrolling, once, a
+  custom trigger, seek/pause/resume/replay, progressVar, destroy, reduced
+  motion). `ssr.test.ts` imports and calls the entry with no DOM.
+  `e2e/write.spec.ts` (6): order and pace against `penTimes` at six points of
+  the window, a jump past it, scrolling back and `once`, a parent narrower
+  than the line, the accessible name and `destroy()`, and a page loaded under
+  reduced motion. Mutations `write/pace`, `write/reduced` and `write/restore`.
+
 ## [2.30.0] — 2026-11-19
 
 ### Added
