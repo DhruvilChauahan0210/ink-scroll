@@ -1,6 +1,6 @@
 # svg-scroll-draw — Roadmap
 
-> Last updated: 2026-11-21 — 2.31.0 prepared (`svg-scroll-draw/write`: `scrollWrite`, handwriting on scroll); 2.30.0 tagged and on npm
+> Last updated: 2026-11-21 — 2.31.0 released (`svg-scroll-draw/write`: `scrollWrite`, handwriting on scroll), tagged and on npm
 >
 > Items marked ✓ are shipped. Remaining items are ordered by value/effort ratio.
 

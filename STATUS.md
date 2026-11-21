@@ -1,6 +1,6 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **2.31.0** prepared on branch `feat/scroll-write` (`svg-scroll-draw/write`: `scrollWrite`, handwriting on scroll); 2.30.0 tagged and on npm (`latest`)
+> Current version: **2.31.0**, tagged and on npm (`latest`, with provenance) (`svg-scroll-draw/write`: `scrollWrite`, handwriting on scroll); merged in PR #26 on 2026-11-21
 > Tests: **1077 unit** across 49 suites · **359 browser tests** per engine (1077 runs
 > across Chromium/Firefox/WebKit) · **174 mutations**, each caught by the one test
 > named for it · **91.5% line coverage** (gate 90/90/82/82)
