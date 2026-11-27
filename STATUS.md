@@ -1,11 +1,11 @@
 # Project Status — svg-scroll-draw
 
-> Current version: **2.31.0**, tagged and on npm (`latest`, with provenance) (`svg-scroll-draw/write`: `scrollWrite`, handwriting on scroll); merged in PR #26 on 2026-11-21
-> Tests: **1077 unit** across 49 suites · **359 browser tests** per engine (1077 runs
-> across Chromium/Firefox/WebKit) · **174 mutations**, each caught by the one test
+> Current version: **2.32.0** prepared on branch `release/2.32.0` (`svg-scroll-draw/follow`: `scrollFollow`, motion along a path; `svg-scroll-draw/morph`: `scrollMorph`, any shape into any other); 2.31.0 tagged and on npm (`latest`)
+> Tests: **1127 unit** across 51 suites · **374 browser tests** per engine (1122 runs
+> across Chromium/Firefox/WebKit) · **180 mutations**, each caught by the one test
 > named for it · **91.5% line coverage** (gate 90/90/82/82)
 > Bundle: **11.9 KB gzipped** (main entry as shipped files, chunks included; per-API entries from 0.3 KB) · zero runtime dependencies
-> Last updated: 2026-11-21
+> Last updated: 2026-11-27
 
 ---
 
@@ -27,6 +27,8 @@
 - [x] All `scrollDraw` options — selector, speed, fade, easing, stagger, direction, once, debug, axis, scrollContainer, autoReverse, delay, strokeColor, strokeWidth, fillOpacity, clip, morphTo, velocityScale, repeat, repeatDelay, waypoints (in order on a jump, 2.30.0), autoplay, duration, native, preset, progressVar (2.29.0)
 - [x] `svg-scroll-draw/subpaths` (2.30.0) — `splitSubpaths(target)` splits each multi-subpath `<path>` into one path per subpath (the path keeps the first, copies after it, relative movetos made absolute), so `stagger` draws them one after another; `joinSubpaths(target)` puts the markup back exactly. 0.8 KB, an entry of its own
 - [x] `svg-scroll-draw/write` (2.31.0) — `scrollWrite(target, options)` writes the element's text (or `text`) in a Hershey single-stroke font (`script`, `roman`, `italic`) as the page scrolls: one stroke after another in writing order at one pen speed, pen lifts between letters and at spaces; `<svg>` aria-hidden with a visually hidden copy, `destroy()` restores, written at once under reduced motion. `writePaths(text, { font, size })` is the layout alone, no DOM. 7.0 KB, an entry of its own (fonts 2.9 KB)
+- [x] `svg-scroll-draw/follow` (2.32.0) — `scrollFollow(target, path, options)` moves an HTML or SVG element along any SVG path on scroll: `rotate` to the path's direction on screen, `angle`, `anchor`, `draw` (the path drawn up to the element), `start`/`end`; HTML mapped through `getScreenCTM`, so it stays on a scaled or responsive `<svg>` and in a sticky stage; reduced motion places it at the end. JS only. 4.0 KB, its own entry
+- [x] `svg-scroll-draw/morph` (2.32.0) — `scrollMorph(target, { to })` morphs any shape (any basic shape or path, a `<g>`, or a sequence) into any other on scroll: outlines cut at matching fractions of their length, windings matched, start turned to move points least, holes grown from a point; `interpolatePaths()` and `shapeToPath()` work without scroll; `morphTo` unchanged. 7.0 KB, its own entry
 - [x] Native CSS `animation-timeline: view()` fast path with automatic JS fallback
 - [x] Instance API — `destroy`, `replay`, `pause`, `resume`, `seek`, `getProgress`
 - [x] Easing factories — `createSpring`, `createBounce`, `createElastic`
@@ -53,11 +55,11 @@
 - [x] `scrollAnimateGroup` + `scrollAnimateSequence` + `scrollParallaxGroup` in `svg-scroll-draw/group`
 
 ### Testing
-- [x] 1077 tests across 49 suites — `motionLive` (reduced motion turned on mid-visit, every engine and the React hook), `reactive` (the wrappers' option fingerprint and live callbacks), `directives` (the built files' "use client"), `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollFrames` (47), `scrollFramesWrappers` (48), `scrollText` (23)
+- [x] 1127 tests across 51 suites — `motionLive` (reduced motion turned on mid-visit, every engine and the React hook), `reactive` (the wrappers' option fingerprint and live callbacks), `directives` (the built files' "use client"), `engine`, `engine-options`, `engine-native`, `css-easing`, `ssr` (no DOM at all), `group`, `timeline`, `framework`, `cinematic`, `utils`, `scrollAnimate` (30), `scrollCounter` (20), `scrollVideo` (17), `scrollFrames` (47), `scrollFramesWrappers` (48), `scrollText` (23)
 - [x] Initial state fix — `createAnimateEngine` and `scrollCounter` now apply correct alpha immediately on init (no flash before IO fires)
 
 ### Browser tests (Phase 2, `packages/svg-scroll-draw/e2e`)
-359 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
+374 browser tests per engine, run on Chromium, Firefox and WebKit. Shared harness:
 `helpers.ts` (deterministic sweep — scroll to a fixed offset, wait two frames,
 read) and `fixtures/_probe.mjs` (parsing stays in the page, so specs assert on
 numbers).
@@ -200,6 +202,7 @@ at all.
 - [x] `/blog/css-cubic-bezier-easing` says a `cubic-bezier()` string works since 2.26.0
 - [x] The draw dash is `L 2L` (core/dash.ts) in scrollDraw (JS and native), timelines and Cinematic: with an equal gap WebKit painted a cap dot on undrawn diagonal lines and closed outlines (`e2e/round-cap.spec.ts`, screenshot-compared in three engines; its mutation runs in WebKit)
 - [x] Tagged and published: v2.24.0, v2.25.0 (`previous`), v2.26.0 (`latest`), 2026-11-13
+- [x] 2.32.0: `svg-scroll-draw/follow` and `svg-scroll-draw/morph`; `e2e/follow.spec.ts`, `e2e/scroll-morph.spec.ts` and mutations `follow/tangent`, `follow/untransformed`, `follow/reduced`, `morph/turn`, `morph/winding`, `morph/restore`
 - [x] 2.31.0: `svg-scroll-draw/write` — `scrollWrite` handwriting on scroll, `writePaths`; `e2e/write.spec.ts` and mutations `write/pace`, `write/reduced`, `write/restore`
 - [x] 2.29.0: `progressVar` option on every API; scrollReveal off by default (60-card reveal 76 → 41 ms main thread, Chromium 4× CPU)
 - [x] 2.28.0: `svg-scroll-draw/no-flash.css` — no finished drawing before the script runs (the benchmark's flash finding); browser test + mutation `engine/no-flash`

@@ -78,6 +78,8 @@ describe('SSR — no window, no document', () => {
       '../lenis',
       '../subpaths',
       '../write',
+      '../follow',
+      '../morph',
       '../devtools',
       '../aos',
       '../scrollreveal',
@@ -103,6 +105,19 @@ describe('SSR — no window, no document', () => {
     const { scrollWrite, writePaths } = await import('../write');
     expect(scrollWrite('#sig').getProgress()).toBe(0);
     expect(writePaths('Hi').strokes.length).toBeGreaterThan(0);
+  });
+
+  it('scrollFollow is inert', async () => {
+    const { scrollFollow } = await import('../follow');
+    const inst = scrollFollow('#plane', '#route', { rotate: true, draw: true });
+    expect(inst.getProgress()).toBe(0);
+    expect(() => { inst.seek(0.5); inst.refresh(); inst.destroy(); }).not.toThrow();
+  });
+
+  it('scrollMorph is inert and interpolatePaths still morphs', async () => {
+    const { scrollMorph, interpolatePaths } = await import('../morph');
+    expectInertInstance(scrollMorph('#icon', { to: 'M0 0H10V10Z' }), 'scrollMorph');
+    expect(interpolatePaths('M0 0H10V10H0Z', 'M5 0L10 10H0Z')(0.5)).toMatch(/^M[\d.]+ [\d.]+C/);
   });
 
   it('the core APIs return inert instances rather than throwing', async () => {

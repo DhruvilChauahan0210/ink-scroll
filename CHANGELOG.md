@@ -1248,6 +1248,78 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ---
 
+## [2.32.0] — 2026-11-27
+
+### Added
+
+- **`svg-scroll-draw/follow`: an element along a path as the page scrolls.**
+  `scrollFollow(target, path, options)` moves `target`, an HTML or an SVG
+  element, along `path` (a selector or any SVG shape with a length) from its
+  start to its end over the scroll window: the motion along a path GSAP's
+  MotionPathPlugin gives a ScrollTrigger. An HTML element is moved with a CSS
+  transform, the path's point mapped through `getScreenCTM()` (viewBox, group
+  transforms, the `<svg>`'s CSS size) and taken from the element's own box, so
+  it lines up over a responsive `<svg>` at any width and inside a sticky stage;
+  an SVG element in its parent's user units, through its `transform` attribute.
+  `rotate` turns it to the path's direction on screen (through an uneven
+  viewBox too), `angle` adds degrees (CSS `offset-rotate: auto <angle>`),
+  `anchor` picks the point of its box on the path (default the centre),
+  `draw` draws the path up to it in the draw engine's dash, `start` and `end`
+  take part of the path (backwards when `end < start`), with `easing`,
+  `trigger` (default the `<svg>`'s top at mid-screen to its bottom there),
+  `once`, `onProgress`, `onComplete` and `progressVar`. The usual instance
+  plus `refresh()`; `destroy()` puts back the element's inline style or
+  transform attribute, and the path's, exactly. Under reduced motion it is at
+  the end at once, and turned on mid-visit it goes there then. Its own frame
+  loop on `core/frame-gate`: a jump past the window lands at the end and fires
+  `onComplete`; a resize or layout change re-measures. JS only: `offset-path`
+  with a scroll timeline was left out, as its `path()` is in CSS pixels and
+  would need rewriting for every viewBox scale. 4.0 KB gzipped, an entry of
+  its own; built with and without it, no other entry moved by a byte. Tests:
+  scrollFollow.test.ts (21), ssr.test.ts, e2e/follow.spec.ts (8, Chromium and
+  WebKit); mutations follow/tangent, follow/untransformed and follow/reduced.
+
+- **`svg-scroll-draw/morph`: any shape morphs into any other on scroll.**
+  `scrollMorph(target, { to })` morphs a `<path>`, or any basic shape, into
+  another as the page scrolls, and back when it scrolls back. `to` is path
+  data, a selector or an element (a path, a `<rect>` rounded or not,
+  `<circle>`, `<ellipse>`, `<line>`, `<polyline>`, `<polygon>`, or a `<g>` of
+  them), or a list of them to morph through in turn, an equal share of the
+  window each. The main entry's `morphTo` pairs the numbers of two `d`
+  strings in order and needs both drawn with the same commands; this matches
+  the outlines. Every shape becomes rings of cubic Béziers (all path
+  commands, arcs included); rings are paired by place and size, a closed one
+  with no partner (the hole of an A) grows from a point at its own middle or
+  shrinks to one, and an open line with no partner splits from or joins the
+  line nearest it (shrunk to a point, a round-capped stroke leaves a dot);
+  each pair is cut at the same fractions of its length (every
+  corner of either shape plus `points` even cuts, default 24), run the same
+  way round when the windings differ, and turned to the start that moves the
+  points least; every point then travels a straight line. Cutting a cubic does
+  not change it, so the first and last frames are the shapes themselves,
+  corners kept, and at exactly 0 and 1 the element gets the strings as given.
+  `precision` (2) sets the decimals written. A shape other than a `<path>` is
+  swapped for a `<path>` with its attributes while it runs; `destroy()` puts
+  the element back, or a path's `d` and `style` exactly. `trigger` (window on
+  the shape's `<svg>`, default `top 85%` → `center center`), `easing` (on each
+  step of a sequence), `once`, `onProgress`, `onComplete`, `progressVar`, and
+  the usual instance with `refresh()`. Under reduced motion the last shape
+  shows at once, and turned on mid-visit it jumps there. Its own frame loop on
+  `core/frame-gate`, so a jump past the window lands on the last shape and
+  fires `onComplete`. `interpolatePaths(from, to, { points, precision })` is
+  the matching alone, `(t) => d`, with no DOM or scroll; `shapeToPath(el)`
+  gives any shape's outline as path data. 7.0 KB gzipped (its own code 5.0),
+  an entry of its own: every other entry, the main one included, builds to the
+  byte as before. Not in the CDN bundle, as for the other optional entries.
+
+  Docs: a section in both READMEs, the sub-path export table, and
+  `/docs#morph` with a circle that becomes a star and then an i, and a menu
+  icon that becomes a close icon. Tests: `scrollMorph.test.ts` (27),
+  `ssr.test.ts`; `e2e/scroll-morph.spec.ts` (7), reading the path back through
+  the browser's own geometry at 0, halfway and 1, a sequence, a jump, scrolling
+  back and `once`, `destroy()`, reduced motion. Mutations `morph/turn`,
+  `morph/winding` and `morph/restore`.
+
 ## [2.31.0] — 2026-11-21
 
 ### Added

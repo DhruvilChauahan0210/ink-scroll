@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>svg-scroll-draw/morph</title>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+  .lead { height: 1200px; }
+  .gap  { height: 700px; }
+  .tail { height: 3000px; }
+  svg { display: block; margin-left: 100px; }
+  #refs { position: absolute; top: 0; left: 0; visibility: hidden; margin: 0; }
+</style>
+</head>
+<body>
+
+<!--
+  Viewport 900x800. Each <svg> is 200px tall: its window runs from its top
+  at 85% of the viewport to its centre at the centre (the defaults), and the
+  gaps give each its own stretch of scroll.
+
+  #plain: a square <path> (clockwise) to a circle (anticlockwise), path data.
+  #seq:   a <circle> through a star to a letter A with a hole, by selector.
+  #once:  a line to a zigzag, open paths, `once`.
+-->
+<div class="lead"></div>
+<svg id="s-plain" viewBox="0 0 100 100" width="200" height="200">
+  <path id="plain" d="M0 0H100V100H0Z" fill="#123"/>
+</svg>
+<div class="gap"></div>
+<svg id="s-seq" viewBox="0 0 100 100" width="200" height="200">
+  <circle id="seq" class="blob" cx="50" cy="50" r="50" fill="#c33" data-x="kept"/>
+</svg>
+<div class="gap"></div>
+<svg id="s-once" viewBox="0 0 100 100" width="200" height="200">
+  <path id="once" d="M0 50H100" fill="none" stroke="#123" stroke-width="4" style="color: red"/>
+</svg>
+<div class="tail"></div>
+
+<svg id="refs" viewBox="0 0 100 100" width="100" height="100">
+  <path id="star" d="M50 0L61 35L98 35L68 57L79 91L50 70L21 91L32 57L2 35L39 35Z"/>
+  <!-- An A: the outer outline clockwise, the hole anticlockwise. -->
+  <path id="letter" d="M50 5L90 95H72L63 74H37L28 95H10ZM50 30L42 58H58Z"/>
+  <circle id="ref-circle" cx="50" cy="50" r="50"/>
+</svg>
+
+<script type="module">
+import { scrollMorph, interpolatePaths } from '/dist/morph/index.mjs';
+import { publish } from './_probe.mjs';
+
+const $ = (sel) => document.querySelector(sel);
+// Anticlockwise, where the square runs clockwise: the morph runs one of them backwards.
+const CIRCLE = 'M100 50A50 50 0 0 0 0 50A50 50 0 0 0 100 50Z';
+const ZIGZAG = 'M0 50L25 20L50 80L75 20L100 50';
+const completed = { plain: 0, seq: 0 };
+const original = { seq: $('#seq').outerHTML, once: $('#once').outerHTML };
+const seqCircle = $('#seq');
+
+const instances = {
+  plain: scrollMorph('#plain', { to: CIRCLE, onComplete: () => completed.plain++ }),
+  seq: scrollMorph(seqCircle, { to: ['#star', '#letter'], onComplete: () => completed.seq++ }),
+  once: scrollMorph('#once', { to: ZIGZAG, once: true }),
+};
+
+const round = (n) => Math.round(n * 1000) / 1000;
+
+/** The outline the browser draws, from its own geometry: points evenly along it. */
+function geom(sel, n = 96) {
+  const p = $(sel);
+  const len = p.getTotalLength();
+  const pts = [];
+  for (let k = 0; k < n; k++) {
+    const q = p.getPointAtLength((len * k) / n);
+    pts.push([round(q.x), round(q.y)]);
+  }
+  const b = p.getBBox();
+  const svg = p.ownerSVGElement;
+  const at = svg.createSVGPoint();
+  at.x = 50;
+  at.y = 50;
+  return {
+    tag: p.localName,
+    d: p.getAttribute('d'),
+    len: round(len),
+    box: [b.x, b.y, b.width, b.height].map(round),
+    pts,
+    centreFilled: p.isPointInFill(at),
+  };
+}
+
+publish({
+  geom,
+  d: (sel) => $(sel).getAttribute('d'),
+  ref: (sel) => geom(sel),
+  /** What interpolatePaths gives, worked out here for comparison. */
+  between: (from, to, t) => interpolatePaths(from, to)(t),
+  /** The scroll at which the window (top 85% → centre at the centre) of `sel`'s <svg> is `p` of the way through. */
+  yAt: (sel, p) => {
+    // The <svg>'s box: the shape's own changes as it morphs.
+    const r = $(sel).ownerSVGElement.getBoundingClientRect();
+    const top = r.top + scrollY;
+    const start = top - 0.85 * innerHeight;
+    const end = top + r.height / 2 - 0.5 * innerHeight;
+    return start + p * (end - start);
+  },
+  progress: (name) => instances[name].getProgress(),
+  completed: () => ({ ...completed }),
+  maxScroll: () => document.documentElement.scrollHeight - innerHeight,
+  destroy: (name) => {
+    instances[name].destroy();
+    const el = name === 'seq' ? $('#seq') : $(`#${name}`);
+    return { same: name === 'seq' ? el === seqCircle : true, html: el.outerHTML, was: original[name] };
+  },
+});
+</script>
+</body>
+</html>

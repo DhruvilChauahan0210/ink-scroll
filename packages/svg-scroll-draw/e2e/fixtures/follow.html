@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>svg-scroll-draw/follow</title>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; font: 13px/1.4 ui-monospace, monospace; }
+  .lead { height: 1000px; }
+  .gap  { height: 900px; }
+  .tail { height: 2000px; }
+  .stage { position: relative; margin-left: 40px; }
+  #stage { width: 80%; max-width: 600px; }
+  #map { display: block; width: 100%; height: auto; }
+  .mover { position: absolute; left: 20px; top: 30px; width: 30px; height: 12px; background: #e33; }
+  /* Zero-size markers: a point's bounding box is the point, turned or not. */
+  .mover i { position: absolute; width: 0; height: 0; top: 50%; }
+  .mover .c { left: 50%; }
+  .mover .r { left: 100%; }
+  #pinwrap { height: 1600px; }
+  #pinstage { position: sticky; top: 100px; height: 300px; }
+</style>
+</head>
+<body>
+
+<!--
+  Viewport 900x800. #map is a viewBox shown 3x (2.5x at a 500px viewport),
+  with an HTML element beside it and an SVG one inside a scaled group; #squash
+  stretches its viewBox unevenly (preserveAspectRatio none), so a tangent of
+  45 degrees in user units is 18.4 on screen; #pinroute is in a sticky stage
+  that holds still while its element travels.
+-->
+<div class="lead"></div>
+<div id="stage" class="stage">
+  <svg id="map" viewBox="0 0 200 100">
+    <path id="route" d="M10 50 C60 -10 140 110 190 50" fill="none" stroke="#ccc" stroke-width="1" />
+    <g transform="translate(5 5) scale(.5)">
+      <circle id="dot" r="6" fill="#36c" transform="translate(999 999)" />
+    </g>
+  </svg>
+  <div id="plane" class="mover"><i class="c"></i><i class="r"></i></div>
+</div>
+<div class="gap"></div>
+<div class="stage">
+  <svg id="squash" viewBox="0 0 100 100" preserveAspectRatio="none" width="600" height="200">
+    <path id="diag" d="M0 0L100 100" fill="none" stroke="#123" stroke-width="2" stroke-linecap="round" />
+  </svg>
+  <div id="arrow" class="mover"><i class="c"></i><i class="r"></i></div>
+</div>
+<div class="gap"></div>
+<div id="pinwrap">
+  <div id="pinstage" class="stage">
+    <svg id="pinmap" viewBox="0 0 100 50" width="400" height="200">
+      <path id="pinroute" d="M5 25 Q50 -20 95 25" fill="none" stroke="#ccc" />
+    </svg>
+    <div id="pinplane" class="mover"><i class="c"></i><i class="r"></i></div>
+  </div>
+</div>
+<div class="stage">
+  <div id="kept" style="color: rgb(1, 2, 3); transform: rotate(3deg);">kept</div>
+</div>
+<div class="tail"></div>
+
+<script type="module">
+import { scrollFollow } from '/dist/follow/index.mjs';
+import { publish } from './_probe.mjs';
+
+const $ = (sel) => document.querySelector(sel);
+const completed = { plane: 0 };
+const keptStyle = $('#kept').getAttribute('style');
+const instances = {
+  plane: scrollFollow('#plane', '#route', { onComplete: () => completed.plane++ }),
+  dot: scrollFollow('#dot', '#route'),
+  arrow: scrollFollow('#arrow', '#diag', { rotate: true, draw: true }),
+  pin: scrollFollow('#pinplane', '#pinroute', { rotate: true, trigger: { start: 'top 12.5%', end: 'bottom top' } }),
+  kept: scrollFollow('#kept', '#route', { angle: 10 }),
+};
+
+/** Which path each element follows. */
+const PATH = { plane: '#route', dot: '#route', arrow: '#diag', pin: '#pinroute' };
+const pinTop = $('#pinmap').getBoundingClientRect().top + scrollY;
+/**
+ * Each element's scroll window, worked out here: the default (its <svg>'s top
+ * at the middle of the viewport, to its bottom there), or for the pinned one
+ * its <svg>'s top at 100px (where it sticks) to its bottom at 0, measured
+ * before it sticks.
+ */
+function windowOf(name) {
+  if (name === 'pin') return [pinTop - 100, pinTop + 200];
+  const r = $(PATH[name]).ownerSVGElement.getBoundingClientRect();
+  return [r.top + scrollY - innerHeight / 2, r.bottom + scrollY - innerHeight / 2];
+}
+const onScreen = (path, l) => {
+  const p = path.getPointAtLength(l);
+  return new DOMPoint(p.x, p.y).matrixTransform(path.getScreenCTM());
+};
+const centre = (el) => {
+  const r = el.getBoundingClientRect();
+  return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+};
+// `|| 0`: no -0, which toEqual tells apart from 0.
+const round = (n) => Math.round(n * 100) / 100 || 0;
+const deg = (a, b) => (Math.atan2(b.y - a.y, b.x - a.x) * 180) / Math.PI;
+
+publish({
+  yAt: (name, p) => {
+    const [a, b] = windowOf(name);
+    return a + p * (b - a);
+  },
+  /**
+   * Where the element is against where it should be: the path's point at the
+   * scroll's share of its length, on screen. `off` is the distance in px;
+   * `angle` the element's turn on screen, `tangent` the path's there.
+   */
+  check: (name) => {
+    const path = $(PATH[name]);
+    const [a, b] = windowOf(name);
+    const p = Math.min(1, Math.max(0, (scrollY - a) / (b - a)));
+    const len = path.getTotalLength();
+    const want = onScreen(path, p * len);
+    let got;
+    let angle = null;
+    if (name === 'dot') {
+      got = new DOMPoint(0, 0).matrixTransform($('#dot').getScreenCTM());
+    } else {
+      const el = $(`#${name === 'pin' ? 'pinplane' : name}`);
+      got = centre(el.querySelector('.c'));
+      angle = round(deg(got, centre(el.querySelector('.r'))));
+    }
+    const l = p * len;
+    const tangent = round(deg(onScreen(path, Math.max(0, l - 0.5)), onScreen(path, Math.min(len, l + 0.5))));
+    return { p: round(p), off: round(Math.hypot(got.x - want.x, got.y - want.y)), angle, tangent };
+  },
+  /** The stretch of #diag that is drawn, as [from, to] fractions of its length. */
+  drawn: () => {
+    const path = $('#diag');
+    const len = path.getTotalLength();
+    const cs = getComputedStyle(path);
+    const [dash] = cs.strokeDasharray.split(/[\s,]+/).map(parseFloat);
+    const offset = parseFloat(cs.strokeDashoffset) || 0;
+    if (offset > 0) return [0, round(Math.max(0, dash - offset) / len)];
+    return [round(-offset / len), round((dash - offset) / len)];
+  },
+  progress: (name) => round(instances[name].getProgress()),
+  completed: () => ({ ...completed }),
+  maxScroll: () => document.documentElement.scrollHeight - innerHeight,
+  destroyAll: () => {
+    for (const i of Object.values(instances)) i.destroy();
+    return {
+      kept: $('#kept').getAttribute('style') === keptStyle,
+      plane: $('#plane').getAttribute('style'),
+      dot: $('#dot').getAttribute('transform'),
+      diag: $('#diag').getAttribute('style'),
+    };
+  },
+});
+</script>
+</body>
+</html>

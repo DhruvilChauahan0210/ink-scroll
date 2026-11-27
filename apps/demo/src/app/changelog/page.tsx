@@ -55,6 +55,17 @@ const KINDS: { k: Kind; label: string }[] = [
  */
 const RELEASES: Release[] = [
   {
+    version: '2.32.0',
+    title: 'Motion along a path, and morphing any shape',
+    date: '2026-11-27',
+    items: [
+      { type: 'new', text: "svg-scroll-draw/follow (4.0 KB, its own entry): scrollFollow(target, path) moves an HTML or SVG element along any SVG path as the page scrolls, turned to the path's direction with rotate, drawing the path behind it with draw. It stays on the path over a scaled or responsive SVG and in a sticky stage." },
+      { type: 'new', text: "svg-scroll-draw/morph (7.0 KB, its own entry): scrollMorph(target, { to }) morphs any shape into any other, or through a sequence, as the page scrolls: a circle into a star into a letter, a menu icon into a close icon. Outlines are matched by length, winding and starting point, and holes grow from a point. interpolatePaths() does the same without scrolling. The main entry's morphTo is unchanged." },
+      { type: 'test', text: 'Unit tests for both entries and their server rendering; browser tests of position, direction, drawing, shapes read back through the browser at 0, halfway and 1, jumps, resizes, destroy and reduced motion; six new mutations, each caught.' },
+      { type: 'site', text: '/docs#follow and /docs#morph, each with a live demo.' },
+    ],
+  },
+  {
     version: '2.31.0',
     title: 'Handwriting on scroll',
     date: '2026-11-21',

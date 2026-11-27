@@ -189,6 +189,18 @@ const BUDGETS_KB = {
   // The chunks it splits cost frames 12 bytes, angular 15 and nuxt 14 (each
   // rounds up 0.1 KB, within budget), the main entry 3. Rounded up with 0.1 KB more.
   write:             7.1,
+  // scrollFollow: an element along a path as the page scrolls, 4.0 KB (4,087
+  // bytes) at its first build, most of it the shared trigger, frame-gate,
+  // easing and reduced-motion files. Built with and without it, no other entry
+  // moved by a byte. Rounded up with 0.1 KB more.
+  follow:            4.1,
+  // scrollMorph, interpolatePaths and shapeToPath: 6.98 KB at its first build
+  // (7,152 bytes), its own code 5.0 of it (a path parser with arcs, arc-length
+  // tables, ring pairing and alignment, cubic splitting), the shared trigger,
+  // frame-gate, easing and reduced-motion chunks the rest. An entry of its own:
+  // every other entry, the main one included, built to the byte as before it.
+  // Rounded up with 0.1 KB more.
+  morph:             7.1,
 };
 
 /*
