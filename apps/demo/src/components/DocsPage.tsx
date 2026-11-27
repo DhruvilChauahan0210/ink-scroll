@@ -5,6 +5,7 @@ import { Children, useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { ScrollDraw } from 'svg-scroll-draw/react';
 import { splitSubpaths, joinSubpaths } from 'svg-scroll-draw/subpaths';
 import { scrollWrite } from 'svg-scroll-draw/write';
+import { scrollMorph } from 'svg-scroll-draw/morph';
 import Link from 'next/link';
 import { CopyButton } from './CopyButton';
 import { CopyCommand } from './home/CopyCommand';
@@ -35,6 +36,7 @@ const NAV_GROUPS = [
       { id: 'advanced',                 label: 'Advanced' },
       { id: 'subpaths',                 label: 'Subpaths' },
       { id: 'write',                    label: 'Handwriting' },
+      { id: 'morph',                    label: 'Morphing' },
     ],
   },
   {
@@ -313,6 +315,50 @@ function WriteDemo() {
         <span ref={roman} className="block" />
         <figcaption className="mt-3 text-[12px] text-graphite-border">
           <code className="font-mono text-pitch-black">{"font: 'roman'"}</code>: upright print
+        </figcaption>
+      </figure>
+    </div>
+  );
+}
+
+/** The shapes the morph demo runs through, in a 100 × 100 box. */
+const MORPH_CIRCLE = 'M50 4A46 46 0 1 1 49.99 4Z';
+const MORPH_STAR = 'M50 2L61.5 36.5H97.5L68.5 58L79.5 93L50 71.5L20.5 93L31.5 58L2.5 36.5H38.5Z';
+/** An i, for ink: a rounded stem and its dot, two outlines where the star has one. */
+const MORPH_I = 'M40 48A10 10 0 0 1 60 48V86A10 10 0 0 1 40 86ZM50 9A11 11 0 1 1 49.99 9Z';
+const MORPH_MENU = 'M22 30H78M22 50H78M22 70H78';
+const MORPH_CLOSE = 'M28 28L72 72M72 28L28 72';
+
+/**
+ * A circle into a star into an i, and a menu icon into a close icon, as the
+ * page scrolls. React renders a <path> (scrollMorph would swap a <circle> for
+ * one, which React does not expect); destroy() puts its d back.
+ */
+function MorphDemo() {
+  const blob = useRef<SVGPathElement>(null);
+  const icon = useRef<SVGPathElement>(null);
+  useEffect(() => {
+    const a = scrollMorph(blob.current!, { to: [MORPH_STAR, MORPH_I] });
+    const b = scrollMorph(icon.current!, { to: MORPH_CLOSE, easing: 'ease-in-out' });
+    return () => { a.destroy(); b.destroy(); };
+  }, []);
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+      <figure className="border border-graphite-border/30 p-4 m-0 text-pitch-black">
+        <svg viewBox="0 0 100 100" className="block w-40 h-40 mx-auto" aria-hidden="true">
+          <path ref={blob} d={MORPH_CIRCLE} fill="currentColor" />
+        </svg>
+        <figcaption className="mt-3 text-[12px] text-graphite-border">
+          A circle, a star, an <code className="font-mono text-pitch-black">i</code>: arcs, corners, and a dot
+          the star has no outline for
+        </figcaption>
+      </figure>
+      <figure className="border border-graphite-border/30 p-4 m-0 text-pitch-black">
+        <svg viewBox="0 0 100 100" className="block w-40 h-40 mx-auto" aria-hidden="true">
+          <path ref={icon} d={MORPH_MENU} fill="none" stroke="currentColor" strokeWidth="8" strokeLinecap="round" />
+        </svg>
+        <figcaption className="mt-3 text-[12px] text-graphite-border">
+          Three open lines into two: the third joins the arm nearest it
         </figcaption>
       </figure>
     </div>
@@ -950,6 +996,70 @@ scrollWrite('#hello', { text: 'Hello, world', font: 'roman', once: true });`}
               It replaces the element’s content, so in React, Vue or another framework call it on an element the
               framework renders empty, and pass <code className="font-mono">text</code>, as the demo above does.
               The entry is 7.0 KB gzipped, most of it the two fonts; the main entry carries none of it.
+            </Note>
+          </DocSection>
+
+          {/* ── Morphing ─────────────────────────────────────── */}
+          <DocSection id="morph" tag="New" heading="Morphing: scrollMorph">
+            <p className="text-sm text-graphite-border leading-relaxed mb-4">
+              <code className="font-mono text-pitch-black">svg-scroll-draw/morph</code> morphs any SVG shape into
+              any other as the page scrolls, and back when it scrolls back. The shapes need nothing in common:
+              different commands, curves against corners, open or closed, one outline or several. Scroll the two
+              below.
+            </p>
+            <MorphDemo />
+            <CodeBlock file="morph.js">
+{`import { scrollMorph } from 'svg-scroll-draw/morph';
+
+// Into one shape: path data, a selector or an element.
+scrollMorph('#icon', { to: '#star' });
+
+// Through several, an equal share of the scroll each.
+scrollMorph('#blob', { to: [STAR, '#logo-letter'], easing: 'ease-in-out' });`}
+            </CodeBlock>
+            <OptGroup>
+              <Opt name="to" type="string | Element | Array">
+                The shape to morph into: path data (a string starting with M), a selector, or an element (a path,
+                any basic shape, or a group of them). A list morphs through each in turn.
+              </Opt>
+              <Opt name="points" type="number" defaultVal="24">
+                Cuts spaced evenly along each outline, besides its corners. More make the shapes in between follow
+                each outline’s length more closely.
+              </Opt>
+              <Opt name="precision" type="number" defaultVal="2">Decimal places in the path data written.</Opt>
+              <Opt name="trigger" type="TriggerConfig" defaultVal="top 85% → center center">
+                The window, on the shape’s <code className="font-mono">{'<svg>'}</code>: the last shape lands when
+                its centre reaches the viewport’s.
+              </Opt>
+              <Opt name="easing" type="Easing" defaultVal="'linear'">On each step of a sequence.</Opt>
+              <Opt name="once" type="boolean" defaultVal="false">Stay morphed once there.</Opt>
+              <Opt name="onProgress" type="(progress) => void">Every frame the progress changes.</Opt>
+              <Opt name="onComplete" type="() => void">When the last shape is reached.</Opt>
+            </OptGroup>
+            <Sub>How the shapes are matched</Sub>
+            <p className="text-sm text-graphite-border leading-relaxed mb-4">
+              The main entry’s <code className="font-mono text-pitch-black">morphTo</code> pairs the numbers of two
+              path strings in order, so both must be drawn with the same commands. This entry matches the outlines:
+              each shape becomes rings of cubic curves, rings are paired by place and size (an outline with no
+              partner grows from a point at its own middle, an open line joins the nearest one), each pair is cut at the same fractions of its length (every
+              corner of either shape plus <code className="font-mono text-pitch-black">points</code> even cuts),
+              run the same way round and turned to the start that moves the points least. Every point then travels
+              a straight line. Cutting a curve does not change it, so the first and last frames are the shapes
+              themselves, corners and all.
+            </p>
+            <CodeBlock file="no-scroll.js">
+{`import { interpolatePaths } from 'svg-scroll-draw/morph';
+
+// The same matching with no scroll and no DOM: a hover, a timer, a canvas, a server.
+const at = interpolatePaths(CIRCLE, [STAR, LETTER]);
+path.setAttribute('d', at(0.25)); // halfway from the circle to the star`}
+            </CodeBlock>
+            <Note>
+              A <code className="font-mono">{'<circle>'}</code> or <code className="font-mono">{'<rect>'}</code>{' '}
+              target is swapped for a <code className="font-mono">{'<path>'}</code> while the morph runs, and put
+              back on <code className="font-mono">destroy()</code>; in React or Vue render a{' '}
+              <code className="font-mono">{'<path>'}</code>, as the demo does. Under reduced motion the last shape
+              shows at once. The entry is 7.0 KB gzipped; the main entry carries none of it.
             </Note>
           </DocSection>
 

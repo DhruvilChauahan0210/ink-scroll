@@ -164,6 +164,9 @@
       "write": [
         "./dist/write/index.d.ts"
       ],
+      "morph": [
+        "./dist/morph/index.d.ts"
+      ],
       "reveal": [
         "./dist/reveal/index.d.ts"
       ],
@@ -409,6 +412,16 @@
       "require": {
         "types": "./dist/write/index.d.ts",
         "default": "./dist/write/index.cjs"
+      }
+    },
+    "./morph": {
+      "import": {
+        "types": "./dist/morph/index.d.mts",
+        "default": "./dist/morph/index.mjs"
+      },
+      "require": {
+        "types": "./dist/morph/index.d.ts",
+        "default": "./dist/morph/index.cjs"
       }
     },
     "./reveal": {

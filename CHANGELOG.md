@@ -6,6 +6,49 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ## [Unreleased]
 
+### Added
+
+- **`svg-scroll-draw/morph`: any shape morphs into any other on scroll.**
+  `scrollMorph(target, { to })` morphs a `<path>`, or any basic shape, into
+  another as the page scrolls, and back when it scrolls back. `to` is path
+  data, a selector or an element (a path, a `<rect>` rounded or not,
+  `<circle>`, `<ellipse>`, `<line>`, `<polyline>`, `<polygon>`, or a `<g>` of
+  them), or a list of them to morph through in turn, an equal share of the
+  window each. The main entry's `morphTo` pairs the numbers of two `d`
+  strings in order and needs both drawn with the same commands; this matches
+  the outlines. Every shape becomes rings of cubic Béziers (all path
+  commands, arcs included); rings are paired by place and size, a closed one
+  with no partner (the hole of an A) grows from a point at its own middle or
+  shrinks to one, and an open line with no partner splits from or joins the
+  line nearest it (shrunk to a point, a round-capped stroke leaves a dot);
+  each pair is cut at the same fractions of its length (every
+  corner of either shape plus `points` even cuts, default 24), run the same
+  way round when the windings differ, and turned to the start that moves the
+  points least; every point then travels a straight line. Cutting a cubic does
+  not change it, so the first and last frames are the shapes themselves,
+  corners kept, and at exactly 0 and 1 the element gets the strings as given.
+  `precision` (2) sets the decimals written. A shape other than a `<path>` is
+  swapped for a `<path>` with its attributes while it runs; `destroy()` puts
+  the element back, or a path's `d` and `style` exactly. `trigger` (window on
+  the shape's `<svg>`, default `top 85%` → `center center`), `easing` (on each
+  step of a sequence), `once`, `onProgress`, `onComplete`, `progressVar`, and
+  the usual instance with `refresh()`. Under reduced motion the last shape
+  shows at once, and turned on mid-visit it jumps there. Its own frame loop on
+  `core/frame-gate`, so a jump past the window lands on the last shape and
+  fires `onComplete`. `interpolatePaths(from, to, { points, precision })` is
+  the matching alone, `(t) => d`, with no DOM or scroll; `shapeToPath(el)`
+  gives any shape's outline as path data. 7.0 KB gzipped (its own code 5.0),
+  an entry of its own: every other entry, the main one included, builds to the
+  byte as before. Not in the CDN bundle, as for the other optional entries.
+
+  Docs: a section in both READMEs, the sub-path export table, and
+  `/docs#morph` with a circle that becomes a star and then an i, and a menu
+  icon that becomes a close icon. Tests: `scrollMorph.test.ts` (27),
+  `ssr.test.ts`; `e2e/scroll-morph.spec.ts` (7), reading the path back through
+  the browser's own geometry at 0, halfway and 1, a sequence, a jump, scrolling
+  back and `once`, `destroy()`, reduced motion. Mutations `morph/turn`,
+  `morph/winding` and `morph/restore`.
+
 ### Site
 
 - **The site header shows the current version.** It read v2.27.3 from 2.28.0

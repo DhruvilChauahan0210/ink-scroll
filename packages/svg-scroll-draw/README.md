@@ -587,6 +587,83 @@ format is James Hurt's (Cognition, Inc.). Both acknowledgements ship with the fo
 
 ---
 
+## scrollMorph — any shape into any other
+
+`svg-scroll-draw/morph` morphs an SVG shape into another as the page scrolls, and back when it
+scrolls back. The two shapes need nothing in common: different commands, curves against corners,
+open or closed, one outline or several.
+
+```js
+import { scrollMorph } from 'svg-scroll-draw/morph';
+
+scrollMorph('#icon', { to: '#star' });                      // a selector, an element or path data
+scrollMorph('#blob', { to: ['#star', '#logo-letter'] });    // a sequence: circle → star → letter
+```
+
+The main entry's `morphTo` pairs the numbers of two `d` strings in order, so it only works when both
+are drawn with the same commands. This entry matches the outlines instead:
+
+- every shape becomes rings of cubic Béziers — `<rect>` (rounded too), `<circle>`, `<ellipse>`,
+  `<line>`, `<polyline>`, `<polygon>`, every path command including arcs, or a `<g>` of them;
+- rings are paired by place and size; a closed ring with no partner (the hole of an A) grows from a
+  point at its own middle, or shrinks to one, and an open line with no partner splits from, or joins,
+  the line nearest it, so a stroke leaves no dot behind;
+- each pair is cut at the same fractions of its length — every corner of either shape, plus `points`
+  cuts spaced evenly — then run the same way round (windings matched) and turned to the starting
+  point that moves the points least;
+- every point travels a straight line to its partner.
+
+Cutting a cubic does not change the curve, so the first and last frames are the shapes themselves,
+every corner kept; at exactly 0 and 1 the element gets the `d` strings as given.
+
+The target is a `<path>` or any basic shape: a `<circle>` has no `d`, so it is swapped for a `<path>`
+with the same attributes while the morph runs, and `destroy()` puts the original element back. Shapes
+to morph into can sit in a hidden `<defs>`: only their attributes are read, in their own coordinates
+(a `transform` is not applied). Under `prefers-reduced-motion: reduce` the last shape shows at once.
+
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `to` | `string \| Element \| Array` | — | The shape to morph into: path data (a string starting with `M`), a selector, or an element. A list morphs through each in turn, an equal share of the window each |
+| `points` | `number` | `24` | Cuts spaced evenly along each outline, besides its corners; more make the in-between shapes follow each outline's length more closely |
+| `precision` | `number` | `2` | Decimal places in the path data written |
+| `trigger` | `TriggerConfig` | `{ start: 'top 85%', end: 'center center' }` | The window, on the shape's `<svg>`: the last shape lands when its centre reaches the viewport's |
+| `easing` | `Easing` | `'linear'` | On each step of a sequence |
+| `once` | `boolean` | `false` | Stay morphed once there |
+| `onProgress` | `(progress: number) => void` | — | Every frame the progress through the window changes |
+| `onComplete` | `() => void` | — | When the last shape is reached |
+| `progressVar` | `boolean` | `true` | Write `--scroll-draw-progress` on the shape |
+
+It returns the usual instance (`pause`, `resume`, `seek`, `replay`, `getProgress`, `destroy`, and
+`refresh` to re-measure the window). `destroy()` puts the original `d` back exactly.
+
+The interpolation is exported on its own, with no DOM and no scroll, for a hover, a timer, a canvas
+or a server:
+
+```js
+import { interpolatePaths, shapeToPath } from 'svg-scroll-draw/morph';
+
+const at = interpolatePaths(circleD, [starD, letterD], { points: 32 });
+path.setAttribute('d', at(0.25));      // halfway from the circle to the star
+shapeToPath(document.querySelector('rect'));   // 'M0 0H100V40H0Z'
+```
+
+In React, call it in an effect on a shape the component renders, and destroy it in the cleanup:
+
+```tsx
+function MorphingIcon() {
+  const ref = useRef<SVGPathElement>(null);
+  useEffect(() => {
+    const morph = scrollMorph(ref.current!, { to: STAR });
+    return () => morph.destroy();
+  }, []);
+  return <svg viewBox="0 0 100 100"><path ref={ref} d={CIRCLE} /></svg>;
+}
+```
+
+The entry is 7.0 KB gzipped, and the main entry carries none of it.
+
+---
+
 ## scrollDraw — SVG path drawing (v1 API, unchanged)
 
 ```js
@@ -670,7 +747,7 @@ import { ScrollDraw } from 'svg-scroll-draw/vue';
 | `strokeWidth` | `number \| [number, number]` | — | Static width or `[from, to]` animation |
 | `fillOpacity` | `number \| [number, number]` | — | Animate fill opacity in sync with the draw |
 | `clip` | `boolean \| "left" \| "right" \| "top" \| "bottom" \| "center"` | `false` | Reveal via CSS `clip-path` instead of stroke-dashoffset |
-| `morphTo` | `string` | — | SVG path `d` value to morph toward |
+| `morphTo` | `string` | — | SVG path `d` value to morph toward; both paths drawn with the same commands. For any two shapes, [`svg-scroll-draw/morph`](#scrollmorph--any-shape-into-any-other) |
 | `waypoints` | `Record<number, () => void>` | — | Callbacks at specific progress thresholds (0–1), in order |
 | `velocityScale` | `boolean \| number` | `false` | Scale draw speed by scroll velocity |
 | `repeat` | `number \| "infinite"` | `0` | Replay N times after completion |
@@ -966,6 +1043,7 @@ devtools.highlight('#my-element'); // outline for 2 seconds
 | `svg-scroll-draw/devtools` | `devtools` (dev-only) |
 | `svg-scroll-draw/subpaths` | `splitSubpaths`, `joinSubpaths` (2.30.0) |
 | `svg-scroll-draw/write` | `scrollWrite`, `writePaths` (2.31.0) |
+| `svg-scroll-draw/morph` | `scrollMorph`, `interpolatePaths`, `shapeToPath` (unreleased) |
 | `svg-scroll-draw/aos` | `AOS` (default), `init`, `refresh`, `refreshHard`, `destroy` |
 | `svg-scroll-draw/scrollreveal` | `ScrollReveal` (default and named) |
 | `svg-scroll-draw/vivus` | `Vivus` (default and named) |
