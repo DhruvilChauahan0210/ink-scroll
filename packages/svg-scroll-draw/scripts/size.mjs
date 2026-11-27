@@ -189,6 +189,11 @@ const BUDGETS_KB = {
   // The chunks it splits cost frames 12 bytes, angular 15 and nuxt 14 (each
   // rounds up 0.1 KB, within budget), the main entry 3. Rounded up with 0.1 KB more.
   write:             7.1,
+  // scrollFollow: an element along a path as the page scrolls, 4.0 KB (4,087
+  // bytes) at its first build, most of it the shared trigger, frame-gate,
+  // easing and reduced-motion files. Built with and without it, no other entry
+  // moved by a byte. Rounded up with 0.1 KB more.
+  follow:            4.1,
 };
 
 /*
