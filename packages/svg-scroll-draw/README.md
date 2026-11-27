@@ -1096,8 +1096,8 @@ devtools.highlight('#my-element'); // outline for 2 seconds
 | `svg-scroll-draw/devtools` | `devtools` (dev-only) |
 | `svg-scroll-draw/subpaths` | `splitSubpaths`, `joinSubpaths` (2.30.0) |
 | `svg-scroll-draw/write` | `scrollWrite`, `writePaths` (2.31.0) |
-| `svg-scroll-draw/follow` | `scrollFollow` (unreleased) |
-| `svg-scroll-draw/morph` | `scrollMorph`, `interpolatePaths`, `shapeToPath` (unreleased) |
+| `svg-scroll-draw/follow` | `scrollFollow` (2.32.0) |
+| `svg-scroll-draw/morph` | `scrollMorph`, `interpolatePaths`, `shapeToPath` (2.32.0) |
 | `svg-scroll-draw/aos` | `AOS` (default), `init`, `refresh`, `refreshHard`, `destroy` |
 | `svg-scroll-draw/scrollreveal` | `ScrollReveal` (default and named) |
 | `svg-scroll-draw/vivus` | `Vivus` (default and named) |

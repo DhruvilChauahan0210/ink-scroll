@@ -53,7 +53,7 @@ export const SELF: Competitor = {
   label: 'svg-scroll-draw (all APIs)',
   // The site header shows it; check-competitors fails when it is not the
   // package's own version (it read 2.27.3 from 2.28.0 to 2.31.0).
-  version: '2.31.0',
+  version: '2.32.0',
   license: 'MIT',
   gzipKb: 11.9,
   lastPublish: '2026-08-14',

@@ -1043,7 +1043,7 @@ scrollWrite('#hello', { text: 'Hello, world', font: 'roman', once: true });`}
           </DocSection>
 
           {/* ── Along a path ─────────────────────────────────── */}
-          <DocSection id="follow" tag="Unreleased" heading="Along a path: scrollFollow">
+          <DocSection id="follow" tag="v2.32.0" heading="Along a path: scrollFollow">
             <p className="text-sm text-graphite-border leading-relaxed mb-4">
               <code className="font-mono text-pitch-black">svg-scroll-draw/follow</code> moves an element along an
               SVG path as the page scrolls, from the path’s start to its end over the scroll window, and back
@@ -1112,7 +1112,7 @@ scrollFollow('#arrow', '#route', { start: 0.25, end: 0.75, rotate: true, angle: 
           </DocSection>
 
           {/* ── Morphing ─────────────────────────────────────── */}
-          <DocSection id="morph" tag="New" heading="Morphing: scrollMorph">
+          <DocSection id="morph" tag="v2.32.0" heading="Morphing: scrollMorph">
             <p className="text-sm text-graphite-border leading-relaxed mb-4">
               <code className="font-mono text-pitch-black">svg-scroll-draw/morph</code> morphs any SVG shape into
               any other as the page scrolls, and back when it scrolls back. The shapes need nothing in common:

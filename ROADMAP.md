@@ -1,6 +1,6 @@
 # svg-scroll-draw — Roadmap
 
-> Last updated: 2026-11-21 — 2.31.0 released (`svg-scroll-draw/write`: `scrollWrite`, handwriting on scroll), tagged and on npm
+> Last updated: 2026-11-27 — 2.32.0 prepared (`svg-scroll-draw/follow`: motion along a path; `svg-scroll-draw/morph`: any shape into any other); 2.31.0 tagged and on npm
 >
 > Items marked ✓ are shipped. Remaining items are ordered by value/effort ratio.
 
@@ -20,6 +20,8 @@
 - [x] `autoReverse` — follows scroll direction
 - [x] `waypoints` — callbacks at specific progress thresholds; in order on a jump past several (2.30.0)
 - [x] `svg-scroll-draw/subpaths` — `splitSubpaths()` / `joinSubpaths()`: a path's subpaths as separate paths, so `stagger` draws them one after another (2.30.0)
+- [x] `svg-scroll-draw/follow` — `scrollFollow(el, path, { rotate, draw })`: an element along a path on scroll, the GSAP MotionPathPlugin gap (2.32.0)
+- [x] `svg-scroll-draw/morph` — `scrollMorph(el, { to })`: any shape into any other, the GSAP MorphSVG gap (2.32.0)
 - [x] `svg-scroll-draw/write` — `scrollWrite('#signature')`: text written stroke by stroke in a Hershey single-stroke font as the page scrolls, at one pen speed; `writePaths()` for the server (2.31.0)
 - [x] `strokeColor`, `strokeWidth` — animated color and width
 - [x] `fillOpacity` — flood fill in sync with stroke draw
@@ -141,6 +143,7 @@
 - ~~Handwriting in the library~~ — `scrollWrite()` in `svg-scroll-draw/write`, 2.31.0, 2026-11-21. Next: the generator could build its output on `writePaths` instead of its own copy of the layout and fonts; more than one line (wrap or `
 `); framework components once the API settles.
 - The rare first-frame flash on Chrome's native CSS path (agreed next, 2026-11-19): no repro yet.
+- Next for SVG and scroll (agreed 2026-11-26, growing the library and scrollfx together): `scrollWrite` v2 (several lines, more Hershey faces, a pen riding the stroke with `scrollFollow`, framework components); plotter fills (`svg-scroll-draw/hatch`: hatching, cross-hatching and contour fills inside any shape, drawn on scroll); a calligraphic pen (tapering strokes); text along a path and animated dashes. scrollfx pieces on each: route map (follow), morphing icon (morph), hatched illustration (hatch), timeline/roadmap chart, process, comparison, locations and 404 blocks.
 - scrollDraw on round-capped paths in WebKit: a dot at the end of each path not yet drawn (the dash's gap equals the length, so the next, empty dash starts at the end). Write the gap as twice the length, with a browser test that counts pixels before the draw; then the handwriting generator's scroll version can go back to round caps.
 - Measure the tools before building more: `npm run report:numbers` weekly, Search Console per page after 2–3 weeks; improve the ones with impressions and few clicks.
 - GitHub Sponsors: the owner sets up the profile; the footer link and FUNDING.yml are on the branch. Ads: not at this traffic (see the 2026-11-11 discussion: about $1–5 a month, a consent banner, Vercel Hobby is non-commercial); revisit a single developer ad network (Carbon, EthicalAds) past ~10k views a month on a custom domain.
