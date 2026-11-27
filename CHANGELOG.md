@@ -6,6 +6,35 @@ All notable changes to `svg-scroll-draw` are documented here.
 
 ## [Unreleased]
 
+### Added
+
+- **`svg-scroll-draw/follow`: an element along a path as the page scrolls.**
+  `scrollFollow(target, path, options)` moves `target`, an HTML or an SVG
+  element, along `path` (a selector or any SVG shape with a length) from its
+  start to its end over the scroll window: the motion along a path GSAP's
+  MotionPathPlugin gives a ScrollTrigger. An HTML element is moved with a CSS
+  transform, the path's point mapped through `getScreenCTM()` (viewBox, group
+  transforms, the `<svg>`'s CSS size) and taken from the element's own box, so
+  it lines up over a responsive `<svg>` at any width and inside a sticky stage;
+  an SVG element in its parent's user units, through its `transform` attribute.
+  `rotate` turns it to the path's direction on screen (through an uneven
+  viewBox too), `angle` adds degrees (CSS `offset-rotate: auto <angle>`),
+  `anchor` picks the point of its box on the path (default the centre),
+  `draw` draws the path up to it in the draw engine's dash, `start` and `end`
+  take part of the path (backwards when `end < start`), with `easing`,
+  `trigger` (default the `<svg>`'s top at mid-screen to its bottom there),
+  `once`, `onProgress`, `onComplete` and `progressVar`. The usual instance
+  plus `refresh()`; `destroy()` puts back the element's inline style or
+  transform attribute, and the path's, exactly. Under reduced motion it is at
+  the end at once, and turned on mid-visit it goes there then. Its own frame
+  loop on `core/frame-gate`: a jump past the window lands at the end and fires
+  `onComplete`; a resize or layout change re-measures. JS only: `offset-path`
+  with a scroll timeline was left out, as its `path()` is in CSS pixels and
+  would need rewriting for every viewBox scale. 4.0 KB gzipped, an entry of
+  its own; built with and without it, no other entry moved by a byte. Tests:
+  scrollFollow.test.ts (21), ssr.test.ts, e2e/follow.spec.ts (8, Chromium and
+  WebKit); mutations follow/tangent, follow/untransformed and follow/reduced.
+
 ### Site
 
 - **The site header shows the current version.** It read v2.27.3 from 2.28.0

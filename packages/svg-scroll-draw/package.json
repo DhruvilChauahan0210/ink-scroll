@@ -164,6 +164,9 @@
       "write": [
         "./dist/write/index.d.ts"
       ],
+      "follow": [
+        "./dist/follow/index.d.ts"
+      ],
       "reveal": [
         "./dist/reveal/index.d.ts"
       ],
@@ -409,6 +412,16 @@
       "require": {
         "types": "./dist/write/index.d.ts",
         "default": "./dist/write/index.cjs"
+      }
+    },
+    "./follow": {
+      "import": {
+        "types": "./dist/follow/index.d.mts",
+        "default": "./dist/follow/index.mjs"
+      },
+      "require": {
+        "types": "./dist/follow/index.d.ts",
+        "default": "./dist/follow/index.cjs"
       }
     },
     "./reveal": {

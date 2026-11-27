@@ -62,6 +62,7 @@ If this saves you time, a ⭐ [on GitHub](https://github.com/DhruvilChauahan0210
 | `scrollVideo` | `svg-scroll-draw/video` | Tie `<video>.currentTime` to scroll. The Apple/Stripe product-page pattern. |
 | `scrollFrames` | `svg-scroll-draw/frames` | Scrub an image sequence on a `<canvas>` with the scroll: the frame-by-frame version of the same pattern, for footage a video decoder cannot seek smoothly. |
 | `scrollText` | `svg-scroll-draw/text` | Split text into chars/words/lines and stagger-animate each on scroll. 3.9 KB, nothing else to load. |
+| `scrollFollow` | `svg-scroll-draw/follow` | Move any element, HTML or SVG, along an SVG path as the page scrolls, turned to its direction, optionally drawing the path behind it. |
 | `devtools` | `svg-scroll-draw/devtools` | Visual overlay showing every active animation's triggers and progress. Dev-only. |
 | `AOS` | `svg-scroll-draw/aos` | Drop-in replacement for AOS: same `AOS.init()`, same `data-aos` markup, no `aos.css`. |
 | `ScrollReveal` | `svg-scroll-draw/scrollreveal` | Drop-in replacement for ScrollReveal.js 4, MIT instead of GPL-3.0. |
@@ -587,6 +588,58 @@ format is James Hurt's (Cognition, Inc.). Both acknowledgements ship with the fo
 
 ---
 
+## scrollFollow — an element along a path
+
+`svg-scroll-draw/follow` moves an element along an SVG path as the page scrolls, from the path's
+start to its end over the scroll window, the way GSAP's MotionPathPlugin does on a ScrollTrigger.
+Scrolling back runs it back.
+
+```js
+import { scrollFollow } from 'svg-scroll-draw/follow';
+
+scrollFollow('#plane', '#route');                                  // its centre on the path
+scrollFollow('#pen', '#route', { rotate: true, draw: true });      // turned along it, drawing it
+```
+
+The element can be HTML (a marker, an image, a card beside the `<svg>`) or an SVG element inside
+an `<svg>`. An HTML element is moved with a CSS `transform`: the path's point is mapped through the
+`<svg>`'s viewBox, its groups' transforms and its CSS size (`getScreenCTM()`), and taken from where
+the element's own box is, so a responsive `<svg>` and an element positioned over it line up at any
+width, and a sticky stage holding both works too. An SVG element is moved in its parent's user units
+through its `transform` attribute, so it can sit in a scaled group. Either way the layout is
+re-measured after a resize or a layout change.
+
+With `draw: true` the path is drawn up to the element as it travels (the same dash the draw engine
+writes), so the element reads as the tip of a pen. `destroy()` puts back the element's inline style
+(or its `transform` attribute) and the path's exactly. Under `prefers-reduced-motion: reduce` the
+element is placed at the end at once, the path drawn.
+
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `rotate` | `boolean` | `false` | Turn the element to the path's direction (its right side leads), as CSS `offset-rotate: auto` |
+| `angle` | `number` | `0` | Degrees added: on top of the direction with `rotate` (an arrow drawn pointing up wants `90`), a fixed turn without it |
+| `anchor` | `[number, number]` | `[0.5, 0.5]` | The point of the element that sits on the path, as fractions of its box (`[0, 0]` top left); of its bounding box for an SVG element |
+| `draw` | `boolean` | `false` | Draw the path up to the element |
+| `start` | `number` | `0` | Where on the path the run starts, as a fraction of its length |
+| `end` | `number` | `1` | Where it ends; less than `start` runs the path backwards |
+| `easing` | `Easing` | `'linear'` | From the scroll to the distance travelled: a name, a CSS `cubic-bezier()` or a function |
+| `trigger` | `TriggerConfig` | `{ start: 'top center', end: 'bottom center' }` | The window, on the path's `<svg>`: by default the element keeps near the middle of the screen as a tall route scrolls past |
+| `once` | `boolean` | `false` | Stay at the furthest point reached |
+| `onProgress` | `(progress: number) => void` | — | Progress through the window, 0–1, each frame it moves |
+| `onComplete` | `() => void` | — | When the element reaches the end; again after scrolling back and forward, unless `once` |
+| `progressVar` | `boolean` | `true` | Write `--scroll-draw-progress` on the element |
+
+It returns the usual instance (`pause`, `resume`, `seek`, `replay`, `getProgress`, `refresh`,
+`destroy`). A jump past the window (the End key, an anchor link) lands the element at the end and
+fires `onComplete`.
+
+JavaScript only, one transform write per frame. CSS `offset-path` with a scroll-driven animation was
+left out: `path()` is in the containing block's CSS pixels, so a path in a scaled viewBox would need
+its data rewritten on every resize, and its `rotate`, anchor and easing would each have to be matched
+across browsers. The entry is 4.0 KB gzipped and the main entry carries none of it.
+
+---
+
 ## scrollDraw — SVG path drawing (v1 API, unchanged)
 
 ```js
@@ -966,6 +1019,7 @@ devtools.highlight('#my-element'); // outline for 2 seconds
 | `svg-scroll-draw/devtools` | `devtools` (dev-only) |
 | `svg-scroll-draw/subpaths` | `splitSubpaths`, `joinSubpaths` (2.30.0) |
 | `svg-scroll-draw/write` | `scrollWrite`, `writePaths` (2.31.0) |
+| `svg-scroll-draw/follow` | `scrollFollow` (unreleased) |
 | `svg-scroll-draw/aos` | `AOS` (default), `init`, `refresh`, `refreshHard`, `destroy` |
 | `svg-scroll-draw/scrollreveal` | `ScrollReveal` (default and named) |
 | `svg-scroll-draw/vivus` | `Vivus` (default and named) |

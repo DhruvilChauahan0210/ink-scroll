@@ -5,6 +5,7 @@ import { Children, useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { ScrollDraw } from 'svg-scroll-draw/react';
 import { splitSubpaths, joinSubpaths } from 'svg-scroll-draw/subpaths';
 import { scrollWrite } from 'svg-scroll-draw/write';
+import { scrollFollow } from 'svg-scroll-draw/follow';
 import Link from 'next/link';
 import { CopyButton } from './CopyButton';
 import { CopyCommand } from './home/CopyCommand';
@@ -35,6 +36,7 @@ const NAV_GROUPS = [
       { id: 'advanced',                 label: 'Advanced' },
       { id: 'subpaths',                 label: 'Subpaths' },
       { id: 'write',                    label: 'Handwriting' },
+      { id: 'follow',                   label: 'Along a path' },
     ],
   },
   {
@@ -316,6 +318,47 @@ function WriteDemo() {
         </figcaption>
       </figure>
     </div>
+  );
+}
+
+/**
+ * A route across a viewBox shown at the column's width, and an HTML arrow
+ * that travels it as the page scrolls: turned to the path's direction and
+ * drawing the route behind it. The arrow is a plain <div> over the <svg>, so
+ * the path's point is mapped through the viewBox to the arrow's box at any
+ * width. A faint copy of the route shows where it is going.
+ */
+const ROUTE = 'M24 150 C 110 150, 110 40, 200 40 S 290 150, 380 150 S 470 40, 576 40';
+
+function FollowDemo() {
+  const path = useRef<SVGPathElement>(null);
+  const arrow = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const f = scrollFollow(arrow.current!, path.current!, {
+      rotate: true,
+      draw: true,
+      trigger: { start: 'top 85%', end: 'bottom 35%' },
+    });
+    return () => f.destroy();
+  }, []);
+  return (
+    <figure className="border border-graphite-border/30 p-4 m-0 mb-4 text-pitch-black">
+      <div className="relative">
+        <svg viewBox="0 0 600 190" className="block w-full h-auto" role="img" aria-label="An arrow travelling a winding route, drawing it as it goes">
+          <path d={ROUTE} fill="none" stroke="currentColor" strokeOpacity="0.15" strokeWidth="2" strokeDasharray="4 6" />
+          <path ref={path} d={ROUTE} fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+        </svg>
+        <div ref={arrow} aria-hidden="true" className="absolute top-0 left-0 w-6 h-4">
+          <svg viewBox="0 0 24 16" className="block w-full h-full">
+            <path d="M2 2 L22 8 L2 14 L7 8 Z" fill="currentColor" />
+          </svg>
+        </div>
+      </div>
+      <figcaption className="mt-3 text-[12px] text-graphite-border">
+        <code className="font-mono text-pitch-black">{'{ rotate: true, draw: true }'}</code>: an HTML element over
+        the <code className="font-mono text-pitch-black">{'<svg>'}</code>, turned along the route, drawing it
+      </figcaption>
+    </figure>
   );
 }
 
@@ -950,6 +993,75 @@ scrollWrite('#hello', { text: 'Hello, world', font: 'roman', once: true });`}
               It replaces the element’s content, so in React, Vue or another framework call it on an element the
               framework renders empty, and pass <code className="font-mono">text</code>, as the demo above does.
               The entry is 7.0 KB gzipped, most of it the two fonts; the main entry carries none of it.
+            </Note>
+          </DocSection>
+
+          {/* ── Along a path ─────────────────────────────────── */}
+          <DocSection id="follow" tag="Unreleased" heading="Along a path: scrollFollow">
+            <p className="text-sm text-graphite-border leading-relaxed mb-4">
+              <code className="font-mono text-pitch-black">svg-scroll-draw/follow</code> moves an element along an
+              SVG path as the page scrolls, from the path’s start to its end over the scroll window, and back
+              when you scroll back. The element can be HTML (a marker, an image, a card over the{' '}
+              <code className="font-mono text-pitch-black">{'<svg>'}</code>) or an SVG element inside one. With{' '}
+              <code className="font-mono text-pitch-black">draw</code> the path is drawn up to it, so it reads
+              as the tip of a pen. Scroll the route below.
+            </p>
+            <FollowDemo />
+            <CodeBlock file="route.js">
+{`import { scrollFollow } from 'svg-scroll-draw/follow';
+
+// Its centre on the path, from start to end as the <svg> scrolls past.
+scrollFollow('#plane', '#route');
+
+// Turned to the path's direction, drawing the path behind it.
+scrollFollow('#pen', '#route', { rotate: true, draw: true });
+
+// The middle half of the path, an arrow drawn pointing up, eased.
+scrollFollow('#arrow', '#route', { start: 0.25, end: 0.75, rotate: true, angle: 90, easing: 'ease-in-out' });`}
+            </CodeBlock>
+            <OptGroup>
+              <Opt name="rotate" type="boolean" defaultVal="false">
+                Turn the element to the path’s direction, its right side leading, as CSS{' '}
+                <code className="font-mono">offset-rotate: auto</code>.
+              </Opt>
+              <Opt name="angle" type="number" defaultVal="0">
+                Degrees added: on top of the direction with <code className="font-mono">rotate</code> (an arrow
+                drawn pointing up wants 90), a fixed turn without it.
+              </Opt>
+              <Opt name="anchor" type="[number, number]" defaultVal="[0.5, 0.5]">
+                The point of the element on the path, as fractions of its box: [0, 0] is its top left.
+              </Opt>
+              <Opt name="draw" type="boolean" defaultVal="false">Draw the path up to the element.</Opt>
+              <Opt name="start" type="number" defaultVal="0">Where on the path the run starts, as a fraction of its length.</Opt>
+              <Opt name="end" type="number" defaultVal="1">Where it ends. Less than start runs the path backwards.</Opt>
+              <Opt name="easing" type="Easing" defaultVal="'linear'">From the scroll to the distance travelled.</Opt>
+              <Opt name="trigger" type="TriggerConfig" defaultVal="top center → bottom center">
+                The window, on the path’s <code className="font-mono">{'<svg>'}</code>: by default the element
+                keeps near the middle of the screen as a tall route scrolls past.
+              </Opt>
+              <Opt name="once" type="boolean" defaultVal="false">Stay at the furthest point reached.</Opt>
+              <Opt name="onProgress" type="(progress: number) => void">Progress through the window, 0–1.</Opt>
+              <Opt name="onComplete" type="() => void">When the element reaches the end.</Opt>
+              <Opt name="progressVar" type="boolean" defaultVal="true">
+                Write <code className="font-mono">--scroll-draw-progress</code> on the element.
+              </Opt>
+            </OptGroup>
+            <Sub>Where the element goes</Sub>
+            <p className="text-sm text-graphite-border leading-relaxed mb-4">
+              An HTML element is moved with a CSS <code className="font-mono text-pitch-black">transform</code>:
+              the path’s point is mapped through the <code className="font-mono text-pitch-black">{'<svg>'}</code>’s
+              viewBox, its groups and its CSS size, and taken from where the element’s own box is, so an element
+              positioned over a responsive <code className="font-mono text-pitch-black">{'<svg>'}</code> stays on
+              the path at any width, and inside a sticky stage too. An SVG element moves in its parent’s user units
+              through its <code className="font-mono text-pitch-black">transform</code> attribute. A resize
+              re-measures. <code className="font-mono text-pitch-black">destroy()</code> puts back the element’s
+              inline style (or transform attribute) and the path’s exactly; under reduced motion the element is
+              at the end at once.
+            </p>
+            <Note>
+              JavaScript only, one transform a frame: CSS <code className="font-mono">offset-path</code> measures
+              its <code className="font-mono">path()</code> in CSS pixels, so a path in a scaled viewBox would
+              need rewriting at every width. The entry is 4.0 KB gzipped; the main entry carries none of it.
             </Note>
           </DocSection>
 

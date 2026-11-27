@@ -1685,6 +1685,34 @@ const MUTATIONS = [
     spec: 'e2e/write.spec.ts',
     grep: 'destroy\\(\\) puts the content back',
   },
+  // svg-scroll-draw/follow (follow.spec).
+  {
+    id: 'follow/tangent',
+    what: 'rotate takes the tangent in user units, not mapped through the viewBox',
+    file: 'src/follow/index.ts',
+    from: '      turn += (Math.atan2(m[1] * vx + m[3] * vy, m[0] * vx + m[2] * vy) * 180) / Math.PI;',
+    to: '      turn += (Math.atan2(vy, vx) * 180) / Math.PI;',
+    spec: 'e2e/follow.spec.ts',
+    grep: 'rotate follows the tangent on screen',
+  },
+  {
+    id: 'follow/untransformed',
+    what: 're-measuring reads the element box with its own transform still on',
+    file: 'src/follow/index.ts',
+    from: "      el.style.transform = 'none';",
+    to: '      void 0;',
+    spec: 'e2e/follow.spec.ts',
+    grep: 'after a resize scales the',
+  },
+  {
+    id: 'follow/reduced',
+    what: 'under reduced motion the element starts at the start and waits for the scroll',
+    file: 'src/follow/index.ts',
+    from: '  const at = (): number => (reduced ? 1 : computeProgress(window.scrollY, tStart, tEnd, 1));',
+    to: '  const at = (): number => computeProgress(window.scrollY, tStart, tEnd, 1);',
+    spec: 'e2e/follow.spec.ts',
+    grep: 'under reduced motion the element is at the end at once',
+  },
 ];
 
 const args = process.argv.slice(2);
