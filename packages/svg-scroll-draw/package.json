@@ -167,6 +167,9 @@
       "follow": [
         "./dist/follow/index.d.ts"
       ],
+      "morph": [
+        "./dist/morph/index.d.ts"
+      ],
       "reveal": [
         "./dist/reveal/index.d.ts"
       ],
@@ -422,6 +425,16 @@
       "require": {
         "types": "./dist/follow/index.d.ts",
         "default": "./dist/follow/index.cjs"
+      }
+    },
+    "./morph": {
+      "import": {
+        "types": "./dist/morph/index.d.mts",
+        "default": "./dist/morph/index.mjs"
+      },
+      "require": {
+        "types": "./dist/morph/index.d.ts",
+        "default": "./dist/morph/index.cjs"
       }
     },
     "./reveal": {

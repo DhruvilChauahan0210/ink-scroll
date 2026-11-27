@@ -194,6 +194,13 @@ const BUDGETS_KB = {
   // easing and reduced-motion files. Built with and without it, no other entry
   // moved by a byte. Rounded up with 0.1 KB more.
   follow:            4.1,
+  // scrollMorph, interpolatePaths and shapeToPath: 6.98 KB at its first build
+  // (7,152 bytes), its own code 5.0 of it (a path parser with arcs, arc-length
+  // tables, ring pairing and alignment, cubic splitting), the shared trigger,
+  // frame-gate, easing and reduced-motion chunks the rest. An entry of its own:
+  // every other entry, the main one included, built to the byte as before it.
+  // Rounded up with 0.1 KB more.
+  morph:             7.1,
 };
 
 /*

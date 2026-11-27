@@ -1713,6 +1713,34 @@ const MUTATIONS = [
     spec: 'e2e/follow.spec.ts',
     grep: 'under reduced motion the element is at the end at once',
   },
+  // svg-scroll-draw/morph (scroll-morph.spec).
+  {
+    id: 'morph/turn',
+    what: 'two closed outlines are paired from their own starts, never turned to the start that moves least',
+    file: 'src/morph/geometry.ts',
+    from: '  const turnB = b.closed;',
+    to: '  const turnB = false;',
+    spec: 'e2e/scroll-morph.spec.ts',
+    grep: 'halfway from a square to a circle',
+  },
+  {
+    id: 'morph/winding',
+    what: 'outlines wound opposite ways are paired as they are, so the shape folds through itself',
+    file: 'src/morph/geometry.ts',
+    from: '    ? [a.area * b.area < 0 ? reverse(b) : b]',
+    to: '    ? [b]',
+    spec: 'e2e/scroll-morph.spec.ts',
+    grep: 'halfway from a square to a circle',
+  },
+  {
+    id: 'morph/restore',
+    what: 'destroy() leaves the stand-in <path> where the <circle> was',
+    file: 'src/morph/index.ts',
+    from: '    if (path !== el) path.replaceWith(el);',
+    to: '    if (false as boolean) path.replaceWith(el);',
+    spec: 'e2e/scroll-morph.spec.ts',
+    grep: 'destroy\\(\\) puts the <circle> back',
+  },
 ];
 
 const args = process.argv.slice(2);

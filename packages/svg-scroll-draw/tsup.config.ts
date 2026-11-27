@@ -28,6 +28,7 @@ const ENTRIES: Record<string, string> = {
   'subpaths/index':           'src/subpaths/index.ts',
   'write/index':              'src/write/index.ts',
   'follow/index':             'src/follow/index.ts',
+  'morph/index':              'src/morph/index.ts',
   'reveal/index':             'src/reveal/index.ts',
   'aos/index':                'src/aos/index.ts',
   'scrollreveal/index':       'src/scrollreveal/index.ts',

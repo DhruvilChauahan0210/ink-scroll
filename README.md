@@ -64,6 +64,7 @@ If this saves you time, a ⭐ [on GitHub](https://github.com/DhruvilChauahan0210
 - **Zero dependencies** — no GSAP, no ScrollTrigger, no heavyweight runtime
 - **Handwriting** — `scrollWrite('#signature')` writes a line of text stroke by stroke in a single-stroke font as the page scrolls, the pen at one speed. [Details](#scrollwrite--handwriting-on-scroll)
 - **Motion along a path** — `scrollFollow('#plane', '#route', { rotate: true })` moves any element, HTML or SVG, along an SVG path as the page scrolls, turned to its direction, optionally drawing the path behind it. [Details](#scrollfollow--an-element-along-a-path)
+- **Morph any shape into any other** — `scrollMorph('#icon', { to: '#star' })`: a circle into a star into a letter with a hole, whatever commands each is drawn with, corners kept at both ends. [Details](#scrollmorph--any-shape-into-any-other)
 - **Reduced motion, followed live** — under `prefers-reduced-motion: reduce` every effect shows its finished state instead of animating, and a reader who turns the setting on while the page is open sees everything still moving finish at once. Scrubbing that moves only with the reader's own scroll (the horizontal strip, a timeline's scroll pass) keeps working, because holding it would hide content
 - **Full playback API** — `pause`, `resume`, `seek`, `replay`, `getProgress`, `destroy`
 - **Presets** — `{ preset: 'reveal' }` for instant one-liner setup; five named presets: `sketch`, `reveal`, `typewriter`, `cinematic`, `spring`
@@ -90,6 +91,7 @@ If this saves you time, a ⭐ [on GitHub](https://github.com/DhruvilChauahan0210
 - [Timeline API](#scrolldrawtimeline)
 - [scrollWrite — handwriting](#scrollwrite--handwriting-on-scroll)
 - [scrollFollow — motion along a path](#scrollfollow--an-element-along-a-path)
+- [scrollMorph — any shape into any other](#scrollmorph--any-shape-into-any-other)
 - [useScrollDrawProgress](#usescrolldrawprogress-react)
 - [Bundle sizes](#bundle-sizes)
 - [Browser support](#browser-support)
@@ -490,7 +492,7 @@ The library falls back to the JS engine automatically when:
 | `strokeWidth` | `number \| [number, number]` | — | Static width or animate `[from, to]` |
 | `fillOpacity` | `number \| [number, number]` | — | Animate fill opacity — `[0, 1]` floods fill in sync with the stroke draw |
 | `clip` | `boolean \| "left" \| "right" \| "top" \| "bottom" \| "center"` | — | Reveal using CSS `clip-path` instead of stroke — works on any content, not just SVG paths |
-| `morphTo` | `string` | — | Target SVG `d` attribute to morph toward as the animation progresses |
+| `morphTo` | `string` | — | Target SVG `d` attribute to morph toward as the animation progresses; both paths drawn with the same commands. For any two shapes, [`svg-scroll-draw/morph`](#scrollmorph--any-shape-into-any-other) |
 | `velocityScale` | `boolean \| number` | `false` | Scale speed by scroll velocity — faster scrolling draws faster |
 | `repeat` | `number \| "infinite"` | `0` | Repeat the animation N times after completion |
 | `repeatDelay` | `number` | `0` | Milliseconds between repeats |
@@ -913,6 +915,83 @@ across browsers. The entry is 4.0 KB gzipped and the main entry carries none of 
 
 ---
 
+## scrollMorph — any shape into any other
+
+`svg-scroll-draw/morph` morphs an SVG shape into another as the page scrolls, and back when it
+scrolls back. The two shapes need nothing in common: different commands, curves against corners,
+open or closed, one outline or several.
+
+```js
+import { scrollMorph } from 'svg-scroll-draw/morph';
+
+scrollMorph('#icon', { to: '#star' });                      // a selector, an element or path data
+scrollMorph('#blob', { to: ['#star', '#logo-letter'] });    // a sequence: circle → star → letter
+```
+
+The main entry's `morphTo` pairs the numbers of two `d` strings in order, so it only works when both
+are drawn with the same commands. This entry matches the outlines instead:
+
+- every shape becomes rings of cubic Béziers — `<rect>` (rounded too), `<circle>`, `<ellipse>`,
+  `<line>`, `<polyline>`, `<polygon>`, every path command including arcs, or a `<g>` of them;
+- rings are paired by place and size; a closed ring with no partner (the hole of an A) grows from a
+  point at its own middle, or shrinks to one, and an open line with no partner splits from, or joins,
+  the line nearest it, so a stroke leaves no dot behind;
+- each pair is cut at the same fractions of its length — every corner of either shape, plus `points`
+  cuts spaced evenly — then run the same way round (windings matched) and turned to the starting
+  point that moves the points least;
+- every point travels a straight line to its partner.
+
+Cutting a cubic does not change the curve, so the first and last frames are the shapes themselves,
+every corner kept; at exactly 0 and 1 the element gets the `d` strings as given.
+
+The target is a `<path>` or any basic shape: a `<circle>` has no `d`, so it is swapped for a `<path>`
+with the same attributes while the morph runs, and `destroy()` puts the original element back. Shapes
+to morph into can sit in a hidden `<defs>`: only their attributes are read, in their own coordinates
+(a `transform` is not applied). Under `prefers-reduced-motion: reduce` the last shape shows at once.
+
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `to` | `string \| Element \| Array` | — | The shape to morph into: path data (a string starting with `M`), a selector, or an element. A list morphs through each in turn, an equal share of the window each |
+| `points` | `number` | `24` | Cuts spaced evenly along each outline, besides its corners; more make the in-between shapes follow each outline's length more closely |
+| `precision` | `number` | `2` | Decimal places in the path data written |
+| `trigger` | `TriggerConfig` | `{ start: 'top 85%', end: 'center center' }` | The window, on the shape's `<svg>`: the last shape lands when its centre reaches the viewport's |
+| `easing` | `Easing` | `'linear'` | On each step of a sequence |
+| `once` | `boolean` | `false` | Stay morphed once there |
+| `onProgress` | `(progress: number) => void` | — | Every frame the progress through the window changes |
+| `onComplete` | `() => void` | — | When the last shape is reached |
+| `progressVar` | `boolean` | `true` | Write `--scroll-draw-progress` on the shape |
+
+It returns the usual instance (`pause`, `resume`, `seek`, `replay`, `getProgress`, `destroy`, and
+`refresh` to re-measure the window). `destroy()` puts the original `d` back exactly.
+
+The interpolation is exported on its own, with no DOM and no scroll, for a hover, a timer, a canvas
+or a server:
+
+```js
+import { interpolatePaths, shapeToPath } from 'svg-scroll-draw/morph';
+
+const at = interpolatePaths(circleD, [starD, letterD], { points: 32 });
+path.setAttribute('d', at(0.25));      // halfway from the circle to the star
+shapeToPath(document.querySelector('rect'));   // 'M0 0H100V40H0Z'
+```
+
+In React, call it in an effect on a shape the component renders, and destroy it in the cleanup:
+
+```tsx
+function MorphingIcon() {
+  const ref = useRef<SVGPathElement>(null);
+  useEffect(() => {
+    const morph = scrollMorph(ref.current!, { to: STAR });
+    return () => morph.destroy();
+  }, []);
+  return <svg viewBox="0 0 100 100"><path ref={ref} d={CIRCLE} /></svg>;
+}
+```
+
+The entry is 7.0 KB gzipped, and the main entry carries none of it.
+
+---
+
 ## useScrollDrawProgress (React)
 
 A hook that exposes reactive scroll progress (0–1) for any element — use it to drive any animation alongside or independent of an SVG draw:
@@ -1121,6 +1200,7 @@ outgrows its budget.
 | `svg-scroll-draw/group`              | 29.7 KB | **10.5 KB** |
 | `svg-scroll-draw/web-component`      | 21.5 KB | **8.3 KB** |
 | `svg-scroll-draw/write`              | 14.8 KB | **7.0 KB** |
+| `svg-scroll-draw/morph`              | 14.9 KB | **7.0 KB** |
 | `svg-scroll-draw/reveal`             | 14.4 KB | **6.1 KB** |
 | `svg-scroll-draw/horizontal`         | 14.7 KB | **6.0 KB** |
 | `svg-scroll-draw/scrollreveal/react` | 12.3 KB | **4.8 KB** |
